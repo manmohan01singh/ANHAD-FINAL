@@ -1,0 +1,1478 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   GURPURAB CALENDAR — Pure iOS 18 Style
+   Stable, Clean, No Flickering
+   Version: 3.0.0
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Brand Colors */
+  --kesri: #FF6B00;
+  --kesri-soft: rgba(255, 107, 0, 0.12);
+  --kesri-glow: rgba(255, 107, 0, 0.25);
+
+  /* iOS System Colors */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-red: #FF3B30;
+  --ios-orange: #FF9500;
+  --ios-purple: #AF52DE;
+
+  /* Background - THEME ENGINE */
+  --bg-primary: var(--cal-bg, #F2F2F7);
+  --bg-secondary: var(--cal-card, #FFFFFF);
+  --bg-elevated: var(--cal-card, rgba(255, 255, 255, 0.95));
+
+  /* Glass Effects */
+  --glass-bg: var(--cal-card, rgba(255, 255, 255, 0.85));
+  --glass-border: var(--cal-border, rgba(0, 0, 0, 0.08));
+  --glass-blur: 20px;
+
+  /* Typography - THEME ENGINE */
+  --text-primary: var(--cal-text, #000000);
+  --text-secondary: var(--cal-muted, rgba(60, 60, 67, 0.7));
+  --text-tertiary: var(--cal-muted, rgba(60, 60, 67, 0.45));
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-xxl: 24px;
+
+  /* Radius - iOS Standard */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+
+  /* Safe Areas */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE STYLES
+───────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.47;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Main Page Container */
+.page {
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-xxl) + var(--safe-area-bottom));
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAVIGATION HEADER - iOS Style
+───────────────────────────────────────────────────────────────────────────── */
+
+.page-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--safe-area-top) + var(--space-sm)) var(--space-md) var(--space-sm);
+  background: rgba(242, 242, 247, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.nav-title {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.4px;
+  color: var(--text-primary);
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--ios-blue);
+  font-weight: 400;
+  font-size: 17px;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-btn:active {
+  opacity: 0.5;
+}
+
+.nav-btn span:first-child {
+  font-size: 24px;
+  font-weight: 300;
+  margin-right: -2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLASS CARDS - Pure iOS Style (No Flickering)
+───────────────────────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 16px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* Remove the complex glass-optics effect that causes flickering */
+.glass-optics {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION STYLES
+───────────────────────────────────────────────────────────────────────────── */
+
+.section {
+  margin-top: var(--space-md);
+}
+
+.section:first-child {
+  margin-top: 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-lg) var(--space-sm);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.section-sub {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TODAY CARD
+───────────────────────────────────────────────────────────────────────────── */
+
+.today-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.today-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.today-nk {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  font-family: 'Noto Sans Gurmukhi', system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+.today-g {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--kesri) 0%, #FF8C40 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONTROLS SECTION
+───────────────────────────────────────────────────────────────────────────── */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.search {
+  width: 100%;
+  border: none;
+  background: rgba(118, 118, 128, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--text-primary);
+  outline: none;
+  transition: background var(--duration-fast);
+}
+
+.search:focus {
+  background: rgba(118, 118, 128, 0.18);
+}
+
+.search::placeholder {
+  color: var(--text-secondary);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.filter-chip {
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  border: none;
+  background: rgba(118, 118, 128, 0.12);
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-ios);
+  color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-chip:active {
+  transform: scale(0.96);
+}
+
+.filter-chip.active {
+  background: var(--kesri);
+  color: white;
+}
+
+/* Segmented Control */
+.view-seg {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 9px;
+  background: rgba(118, 118, 128, 0.12);
+}
+
+.view-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all var(--duration-fast) var(--ease-ios);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.view-btn:active {
+  opacity: 0.7;
+}
+
+.view-btn.active {
+  background: var(--bg-secondary);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 3px 1px rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   UPCOMING & EVENT LIST
+───────────────────────────────────────────────────────────────────────────── */
+
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.event-row:last-child {
+  border-bottom: none;
+}
+
+.event-row:active {
+  background: rgba(0, 0, 0, 0.04);
+  margin: 0 calc(var(--space-lg) * -1);
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.event-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.event-title {
+  font-weight: 500;
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.event-sub {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.days-left {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CALENDAR
+───────────────────────────────────────────────────────────────────────────── */
+
+.calendar-wrap {
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+}
+
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.month-label {
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.icon-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(118, 118, 128, 0.12);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-pill:active {
+  background: rgba(118, 118, 128, 0.24);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: var(--space-sm) 0;
+  text-align: center;
+}
+
+.weekdays div {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day {
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  min-height: 60px;
+  padding: var(--space-sm);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: background var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.day:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.day:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.day.other {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.day.other:hover,
+.day.other:active {
+  background: transparent;
+}
+
+.day.today .day-number {
+  background: var(--kesri);
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -4px;
+}
+
+.day-number {
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--text-primary);
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.dots .dot {
+  width: 6px;
+  height: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LEGEND
+───────────────────────────────────────────────────────────────────────────── */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.legend-item .dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   YEARLY VIEW
+───────────────────────────────────────────────────────────────────────────── */
+
+#yearGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+#yearGrid .glass-card {
+  padding: var(--space-md);
+}
+
+#yearGrid .grid {
+  gap: 2px;
+}
+
+#yearGrid .day {
+  min-height: 36px;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+#yearGrid .day .day-number {
+  font-size: 13px;
+}
+
+#yearGrid .day.today .day-number {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}
+
+#yearGrid .dots .dot {
+  width: 5px;
+  height: 5px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   iOS MODALS & SHEETS
+───────────────────────────────────────────────────────────────────────────── */
+
+.ios-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-normal) var(--ease-ios),
+    visibility var(--duration-normal);
+  z-index: 500;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ios-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ios-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  max-height: 90vh;
+  background: var(--bg-secondary);
+  border-radius: 14px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--duration-normal) var(--ease-ios);
+  z-index: 600;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ios-modal.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.modal-cancel {
+  border: none;
+  background: transparent;
+  color: var(--ios-blue);
+  font-size: 17px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modal-cancel:active {
+  opacity: 0.5;
+}
+
+.modal-body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-title-pa {
+  font-family: 'Noto Sans Gurmukhi', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.modal-title-en {
+  margin-top: 4px;
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--text-secondary);
+}
+
+.kv {
+  margin-top: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+.kv div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.block {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: rgba(118, 118, 128, 0.08);
+  border-radius: 12px;
+}
+
+.block-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: -0.08px;
+  margin-bottom: var(--space-sm);
+}
+
+.block-text {
+  font-weight: 400;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   iOS SHEET (Bottom Sheet)
+───────────────────────────────────────────────────────────────────────────── */
+
+.ios-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-secondary);
+  border-radius: 14px 14px 0 0;
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--duration-normal) var(--ease-ios);
+  z-index: 600;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--safe-area-bottom);
+}
+
+.ios-sheet.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.sheet-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.sheet-close {
+  border: none;
+  background: transparent;
+  color: var(--ios-blue);
+  font-size: 17px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sheet-close:active {
+  opacity: 0.5;
+}
+
+#reminderSave {
+  font-weight: 600;
+}
+
+.sheet-content {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REMINDER SETTINGS - iOS Native Style
+───────────────────────────────────────────────────────────────────────────── */
+
+.reminder-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-md) 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.reminder-row:last-child {
+  border-bottom: none;
+}
+
+/* iOS Toggle Switch */
+.sheet-content label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  font-weight: 400;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.sheet-content input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 51px;
+  height: 31px;
+  background: rgba(120, 120, 128, 0.16);
+  border-radius: 16px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.sheet-content input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 3px 1px rgba(0, 0, 0, 0.06);
+  transition: transform var(--duration-fast) var(--ease-ios);
+}
+
+.sheet-content input[type="checkbox"]:checked {
+  background: var(--ios-green);
+}
+
+.sheet-content input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+/* Time Input */
+.time {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 8px;
+  border: none;
+  background: rgba(118, 118, 128, 0.12);
+  padding: 10px 14px;
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--ios-blue);
+  outline: none;
+  cursor: pointer;
+  min-width: 100px;
+  text-align: center;
+}
+
+.time::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+/* Day Pills for Reminder */
+.day-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.day-pill {
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  border: none;
+  background: rgba(118, 118, 128, 0.12);
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-ios);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.day-pill:active {
+  transform: scale(0.96);
+}
+
+.day-pill.active {
+  background: var(--ios-green);
+  color: white;
+}
+
+/* Help Text */
+.sheet-content>div:last-child {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTION BUTTONS
+───────────────────────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border-top: 0.5px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.primary {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 17px;
+  cursor: pointer;
+  background: var(--ios-blue);
+  color: white;
+  transition: opacity var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary:active {
+  opacity: 0.7;
+}
+
+.secondary {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 400;
+  font-size: 17px;
+  cursor: pointer;
+  background: rgba(118, 118, 128, 0.12);
+  color: var(--ios-blue);
+  transition: opacity var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.secondary:active {
+  opacity: 0.7;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOAST NOTIFICATION
+───────────────────────────────────────────────────────────────────────────── */
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + var(--safe-area-bottom));
+  transform: translateX(-50%) translateY(20px);
+  z-index: 2000;
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: white;
+  font-weight: 500;
+  font-size: 15px;
+  opacity: 0;
+  transition: opacity var(--duration-normal), transform var(--duration-normal);
+  pointer-events: none;
+}
+
+#toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HIDDEN UTILITY
+───────────────────────────────────────────────────────────────────────────── */
+
+.hidden {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIQUID BACKGROUND - Simplified (No Flickering)
+───────────────────────────────────────────────────────────────────────────── */
+
+.liquid-background {
+  display: none !important;
+}
+
+.svg-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE ADJUSTMENTS
+───────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .page {
+    padding: var(--space-xl);
+  }
+
+  .section {
+    margin-top: var(--space-lg);
+  }
+
+  .glass-card {
+    border-radius: 16px;
+  }
+
+  .today-nk {
+    font-size: 26px;
+  }
+
+  .day {
+    min-height: 72px;
+    padding: var(--space-md);
+  }
+
+  .day-number {
+    font-size: 15px;
+  }
+
+  .day.today .day-number {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES - Force proper text colors
+   These override any conflicting styles from external CSS files
+═══════════════════════════════════════════════════════════════════════════ */
+
+body {
+  background: #F2F2F7 !important;
+  color: #000000 !important;
+}
+
+.page-nav {
+  background: rgba(242, 242, 247, 0.95) !important;
+  color: #000000 !important;
+}
+
+.nav-title {
+  color: #000000 !important;
+}
+
+.glass-card {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+.section-title {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.section-sub {
+  color: rgba(60, 60, 67, 0.5) !important;
+}
+
+.today-nk {
+  color: #000000 !important;
+}
+
+.today-g {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.search {
+  color: #000000 !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+}
+
+.search::placeholder {
+  color: rgba(60, 60, 67, 0.6) !important;
+}
+
+.filter-chip {
+  color: rgba(60, 60, 67, 0.8) !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+}
+
+.filter-chip.active {
+  color: #FFFFFF !important;
+  background: var(--kesri) !important;
+}
+
+.view-btn {
+  color: #000000 !important;
+}
+
+.view-btn.active {
+  color: #000000 !important;
+  background: #FFFFFF !important;
+}
+
+.event-title {
+  color: #000000 !important;
+}
+
+.event-sub {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.days-left {
+  color: rgba(60, 60, 67, 0.6) !important;
+}
+
+.month-label {
+  color: #000000 !important;
+}
+
+.weekdays div {
+  color: rgba(60, 60, 67, 0.6) !important;
+}
+
+.day-number {
+  color: #000000 !important;
+}
+
+.day.other .day-number {
+  color: rgba(60, 60, 67, 0.3) !important;
+}
+
+.day.today .day-number {
+  color: #FFFFFF !important;
+  background: var(--kesri) !important;
+}
+
+.legend-item {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.icon-pill {
+  color: #000000 !important;
+  background: rgba(118, 118, 128, 0.12) !important;
+}
+
+.modal-header h2 {
+  color: #000000 !important;
+}
+
+.modal-title-pa {
+  color: #000000 !important;
+}
+
+.modal-title-en {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.kv {
+  color: rgba(60, 60, 67, 0.7) !important;
+}
+
+.block-title {
+  color: rgba(60, 60, 67, 0.6) !important;
+}
+
+.block-text {
+  color: #000000 !important;
+}
+
+.sheet-content label span {
+  color: #000000 !important;
+}
+
+.reminder-row span {
+  color: #000000 !important;
+}
+
+.day-pill {
+  color: #000000 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   iOS MODAL ENHANCEMENTS - Premium Gurpurab Reminder UI
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Event Modal - Pure iOS Style */
+.ios-modal {
+  background: #FFFFFF !important;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.35),
+    0 10px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.ios-modal .modal-header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 16px 20px !important;
+}
+
+.ios-modal .modal-header h2 {
+  color: #000000 !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+}
+
+.ios-modal .modal-body {
+  background: #FFFFFF !important;
+  padding: 20px !important;
+}
+
+/* Gurmukhi Title - Large and Prominent */
+.modal-title-pa {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: #000000 !important;
+  line-height: 1.3 !important;
+  font-family: 'Noto Sans Gurmukhi', system-ui, sans-serif !important;
+}
+
+/* English Title - Secondary */
+.modal-title-en {
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
+  margin-top: 6px !important;
+}
+
+/* Date Info Section */
+.kv {
+  margin-top: 20px !important;
+  background: rgba(118, 118, 128, 0.08) !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+}
+
+.kv div {
+  color: rgba(0, 0, 0, 0.7) !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  padding: 4px 0 !important;
+}
+
+/* Description Block */
+.block {
+  background: rgba(118, 118, 128, 0.06) !important;
+  border-radius: 12px !important;
+  margin-top: 16px !important;
+  padding: 14px 16px !important;
+}
+
+.block-title {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(0, 0, 0, 0.45) !important;
+  margin-bottom: 8px !important;
+}
+
+.block-text {
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  color: #000000 !important;
+  line-height: 1.5 !important;
+}
+
+/* Modal Actions - iOS Buttons */
+.actions {
+  padding: 16px 20px 20px !important;
+  background: #FFFFFF !important;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.actions .primary {
+  background: linear-gradient(135deg, #007AFF 0%, #0056B3 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  font-size: 17px !important;
+  padding: 16px !important;
+  border-radius: 14px !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+
+.actions .primary:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.45) !important;
+}
+
+.actions .primary:active {
+  transform: scale(0.98) !important;
+}
+
+.actions .secondary {
+  background: rgba(118, 118, 128, 0.12) !important;
+  color: #007AFF !important;
+  font-weight: 500 !important;
+  font-size: 17px !important;
+  padding: 14px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: background 0.15s !important;
+}
+
+.actions .secondary:hover {
+  background: rgba(118, 118, 128, 0.18) !important;
+}
+
+.actions .secondary:active {
+  background: rgba(118, 118, 128, 0.24) !important;
+}
+
+/* iOS Sheet - Bottom Sheet */
+.ios-sheet {
+  background: #FFFFFF !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ios-sheet .sheet-header {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08) !important;
+  position: relative !important;
+}
+
+/* Handle bar on sheet */
+.ios-sheet .sheet-header::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 5px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.ios-sheet .sheet-header h2 {
+  color: #000000 !important;
+  font-weight: 600 !important;
+}
+
+.ios-sheet .sheet-content {
+  background: #FFFFFF !important;
+}
+
+.ios-sheet .sheet-content label {
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
+/* iOS Toggle Enhancements */
+.sheet-content input[type="checkbox"] {
+  background: rgba(120, 120, 128, 0.2) !important;
+}
+
+.sheet-content input[type="checkbox"]:checked {
+  background: #34C759 !important;
+}
+
+/* Day Pills for Reminder */
+.day-pills {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+.day-pill {
+  background: rgba(118, 118, 128, 0.12) !important;
+  color: #000000 !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  padding: 12px 18px !important;
+  border-radius: 100px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.day-pill.active {
+  background: #34C759 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35) !important;
+}
+
+.day-pill:hover:not(.active) {
+  background: rgba(118, 118, 128, 0.18) !important;
+}
+
+/* Backdrop Enhancement */
+.ios-backdrop {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Time Input Styling */
+.time {
+  background: rgba(118, 118, 128, 0.12) !important;
+  color: #007AFF !important;
+  font-weight: 600 !important;
+  font-size: 17px !important;
+  padding: 12px 16px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  min-width: 110px !important;
+}

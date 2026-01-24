@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0A0A0F">
+    <meta name="description" content="Daily Hukamnama from Sri Darbar Sahib - Gurbani Radio">
+    
+    <title>Daily Hukamnama | Gurbani Radio</title>
+    
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://api.banidb.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="daily-hukamnama.css">
+    
+    <!-- Manifest & Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-background">
+        <div class="ambient-orb ambient-orb-1"></div>
+        <div class="ambient-orb ambient-orb-2"></div>
+        <div class="ambient-orb ambient-orb-3"></div>
+        <div class="sacred-pattern"></div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Top Bar - iOS 26+ Style -->
+        <header class="top-bar">
+            <button class="top-bar-btn" id="backBtn" aria-label="Go Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            
+            <div class="top-bar-title">
+                <span class="top-bar-title-main">ਹੁਕਮਨਾਮਾ</span>
+                <span class="top-bar-title-sub">Sri Darbar Sahib</span>
+            </div>
+            
+            <button class="top-bar-btn theme-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+                <svg class="theme-dark-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+                </svg>
+                <svg class="theme-light-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-image-container">
+                <img src="../assets/darbar-sahib-evening.jpg" 
+                     alt="Sri Darbar Sahib, Amritsar" 
+                     class="hero-image"
+                     id="heroImage"
+                     onerror="this.src='/frontend/assets/darbar-sahib-evening.jpg'">
+                <div class="hero-overlay"></div>
+                <div class="hero-golden-border"></div>
+            </div>
+            
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M50 5 L50 95 M30 20 Q50 35 70 20 M25 75 Q50 60 75 75 M20 50 L80 50 M35 30 L35 70 M65 30 L65 70"/>
+                    </svg>
+                </div>
+                
+                <div class="hero-title">
+                    <h1 class="hero-title-gurmukhi">ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ</h1>
+                    <p class="hero-title-english">Daily Hukamnama</p>
+                </div>
+                
+                <div class="hero-location">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                    </svg>
+                    <span>Sri Darbar Sahib, Amritsar</span>
+                </div>
+                
+                <div class="date-cards">
+                    <div class="date-card english-date" id="englishDate">
+                        <span class="date-card-label">English</span>
+                        <span class="date-card-value date-value">Loading...</span>
+                    </div>
+                    <div class="date-card nanakshahi-date" id="nanakshahiDate">
+                        <span class="date-card-label">ਨਾਨਕਸ਼ਾਹੀ</span>
+                        <span class="date-card-value date-value">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Gurbani Card -->
+            <article class="gurbani-card" id="hukamnamaCard">
+                
+                <!-- Card Header -->
+                <header class="gurbani-card-header">
+                    <div class="gurbani-card-title">
+                        <h2>ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ</h2>
+                        <div class="gurbani-meta" id="hukamnamaMeta">
+                            <span class="meta-badge raag" id="raagDisplay">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                                </svg>
+                                <span>Loading...</span>
+                            </span>
+                            <span class="meta-badge ang" id="angDisplay">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                                </svg>
+                                <span>Ang: ---</span>
+                            </span>
+                            <span class="meta-badge writer" id="writerDisplay">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                <span>Loading...</span>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <button class="card-settings-btn" id="settingsBtn" aria-label="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                        </svg>
+                    </button>
+                </header>
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p class="loading-text">ਹੁਕਮਨਾਮਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</p>
+                    <p class="loading-subtext">Loading Sacred Words</p>
+                </div>
+
+                <!-- Error State -->
+                <div class="error-state hidden" id="errorState">
+                    <div class="error-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                    </div>
+                    <h3 class="error-title">Unable to Load Hukamnama</h3>
+                    <p class="error-message" id="errorMessage">Please check your connection and try again.</p>
+                    <button class="retry-btn" id="retryBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6"/>
+                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                        <span>Try Again</span>
+                    </button>
+                </div>
+
+                <!-- Gurbani Content -->
+                <div class="gurbani-content hidden" id="hukamnamaContent">
+                    
+                    <!-- Ik Onkar -->
+                    <div class="mool-mantar-decoration">
+                        <span class="ik-onkar">ੴ</span>
+                    </div>
+
+                    <!-- Gurmukhi Section -->
+                    <section class="text-section gurmukhi-section" id="gurmukhiSection">
+                        <header class="section-header">
+                            <span class="section-label">ਗੁਰਮੁਖੀ</span>
+                            <div class="section-controls">
+                                <button class="text-size-btn" data-target="gurmukhi" data-action="decrease" aria-label="Decrease font">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </button>
+                                <button class="text-size-btn" data-target="gurmukhi" data-action="increase" aria-label="Increase font">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="gurmukhi-text" id="gurmukhiText"></div>
+                    </section>
+
+                    <!-- Transliteration Section -->
+                    <section class="text-section transliteration-section" id="transliterationSection">
+                        <header class="section-header">
+                            <span class="section-label">Transliteration</span>
+                            <button class="toggle-section-btn" data-section="transliteration" aria-label="Toggle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                        </header>
+                        <div class="transliteration-text" id="transliterationText"></div>
+                    </section>
+
+                    <!-- English Translation -->
+                    <section class="text-section english-section" id="englishSection">
+                        <header class="section-header">
+                            <span class="section-label">English Translation</span>
+                            <button class="toggle-section-btn" data-section="english" aria-label="Toggle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                        </header>
+                        <div class="english-text" id="englishText"></div>
+                    </section>
+
+                    <!-- Punjabi Translation -->
+                    <section class="text-section punjabi-section" id="punjabiSection">
+                        <header class="section-header">
+                            <span class="section-label">ਪੰਜਾਬੀ ਅਰਥ</span>
+                            <button class="toggle-section-btn" data-section="punjabi" aria-label="Toggle">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                        </header>
+                        <div class="punjabi-text" id="punjabiText"></div>
+                    </section>
+
+                    <!-- End Decoration -->
+                    <div class="end-decoration">
+                        <div class="decoration-line"></div>
+                        <span class="waheguru-text">ਵਾਹਿਗੁਰੂ</span>
+                        <div class="decoration-line"></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Action Bar -->
+            <section class="action-bar-container">
+                <div class="action-bar">
+                    <button class="action-item" id="shareBtn" aria-label="Share">
+                        <div class="action-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
+                            </svg>
+                        </div>
+                        <span>Share</span>
+                    </button>
+                    
+                    <button class="action-item" id="copyBtn" aria-label="Copy">
+                        <div class="action-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                        </div>
+                        <span>Copy</span>
+                    </button>
+                    
+                    <button class="action-item" id="saveBtn" aria-label="Save">
+                        <div class="action-icon-wrapper">
+                            <svg id="heartIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                            </svg>
+                        </div>
+                        <span>Save</span>
+                    </button>
+
+                    <button class="action-item" id="readModeBtn" aria-label="Read">
+                        <div class="action-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                            </svg>
+                        </div>
+                        <span>Read</span>
+                    </button>
+
+                    <button class="action-item" id="refreshBtn" aria-label="Refresh">
+                        <div class="action-icon-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 4v6h-6M1 20v-6h6"/>
+                                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                            </svg>
+                        </div>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Previous Hukamnama Browser -->
+            <section class="browser-section">
+                <div class="section-title-wrapper">
+                    <h3 class="browser-title">Previous Hukamnama</h3>
+                    <p class="browser-subtitle">Explore historical divine words</p>
+                </div>
+                
+                <!-- Day Navigation -->
+                <div class="day-nav-container">
+                    <button class="day-nav-btn" id="prevDayBtn" aria-label="Previous Day">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <path d="M15 18l-6-6 6-6"/>
+                        </svg>
+                        <span>Previous Day</span>
+                    </button>
+                    <button class="day-nav-btn" id="nextDayBtn" aria-label="Next Day">
+                        <span>Next Day</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Date Picker -->
+                <div class="calendar-wrapper">
+                    <div class="date-picker-container">
+                        <input type="date" id="datePicker" class="ios-date-input">
+                        <div class="custom-date-trigger" id="dateTrigger">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <span id="selectedDateLabel">Select Date</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Date Chips -->
+                <div class="quick-dates" id="quickDates"></div>
+
+                <!-- History -->
+                <div class="history-section" id="historySection">
+                    <h4 class="history-title">Recent</h4>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+            </section>
+
+            <div class="bottom-spacer"></div>
+        </main>
+
+        <!-- Settings Sheet -->
+        <div class="settings-overlay" id="settingsOverlay">
+            <div class="settings-sheet" id="settingsSheet">
+                <div class="sheet-handle"></div>
+                
+                <header class="sheet-header">
+                    <h3>Display Settings</h3>
+                    <button class="close-sheet" id="closeSettings">Done</button>
+                </header>
+                
+                <div class="sheet-content">
+                    <!-- Theme -->
+                    <div class="setting-group">
+                        <label>Appearance</label>
+                        <div class="theme-toggle-container">
+                            <button class="theme-option active" data-theme="dark">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+                                <span>Dark</span>
+                            </button>
+                            <button class="theme-option" data-theme="light">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg>
+                                <span>Light</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Font Size -->
+                    <div class="setting-group">
+                        <div class="setting-label-row">
+                            <label>Font Size</label>
+                            <span id="fontSizeValue">24px</span>
+                        </div>
+                        <div class="slider-container">
+                            <span class="slider-icon small">A</span>
+                            <input type="range" id="fontSizeSlider" min="16" max="42" value="24" class="ios-slider">
+                            <span class="slider-icon large">A</span>
+                        </div>
+                    </div>
+
+                    <!-- Font Weight -->
+                    <div class="setting-group">
+                        <div class="setting-label-row">
+                            <label>Font Weight</label>
+                            <span id="fontWeightValue">400</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="fontWeightSlider" min="300" max="700" step="100" value="400" class="ios-slider">
+                        </div>
+                    </div>
+
+                    <!-- Line Spacing -->
+                    <div class="setting-group">
+                        <div class="setting-label-row">
+                            <label>Line Spacing</label>
+                            <span id="lineSpacingValue">1.8</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="lineSpacingSlider" min="1.2" max="2.5" step="0.1" value="1.8" class="ios-slider">
+                        </div>
+                    </div>
+
+                    <!-- Font Family -->
+                    <div class="setting-group">
+                        <label>Gurmukhi Font</label>
+                        <select id="fontFamilySelector" class="ios-select">
+                            <option value="'Noto Sans Gurmukhi', sans-serif">Noto Sans Gurmukhi</option>
+                            <option value="'Mukta Mahee', sans-serif">Mukta Mahee</option>
+                            <option value="AnmolLipi, Gurmukhi, sans-serif">Anmol Lipi</option>
+                        </select>
+                    </div>
+
+                    <!-- Display Toggles -->
+                    <div class="setting-group">
+                        <label>Display Options</label>
+                        <div class="toggles-grid">
+                            <div class="toggle-item">
+                                <span>Larivaar (ਲੜੀਵਾਰ)</span>
+                                <label class="ios-switch">
+                                    <input type="checkbox" id="larivaarToggle">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item" id="larivaarAssistItem" style="display: none;">
+                                <span>Larivaar Assist</span>
+                                <label class="ios-switch">
+                                    <input type="checkbox" id="larivaarAssistToggle">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <span>Transliteration</span>
+                                <label class="ios-switch">
+                                    <input type="checkbox" id="transliterationToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <span>English Translation</span>
+                                <label class="ios-switch">
+                                    <input type="checkbox" id="englishToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-item">
+                                <span>Punjabi Translation</span>
+                                <label class="ios-switch">
+                                    <input type="checkbox" id="punjabiToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="toast-container" id="toastContainer"></div>
+
+        <!-- Reading Mode Toolbar -->
+        <div class="reading-toolbar" id="readingToolbar">
+            <button class="reading-done" id="readingDoneBtn">Done</button>
+            <div class="reading-controls">
+                <button class="reading-toggle" id="readingAutoScrollToggle">Auto Scroll</button>
+            </div>
+            <div class="reading-speed">
+                <input type="range" id="scrollSpeedSlider" min="10" max="120" value="35" class="ios-slider">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="../lib/unified-storage.js"></script>
+    <script src="../lib/banidb.js"></script>
+    <script src="daily-hukamnama.js" type="module"></script>
+    <script src="../lib/global-alarm-system.js" defer></script>
+</body>
+</html>

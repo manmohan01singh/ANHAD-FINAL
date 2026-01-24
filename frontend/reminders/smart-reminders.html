@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Smart Reminders - Futuristic iOS-style Gurbani practice reminders">
+    
+    <title>ਯਾਦ ਕਰਵਾਓ | Smart Reminders</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="smart-reminders-v6.css?v=6.0.0">
+    
+    <!-- Favicon & PWA -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="manifest" href="../manifest.json">
+</head>
+
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         LOADING SCREEN
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-loading" id="appLoading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">ਵਾਹਿਗੁਰੂ</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         HEADER - FROSTED GLASS
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <header class="app-header" id="appHeader">
+        <div class="header-content">
+            <div class="header-left">
+                <button class="header-btn" id="backBtn" aria-label="Go back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="header-title">
+                <span class="gurmukhi">ਯਾਦ ਕਰਵਾਓ</span>
+                <h1>Smart Reminders</h1>
+            </div>
+            
+            <div class="header-right">
+                <div class="status-pill" id="statusPill">
+                    <span class="pulse"></span>
+                    <span class="count" id="activeCount">3/3</span>
+                </div>
+                <button class="header-btn" id="settingsBtn" aria-label="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-container">
+        <main class="main-content" id="mainContent">
+            
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 HERO CARD - NEXT ALARM
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="hero-card" id="heroCard">
+                <div class="hero-header">
+                    <span class="hero-label">Next Reminder</span>
+                </div>
+                <div class="hero-body">
+                    <div class="hero-time-section">
+                        <div class="hero-time">
+                            <span id="heroTime">04:00</span>
+                            <span class="hero-period" id="heroPeriod">AM</span>
+                        </div>
+                        <div class="hero-name">
+                            <span class="hero-emoji" id="heroEmoji">🌅</span>
+                            <span id="heroLabel">Amritvela Simran</span>
+                        </div>
+                    </div>
+                    <div class="countdown-ring">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="countdown-ring-bg" cx="50" cy="50" r="40"/>
+                            <circle class="countdown-ring-fill" id="countdownRing" cx="50" cy="50" r="40" 
+                                    stroke-dasharray="251" stroke-dashoffset="0"/>
+                        </svg>
+                        <div class="countdown-center">
+                            <span class="countdown-value" id="countdownValue">5</span>
+                            <span class="countdown-unit" id="countdownUnit">hrs</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <button class="hero-btn primary" id="testAlarmBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Test
+                    </button>
+                    <button class="hero-btn secondary" id="enableNotifBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        Notifications
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 AMRITVELA SECTION
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="alarm-section" id="amritvelaSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-emoji">☀️</span>
+                        <span class="section-name">Amritvela</span>
+                    </div>
+                </div>
+                
+                <div class="alarm-card amritvela" data-id="amritvela" id="alarmAmritvela">
+                    <div class="alarm-card-content">
+                        <div class="alarm-info">
+                            <div class="alarm-gurmukhi">ਅੰਮ੍ਰਿਤ ਵੇਲਾ</div>
+                            <div class="alarm-time-row">
+                                <span class="alarm-time" id="amritvelaTime">04:00</span>
+                                <span class="alarm-period" id="amritvelaPeriod">AM</span>
+                            </div>
+                            <div class="alarm-label">Amritvela Simran</div>
+                            <div class="alarm-meta">
+                                <span class="alarm-days">Every day</span>
+                                <span class="alarm-sound">Waheguru Jaap</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="alarm-edit-btn" data-id="amritvela" aria-label="Edit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleAmritvela" data-id="amritvela" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 EVENING SECTION
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="alarm-section" id="eveningSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-emoji">🌆</span>
+                        <span class="section-name">Evening</span>
+                    </div>
+                </div>
+                
+                <!-- Rehras Sahib -->
+                <div class="alarm-card rehras evening" data-id="rehras" id="alarmRehras">
+                    <div class="alarm-card-content">
+                        <div class="alarm-info">
+                            <div class="alarm-gurmukhi">ਰਹਿਰਾਸ ਸਾਹਿਬ</div>
+                            <div class="alarm-time-row">
+                                <span class="alarm-time" id="rehrasTime">06:30</span>
+                                <span class="alarm-period" id="rehrasPeriod">PM</span>
+                            </div>
+                            <div class="alarm-label">Rehras Sahib</div>
+                            <div class="alarm-meta">
+                                <span class="alarm-days">Every day</span>
+                                <span class="alarm-sound">Temple Bells</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="alarm-edit-btn" data-id="rehras" aria-label="Edit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleRehras" data-id="rehras" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sohila Sahib -->
+                <div class="alarm-card sohila night" data-id="sohila" id="alarmSohila">
+                    <div class="alarm-card-content">
+                        <div class="alarm-info">
+                            <div class="alarm-gurmukhi">ਸੋਹਿਲਾ ਸਾਹਿਬ</div>
+                            <div class="alarm-time-row">
+                                <span class="alarm-time" id="sohilaTime">09:30</span>
+                                <span class="alarm-period" id="sohilaPeriod">PM</span>
+                            </div>
+                            <div class="alarm-label">Sohila Sahib</div>
+                            <div class="alarm-meta">
+                                <span class="alarm-days">Every day</span>
+                                <span class="alarm-sound">Peaceful Shabad</span>
+                            </div>
+                        </div>
+                        <div class="alarm-actions">
+                            <button class="alarm-edit-btn" data-id="sohila" aria-label="Edit">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleSohila" data-id="sohila" checked>
+                                <span class="toggle-track"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 CUSTOM REMINDERS SECTION
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="alarm-section" id="customSection">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-emoji">📋</span>
+                        <span class="section-name">Custom Reminders</span>
+                    </div>
+                    <button class="section-action" id="addCustomBtn">+ Add</button>
+                </div>
+                
+                <div id="customAlarmsList">
+                    <!-- Custom alarms will be rendered here -->
+                    <div class="empty-state" id="customEmptyState">
+                        <div class="empty-icon">➕</div>
+                        <div class="empty-title">No Custom Reminders</div>
+                        <div class="empty-desc">Tap "Add" to create your own practice reminders</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 STATS CARD
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="stats-card" id="statsCard">
+                <div class="stats-grid">
+                    <div class="stat-item highlight">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value" id="statStreak">0</div>
+                        <div class="stat-label">Streak</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="statCompleted">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">⏭️</div>
+                        <div class="stat-value" id="statMissed">0</div>
+                        <div class="stat-label">Missed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value" id="statRate">100%</div>
+                        <div class="stat-label">Rate</div>
+                    </div>
+                </div>
+                
+                <div class="week-progress" id="weekProgress">
+                    <!-- Week days will be rendered here -->
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 QUICK SETTINGS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="quick-settings">
+                <div class="quick-setting">
+                    <div class="quick-setting-info">
+                        <div class="quick-setting-icon">🔔</div>
+                        <div class="quick-setting-text">
+                            <span class="quick-setting-label">Never Miss Mode</span>
+                            <span class="quick-setting-desc">Persistent until dismissed</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="neverMissToggle">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                
+                <div class="quick-setting">
+                    <div class="quick-setting-info">
+                        <div class="quick-setting-icon">😴</div>
+                        <div class="quick-setting-text">
+                            <span class="quick-setting-label">Smart Snooze</span>
+                            <span class="quick-setting-desc">Tap notification to snooze</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="smartSnoozeToggle" checked>
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                
+                <div class="quick-setting">
+                    <div class="quick-setting-info">
+                        <div class="quick-setting-icon">⏰</div>
+                        <div class="quick-setting-text">
+                            <span class="quick-setting-label">Pre-Reminder</span>
+                            <span class="quick-setting-desc">Alert before main reminder</span>
+                        </div>
+                    </div>
+                    <select id="preReminderSelect" class="form-input" style="width: auto; padding: 8px 12px;">
+                        <option value="0">Off</option>
+                        <option value="5" selected>5 min</option>
+                        <option value="10">10 min</option>
+                        <option value="15">15 min</option>
+                    </select>
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         FLOATING ADD BUTTON
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="fab-container">
+        <button class="fab" id="fabAddBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>Add Alarm</span>
+        </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         EDIT ALARM SHEET
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="sheet-backdrop" id="editBackdrop"></div>
+    <div class="sheet" id="editSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <span class="sheet-title" id="editSheetTitle">Edit Alarm</span>
+            <button class="sheet-close" id="editSheetClose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="sheet-content">
+            <!-- Time Picker -->
+            <div class="form-group">
+                <label class="form-label">Time</label>
+                <div class="time-picker-display" id="timePickerDisplay">
+                    <input type="time" id="editTimeInput" class="time-input-hidden">
+                    <span class="time-picker-value" id="editTimeHour">04</span>
+                    <span class="time-picker-separator">:</span>
+                    <span class="time-picker-value" id="editTimeMin">00</span>
+                    <span class="time-picker-period" id="editTimePeriod">AM</span>
+                </div>
+            </div>
+            
+            <!-- Label -->
+            <div class="form-group">
+                <label class="form-label">Label</label>
+                <input type="text" id="editLabel" class="form-input" placeholder="Reminder name...">
+            </div>
+            
+            <!-- Repeat Days -->
+            <div class="form-group">
+                <label class="form-label">Repeat</label>
+                <div class="days-selector" id="editDays">
+                    <button class="day-chip active" data-day="0">S</button>
+                    <button class="day-chip active" data-day="1">M</button>
+                    <button class="day-chip active" data-day="2">T</button>
+                    <button class="day-chip active" data-day="3">W</button>
+                    <button class="day-chip active" data-day="4">T</button>
+                    <button class="day-chip active" data-day="5">F</button>
+                    <button class="day-chip active" data-day="6">S</button>
+                </div>
+            </div>
+            
+            <!-- Sound Selector -->
+            <div class="form-group">
+                <label class="form-label">Sound</label>
+                <div class="sound-selector" id="soundSelector">
+                    <div class="sound-option active" data-sound="audio1">
+                        <div class="sound-icon">☸️</div>
+                        <div class="sound-info">
+                            <div class="sound-name">Waheguru Simran</div>
+                            <div class="sound-desc">Peaceful Waheguru jaap</div>
+                        </div>
+                        <button class="sound-preview-btn" data-audio="audio1">▶</button>
+                    </div>
+                    <div class="sound-option" data-sound="audio2">
+                        <div class="sound-icon">🌅</div>
+                        <div class="sound-info">
+                            <div class="sound-name">Amritvela Jaap</div>
+                            <div class="sound-desc">Morning spiritual tone</div>
+                        </div>
+                        <button class="sound-preview-btn" data-audio="audio2">▶</button>
+                    </div>
+                    <div class="sound-option" data-sound="audio3">
+                        <div class="sound-icon">📿</div>
+                        <div class="sound-info">
+                            <div class="sound-name">Rehras Sahib</div>
+                            <div class="sound-desc">Evening prayer tone</div>
+                        </div>
+                        <button class="sound-preview-btn" data-audio="audio3">▶</button>
+                    </div>
+                    <div class="sound-option" data-sound="audio4">
+                        <div class="sound-icon">🌙</div>
+                        <div class="sound-info">
+                            <div class="sound-name">Sohila Sahib</div>
+                            <div class="sound-desc">Night prayer soothing</div>
+                        </div>
+                        <button class="sound-preview-btn" data-audio="audio4">▶</button>
+                    </div>
+                    <div class="sound-option" data-sound="audio5">
+                        <div class="sound-icon">🔔</div>
+                        <div class="sound-info">
+                            <div class="sound-name">Temple Bells</div>
+                            <div class="sound-desc">Gentle bell chimes</div>
+                        </div>
+                        <button class="sound-preview-btn" data-audio="audio5">▶</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Snooze -->
+            <div class="form-group">
+                <label class="form-label">Snooze Duration</label>
+                <select id="editSnooze" class="form-input">
+                    <option value="5">5 minutes</option>
+                    <option value="10" selected>10 minutes</option>
+                    <option value="15">15 minutes</option>
+                    <option value="30">30 minutes</option>
+                </select>
+            </div>
+            
+            <!-- Nitnem Tracker Sync -->
+            <div class="quick-setting" style="background: var(--bg-tertiary); border-radius: var(--radius-md); padding: var(--space-md); margin-top: var(--space-lg);">
+                <div class="quick-setting-info">
+                    <div class="quick-setting-icon">📊</div>
+                    <div class="quick-setting-text">
+                        <span class="quick-setting-label">Nitnem Tracker Sync</span>
+                        <span class="quick-setting-desc">Track in your progress</span>
+                    </div>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="editNitnemSync" checked>
+                    <span class="toggle-track"></span>
+                </label>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="sheet-btn primary" id="saveAlarmBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                Save Changes
+            </button>
+            <button class="sheet-btn danger" id="deleteAlarmBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                </svg>
+                Delete Alarm
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SETTINGS SHEET
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="sheet-backdrop" id="settingsBackdrop"></div>
+    <div class="sheet" id="settingsSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <span class="sheet-title">Settings</span>
+            <button class="sheet-close" id="settingsSheetClose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="sheet-content">
+            <!-- Theme -->
+            <div class="settings-section">
+                <div class="settings-section-title">Appearance</div>
+                <div class="theme-selector" id="themeSelector">
+                    <button class="theme-btn" data-theme="light">
+                        <div class="theme-btn-icon">☀️</div>
+                        <span class="theme-btn-label">Light</span>
+                    </button>
+                    <button class="theme-btn active" data-theme="dark">
+                        <div class="theme-btn-icon">🌙</div>
+                        <span class="theme-btn-label">Dark</span>
+                    </button>
+                    <button class="theme-btn" data-theme="system">
+                        <div class="theme-btn-icon">📱</div>
+                        <span class="theme-btn-label">Auto</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Notifications -->
+            <div class="settings-section">
+                <div class="settings-section-title">Notifications</div>
+                <div class="settings-item" id="notifPermissionItem">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon blue">🔔</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Notification Permission</span>
+                            <span class="settings-item-desc" id="notifStatus">Tap to enable</span>
+                        </div>
+                    </div>
+                    <svg class="settings-item-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon green">📳</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Vibration</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vibrationToggle" checked>
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon orange">🔊</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Sound</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Quiet Hours -->
+            <div class="settings-section">
+                <div class="settings-section-title">Quiet Hours</div>
+                <div class="settings-item">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon purple">🌙</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Enable Quiet Hours</span>
+                            <span class="settings-item-desc">No alerts during this time</span>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="quietHoursToggle">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="settings-item" id="quietHoursRange" style="display: none;">
+                    <div class="settings-item-content" style="width: 100%;">
+                        <div style="display: flex; gap: 12px; width: 100%;">
+                            <div style="flex: 1;">
+                                <label style="font-size: 12px; color: var(--text-tertiary);">From</label>
+                                <input type="time" id="quietStart" class="form-input" value="22:00">
+                            </div>
+                            <div style="flex: 1;">
+                                <label style="font-size: 12px; color: var(--text-tertiary);">To</label>
+                                <input type="time" id="quietEnd" class="form-input" value="06:00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data & Sync -->
+            <div class="settings-section">
+                <div class="settings-section-title">Data</div>
+                <div class="settings-item" id="exportDataBtn">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon blue">📤</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Export Data</span>
+                        </div>
+                    </div>
+                    <svg class="settings-item-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+                <div class="settings-item" id="resetDataBtn">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon red">🗑️</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label" style="color: var(--system-red);">Reset All Data</span>
+                        </div>
+                    </div>
+                    <svg class="settings-item-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- About -->
+            <div class="settings-section">
+                <div class="settings-section-title">About</div>
+                <div class="settings-item">
+                    <div class="settings-item-content">
+                        <div class="settings-item-icon orange">ℹ️</div>
+                        <div class="settings-item-text">
+                            <span class="settings-item-label">Version</span>
+                        </div>
+                    </div>
+                    <span class="settings-item-value">6.0.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         ADD CUSTOM ALARM SHEET
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="sheet-backdrop" id="addBackdrop"></div>
+    <div class="sheet" id="addSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-header">
+            <span class="sheet-title">Add Custom Reminder</span>
+            <button class="sheet-close" id="addSheetClose">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="sheet-content">
+            <!-- Time Picker -->
+            <div class="form-group">
+                <label class="form-label">Time</label>
+                <div class="time-picker-display" id="addTimePickerDisplay">
+                    <input type="time" id="addTimeInput" class="time-input-hidden" value="12:00">
+                    <span class="time-picker-value" id="addTimeHour">12</span>
+                    <span class="time-picker-separator">:</span>
+                    <span class="time-picker-value" id="addTimeMin">00</span>
+                    <span class="time-picker-period" id="addTimePeriod">PM</span>
+                </div>
+            </div>
+            
+            <!-- Label -->
+            <div class="form-group">
+                <label class="form-label">Label</label>
+                <input type="text" id="addLabel" class="form-input" placeholder="e.g., Midday Simran...">
+            </div>
+            
+            <!-- Repeat Days -->
+            <div class="form-group">
+                <label class="form-label">Repeat</label>
+                <div class="days-selector" id="addDays">
+                    <button class="day-chip active" data-day="0">S</button>
+                    <button class="day-chip active" data-day="1">M</button>
+                    <button class="day-chip active" data-day="2">T</button>
+                    <button class="day-chip active" data-day="3">W</button>
+                    <button class="day-chip active" data-day="4">T</button>
+                    <button class="day-chip active" data-day="5">F</button>
+                    <button class="day-chip active" data-day="6">S</button>
+                </div>
+            </div>
+            
+            <!-- Sound -->
+            <div class="form-group">
+                <label class="form-label">Sound</label>
+                <select id="addSound" class="form-input">
+                    <option value="audio1">Waheguru Simran</option>
+                    <option value="audio2">Amritvela Jaap</option>
+                    <option value="audio3">Rehras Sahib</option>
+                    <option value="audio4">Sohila Sahib</option>
+                    <option value="audio5">Temple Bells</option>
+                </select>
+            </div>
+        </div>
+        <div class="sheet-actions">
+            <button class="sheet-btn primary" id="createAlarmBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Create Alarm
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         TOAST CONTAINER
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <!-- Performance Optimizer (Load First) -->
+    <script src="js/perf-optimizer.js?v=1.0.0"></script>
+    
+    <!-- Core UI Controller -->
+    <script src="smart-reminders-v6.js?v=6.0.0"></script>
+    
+    <!-- Nitnem Tracker Sync -->
+    <script src="js/nitnem-sync.js?v=2.0.0"></script>
+    
+    <!-- Reliable Alarm System (Multiple Fallbacks) -->
+    <script src="js/reliable-alarm.js?v=2.0.0"></script>
+    
+    <!-- Background Alarm System -->
+    <script src="js/bg-alarm.js?v=2.0.0"></script>
+    
+    <!-- Global Alarm Handler -->
+    <script src="../lib/global-alarm-system.js?v=3.0.0"></script>
+    
+    <!-- iOS/Android Persistent Notifications -->
+    <script src="../lib/ios-android-notifications.js?v=3.0.0"></script>
+    
+    <!-- Alarm Persistence System (IndexedDB + Keep-Alive Worker) -->
+    <script src="../lib/alarm-persistence.js?v=1.0.0"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw-alarm.js', { scope: '/' })
+                .then(reg => console.log('✅ Alarm Service Worker registered'))
+                .catch(err => console.warn('SW registration failed:', err));
+        }
+    </script>
+</body>
+</html>

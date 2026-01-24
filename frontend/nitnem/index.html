@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. Read from Sri Guru Granth Sahib Ji and Sri Dasam Granth Sahib Ji.">
+  <meta name="theme-color" content="#0A0A0F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>ਨਿਤਨੇਮ — Sacred Bani Library | Gurbani Live</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/main.css">
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ੴ</text></svg>">
+</head>
+
+<body>
+  <!-- Loading -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="loading-ik">ੴ</div>
+      <p>ਵਾਹਿਗੁਰੂ...</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div class="app" id="app">
+    
+    <!-- Header -->
+    <header class="header glass">
+      <a href="../index.html" class="header-back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </a>
+      <div class="header-title">
+        <span class="header-gurmukhi">ਨਿਤਨੇਮ</span>
+      </div>
+      <button class="header-btn" id="settingsBtn" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Greeting Hero -->
+    <section class="hero">
+      <div class="hero-greeting" id="greeting">
+        <span class="greeting-icon">☀️</span>
+        <span class="greeting-text">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ</span>
+      </div>
+      
+      <div class="hero-search">
+        <button class="search-trigger" id="searchTrigger">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Search any Bani...</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Categories -->
+    <main class="main">
+      
+      <!-- Nitnem Category -->
+      <a href="category/nitnem.html" class="category-card">
+        <div class="category-icon">📿</div>
+        <div class="category-content">
+          <h2 class="category-title">
+            <span class="gurmukhi">ਨਿਤਨੇਮ</span>
+            <span class="english">Nitnem</span>
+          </h2>
+          <p class="category-desc">Daily prayers for morning, evening & night</p>
+        </div>
+        <svg class="category-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+
+      <!-- Sri Guru Granth Sahib Ji -->
+      <a href="category/sggs.html" class="category-card">
+        <div class="category-icon">📕</div>
+        <div class="category-content">
+          <h2 class="category-title">
+            <span class="gurmukhi">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+            <span class="english">Sri Guru Granth Sahib Ji</span>
+          </h2>
+          <p class="category-desc">Sukhmani Sahib, Asa Di Vaar, and more Banis</p>
+        </div>
+        <svg class="category-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+
+      <!-- Sri Dasam Granth Sahib Ji -->
+      <a href="category/dasam.html" class="category-card">
+        <div class="category-icon">📗</div>
+        <div class="category-content">
+          <h2 class="category-title">
+            <span class="gurmukhi">ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+            <span class="english">Sri Dasam Granth Sahib Ji</span>
+          </h2>
+          <p class="category-desc">Jaap Sahib, Chaupai Sahib, Akal Ustat & more</p>
+        </div>
+        <svg class="category-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+
+      <!-- Favorites -->
+      <a href="category/favorites.html" class="category-card category-secondary">
+        <div class="category-icon">⭐</div>
+        <div class="category-content">
+          <h2 class="category-title">
+            <span class="english">Favorites</span>
+          </h2>
+          <p class="category-desc">Your saved Banis</p>
+        </div>
+        <svg class="category-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
+
+      <!-- Recently Read -->
+      <section class="recent-section" id="recentSection" style="display: none;">
+        <h3 class="section-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Recently Read
+        </h3>
+        <div class="recent-list" id="recentList"></div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-divider">
+        <span class="line"></span>
+        <span class="khanda">☬</span>
+        <span class="line"></span>
+      </div>
+      <p class="footer-text">
+        ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ ॥
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal" id="searchModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content search-modal glass">
+      <div class="search-header">
+        <div class="search-input-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="search" id="searchInput" placeholder="Search Banis..." autocomplete="off" autofocus>
+        </div>
+        <button class="search-cancel" id="searchCancel">Cancel</button>
+      </div>
+      <div class="search-results" id="searchResults">
+        <p class="search-hint">Search by name in Gurmukhi or English...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="settings-panel glass" id="settingsPanel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="settings-close" id="settingsClose">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body" id="settingsBody">
+        <!-- Settings injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/bani-metadata.js"></script>
+  <script src="js/banidb-api.js"></script>
+  <script src="js/hub-app.js"></script>
+</body>
+</html>

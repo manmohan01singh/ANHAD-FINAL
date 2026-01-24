@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Notes | Spiritual Journal</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Capture your spiritual reflections, Gurbani insights, and daily thoughts with this beautiful notes app.">
+    <meta name="theme-color" content="#000000">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Notes">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="notes-app.css">
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════
+         NOTES APPLICATION CONTAINER
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="notes-app" id="notes-app">
+        
+        <!-- ═══════════════════════════════════════════════════════════
+             HEADER
+        ═══════════════════════════════════════════════════════════ -->
+        <header class="notes-header">
+            <div class="header-glass"></div>
+            <div class="header-content">
+                <button class="header-btn back-btn" id="back-btn" aria-label="Go back">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Back</span>
+                </button>
+                
+                <div class="header-title">
+                    <h1>Gurbani Notes</h1>
+                    <span class="notes-count" id="notes-count">0 Notes</span>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="header-btn" id="search-btn" aria-label="Search notes">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </button>
+                    <button class="header-btn" id="theme-btn" aria-label="Toggle theme">
+                        <i class="fas fa-sun" id="theme-icon"></i>
+                    </button>
+                    <button class="header-btn" id="menu-btn" aria-label="More options">
+                        <i class="fas fa-ellipsis"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Search Bar (Hidden by default) -->
+            <div class="search-bar" id="search-bar">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    <input type="text" 
+                           id="search-input" 
+                           placeholder="Search notes..." 
+                           autocomplete="off"
+                           spellcheck="false">
+                    <button class="search-clear" id="search-clear" aria-label="Clear search">
+                        <i class="fas fa-xmark-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             MAIN CONTENT AREA
+        ═══════════════════════════════════════════════════════════ -->
+        <main class="notes-main" id="notes-main">
+            
+            <!-- Folder Tabs -->
+            <div class="folder-tabs" id="folder-tabs">
+                <button class="folder-tab active" data-folder="all">
+                    <i class="fas fa-note-sticky"></i>
+                    <span>All</span>
+                </button>
+                <button class="folder-tab" data-folder="pinned">
+                    <i class="fas fa-thumbtack"></i>
+                    <span>Pinned</span>
+                </button>
+                <button class="folder-tab" data-folder="gurbani">
+                    <i class="fas fa-book-open"></i>
+                    <span>Gurbani</span>
+                </button>
+                <button class="folder-tab" data-folder="personal">
+                    <i class="fas fa-heart"></i>
+                    <span>Personal</span>
+                </button>
+            </div>
+            
+            <!-- Notes List -->
+            <div class="notes-list" id="notes-list">
+                <!-- Notes will be rendered here dynamically -->
+            </div>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state">
+                <div class="empty-illustration">
+                    <div class="empty-icon">
+                        <i class="fas fa-feather-pointed"></i>
+                    </div>
+                    <div class="empty-glow"></div>
+                </div>
+                <h2>No Notes Yet</h2>
+                <p>Capture your spiritual reflections, Gurbani insights, and daily thoughts.</p>
+                <button class="empty-cta" id="empty-cta">
+                    <i class="fas fa-plus"></i>
+                    <span>Create Your First Note</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             FLOATING ACTION BUTTON
+        ═══════════════════════════════════════════════════════════ -->
+        <button class="fab" id="fab" aria-label="Create new note">
+            <div class="fab-glow"></div>
+            <div class="fab-icon">
+                <i class="fas fa-plus"></i>
+            </div>
+        </button>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             NOTE EDITOR OVERLAY
+        ═══════════════════════════════════════════════════════════ -->
+        <div class="editor-overlay" id="editor-overlay">
+            <div class="editor-container">
+                
+                <!-- Editor Header -->
+                <header class="editor-header">
+                    <button class="editor-btn back" id="editor-back">
+                        <i class="fas fa-chevron-left"></i>
+                        <span>Notes</span>
+                    </button>
+                    
+                    <div class="editor-actions">
+                        <button class="editor-btn" id="editor-pin" aria-label="Pin note">
+                            <i class="fas fa-thumbtack"></i>
+                        </button>
+                        <button class="editor-btn" id="editor-folder" aria-label="Change folder">
+                            <i class="fas fa-folder"></i>
+                        </button>
+                        <button class="editor-btn" id="editor-share" aria-label="Share note">
+                            <i class="fas fa-share-from-square"></i>
+                        </button>
+                        <button class="editor-btn delete" id="editor-delete" aria-label="Delete note">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </header>
+                
+                <!-- Editor Body -->
+                <div class="editor-body">
+                    <input type="text" 
+                           class="editor-title" 
+                           id="editor-title" 
+                           placeholder="Title"
+                           maxlength="100">
+                    
+                    <div class="editor-meta" id="editor-meta">
+                        <span class="meta-date"></span>
+                        <span class="meta-chars"></span>
+                    </div>
+                    
+                    <textarea class="editor-content" 
+                              id="editor-content" 
+                              placeholder="Start typing your note..."></textarea>
+                </div>
+                
+                <!-- Editor Toolbar -->
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" data-format="bold" title="Bold">
+                        <i class="fas fa-bold"></i>
+                    </button>
+                    <button class="toolbar-btn" data-format="italic" title="Italic">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="toolbar-btn" data-format="list" title="List">
+                        <i class="fas fa-list"></i>
+                    </button>
+                    <button class="toolbar-btn" data-format="checklist" title="Checklist">
+                        <i class="fas fa-list-check"></i>
+                    </button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" data-format="gurmukhi" title="Insert Gurmukhi">
+                        <span class="gurmukhi-icon">ੴ</span>
+                    </button>
+                </div>
+                
+                <!-- Folder Picker Modal -->
+                <div class="folder-picker" id="folder-picker">
+                    <div class="folder-picker-header">
+                        <h3>Select Folder</h3>
+                        <button class="close-picker" id="close-folder-picker">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="folder-picker-list">
+                        <button class="folder-option" data-folder="all">
+                            <i class="fas fa-note-sticky"></i>
+                            <span>General</span>
+                        </button>
+                        <button class="folder-option" data-folder="gurbani">
+                            <i class="fas fa-book-open"></i>
+                            <span>Gurbani Notes</span>
+                        </button>
+                        <button class="folder-option" data-folder="personal">
+                            <i class="fas fa-heart"></i>
+                            <span>Personal</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             OPTIONS MENU OVERLAY
+        ═══════════════════════════════════════════════════════════ -->
+        <div class="menu-overlay" id="menu-overlay">
+            <div class="menu-backdrop" id="menu-backdrop"></div>
+            <div class="menu-sheet">
+                <div class="menu-handle"></div>
+                <div class="menu-options">
+                    <button class="menu-option" id="menu-sort">
+                        <i class="fas fa-arrow-down-wide-short"></i>
+                        <span>Sort Notes</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="menu-option" id="menu-export">
+                        <i class="fas fa-download"></i>
+                        <span>Export Notes</span>
+                    </button>
+                    <button class="menu-option" id="menu-import">
+                        <i class="fas fa-upload"></i>
+                        <span>Import Notes</span>
+                    </button>
+                    <div class="menu-divider"></div>
+                    <button class="menu-option danger" id="menu-delete-all">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete All Notes</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             SORT OPTIONS SHEET
+        ═══════════════════════════════════════════════════════════ -->
+        <div class="sort-sheet" id="sort-sheet">
+            <div class="sort-backdrop" id="sort-backdrop"></div>
+            <div class="sort-content">
+                <div class="sort-handle"></div>
+                <h3>Sort By</h3>
+                <div class="sort-options">
+                    <button class="sort-option active" data-sort="modified">
+                        <i class="fas fa-clock"></i>
+                        <span>Date Modified</span>
+                        <i class="fas fa-check check-icon"></i>
+                    </button>
+                    <button class="sort-option" data-sort="created">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Date Created</span>
+                        <i class="fas fa-check check-icon"></i>
+                    </button>
+                    <button class="sort-option" data-sort="title">
+                        <i class="fas fa-font"></i>
+                        <span>Title</span>
+                        <i class="fas fa-check check-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             DELETE CONFIRMATION MODAL
+        ═══════════════════════════════════════════════════════════ -->
+        <div class="confirm-modal" id="confirm-modal">
+            <div class="confirm-backdrop"></div>
+            <div class="confirm-dialog">
+                <div class="confirm-icon">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <h3 id="confirm-title">Delete Note?</h3>
+                <p id="confirm-message">This action cannot be undone.</p>
+                <div class="confirm-actions">
+                    <button class="confirm-btn cancel" id="confirm-cancel">Cancel</button>
+                    <button class="confirm-btn danger" id="confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             TOAST NOTIFICATION
+        ═══════════════════════════════════════════════════════════ -->
+        <div class="toast" id="toast">
+            <i class="toast-icon fas fa-check-circle"></i>
+            <span class="toast-message" id="toast-message">Note saved</span>
+        </div>
+
+        <!-- Hidden file input for import -->
+        <input type="file" id="import-input" accept=".json,.txt" style="display: none;">
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════════════════════ -->
+    <script src="../lib/unified-storage.js"></script>
+    <script src="notes-manager.js"></script>
+    <script src="notes-ui.js"></script>
+    <script src="notes-integration.js"></script>
+    <script src="../lib/global-alarm-system.js" defer></script>
+</body>
+</html>

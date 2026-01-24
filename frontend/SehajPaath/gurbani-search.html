@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+    
+    <title>ਗੁਰਬਾਣੀ ਖੋਜ | Gurbani Search</title>
+    <meta name="description" content="Search the sacred words of Sri Guru Granth Sahib Ji">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="components/search-engine.css">
+</head>
+<body>
+    <!-- 
+        GURBANI SEARCH — iOS Native Design
+        Philosophy: Remove until only meaning remains.
+        For: Early morning. Late night. Silence. Emotional vulnerability.
+    -->
+    
+    <div class="search-container" id="searchApp">
+        <main class="main-content">
+            
+            <!-- Header — Minimal, iOS Standard -->
+            <header class="search-header">
+                <a href="../index.html" class="back-btn" aria-label="Back">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </a>
+                <span class="header-title">ਗੁਰਬਾਣੀ ਖੋਜ</span>
+                <button type="button" class="settings-btn" id="themeToggle" aria-label="Settings">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </header>
+            
+            <!-- Search Section -->
+            <section class="search-section">
+                
+                <!-- Search Bar — iOS Spotlight Style -->
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </span>
+                    <input 
+                        type="search" 
+                        id="searchInput" 
+                        class="search-input"
+                        placeholder="Search Gurbani..."
+                        autocomplete="off"
+                        autocapitalize="off"
+                        autocorrect="off"
+                        spellcheck="false"
+                    >
+                    <button type="button" class="clear-btn" id="clearBtn" aria-label="Clear" hidden>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.5"/>
+                            <path d="M15 9l-6 6M9 9l6 6" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </button>
+                    <div class="input-actions">
+                        <button type="button" class="action-btn" id="keyboardBtn" aria-label="Gurmukhi keyboard">
+                            <span style="font-family: var(--font-gurmukhi); font-size: 18px;">ੳ</span>
+                        </button>
+                        <button type="button" class="action-btn" id="voiceBtn" aria-label="Voice search">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mode Selector — Subtle -->
+                <div class="mode-selector">
+                    <button type="button" class="mode-btn active" data-mode="first-letter">First Letter</button>
+                    <button type="button" class="mode-btn" data-mode="gurmukhi">Gurmukhi</button>
+                    <button type="button" class="mode-btn" data-mode="english">English</button>
+                </div>
+                
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                
+                <!-- Empty State -->
+                <div class="state-container" id="emptyState">
+                    <div class="state-icon">🙏</div>
+                    <h2 class="state-title">ਗੁਰਬਾਣੀ ਖੋਜੋ</h2>
+                    <p class="state-text">Search in Gurmukhi or English</p>
+                    
+                    <div class="empty-hints">
+                        <div class="hint">
+                            <span class="hint-query">ਸਗਕ</span>
+                            <span class="hint-arrow">→</span>
+                            <span class="hint-result">ਸਤਿਗੁਰ ਕੀ...</span>
+                        </div>
+                        <div class="hint">
+                            <span class="hint-query">waheguru</span>
+                            <span class="hint-arrow">→</span>
+                            <span class="hint-result">ਵਾਹਿਗੁਰੂ...</span>
+                        </div>
+                        <div class="hint">
+                            <span class="hint-query">🎤 Voice</span>
+                            <span class="hint-arrow">→</span>
+                            <span class="hint-result">Speak in Punjabi</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading State -->
+                <div class="state-container hidden" id="loadingState">
+                    <div class="loader-container">
+                        <div class="loader-ring"></div>
+                        <div class="loader-khanda">☬</div>
+                    </div>
+                    <p class="state-text" id="loadingText">ਖੋਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</p>
+                </div>
+                
+                <!-- No Results State -->
+                <div class="state-container hidden" id="noResultsState">
+                    <div class="state-icon">📜</div>
+                    <h2 class="state-title">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ</h2>
+                    <p class="state-text" id="noResultsMessage">No results found</p>
+                </div>
+                
+                <!-- Error State -->
+                <div class="state-container hidden" id="errorState">
+                    <div class="state-icon">🙏</div>
+                    <h2 class="state-title">ਖੋਜ ਅਸਫਲ</h2>
+                    <p class="state-text" id="errorMessage">Please try again</p>
+                    <button type="button" class="mode-btn" id="retryBtn" style="margin-top: 16px;">Retry</button>
+                </div>
+                
+                <!-- Results List -->
+                <div class="results-list hidden" id="resultsList">
+                    <div class="results-header">
+                        <span class="results-count" id="resultsCount">0 results</span>
+                        <span class="results-query" id="resultsQuery"></span>
+                    </div>
+                    <div class="results-container" id="resultsContainer">
+                        <!-- Results rendered here -->
+                    </div>
+                </div>
+                
+            </section>
+            
+        </main>
+    </div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         GURMUKHI KEYBOARD — iOS Sheet Style
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="keyboard-overlay hidden" id="keyboardOverlay">
+        <div class="keyboard-backdrop" id="keyboardBackdrop"></div>
+        <div class="keyboard-popup" id="keyboardPopup">
+            <div class="keyboard-header">
+                <span class="keyboard-title">ਗੁਰਮੁਖੀ</span>
+                <div class="keyboard-preview" id="keyboardPreview"></div>
+                <button type="button" class="keyboard-close" id="keyboardClose" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="keyboard-body">
+                <!-- Row 1 -->
+                <div class="keyboard-row">
+                    <button type="button" class="key" data-char="ੳ">ੳ</button>
+                    <button type="button" class="key" data-char="ਅ">ਅ</button>
+                    <button type="button" class="key" data-char="ੲ">ੲ</button>
+                    <button type="button" class="key" data-char="ਸ">ਸ</button>
+                    <button type="button" class="key" data-char="ਹ">ਹ</button>
+                    <button type="button" class="key" data-char="ਕ">ਕ</button>
+                    <button type="button" class="key" data-char="ਖ">ਖ</button>
+                    <button type="button" class="key" data-char="ਗ">ਗ</button>
+                    <button type="button" class="key" data-char="ਘ">ਘ</button>
+                    <button type="button" class="key" data-char="ਙ">ਙ</button>
+                </div>
+                
+                <!-- Row 2 -->
+                <div class="keyboard-row">
+                    <button type="button" class="key" data-char="ਚ">ਚ</button>
+                    <button type="button" class="key" data-char="ਛ">ਛ</button>
+                    <button type="button" class="key" data-char="ਜ">ਜ</button>
+                    <button type="button" class="key" data-char="ਝ">ਝ</button>
+                    <button type="button" class="key" data-char="ਞ">ਞ</button>
+                    <button type="button" class="key" data-char="ਟ">ਟ</button>
+                    <button type="button" class="key" data-char="ਠ">ਠ</button>
+                    <button type="button" class="key" data-char="ਡ">ਡ</button>
+                    <button type="button" class="key" data-char="ਢ">ਢ</button>
+                    <button type="button" class="key" data-char="ਣ">ਣ</button>
+                </div>
+                
+                <!-- Row 3 -->
+                <div class="keyboard-row">
+                    <button type="button" class="key" data-char="ਤ">ਤ</button>
+                    <button type="button" class="key" data-char="ਥ">ਥ</button>
+                    <button type="button" class="key" data-char="ਦ">ਦ</button>
+                    <button type="button" class="key" data-char="ਧ">ਧ</button>
+                    <button type="button" class="key" data-char="ਨ">ਨ</button>
+                    <button type="button" class="key" data-char="ਪ">ਪ</button>
+                    <button type="button" class="key" data-char="ਫ">ਫ</button>
+                    <button type="button" class="key" data-char="ਬ">ਬ</button>
+                    <button type="button" class="key" data-char="ਭ">ਭ</button>
+                    <button type="button" class="key" data-char="ਮ">ਮ</button>
+                </div>
+                
+                <!-- Row 4 -->
+                <div class="keyboard-row">
+                    <button type="button" class="key" data-char="ਯ">ਯ</button>
+                    <button type="button" class="key" data-char="ਰ">ਰ</button>
+                    <button type="button" class="key" data-char="ਲ">ਲ</button>
+                    <button type="button" class="key" data-char="ਵ">ਵ</button>
+                    <button type="button" class="key" data-char="ੜ">ੜ</button>
+                    <button type="button" class="key" data-char="ਸ਼">ਸ਼</button>
+                    <button type="button" class="key" data-char="ਖ਼">ਖ਼</button>
+                    <button type="button" class="key" data-char="ਗ਼">ਗ਼</button>
+                    <button type="button" class="key" data-char="ਜ਼">ਜ਼</button>
+                    <button type="button" class="key" data-char="ਫ਼">ਫ਼</button>
+                </div>
+                
+                <!-- Row 5: Matras -->
+                <div class="keyboard-row matras-row">
+                    <button type="button" class="key matra" data-char="ਾ">ਾ</button>
+                    <button type="button" class="key matra" data-char="ਿ">ਿ</button>
+                    <button type="button" class="key matra" data-char="ੀ">ੀ</button>
+                    <button type="button" class="key matra" data-char="ੁ">ੁ</button>
+                    <button type="button" class="key matra" data-char="ੂ">ੂ</button>
+                    <button type="button" class="key matra" data-char="ੇ">ੇ</button>
+                    <button type="button" class="key matra" data-char="ੈ">ੈ</button>
+                    <button type="button" class="key matra" data-char="ੋ">ੋ</button>
+                    <button type="button" class="key matra" data-char="ੌ">ੌ</button>
+                    <button type="button" class="key matra" data-char="ੰ">ੰ</button>
+                    <button type="button" class="key matra" data-char="ੱ">ੱ</button>
+                    <button type="button" class="key matra" data-char="ਂ">ਂ</button>
+                </div>
+                
+                <!-- Row 6: Actions -->
+                <div class="keyboard-row action-row">
+                    <button type="button" class="key special" data-char="ੴ">ੴ</button>
+                    <button type="button" class="key special" data-char="☬">☬</button>
+                    <button type="button" class="key space-key" data-char=" ">space</button>
+                    <button type="button" class="key backspace-key" id="backspaceKey">⌫</button>
+                    <button type="button" class="key done-key" id="doneKey">✓</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         VOICE SEARCH OVERLAY — Calm, Not Exciting
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="voice-overlay hidden" id="voiceOverlay">
+        <div class="voice-modal">
+            <div class="voice-visual">
+                <div class="voice-ring"></div>
+                <div class="voice-ring"></div>
+                <div class="voice-ring"></div>
+                <div class="voice-mic">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+            </div>
+            <p class="voice-status" id="voiceStatus">Listening...</p>
+            <p class="voice-transcript" id="voiceTranscript"></p>
+            <div class="voice-lang-selector">
+                <button type="button" class="lang-btn active" id="langPunjabi">ਪੰਜਾਬੀ</button>
+                <button type="button" class="lang-btn" id="langEnglish">English</button>
+            </div>
+            <button type="button" class="voice-cancel-btn" id="voiceCancelBtn">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+    
+    <!-- Scripts -->
+    <script src="../lib/banidb.js"></script>
+    <script src="components/search-engine.js"></script>
+</body>
+</html>

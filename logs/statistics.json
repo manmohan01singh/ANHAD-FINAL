@@ -1,0 +1,19 @@
+{
+  "totalPlays": 1,
+  "totalListeners": 0,
+  "peakListeners": 0,
+  "uptime": 1767551822882,
+  "trackPlays": {
+    "shabad_001": 1,
+    "shabad_002": 0,
+    "shabad_003": 0,
+    "shabad_004": 0,
+    "shabad_005": 0
+  },
+  "hourlyStats": {
+    "0": {
+      "listeners": 0,
+      "plays": 0
+    }
+  }
+}

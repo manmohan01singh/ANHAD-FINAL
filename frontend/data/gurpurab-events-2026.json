@@ -1,0 +1,688 @@
+{
+    "version": 2,
+    "note": "SGPC-followed Nanakshahi (Samvat 557-558) dates for 2026",
+    "years": {
+        "2026": [
+            {
+                "id": "chabiyan-morcha-2026",
+                "gregorian_date": "2026-01-20",
+                "name_en": "Chabiyan Da Morcha",
+                "name_pa": "ਚਾਬੀਆਂ ਦਾ ਮੋਰਚਾ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "vyah-guru-gobind-2026",
+                "gregorian_date": "2026-01-23",
+                "name_en": "Vyah Purab Guru Gobind Singh Ji",
+                "name_pa": "ਵਿਆਹ ਪੁਰਬ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+                "type": "historical",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "janam-baba-deep-singh-2026",
+                "gregorian_date": "2026-01-27",
+                "name_en": "Janam Dihada Baba Deep Singh Ji",
+                "name_pa": "ਜਨਮ ਦਿਹਾੜਾ ਬਾਬਾ ਦੀਪ ਸਿੰਘ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "prakash-guru-har-rai-2026",
+                "gregorian_date": "2026-01-31",
+                "name_en": "Prakash Gurpurab Guru Har Rai Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "bhagat-ravidas-jayanti-2026",
+                "gregorian_date": "2026-02-01",
+                "name_en": "Bhagat Ravidas Jayanti",
+                "name_pa": "ਭਗਤ ਰਵਿਦਾਸ ਜਯੰਤੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "vadda-ghallughara-2026",
+                "gregorian_date": "2026-02-09",
+                "name_en": "Vadda Ghallughara (Kup Rohira)",
+                "name_pa": "ਵੱਡਾ ਘੱਲੂਘਾਰਾ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "janam-sahibzada-ajit-2026",
+                "gregorian_date": "2026-02-11",
+                "name_en": "Janam Sahibzada Ajit Singh Ji",
+                "name_pa": "ਜਨਮ ਸਾਹਿਬਜ਼ਾਦਾ ਅਜੀਤ ਸਿੰਘ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "saka-nankana-sahib-2026",
+                "gregorian_date": "2026-02-21",
+                "name_en": "Saka Nankana Sahib",
+                "name_pa": "ਸਾਕਾ ਨਨਕਾਣਾ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "jaito-morcha-2026",
+                "gregorian_date": "2026-02-21",
+                "name_en": "Jaito Da Morcha",
+                "name_pa": "ਜੈਤੋ ਦਾ ਮੋਰਚਾ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "hola-mohalla-2026",
+                "gregorian_date": "2026-03-04",
+                "name_en": "Hola Mohalla",
+                "name_pa": "ਹੋਲਾ ਮਹੱਲਾ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "nanakshahi-newyear-2026",
+                "gregorian_date": "2026-03-14",
+                "name_en": "Nanakshahi New Year (Samvat 558)",
+                "name_pa": "ਨਾਨਕਸ਼ਾਹੀ ਨਵਾਂ ਸਾਲ",
+                "type": "sangrand",
+                "color": "#3B82F6"
+            },
+            {
+                "id": "delhi-fateh-2026",
+                "gregorian_date": "2026-03-15",
+                "name_en": "Delhi Fateh (S. Baghel Singh)",
+                "name_pa": "ਦਿੱਲੀ ਫ਼ਤਹਿ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "gurgaddi-guru-har-rai-2026",
+                "gregorian_date": "2026-03-17",
+                "name_en": "Gurgaddi Guru Har Rai Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "gurgaddi-guru-amar-das-2026",
+                "gregorian_date": "2026-03-19",
+                "name_en": "Gurgaddi Guru Amar Das Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "jyoti-jot-guru-angad-2026",
+                "gregorian_date": "2026-03-22",
+                "name_en": "Jyoti Jot Guru Angad Dev Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jyoti-jot-guru-hargobind-2026",
+                "gregorian_date": "2026-03-23",
+                "name_en": "Jyoti Jot Guru Hargobind Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "shaheedi-subeg-shahbaz-2026",
+                "gregorian_date": "2026-03-25",
+                "name_en": "Shaheedi Bhai Subeg Singh & Shahbaz Singh",
+                "name_pa": "ਸ਼ਹੀਦੀ ਭਾਈ ਸੁਬੇਗ ਸਿੰਘ ਤੇ ਸ਼ਾਹਬਾਜ਼ ਸਿੰਘ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "jyoti-jot-guru-harkrishan-2026",
+                "gregorian_date": "2026-04-01",
+                "name_en": "Jyoti Jot Guru Harkrishan Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "gurgaddi-guru-tegh-bahadur-2026",
+                "gregorian_date": "2026-04-01",
+                "name_en": "Gurgaddi Guru Teg Bahadur Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "prakash-guru-tegh-bahadur-2026",
+                "gregorian_date": "2026-04-07",
+                "name_en": "Prakash Gurpurab Guru Teg Bahadur Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "janam-sahibzada-jujhar-2026",
+                "gregorian_date": "2026-04-09",
+                "name_en": "Janam Sahibzada Jujhar Singh Ji",
+                "name_pa": "ਜਨਮ ਸਾਹਿਬਜ਼ਾਦਾ ਜੁਝਾਰ ਸਿੰਘ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "prakash-guru-arjan-2026",
+                "gregorian_date": "2026-04-09",
+                "name_en": "Prakash Gurpurab Guru Arjan Dev Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "sikh-dastar-diwas-2026",
+                "gregorian_date": "2026-04-13",
+                "name_en": "Sikh Dastar Diwas",
+                "name_pa": "ਸਿੱਖ ਦਸਤਾਰ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "vaisakhi-2026",
+                "gregorian_date": "2026-04-14",
+                "name_en": "Vaisakhi / Khalsa Sajna Diwas",
+                "name_pa": "ਵਿਸਾਖੀ / ਖ਼ਾਲਸਾ ਸਾਜਨਾ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "prakash-guru-angad-2026",
+                "gregorian_date": "2026-04-18",
+                "name_en": "Prakash Gurpurab Guru Angad Dev Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "janam-bhagat-dhanna-2026",
+                "gregorian_date": "2026-04-21",
+                "name_en": "Janam Bhagat Dhanna Ji",
+                "name_pa": "ਜਨਮ ਭਗਤ ਧੰਨਾ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "shaheedi-jor-mela-muktsar-2026",
+                "gregorian_date": "2026-05-04",
+                "name_en": "Shaheedi Jor Mela Muktsar",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਮੁਕਤਸਰ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "gurgaddi-guru-hargobind-2026",
+                "gregorian_date": "2026-05-10",
+                "name_en": "Gurgaddi Guru Hargobind Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "sirhind-fateh-2026",
+                "gregorian_date": "2026-05-12",
+                "name_en": "Sirhind Fateh Diwas",
+                "name_pa": "ਸਰਹਿੰਦ ਫ਼ਤਹਿ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "chhota-ghallughara-2026",
+                "gregorian_date": "2026-05-17",
+                "name_en": "Chhota Ghallughara (Kahnuwan)",
+                "name_pa": "ਛੋਟਾ ਘੱਲੂਘਾਰਾ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "birth-jassa-singh-2026",
+                "gregorian_date": "2026-05-19",
+                "name_en": "Birth S. Jassa Singh Ahluwalia",
+                "name_pa": "ਜਨਮ ਸ. ਜੱਸਾ ਸਿੰਘ ਆਹਲੂਵਾਲੀਆ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "shaheedi-paonta-sahib-2026",
+                "gregorian_date": "2026-05-22",
+                "name_en": "Shaheedi Saka Paonta Sahib",
+                "name_pa": "ਸ਼ਹੀਦੀ ਸਾਕਾ ਪਾਉਂਟਾ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "akal-takht-hamla-2026",
+                "gregorian_date": "2026-06-04",
+                "name_en": "Shri Akal Takht Sahib Te Hamla",
+                "name_pa": "ਸ਼੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ ਤੇ ਹਮਲਾ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-bhindranwale-2026",
+                "gregorian_date": "2026-06-06",
+                "name_en": "Shaheedi Sant Jarnail Singh Ji Khalsa Bhindranwale",
+                "name_pa": "ਸ਼ਹੀਦੀ ਸੰਤ ਜਰਨੈਲ ਸਿੰਘ ਜੀ ਖ਼ਾਲਸਾ ਭਿੰਡਰਾਂਵਾਲੇ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-guru-arjan-2026",
+                "gregorian_date": "2026-06-18",
+                "name_en": "Shaheedi Gurpurab Guru Arjan Dev Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-banda-bahadur-2026",
+                "gregorian_date": "2026-06-25",
+                "name_en": "Shaheedi Baba Banda Singh Bahadur",
+                "name_pa": "ਸ਼ਹੀਦੀ ਬਾਬਾ ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "jor-mela-reetha-sahib-2026",
+                "gregorian_date": "2026-06-29",
+                "name_en": "Jor Mela Gurdwara Shri Reetha Sahib",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਗੁਰਦੁਆਰਾ ਸ਼੍ਰੀ ਰੀਠਾ ਸਾਹਿਬ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "bhagat-kabir-jayanti-2026",
+                "gregorian_date": "2026-06-29",
+                "name_en": "Bhagat Kabir Jayanti",
+                "name_pa": "ਭਗਤ ਕਬੀਰ ਜਯੰਤੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "maharaja-ranjit-singh-2026",
+                "gregorian_date": "2026-06-29",
+                "name_en": "Maharaja Ranjit Singh Death Anniversary",
+                "name_pa": "ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਬਰਸੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "prakash-guru-hargobind-2026",
+                "gregorian_date": "2026-06-30",
+                "name_en": "Prakash Gurpurab Guru Hargobind Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "sirjana-akal-takht-2026",
+                "gregorian_date": "2026-07-02",
+                "name_en": "Sirjana Diwas Shri Akal Takht Sahib",
+                "name_pa": "ਸਿਰਜਣਾ ਦਿਵਸ ਸ਼੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "shaheedi-bhai-mani-singh-2026",
+                "gregorian_date": "2026-07-09",
+                "name_en": "Shaheedi Bhai Mani Singh Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-bhai-taru-singh-2026",
+                "gregorian_date": "2026-07-16",
+                "name_en": "Shaheedi Bhai Taru Singh Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਭਾਈ ਤਾਰੂ ਸਿੰਘ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "miri-piri-diwas-2026",
+                "gregorian_date": "2026-07-24",
+                "name_en": "Miri Piri Diwas",
+                "name_pa": "ਮੀਰੀ ਪੀਰੀ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "prakash-guru-harkrishan-2026",
+                "gregorian_date": "2026-08-07",
+                "name_en": "Prakash Gurpurab Guru Harkrishan Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "morcha-guru-ka-bagh-2026",
+                "gregorian_date": "2026-08-08",
+                "name_en": "Morcha Guru Ka Bagh",
+                "name_pa": "ਮੋਰਚਾ ਗੁਰੂ ਕਾ ਬਾਗ਼",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jor-mela-baba-bakala-2026",
+                "gregorian_date": "2026-08-28",
+                "name_en": "Jor Mela Baba Bakala",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਬਾਬਾ ਬਕਾਲਾ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "sampuranta-sggs-2026",
+                "gregorian_date": "2026-08-30",
+                "name_en": "Sampuranta Diwas Sri Guru Granth Sahib Ji",
+                "name_pa": "ਸੰਪੂਰਨਤਾ ਦਿਵਸ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+                "type": "historical",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "first-parkash-sggs-2026",
+                "gregorian_date": "2026-09-12",
+                "name_en": "First Parkash Purab Sri Guru Granth Sahib Ji",
+                "name_pa": "ਪਹਿਲਾ ਪ੍ਰਕਾਸ਼ ਪੁਰਬ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "gurgaddi-guru-arjan-2026",
+                "gregorian_date": "2026-09-13",
+                "name_en": "Gurgaddi Guru Arjan Dev Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "jyoti-jot-guru-ram-das-2026",
+                "gregorian_date": "2026-09-14",
+                "name_en": "Jyoti Jot Guru Ram Das Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jor-mela-kandh-sahib-2026",
+                "gregorian_date": "2026-09-18",
+                "name_en": "Jor Mela Gurdwara Kandh Sahib (Batala)",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਗੁਰਦੁਆਰਾ ਕੰਧ ਸਾਹਿਬ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "gurgaddi-guru-ram-das-2026",
+                "gregorian_date": "2026-09-24",
+                "name_en": "Gurgaddi Guru Ram Das Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "jyoti-jot-guru-amar-das-2026",
+                "gregorian_date": "2026-09-26",
+                "name_en": "Jyoti Jot Guru Amar Das Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jor-mela-baba-budha-ramdass-2026",
+                "gregorian_date": "2026-09-30",
+                "name_en": "Jor Mela Baba Budha Ji (Ramdass)",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਬਾਬਾ ਬੁੱਢਾ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "gurgaddi-guru-angad-2026",
+                "gregorian_date": "2026-10-01",
+                "name_en": "Gurgaddi Guru Angad Dev Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "jyoti-jot-guru-nanak-2026",
+                "gregorian_date": "2026-10-05",
+                "name_en": "Jyoti Jot Guru Nanak Dev Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jor-mela-bir-baba-budha-1-2026",
+                "gregorian_date": "2026-10-07",
+                "name_en": "Jor Mela Bir Baba Budha Ji (Thatha)",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਬੀੜ ਬਾਬਾ ਬੁੱਢਾ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "jor-mela-bir-baba-budha-2-2026",
+                "gregorian_date": "2026-10-08",
+                "name_en": "Jor Mela Bir Baba Budha Ji (Thatha)",
+                "name_pa": "ਜੋੜ ਮੇਲਾ ਬੀੜ ਬਾਬਾ ਬੁੱਢਾ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "darbar-khalsa-2026",
+                "gregorian_date": "2026-10-20",
+                "name_en": "Darbar Khalsa (Dussehra)",
+                "name_pa": "ਦਰਬਾਰ ਖ਼ਾਲਸਾ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "prakash-guru-ram-das-2026",
+                "gregorian_date": "2026-10-27",
+                "name_en": "Prakash Gurpurab Guru Ram Das Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "jyoti-jot-guru-har-rai-2026",
+                "gregorian_date": "2026-11-03",
+                "name_en": "Jyoti Jot Guru Har Rai Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "gurgaddi-guru-harkrishan-2026",
+                "gregorian_date": "2026-11-03",
+                "name_en": "Gurgaddi Guru Har Krishan Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "bandi-chhor-divas-2026",
+                "gregorian_date": "2026-11-08",
+                "name_en": "Bandi Chhor Divas (Diwali)",
+                "name_pa": "ਬੰਦੀ ਛੋੜ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "gurgaddi-sggs-2026",
+                "gregorian_date": "2026-11-11",
+                "name_en": "Gurgaddi Sri Guru Granth Sahib Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "jyoti-jot-guru-gobind-singh-2026",
+                "gregorian_date": "2026-11-14",
+                "name_en": "Jyoti Jot Guru Gobind Singh Ji",
+                "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "shaheedi-baba-deep-singh-2026",
+                "gregorian_date": "2026-11-15",
+                "name_en": "Shaheedi Baba Deep Singh Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਬਾਬਾ ਦੀਪ ਸਿੰਘ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "sthapna-sgpc-2026",
+                "gregorian_date": "2026-11-15",
+                "name_en": "Sthapna SGPC",
+                "name_pa": "ਸਥਾਪਨਾ ਐੱਸ.ਜੀ.ਪੀ.ਸੀ.",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "bhagat-namdev-birthday-2026",
+                "gregorian_date": "2026-11-20",
+                "name_en": "Bhagat Namdev Ji Birthday",
+                "name_pa": "ਭਗਤ ਨਾਮਦੇਵ ਜੀ ਜਨਮ ਦਿਵਸ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "prakash-guru-nanak-2026",
+                "gregorian_date": "2026-11-24",
+                "name_en": "Prakash Gurpurab Guru Nanak Dev Ji",
+                "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "akal-chalana-mardana-2026",
+                "gregorian_date": "2026-11-28",
+                "name_en": "Akal Chalana Bhai Mardana Ji",
+                "name_pa": "ਅਕਾਲ ਚਲਾਣਾ ਭਾਈ ਮਰਦਾਨਾ ਜੀ",
+                "type": "historical",
+                "color": "#22C55E"
+            },
+            {
+                "id": "janam-sahibzada-zorawar-2026",
+                "gregorian_date": "2026-11-30",
+                "name_en": "Janam Sahibzada Zorawar Singh Ji",
+                "name_pa": "ਜਨਮ ਸਾਹਿਬਜ਼ਾਦਾ ਜ਼ੋਰਾਵਰ ਸਿੰਘ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "gurgaddi-guru-gobind-singh-2026",
+                "gregorian_date": "2026-12-12",
+                "name_en": "Gurgaddi Guru Gobind Singh Ji",
+                "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+                "type": "gurgaddi",
+                "color": "#8B5CF6"
+            },
+            {
+                "id": "shaheedi-guru-tegh-bahadur-2026",
+                "gregorian_date": "2026-12-14",
+                "name_en": "Shaheedi Gurpurab Guru Teg Bahadur Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਗੁਰਪੁਰਬ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "janam-sahibzada-fateh-2026",
+                "gregorian_date": "2026-12-14",
+                "name_en": "Janam Sahibzada Fateh Singh Ji",
+                "name_pa": "ਜਨਮ ਸਾਹਿਬਜ਼ਾਦਾ ਫਤਿਹ ਸਿੰਘ ਜੀ",
+                "type": "prakash",
+                "color": "#FF6B00"
+            },
+            {
+                "id": "shaheedi-chamkaur-1-2026",
+                "gregorian_date": "2026-12-21",
+                "name_en": "Shaheedi Jor Mela Chamkaur Sahib (Day 1)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਚਮਕੌਰ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-chamkaur-2-2026",
+                "gregorian_date": "2026-12-22",
+                "name_en": "Shaheedi Jor Mela Chamkaur Sahib (Day 2)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਚਮਕੌਰ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-bhai-jiwan-singh-2026",
+                "gregorian_date": "2026-12-22",
+                "name_en": "Shaheedi Bhai Jiwan Singh Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਭਾਈ ਜੀਵਨ ਸਿੰਘ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-chamkaur-3-2026",
+                "gregorian_date": "2026-12-23",
+                "name_en": "Shaheedi Jor Mela Chamkaur Sahib (Day 3)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਚਮਕੌਰ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-vade-sahibzade-2026",
+                "gregorian_date": "2026-12-23",
+                "name_en": "Shaheedi Diwas: Vade Sahibzade + Chamkaur Sahib",
+                "name_pa": "ਸ਼ਹੀਦੀ ਦਿਵਸ: ਵੱਡੇ ਸਾਹਿਬਜ਼ਾਦੇ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-bhai-sangat-singh-2026",
+                "gregorian_date": "2026-12-24",
+                "name_en": "Shaheedi Bhai Sangat Singh Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਭਾਈ ਸੰਗਤ ਸਿੰਘ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-fatehgarh-1-2026",
+                "gregorian_date": "2026-12-26",
+                "name_en": "Shaheedi Jor Mela Fatehgarh Sahib (Day 1)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਫ਼ਤਿਹਗੜ੍ਹ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-fatehgarh-2-2026",
+                "gregorian_date": "2026-12-27",
+                "name_en": "Shaheedi Jor Mela Fatehgarh Sahib (Day 2)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਫ਼ਤਿਹਗੜ੍ਹ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-fatehgarh-3-2026",
+                "gregorian_date": "2026-12-28",
+                "name_en": "Shaheedi Jor Mela Fatehgarh Sahib (Day 3)",
+                "name_pa": "ਸ਼ਹੀਦੀ ਜੋੜ ਮੇਲਾ ਫ਼ਤਿਹਗੜ੍ਹ ਸਾਹਿਬ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            },
+            {
+                "id": "shaheedi-chhote-sahibzade-2026",
+                "gregorian_date": "2026-12-28",
+                "name_en": "Shaheedi Diwas: Chhote Sahibzade & Mata Gujri Ji",
+                "name_pa": "ਸ਼ਹੀਦੀ ਦਿਵਸ: ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦੇ ਤੇ ਮਾਤਾ ਗੁਜਰੀ ਜੀ",
+                "type": "shaheedi",
+                "color": "#EF4444"
+            }
+        ]
+    }
+}

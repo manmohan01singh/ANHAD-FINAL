@@ -1,0 +1,828 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RITUAL OVERLAY - Sacred Micro-Commitment UI
+   
+   Apple-Grade Visual Excellence
+   - Smooth card morphing
+   - Breathing animations (slow, calm)
+   - Warm spiritual color palette
+   - One action per screen
+   
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ MAIN OVERLAY ═══ */
+.ritual-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ritual-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Backdrop with gentle blur */
+.ritual-backdrop {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+            rgba(10, 10, 20, 0.95) 0%,
+            rgba(20, 15, 30, 0.98) 50%,
+            rgba(10, 10, 20, 0.95) 100%);
+    backdrop-filter: blur(30px) saturate(150%);
+    -webkit-backdrop-filter: blur(30px) saturate(150%);
+}
+
+/* Main Container */
+.ritual-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: containerAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes containerAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ═══ HEADER ═══ */
+.ritual-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.ritual-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, rgba(255, 149, 0, 0.2) 0%, rgba(255, 215, 0, 0.15) 100%);
+    border: 1px solid rgba(255, 149, 0, 0.3);
+    border-radius: 100px;
+    margin-bottom: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #FF9500;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.6);
+}
+
+.status-dot.pulsing {
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+.status-text {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #FF9500;
+}
+
+.ritual-time-range {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.05em;
+}
+
+/* ═══ CIRCULAR PROGRESS RING - THE SOUL ═══ */
+.ritual-timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.circular-progress-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 8;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: url(#progressGradient);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear;
+    transform-origin: center;
+}
+
+.timer-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-value {
+    font-size: 3.5rem;
+    font-weight: 200;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    text-shadow: 0 0 40px rgba(255, 149, 0, 0.3);
+}
+
+.timer-label {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+}
+
+/* Progress Dots */
+.ritual-progress-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.ritual-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.ritual-dot.filled {
+    background: #34C759;
+    box-shadow: 0 0 8px rgba(52, 199, 89, 0.5);
+}
+
+.ritual-dot.current {
+    background: #FF9500;
+    animation: dotPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.6);
+}
+
+@keyframes dotPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+/* ═══ SACRED SYMBOL SECTION ═══ */
+.ritual-symbol-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sacred-symbol {
+    font-size: 4rem;
+    color: #FF9500;
+    text-shadow: 0 0 60px rgba(255, 149, 0, 0.4);
+    margin-bottom: 8px;
+}
+
+.sacred-symbol.breathing {
+    animation: sacredBreath 6s ease-in-out infinite;
+}
+
+@keyframes sacredBreath {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+.waheguru-text {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 16px;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.breathing-guide {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-style: italic;
+    transition: opacity 0.3s ease;
+}
+
+/* ═══ ACTION BUTTONS ═══ */
+.ritual-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ritual-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Presence Button - Primary CTA */
+.presence-btn {
+    background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+    color: white;
+    box-shadow: 0 8px 32px rgba(52, 199, 89, 0.3);
+}
+
+.presence-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(52, 199, 89, 0.4);
+}
+
+.presence-btn:active {
+    transform: scale(0.98);
+}
+
+.presence-btn.confirmed {
+    background: linear-gradient(135deg, #32D74B 0%, #30D158 100%);
+    box-shadow:
+        0 0 30px rgba(52, 199, 89, 0.6),
+        0 0 60px rgba(52, 199, 89, 0.3),
+        0 0 100px rgba(52, 199, 89, 0.2);
+    animation: presenceConfirmedGlow 2s ease-in-out infinite;
+}
+
+@keyframes presenceConfirmedGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 30px rgba(52, 199, 89, 0.6),
+            0 0 60px rgba(52, 199, 89, 0.3);
+    }
+
+    50% {
+        box-shadow:
+            0 0 40px rgba(52, 199, 89, 0.8),
+            0 0 80px rgba(52, 199, 89, 0.5),
+            0 0 120px rgba(52, 199, 89, 0.3);
+    }
+}
+
+.presence-check {
+    display: none;
+    font-size: 1.25rem;
+    margin-left: 4px;
+}
+
+.presence-btn.confirmed .presence-check {
+    display: inline;
+    animation: checkAppear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Ripple effect on presence button click */
+.presence-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.presence-btn:active::after {
+    opacity: 1;
+    transform: scale(2);
+    transition: none;
+}
+
+@keyframes checkAppear {
+    from {
+        transform: scale(0) rotate(-45deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+/* Secondary Actions Row */
+.secondary-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.secondary-actions .ritual-btn {
+    flex: 1;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.secondary-actions .ritual-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.silence-btn.active {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+.skip-btn {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.skip-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.btn-icon {
+    font-size: 1.25rem;
+}
+
+.btn-text {
+    font-weight: 500;
+}
+
+/* ═══ COMPLETION STATE ═══ */
+.ritual-completion-state {
+    text-align: center;
+    animation: completionAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ritual-completion-state.hidden {
+    display: none;
+}
+
+@keyframes completionAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Animated Checkmark */
+.completion-celebration {
+    margin-bottom: 24px;
+}
+
+.completion-checkmark {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+}
+
+.completion-checkmark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.checkmark-circle {
+    stroke: #34C759;
+    stroke-width: 2;
+    stroke-dasharray: 157;
+    stroke-dashoffset: 157;
+    animation: circleGrow 0.6s ease-out 0.2s forwards;
+}
+
+.checkmark-check {
+    stroke: #34C759;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: checkDraw 0.4s ease-out 0.6s forwards;
+}
+
+@keyframes circleGrow {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes checkDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.completion-title {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.completion-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 24px;
+}
+
+/* Credit Badge */
+.completion-credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.2) 0%, rgba(52, 199, 89, 0.1) 100%);
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    border-radius: 100px;
+    margin-bottom: 32px;
+}
+
+.credit-icon {
+    font-size: 1.25rem;
+}
+
+.credit-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #34C759;
+}
+
+/* Affirmation */
+.completion-affirmation {
+    margin-bottom: 32px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.affirmation-gurmukhi {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #FF9500;
+    margin-bottom: 8px;
+}
+
+.affirmation-english {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+}
+
+/* Completion Stats */
+.completion-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.comp-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.comp-stat .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.comp-stat .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Continue Button */
+.continue-day-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 32px;
+    background: linear-gradient(135deg, #FF9500 0%, #FFD700 100%);
+    color: #1a1a2e;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(255, 149, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.continue-day-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255, 149, 0, 0.4);
+}
+
+.continue-day-btn:active {
+    transform: scale(0.98);
+}
+
+.continue-day-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ═══ SKIP CONFIRMATION MODAL ═══ */
+.skip-confirm-modal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+    animation: fadeIn 0.3s ease;
+}
+
+.skip-confirm-modal.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.skip-confirm-content {
+    background: linear-gradient(180deg, #1a1a2e 0%, #12121f 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 320px;
+    text-align: center;
+    animation: modalBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalBounce {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.skip-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+}
+
+.skip-confirm-content h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+}
+
+.skip-confirm-content p {
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 16px;
+}
+
+.skip-wisdom {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 1rem;
+    color: #FF9500;
+    margin-bottom: 4px !important;
+}
+
+.skip-wisdom-trans {
+    font-size: 0.8125rem !important;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-bottom: 24px !important;
+}
+
+.skip-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cancel-skip-btn {
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-skip-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(52, 199, 89, 0.3);
+}
+
+.confirm-skip-btn {
+    padding: 14px 24px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.confirm-skip-btn:hover {
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.3);
+    background: rgba(255, 59, 48, 0.1);
+}
+
+/* ═══ LIGHT THEME ADJUSTMENTS ═══ */
+[data-theme="light"] .ritual-backdrop,
+.theme-light .ritual-backdrop {
+    background: linear-gradient(180deg,
+            rgba(255, 248, 240, 0.98) 0%,
+            rgba(255, 255, 255, 0.99) 50%,
+            rgba(245, 240, 255, 0.98) 100%);
+}
+
+[data-theme="light"] .timer-value,
+.theme-light .timer-value {
+    color: #1a1a2e;
+    text-shadow: none;
+}
+
+[data-theme="light"] .waheguru-text,
+.theme-light .waheguru-text {
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .breathing-guide,
+.theme-light .breathing-guide {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .secondary-actions .ritual-btn,
+.theme-light .secondary-actions .ritual-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] .completion-title,
+.theme-light .completion-title {
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .completion-subtitle,
+.theme-light .completion-subtitle {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .comp-stat .stat-value,
+.theme-light .comp-stat .stat-value {
+    color: #1a1a2e;
+}
+
+[data-theme="light"] .completion-affirmation,
+.theme-light .completion-affirmation {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .affirmation-english,
+.theme-light .affirmation-english {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+/* ═══ REDUCED MOTION ═══ */
+@media (prefers-reduced-motion: reduce) {
+
+    .ritual-overlay,
+    .ritual-container,
+    .ritual-completion-state,
+    .skip-confirm-content,
+    .sacred-symbol,
+    .status-dot,
+    .ritual-dot,
+    .checkmark-circle,
+    .checkmark-check {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .progress-ring-fill {
+        transition: none !important;
+    }
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 380px) {
+    .ritual-container {
+        padding: 16px;
+    }
+
+    .circular-progress-container {
+        width: 160px;
+        height: 160px;
+    }
+
+    .timer-value {
+        font-size: 2.75rem;
+    }
+
+    .sacred-symbol {
+        font-size: 3rem;
+    }
+
+    .waheguru-text {
+        font-size: 1.5rem;
+    }
+
+    .completion-stats {
+        gap: 16px;
+    }
+}

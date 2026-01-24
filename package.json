@@ -1,0 +1,71 @@
+{
+    "name": "gurbani-radio",
+    "version": "1.0.0",
+    "description": "24/7 Divine Gurbani Kirtan streaming with reminders and Nitnem Tracker",
+    "main": "electron-main.js",
+    "scripts": {
+        "start": "node backend/server.js",
+        "dev": "node backend/server.js",
+        "electron": "electron .",
+        "electron:dev": "electron . --dev",
+        "electron:build": "electron-builder --win",
+        "electron:build:all": "electron-builder --win --mac --linux",
+        "cap:init": "npx cap init \"Gurbani Radio\" \"com.gurbaniradio.app\" --web-dir frontend",
+        "cap:add:android": "npx cap add android",
+        "cap:sync": "npx cap sync",
+        "cap:open:android": "npx cap open android",
+        "cap:build": "npm run cap:sync && npx cap open android"
+    },
+    "keywords": [
+        "gurbani",
+        "sikh",
+        "kirtan",
+        "pwa",
+        "nitnem",
+        "electron"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@capacitor/android": "^6.0.0",
+        "@capacitor/cli": "^6.0.0",
+        "@capacitor/core": "^6.0.0",
+        "@capacitor/local-notifications": "^6.0.0",
+        "express": "^4.18.2"
+    },
+    "devDependencies": {
+        "electron": "^28.3.3",
+        "electron-builder": "^24.13.3",
+        "typescript": "^5.0.0"
+    },
+    "build": {
+        "appId": "com.gurbaniradio.desktop",
+        "productName": "Gurbani Radio",
+        "directories": {
+            "output": "dist-electron"
+        },
+        "files": [
+            "electron-main.js",
+            "electron-preload.js",
+            "frontend/**/*"
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "frontend/nitnem/icons/icon-512.png",
+            "signAndEditExecutable": false
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "Gurbani Radio",
+            "include": null,
+            "installerIcon": "frontend/nitnem/icons/icon-512.png",
+            "uninstallerIcon": "frontend/nitnem/icons/icon-512.png"
+        },
+        "portable": {
+            "artifactName": "GurbaniRadio-Portable.exe"
+        }
+    }
+}

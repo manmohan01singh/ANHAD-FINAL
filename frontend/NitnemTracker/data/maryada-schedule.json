@@ -1,0 +1,634 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-15",
+  "description": "Default Nitnem schedule as per Sikh Rehat Maryada",
+  "schedules": {
+    "default": {
+      "id": "default",
+      "name": "Standard Nitnem",
+      "nameGurmukhi": "ਸਟੈਂਡਰਡ ਨਿਤਨੇਮ",
+      "description": "Daily Nitnem as per Sikh Rehat Maryada",
+      "isDefault": true,
+      "periods": {
+        "amritvela": {
+          "id": "amritvela",
+          "name": "Amritvela",
+          "nameGurmukhi": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ",
+          "description": "Ambrosial hours - early morning spiritual practice",
+          "timeRange": {
+            "start": "03:00",
+            "end": "06:00",
+            "idealStart": "03:00",
+            "idealEnd": "05:00"
+          },
+          "banis": [
+            {
+              "baniId": "japji-sahib",
+              "order": 1,
+              "required": true,
+              "notes": "Begin day with Japji Sahib"
+            },
+            {
+              "baniId": "jaap-sahib",
+              "order": 2,
+              "required": true,
+              "notes": "Praise of Akal Purakh"
+            },
+            {
+              "baniId": "tav-prasad-savaiye",
+              "order": 3,
+              "required": true,
+              "notes": "Rejection of ritualism"
+            },
+            {
+              "baniId": "chaupai-sahib",
+              "order": 4,
+              "required": true,
+              "notes": "Prayer for protection"
+            },
+            {
+              "baniId": "anand-sahib",
+              "order": 5,
+              "required": true,
+              "notes": "Full 40 pauris"
+            }
+          ],
+          "totalDuration": "62 min",
+          "totalDurationMinutes": 62,
+          "reminder": {
+            "enabled": true,
+            "time": "03:30",
+            "message": "ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਉੱਠੋ - Wake up for Amritvela 🌅",
+            "sound": "gentle_bell",
+            "vibration": true
+          }
+        },
+        "rehras": {
+          "id": "rehras",
+          "name": "Rehras Sahib",
+          "nameGurmukhi": "ਰਹਿਰਾਸ ਸਾਹਿਬ",
+          "description": "Evening prayer at sunset",
+          "timeRange": {
+            "start": "18:00",
+            "end": "20:00",
+            "idealStart": "18:30",
+            "idealEnd": "19:30"
+          },
+          "banis": [
+            {
+              "baniId": "rehras-sahib",
+              "order": 1,
+              "required": true,
+              "notes": "Complete Rehras Sahib with Ardas"
+            }
+          ],
+          "totalDuration": "25 min",
+          "totalDurationMinutes": 25,
+          "reminder": {
+            "enabled": true,
+            "time": "18:30",
+            "message": "ਰਹਿਰਾਸ ਸਾਹਿਬ ਦਾ ਸਮਾਂ - Time for Rehras Sahib 🌇",
+            "sound": "evening_bell",
+            "vibration": true
+          }
+        },
+        "sohila": {
+          "id": "sohila",
+          "name": "Sohila Sahib",
+          "nameGurmukhi": "ਸੋਹਿਲਾ ਸਾਹਿਬ",
+          "description": "Bedtime prayer",
+          "timeRange": {
+            "start": "21:00",
+            "end": "23:00",
+            "idealStart": "21:30",
+            "idealEnd": "22:30"
+          },
+          "banis": [
+            {
+              "baniId": "sohila-sahib",
+              "order": 1,
+              "required": true,
+              "notes": "Recite before sleeping"
+            }
+          ],
+          "totalDuration": "7 min",
+          "totalDurationMinutes": 7,
+          "reminder": {
+            "enabled": true,
+            "time": "21:30",
+            "message": "ਸੋਹਿਲਾ ਸਾਹਿਬ ਦਾ ਸਮਾਂ - Time for Sohila Sahib 🌙",
+            "sound": "night_bell",
+            "vibration": true
+          }
+        }
+      },
+      "optionalPractices": {
+        "sukhmani": {
+          "name": "Sukhmani Sahib",
+          "nameGurmukhi": "ਸੁਖਮਨੀ ਸਾਹਿਬ",
+          "baniId": "sukhmani-sahib",
+          "suggestedTime": "Any peaceful time",
+          "frequency": "Daily or Weekly",
+          "notes": "Complete recitation brings peace of mind"
+        },
+        "asaDiVar": {
+          "name": "Asa Di Var",
+          "nameGurmukhi": "ਆਸਾ ਦੀ ਵਾਰ",
+          "baniId": "asa-di-var",
+          "suggestedTime": "Early morning",
+          "frequency": "Daily",
+          "notes": "Traditional morning kirtan in Gurdwaras"
+        },
+        "malaJaap": {
+          "name": "Mala Jaap",
+          "nameGurmukhi": "ਮਾਲਾ ਜਾਪ",
+          "suggestedJaap": "waheguru",
+          "suggestedCount": 108,
+          "frequency": "Daily",
+          "notes": "Meditation with mala beads"
+        }
+      }
+    },
+    "condensed": {
+      "id": "condensed",
+      "name": "Condensed Nitnem",
+      "nameGurmukhi": "ਸੰਖੇਪ ਨਿਤਨੇਮ",
+      "description": "Shorter version for time-constrained days",
+      "isDefault": false,
+      "periods": {
+        "amritvela": {
+          "id": "amritvela",
+          "name": "Morning",
+          "nameGurmukhi": "ਸਵੇਰ",
+          "timeRange": {
+            "start": "04:00",
+            "end": "07:00"
+          },
+          "banis": [
+            {
+              "baniId": "japji-sahib",
+              "order": 1,
+              "required": true,
+              "notes": "Essential morning bani"
+            },
+            {
+              "baniId": "chaupai-sahib",
+              "order": 2,
+              "required": true,
+              "notes": "Protection prayer"
+            }
+          ],
+          "totalDuration": "32 min",
+          "totalDurationMinutes": 32
+        },
+        "rehras": {
+          "id": "rehras",
+          "name": "Evening",
+          "nameGurmukhi": "ਸ਼ਾਮ",
+          "timeRange": {
+            "start": "18:00",
+            "end": "21:00"
+          },
+          "banis": [
+            {
+              "baniId": "rehras-sahib",
+              "order": 1,
+              "required": true
+            }
+          ],
+          "totalDuration": "25 min",
+          "totalDurationMinutes": 25
+        },
+        "sohila": {
+          "id": "sohila",
+          "name": "Night",
+          "nameGurmukhi": "ਰਾਤ",
+          "timeRange": {
+            "start": "21:00",
+            "end": "23:59"
+          },
+          "banis": [
+            {
+              "baniId": "sohila-sahib",
+              "order": 1,
+              "required": true
+            }
+          ],
+          "totalDuration": "7 min",
+          "totalDurationMinutes": 7
+        }
+      }
+    },
+    "extended": {
+      "id": "extended",
+      "name": "Extended Nitnem",
+      "nameGurmukhi": "ਵਿਸਤਾਰਿਤ ਨਿਤਨੇਮ",
+      "description": "Extended practice for dedicated practitioners",
+      "isDefault": false,
+      "periods": {
+        "amritvela": {
+          "id": "amritvela",
+          "name": "Amritvela",
+          "nameGurmukhi": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ",
+          "timeRange": {
+            "start": "02:00",
+            "end": "06:00"
+          },
+          "banis": [
+            {
+              "baniId": "japji-sahib",
+              "order": 1,
+              "required": true
+            },
+            {
+              "baniId": "jaap-sahib",
+              "order": 2,
+              "required": true
+            },
+            {
+              "baniId": "tav-prasad-savaiye",
+              "order": 3,
+              "required": true
+            },
+            {
+              "baniId": "chaupai-sahib",
+              "order": 4,
+              "required": true
+            },
+            {
+              "baniId": "anand-sahib",
+              "order": 5,
+              "required": true
+            },
+            {
+              "baniId": "sukhmani-sahib",
+              "order": 6,
+              "required": false,
+              "notes": "Complete Sukhmani Sahib for deeper practice"
+            },
+            {
+              "baniId": "asa-di-var",
+              "order": 7,
+              "required": false,
+              "notes": "Traditional Gurdwara morning practice"
+            }
+          ],
+          "totalDuration": "197 min",
+          "totalDurationMinutes": 197
+        },
+        "rehras": {
+          "id": "rehras",
+          "name": "Rehras Sahib",
+          "nameGurmukhi": "ਰਹਿਰਾਸ ਸਾਹਿਬ",
+          "timeRange": {
+            "start": "18:00",
+            "end": "20:00"
+          },
+          "banis": [
+            {
+              "baniId": "rehras-sahib",
+              "order": 1,
+              "required": true
+            },
+            {
+              "baniId": "dukh-bhanjani-sahib",
+              "order": 2,
+              "required": false,
+              "notes": "For healing and comfort"
+            }
+          ],
+          "totalDuration": "45 min",
+          "totalDurationMinutes": 45
+        },
+        "sohila": {
+          "id": "sohila",
+          "name": "Sohila Sahib",
+          "nameGurmukhi": "ਸੋਹਿਲਾ ਸਾਹਿਬ",
+          "timeRange": {
+            "start": "21:00",
+            "end": "23:00"
+          },
+          "banis": [
+            {
+              "baniId": "sohila-sahib",
+              "order": 1,
+              "required": true
+            }
+          ],
+          "totalDuration": "7 min",
+          "totalDurationMinutes": 7
+        }
+      }
+    }
+  },
+  "amritvelaSettings": {
+    "definition": {
+      "start": "03:00",
+      "end": "06:00",
+      "description": "The ambrosial hours, considered the most auspicious time for spiritual practice"
+    },
+    "wakeUpGrades": [
+      {
+        "id": "excellent",
+        "grade": "Excellent",
+        "gradeGurmukhi": "ਬਹੁਤ ਵਧੀਆ",
+        "timeRange": {
+          "start": "00:00",
+          "end": "03:59"
+        },
+        "message": "🌟 ਬਹੁਤ ਵਧੀਆ! You woke up in true Amritvela!",
+        "points": 100,
+        "color": "#34C759"
+      },
+      {
+        "id": "good",
+        "grade": "Good",
+        "gradeGurmukhi": "ਵਧੀਆ",
+        "timeRange": {
+          "start": "04:00",
+          "end": "04:59"
+        },
+        "message": "✨ ਵਧੀਆ! Great start to your spiritual day!",
+        "points": 80,
+        "color": "#007AFF"
+      },
+      {
+        "id": "okay",
+        "grade": "Okay",
+        "gradeGurmukhi": "ਠੀਕ ਹੈ",
+        "timeRange": {
+          "start": "05:00",
+          "end": "05:59"
+        },
+        "message": "👍 Good effort! Try waking a bit earlier tomorrow.",
+        "points": 60,
+        "color": "#FF9500"
+      },
+      {
+        "id": "late",
+        "grade": "Late",
+        "gradeGurmukhi": "ਦੇਰ ਨਾਲ",
+        "timeRange": {
+          "start": "06:00",
+          "end": "23:59"
+        },
+        "message": "🌅 You're here! Tomorrow, try to wake before 6 AM.",
+        "points": 30,
+        "color": "#FF3B30"
+      }
+    ],
+    "presentCutoffTime": "07:00",
+    "streakRules": {
+      "minGradeForStreak": "late",
+      "nitnemRequiredForStreak": true,
+      "gracePeriodHours": 0
+    }
+  },
+  "malaSettings": {
+    "defaultBeadsPerMala": 108,
+    "beadOptions": [27, 54, 108],
+    "defaultJaap": "waheguru",
+    "vibrationPatterns": {
+      "light": {
+        "name": "Light",
+        "pattern": [10]
+      },
+      "medium": {
+        "name": "Medium",
+        "pattern": [20]
+      },
+      "strong": {
+        "name": "Strong",
+        "pattern": [30, 10, 30]
+      }
+    },
+    "completionCelebration": true,
+    "soundEnabled": true
+  },
+  "notificationSettings": {
+    "default": {
+      "amritvela": {
+        "enabled": true,
+        "times": ["03:30", "04:00"],
+        "sound": "gentle_bell",
+        "vibration": true,
+        "snoozeMinutes": 10,
+        "maxSnoozes": 3
+      },
+      "rehras": {
+        "enabled": true,
+        "times": ["18:30"],
+        "sound": "evening_bell",
+        "vibration": true,
+        "snoozeMinutes": 15,
+        "maxSnoozes": 2
+      },
+      "sohila": {
+        "enabled": true,
+        "times": ["21:30"],
+        "sound": "night_chime",
+        "vibration": true,
+        "snoozeMinutes": 15,
+        "maxSnoozes": 2
+      }
+    },
+    "sounds": {
+      "gentle_bell": {
+        "id": "gentle_bell",
+        "name": "Gentle Bell",
+        "file": "gentle-bell.mp3"
+      },
+      "evening_bell": {
+        "id": "evening_bell",
+        "name": "Evening Bell",
+        "file": "evening-bell.mp3"
+      },
+      "night_chime": {
+        "id": "night_chime",
+        "name": "Night Chime",
+        "file": "night-chime.mp3"
+      },
+      "tabla": {
+        "id": "tabla",
+        "name": "Tabla",
+        "file": "tabla.mp3"
+      },
+      "harmonium": {
+        "id": "harmonium",
+        "name": "Harmonium",
+        "file": "harmonium.mp3"
+      }
+    }
+  },
+  "streakMilestones": [
+    {
+      "days": 3,
+      "title": "Getting Started",
+      "titleGurmukhi": "ਸ਼ੁਰੂਆਤ",
+      "message": "3 days of dedication! You're building a beautiful habit.",
+      "icon": "🌱",
+      "celebration": true
+    },
+    {
+      "days": 7,
+      "title": "Week Warrior",
+      "titleGurmukhi": "ਹਫ਼ਤਾ ਯੋਧਾ",
+      "message": "One week complete! Your consistency is inspiring.",
+      "icon": "🔥",
+      "celebration": true,
+      "achievementId": "week-streak"
+    },
+    {
+      "days": 14,
+      "title": "Two Weeks Strong",
+      "titleGurmukhi": "ਦੋ ਹਫ਼ਤੇ",
+      "message": "14 days! The habit is taking root.",
+      "icon": "💪",
+      "celebration": true
+    },
+    {
+      "days": 21,
+      "title": "Habit Formed",
+      "titleGurmukhi": "ਆਦਤ ਬਣੀ",
+      "message": "21 days - the habit is now part of you!",
+      "icon": "⭐",
+      "celebration": true
+    },
+    {
+      "days": 30,
+      "title": "Month Master",
+      "titleGurmukhi": "ਮਹੀਨਾ ਮਾਸਟਰ",
+      "message": "One month of devotion! You are truly blessed.",
+      "icon": "🏆",
+      "celebration": true,
+      "achievementId": "month-streak"
+    },
+    {
+      "days": 40,
+      "title": "40 Day Journey",
+      "titleGurmukhi": "40 ਦਿਨ ਦੀ ਯਾਤਰਾ",
+      "message": "40 days - a complete spiritual cycle!",
+      "icon": "🙏",
+      "celebration": true
+    },
+    {
+      "days": 90,
+      "title": "Quarter Year",
+      "titleGurmukhi": "ਤਿਮਾਹੀ",
+      "message": "90 days of unbroken practice!",
+      "icon": "💎",
+      "celebration": true
+    },
+    {
+      "days": 100,
+      "title": "Century",
+      "titleGurmukhi": "ਸੈਂਕੜਾ",
+      "message": "100 days! You are an inspiration to all.",
+      "icon": "💯",
+      "celebration": true
+    },
+    {
+      "days": 180,
+      "title": "Half Year",
+      "titleGurmukhi": "ਛਿਮਾਹੀ",
+      "message": "6 months of dedication!",
+      "icon": "🌟",
+      "celebration": true
+    },
+    {
+      "days": 365,
+      "title": "Year of Devotion",
+      "titleGurmukhi": "ਭਗਤੀ ਦਾ ਸਾਲ",
+      "message": "365 days! A full year of spiritual practice. Waheguru!",
+      "icon": "👑",
+      "celebration": true,
+      "achievementId": "year-streak"
+    }
+  ],
+  "weeklyGoals": {
+    "amritvela": {
+      "target": 7,
+      "minimum": 5,
+      "unit": "days",
+      "description": "Wake up for Amritvela"
+    },
+    "nitnem": {
+      "target": 7,
+      "minimum": 5,
+      "unit": "days",
+      "description": "Complete all Nitnem banis"
+    },
+    "mala": {
+      "target": 7,
+      "minimum": 3,
+      "unit": "malas",
+      "description": "Complete mala jaap"
+    }
+  },
+  "specialDays": {
+    "sangrand": {
+      "name": "Sangrand",
+      "nameGurmukhi": "ਸੰਗਰਾਂਦ",
+      "description": "First day of each month in Nanakshahi calendar",
+      "additionalBanis": ["barah-maha"],
+      "notification": true
+    },
+    "puranmashi": {
+      "name": "Puranmashi",
+      "nameGurmukhi": "ਪੂਰਨਮਾਸ਼ੀ",
+      "description": "Full moon day",
+      "additionalBanis": ["sukhmani-sahib"],
+      "notification": true
+    },
+    "amavas": {
+      "name": "Amavas",
+      "nameGurmukhi": "ਮੱਸਿਆ",
+      "description": "New moon day",
+      "additionalBanis": ["japji-sahib"],
+      "notification": true
+    }
+  },
+  "quotes": [
+    {
+      "text": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥",
+      "transliteration": "Amrit velā sach nāu vadiāī vīchār",
+      "translation": "In the Amrit Vela, the ambrosial hours before dawn, chant the True Name, and contemplate His Glorious Greatness.",
+      "source": "Japji Sahib",
+      "author": "Guru Nanak Dev Ji"
+    },
+    {
+      "text": "ਪ੍ਰਭਾਤੀ ਪ੍ਰਭੁ ਨਾਮੁ ਲੈ ਦਿਨੁ ਸਫਲੁ ਤਿਥਿ ॥",
+      "transliteration": "Prabhātī prabh nām lai din safal tith",
+      "translation": "Reciting God's Name at dawn makes the day fruitful.",
+      "source": "Sri Guru Granth Sahib Ji",
+      "author": "Guru Arjan Dev Ji"
+    },
+    {
+      "text": "ਗੁਰ ਸਤਿਗੁਰ ਕਾ ਜੋ ਸਿਖੁ ਅਖਾਏ ਸੁ ਭਲਕੇ ਉਠਿ ਹਰਿ ਨਾਮੁ ਧਿਆਵੈ ॥",
+      "transliteration": "Gur satgur kā jo sikh akhāe su bhalkē uth har nām dhiāvai",
+      "translation": "One who calls himself a Sikh of the True Guru shall rise early and meditate on the Lord's Name.",
+      "source": "Rehras Sahib",
+      "author": "Guru Ram Das Ji"
+    },
+    {
+      "text": "ਨਾਨਕ ਨਾਮੁ ਮਿਲੈ ਤਾਂ ਜੀਵਾਂ ਤਨੁ ਮਨੁ ਥੀਵੈ ਹਰਿਆ ॥",
+      "transliteration": "Nānak nām milai tāṁ jīvāṁ tan man thīvai hariā",
+      "translation": "O Nanak, if I receive the Naam, I live; my body and mind blossom forth.",
+      "source": "Anand Sahib",
+      "author": "Guru Amar Das Ji"
+    },
+    {
+      "text": "ਦੇਹਿ ਸ਼ਿਵਾ ਬਰ ਮੋਹਿ ਇਹੈ ਸ਼ੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ ॥",
+      "transliteration": "Deh shivā bar mohi ihai shubh karman te kabhūṁ na ṭaroṁ",
+      "translation": "O Lord, grant me this boon: that I may never deviate from doing good deeds.",
+      "source": "Chandi Charitar",
+      "author": "Guru Gobind Singh Ji"
+    }
+  ],
+  "metadata": {
+    "createdBy": "Nitnem Tracker",
+    "version": "1.0.0",
+    "lastModified": "2025-01-15T00:00:00Z",
+    "basedOn": "Sikh Rehat Maryada"
+  }
+}

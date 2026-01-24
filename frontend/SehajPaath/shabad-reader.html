@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FAF9F7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0C0C0C" media="(prefers-color-scheme: dark)">
+    
+    <title>ਸ਼ਬਦ | Shabad</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="components/shabad-reader.css">
+</head>
+<body>
+    <!-- 
+        SHABAD READER — Sacred Reading Space
+        
+        Philosophy:
+        - The UI should disappear
+        - Only the Shabad exists
+        - No floating controls at bottom
+        - Settings: Top-right only
+        - Highlight: Only searched pangti, never Rahao
+    -->
+    
+    <!-- Navigation — Whisper Thin -->
+    <nav class="reader-nav" id="readerNav">
+        <a href="gurbani-search.html" class="back-link" id="backLink" aria-label="Back">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </a>
+        <div class="nav-meta" id="navMeta">
+            <!-- Ang number dynamically -->
+        </div>
+        <!-- Settings — Top Right (iOS Muscle Memory) -->
+        <button class="settings-link" id="settingsBtn" aria-label="Settings">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+    </nav>
+    
+    <!-- Loading State -->
+    <div class="reader-state loading-state" id="loadingState">
+        <div class="breath-loader">
+            <span class="ik-onkar">ੴ</span>
+        </div>
+        <p class="loading-text">ਸ਼ਬਦ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</p>
+    </div>
+    
+    <!-- Error State -->
+    <div class="reader-state error-state hidden" id="errorState">
+        <div class="error-icon">🙏</div>
+        <h2>ਸ਼ਬਦ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ</h2>
+        <p id="errorMessage">Unable to load shabad.</p>
+        <button class="retry-btn" onclick="location.reload()">Retry</button>
+        <a href="gurbani-search.html" class="back-to-search">← Back to Search</a>
+    </div>
+    
+    <!-- Main Reading Space -->
+    <main class="reader-content hidden" id="readerContent">
+        <!-- Shabad Header -->
+        <header class="shabad-header" id="shabadHeader">
+            <!-- Raag, Ang, Writer dynamically -->
+        </header>
+        
+        <!-- Verses Flow -->
+        <article class="verses-flow" id="versesFlow">
+            <!-- Verses rendered here -->
+        </article>
+        
+        <!-- Shabad Footer -->
+        <footer class="shabad-footer" id="shabadFooter">
+            <div class="waheguru-symbol">ੴ</div>
+            <p class="end-text">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਿਹ॥</p>
+        </footer>
+    </main>
+    
+    <!-- NO FLOATING CONTROLS — Reading must be uninterrupted -->
+    
+    <!-- Settings Panel — Slides in from Right -->
+    <div class="settings-overlay hidden" id="settingsOverlay">
+        <div class="settings-backdrop" id="settingsBackdrop"></div>
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <button class="settings-close" id="settingsClose">✕</button>
+            </div>
+            
+            <div class="settings-body">
+                <!-- Theme -->
+                <div class="settings-section">
+                    <h3 class="settings-label">Theme</h3>
+                    <div class="theme-options">
+                        <button class="theme-btn active" data-theme="light">
+                            <span class="theme-icon">☀</span>
+                            <span class="theme-name">Paper</span>
+                        </button>
+                        <button class="theme-btn" data-theme="dark">
+                            <span class="theme-icon">☽</span>
+                            <span class="theme-name">Ink</span>
+                        </button>
+                        <button class="theme-btn" data-theme="gold">
+                            <span class="theme-icon">✦</span>
+                            <span class="theme-name">Gold</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Display Options -->
+                <div class="settings-section">
+                    <h3 class="settings-label">Display</h3>
+                    
+                    <label class="toggle-row">
+                        <span class="toggle-label">Transliteration</span>
+                        <input type="checkbox" id="transliterationToggle" checked>
+                        <span class="toggle-switch"></span>
+                    </label>
+                    
+                    <label class="toggle-row">
+                        <span class="toggle-label">Translation</span>
+                        <input type="checkbox" id="translationToggle" checked>
+                        <span class="toggle-switch"></span>
+                    </label>
+                </div>
+                
+                <!-- Font Size -->
+                <div class="settings-section">
+                    <h3 class="settings-label">Font Size</h3>
+                    <div class="font-size-options">
+                        <button class="font-btn" data-size="small">ਅ</button>
+                        <button class="font-btn active" data-size="medium">ਅ</button>
+                        <button class="font-btn" data-size="large">ਅ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="../lib/banidb.js"></script>
+    <script src="components/shabad-reader.js"></script>
+</body>
+</html>

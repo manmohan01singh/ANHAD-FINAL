@@ -1,0 +1,470 @@
+{
+    "version": "2.0.0",
+    "lastUpdated": "2026-01-23",
+    "categories": [
+        {
+            "id": "nitnem",
+            "nameGurmukhi": "ਨਿਤਨੇਮ",
+            "nameEnglish": "Nitnem",
+            "description": "Daily prayers prescribed by the Khalsa Panth",
+            "icon": "sunrise",
+            "subcategories": [
+                {
+                    "id": "amritvela",
+                    "nameGurmukhi": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ",
+                    "nameEnglish": "Morning Prayers",
+                    "icon": "sun",
+                    "banis": [
+                        2,
+                        4,
+                        6,
+                        7,
+                        9,
+                        10
+                    ]
+                },
+                {
+                    "id": "evening",
+                    "nameGurmukhi": "ਸ਼ਾਮ",
+                    "nameEnglish": "Evening Prayers",
+                    "icon": "sunset",
+                    "banis": [
+                        21
+                    ]
+                },
+                {
+                    "id": "night",
+                    "nameGurmukhi": "ਰਾਤ",
+                    "nameEnglish": "Night Prayers",
+                    "icon": "moon",
+                    "banis": [
+                        23
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "sggs",
+            "nameGurmukhi": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+            "nameEnglish": "Sri Guru Granth Sahib Ji",
+            "description": "Sacred compositions from the eternal Guru",
+            "icon": "book-open",
+            "subcategories": [
+                {
+                    "id": "popular",
+                    "nameGurmukhi": "ਪ੍ਰਸਿੱਧ ਬਾਣੀਆਂ",
+                    "nameEnglish": "Popular Banis",
+                    "banis": [
+                        31,
+                        36,
+                        27,
+                        33,
+                        34,
+                        35,
+                        30
+                    ]
+                },
+                {
+                    "id": "vaars",
+                    "nameGurmukhi": "ਵਾਰਾਂ",
+                    "nameEnglish": "Vaars",
+                    "banis": [
+                        86,
+                        87,
+                        88,
+                        89,
+                        90,
+                        91,
+                        92,
+                        93,
+                        94,
+                        95,
+                        96,
+                        97,
+                        98,
+                        99,
+                        100,
+                        101,
+                        102,
+                        103,
+                        104,
+                        105,
+                        106,
+                        107
+                    ]
+                },
+                {
+                    "id": "raags",
+                    "nameGurmukhi": "ਰਾਗ",
+                    "nameEnglish": "Raags",
+                    "banis": [
+                        55,
+                        56,
+                        57,
+                        58,
+                        59,
+                        60,
+                        61,
+                        62,
+                        63,
+                        64,
+                        65,
+                        66,
+                        67,
+                        68,
+                        69,
+                        70,
+                        71,
+                        72,
+                        73,
+                        74,
+                        75,
+                        76
+                    ]
+                },
+                {
+                    "id": "special",
+                    "nameGurmukhi": "ਵਿਸ਼ੇਸ਼",
+                    "nameEnglish": "Special Compositions",
+                    "banis": [
+                        3,
+                        11,
+                        38,
+                        39,
+                        46,
+                        77,
+                        78
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "dasamgranth",
+            "nameGurmukhi": "ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+            "nameEnglish": "Sri Dasam Granth Sahib Ji",
+            "description": "Divine compositions of Guru Gobind Singh Ji",
+            "icon": "sword",
+            "subcategories": [
+                {
+                    "id": "nitnem-dasam",
+                    "nameGurmukhi": "ਨਿਤਨੇਮ ਬਾਣੀਆਂ",
+                    "nameEnglish": "Nitnem Banis",
+                    "banis": [
+                        4,
+                        6,
+                        7,
+                        9
+                    ]
+                },
+                {
+                    "id": "other-dasam",
+                    "nameGurmukhi": "ਹੋਰ ਬਾਣੀਆਂ",
+                    "nameEnglish": "Other Banis",
+                    "banis": [
+                        5,
+                        8,
+                        12,
+                        13,
+                        19,
+                        28,
+                        29,
+                        53
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "ardas",
+            "nameGurmukhi": "ਅਰਦਾਸ",
+            "nameEnglish": "Ardas & More",
+            "description": "Prayer and supplementary texts",
+            "icon": "hands-folded",
+            "banis": [
+                24,
+                22,
+                25,
+                26
+            ]
+        }
+    ],
+    "baniDetails": {
+        "1": {
+            "id": 1,
+            "nameGurmukhi": "ਗੁਰ ਮੰਤ੍ਰ",
+            "nameEnglish": "Gur Mantr",
+            "author": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Nanak Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "1 min",
+            "verseCount": null,
+            "difficulty": "easy"
+        },
+        "2": {
+            "id": 2,
+            "nameGurmukhi": "ਜਪੁਜੀ ਸਾਹਿਬ",
+            "nameEnglish": "Japji Sahib",
+            "author": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Nanak Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "20-25 min",
+            "verseCount": 199,
+            "difficulty": "medium",
+            "isFeatured": true,
+            "description": "The foundational morning prayer that opens Sri Guru Granth Sahib Ji"
+        },
+        "4": {
+            "id": 4,
+            "nameGurmukhi": "ਜਾਪੁ ਸਾਹਿਬ",
+            "nameEnglish": "Jaap Sahib",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "15-20 min",
+            "verseCount": 199,
+            "difficulty": "advanced",
+            "isFeatured": true,
+            "description": "199 verses praising the Almighty with divine names"
+        },
+        "6": {
+            "id": 6,
+            "nameGurmukhi": "ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਸ੍ਰਾਵਗ ਸੁੱਧ)",
+            "nameEnglish": "Tav Prasad Savaiye (Sravag Sudh)",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "3-5 min",
+            "difficulty": "medium"
+        },
+        "7": {
+            "id": 7,
+            "nameGurmukhi": "ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਦੀਨਨ ਕੀ)",
+            "nameEnglish": "Tav Prasad Savaiye (Deenan Ki)",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "3-5 min",
+            "difficulty": "medium"
+        },
+        "9": {
+            "id": 9,
+            "nameGurmukhi": "ਬੇਨਤੀ ਚੌਪਈ ਸਾਹਿਬ",
+            "nameEnglish": "Chaupai Sahib",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "5-7 min",
+            "difficulty": "medium",
+            "isFeatured": true,
+            "description": "A prayer for divine protection"
+        },
+        "10": {
+            "id": 10,
+            "nameGurmukhi": "ਅਨੰਦੁ ਸਾਹਿਬ",
+            "nameEnglish": "Anand Sahib",
+            "author": "ਗੁਰੂ ਅਮਰਦਾਸ ਜੀ",
+            "authorEnglish": "Guru Amar Das Ji",
+            "source": "sggs",
+            "estimatedTime": "15-20 min",
+            "difficulty": "medium",
+            "isFeatured": true,
+            "description": "The Song of Bliss - expressing the joy of union with the Divine"
+        },
+        "21": {
+            "id": 21,
+            "nameGurmukhi": "ਰਹਰਾਸਿ ਸਾਹਿਬ",
+            "nameEnglish": "Rehras Sahib",
+            "author": "ਸਮੂਹਿਕ",
+            "authorEnglish": "Multiple Authors",
+            "source": "sggs",
+            "estimatedTime": "20-25 min",
+            "difficulty": "medium",
+            "isFeatured": true,
+            "description": "Evening prayer combining Shabads from multiple Gurus"
+        },
+        "23": {
+            "id": 23,
+            "nameGurmukhi": "ਸੋਹਿਲਾ ਸਾਹਿਬ",
+            "nameEnglish": "Sohila Sahib",
+            "author": "ਸਮੂਹਿਕ",
+            "authorEnglish": "Multiple Authors",
+            "source": "sggs",
+            "estimatedTime": "5-7 min",
+            "difficulty": "easy",
+            "isFeatured": true,
+            "description": "The bedtime prayer - preparation for the soul's journey"
+        },
+        "24": {
+            "id": 24,
+            "nameGurmukhi": "ਅਰਦਾਸ",
+            "nameEnglish": "Ardas",
+            "author": "ਖਾਲਸਾ ਪੰਥ",
+            "authorEnglish": "Khalsa Panth",
+            "source": "tradition",
+            "estimatedTime": "5-7 min",
+            "difficulty": "easy"
+        },
+        "30": {
+            "id": 30,
+            "nameGurmukhi": "ਸਲੋਕ ਮਹਲਾ ੯",
+            "nameEnglish": "Salok Mahalla 9",
+            "author": "ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ ਜੀ",
+            "authorEnglish": "Guru Tegh Bahadur Ji",
+            "source": "sggs",
+            "estimatedTime": "10-12 min",
+            "difficulty": "medium"
+        },
+        "31": {
+            "id": 31,
+            "nameGurmukhi": "ਸੁਖਮਨੀ ਸਾਹਿਬ",
+            "nameEnglish": "Sukhmani Sahib",
+            "author": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Arjan Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "90-120 min",
+            "difficulty": "advanced",
+            "isFeatured": true,
+            "description": "The Psalm of Peace - a long meditative composition"
+        },
+        "33": {
+            "id": 33,
+            "nameGurmukhi": "ਬਾਵਨ ਅਖਰੀ",
+            "nameEnglish": "Bavan Akhri",
+            "author": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Arjan Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "25-30 min",
+            "difficulty": "medium"
+        },
+        "34": {
+            "id": 34,
+            "nameGurmukhi": "ਸਿਧ ਗੋਸਟਿ",
+            "nameEnglish": "Sidh Gosht",
+            "author": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Nanak Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "30-40 min",
+            "difficulty": "advanced"
+        },
+        "36": {
+            "id": 36,
+            "nameGurmukhi": "ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ",
+            "nameEnglish": "Dukh Bhanjani Sahib",
+            "author": "ਸਮੂਹਿਕ",
+            "authorEnglish": "Multiple Authors",
+            "source": "sggs",
+            "estimatedTime": "25-30 min",
+            "difficulty": "medium",
+            "isFeatured": true,
+            "description": "Collection of Shabads for healing and solace"
+        },
+        "27": {
+            "id": 27,
+            "nameGurmukhi": "ਬਾਰਹ ਮਾਹਾ ਮਾਂਝ",
+            "nameEnglish": "Barah Maha",
+            "author": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Arjan Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "20-25 min",
+            "difficulty": "medium"
+        },
+        "90": {
+            "id": 90,
+            "nameGurmukhi": "ਆਸਾ ਦੀ ਵਾਰ",
+            "nameEnglish": "Asa Di Vaar",
+            "author": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Nanak Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "45-60 min",
+            "difficulty": "advanced",
+            "isFeatured": true,
+            "description": "The morning ballad sung at Amrit Vela in Gurdwaras"
+        },
+        "22": {
+            "id": 22,
+            "nameGurmukhi": "ਆਰਤੀ",
+            "nameEnglish": "Aarti",
+            "author": "ਸਮੂਹਿਕ",
+            "authorEnglish": "Multiple Authors",
+            "source": "sggs",
+            "estimatedTime": "7-10 min",
+            "difficulty": "easy"
+        },
+        "3": {
+            "id": 3,
+            "nameGurmukhi": "ਸ਼ਬਦ ਹਜ਼ਾਰੇ",
+            "nameEnglish": "Shabad Hazare",
+            "author": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+            "authorEnglish": "Guru Arjan Dev Ji",
+            "source": "sggs",
+            "estimatedTime": "10-15 min",
+            "difficulty": "medium"
+        },
+        "5": {
+            "id": 5,
+            "nameGurmukhi": "ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦",
+            "nameEnglish": "Shabad Hazare Patshahi 10",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "10-15 min",
+            "difficulty": "medium"
+        },
+        "29": {
+            "id": 29,
+            "nameGurmukhi": "ਅਕਾਲ ਉਸਤਤ",
+            "nameEnglish": "Akal Ustat",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "60-90 min",
+            "difficulty": "advanced"
+        },
+        "13": {
+            "id": 13,
+            "nameGurmukhi": "ਚੰਡੀ ਦੀ ਵਾਰ",
+            "nameEnglish": "Chandi Di Vaar",
+            "author": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+            "authorEnglish": "Guru Gobind Singh Ji",
+            "source": "dasam",
+            "estimatedTime": "30-40 min",
+            "difficulty": "advanced"
+        }
+    },
+    "quickAccess": {
+        "morningNitnem": [
+            2,
+            4,
+            6,
+            7,
+            9,
+            10
+        ],
+        "eveningNitnem": [
+            21
+        ],
+        "nightNitnem": [
+            23
+        ],
+        "sampuranNitnem": [
+            2,
+            4,
+            6,
+            7,
+            9,
+            10,
+            21,
+            23
+        ],
+        "featured": [
+            2,
+            4,
+            9,
+            10,
+            21,
+            23,
+            31,
+            36,
+            90
+        ]
+    }
+}

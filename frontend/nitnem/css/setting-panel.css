@@ -1,0 +1,616 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTING-PANEL.CSS — Nitnem Module
+   Purpose: Settings Panel UI Styling
+   Author: Gurbani Live
+   Note: All colors use CSS variables from themes.css
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SETTINGS PANEL — OVERLAY STRUCTURE
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.settings-panel[aria-hidden="false"] {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BACKDROP
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-panel__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-overlay);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  cursor: pointer;
+}
+
+.settings-panel[aria-hidden="false"] .settings-panel__backdrop {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL CONTENT
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-panel__content {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  max-height: 100vh;
+  background-color: var(--color-panel-bg);
+  border-left: 1px solid var(--color-panel-border);
+  box-shadow: var(--shadow-xl);
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.settings-panel__content {
+  backdrop-filter: blur(var(--glass-blur-xl)) saturate(var(--glass-saturation));
+  -webkit-backdrop-filter: blur(var(--glass-blur-xl)) saturate(var(--glass-saturation));
+  box-shadow:
+    var(--shadow-xl),
+    0 0 calc(40px * (var(--glass-glow, 0.35) + (var(--scroll-glow, 0) * 0.8))) rgba(var(--color-accent-rgb), 0.10);
+}
+
+.settings-panel[aria-hidden="false"] .settings-panel__content {
+  transform: translateX(0);
+}
+
+/* Scrollbar for panel */
+.settings-panel__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.settings-panel__content::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar-thumb);
+  border-radius: var(--radius-full);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL HEADER
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-border-light);
+  position: sticky;
+  top: 0;
+  background-color: var(--color-panel-bg);
+  z-index: 1;
+}
+
+.settings-panel__title {
+  font-family: var(--font-gurmukhi);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.settings-panel__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.settings-panel__close:hover {
+  background-color: var(--color-button-bg);
+  border-color: var(--color-border-medium);
+  color: var(--color-text-primary);
+  transform: rotate(90deg);
+}
+
+.settings-panel__close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SETTINGS GROUPS
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-group {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.settings-group:last-child {
+  border-bottom: none;
+}
+
+.settings-group__label {
+  display: block;
+  font-family: var(--font-gurmukhi);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.range-slider {
+  width: 100%;
+  height: 34px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.range-slider:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+.range-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, rgba(var(--color-accent-rgb), 0.22), rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border-light);
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  margin-top: -7px;
+  background: var(--color-accent-primary);
+  border: 1px solid var(--color-border-medium);
+  box-shadow: 0 0 16px rgba(var(--color-accent-rgb), 0.25);
+}
+
+.range-slider::-moz-range-track {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, rgba(var(--color-accent-rgb), 0.22), rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--color-border-light);
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-primary);
+  border: 1px solid var(--color-border-medium);
+  box-shadow: 0 0 16px rgba(var(--color-accent-rgb), 0.25);
+}
+
+.toggle-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-button-bg);
+}
+
+.toggle-pill__label {
+  font-family: var(--font-gurmukhi);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.toggle-pill__switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-medium);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.toggle-pill__switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.9);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.toggle-pill__switch[data-on="true"] {
+  background: rgba(var(--color-accent-rgb), 0.18);
+  border-color: rgba(var(--color-accent-rgb), 0.35);
+  box-shadow: 0 0 18px rgba(var(--color-accent-rgb), 0.22);
+}
+
+.toggle-pill__switch[data-on="true"]::after {
+  transform: translateX(22px);
+  background: var(--color-accent-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THEME TOGGLE BUTTONS
+   ───────────────────────────────────────────────────────────────────────────── */
+.theme-toggle {
+  display: flex;
+  gap: var(--space-sm);
+  background-color: var(--color-button-bg);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.theme-toggle__btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-english);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle__btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-button-bg-hover);
+}
+
+.theme-toggle__btn[aria-pressed="true"] {
+  color: var(--color-button-text-active);
+  background-color: var(--color-button-bg-active);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle__btn svg {
+  flex-shrink: 0;
+}
+
+/* Day button specific icon color */
+.theme-toggle__btn--day[aria-pressed="true"] svg {
+  color: var(--color-button-text-active);
+}
+
+/* Night button specific styling when active in night mode */
+:root[data-theme="night"] .theme-toggle__btn--night[aria-pressed="true"] {
+  background-color: var(--color-button-bg-active);
+  color: var(--color-button-text-active);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FONT SIZE CONTROLS
+   ───────────────────────────────────────────────────────────────────────────── */
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  background-color: var(--color-button-bg);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+}
+
+.font-size-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 44px;
+  font-family: var(--font-english);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.font-size-btn:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-button-bg-hover);
+}
+
+.font-size-btn:active {
+  background-color: var(--color-accent-primary);
+  color: var(--color-text-inverse);
+  transform: scale(0.95);
+}
+
+.font-size-value {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-system);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOGGLE SWITCH (For future use)
+   ───────────────────────────────────────────────────────────────────────────── */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+}
+
+.toggle-switch__label {
+  font-family: var(--font-gurmukhi);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.toggle-switch__control {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background-color: var(--color-button-bg);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toggle-switch__control::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.toggle-switch__control[aria-checked="true"] {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+}
+
+.toggle-switch__control[aria-checked="true"]::after {
+  left: calc(100% - 23px);
+  background-color: var(--color-text-inverse);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE ADJUSTMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .settings-panel__content {
+    max-width: 100%;
+    border-left: none;
+    border-radius: 0;
+  }
+  
+  .settings-panel__header {
+    padding: var(--space-md);
+  }
+  
+  .settings-group {
+    padding: var(--space-md);
+  }
+  
+  .theme-toggle__btn {
+    padding: var(--space-sm);
+  }
+  
+  .theme-toggle__btn span {
+    display: none;
+  }
+  
+  .theme-toggle__btn svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL ANIMATIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Entry animation for settings groups */
+.settings-panel[aria-hidden="false"] .settings-group {
+  animation: slideInRight 0.4s ease-out;
+  animation-fill-mode: both;
+}
+
+.settings-panel[aria-hidden="false"] .settings-group:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.settings-panel[aria-hidden="false"] .settings-group:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.settings-panel[aria-hidden="false"] .settings-group:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .settings-panel__content {
+    transition: none;
+  }
+  
+  .settings-panel__backdrop {
+    transition: none;
+  }
+  
+  .settings-panel[aria-hidden="false"] .settings-group {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOCUS TRAP INDICATOR (Accessibility)
+   ───────────────────────────────────────────────────────────────────────────── */
+.settings-panel[aria-hidden="false"] .settings-panel__close:focus-visible,
+.settings-panel[aria-hidden="false"] .theme-toggle__btn:focus-visible,
+.settings-panel[aria-hidden="false"] .font-size-btn:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BODY SCROLL LOCK (when panel is open)
+   ───────────────────────────────────────────────────────────────────────────── */
+body.settings-open {
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DECORATIVE ELEMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Sacred accent line at top of panel */
+.settings-panel__content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-primary),
+    var(--color-sacred-gold),
+    var(--color-accent-primary)
+  );
+}
+
+/* Subtle pattern in panel background */
+.settings-panel__content::after {
+  content: '';
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3Eੴ%3C/text%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS PANEL - LIQUID GLASS ENHANCEMENT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.settings-panel__content {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  box-shadow: 
+    -10px 0 60px rgba(0, 0, 0, 0.15),
+    inset 1px 0 0 rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme="night"] .settings-panel__content {
+  background: rgba(20, 20, 20, 0.9);
+  box-shadow: 
+    -10px 0 60px rgba(0, 0, 0, 0.4),
+    inset 1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.settings-panel__backdrop {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+}
+
+:root[data-theme="night"] .theme-toggle {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.theme-toggle__btn {
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.theme-toggle__btn[aria-pressed="true"] {
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.font-size-controls {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+}
+
+:root[data-theme="night"] .font-size-controls {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.font-size-btn {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.font-size-btn:hover {
+  transform: scale(1.1);
+}
+
+.font-size-btn:active {
+  transform: scale(0.95);
+}

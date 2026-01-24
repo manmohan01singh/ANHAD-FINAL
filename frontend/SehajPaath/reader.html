@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pa" data-theme="gradient">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Read Sri Guru Granth Sahib Ji - Sehaj Paath Reader">
+    
+    <title>ਸਹਿਜ ਪਾਠ | Reader</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="reader.css">
+    <link rel="stylesheet" href="divine-design.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">ਗੁਰਬਾਣੀ ਲੋਡ ਹੋ ਰਹੀ ਹੈ...</p>
+        </div>
+    </div>
+
+    <!-- Main Reader Container -->
+    <div class="reader-container" id="readerContainer">
+        
+        <!-- Reading Progress Indicator (Top Line) -->
+        <div class="reading-progress-bar" id="readingProgressBar">
+            <div class="reading-progress-fill" id="readingProgressFill"></div>
+        </div>
+        
+        <!-- Header (Auto-hide on scroll) -->
+        <header class="reader-header" id="readerHeader">
+            <div class="header-blur"></div>
+            <div class="header-content">
+                <button class="header-btn back-btn" id="backBtn" aria-label="Go back">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                
+                <div class="header-center">
+                    <span class="ang-label">ਅੰਗ</span>
+                    <span class="ang-number" id="currentAngDisplay">1</span>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" aria-label="Search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                    <button class="header-btn" id="bookmarkBtn" aria-label="Bookmark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </button>
+                    <button class="header-btn settings-btn-animated" id="settingsBtn" aria-label="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Seek Bar -->
+            <div class="seek-bar-container" id="seekBarContainer">
+                <input type="range" class="seek-bar" id="seekBar" min="1" max="1430" value="1">
+            </div>
+        </header>
+        
+        <!-- Floating Khanda Watermark -->
+        <div class="khanda-watermark-reader">☬</div>
+
+        <!-- Gurbani Content Area -->
+        <main class="gurbani-content" id="gurbaniContent">
+            <div class="gurbani-scroll" id="gurbaniScroll">
+                <!-- Raag/Section Header -->
+                <div class="section-header" id="sectionHeader">
+                    <span class="raag-name" id="raagName"></span>
+                </div>
+                
+                <!-- Gurbani Lines Container -->
+                <div class="gurbani-lines" id="gurbaniLines">
+                    <!-- Lines will be injected here -->
+                </div>
+                
+                <!-- Ang Info Footer -->
+                <div class="ang-info" id="angInfo">
+                    <span class="ang-info-text" id="angInfoText">Ang 1 of 1430</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer Navigation (Auto-hide) -->
+        <footer class="reader-footer" id="readerFooter">
+            <div class="footer-blur"></div>
+            <div class="footer-content">
+                <button class="nav-btn prev-btn" id="prevAngBtn" aria-label="Previous Ang">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                    <span id="prevAngNum">-</span>
+                </button>
+                
+                <div class="footer-center">
+                    <div class="reading-stats">
+                        <span class="stat">
+                            <span class="stat-icon">⏱️</span>
+                            <span class="stat-value" id="readingTime">0:00</span>
+                        </span>
+                        <span class="stat">
+                            <span class="stat-icon">🔥</span>
+                            <span class="stat-value" id="streakDisplay">0</span>
+                        </span>
+                    </div>
+                    <div class="progress-mini">
+                        <div class="progress-bar-mini">
+                            <div class="progress-fill-mini" id="progressFillMini"></div>
+                        </div>
+                        <span class="progress-text-mini" id="progressTextMini">0%</span>
+                    </div>
+                </div>
+                
+                <button class="nav-btn next-btn" id="nextAngBtn" aria-label="Next Ang">
+                    <span id="nextAngNum">2</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+
+        <!-- Quick Actions Overlay (Tap center to show) -->
+        <div class="quick-actions-overlay" id="quickActionsOverlay">
+            <div class="quick-actions-backdrop"></div>
+            <div class="quick-actions-panel">
+                <div class="actions-row">
+                    <button class="action-btn" id="actionBookmark">
+                        <div class="action-icon">🔖</div>
+                        <span>Bookmark</span>
+                    </button>
+                    <button class="action-btn" id="actionNote">
+                        <div class="action-icon">📝</div>
+                        <span>Note</span>
+                    </button>
+                    <button class="action-btn" id="actionAudio">
+                        <div class="action-icon">🔊</div>
+                        <span>Audio</span>
+                    </button>
+                    <button class="action-btn" id="actionShare">
+                        <div class="action-icon">📤</div>
+                        <span>Share</span>
+                    </button>
+                </div>
+                <div class="divider"></div>
+                <div class="actions-row">
+                    <button class="action-btn" id="actionFont">
+                        <div class="action-icon">Aa</div>
+                        <span>Font</span>
+                    </button>
+                    <button class="action-btn" id="actionTheme">
+                        <div class="action-icon">☀️</div>
+                        <span>Theme</span>
+                    </button>
+                    <button class="action-btn" id="actionView">
+                        <div class="action-icon">📖</div>
+                        <span>View</span>
+                    </button>
+                    <button class="action-btn" id="actionSettings">
+                        <div class="action-icon">⚙️</div>
+                        <span>Settings</span>
+                    </button>
+                </div>
+                <button class="close-actions-btn" id="closeActionsBtn">✕</button>
+            </div>
+        </div>
+
+        <!-- Enhanced Settings Panel (Slide from right) -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-backdrop"></div>
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2>⚙️ Reader Settings</h2>
+                    <button class="close-settings-btn" id="closeSettingsBtn">✕</button>
+                </div>
+                
+                <div class="settings-body">
+                    <!-- Display Settings -->
+                    <div class="settings-section">
+                        <h3>📖 Display Options</h3>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Gurmukhi</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="showGurmukhi" checked disabled>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>English Translation</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="showTranslation" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Transliteration</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="showTransliteration">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Hindi Translation</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="showHindi">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Theme Settings -->
+                    <div class="settings-section">
+                        <h3>🎨 Theme</h3>
+                        <div class="theme-selector-modern">
+                            <button class="theme-pill" data-theme="light" title="Light Mode">
+                                <span class="theme-emoji">☀️</span>
+                                <span class="theme-name">Light</span>
+                            </button>
+                            <button class="theme-pill active" data-theme="dark" title="Dark Mode">
+                                <span class="theme-emoji">🌙</span>
+                                <span class="theme-name">Dark</span>
+                            </button>
+                            <button class="theme-pill" data-theme="auto" title="Auto (follows system)">
+                                <span class="theme-emoji">🌅</span>
+                                <span class="theme-name">Auto</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Extended Themes -->
+                        <div class="theme-options-extended">
+                            <button class="theme-btn" data-theme="sepia">
+                                <div class="theme-preview sepia"></div>
+                                <span>Sepia</span>
+                            </button>
+                            <button class="theme-btn" data-theme="oled">
+                                <div class="theme-preview oled"></div>
+                                <span>OLED</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Font Size -->
+                    <div class="settings-section">
+                        <h3>📝 Font Size</h3>
+                        <div class="font-size-control-modern">
+                            <span class="font-small">A</span>
+                            <input type="range" id="fontSizeSlider" min="14" max="32" value="22">
+                            <span class="font-large">A</span>
+                            <span class="font-size-value" id="fontSizeValue">22px</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Font Style -->
+                    <div class="settings-section">
+                        <h3>🔤 Font Style</h3>
+                        <select id="fontStyleSelect" class="modern-select">
+                            <option value="Noto Sans Gurmukhi">Noto Sans Gurmukhi</option>
+                            <option value="Mukta Mahee">Mukta Mahee</option>
+                            <option value="AnmolLipi">AnmolLipi</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Line Spacing -->
+                    <div class="settings-section">
+                        <h3>📐 Line Spacing</h3>
+                        <div class="line-spacing-control">
+                            <input type="range" id="lineSpacingSlider" min="1.5" max="3" step="0.1" value="2.2">
+                            <span class="line-spacing-value" id="lineSpacingValue">2.2</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Display Mode -->
+                    <div class="settings-section">
+                        <h3>📜 Display Mode</h3>
+                        <div class="display-mode-pills">
+                            <button class="mode-pill active" data-mode="padchhed">Padchhed</button>
+                            <button class="mode-pill" data-mode="larivaar">Larivaar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Reading Experience -->
+                    <div class="settings-section">
+                        <h3>✨ Reading Experience</h3>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Auto-hide Header</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="autoHideHeader" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Haptic Feedback</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="hapticFeedback" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Show Line Numbers</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="showLineNumbers" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Quick Actions Bar -->
+        <div class="floating-actions-bar" id="floatingActionsBar">
+            <button class="fab-btn" id="fabBookmark" title="Bookmark">
+                <span class="fab-icon">🔖</span>
+                <span class="fab-label">Bookmark</span>
+            </button>
+            <button class="fab-btn" id="fabShare" title="Share">
+                <span class="fab-icon">📤</span>
+                <span class="fab-label">Share</span>
+            </button>
+            <button class="fab-btn" id="fabCopy" title="Copy">
+                <span class="fab-icon">📋</span>
+                <span class="fab-label">Copy</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="services/storage-service.js"></script>
+    <script src="services/banidb-api.js"></script>
+    <script src="services/cache-service.js"></script>
+    <script src="utils/text-formatter.js"></script>
+    <script src="utils/haptic-feedback.js"></script>
+    <script src="components/detached-mode.js"></script>
+    <script src="reader.js"></script>
+</body>
+</html>
