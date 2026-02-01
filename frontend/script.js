@@ -3076,7 +3076,7 @@ window.addEventListener('appinstalled', () => {
     console.log('[PWA] ANHAD was installed successfully');
     try {
         localStorage.setItem('pwaInstalled', 'true');
-    } catch (e) {}
+    } catch (e) { }
     hidePWAInstallPrompt();
     hideHeaderInstallButton();
     deferredPrompt = null;
@@ -3354,5 +3354,80 @@ document.addEventListener('visibilitychange', () => {
 
         console.log('[iOS Controls] Bottom controls initialized');
     }
+})();
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SERVICE WORKER MESSAGE HANDLER
+   Handles background notification tracking to prevent duplicates
+═══════════════════════════════════════════════════════════════════════════════ */
+
+(function initServiceWorkerHandler() {
+    if (!('serviceWorker' in navigator)) return;
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        const { type, key, id, hour, today } = event.data || {};
+
+        // Handle notification shown check from SW
+        if (type === 'CHECK_NOTIFICATION_SHOWN' && event.ports?.[0]) {
+            const shown = sessionStorage.getItem(key) === 'true' ||
+                localStorage.getItem(key) === 'true';
+            event.ports[0].postMessage({ shown });
+            return;
+        }
+
+        // Mark notification as shown
+        if (type === 'NOTIFICATION_SHOWN' && key) {
+            sessionStorage.setItem(key, 'true');
+            localStorage.setItem(key, 'true');
+            console.log('[SW Handler] Notification marked as shown:', id);
+        }
+
+        // Handle Naam Abhyas schedule queries (if naam-abhyas.js isn't loaded)
+        if (type === 'GET_NAAM_ABHYAS_SCHEDULE' && event.ports?.[0]) {
+            // Try to get schedule from localStorage for SW
+            try {
+                const config = JSON.parse(localStorage.getItem('naam_abhyas_config') || '{}');
+                const history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
+                const todayKey = new Date().toISOString().split('T')[0];
+                const schedule = history.scheduleHistory?.[todayKey] || {};
+
+                const sessions = Object.entries(schedule)
+                    .filter(([h, s]) => s && s.status === 'pending')
+                    .map(([h, s]) => ({
+                        hour: parseInt(h),
+                        startMinute: s.startMinute,
+                        duration: config.duration || 2,
+                        notified: !!s.notified
+                    }));
+
+                event.ports[0].postMessage({
+                    sessions,
+                    enabled: config.enabled,
+                    duration: config.duration
+                });
+            } catch (e) {
+                event.ports[0].postMessage({ sessions: [], enabled: false });
+            }
+            return;
+        }
+
+        // Handle Naam Abhyas notification confirmation
+        if (type === 'NAAM_ABHYAS_NOTIFIED' && hour !== undefined) {
+            try {
+                const history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
+                const todayKey = today || new Date().toISOString().split('T')[0];
+
+                if (history.scheduleHistory?.[todayKey]?.[hour]) {
+                    history.scheduleHistory[todayKey][hour].notified = true;
+                    localStorage.setItem('naam_abhyas_history', JSON.stringify(history));
+                    console.log('[SW Handler] Naam Abhyas notified for hour:', hour);
+                }
+            } catch (e) {
+                console.warn('[SW Handler] Error marking notification:', e);
+            }
+        }
+    });
+
+    console.log('[SW Handler] Global Service Worker message handler initialized');
 })();
 

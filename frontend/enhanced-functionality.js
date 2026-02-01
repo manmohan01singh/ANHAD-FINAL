@@ -45,7 +45,7 @@ class GurbaniRadioEnhancements {
       sehajPaathCard.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        window.location.href = '../SehajPaath/sehaj-paath.html';
+        window.location.href = './SehajPaath/sehaj-paath.html';
       });
     }
 
@@ -336,11 +336,11 @@ class GurbaniRadioEnhancements {
   }
 
   openReminders() {
-    window.location.href = '../reminders/smart-reminders.html';
+    window.location.href = './reminders/smart-reminders.html';
   }
 
   openNitnemTracker() {
-    window.location.href = '../NitnemTracker/nitnem-tracker.html';
+    window.location.href = './NitnemTracker/nitnem-tracker.html';
   }
 
   openSettings() {

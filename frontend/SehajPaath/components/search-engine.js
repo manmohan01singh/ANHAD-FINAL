@@ -32,7 +32,7 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     const state = {
-        searchMode: 'firstLetters', // 'firstLetters', 'gurmukhi', or 'english'
+        searchMode: 'first-letter', // 'first-letter', 'gurmukhi', or 'english'
         currentQuery: '',
         isLoading: false,
         debounceTimer: null,
@@ -280,7 +280,7 @@
             setSearchMode('english', false);
         } else {
             // Default to first letters for short queries
-            setSearchMode('firstLetters', false);
+            setSearchMode('first-letter', false);
         }
     }
 
@@ -294,7 +294,7 @@
 
         // Update placeholder
         const placeholders = {
-            'firstLetters': 'ਖੋਜੋ... hjkn, vv, etc.',
+            'first-letter': 'ਖੋਜੋ... hjkn, vv, etc.',
             'gurmukhi': 'ਗੁਰਮੁਖੀ ਵਿੱਚ ਖੋਜੋ...',
             'english': 'Search in English... waheguru'
         };
@@ -374,7 +374,7 @@
 
     function getSearchTypeString() {
         const types = {
-            'firstLetters': 'first-letter',
+            'first-letter': 'first-letter',
             'gurmukhi': 'gurmukhi',
             'english': 'english'
         };
@@ -385,16 +385,17 @@
         // BaniDB API search types:
         // 0 = First Letter Search (Each letter represents first letter of each word)
         // 1 = First Word (Gurmukhi)
-        // 2 = Full Word (Gurmukhi)
+        // 2 = Full Word (Gurmukhi) - USE THIS FOR PHRASE SEARCH
         // 3 = Full Word Translation
-        // 4 = Full Word (Romanized)
+        // 4 = Full Word (Romanized/English)
         // 5 = Ang
         // 6 = Main Letter Search
         // 7 = Romanized First Letter
         const modes = {
-            'firstLetters': 0,  // First letter of each word
-            'gurmukhi': 1,      // First word Gurmukhi
-            'english': 4        // Full word romanized
+            'firstLetters': 0,   // First letter of each word
+            'first-letter': 0,   // Alias for first letter
+            'gurmukhi': 2,       // FIXED: Full word Gurmukhi for phrase search
+            'english': 4         // Full word romanized
         };
         return modes[state.searchMode] ?? 0;
     }

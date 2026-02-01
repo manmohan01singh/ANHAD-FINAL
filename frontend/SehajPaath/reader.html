@@ -319,6 +319,30 @@
                         </div>
                         
                         <div class="setting-item toggle-item">
+                            <label>Continuous Reading</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="continuousReading">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
+                            <label>Paragraph Mode</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="paragraphMode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item" id="larivaarAssistRow" style="display: none;">
+                            <label>Larivaar Assist</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="larivaarAssist">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item toggle-item">
                             <label>Haptic Feedback</label>
                             <label class="toggle">
                                 <input type="checkbox" id="hapticFeedback" checked>
@@ -352,6 +376,24 @@
                 <span class="fab-icon">📋</span>
                 <span class="fab-label">Copy</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Search/Go to Ang Modal -->
+    <div class="search-modal" id="searchModal">
+        <div class="search-modal-backdrop"></div>
+        <div class="search-modal-content">
+            <div class="search-modal-header">
+                <h3>🔍 Go to Ang</h3>
+                <button class="close-search-btn" id="closeSearchBtn">✕</button>
+            </div>
+            <div class="search-modal-body">
+                <input type="number" id="goToAngInput" class="ang-input" placeholder="Enter Ang (1-1430)" min="1" max="1430" autocomplete="off">
+                <button class="go-btn" id="goToAngBtn">Go</button>
+            </div>
+            <div class="search-modal-footer">
+                <a href="gurbani-search.html" class="advanced-search-link">🔎 Advanced Gurbani Search</a>
+            </div>
         </div>
     </div>
 

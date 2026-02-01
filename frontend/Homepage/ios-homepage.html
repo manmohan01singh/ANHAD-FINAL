@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-title" content="ANHAD">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+    
+    <!-- Apple Touch Icons for iOS -->
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../assets/icons/icon-192x192.png">
+    
+    <title>ANHAD • ਅਨਹਦ | Divine Gurbani Experience</title>
+    <meta name="description" content="ANHAD - 24/7 Gurbani Kirtan streaming, Nitnem, Daily Hukamnama, Sehaj Paath, and spiritual reminders. Your complete Sikh prayer companion app.">
+    
+    <!-- DNS Prefetch -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    
+    <style>
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       ANHAD HOMEPAGE — iOS 18++ ULTRA-SMOOTH PERFORMANCE OPTIMIZED
+       Version: 10.0.0 — 60fps Buttery Smooth
+       ═══════════════════════════════════════════════════════════════════════════════ */
+
+    :root {
+        --bg-void: #000000;
+        --surface-glass: rgba(255, 255, 255, 0.1);
+        --surface-glass-heavy: rgba(255, 255, 255, 0.15);
+        
+        --text-primary: rgba(255, 255, 255, 0.95);
+        --text-secondary: rgba(255, 255, 255, 0.65);
+        --text-ghost: rgba(255, 255, 255, 0.3);
+        
+        --accent-dynamic: #F5D47A;
+        --accent-glow: rgba(245, 212, 122, 0.5);
+        
+        --card-width: min(340px, 85vw);
+        --card-height: min(520px, 72vh);
+        --card-radius: 36px;
+        
+        --ease-ios: cubic-bezier(0.28, 0.11, 0.32, 1);
+        --ease-spring: cubic-bezier(0.37, 0.01, 0.28, 1);
+        
+        --safe-top: env(safe-area-inset-top, 20px);
+        --safe-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background: #000;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        color: var(--text-primary);
+        position: fixed;
+        inset: 0;
+        user-select: none;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       BACKGROUND — Optimized with reduced blur (GPU friendly)
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: #000;
+        overflow: hidden;
+    }
+
+    .bg__img {
+        position: absolute;
+        width: 120%;
+        height: 120%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) translateZ(0);
+        object-fit: cover;
+        filter: blur(80px) brightness(0.35);
+        opacity: 0;
+        transition: opacity 0.8s ease-out;
+        will-change: opacity;
+    }
+
+    .bg__img.active { 
+        opacity: 0.5; 
+    }
+
+    /* Simple color overlay - no animation, just static */
+    .bg__orb {
+        position: absolute;
+        width: 60%;
+        height: 60%;
+        top: -10%;
+        right: -10%;
+        background: radial-gradient(circle, var(--accent-dynamic) 0%, transparent 65%);
+        opacity: 0.15;
+        filter: blur(60px);
+        pointer-events: none;
+    }
+
+    .bg__vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 70% 50% at 50% 45%, transparent 0%, rgba(0,0,0,0.5) 100%);
+        pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       APP SHELL
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .app {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       HEADER — Simple, no heavy effects
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .header {
+        padding: 20px 28px;
+        padding-top: calc(16px + var(--safe-top));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .header__brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .header__title {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #fff;
+    }
+
+    .header__subtitle {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .header__time {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--accent-dynamic);
+        margin-top: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       CAROUSEL — Hardware accelerated
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .carousel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 0;
+        padding: 12px 0;
+    }
+
+    .carousel__stage {
+        position: relative;
+        width: 100%;
+        height: var(--card-height);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       CARDS — Ultra-smooth with hardware acceleration
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .card {
+        position: absolute;
+        width: var(--card-width);
+        height: 100%;
+        border-radius: var(--card-radius);
+        overflow: hidden;
+        cursor: pointer;
+        
+        /* CRITICAL: Force GPU layer */
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+        
+        /* Hidden state */
+        opacity: 0;
+        visibility: hidden;
+        
+        /* SMOOTH transition - only transform and opacity */
+        transition: 
+            transform 0.45s var(--ease-ios),
+            opacity 0.35s ease-out;
+        
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* Card border - simple, no animation */
+    .card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: var(--card-radius);
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: 20;
+    }
+
+    .card__img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card__gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+            transparent 0%,
+            transparent 40%,
+            rgba(0,0,0,0.4) 65%,
+            rgba(0,0,0,0.9) 100%);
+        pointer-events: none;
+    }
+
+    .card__glow {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, var(--card-accent, rgba(245,212,122,0.2)) 0%, transparent 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .card.is-active .card__glow {
+        opacity: 1;
+    }
+
+    .card__content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 26px;
+        z-index: 5;
+    }
+
+    .card__tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 13px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 14px;
+    }
+
+    .card__tag--live {
+        background: rgba(255, 59, 48, 0.35);
+    }
+
+    .card__tag--live::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        background: #fff;
+        border-radius: 50%;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
+    }
+
+    .card__title {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        margin-bottom: 6px;
+        line-height: 1.1;
+    }
+
+    .card__subtitle {
+        font-size: 14px;
+        color: rgba(255,255,255,0.72);
+        line-height: 1.4;
+    }
+
+    /* Expand content */
+    .card__expand-content {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition: 
+            grid-template-rows 0.35s var(--ease-ios),
+            opacity 0.25s ease;
+        margin-top: 0;
+    }
+
+    .card__expand-inner {
+        overflow: hidden;
+    }
+
+    .card__info {
+        display: flex;
+        gap: 18px;
+        padding: 16px 0;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .card__info-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        color: rgba(255,255,255,0.7);
+    }
+
+    .card__cta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 16px 24px;
+        border-radius: 16px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #000;
+        text-decoration: none;
+        margin-top: 16px;
+        transition: transform 0.15s ease;
+    }
+
+    .card__cta:active { 
+        transform: scale(0.97); 
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       CARD STATES — Clean transform only (no filter changes = smooth)
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .card.is-prev {
+        opacity: 0.5;
+        visibility: visible;
+        transform: translate3d(-65%, 0, -50px) scale(0.82) rotateY(5deg);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .card.is-next {
+        opacity: 0.5;
+        visibility: visible;
+        transform: translate3d(65%, 0, -50px) scale(0.82) rotateY(-5deg);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .card.is-active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate3d(0, 0, 0) scale(1) rotateY(0);
+        z-index: 5;
+        box-shadow: 
+            0 25px 80px rgba(0,0,0,0.5),
+            0 0 50px var(--accent-glow);
+    }
+
+    .card.is-expanded {
+        transform: translate3d(0, 0, 10px) scale(1.02);
+        z-index: 10;
+    }
+
+    .card.is-expanded .card__expand-content {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        margin-top: 16px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       DOTS — Simple and smooth
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .dots {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding: 22px 0;
+        flex-shrink: 0;
+    }
+
+    .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--text-ghost);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s var(--ease-ios);
+    }
+
+    .dot:hover {
+        background: var(--text-secondary);
+    }
+
+    .dot.is-active {
+        width: 28px;
+        border-radius: 100px;
+        background: var(--accent-dynamic);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .footer {
+        padding: 18px 32px;
+        padding-bottom: calc(22px + var(--safe-bottom));
+        display: flex;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .enter-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 48px;
+        background: linear-gradient(180deg, #fff 0%, #f4f4f4 100%);
+        border-radius: 100px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #000;
+        text-decoration: none;
+        box-shadow: 
+            0 6px 25px rgba(0,0,0,0.2),
+            0 0 40px rgba(255,255,255,0.1);
+        transition: transform 0.2s var(--ease-spring);
+    }
+
+    .enter-btn:hover {
+        transform: scale(1.04) translateY(-2px);
+    }
+
+    .enter-btn:active { 
+        transform: scale(0.97); 
+    }
+
+    .enter-btn i {
+        transition: transform 0.2s ease;
+    }
+
+    .enter-btn:hover i {
+        transform: translateX(3px);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    @media (max-width: 380px) {
+        :root {
+            --card-width: 290px;
+            --card-height: min(460px, 65vh);
+        }
+        .card__title { font-size: 24px; }
+        .header__title { font-size: 28px; }
+    }
+
+    @media (min-width: 500px) {
+        :root {
+            --card-width: 360px;
+            --card-height: min(560px, 75vh);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        * { 
+            animation: none !important; 
+            transition-duration: 0.01ms !important;
+        }
+    }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND -->
+    <div class="bg">
+        <img class="bg__img active" id="bg1" src="../assets/homepage-hero/gurbani-radio.png" alt="">
+        <img class="bg__img" id="bg2" src="" alt="">
+        <div class="bg__orb"></div>
+        <div class="bg__vignette"></div>
+    </div>
+
+    <!-- APP -->
+    <div class="app">
+        
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header__brand">
+                <h1 class="header__title">ਵਾਹਿਗੁਰੂ</h1>
+                <span class="header__subtitle">Welcome to Anhad</span>
+                <span class="header__time" id="timeGreeting"></span>
+            </div>
+        </header>
+        
+        <!-- CAROUSEL -->
+        <section class="carousel">
+            <div class="carousel__stage" id="stage">
+                
+                <!-- Card 1: Gurbani Radio -->
+                <article class="card is-active" 
+                         data-link="../GurbaniRadio/ios17-gurbani-radio.html"
+                         data-img="../assets/homepage-hero/gurbani-radio.png"
+                         data-color="#D4A03A"
+                         style="--card-accent: rgba(212,160,58,0.25)">
+                    <img class="card__img" src="../assets/homepage-hero/gurbani-radio.png" alt="">
+                    <div class="card__gradient"></div>
+                    <div class="card__glow"></div>
+                    <div class="card__content">
+                        <span class="card__tag card__tag--live">Live</span>
+                        <h2 class="card__title">Gurbani Radio</h2>
+                        <p class="card__subtitle">24/7 Live Kirtan from Sri Harmandir Sahib</p>
+                        
+                        <div class="card__expand-content">
+                            <div class="card__expand-inner">
+                                <div class="card__info">
+                                    <span class="card__info-item"><i class="fas fa-users" style="color:#D4A03A"></i> 2,847 listeners</span>
+                                    <span class="card__info-item"><i class="fas fa-signal" style="color:#D4A03A"></i> Live now</span>
+                                </div>
+                                <a href="../GurbaniRadio/ios17-gurbani-radio.html" class="card__cta" style="background:#D4A03A">
+                                    <i class="fas fa-play"></i> Listen Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Card 2: Hukamnama -->
+                <article class="card" 
+                         data-link="../Hukamnama/daily-hukamnama.html"
+                         data-img="../assets/homepage-hero/hukamnama.png"
+                         data-color="#E8A855"
+                         style="--card-accent: rgba(232,168,85,0.25)">
+                    <img class="card__img" src="../assets/homepage-hero/hukamnama.png" alt="">
+                    <div class="card__gradient"></div>
+                    <div class="card__glow"></div>
+                    <div class="card__content">
+                        <span class="card__tag"><i class="fas fa-scroll"></i> Daily</span>
+                        <h2 class="card__title">Hukamnama</h2>
+                        <p class="card__subtitle">Today's Divine Message from Sri Darbar Sahib</p>
+                        
+                        <div class="card__expand-content">
+                            <div class="card__expand-inner">
+                                <div class="card__info">
+                                    <span class="card__info-item"><i class="fas fa-calendar" style="color:#E8A855"></i> Updated today</span>
+                                    <span class="card__info-item"><i class="fas fa-language" style="color:#E8A855"></i> Multi-language</span>
+                                </div>
+                                <a href="../Hukamnama/daily-hukamnama.html" class="card__cta" style="background:#E8A855">
+                                    <i class="fas fa-book-open"></i> Read Hukamnama
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Card 3: Random Shabad -->
+                <article class="card" 
+                         data-link="../RandomShabad/random-shabad.html"
+                         data-img="../assets/homepage-hero/random-shabad.png"
+                         data-color="#A78BFA"
+                         style="--card-accent: rgba(167,139,250,0.25)">
+                    <img class="card__img" src="../assets/homepage-hero/random-shabad.png" alt="">
+                    <div class="card__gradient"></div>
+                    <div class="card__glow"></div>
+                    <div class="card__content">
+                        <span class="card__tag"><i class="fas fa-shuffle"></i> Discover</span>
+                        <h2 class="card__title">Random Shabad</h2>
+                        <p class="card__subtitle">Divine guidance through sacred verses</p>
+                        
+                        <div class="card__expand-content">
+                            <div class="card__expand-inner">
+                                <div class="card__info">
+                                    <span class="card__info-item"><i class="fas fa-infinity" style="color:#A78BFA"></i> Infinite wisdom</span>
+                                    <span class="card__info-item"><i class="fas fa-heart" style="color:#A78BFA"></i> Save favorites</span>
+                                </div>
+                                <a href="../RandomShabad/random-shabad.html" class="card__cta" style="background:#A78BFA">
+                                    <i class="fas fa-dice"></i> Discover Shabad
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Card 4: Gurbani Khoj -->
+                <article class="card" 
+                         data-link="../GurbaniKhoj/gurbani-khoj.html"
+                         data-img="../assets/homepage-hero/gurbani-khoj.png"
+                         data-color="#60A5FA"
+                         style="--card-accent: rgba(96,165,250,0.25)">
+                    <img class="card__img" src="../assets/homepage-hero/gurbani-khoj.png" alt="">
+                    <div class="card__gradient"></div>
+                    <div class="card__glow"></div>
+                    <div class="card__content">
+                        <span class="card__tag"><i class="fas fa-search"></i> Search</span>
+                        <h2 class="card__title">Gurbani Khoj</h2>
+                        <p class="card__subtitle">Search the sacred scriptures</p>
+                        
+                        <div class="card__expand-content">
+                            <div class="card__expand-inner">
+                                <div class="card__info">
+                                    <span class="card__info-item"><i class="fas fa-book" style="color:#60A5FA"></i> 1,430 pages</span>
+                                    <span class="card__info-item"><i class="fas fa-bolt" style="color:#60A5FA"></i> Instant results</span>
+                                </div>
+                                <a href="../GurbaniKhoj/gurbani-khoj.html" class="card__cta" style="background:#60A5FA">
+                                    <i class="fas fa-magnifying-glass"></i> Search Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                    
+                <!-- Card 5: Nitnem -->
+                <article class="card" 
+                         data-link="../nitnem/index.html"
+                         data-img="../assets/homepage-hero/nitnem.png"
+                         data-color="#4ADE80"
+                         style="--card-accent: rgba(74,222,128,0.25)">
+                    <img class="card__img" src="../assets/homepage-hero/nitnem.png" alt="">
+                    <div class="card__gradient"></div>
+                    <div class="card__glow"></div>
+                    <div class="card__content">
+                        <span class="card__tag"><i class="fas fa-sun"></i> Daily Prayers</span>
+                        <h2 class="card__title">Nitnem</h2>
+                        <p class="card__subtitle">Complete daily prayers collection</p>
+                        
+                        <div class="card__expand-content">
+                            <div class="card__expand-inner">
+                                <div class="card__info">
+                                    <span class="card__info-item"><i class="fas fa-list" style="color:#4ADE80"></i> 5 Banis</span>
+                                    <span class="card__info-item"><i class="fas fa-chart-line" style="color:#4ADE80"></i> Track progress</span>
+                                </div>
+                                <a href="../nitnem/index.html" class="card__cta" style="background:#4ADE80">
+                                    <i class="fas fa-book"></i> Start Nitnem
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                    
+            </div>
+        </section>
+        
+        <!-- DOTS -->
+        <div class="dots" id="dots"></div>
+        
+        <!-- FOOTER -->
+        <footer class="footer">
+            <a href="../index.html" class="enter-btn">
+                <span>Enter Anhad</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </footer>
+        
+    </div>
+
+    <script>
+    (() => {
+        'use strict';
+        
+        // ═══════════════════════════════════════════════════════════════════════════════
+        // SMART NAVIGATION - PWA & Website Session Management
+        // ═══════════════════════════════════════════════════════════════════════════════
+        const WELCOME_SEEN_KEY = 'anhad_welcome_seen';
+        const SESSION_KEY = 'anhad_session_active';
+        
+        // Detect if running as installed PWA
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                      window.navigator.standalone === true ||
+                      document.referrer.includes('android-app://');
+        
+        // Function to navigate to main app
+        function goToMainApp(e) {
+            if (e) e.preventDefault();
+            
+            // Set flags based on mode
+            if (isPWA) {
+                // PWA: Set session flag (cleared when app closes)
+                sessionStorage.setItem(SESSION_KEY, 'true');
+            } else {
+                // Website: Set permanent flag (remembered across visits)
+                localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+            }
+            
+            window.location.href = '../index.html';
+        }
+        
+        // Handle "Enter Anhad" button click
+        const enterBtn = document.querySelector('.enter-btn');
+        if (enterBtn) {
+            enterBtn.addEventListener('click', goToMainApp);
+        }
+        
+        // Handle card CTA clicks - set flags and let link proceed
+        document.querySelectorAll('.card__cta').forEach(cta => {
+            cta.addEventListener('click', () => {
+                if (isPWA) {
+                    sessionStorage.setItem(SESSION_KEY, 'true');
+                } else {
+                    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+                }
+            });
+        });
+        
+        const cards = document.querySelectorAll('.card');
+        const dotsContainer = document.getElementById('dots');
+        const stage = document.getElementById('stage');
+        const bg1 = document.getElementById('bg1');
+        const bg2 = document.getElementById('bg2');
+        const timeEl = document.getElementById('timeGreeting');
+        const orb = document.querySelector('.bg__orb');
+        
+        let current = 0;
+        let useBg1 = true;
+        let expanded = null;
+        let animating = false;
+        let autoTimer = null;
+        const total = cards.length;
+
+        // Time greeting
+        function updateTime() {
+            const h = new Date().getHours();
+            const greeting = h < 12 ? '☀️ Good Morning' : h < 17 ? '🌤️ Good Afternoon' : h < 21 ? '🌅 Good Evening' : '🌙 Good Night';
+            if (timeEl) timeEl.textContent = greeting;
+        }
+        updateTime();
+
+        // Create dots
+        cards.forEach((_, i) => {
+            const d = document.createElement('button');
+            d.className = 'dot' + (i === 0 ? ' is-active' : '');
+            d.onclick = () => !animating && goTo(i);
+            dotsContainer.appendChild(d);
+        });
+        const dots = dotsContainer.querySelectorAll('.dot');
+
+        // Update background
+        function updateBg(card) {
+            const src = card.dataset.img;
+            const color = card.dataset.color || '#F5D47A';
+            if (!src) return;
+            
+            document.documentElement.style.setProperty('--accent-dynamic', color);
+            document.documentElement.style.setProperty('--accent-glow', color + '80');
+            
+            if (orb) {
+                orb.style.background = `radial-gradient(circle, ${color} 0%, transparent 65%)`;
+            }
+            
+            const next = useBg1 ? bg2 : bg1;
+            const prev = useBg1 ? bg1 : bg2;
+            
+            const img = new Image();
+            img.onload = () => {
+                next.src = src;
+                requestAnimationFrame(() => {
+                    prev.classList.remove('active');
+                    next.classList.add('active');
+                    useBg1 = !useBg1;
+                });
+            };
+            img.src = src;
+        }
+
+        // Update cards
+        function update() {
+            animating = true;
+            
+            if (expanded) {
+                expanded.classList.remove('is-expanded');
+                expanded = null;
+            }
+            
+            const prev = (current - 1 + total) % total;
+            const next = (current + 1) % total;
+            
+            cards.forEach((card, i) => {
+                card.classList.remove('is-active', 'is-prev', 'is-next');
+                if (i === current) {
+                    card.classList.add('is-active');
+                    updateBg(card);
+                } else if (i === prev) {
+                    card.classList.add('is-prev');
+                } else if (i === next) {
+                    card.classList.add('is-next');
+                }
+            });
+            
+            dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
+            
+            setTimeout(() => animating = false, 450);
+        }
+
+        function goTo(i) { 
+            if (i === current) return;
+            current = i; 
+            update(); 
+            resetAuto();
+        }
+        
+        function next() { 
+            if (animating) return;
+            current = (current + 1) % total; 
+            update(); 
+        }
+        
+        function prev() { 
+            if (animating) return;
+            current = (current - 1 + total) % total; 
+            update(); 
+        }
+
+        // Auto-swipe
+        function startAuto() {
+            autoTimer = setInterval(() => {
+                if (!animating && !expanded) next();
+            }, 6000);
+        }
+        
+        function stopAuto() {
+            if (autoTimer) clearInterval(autoTimer);
+            autoTimer = null;
+        }
+        
+        function resetAuto() {
+            stopAuto();
+            setTimeout(startAuto, 10000);
+        }
+
+        // Toggle expand
+        function toggleExpand(card) {
+            if (!card.classList.contains('is-active')) return;
+            
+            if (card.classList.contains('is-expanded')) {
+                card.classList.remove('is-expanded');
+                expanded = null;
+                startAuto();
+            } else {
+                card.classList.add('is-expanded');
+                expanded = card;
+                stopAuto();
+            }
+        }
+
+        // Events
+        cards.forEach(card => {
+            card.onclick = (e) => {
+                if (e.target.closest('.card__cta')) return;
+                if (card.classList.contains('is-active')) toggleExpand(card);
+            };
+        });
+
+        // Keyboard
+        document.onkeydown = (e) => {
+            if (e.key === 'ArrowLeft') { prev(); resetAuto(); }
+            if (e.key === 'ArrowRight') { next(); resetAuto(); }
+            if (e.key === 'Escape' && expanded) {
+                expanded.classList.remove('is-expanded');
+                expanded = null;
+                startAuto();
+            }
+        };
+
+        // Touch
+        let touchX = 0;
+        stage.ontouchstart = (e) => touchX = e.touches[0].screenX;
+        stage.ontouchend = (e) => {
+            const diff = touchX - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 40) {
+                if (expanded) {
+                    expanded.classList.remove('is-expanded');
+                    expanded = null;
+                }
+                diff > 0 ? next() : prev();
+                resetAuto();
+            }
+        };
+
+        // Visibility
+        document.addEventListener('visibilitychange', () => {
+            document.hidden ? stopAuto() : startAuto();
+        });
+
+        // Init
+        update();
+        startAuto();
+    })();
+    </script>
+    
+    <script src="../lib/mini-player.js" defer></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script src="../pwa-register.js" defer></script>
+
+</body>
+</html>

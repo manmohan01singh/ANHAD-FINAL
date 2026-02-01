@@ -88,13 +88,13 @@
         }
       };
 
-      this.currentTheme = localStorage.getItem('calendar_theme') || 'dark';
+      this.currentTheme = localStorage.getItem('calendar_theme') || 'light';
       this.init();
     }
 
     init() {
       this.applyTheme(this.currentTheme);
-      this.renderThemeSelector();
+      this.bindSettingsModal();
     }
 
     applyTheme(themeName) {
@@ -110,47 +110,54 @@
       this.updateActiveThemeButton();
     }
 
-    renderThemeSelector() {
-      const controls = document.querySelector('.controls');
-      if (!controls) return;
-
-      let selector = document.getElementById('calendarThemeSelector');
-      if (!selector) {
-        selector = document.createElement('div');
-        selector.id = 'calendarThemeSelector';
-        selector.className = 'theme-selector';
-        selector.style.marginTop = '16px';
-        controls.appendChild(selector);
+    bindSettingsModal() {
+      // Bind settings button
+      const btnSettings = qs('btnSettings');
+      if (btnSettings) {
+        btnSettings.addEventListener('click', () => this.openSettingsModal());
       }
 
-      selector.innerHTML = `
-        <div style="font-size: 11px; font-weight: 700; color: var(--cal-muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Theme</div>
-        <div class="calendar-themes" style="display: flex; gap: 8px;">
-          ${Object.keys(this.themes).map(t => `
-            <button class="theme-chip ${t === this.currentTheme ? 'active' : ''}" 
-                    data-cal-theme="${t}" 
-                    style="flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--cal-border); background: var(--cal-card); color: var(--cal-text); font-size: 12px; cursor: pointer;">
-              ${t.charAt(0).toUpperCase() + t.slice(1).replace(/([A-Z])/g, ' $1')}
-            </button>
-          `).join('')}
-        </div>
-      `;
+      // Bind close button and backdrop
+      qs('settingsClose')?.addEventListener('click', () => this.closeSettingsModal());
+      qs('settingsBackdrop')?.addEventListener('click', () => this.closeSettingsModal());
 
-      selector.querySelectorAll('[data-cal-theme]').forEach(btn => {
-        btn.addEventListener('click', () => this.applyTheme(btn.dataset.calTheme));
-      });
+      // Bind theme options
+      const themeGrid = qs('themeGrid');
+      if (themeGrid) {
+        themeGrid.querySelectorAll('[data-theme]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            this.applyTheme(btn.dataset.theme);
+          });
+        });
+      }
+    }
+
+    openSettingsModal() {
+      const modal = qs('settingsModal');
+      const backdrop = qs('settingsBackdrop');
+      if (modal && backdrop) {
+        backdrop.classList.add('visible');
+        modal.classList.add('visible');
+        modal.setAttribute('aria-hidden', 'false');
+        backdrop.setAttribute('aria-hidden', 'false');
+        this.updateActiveThemeButton();
+      }
+    }
+
+    closeSettingsModal() {
+      const modal = qs('settingsModal');
+      const backdrop = qs('settingsBackdrop');
+      if (modal && backdrop) {
+        backdrop.classList.remove('visible');
+        modal.classList.remove('visible');
+        modal.setAttribute('aria-hidden', 'true');
+        backdrop.setAttribute('aria-hidden', 'true');
+      }
     }
 
     updateActiveThemeButton() {
-      document.querySelectorAll('[data-cal-theme]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.calTheme === this.currentTheme);
-        if (btn.classList.contains('active')) {
-          btn.style.borderColor = 'var(--cal-accent)';
-          btn.style.background = 'var(--cal-highlight)';
-        } else {
-          btn.style.borderColor = 'var(--cal-border)';
-          btn.style.background = 'var(--cal-card)';
-        }
+      document.querySelectorAll('[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === this.currentTheme);
       });
     }
   }

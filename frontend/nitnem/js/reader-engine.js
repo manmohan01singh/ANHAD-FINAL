@@ -1,7 +1,7 @@
 /**
- * Reader Engine - Clean Bani Display
- * FIXES: Wrong verse type labels (Chhant, Savaiyya on Japji etc.)
- * @version 2.1.0
+ * Reader Engine - PURE iOS Experience
+ * Apple-Level Design • Clean • Minimal
+ * @version 5.0.0 - PURE iOS Edition
  */
 
 (function () {
@@ -12,30 +12,73 @@
     // ═══════════════════════════════════════════════════════════════
 
     const DEFAULTS = {
-        // Display
-        fontSize: 28,
-        fontFamily: 'gurmukhi',
-        lineSpacing: 1.8,
-        textAlign: 'center',
-        // Appearance
-        theme: 'dark',
-        amoled: false,
-        accentColor: '#D4AF37',
-        // Reading
-        showTranslation: true,
-        translationLang: 'english',
-        showTransliteration: true,
-        paragraphMode: false,
-        larivaar: false,
+        // General
         wakeLock: false,
+        larivaar: false,
+        larivaarAssist: false,
+        continuousReading: false,
+        paragraphMode: false,
+        showVisraams: false,
+        paperBackground: false,
+        showTitles: true,
+        hideGurmukhi: false,
+
+        // Translation
+        translationSize: 16,
+        punjabiTranslation: false,
+        englishTranslation: true,
+
+        // Transliteration
+        translitSize: 17,
+        englishTranslit: true,
+        hindiTranslit: false,
+        shahmukhiTranslit: false,
+
+        // Colors
+        theme: 'dark',
+        gurmukhiColorIdx: 0,
+        translationColorIdx: 2,
+        translitColorIdx: 2,
+
+        // Font
+        gurbaniFontSize: 28,
+        fontFamily: 'noto',
+        fontWeight: '500',
+        textAlign: 'center',
+
         // Audio
         autoPlay: false,
         playbackSpeed: 1,
-        // Legacy (for toggle buttons)
+
+        // Display toggles
         showGurmukhi: true,
         showRoman: true,
         showEnglish: true,
         showPunjabi: false
+    };
+
+    // Color Palette
+    const COLOR_PALETTE = [
+        'currentColor', // Default text
+        '#D4AF37',      // Sacred Gold
+        '#8E8E93',      // iOS Gray
+        '#DC2626',      // Red
+        '#F59E0B',      // Amber
+        '#2E8B57',      // Green
+        '#3B82F6',      // Blue
+        '#8B5CF6',      // Purple
+        '#EC4899',      // Pink
+        '#000000',      // Black
+        '#FFFFFF',      // White
+    ];
+
+    // Font Families
+    const FONT_MAP = {
+        'noto': "'Noto Sans Gurmukhi', sans-serif",
+        'puratan': "'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
+        'riyasti-hast': "'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
+        'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
+        'ladivar': "'Noto Sans Gurmukhi', sans-serif"
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -48,77 +91,117 @@
         baniMeta: null,
         settings: { ...DEFAULTS },
         isSettingsOpen: false,
-        wakeLockSentinel: null
+        wakeLockSentinel: null,
+        currentColorPicker: null
     };
 
     // ═══════════════════════════════════════════════════════════════
-    // DOM ELEMENTS
+    // DOM CACHE
     // ═══════════════════════════════════════════════════════════════
 
     const $ = (id) => document.getElementById(id);
+    let els = {};
 
-    const els = {
-        // Core
-        loadingOverlay: $('loadingOverlay'),
-        loadingText: $('loadingText'),
-        errorState: $('errorState'),
-        errorMessage: $('errorMessage'),
-        retryBtn: $('retryBtn'),
-        readerApp: $('readerApp'),
-        readerTitle: $('readerTitle'),
-        readerInfo: $('readerInfo'),
-        versesContainer: $('versesContainer'),
-        readerEnd: $('readerEnd'),
-        progressBar: $('progressBar'),
-        progressText: $('progressText'),
-        scrollTopBtn: $('scrollTopBtn'),
-        // NEW: Header and toggles for scroll-hide
-        readerHeader: document.querySelector('.reader-header'),
-        readerToggles: document.querySelector('.reader-toggles'),
-        settingsBtn: $('settingsBtn'),
-        settingsOverlay: $('settingsOverlay'),
-        settingsDrawer: $('settingsDrawer'),
-        settingsClose: $('settingsClose'),
-        bookmarkBtn: $('bookmarkBtn'),
-        readAgainBtn: $('readAgainBtn'),
-        resetBtn: $('resetBtn'),
-        // Display toggles (header)
-        toggleGurmukhi: $('toggleGurmukhi'),
-        toggleRoman: $('toggleRoman'),
-        toggleEnglish: $('toggleEnglish'),
-        togglePunjabi: $('togglePunjabi'),
-        // NEW: Display settings
-        fontSizeSlider: $('fontSizeSlider'),
-        fontSizeValue: $('fontSizeValue'),
-        fontFamilySelect: $('fontFamilySelect'),
-        lineSpacingSlider: $('lineSpacingSlider'),
-        lineSpacingValue: $('lineSpacingValue'),
-        // NEW: Appearance
-        amoledToggle: $('amoledToggle'),
-        // NEW: Reading
-        translationToggle: $('translationToggle'),
-        translationLangSelect: $('translationLangSelect'),
-        transliterationToggle: $('transliterationToggle'),
-        larivaarToggle: $('larivaarToggle'),
-        wakeLockToggle: $('wakeLockToggle'),
-        // NEW: Audio
-        autoPlayToggle: $('autoPlayToggle'),
-        playbackSpeedSelect: $('playbackSpeedSelect'),
-        // NEW: Paragraph Mode
-        paragraphModeToggle: $('paragraphModeToggle'),
-        // NEW: Data actions
-        downloadOfflineBtn: $('downloadOfflineBtn'),
-        clearHistoryBtn: $('clearHistoryBtn')
-    };
+    function initElements() {
+        els = {
+            // Core
+            loadingOverlay: $('loadingOverlay'),
+            loadingText: $('loadingText'),
+            errorState: $('errorState'),
+            errorMessage: $('errorMessage'),
+            retryBtn: $('retryBtn'),
+            readerApp: $('readerApp'),
+            readerTitle: $('readerTitle'),
+            readerInfo: $('readerInfo'),
+            versesContainer: $('versesContainer'),
+            readerEnd: $('readerEnd'),
+            progressBar: $('progressBar'),
+            progressText: $('progressText'),
+            scrollTopBtn: $('scrollTopBtn'),
+            paperBackground: $('paperBackground'),
+
+            // Header
+            readerHeader: document.querySelector('.reader-header'),
+            readerToggles: document.querySelector('.reader-toggles'),
+            settingsBtn: $('settingsBtn'),
+            settingsOverlay: $('settingsOverlay'),
+            settingsDrawer: $('settingsDrawer'),
+            settingsCloseFloat: $('settingsCloseFloat'),
+            bookmarkBtn: $('bookmarkBtn'),
+            readAgainBtn: $('readAgainBtn'),
+            resetBtn: $('resetBtn'),
+
+            // Display toggles
+            toggleGurmukhi: $('toggleGurmukhi'),
+            toggleRoman: $('toggleRoman'),
+            toggleEnglish: $('toggleEnglish'),
+            togglePunjabi: $('togglePunjabi'),
+
+            // General
+            wakeLockToggle: $('wakeLockToggle'),
+            larivaarToggle: $('larivaarToggle'),
+            larivaarAssistToggle: $('larivaarAssistToggle'),
+            larivaarAssistRow: $('larivaarAssistRow'),
+            larivaarAssistDivider: $('larivaarAssistDivider'),
+            continuousReadingToggle: $('continuousReadingToggle'),
+            paragraphModeToggle: $('paragraphModeToggle'),
+            showVisraamsToggle: $('showVisraamsToggle'),
+            paperBackgroundToggle: $('paperBackgroundToggle'),
+            showTitlesToggle: $('showTitlesToggle'),
+            hideGurmukhiToggle: $('hideGurmukhiToggle'),
+
+            // Translation
+            translationSizeValue: $('translationSizeValue'),
+            punjabiTranslationToggle: $('punjabiTranslationToggle'),
+            englishTranslationToggle: $('englishTranslationToggle'),
+
+            // Transliteration
+            translitSizeValue: $('translitSizeValue'),
+            englishTranslitToggle: $('englishTranslitToggle'),
+            hindiTranslitToggle: $('hindiTranslitToggle'),
+            shahmukhiTranslitToggle: $('shahmukhiTranslitToggle'),
+
+            // Colors
+            gurmukhiColor: $('gurmukhiColor'),
+            translationColor: $('translationColor'),
+            translitColor: $('translitColor'),
+            longVisraamColor: $('longVisraamColor'),
+            shortVisraamColor: $('shortVisraamColor'),
+            larivaarAssistColor: $('larivaarAssistColor'),
+            backgroundColor: $('backgroundColor'),
+
+            // Font
+            fontPreview: $('fontPreview'),
+            gurbaniFontSizeValue: $('gurbaniFontSizeValue'),
+            fontFamilySelect: $('fontFamilySelect'),
+            fontWeightSelect: $('fontWeightSelect'),
+            textAlignSelect: $('textAlignSelect'),
+
+            // Audio
+            autoPlayToggle: $('autoPlayToggle'),
+            playbackSpeedSelect: $('playbackSpeedSelect'),
+
+            // Data
+            downloadOfflineBtn: $('downloadOfflineBtn'),
+            clearHistoryBtn: $('clearHistoryBtn'),
+
+            // Color Picker
+            colorPickerModal: $('colorPickerModal'),
+            pickerTitle: $('pickerTitle'),
+            pickerColors: $('pickerColors'),
+            pickerClose: $('pickerClose')
+        };
+    }
 
     // ═══════════════════════════════════════════════════════════════
     // INITIALIZATION
     // ═══════════════════════════════════════════════════════════════
 
     async function init() {
-        console.log('🙏 Initializing Reader...');
+        console.log('🙏 ANHAD Reader v5.0 - PURE iOS');
 
-        // Get Bani ID from URL
+        initElements();
+
         const params = new URLSearchParams(window.location.search);
         state.baniId = parseInt(params.get('id'), 10);
 
@@ -127,17 +210,11 @@
             return;
         }
 
-        // Get metadata for this Bani
         state.baniMeta = typeof getBaniMeta === 'function' ? getBaniMeta(state.baniId) : null;
 
-        // Load settings
         loadSettings();
-        applySettings();
-
-        // Setup events
+        applyAllSettings();
         setupEvents();
-
-        // Load Bani
         await loadBani();
     }
 
@@ -146,7 +223,13 @@
     // ═══════════════════════════════════════════════════════════════
 
     async function loadBani() {
-        showLoading('Loading Bani...');
+        showLoading('Loading...');
+
+        // Check if Sarbloh Granth (IDs 201-205) - not available in BaniDB API
+        if (state.baniId >= 201 && state.baniId <= 205) {
+            showError('Sarbloh Granth Banis are not yet available via API. Coming soon! 🙏');
+            return;
+        }
 
         try {
             const data = await BaniDB.getBani(state.baniId);
@@ -156,19 +239,15 @@
                 throw new Error('No verses found');
             }
 
-            // Update header
             updateHeader(data);
-
-            // Render verses - CLEAN, NO WRONG LABELS
             renderVerses(data.verses);
-
-            // Show info
             renderInfo(data);
 
-            // Hide loading, show app
             hideLoading();
-            els.readerApp.style.display = 'flex';
+            els.readerApp.style.display = 'block';
             els.readerEnd.style.display = 'block';
+
+            checkBookmark();
 
         } catch (error) {
             console.error('Load failed:', error);
@@ -176,108 +255,77 @@
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // UPDATE HEADER
-    // ═══════════════════════════════════════════════════════════════
-
     function updateHeader(data) {
         const meta = state.baniMeta;
         const nameGurmukhi = meta?.nameGurmukhi || data.baniInfo?.unicode || 'ਬਾਣੀ';
         const nameEnglish = meta?.nameEnglish || data.baniInfo?.transliteration || 'Bani';
 
         els.readerTitle.innerHTML = `
-      <span class="reader-gurmukhi">${escapeHtml(nameGurmukhi)}</span>
-      <span class="reader-english">${escapeHtml(nameEnglish)}</span>
-    `;
+            <span class="reader-gurmukhi">${escapeHtml(nameGurmukhi)}</span>
+            <span class="reader-english">${escapeHtml(nameEnglish)}</span>
+        `;
 
-        document.title = `${nameEnglish} | Gurbani Live`;
+        document.title = `${nameEnglish} | ANHAD`;
     }
-
-    // ═══════════════════════════════════════════════════════════════
-    // RENDER INFO
-    // ═══════════════════════════════════════════════════════════════
 
     function renderInfo(data) {
         const meta = state.baniMeta;
         const verseCount = data.verses?.length || 0;
 
-        let info = '';
-
-        if (meta) {
-            info = `${meta.nameGurmukhi || meta.nameEnglish}`;
-            if (meta.author) info += ` • ${meta.author}`;
-            if (meta.estimatedTime) info += ` • ${meta.estimatedTime}`;
-        } else {
-            info = `${verseCount} verses`;
+        let info = `${verseCount} verses`;
+        if (meta?.estimatedTime) {
+            info += ` • ${meta.estimatedTime}`;
         }
 
         els.readerInfo.textContent = info;
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // RENDER VERSES - FIXED: NO WRONG LABELS
+    // RENDER VERSES
     // ═══════════════════════════════════════════════════════════════
 
     function renderVerses(verses) {
         els.versesContainer.innerHTML = '';
 
         const meta = state.baniMeta;
-        const hideVerseType = meta?.hideVerseType === true;
-        const showChhandType = meta?.showChhandType === true;
-
         let currentSection = null;
-        let verseNumber = 0;
 
         verses.forEach((verseData, index) => {
             const parsed = parseVerse(verseData);
 
-            // Section headers - only show for specific Banis that need them
-            // AND only if showChhandType is true (like Jaap Sahib)
-            if (showChhandType && !hideVerseType) {
+            // Section headers
+            if (meta?.showChhandType && state.settings.showTitles) {
                 const header = verseData.header || verseData.verse?.header;
                 if (header && header !== currentSection) {
                     currentSection = header;
-                    const sectionEl = createSectionDivider(header);
-                    els.versesContainer.appendChild(sectionEl);
+                    els.versesContainer.appendChild(createSectionDivider(header));
                 }
             }
 
-            verseNumber++;
-
-            // Create verse element - CLEAN
-            const verseEl = createVerseElement(parsed, verseNumber, index);
-            els.versesContainer.appendChild(verseEl);
+            els.versesContainer.appendChild(createVerseElement(parsed, index));
         });
 
+        applyModes();
+        applyFontToVerses();
         updateVisibility();
     }
 
-    /**
-     * Parse verse data - extract all languages
-     */
     function parseVerse(verseData) {
         const verse = verseData.verse || verseData;
 
-        // Gurmukhi
         let gurmukhi = '';
         if (verse.verse) {
-            gurmukhi = typeof verse.verse === 'string'
-                ? verse.verse
-                : verse.verse.unicode || verse.verse.gurmukhi || '';
+            gurmukhi = typeof verse.verse === 'string' ? verse.verse : verse.verse.unicode || verse.verse.gurmukhi || '';
         } else {
             gurmukhi = verse.unicode || verse.gurmukhi || '';
         }
 
-        // Transliteration (Roman)
         let roman = '';
         const translit = verseData.transliteration || verse.transliteration;
         if (translit) {
-            roman = typeof translit === 'string'
-                ? translit
-                : translit.english || translit.en || translit.roman || '';
+            roman = typeof translit === 'string' ? translit : translit.english || translit.en || '';
         }
 
-        // English Translation
         let english = '';
         const translation = verseData.translation || verse.translation;
         if (translation) {
@@ -289,7 +337,6 @@
             }
         }
 
-        // Punjabi Translation
         let punjabi = '';
         if (translation?.pu) {
             const pu = translation.pu;
@@ -298,71 +345,111 @@
             } else {
                 for (const src of ['ss', 'bdb', 'ms', 'ft']) {
                     if (pu[src]) {
-                        punjabi = typeof pu[src] === 'string'
-                            ? pu[src]
-                            : pu[src].unicode || pu[src].gurmukhi || '';
+                        punjabi = typeof pu[src] === 'string' ? pu[src] : pu[src].unicode || pu[src].gurmukhi || '';
                         if (punjabi) break;
                     }
                 }
             }
         }
 
-        return {
-            gurmukhi: escapeHtml(gurmukhi),
-            roman: escapeHtml(roman),
-            english: escapeHtml(english),
-            punjabi: escapeHtml(punjabi)
-        };
+        return { gurmukhi, roman, english, punjabi };
     }
 
-    /**
-     * Create verse element - CLEAN, NO WRONG LABELS
-     */
-    function createVerseElement(parsed, number, index) {
+    function createVerseElement(parsed, index) {
         const el = document.createElement('div');
         el.className = 'verse';
-        el.style.animationDelay = `${Math.min(index * 0.02, 0.2)}s`;
+        el.style.animationDelay = `${Math.min(index * 0.03, 0.3)}s`;
 
-        // Optional: Show subtle verse number
-        // Only for Banis where it makes sense
-        const meta = state.baniMeta;
-        let numberLabel = '';
-        if (meta?.structure && meta.totalUnits) {
-            // Show: "Pauri 5", "Verse 10", etc.
-            // But keep it subtle
+        // Get current font class
+        const fontClass = `font-${state.settings.fontFamily}`;
+
+        // Apply Larivaar
+        let gurmukhiHTML = escapeHtml(parsed.gurmukhi);
+        if (state.settings.larivaar) {
+            if (state.settings.larivaarAssist) {
+                gurmukhiHTML = applyLarivaarAssist(parsed.gurmukhi);
+            } else {
+                gurmukhiHTML = escapeHtml(parsed.gurmukhi.replace(/\s+/g, ''));
+            }
         }
 
         el.innerHTML = `
-      <div class="verse-gurmukhi ${state.settings.showGurmukhi ? '' : 'hidden'}">${parsed.gurmukhi}</div>
-      <div class="verse-roman ${state.settings.showRoman ? '' : 'hidden'}">${parsed.roman}</div>
-      <div class="verse-english ${state.settings.showEnglish ? '' : 'hidden'}">${parsed.english}</div>
-      <div class="verse-punjabi ${state.settings.showPunjabi ? '' : 'hidden'}">${parsed.punjabi}</div>
-    `;
+            <div class="verse-gurmukhi ${fontClass}">${gurmukhiHTML}</div>
+            <div class="verse-roman">${escapeHtml(parsed.roman)}</div>
+            <div class="verse-english">${escapeHtml(parsed.english)}</div>
+            <div class="verse-punjabi">${escapeHtml(parsed.punjabi)}</div>
+        `;
 
         return el;
     }
 
-    /**
-     * Create section divider - ONLY for Banis that need it
-     */
+    function applyLarivaarAssist(text) {
+        const words = text.split(/\s+/);
+        let result = '';
+        words.forEach((word, i) => {
+            const escapedWord = escapeHtml(word);
+            if (i % 2 === 1) {
+                result += `<span class="word-alt">${escapedWord}</span>`;
+            } else {
+                result += escapedWord;
+            }
+        });
+        return result;
+    }
+
     function createSectionDivider(headerType) {
         const el = document.createElement('div');
         el.className = 'section-divider';
 
-        // Map header types to proper names
-        const names = {
-            1: 'ਛੰਦ',
-            2: 'ਸਵੈਯਾ',
-            3: 'ਦੋਹਰਾ',
-            4: 'ਚੌਪਈ',
-            5: 'ਅੜਿੱਲ',
-            6: 'ਭੁਜੰਗ ਪ੍ਰਯਾਤ'
-        };
-
-        const name = names[headerType] || `Section ${headerType}`;
-        el.innerHTML = `<span>${name}</span>`;
+        const names = { 1: 'ਛੰਦ', 2: 'ਸਵੈਯਾ', 3: 'ਦੋਹਰਾ', 4: 'ਚੌਪਈ', 5: 'ਅੜਿੱਲ', 6: 'ਭੁਜੰਗ ਪ੍ਰਯਾਤ' };
+        el.innerHTML = `<span>${names[headerType] || `Section ${headerType}`}</span>`;
 
         return el;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // APPLY FONT TO ALL VERSES (Direct Style Application)
+    // ═══════════════════════════════════════════════════════════════
+
+    function applyFontToVerses() {
+        const fontKey = state.settings.fontFamily || 'noto';
+        const fontFamily = FONT_MAP[fontKey] || FONT_MAP.noto;
+        const fontWeight = state.settings.fontWeight || '500';
+        const fontSize = state.settings.gurbaniFontSize || 28;
+        const textAlign = state.settings.textAlign || 'center';
+
+        console.log('🔤 Applying font:', fontKey, fontFamily);
+
+        document.querySelectorAll('.verse-gurmukhi').forEach(el => {
+            // Remove all font classes first
+            el.classList.remove('font-noto', 'font-puratan', 'font-riyasti-hast', 'font-riyasti-naveen');
+
+            // Add current font class
+            el.classList.add(`font-${fontKey}`);
+
+            // FORCE apply inline styles with cssText for maximum priority
+            el.style.cssText = `
+                font-family: ${fontFamily} !important;
+                font-weight: ${fontWeight} !important;
+                font-size: ${fontSize}px !important;
+            `;
+        });
+
+        // Apply text alignment
+        document.querySelectorAll('.verse').forEach(el => {
+            el.style.textAlign = textAlign;
+        });
+
+        // Update font preview
+        const preview = document.querySelector('.font-preview-text');
+        if (preview) {
+            preview.style.cssText = `font-family: ${fontFamily} !important;`;
+        }
+
+        // Update font select value
+        if (els.fontFamilySelect) {
+            els.fontFamilySelect.value = fontKey;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -378,239 +465,263 @@
     }
 
     function updateVisibility() {
+        const s = state.settings;
+
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
-            el.classList.toggle('hidden', !state.settings.showGurmukhi);
+            el.classList.toggle('hidden', !s.showGurmukhi || s.hideGurmukhi);
         });
         document.querySelectorAll('.verse-roman').forEach(el => {
-            el.classList.toggle('hidden', !state.settings.showRoman);
+            el.classList.toggle('hidden', !s.showRoman || !s.englishTranslit);
         });
         document.querySelectorAll('.verse-english').forEach(el => {
-            el.classList.toggle('hidden', !state.settings.showEnglish);
+            el.classList.toggle('hidden', !s.showEnglish);
         });
         document.querySelectorAll('.verse-punjabi').forEach(el => {
-            el.classList.toggle('hidden', !state.settings.showPunjabi);
+            el.classList.toggle('hidden', !s.showPunjabi || !s.punjabiTranslation);
         });
     }
 
     function updateToggleButtons() {
+        const s = state.settings;
+
         if (els.toggleGurmukhi) {
-            els.toggleGurmukhi.dataset.active = state.settings.showGurmukhi;
-            els.toggleGurmukhi.classList.toggle('active', state.settings.showGurmukhi);
+            els.toggleGurmukhi.classList.toggle('active', s.showGurmukhi);
         }
         if (els.toggleRoman) {
-            els.toggleRoman.dataset.active = state.settings.showRoman;
-            els.toggleRoman.classList.toggle('active', state.settings.showRoman);
+            els.toggleRoman.classList.toggle('active', s.showRoman);
         }
         if (els.toggleEnglish) {
-            els.toggleEnglish.dataset.active = state.settings.showEnglish;
-            els.toggleEnglish.classList.toggle('active', state.settings.showEnglish);
+            els.toggleEnglish.classList.toggle('active', s.showEnglish);
         }
         if (els.togglePunjabi) {
-            els.togglePunjabi.dataset.active = state.settings.showPunjabi;
-            els.togglePunjabi.classList.toggle('active', state.settings.showPunjabi);
+            els.togglePunjabi.classList.toggle('active', s.showPunjabi);
         }
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // SETTINGS
+    // APPLY ALL SETTINGS
     // ═══════════════════════════════════════════════════════════════
 
-    function applySettings() {
+    function applyAllSettings() {
         const root = document.documentElement;
         const s = state.settings;
 
-        // Font size (unified)
-        root.style.setProperty('--gurmukhi-size', `${s.fontSize}px`);
-        root.style.setProperty('--roman-size', `${Math.round(s.fontSize * 0.65)}px`);
-        root.style.setProperty('--translation-size', `${Math.round(s.fontSize * 0.57)}px`);
+        // Font sizes
+        root.style.setProperty('--gurmukhi-size', `${s.gurbaniFontSize}px`);
+        root.style.setProperty('--translation-size', `${s.translationSize}px`);
+        root.style.setProperty('--roman-size', `${s.translitSize}px`);
+        root.style.setProperty('--font-weight', s.fontWeight);
+        root.style.setProperty('--line-spacing', '1.8');
 
-        // Line spacing
-        root.style.setProperty('--line-spacing', s.lineSpacing);
-
-        // Accent color
-        root.style.setProperty('--accent', s.accentColor);
-
-        // Theme (direct application - includes dark, light, sepia, amoled, gold)
-        root.setAttribute('data-theme', s.theme);
-
-        // Text alignment
-        document.querySelectorAll('.verse').forEach(el => {
-            el.style.textAlign = s.textAlign;
-        });
-
-        // Paragraph mode
-        if (els.versesContainer) {
-            els.versesContainer.classList.toggle('paragraph-mode', s.paragraphMode);
+        // Theme
+        if (s.paperBackground) {
+            root.setAttribute('data-theme', 'sepia');
+        } else {
+            root.setAttribute('data-theme', s.theme);
         }
 
-        // Update toggles
-        updateToggleButtons();
+        // Paper background
+        if (els.paperBackground) {
+            els.paperBackground.classList.toggle('visible', s.paperBackground);
+        }
+        if (els.readerApp) {
+            els.readerApp.classList.toggle('paper-active', s.paperBackground);
+        }
+
+        // Apply modes
+        applyModes();
+
+        // Apply font to verses
+        applyFontToVerses();
+
+        // Update UI
         updateSettingsUI();
+        updateToggleButtons();
+    }
+
+    function applyModes() {
+        const container = els.versesContainer;
+        if (!container) return;
+
+        // Larivaar
+        document.body.classList.toggle('larivaar-mode', state.settings.larivaar);
+        document.body.classList.toggle('larivaar-assist', state.settings.larivaar && state.settings.larivaarAssist);
+
+        // Continuous reading (true continuous - inline display)
+        container.classList.toggle('continuous-mode', state.settings.continuousReading);
+
+        // Paragraph mode
+        container.classList.toggle('paragraph-mode', state.settings.paragraphMode && !state.settings.continuousReading);
+
+        // Show/hide larivaar assist option
+        if (els.larivaarAssistRow) {
+            els.larivaarAssistRow.style.display = state.settings.larivaar ? 'flex' : 'none';
+        }
+        if (els.larivaarAssistDivider) {
+            els.larivaarAssistDivider.style.display = state.settings.larivaar ? 'block' : 'none';
+        }
     }
 
     function updateSettingsUI() {
         const s = state.settings;
 
-        // Font size slider
-        if (els.fontSizeSlider) {
-            els.fontSizeSlider.value = s.fontSize;
-            updateSliderProgress(els.fontSizeSlider);
-        }
-        if (els.fontSizeValue) {
-            els.fontSizeValue.textContent = `${s.fontSize}pt`;
-        }
-
-        // Font family
-        if (els.fontFamilySelect) {
-            els.fontFamilySelect.value = s.fontFamily;
-        }
-
-        // Line spacing slider
-        if (els.lineSpacingSlider) {
-            els.lineSpacingSlider.value = s.lineSpacing * 10;
-            updateSliderProgress(els.lineSpacingSlider);
-        }
-        if (els.lineSpacingValue) {
-            els.lineSpacingValue.textContent = s.lineSpacing.toFixed(1);
-        }
-
-        // Text alignment
-        document.querySelectorAll('#textAlignmentControl .segment-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.value === s.textAlign);
-        });
-
-        // Theme pills
-        document.querySelectorAll('.theme-pill').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.theme === s.theme);
-        });
-
-        // AMOLED toggle
-        if (els.amoledToggle) {
-            els.amoledToggle.setAttribute('aria-checked', s.amoled);
-            els.amoledToggle.classList.toggle('active', s.amoled);
-        }
-
-        // Accent colors
-        document.querySelectorAll('.color-dot').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.color === s.accentColor);
-        });
-
-        // Translation toggle
-        if (els.translationToggle) {
-            els.translationToggle.setAttribute('aria-checked', s.showTranslation);
-            els.translationToggle.classList.toggle('active', s.showTranslation);
-        }
-
-        // Translation language
-        if (els.translationLangSelect) {
-            els.translationLangSelect.value = s.translationLang;
-        }
-
-        // Transliteration toggle
-        if (els.transliterationToggle) {
-            els.transliterationToggle.setAttribute('aria-checked', s.showTransliteration);
-            els.transliterationToggle.classList.toggle('active', s.showTransliteration);
-        }
-
-        // Larivaar toggle
-        if (els.larivaarToggle) {
-            els.larivaarToggle.setAttribute('aria-checked', s.larivaar);
-            els.larivaarToggle.classList.toggle('active', s.larivaar);
-        }
-
-        // Wake lock toggle
-        if (els.wakeLockToggle) {
-            els.wakeLockToggle.setAttribute('aria-checked', s.wakeLock);
-            els.wakeLockToggle.classList.toggle('active', s.wakeLock);
-        }
-
-        // Auto-play toggle
-        if (els.autoPlayToggle) {
-            els.autoPlayToggle.setAttribute('aria-checked', s.autoPlay);
-            els.autoPlayToggle.classList.toggle('active', s.autoPlay);
-        }
-
-        // Playback speed
-        if (els.playbackSpeedSelect) {
-            els.playbackSpeedSelect.value = s.playbackSpeed;
-        }
-
-        // Paragraph mode toggle
-        if (els.paragraphModeToggle) {
-            els.paragraphModeToggle.setAttribute('aria-checked', s.paragraphMode);
-            els.paragraphModeToggle.classList.toggle('active', s.paragraphMode);
-        }
-    }
-
-    function updateSliderProgress(slider) {
-        const min = parseFloat(slider.min);
-        const max = parseFloat(slider.max);
-        const val = parseFloat(slider.value);
-        const progress = ((val - min) / (max - min)) * 100;
-        slider.style.setProperty('--slider-progress', `${progress}%`);
-    }
-
-    function adjustSize(target, action) {
-        const limits = {
-            gurmukhi: { min: 18, max: 52 },
-            roman: { min: 12, max: 32 },
-            translation: { min: 12, max: 28 }
+        // Toggles
+        const toggleMap = {
+            wakeLockToggle: 'wakeLock',
+            larivaarToggle: 'larivaar',
+            larivaarAssistToggle: 'larivaarAssist',
+            continuousReadingToggle: 'continuousReading',
+            paragraphModeToggle: 'paragraphMode',
+            showVisraamsToggle: 'showVisraams',
+            paperBackgroundToggle: 'paperBackground',
+            showTitlesToggle: 'showTitles',
+            hideGurmukhiToggle: 'hideGurmukhi',
+            punjabiTranslationToggle: 'punjabiTranslation',
+            englishTranslationToggle: 'englishTranslation',
+            englishTranslitToggle: 'englishTranslit',
+            hindiTranslitToggle: 'hindiTranslit',
+            shahmukhiTranslitToggle: 'shahmukhiTranslit',
+            autoPlayToggle: 'autoPlay'
         };
 
-        const key = `${target}Size`;
-        const limit = limits[target];
-        if (!limit) return;
+        Object.entries(toggleMap).forEach(([elKey, settingKey]) => {
+            const el = els[elKey];
+            if (el) {
+                const isOn = s[settingKey];
+                el.setAttribute('aria-checked', isOn);
+                el.classList.toggle('active', isOn);
+            }
+        });
 
-        const step = 2;
-
-        if (action === 'increase' && state.settings[key] < limit.max) {
-            state.settings[key] += step;
-        } else if (action === 'decrease' && state.settings[key] > limit.min) {
-            state.settings[key] -= step;
+        // Size values
+        if (els.gurbaniFontSizeValue) {
+            els.gurbaniFontSizeValue.textContent = `${s.gurbaniFontSize} px`;
+        }
+        if (els.translationSizeValue) {
+            els.translationSizeValue.textContent = `${s.translationSize} px`;
+        }
+        if (els.translitSizeValue) {
+            els.translitSizeValue.textContent = `${s.translitSize} px`;
         }
 
-        applySettings();
+        // Selects
+        if (els.fontFamilySelect) els.fontFamilySelect.value = s.fontFamily;
+        if (els.fontWeightSelect) els.fontWeightSelect.value = s.fontWeight;
+        if (els.textAlignSelect) els.textAlignSelect.value = s.textAlign;
+        if (els.playbackSpeedSelect) els.playbackSpeedSelect.value = s.playbackSpeed;
+
+        // Theme bubbles
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === s.theme && !s.paperBackground);
+        });
+
+        // Color circles
+        const colorMap = {
+            gurmukhiColor: 'gurmukhiColorIdx',
+            translationColor: 'translationColorIdx',
+            translitColor: 'translitColorIdx'
+        };
+
+        Object.entries(colorMap).forEach(([elKey, settingKey]) => {
+            const el = els[elKey];
+            if (el) {
+                const color = COLOR_PALETTE[s[settingKey]] || COLOR_PALETTE[0];
+                el.style.background = color === 'currentColor' ? '#8E8E93' : color;
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SIZE ADJUSTMENT
+    // ═══════════════════════════════════════════════════════════════
+
+    function adjustSize(target, action) {
+        const config = {
+            gurbani: { min: 18, max: 56, key: 'gurbaniFontSize' },
+            translation: { min: 12, max: 28, key: 'translationSize' },
+            translit: { min: 12, max: 28, key: 'translitSize' }
+        }[target];
+
+        if (!config) return;
+
+        const step = 2;
+        const current = state.settings[config.key];
+
+        if (action === 'increase' && current < config.max) {
+            state.settings[config.key] = current + step;
+        } else if (action === 'decrease' && current > config.min) {
+            state.settings[config.key] = current - step;
+        }
+
+        applyAllSettings();
         saveSettings();
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // THEME
+    // ═══════════════════════════════════════════════════════════════
 
     function setTheme(theme) {
         state.settings.theme = theme;
-        localStorage.setItem('nitnem_theme', theme);
-        applySettings();
+        state.settings.paperBackground = false;
+        applyAllSettings();
         saveSettings();
     }
 
-    function resetSettings() {
-        state.settings = { ...DEFAULTS };
-        applySettings();
+    // ═══════════════════════════════════════════════════════════════
+    // COLOR PICKER
+    // ═══════════════════════════════════════════════════════════════
+
+    function openColorPicker(settingKey, title) {
+        state.currentColorPicker = settingKey;
+
+        if (els.pickerTitle) els.pickerTitle.textContent = title;
+
+        if (els.pickerColors) {
+            els.pickerColors.innerHTML = '';
+            COLOR_PALETTE.forEach((color, idx) => {
+                if (color === 'currentColor') return; // Skip default
+
+                const btn = document.createElement('button');
+                btn.className = 'picker-color';
+                btn.style.background = color;
+                btn.dataset.index = idx;
+
+                if (state.settings[settingKey] === idx) btn.classList.add('selected');
+
+                btn.addEventListener('click', () => {
+                    state.settings[settingKey] = idx;
+                    applyAllSettings();
+                    saveSettings();
+                    closeColorPicker();
+                });
+
+                els.pickerColors.appendChild(btn);
+            });
+        }
+
+        if (els.colorPickerModal) els.colorPickerModal.classList.add('visible');
+    }
+
+    function closeColorPicker() {
+        if (els.colorPickerModal) els.colorPickerModal.classList.remove('visible');
+        state.currentColorPicker = null;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // TOGGLE SETTING
+    // ═══════════════════════════════════════════════════════════════
+
+    function toggleSetting(key) {
+        state.settings[key] = !state.settings[key];
+
+        // Re-render for larivaar changes
+        if ((key === 'larivaar' || key === 'larivaarAssist') && state.baniData?.verses) {
+            renderVerses(state.baniData.verses);
+        }
+
+        applyAllSettings();
         saveSettings();
-        closeSettings();
-    }
-
-    function saveSettings() {
-        try {
-            localStorage.setItem('nitnem_reader_settings', JSON.stringify(state.settings));
-        } catch (e) {
-            console.warn('Could not save settings');
-        }
-    }
-
-    function loadSettings() {
-        try {
-            // Load theme first
-            const savedTheme = localStorage.getItem('nitnem_theme');
-            if (savedTheme) {
-                state.settings.theme = savedTheme;
-            }
-
-            // Load other settings
-            const saved = localStorage.getItem('nitnem_reader_settings');
-            if (saved) {
-                state.settings = { ...DEFAULTS, ...JSON.parse(saved) };
-            }
-        } catch (e) {
-            console.warn('Could not load settings');
-        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -631,64 +742,13 @@
             } catch (e) {
                 state.settings.wakeLock = false;
             }
-        } else {
-            if (state.wakeLockSentinel) {
-                await state.wakeLockSentinel.release();
-                state.wakeLockSentinel = null;
-            }
+        } else if (state.wakeLockSentinel) {
+            await state.wakeLockSentinel.release();
+            state.wakeLockSentinel = null;
         }
 
         updateSettingsUI();
         saveSettings();
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // PROGRESS & SCROLL (with scroll-hide header/toggles)
-    // ═══════════════════════════════════════════════════════════════
-
-    let lastScrollTop = 0;
-    let scrollThreshold = 100;
-
-    function updateProgress() {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
-
-        if (els.progressBar) els.progressBar.style.width = `${progress}%`;
-        if (els.progressText) els.progressText.textContent = `${progress}%`;
-
-        // Scroll top button
-        if (els.scrollTopBtn) {
-            els.scrollTopBtn.classList.toggle('visible', scrollTop > 500);
-        }
-
-        // Scroll-hide header and toggles
-        if (scrollTop > scrollThreshold) {
-            const scrollingDown = scrollTop > lastScrollTop;
-
-            if (scrollingDown) {
-                // Hide header and toggles when scrolling down
-                els.readerHeader?.classList.add('hidden');
-                els.readerToggles?.classList.add('hidden');
-                els.progressText?.classList.add('hidden');
-            } else {
-                // Show header and toggles when scrolling up
-                els.readerHeader?.classList.remove('hidden');
-                els.readerToggles?.classList.remove('hidden');
-                els.progressText?.classList.remove('hidden');
-            }
-        } else {
-            // Always show at top of page
-            els.readerHeader?.classList.remove('hidden');
-            els.readerToggles?.classList.remove('hidden');
-            els.progressText?.classList.remove('hidden');
-        }
-
-        lastScrollTop = scrollTop;
-    }
-
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -709,12 +769,79 @@
         document.body.style.overflow = '';
     }
 
+    function resetSettings() {
+        if (confirm('Reset all settings?')) {
+            state.settings = { ...DEFAULTS };
+            applyAllSettings();
+            saveSettings();
+            if (state.baniData?.verses) renderVerses(state.baniData.verses);
+            closeSettings();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SAVE/LOAD
+    // ═══════════════════════════════════════════════════════════════
+
+    function saveSettings() {
+        try {
+            localStorage.setItem('anhad_reader_v5', JSON.stringify(state.settings));
+        } catch (e) { }
+    }
+
+    function loadSettings() {
+        try {
+            const saved = localStorage.getItem('anhad_reader_v5');
+            if (saved) state.settings = { ...DEFAULTS, ...JSON.parse(saved) };
+        } catch (e) { }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PROGRESS & SCROLL
+    // ═══════════════════════════════════════════════════════════════
+
+    let lastScrollTop = 0;
+    const SCROLL_THRESHOLD = 80;
+
+    function updateProgress() {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
+
+        if (els.progressBar) els.progressBar.style.width = `${progress}%`;
+        if (els.progressText) els.progressText.textContent = `${progress}%`;
+
+        // Scroll top button
+        if (els.scrollTopBtn) {
+            els.scrollTopBtn.classList.toggle('visible', scrollTop > 400);
+        }
+
+        // Hide header & toggles on scroll DOWN, show on scroll UP
+        const scrollingDown = scrollTop > lastScrollTop && scrollTop > SCROLL_THRESHOLD;
+
+        if (els.readerHeader) {
+            els.readerHeader.classList.toggle('hidden', scrollingDown);
+        }
+        if (els.readerToggles) {
+            els.readerToggles.classList.toggle('hidden', scrollingDown);
+        }
+        if (els.progressText) {
+            els.progressText.classList.toggle('hidden', scrollingDown);
+        }
+
+        lastScrollTop = scrollTop;
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // BOOKMARK
     // ═══════════════════════════════════════════════════════════════
 
     function toggleBookmark() {
-        let favorites = JSON.parse(localStorage.getItem('nitnem_favorites') || '[]');
+        let favorites = JSON.parse(localStorage.getItem('anhad_favorites') || '[]');
         const exists = favorites.some(f => f.id === state.baniId);
 
         if (exists) {
@@ -729,13 +856,12 @@
             els.bookmarkBtn?.classList.add('active');
         }
 
-        localStorage.setItem('nitnem_favorites', JSON.stringify(favorites));
+        localStorage.setItem('anhad_favorites', JSON.stringify(favorites));
     }
 
     function checkBookmark() {
-        const favorites = JSON.parse(localStorage.getItem('nitnem_favorites') || '[]');
-        const isFavorite = favorites.some(f => f.id === state.baniId);
-        els.bookmarkBtn?.classList.toggle('active', isFavorite);
+        const favorites = JSON.parse(localStorage.getItem('anhad_favorites') || '[]');
+        els.bookmarkBtn?.classList.toggle('active', favorites.some(f => f.id === state.baniId));
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -744,12 +870,12 @@
 
     function showLoading(msg) {
         if (els.loadingText) els.loadingText.textContent = msg;
-        if (els.loadingOverlay) els.loadingOverlay.classList.remove('hidden');
+        if (els.loadingOverlay) els.loadingOverlay.style.display = 'flex';
         if (els.errorState) els.errorState.style.display = 'none';
     }
 
     function hideLoading() {
-        if (els.loadingOverlay) els.loadingOverlay.classList.add('hidden');
+        if (els.loadingOverlay) els.loadingOverlay.style.display = 'none';
     }
 
     function showError(msg) {
@@ -766,200 +892,116 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // EVENT LISTENERS
+    // EVENT SETUP
     // ═══════════════════════════════════════════════════════════════
 
     function setupEvents() {
-        // Progress
+        // Scroll
         window.addEventListener('scroll', updateProgress, { passive: true });
 
-        // Scroll to top
+        // Scroll top
         els.scrollTopBtn?.addEventListener('click', scrollToTop);
 
-        // Settings panel
+        // Settings
         els.settingsBtn?.addEventListener('click', openSettings);
-        els.settingsClose?.addEventListener('click', closeSettings);
+        els.settingsCloseFloat?.addEventListener('click', closeSettings);
         els.settingsOverlay?.addEventListener('click', closeSettings);
 
-        // Display toggles (header bar)
+        // Display toggles
         els.toggleGurmukhi?.addEventListener('click', () => toggleDisplay('gurmukhi'));
         els.toggleRoman?.addEventListener('click', () => toggleDisplay('roman'));
         els.toggleEnglish?.addEventListener('click', () => toggleDisplay('english'));
         els.togglePunjabi?.addEventListener('click', () => toggleDisplay('punjabi'));
 
-        // ═══════════════════════════════════════════════════════════
-        // NEW: iOS Settings Controls
-        // ═══════════════════════════════════════════════════════════
+        // Bookmark & actions
+        els.bookmarkBtn?.addEventListener('click', toggleBookmark);
+        els.readAgainBtn?.addEventListener('click', scrollToTop);
+        els.resetBtn?.addEventListener('click', resetSettings);
+        els.retryBtn?.addEventListener('click', loadBani);
 
-        // Font size slider
-        els.fontSizeSlider?.addEventListener('input', (e) => {
-            state.settings.fontSize = parseInt(e.target.value, 10);
-            applySettings();
-            saveSettings();
+        // General toggles
+        els.wakeLockToggle?.addEventListener('click', toggleWakeLock);
+        els.larivaarToggle?.addEventListener('click', () => toggleSetting('larivaar'));
+        els.larivaarAssistToggle?.addEventListener('click', () => toggleSetting('larivaarAssist'));
+        els.continuousReadingToggle?.addEventListener('click', () => toggleSetting('continuousReading'));
+        els.paragraphModeToggle?.addEventListener('click', () => toggleSetting('paragraphMode'));
+        els.showVisraamsToggle?.addEventListener('click', () => toggleSetting('showVisraams'));
+        els.paperBackgroundToggle?.addEventListener('click', () => toggleSetting('paperBackground'));
+        els.showTitlesToggle?.addEventListener('click', () => toggleSetting('showTitles'));
+        els.hideGurmukhiToggle?.addEventListener('click', () => toggleSetting('hideGurmukhi'));
+
+        // Translation toggles
+        els.punjabiTranslationToggle?.addEventListener('click', () => toggleSetting('punjabiTranslation'));
+        els.englishTranslationToggle?.addEventListener('click', () => toggleSetting('englishTranslation'));
+
+        // Transliteration toggles
+        els.englishTranslitToggle?.addEventListener('click', () => toggleSetting('englishTranslit'));
+        els.hindiTranslitToggle?.addEventListener('click', () => toggleSetting('hindiTranslit'));
+        els.shahmukhiTranslitToggle?.addEventListener('click', () => toggleSetting('shahmukhiTranslit'));
+
+        // Audio
+        els.autoPlayToggle?.addEventListener('click', () => toggleSetting('autoPlay'));
+
+        // Size controls
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', () => adjustSize(btn.dataset.target, btn.dataset.action));
         });
 
-        // Font family select
+        // Theme bubbles
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
+            btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+        });
+
+        // Font select - DIRECT FONT APPLICATION
         els.fontFamilySelect?.addEventListener('change', (e) => {
             state.settings.fontFamily = e.target.value;
-            applySettings();
+            applyFontToVerses();
             saveSettings();
         });
 
-        // Line spacing slider
-        els.lineSpacingSlider?.addEventListener('input', (e) => {
-            state.settings.lineSpacing = parseFloat(e.target.value) / 10;
-            applySettings();
+        els.fontWeightSelect?.addEventListener('change', (e) => {
+            state.settings.fontWeight = e.target.value;
+            applyFontToVerses();
             saveSettings();
         });
 
-        // Text alignment segmented control
-        document.querySelectorAll('#textAlignmentControl .segment-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.settings.textAlign = btn.dataset.value;
-                applySettings();
-                saveSettings();
-            });
-        });
-
-        // Theme pills
-        document.querySelectorAll('.theme-pill').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.settings.theme = btn.dataset.theme;
-                localStorage.setItem('nitnem_theme', btn.dataset.theme);
-                applySettings();
-                saveSettings();
-            });
-        });
-
-        // AMOLED toggle
-        els.amoledToggle?.addEventListener('click', () => {
-            state.settings.amoled = !state.settings.amoled;
-            applySettings();
+        els.textAlignSelect?.addEventListener('change', (e) => {
+            state.settings.textAlign = e.target.value;
+            applyFontToVerses();
             saveSettings();
         });
 
-        // Accent color picker
-        document.querySelectorAll('.color-dot').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.settings.accentColor = btn.dataset.color;
-                applySettings();
-                saveSettings();
-            });
-        });
-
-        // Translation toggle
-        els.translationToggle?.addEventListener('click', () => {
-            state.settings.showTranslation = !state.settings.showTranslation;
-            state.settings.showEnglish = state.settings.showTranslation;
-            updateVisibility();
-            applySettings();
-            saveSettings();
-        });
-
-        // Translation language
-        els.translationLangSelect?.addEventListener('change', (e) => {
-            state.settings.translationLang = e.target.value;
-            saveSettings();
-        });
-
-        // Transliteration toggle
-        els.transliterationToggle?.addEventListener('click', () => {
-            state.settings.showTransliteration = !state.settings.showTransliteration;
-            state.settings.showRoman = state.settings.showTransliteration;
-            updateVisibility();
-            applySettings();
-            saveSettings();
-        });
-
-        // Larivaar toggle
-        els.larivaarToggle?.addEventListener('click', () => {
-            state.settings.larivaar = !state.settings.larivaar;
-            applySettings();
-            saveSettings();
-            // TODO: Re-render verses in larivaar mode
-        });
-
-        // Paragraph mode toggle
-        els.paragraphModeToggle?.addEventListener('click', () => {
-            state.settings.paragraphMode = !state.settings.paragraphMode;
-            applySettings();
-            saveSettings();
-        });
-
-        // Wake lock toggle
-        els.wakeLockToggle?.addEventListener('click', toggleWakeLock);
-
-        // Auto-play toggle
-        els.autoPlayToggle?.addEventListener('click', () => {
-            state.settings.autoPlay = !state.settings.autoPlay;
-            applySettings();
-            saveSettings();
-        });
-
-        // Playback speed
         els.playbackSpeedSelect?.addEventListener('change', (e) => {
             state.settings.playbackSpeed = parseFloat(e.target.value);
             saveSettings();
         });
 
-        // Download for offline
-        els.downloadOfflineBtn?.addEventListener('click', async () => {
-            els.downloadOfflineBtn.disabled = true;
-            els.downloadOfflineBtn.querySelector('.action-label').textContent = 'Downloading...';
-            try {
-                // Cache the current Bani data
-                if (state.baniData) {
-                    localStorage.setItem(`bani_cache_${state.baniId}`, JSON.stringify(state.baniData));
-                }
-                els.downloadOfflineBtn.querySelector('.action-label').textContent = '✓ Saved!';
-            } catch (e) {
-                els.downloadOfflineBtn.querySelector('.action-label').textContent = 'Failed';
-            }
-            setTimeout(() => {
-                els.downloadOfflineBtn.querySelector('.action-label').textContent = 'Download for Offline';
-                els.downloadOfflineBtn.disabled = false;
-            }, 2000);
-        });
+        // Color pickers
+        els.gurmukhiColor?.addEventListener('click', () => openColorPicker('gurmukhiColorIdx', 'Gurbani Color'));
+        els.translationColor?.addEventListener('click', () => openColorPicker('translationColorIdx', 'Translation Color'));
+        els.translitColor?.addEventListener('click', () => openColorPicker('translitColorIdx', 'Transliteration Color'));
 
-        // Clear history
-        els.clearHistoryBtn?.addEventListener('click', () => {
-            if (confirm('Clear all reading history?')) {
-                localStorage.removeItem('nitnemHub_state');
-                els.clearHistoryBtn.querySelector('.action-label').textContent = '✓ Cleared!';
-                setTimeout(() => {
-                    els.clearHistoryBtn.querySelector('.action-label').textContent = 'Clear Reading History';
-                }, 2000);
-            }
-        });
+        // Color picker close
+        els.pickerClose?.addEventListener('click', closeColorPicker);
+        document.querySelector('.picker-backdrop')?.addEventListener('click', closeColorPicker);
 
-        // Bookmark
-        els.bookmarkBtn?.addEventListener('click', toggleBookmark);
-
-        // Reset
-        els.resetBtn?.addEventListener('click', () => {
-            if (confirm('Reset all settings to defaults?')) {
-                resetSettings();
-            }
-        });
-
-        // Retry
-        els.retryBtn?.addEventListener('click', loadBani);
-
-        // Read again
-        els.readAgainBtn?.addEventListener('click', scrollToTop);
-
-        // Keyboard
+        // Escape key
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && state.isSettingsOpen) closeSettings();
+            if (e.key === 'Escape') {
+                if (state.currentColorPicker) closeColorPicker();
+                else if (state.isSettingsOpen) closeSettings();
+            }
         });
-
-        // Check bookmark on load
-        setTimeout(checkBookmark, 100);
     }
 
     // ═══════════════════════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════════════════════
 
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
 })();

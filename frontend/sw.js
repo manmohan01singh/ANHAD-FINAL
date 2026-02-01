@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.0.1';
+const CACHE_VERSION = 'anhad-v3.0.3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -55,6 +55,15 @@ const STATIC_FILES = [
   '/lib/ios-android-notifications.js',
   '/lib/alarm-persistence.js',
   '/lib/keep-alive-worker.js',
+  '/lib/global-theme.js',
+  '/lib/user-stats.js',
+  '/lib/share-card.js',
+
+  // Dashboard
+  '/Dashboard/dashboard.html',
+
+  // Favorites
+  '/Favorites/favorites.html',
 
   // Nitnem v2.1 - RENOVATED MODULE (iOS 26++ Design)
   '/nitnem/index.html',
@@ -119,10 +128,6 @@ const STATIC_FILES = [
   '/SehajPaath/reader.html',
   '/SehajPaath/sehaj-paath.css',
   '/SehajPaath/sehaj-paath.js',
-  '/SehajPaath/components/reader-engine.js',
-  '/SehajPaath/components/progress-engine.js',
-  '/SehajPaath/components/reminder-engine.js',
-  '/SehajPaath/components/settings-engine.js',
 
   // Calendar
   '/Calendar/Gurupurab-Calendar.html',
@@ -139,8 +144,9 @@ const STATIC_FILES = [
 
   // Reminders
   '/reminders/smart-reminders.html',
-  '/reminders/smart-reminders.css',
-  '/reminders/smart-reminders.js',
+  '/reminders/smart-reminders-v6.css',
+  '/reminders/smart-reminders-v6.js',
+  '/reminders/smart-reminders-ui.js',
   '/reminders/alarm.html',
   '/reminders/css/alarm.css',
   '/reminders/js/alarm.js',
@@ -326,15 +332,38 @@ self.addEventListener('message', (event) => {
   }
 
   if (event.data?.type === 'SET_ALARMS' && Array.isArray(event.data.alarms)) {
-    event.data.alarms.forEach(alarm => scheduleNotification({
-      id: alarm.id,
-      title: alarm.title,
-      body: `Time for ${alarm.title}`,
-      scheduledTime: getNextAlarmTime(alarm.time),
-      data: { url: `/reminders/alarm.html?id=${alarm.id}&title=${encodeURIComponent(alarm.title)}` },
-      tag: `smart-reminder-${alarm.id}`,
-      requireInteraction: true
-    }));
+    console.log('[SW] Received SET_ALARMS with', event.data.alarms.length, 'alarms');
+    event.data.alarms.forEach(alarm => {
+      const notifPayload = {
+        id: alarm.id,
+        title: alarm.title,
+        body: alarm.type === 'naamAbhyas'
+          ? 'Leave all work. Remember Vaheguru. ਵਾਹਿਗੁਰੂ'
+          : `Time for ${alarm.title}`,
+        scheduledTime: getNextAlarmTime(alarm.time),
+        data: {
+          url: alarm.type === 'naamAbhyas'
+            ? '/NaamAbhyas/naam-abhyas.html?autoStart=true'
+            : `/reminders/alarm.html?id=${alarm.id}&title=${encodeURIComponent(alarm.title)}`,
+          type: alarm.type,
+          alarmData: alarm.data
+        },
+        tag: alarm.type === 'naamAbhyas' ? `naam-abhyas-${alarm.id}` : `smart-reminder-${alarm.id}`,
+        requireInteraction: true,
+        actions: alarm.type === 'naamAbhyas'
+          ? [{ action: 'start', title: '🙏 Start' }, { action: 'snooze', title: 'Snooze' }]
+          : [{ action: 'open', title: 'Open' }, { action: 'snooze', title: 'Snooze' }]
+      };
+      scheduleNotification(notifPayload);
+    });
+  }
+
+  // Handle PWA installation - register all alarms from localStorage
+  if (event.data?.type === 'PWA_INSTALLED') {
+    console.log('[SW] PWA installed, checking for persisted alarms...');
+    // Alarms are now persisted in 'pwa_scheduled_alarms' localStorage key by pwa-register.js
+    // We'll check them on the next periodic sync
+    checkAndFireScheduledNotifications();
   }
 });
 
@@ -363,11 +392,21 @@ self.addEventListener('periodicsync', (event) => {
   console.log('[SW] Periodic sync triggered:', event.tag);
 
   if (event.tag === 'anhad-notification-check') {
-    event.waitUntil(checkAndFireScheduledNotifications());
+    event.waitUntil(
+      Promise.all([
+        checkAndFireScheduledNotifications(),
+        checkNaamAbhyasSchedule()
+      ])
+    );
   }
 
   if (event.tag === 'anhad-daily-reminders') {
     event.waitUntil(scheduleDailyReminders());
+  }
+
+  // Handle one-time sync registrations
+  if (event.tag === 'anhad-alarm-sync') {
+    event.waitUntil(checkAndFireScheduledNotifications());
   }
 });
 
@@ -486,6 +525,90 @@ async function scheduleDailyReminders() {
 
   // Re-check all notifications for the new day
   await checkAndFireScheduledNotifications();
+  await checkNaamAbhyasSchedule();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NAAM ABHYAS SPECIFIC NOTIFICATION CHECKER
+// Checks localStorage for Naam Abhyas schedule and fires notifications
+// ═══════════════════════════════════════════════════════════════════════════════
+async function checkNaamAbhyasSchedule() {
+  console.log('[SW] Checking Naam Abhyas schedule...');
+
+  // Get all connected clients to access localStorage
+  const clients = await self.clients.matchAll({ type: 'window' });
+
+  if (clients.length === 0) {
+    // No clients available - can't access localStorage directly
+    // Rely on the pwa_scheduled_alarms that were set by pwa-register.js
+    return;
+  }
+
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const today = now.toISOString().split('T')[0];
+
+  // Request Naam Abhyas config from any connected client
+  for (const client of clients) {
+    try {
+      const response = await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => resolve(e.data);
+        client.postMessage({
+          type: 'GET_NAAM_ABHYAS_SCHEDULE',
+          currentHour,
+          currentMinute,
+          today
+        }, [channel.port2]);
+        setTimeout(() => resolve(null), 500); // Timeout after 500ms
+      });
+
+      if (response?.sessions) {
+        // Check each session
+        for (const session of response.sessions) {
+          const sessionTime = session.hour * 60 + session.startMinute;
+          const currentTime = currentHour * 60 + currentMinute;
+          const timeDiff = currentTime - sessionTime;
+
+          // Fire if within 0-2 minute window (more precise for Naam Abhyas)
+          if (timeDiff >= 0 && timeDiff <= 2 && !session.notified) {
+            await self.registration.showNotification('🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas', {
+              body: `Leave all work. Remember Vaheguru for ${session.duration || 2} minutes.`,
+              icon: '/assets/icons/icon-192x192.png',
+              badge: '/assets/icons/icon-72x72.png',
+              tag: `naam-abhyas-${today}-${session.hour}`,
+              renotify: true,
+              requireInteraction: true,
+              vibrate: [300, 100, 300, 100, 500],
+              data: {
+                url: '/NaamAbhyas/naam-abhyas.html?autoStart=true',
+                type: 'naamAbhyas',
+                hour: session.hour,
+                startMinute: session.startMinute
+              },
+              actions: [
+                { action: 'start', title: '🙏 Start Now' },
+                { action: 'snooze', title: 'Snooze 5min' }
+              ]
+            });
+
+            console.log(`[SW] Naam Abhyas notification fired for hour ${session.hour}`);
+
+            // Notify client that notification was shown
+            client.postMessage({
+              type: 'NAAM_ABHYAS_NOTIFIED',
+              hour: session.hour,
+              today: today
+            });
+          }
+        }
+        break; // Got data from first client, no need to ask others
+      }
+    } catch (e) {
+      console.warn('[SW] Error checking Naam Abhyas with client:', e);
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -555,6 +678,18 @@ self.addEventListener('notificationclick', (event) => {
   if (action === 'dismiss') {
     // Just close, already done above
     console.log('[SW] Notification dismissed:', data.id);
+    return;
+  }
+
+  // Handle Naam Abhyas 'start' action - open page with auto-start param
+  if (action === 'start' && data.type === 'naamAbhyas') {
+    const startUrl = `/NaamAbhyas/naam-abhyas.html?autoStart=true&hour=${data.hour || ''}&minute=${data.startMinute || ''}`;
+    event.waitUntil(
+      self.clients.openWindow(startUrl).then(windowClient => {
+        console.log('[SW] Naam Abhyas auto-start triggered');
+        return windowClient;
+      })
+    );
     return;
   }
 

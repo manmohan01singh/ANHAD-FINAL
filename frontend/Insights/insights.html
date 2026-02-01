@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Gurbani Insights | ANHAD</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Insights Styles -->
+  <link rel="stylesheet" href="insights.css">
+</head>
+
+<body>
+  <!-- Animated Background -->
+  <div class="insights-bg" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+  </div>
+  
+  <main class="insights-app">
+    <!-- Header -->
+    <header class="insights-header">
+      <button class="back-btn" id="backBtn" aria-label="Go Back">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <h1 class="insights-header__title">Gurbani Insights</h1>
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+    </header>
+    
+    <!-- Daily Inspiration -->
+    <section class="inspiration-section glass-card">
+      <div class="inspiration-header">
+        <span class="inspiration-tag">✨ Today's Inspiration</span>
+        <button class="refresh-btn" id="refreshInspirationBtn" aria-label="Refresh">
+          <i class="fas fa-rotate"></i>
+        </button>
+      </div>
+      <blockquote class="inspiration-quote" id="dailyQuote">
+        <p class="inspiration-quote__text">ਸਤਿਗੁਰ ਕੀ ਜਿਸ ਨੋ ਮਤਿ ਆਵੈ ਸੋ ਸਤਿਗੁਰ ਮਾਹਿ ਸਮਾਨਾ ॥</p>
+        <p class="inspiration-quote__translation">One who is blessed with the Teachings of the True Guru, merges in the True Guru.</p>
+      </blockquote>
+      <div class="inspiration-meta">
+        <span><i class="fas fa-book-open"></i> Ang 797</span>
+        <button class="share-btn" id="shareQuoteBtn">
+          <i class="fas fa-share-nodes"></i> Share
+        </button>
+      </div>
+    </section>
+
+    <!-- Gurbani Categories -->
+    <section class="categories-section">
+      <h3 class="section-title">📚 Explore Gurbani</h3>
+      <div class="categories-grid">
+        <a href="../SehajPaath/sehaj-paath.html" class="category-card glass-card">
+          <div class="category-icon category-icon--img">
+            <img src="../assets/sggs-transparent.webp" alt="Sehaj Paath">
+          </div>
+          <span class="category-name">Sehaj Paath</span>
+          <span class="category-desc">Complete SGGS reading</span>
+        </a>
+        
+        <a href="../NitnemTracker/nitnem-tracker.html" class="category-card glass-card">
+          <div class="category-icon category-icon--img">
+            <img src="../assets/insights-nitnem.png" alt="Nitnem">
+          </div>
+          <span class="category-name">Nitnem</span>
+          <span class="category-desc">Daily prayers</span>
+        </a>
+        
+        <a href="../NaamAbhyas/naam-abhyas.html" class="category-card glass-card">
+          <div class="category-icon category-icon--img">
+            <img src="../assets/insights-naam-abhyas.png" alt="Naam Abhyas">
+          </div>
+          <span class="category-name">Naam Abhyas</span>
+          <span class="category-desc">Naam meditation</span>
+        </a>
+        
+        <a href="../GurbaniKhoj/gurbani-khoj.html" class="category-card glass-card">
+          <div class="category-icon category-icon--img">
+            <img src="../assets/insights-gurbani-khoj.png" alt="Gurbani Khoj">
+          </div>
+          <span class="category-name">Khoj</span>
+          <span class="category-desc">Search Shabads</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Learning Topics -->
+    <section class="topics-section">
+      <h3 class="section-title">🎓 Learn & Discover</h3>
+      <div class="topics-list">
+        <div class="topic-card glass-card" data-topic="raags">
+          <div class="topic-info">
+            <span class="topic-emoji">🎵</span>
+            <div>
+              <span class="topic-name">31 Classical Raags</span>
+              <span class="topic-desc">Musical modes in SGGS</span>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        
+        <div class="topic-card glass-card" data-topic="composers">
+          <div class="topic-info">
+            <span class="topic-emoji">📝</span>
+            <div>
+              <span class="topic-name">35 Contributors</span>
+              <span class="topic-desc">Gurus, Bhagats & Bhatts</span>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        
+        <div class="topic-card glass-card" data-topic="themes">
+          <div class="topic-info">
+            <span class="topic-emoji">💎</span>
+            <div>
+              <span class="topic-name">Spiritual Themes</span>
+              <span class="topic-desc">Love, Devotion, Wisdom</span>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+        
+        <div class="topic-card glass-card" data-topic="history">
+          <div class="topic-info">
+            <span class="topic-emoji">📜</span>
+            <div>
+              <span class="topic-name">Historical Context</span>
+              <span class="topic-desc">Origins of SGGS</span>
+            </div>
+          </div>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="quick-stats-section">
+      <h3 class="section-title">📊 Your Journey</h3>
+      <div class="quick-stats glass-card">
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="weeklyListening">0</span>
+          <span class="quick-stat__label">Hours this week</span>
+        </div>
+        <div class="quick-stat__divider"></div>
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="weeklyAngs">0</span>
+          <span class="quick-stat__label">Angs this week</span>
+        </div>
+        <div class="quick-stat__divider"></div>
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="currentStreak">0</span>
+          <span class="quick-stat__label">Day streak 🔥</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section class="recommendations-section">
+      <h3 class="section-title">🙏 Recommended Shabads</h3>
+      <div class="shabads-list" id="recommendedShabads">
+        <div class="shabad-card glass-card" data-ang="1">
+          <div class="shabad-info">
+            <span class="shabad-title">ਜਪੁ ਜੀ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Japji Sahib • Ang 1-8</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <div class="shabad-card glass-card" data-ang="262">
+          <div class="shabad-info">
+            <span class="shabad-title">ਸੁਖਮਨੀ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Sukhmani Sahib • Ang 262</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        
+        <div class="shabad-card glass-card" data-ang="917">
+          <div class="shabad-info">
+            <span class="shabad-title">ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Dukh Bhanjani • Ang 218</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Spacer -->
+    <div style="height: 100px;"></div>
+  </main>
+  <!-- Learn & Discover Modal -->
+  <div class="insight-modal" id="insightModal">
+    <div class="insight-modal__backdrop" onclick="closeModal()"></div>
+    <div class="insight-modal__content">
+      <div class="insight-modal__header">
+        <h2 class="insight-modal__title" id="modalTitle">Title</h2>
+        <button class="insight-modal__close" onclick="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="insight-modal__lang-switch" id="langSwitch" style="display:none;">
+        <button class="lang-btn lang-btn--active" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
+      </div>
+      <div class="insight-modal__body" id="modalBody">
+        <!-- Content will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav__container">
+      <a href="../index.html" class="nav-item" aria-label="Home"><i class="fas fa-house"></i></a>
+      <button class="nav-item nav-item--active" aria-label="Insights"><i class="fas fa-lightbulb"></i></button>
+      <a href="../Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
+      <a href="../Profile/profile.html" class="nav-item" aria-label="Profile"><i class="fas fa-user"></i></a>
+    </div>
+  </nav>
+
+  <!-- Global Theme -->
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- User Stats Library -->
+  <script src="../lib/user-stats.js"></script>
+  
+  <!-- Insights Scripts -->
+  <script src="insights.js"></script>
+</body>
+</html>

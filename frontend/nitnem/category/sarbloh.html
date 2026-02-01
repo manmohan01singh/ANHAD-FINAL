@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ — The Granth of All-Steel">
+    <meta name="theme-color" content="#000000">
+    
+    <title>ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ | ANHAD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-indigo: #5856D6;
+            --ios-purple: #AF52DE;
+            --sacred-gold: #D4AF37;
+            --steel-blue: #708090;
+            
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a12 50%, #1a1a2e 100%);
+            --card-bg: rgba(28, 28, 30, 0.8);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --glass-blur: blur(40px);
+            
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --font-primary: 'Inter', -apple-system, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(180deg, #F5F5F7 0%, #FFFFFF 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #1D1D1F;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --text-tertiary: rgba(0, 0, 0, 0.4);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Background */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--ios-indigo), var(--ios-purple));
+            top: -100px;
+            right: -50px;
+        }
+        
+        .orb-2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--steel-blue), #4a5568);
+            bottom: 30%;
+            left: -100px;
+            animation-delay: -10s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+        
+        /* App */
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding-bottom: calc(var(--safe-bottom) + 32px);
+        }
+        
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: calc(var(--safe-top) + 8px) 16px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--card-border);
+        }
+        
+        [data-theme="light"] .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--ios-blue);
+            text-decoration: none;
+            font-size: 17px;
+        }
+        
+        .back-btn svg { width: 20px; height: 20px; }
+        
+        .header h1 {
+            flex: 1;
+            font-family: var(--font-gurmukhi);
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            background: linear-gradient(135deg, var(--steel-blue), var(--ios-indigo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-spacer { width: 50px; }
+        
+        /* Hero */
+        .hero {
+            padding: 32px 20px;
+            text-align: center;
+        }
+        
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            filter: drop-shadow(0 0 30px rgba(88, 86, 214, 0.5));
+        }
+        
+        [data-theme="light"] .hero-icon {
+            filter: 
+                drop-shadow(0 0 20px rgba(88, 86, 214, 0.4))
+                drop-shadow(0 0 2px rgba(63, 81, 181, 0.7))
+                drop-shadow(0 0 1px rgba(0, 0, 0, 0.2));
+        }
+        
+        .hero-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .hero h2 {
+            font-family: var(--font-gurmukhi);
+            font-size: 26px;
+            margin-bottom: 4px;
+        }
+        
+        .hero-english {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .hero p {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            max-width: 320px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Main */
+        .main { padding: 0 16px; }
+        
+        /* Warning Banner */
+        .warning-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .warning-icon {
+            font-size: 28px;
+        }
+        
+        .warning-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #F59E0B;
+        }
+        
+        .warning-content p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        /* Info Card */
+        .info-card {
+            display: flex;
+            gap: 14px;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .info-card-icon {
+            font-size: 32px;
+        }
+        
+        .info-card h4 {
+            font-family: var(--font-gurmukhi);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .section {
+            margin-bottom: 32px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-left: 4px;
+        }
+        
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .section-icon { font-size: 22px; }
+        
+        /* Bani Cards */
+        .bani-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .bani-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s var(--ease-out);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .bani-card.available {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .bani-card.available:active {
+            transform: scale(0.98);
+        }
+        
+        .bani-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: rgba(88, 86, 214, 0.1);
+            border-radius: 14px;
+            flex-shrink: 0;
+        }
+        
+        .bani-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .bani-name {
+            font-family: var(--font-gurmukhi);
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .bani-english {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .bani-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+        
+        .coming-soon-badge {
+            display: inline-flex;
+            padding: 4px 10px;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #F59E0B;
+        }
+        
+        .bani-arrow {
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 32px 20px;
+            text-align: center;
+        }
+        
+        .footer-khanda {
+            font-size: 24px;
+            color: var(--ios-indigo);
+            margin-bottom: 12px;
+        }
+        
+        .footer p {
+            font-family: var(--font-gurmukhi);
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+        
+        @media (min-width: 768px) {
+            .main { max-width: 600px; margin: 0 auto; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <a href="../index.html" class="back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+                Back
+            </a>
+            <h1>ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h1>
+            <div class="header-spacer"></div>
+        </header>
+        
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-icon">
+                <img src="../../assets/sarbloh-granth-transparent.webp" alt="ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ" />
+            </div>
+            <h2>ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</h2>
+            <p class="hero-english">Sri Sarbloh Granth Sahib Ji</p>
+            <p>The Granth of All-Steel — Sacred warrior-saint compositions praising the Divine in the form of weapons and iron</p>
+        </section>
+        
+        <main class="main">
+            
+            <!-- Warning -->
+            <div class="warning-banner">
+                <span class="warning-icon">⚠️</span>
+                <div class="warning-content">
+                    <h4>Content Coming Soon</h4>
+                    <p>These sacred Banis are not yet available digitally. We are working on sourcing authentic content from original manuscripts.</p>
+                </div>
+            </div>
+            
+            <!-- Info -->
+            <div class="info-card">
+                <span class="info-card-icon">📜</span>
+                <div>
+                    <h4>ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਬਾਰੇ</h4>
+                    <p>Sri Sarbloh Granth is a sacred text attributed to Guru Gobind Singh Ji, revered especially by the Nihang Singhs. It emphasizes the worship of Akal Purakh as the All-Steel Lord of the Universe.</p>
+                </div>
+            </div>
+            
+            <!-- Banis -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">🛡️</span>
+                    <h3>Sarbloh Banis</h3>
+                </div>
+                <div class="bani-list">
+                    
+                    <div class="bani-card">
+                        <div class="bani-icon">🛡️</div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਸਰਬਲੋਹ ਕਵਚ</div>
+                            <div class="bani-english">Sarab Loh Kavach</div>
+                            <div class="bani-meta">
+                                <span class="coming-soon-badge">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bani-card">
+                        <div class="bani-icon">🔱</div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ</div>
+                            <div class="bani-english">Maha Kaal Stottar</div>
+                            <div class="bani-meta">
+                                <span class="coming-soon-badge">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bani-card">
+                        <div class="bani-icon">⚔️</div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਭਗਉਤੀ ਅਸਤੋਤਰ</div>
+                            <div class="bani-english">Bhagauti Astotar</div>
+                            <div class="bani-meta">
+                                <span class="coming-soon-badge">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bani-card">
+                        <div class="bani-icon">🗡️</div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਉਗਰਦੰਤੀ</div>
+                            <div class="bani-english">Ugardanti</div>
+                            <div class="bani-meta">
+                                <span class="coming-soon-badge">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bani-card">
+                        <div class="bani-icon">📿</div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਸਰਬਲੋਹ ਪਾਠ</div>
+                            <div class="bani-english">Sarab Loh Path</div>
+                            <div class="bani-meta">
+                                <span class="coming-soon-badge">Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-khanda">☬</div>
+            <p>ਅਕਾਲ ਸਹਾਇ ॥</p>
+        </footer>
+    </div>
+    
+    <script>
+        const savedTheme = localStorage.getItem('nitnem_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+</html>

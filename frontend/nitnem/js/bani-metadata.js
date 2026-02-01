@@ -346,6 +346,162 @@ const BaniMetadata = {
         estimatedTime: '5-7 min',
         description: 'The Sikh Prayer',
         icon: '🙏'
+    },
+
+    // ═══════════════════════════════════════════════════════════════
+    // ADDITIONAL DASAM GRANTH BANIS
+    // ═══════════════════════════════════════════════════════════════
+    8: {
+        id: 8,
+        nameGurmukhi: 'ਬਚਿਤ੍ਰ ਨਾਟਕ',
+        nameEnglish: 'Bachittar Natak',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'dasam',
+        category: 'dasam',
+        structure: 'verse',
+        showChhandType: true,
+        estimatedTime: '45-60 min',
+        description: 'Autobiography of Guru Gobind Singh Ji',
+        icon: '📜'
+    },
+
+    12: {
+        id: 12,
+        nameGurmukhi: 'ਜ਼ਫ਼ਰਨਾਮਾ',
+        nameEnglish: 'Zafarnama',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'dasam',
+        category: 'dasam',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '25-30 min',
+        description: 'Letter of Victory to Aurangzeb',
+        icon: '✉️'
+    },
+
+    19: {
+        id: 19,
+        nameGurmukhi: 'ਚੰਡੀ ਚਰਿਤ੍ਰ',
+        nameEnglish: 'Chandi Charitra',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'dasam',
+        category: 'dasam',
+        structure: 'verse',
+        showChhandType: true,
+        estimatedTime: '40-50 min',
+        description: 'Epic of Divine Power',
+        icon: '⚔️'
+    },
+
+    28: {
+        id: 28,
+        nameGurmukhi: 'ਸ਼ਸਤਰ ਨਾਮ ਮਾਲਾ',
+        nameEnglish: 'Shastar Naam Mala',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'dasam',
+        category: 'dasam',
+        structure: 'verse',
+        showChhandType: true,
+        estimatedTime: '30-40 min',
+        description: 'Rosary of Weapon Names',
+        icon: '🗡️'
+    },
+
+    53: {
+        id: 53,
+        nameGurmukhi: 'ਖ਼ਾਲਸਾ ਮਹਿਮਾ',
+        nameEnglish: 'Khalsa Mahima',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'dasam',
+        category: 'dasam',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '8-10 min',
+        description: 'Glory of the Khalsa',
+        icon: '☬'
+    },
+
+    // ═══════════════════════════════════════════════════════════════
+    // SARBLOH GRANTH SAHIB JI BANIS
+    // ═══════════════════════════════════════════════════════════════
+    201: {
+        id: 201,
+        nameGurmukhi: 'ਸਰਬਲੋਹ ਕਵਚ',
+        nameEnglish: 'Sarab Loh Kavach',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'sarbloh',
+        category: 'sarbloh',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '15-20 min',
+        description: 'The All-Steel Armour',
+        icon: '🛡️'
+    },
+
+    202: {
+        id: 202,
+        nameGurmukhi: 'ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ',
+        nameEnglish: 'Maha Kaal Stottar',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'sarbloh',
+        category: 'sarbloh',
+        structure: 'verse',
+        showChhandType: true,
+        estimatedTime: '12-15 min',
+        description: 'Praise of the Timeless Destroyer',
+        icon: '⚔️'
+    },
+
+    203: {
+        id: 203,
+        nameGurmukhi: 'ਭਗੌਤੀ ਅਸਤੋਤਰ',
+        nameEnglish: 'Bhagauti Astotar',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'sarbloh',
+        category: 'sarbloh',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '10-12 min',
+        description: '108 Names of the Divine Sword',
+        icon: '🗡️'
+    },
+
+    204: {
+        id: 204,
+        nameGurmukhi: 'ਉਗਰਦੰਤੀ',
+        nameEnglish: 'Ugardanti',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'sarbloh',
+        category: 'sarbloh',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '8-10 min',
+        description: 'Fierce Divine Energy',
+        icon: '🔥'
+    },
+
+    205: {
+        id: 205,
+        nameGurmukhi: 'ਸਰਬਲੋਹ ਪਾਠ',
+        nameEnglish: 'Sarab Loh Path',
+        author: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ',
+        authorEnglish: 'Guru Gobind Singh Ji',
+        source: 'sarbloh',
+        category: 'sarbloh',
+        structure: 'verse',
+        hideVerseType: true,
+        estimatedTime: '20-25 min',
+        description: 'Complete Sarbloh Reading',
+        icon: '📖'
     }
 };
 
@@ -399,6 +555,16 @@ const BaniCategories = {
         icon: '📗',
         nitnemBanis: [4, 6, 7, 9],
         all: [4, 5, 6, 7, 8, 9, 12, 13, 19, 28, 29, 53]
+    },
+
+    sarbloh: {
+        id: 'sarbloh',
+        nameGurmukhi: 'ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ',
+        nameEnglish: 'Sri Sarbloh Granth Sahib Ji',
+        description: 'The Granth of All-Steel',
+        icon: '⚔️',
+        popular: [201, 202, 203],
+        all: [201, 202, 203, 204, 205]
     }
 };
 

@@ -1,1871 +1,3241 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ANHAD">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icons for iOS -->
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="assets/icons/icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192x192.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  
+  <!-- Preload LCP Image -->
+  <link rel="preload" as="image" href="assets/DARBAR.jpg" fetchpriority="high">
   
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
-  <meta name="title" content="ANHAD | Sacred Gurbani Broadcasting">
-  <meta name="description" content="Experience the divine essence of Gurbani Kirtan 24/7. Live broadcast from Sri Harmandir Sahib (Golden Temple) and other sacred Gurdwaras.">
-  <meta name="keywords" content="ANHAD, Gurbani, Kirtan, Live Radio, Sikh, Golden Temple, Harmandir Sahib, Waheguru, Shabad, Paath">
-  <meta name="author" content="ANHAD">
-  <meta name="robots" content="index, follow">
+  <meta name="description" content="ANHAD - 24/7 Gurbani Kirtan streaming, Nitnem, Daily Hukamnama, Sehaj Paath, and spiritual reminders. Your complete Sikh prayer companion app.">
   
-  <meta name="theme-color" content="#020205">
-  <meta name="color-scheme" content="dark">
-  <meta name="msapplication-TileColor" content="#f7c634">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="ANHAD">
-  <meta name="mobile-web-app-capable" content="yes">
+  <!-- Smart Navigation - PWA always shows welcome, website only on first visit -->
+  <script>
+    (function() {
+      var WELCOME_SEEN_KEY = 'anhad_welcome_seen';
+      var SESSION_KEY = 'anhad_session_active';
+      
+      // Detect if running as installed PWA (standalone mode)
+      var isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                  window.navigator.standalone === true ||
+                  document.referrer.includes('android-app://');
+      
+      if (isPWA) {
+        // PWA: Always show welcome page on app launch (new session)
+        // But allow navigation within the session
+        if (sessionStorage.getItem(SESSION_KEY) !== 'true') {
+          // New PWA session - redirect to welcome page
+          window.location.replace('./Homepage/ios-homepage.html');
+        }
+      } else {
+        // Website: Only redirect first-time visitors
+        if (localStorage.getItem(WELCOME_SEEN_KEY) !== 'true') {
+          window.location.replace('./Homepage/ios-homepage.html');
+        }
+      }
+    })();
+  </script>
   
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://gurbaniliveradio.com/">
-  <meta property="og:title" content="ANHAD | Sacred Gurbani Broadcasting">
-  <meta property="og:description" content="Experience divine Gurbani Kirtan 24/7 from sacred Gurdwaras worldwide.">
-  <meta property="og:image" content="assets/og-image.jpg">
-  
-  <link rel="canonical" href="https://gurbaniliveradio.com/">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192x192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="assets/icons/icon-120x120.png">
-  
-  <!-- iOS Splash Screens - All Device Sizes -->
-  <!-- iPhone SE, 6s, 7, 8 (750x1334) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-750-1334.png"
-        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPhone 6s Plus, 7 Plus, 8 Plus (1242x2208) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1242-2208.png"
-        media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone X, XS, 11 Pro (1125x2436) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1125-2436.png"
-        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone XR, 11 (828x1792) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-828-1792.png"
-        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPhone XS Max, 11 Pro Max (1242x2688) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1242-2688.png"
-        media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12 mini (1080x2340) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1080-2340.png"
-        media="(device-width: 360px) and (device-height: 780px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12, 12 Pro, 13, 13 Pro, 14 (1170x2532) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1170-2532.png"
-        media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 12 Pro Max, 13 Pro Max, 14 Plus (1284x2778) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1284-2778.png"
-        media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 14 Pro (1179x2556) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1179-2556.png"
-        media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPhone 14 Pro Max, 15 Plus, 15 Pro Max (1290x2796) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1290-2796.png"
-        media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
-  <!-- iPad Mini, Air (1536x2048) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1536-2048.png"
-        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Pro 10.5" (1668x2224) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1668-2224.png"
-        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Pro 11" (1668x2388) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-1668-2388.png"
-        media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
-  <!-- iPad Pro 12.9" (2048x2732) -->
-  <link rel="apple-touch-startup-image" 
-        href="assets/splash/apple-splash-2048-2732.png"
-        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
-  
+  <!-- DNS Prefetch for faster resource loading -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <link rel="dns-prefetch" href="//fonts.gstatic.com">
   <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
-  <link rel="preload" href="style.css" as="style">
-  <link rel="preload" href="css/divine-animations.css" as="style">
-  <link rel="preload" href="assets/darbar-sahib-evening.jpg" as="image" type="image/jpeg">
-  
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    html { 
-      font-size: 16px; 
-      -webkit-text-size-adjust: 100%;
-      scroll-behavior: smooth;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background: #020205;
-      color: #ffffff;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-    
-    /* ═══════════════════════════════════════════════════════════════
-       DARBAR SAHIB BACKGROUND IMAGE
-    ═══════════════════════════════════════════════════════════════ */
-    .page-background {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background-image: url('');
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-    }
-    
-    /* Dark overlay for readability */
-    .page-background::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(2, 2, 5, 0.7) 0%,
-        rgba(2, 2, 5, 0.5) 30%,
-        rgba(2, 2, 5, 0.6) 70%,
-        rgba(2, 2, 5, 0.85) 100%
-      );
-      z-index: 1;
-    }
-    
-    /* Golden glow effect at the center (where Darbar Sahib would be) */
-    .page-background::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        ellipse 80% 50% at 50% 40%,
-        rgba(247, 198, 52, 0.15) 0%,
-        rgba(247, 198, 52, 0.05) 40%,
-        transparent 70%
-      );
-      z-index: 2;
-      pointer-events: none;
-    }
-    
-    /* Hide the old cosmic background or make it transparent */
-    .cosmic-bg {
-      display: none;
-    }
-    
-    .loading-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #020205 0%, #0a0a12 50%, #020205 100%);
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-    
-    .loading-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    
-    .loader {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-    }
-    
-    .loader__symbol {
-      font-size: 2.5rem;
-      color: #f7c634;
-      text-shadow: 0 0 20px rgba(247, 198, 52, 0.5);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    
-    .loader__title {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #f7c634;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.8; transform: scale(1.05); }
-    }
-    
-    .app {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .loading-screen.hidden + .page-background + .app,
-    .loading-screen.hidden ~ .app {
-      opacity: 1;
-    }
-    
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       NOTES OVERLAY STYLES (Required for JS to work)
-    ═══════════════════════════════════════════════════════════════ */
-    .notes-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .notes-overlay.active {
-      display: flex;
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .notes-modal {
-      width: 90%;
-      max-width: 600px;
-      max-height: 85vh;
-      background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-      border: 1px solid rgba(247, 198, 52, 0.2);
-      border-radius: 20px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
-    }
-    
-    .notes-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      background: rgba(247, 198, 52, 0.05);
-      border-bottom: 1px solid rgba(247, 198, 52, 0.1);
-    }
-    
-    .notes-header__title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .notes-header__icon {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #f7c634, #dba520);
-      border-radius: 10px;
-      color: #000;
-      font-size: 1.1rem;
-    }
-    
-    .notes-header h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #fff;
-    }
-    
-    .notes-header h2 span {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 2px;
-    }
-    
-    .notes-close {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      color: rgba(255, 255, 255, 0.7);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .notes-close:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-    }
-    
-    .notes-container {
-      flex: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
-    }
-    
-    .notes-textarea {
-      width: 100%;
-      min-height: 250px;
-      padding: 1rem;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(247, 198, 52, 0.15);
-      border-radius: 12px;
-      color: #fff;
-      font-family: inherit;
-      font-size: 1rem;
-      line-height: 1.6;
-      resize: vertical;
-      transition: border-color 0.2s ease;
-    }
-    
-    .notes-textarea:focus {
-      outline: none;
-      border-color: rgba(247, 198, 52, 0.4);
-    }
-    
-    .notes-textarea::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .notes-char-count {
-      text-align: right;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.5);
-      margin-top: 0.5rem;
-    }
-    
-    .notes-actions {
-      display: flex;
-      gap: 0.75rem;
-      padding: 1rem 1.5rem;
-      background: rgba(0, 0, 0, 0.2);
-      border-top: 1px solid rgba(247, 198, 52, 0.1);
-    }
-    
-    .notes-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1rem;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .notes-btn--save {
-      background: linear-gradient(135deg, #f7c634, #dba520);
-      color: #000;
-    }
-    
-    .notes-btn--save:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 20px rgba(247, 198, 52, 0.3);
-    }
-    
-    .notes-btn--download {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #3b82f6;
-    }
-    
-    .notes-btn--clear {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-    }
-    
-    .notes-hint {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem;
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.5);
-      background: rgba(247, 198, 52, 0.05);
-    }
-    
-    .notes-toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.25rem;
-      background: linear-gradient(135deg, #10b981, #059669);
-      border-radius: 30px;
-      color: #fff;
-      font-size: 0.875rem;
-      font-weight: 500;
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 10001;
-    }
-    
-    .notes-toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    
-    .notes-confirm-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 10002;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.9);
-    }
-    
-    .notes-confirm-overlay.active {
-      display: flex;
-    }
-    
-    .notes-confirm-dialog {
-      background: #1a1a2e;
-      border: 1px solid rgba(247, 198, 52, 0.2);
-      border-radius: 16px;
-      padding: 1.5rem;
-      text-align: center;
-      max-width: 320px;
-    }
-    
-    .notes-confirm-dialog h3 {
-      color: #f7c634;
-      margin-bottom: 0.5rem;
-    }
-    
-    .notes-confirm-dialog p {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.9rem;
-      margin-bottom: 1.25rem;
-    }
-    
-    .notes-confirm-actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    
-    .notes-confirm-actions button {
-      flex: 1;
-      padding: 0.625rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    .notes-confirm-save {
-      background: linear-gradient(135deg, #f7c634, #dba520);
-      color: #000;
-    }
-    
-    .notes-confirm-discard {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-    }
-    
-    .notes-confirm-cancel {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-    }
-
-    /* ═══════════════════════════════════════════════════════════════
-       SHABAD OVERLAY STYLES (Required for JS to work)
-    ═══════════════════════════════════════════════════════════════ */
-    .shabad-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.9);
-      backdrop-filter: blur(15px);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    
-    .shabad-overlay.active {
-      display: flex;
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .shabad-modal {
-      position: relative;
-      width: 95%;
-      max-width: 700px;
-      max-height: 90vh;
-      background: linear-gradient(145deg, #1a1a2e 0%, #0f0f1a 100%);
-      border: 1px solid rgba(247, 198, 52, 0.25);
-      border-radius: 24px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6), 0 0 60px rgba(247, 198, 52, 0.1);
-    }
-    
-    .shabad-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1.1rem;
-      cursor: pointer;
-      z-index: 10;
-      transition: all 0.2s ease;
-    }
-    
-    .shabad-close:hover {
-      background: rgba(239, 68, 68, 0.3);
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #fff;
-    }
-    
-    .shabad-container {
-      flex: 1;
-      padding: 2rem;
-      overflow-y: auto;
-    }
-    
-    .shabad-loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 4rem 2rem;
-      text-align: center;
-    }
-    
-    .shabad-loading__spinner {
-      margin-bottom: 1.5rem;
-    }
-    
-    .shabad-loading__spinner .khanda-symbol {
-      font-size: 3rem;
-      color: #f7c634;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    .shabad-loading__text {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 1rem;
-    }
-    
-    .shabad-error {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 3rem;
-      text-align: center;
-    }
-    
-    .shabad-error i {
-      font-size: 3rem;
-      color: #ef4444;
-      margin-bottom: 1rem;
-    }
-    
-    .shabad-error h3 {
-      color: #fff;
-      margin-bottom: 0.5rem;
-    }
-    
-    .shabad-error p {
-      color: rgba(255, 255, 255, 0.6);
-      margin-bottom: 1.5rem;
-    }
-    
-    .shabad-content {
-      display: none;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    
-    .shabad-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    
-    .shabad-ang {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: linear-gradient(135deg, rgba(247, 198, 52, 0.15), rgba(219, 165, 32, 0.1));
-      border: 1px solid rgba(247, 198, 52, 0.3);
-      border-radius: 30px;
-    }
-    
-    .shabad-ang__label {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    
-    .shabad-ang__number {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #f7c634;
-    }
-    
-    .shabad-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
-    .shabad-badge i {
-      color: #f7c634;
-    }
-    
-    .shabad-gurmukhi-wrapper {
-      background: rgba(247, 198, 52, 0.03);
-      border: 1px solid rgba(247, 198, 52, 0.1);
-      border-radius: 16px;
-      padding: 1.5rem;
-    }
-    
-    .shabad-gurmukhi {
-      font-family: 'Noto Sans Gurmukhi', sans-serif;
-      font-size: 1.5rem;
-      line-height: 2;
-      color: #f7c634;
-      text-align: center;
-      direction: ltr;
-    }
-    
-    .shabad-transliteration {
-      font-size: 1rem;
-      line-height: 1.8;
-      color: rgba(255, 255, 255, 0.8);
-      text-align: center;
-      font-style: italic;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: 12px;
-    }
-    
-    .shabad-translation {
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: rgba(255, 255, 255, 0.9);
-      text-align: center;
-      padding: 1.25rem;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
-      border: 1px solid rgba(59, 130, 246, 0.1);
-      border-radius: 12px;
-    }
-    
-    .shabad-source {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .shabad-source span {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      color: rgba(255, 255, 255, 0.6);
-    }
-    
-    .shabad-source i {
-      color: #f7c634;
-      font-size: 0.75rem;
-    }
-    
-    .shabad-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      padding: 1.25rem 2rem;
-      background: rgba(0, 0, 0, 0.3);
-      border-top: 1px solid rgba(247, 198, 52, 0.1);
-    }
-    
-    .shabad-btn {
-      flex: 1;
-      min-width: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.875rem 1rem;
-      border: none;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .shabad-btn--new {
-      background: linear-gradient(135deg, #f7c634, #dba520);
-      color: #000;
-    }
-    
-    .shabad-btn--new:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 25px rgba(247, 198, 52, 0.35);
-    }
-    
-    .shabad-btn--copy {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #3b82f6;
-    }
-    
-    .shabad-btn--share {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #10b981;
-    }
-    
-    .shabad-btn--bookmark {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-    }
-    
-    .shabad-btn--bookmark.active {
-      background: rgba(239, 68, 68, 0.3);
-    }
-    
-    .shabad-btn--bookmark.active i {
-      font-weight: 900;
-    }
-    
-    .shabad-tooltip {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1.25rem;
-      background: linear-gradient(135deg, #10b981, #059669);
-      border-radius: 30px;
-      color: #fff;
-      font-size: 0.875rem;
-      font-weight: 500;
-      opacity: 0;
-      transition: all 0.3s ease;
-      z-index: 10001;
-    }
-    
-    .shabad-tooltip.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    
-    @media (max-width: 600px) {
-      .shabad-gurmukhi {
-        font-size: 1.25rem;
-      }
-      
-      .shabad-actions {
-        padding: 1rem;
-      }
-      
-      .shabad-btn {
-        min-width: 100px;
-        padding: 0.75rem;
-        font-size: 0.8rem;
-      }
-      
-      .notes-actions {
-        flex-wrap: wrap;
-      }
-    }
-  </style>
-  
-  <link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="style.css"></noscript>
-  <link rel="stylesheet" href="css/shabad-modal.css">
-  <link rel="stylesheet" href="css/anhad-install.css">
-  <link rel="stylesheet" href="css/ios-player-pure.css">
-  <link rel="stylesheet" href="css/gurdwara-themes.css">
+  <link rel="dns-prefetch" href="//api.banidb.com">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <noscript>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
-  </noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
   
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "RadioStation",
-    "name": "ANHAD - ਅਨਹਦ",
-    "description": "24/7 Divine Gurbani Experience - Live Kirtan broadcast from sacred Sikh Gurdwaras",
-    "url": "https://anhad.app",
-    "genre": "Religious"
-  }
-  </script>
-  
-  <!-- OPTICAL LIQUID GLASS PHYSICS ENGINE -->
-  <script src="Hukamnama/optical-glass-physics.js"></script>
-  
-  <!-- ENHANCED FUNCTIONALITY -->
-  <script src="enhanced-functionality.js"></script>
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦✦✦ iOS 26+ EXTREME PREMIUM DESIGN ✦✦✦
+       Light Orbs | Real-Time Data | Liquid Glass | 10000000000% Quality
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    
+    :root {
+      /* Background */
+      --bg-primary: #FAF8F5;
+      --bg-white: #FFFFFF;
+      --bg-soft: #F5F2EE;
+      
+      /* Gold Spectrum */
+      --gold-50: #FDF8E8;
+      --gold-100: #F9EDCC;
+      --gold-300: #E8C76E;
+      --gold-400: #D4A03A;
+      --gold-500: #B8860B;
+      --gold-gradient: linear-gradient(135deg, #D4A03A 0%, #B8860B 100%);
+      --gold-glow: rgba(212, 160, 58, 0.3);
+      
+      /* Lavender Spectrum */
+      --lavender-400: #A99BE0;
+      --lavender-500: #8B7EC8;
+      --lavender-gradient: linear-gradient(135deg, #C4B5FD 0%, #8B7EC8 100%);
+      --lavender-glow: rgba(139, 126, 200, 0.25);
+      
+      /* Light Orb Colors */
+      --orb-gold: rgba(212, 160, 58, 0.4);
+      --orb-lavender: rgba(139, 126, 200, 0.35);
+      --orb-mint: rgba(125, 211, 192, 0.3);
+      --orb-rose: rgba(251, 113, 133, 0.25);
+      
+      /* Text */
+      --text-primary: #1A1D26;
+      --text-secondary: #5A5F72;
+      --text-tertiary: #9CA3B8;
+      
+      /* Tags */
+      --tag-gold: rgba(212, 160, 58, 0.12);
+      --tag-gold-text: #92600A;
+      --tag-lavender: rgba(139, 126, 200, 0.12);
+      --tag-lavender-text: #6B5CA5;
+      --tag-mint: rgba(125, 211, 192, 0.12);
+      --tag-mint-text: #3D9987;
+      --tag-rose: rgba(244, 63, 94, 0.1);
+      --tag-rose-text: #BE123C;
+      --tag-blue: rgba(59, 130, 246, 0.1);
+      --tag-blue-text: #1D4ED8;
+      
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.12);
+      --shadow-gold: 0 8px 32px rgba(212, 160, 58, 0.25);
+      --shadow-lavender: 0 8px 32px rgba(139, 126, 200, 0.25);
+      
+      /* Glass */
+      --glass-white: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      
+      /* Radii */
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --radius-2xl: 36px;
+      
+      /* Animations */
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      
+      /* Safe Areas */
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 34px);
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: calc(110px + var(--safe-bottom));
+      text-rendering: optimizeSpeed;
+    }
+    
+    /* Reduce animations for users who prefer it + improves performance */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .light-orbs { display: none; }
+    }
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ LIGHT ORBS - STATIC VERSION (Performance Optimized)
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .light-orbs {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      /* Single static gradient instead of animated orbs - MUCH faster */
+      background: 
+        radial-gradient(ellipse 400px 400px at 90% 0%, var(--orb-gold) 0%, transparent 60%),
+        radial-gradient(ellipse 300px 300px at 0% 40%, var(--orb-lavender) 0%, transparent 60%),
+        radial-gradient(ellipse 200px 200px at 100% 80%, var(--orb-mint) 0%, transparent 60%),
+        radial-gradient(ellipse 150px 150px at 30% 100%, var(--orb-rose) 0%, transparent 60%);
+    }
+    
+    /* Hide individual orb elements - use CSS gradient instead */
+    .orb { display: none; }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ MAIN CONTAINER
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 0 20px;
+      padding-top: calc(var(--safe-top) + 16px);
+    }
+    
+    .app > * {
+      animation: slideUp 0.7s var(--ease-out) backwards;
+    }
+    .app > *:nth-child(1) { animation-delay: 0.05s; }
+    .app > *:nth-child(2) { animation-delay: 0.1s; }
+    .app > *:nth-child(3) { animation-delay: 0.15s; }
+    .app > *:nth-child(4) { animation-delay: 0.2s; }
+    .app > *:nth-child(5) { animation-delay: 0.25s; }
+    .app > *:nth-child(6) { animation-delay: 0.3s; }
+    .app > *:nth-child(7) { animation-delay: 0.35s; }
+    .app > *:nth-child(8) { animation-delay: 0.4s; }
+    .app > *:nth-child(9) { animation-delay: 0.45s; }
+    .app > *:nth-child(10) { animation-delay: 0.5s; }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translate3d(0, 24px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ PREMIUM HEADER WITH REAL-TIME CLOCK
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .header-brand__greeting {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+    
+    .header-brand__title {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+    
+    .header-brand__title span {
+      display: inline-block;
+      font-family: 'Noto Sans Gurmukhi', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      margin-left: 8px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .header-btn {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+      font-size: 16px;
+      text-decoration: none;
+    }
+    
+    .header-btn--glass {
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--glass-border);
+    }
+    
+    .header-btn--primary {
+      background: var(--gold-gradient);
+      color: white;
+      box-shadow: var(--shadow-gold);
+    }
+    
+    .header-btn:hover { transform: scale(1.08); }
+    .header-btn:active { transform: scale(0.95); }
+    
+    .header-btn__badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 18px;
+      height: 18px;
+      background: #EF4444;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ REAL-TIME STATUS BAR
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .status-item i {
+      font-size: 12px;
+      color: var(--gold-400);
+    }
+    
+    .status-item--live {
+      color: #059669;
+    }
+    
+    .status-item--live i {
+      color: #059669;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ CATEGORY PILLS - iOS 26+ GLASS
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .categories {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 0;
+    }
+    
+    .categories::-webkit-scrollbar { display: none; }
+    
+    .filter-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-btn:active { transform: scale(0.95); }
+    
+    .category-pill {
+      flex-shrink: 0;
+      padding: 12px 20px;
+      border-radius: 100px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+      white-space: nowrap;
+    }
+    
+    .category-pill--active {
+      background: var(--gold-gradient);
+      color: white;
+      box-shadow: var(--shadow-gold);
+    }
+    
+    .category-pill--inactive {
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      color: var(--text-secondary);
+      border: 1px solid var(--glass-border);
+    }
+    
+    .category-pill:active { transform: scale(0.95); }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ HERO CARD - EXTREME PREMIUM
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .hero-card {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      margin-bottom: 28px;
+      cursor: pointer;
+      transition: all 0.5s var(--ease-spring);
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-2xl);
+      padding: 1.5px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.6), transparent 60%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      pointer-events: none;
+      z-index: 20;
+    }
+    
+    .hero-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 35px 70px rgba(0,0,0,0.18), 0 0 60px var(--gold-glow);
+    }
+    
+    .hero-card:active { transform: none; }
+    
+    /* Hero Card Menu Button */
+    .hero-card__menu-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 15;
+      transition: all 0.2s ease;
+    }
+    
+    .hero-card__menu-btn:hover {
+      background: rgba(0, 0, 0, 0.6);
+      transform: scale(1.1);
+    }
+    
+    .hero-card__menu-btn:active { transform: scale(0.95); }
+    
+    /* Radio Menu Popup */
+    .radio-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 20px;
+      padding-bottom: calc(20px + var(--safe-bottom));
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .radio-menu.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .radio-menu__sheet {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transform: translateY(100%);
+      transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+      box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.25);
+    }
+    
+    .radio-menu.active .radio-menu__sheet {
+      transform: translateY(0);
+    }
+    
+    .radio-menu__header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      text-align: center;
+    }
+    
+    .radio-menu__title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .radio-menu__subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    
+    .radio-menu__options {
+      padding: 12px 16px;
+    }
+    
+    .radio-menu__option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .radio-menu__option:hover {
+      background: var(--bg-soft);
+    }
+    
+    .radio-menu__option:active {
+      transform: scale(0.98);
+    }
+    
+    .radio-menu__option-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    
+    .radio-menu__option-icon--live {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      color: white;
+    }
+    
+    .radio-menu__option-icon--tracks {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+      color: white;
+    }
+    
+    .radio-menu__option-text {
+      flex: 1;
+    }
+    
+    .radio-menu__option-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .radio-menu__option-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .radio-menu__option-arrow {
+      font-size: 14px;
+      color: var(--text-tertiary);
+    }
+    
+    .radio-menu__cancel {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 8px 16px 16px;
+      padding: 16px;
+      background: var(--bg-soft);
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .radio-menu__cancel:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
+    
+    .radio-menu__cancel:active {
+      transform: scale(0.98);
+    }
+    
+    .hero-card__image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 8s ease-out;
+    }
+    
+    .hero-card:hover .hero-card__image {
+      transform: scale(1.1);
+    }
+    
+    .hero-card__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, 
+        transparent 0%,
+        transparent 35%,
+        rgba(0,0,0,0.25) 65%,
+        rgba(0,0,0,0.8) 100%
+      );
+    }
+    
+    .hero-card__content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      z-index: 10;
+    }
+    
+    .hero-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .hero-card__badge-dot {
+      width: 7px;
+      height: 7px;
+      background: white;
+      border-radius: 50%;
+      animation: livePulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    
+    .hero-card__title {
+      font-size: 34px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    
+    .hero-card__title span {
+      display: block;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 24px;
+      opacity: 0.9;
+    }
+    
+    .hero-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+    }
+    
+    .hero-card__stats {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .hero-card__stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+    }
+    
+    .hero-card__stat i {
+      color: var(--gold-300);
+    }
+    
+    .hero-card__price {
+      padding: 10px 20px;
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 100px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+    }
+    
+    /* Description text */
+    .hero-card__desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    
+    /* ═══════════════ HERO CAROUSEL ═══════════════ */
+    .hero-carousel {
+      position: relative;
+      margin-bottom: 28px;
+    }
+    
+    .hero-carousel__track {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 4px 0 16px 0;
+    }
+    
+    .hero-carousel__track::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .hero-carousel .hero-card {
+      min-width: calc(100% - 32px);
+      scroll-snap-align: start;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    
+    /* Carousel Dots */
+    .hero-carousel__dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 8px;
+    }
+    
+    .hero-carousel__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+    
+    .hero-carousel__dot--active {
+      width: 24px;
+      border-radius: 4px;
+      background: var(--gold-400);
+    }
+    
+    /* ═══════════════ BOTTOM CONTROLS ═══════════════ */
+    .hero-card__controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    
+    .hero-card__ctrl-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border-radius: 100px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      text-decoration: none;
+    }
+    
+    /* Play button - larger, primary */
+    .hero-card__ctrl-btn--play {
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.95);
+      color: #000;
+      font-size: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    
+    .hero-card__ctrl-btn--play:hover {
+      background: #fff;
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+    
+    .hero-card__ctrl-btn--play:active {
+      transform: scale(0.95);
+    }
+    
+    .hero-card__ctrl-btn--play i {
+      margin-left: 2px;
+    }
+    
+    .hero-card__ctrl-btn--play .fa-pause {
+      margin-left: 0;
+    }
+    
+    /* Live/Shuffle button - secondary */
+    .hero-card__ctrl-btn--live,
+    .hero-card__ctrl-btn--shuffle {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .hero-card__ctrl-btn--live:hover,
+    .hero-card__ctrl-btn--shuffle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .hero-card__ctrl-btn--live:active,
+    .hero-card__ctrl-btn--shuffle:active {
+      transform: scale(0.95);
+    }
+    
+    /* Open full player button */
+    .hero-card__ctrl-btn--open {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      margin-left: auto;
+    }
+    
+    .hero-card__ctrl-btn--open:hover {
+      background: rgba(0, 0, 0, 0.5);
+      transform: scale(1.08);
+    }
+    
+    /* Badge variants */
+    .hero-card__badge--live {
+      background: linear-gradient(135deg, #EF4444, #DC2626);
+    }
+    
+    .hero-card__badge--curated {
+      background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+      gap: 6px;
+    }
+    
+    .hero-card.playing .hero-card__badge--live {
+      background: linear-gradient(135deg, #10B981, #059669);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ PROGRESS CARD - iOS LIGHT GLASS EFFECT
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .progress-card {
+      position: relative;
+      background: linear-gradient(145deg, 
+        rgba(237, 233, 254, 0.95) 0%, 
+        rgba(221, 214, 254, 0.9) 50%, 
+        rgba(196, 181, 253, 0.85) 100%);
+      border-radius: 24px;
+      padding: 22px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      box-shadow: 
+        0 4px 24px rgba(139, 92, 246, 0.15),
+        0 1px 2px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    
+    /* Soft glow orb */
+    .progress-card::before {
+      content: '';
+      position: absolute;
+      top: -60%;
+      right: -40%;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(255, 153, 51, 0.45) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    
+    .progress-card::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -20%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(66, 133, 244, 0.35) 0%, transparent 70%);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    
+    .progress-card__header {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    
+    .progress-card__label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FF9500;
+      background: rgba(255,255,255,0.7);
+      padding: 8px 16px;
+      border-radius: 100px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 2px 8px rgba(255, 153, 51, 0.2);
+    }
+    
+    .progress-card__percent {
+      font-size: 40px;
+      font-weight: 900;
+      color: #E67E00;
+      text-shadow: 0 2px 10px rgba(255, 153, 51, 0.25);
+      letter-spacing: -1px;
+    }
+    
+    .progress-card__bar {
+      position: relative;
+      z-index: 1;
+      height: 14px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      box-shadow: inset 0 1px 3px rgba(66, 133, 244, 0.2);
+    }
+    
+    .progress-card__fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF9500, #FFAB40, #4285F4);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 1.8s var(--ease-out);
+      box-shadow: 0 0 12px rgba(255, 153, 51, 0.5);
+    }
+    
+    .progress-card__footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .progress-card__icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(237, 233, 254, 0.6));
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #7C3AED;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+    }
+    
+    .progress-card__text {
+      font-size: 15px;
+      color: #5B21B6;
+      font-weight: 600;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ SECTION HEADERS
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .section-header__title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    
+    .section-header__link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold-400);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ FEATURE GRID - ULTRA PREMIUM iOS LIGHT CARDS
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    
+    .feature-card {
+      position: relative;
+      height: 170px;
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 
+        0 4px 24px rgba(0, 0, 0, 0.06),
+        0 1px 2px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    
+    /* Soft glow orb behind each card */
+    .feature-card__glow {
+      position: absolute;
+      width: 140%;
+      height: 140%;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+    
+    .feature-card--hukam .feature-card__glow {
+      background: radial-gradient(circle, rgba(255, 184, 108, 0.7) 0%, rgba(255, 159, 67, 0.3) 60%, transparent 80%);
+      top: -40%;
+      left: -40%;
+    }
+    
+    .feature-card--shabad .feature-card__glow {
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.7) 0%, rgba(139, 92, 246, 0.3) 60%, transparent 80%);
+      top: -40%;
+      right: -40%;
+    }
+    
+    .feature-card--nitnem .feature-card__glow {
+      background: radial-gradient(circle, rgba(110, 231, 183, 0.7) 0%, rgba(52, 211, 153, 0.3) 60%, transparent 80%);
+      bottom: -40%;
+      left: -40%;
+    }
+    
+    .feature-card--khoj .feature-card__glow {
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.7) 0%, rgba(59, 130, 246, 0.3) 60%, transparent 80%);
+      bottom: -40%;
+      right: -40%;
+    }
+    
+    /* Glass shine effect on top */
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, 
+        rgba(255, 255, 255, 0.5) 0%, 
+        rgba(255, 255, 255, 0.2) 40%,
+        transparent 100%);
+      border-radius: 24px 24px 0 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    /* Subtle border highlight */
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      -webkit-mask-composite: destination-out;
+      pointer-events: none;
+      z-index: 6;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.12),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    
+    .feature-card:hover .feature-card__glow {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+    
+    .feature-card:active { 
+      transform: scale(0.97); 
+      transition: transform 0.15s ease;
+    }
+    
+    /* Background gradient layer */
+    .feature-card__bg {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    
+    /* Ultra-soft pastel gradient backgrounds */
+    .feature-card--hukam .feature-card__bg { 
+      background: linear-gradient(145deg, 
+        rgba(255, 237, 213, 0.9) 0%, 
+        rgba(255, 218, 185, 0.85) 50%, 
+        rgba(255, 200, 150, 0.8) 100%);
+    }
+    
+    .feature-card--shabad .feature-card__bg { 
+      background: linear-gradient(145deg, 
+        rgba(237, 233, 254, 0.9) 0%, 
+        rgba(221, 214, 254, 0.85) 50%, 
+        rgba(196, 181, 253, 0.8) 100%);
+    }
+    
+    .feature-card--nitnem .feature-card__bg { 
+      background: linear-gradient(145deg, 
+        rgba(209, 250, 229, 0.9) 0%, 
+        rgba(167, 243, 208, 0.85) 50%, 
+        rgba(110, 231, 183, 0.8) 100%);
+    }
+    
+    .feature-card--khoj .feature-card__bg { 
+      background: linear-gradient(145deg, 
+        rgba(219, 234, 254, 0.9) 0%, 
+        rgba(191, 219, 254, 0.85) 50%, 
+        rgba(147, 197, 253, 0.8) 100%);
+    }
+    
+    /* Shine overlay */
+    .feature-card__shine {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, 
+        rgba(255,255,255,0.35) 0%, 
+        rgba(255,255,255,0.1) 40%,
+        transparent 60%);
+      z-index: 2;
+    }
+    
+    .feature-card__content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 18px;
+      z-index: 5;
+    }
+    
+    /* Premium frosted glass icon */
+    .feature-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      font-size: 20px;
+      box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+    }
+    
+    /* Icon colors matching card themes */
+    .feature-card--hukam .feature-card__icon { 
+      color: #D97706;
+      background: linear-gradient(135deg, rgba(255, 251, 235, 0.9), rgba(254, 243, 199, 0.8));
+    }
+    
+    .feature-card--shabad .feature-card__icon { 
+      color: #7C3AED;
+      background: linear-gradient(135deg, rgba(245, 243, 255, 0.9), rgba(237, 233, 254, 0.8));
+    }
+    
+    .feature-card--nitnem .feature-card__icon { 
+      color: #059669;
+      background: linear-gradient(135deg, rgba(236, 253, 245, 0.9), rgba(209, 250, 229, 0.8));
+    }
+    
+    .feature-card--khoj .feature-card__icon { 
+      color: #2563EB;
+      background: linear-gradient(135deg, rgba(239, 246, 255, 0.9), rgba(219, 234, 254, 0.8));
+    }
+    
+    .feature-card:hover .feature-card__icon {
+      transform: scale(1.08);
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    
+    .feature-card__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1d1d1f;
+      margin-bottom: 3px;
+      letter-spacing: -0.3px;
+    }
+    
+    .feature-card__subtitle {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 500;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ TASK CARDS - GLASS MORPHISM
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .task-card {
+      position: relative;
+      background: var(--glass-white);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: all 0.35s var(--ease-spring);
+      overflow: hidden;
+    }
+    
+    /* ✦ CARD ORB - Unique floating light orb for each card */
+    .task-card__orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(40px);
+      pointer-events: none;
+      animation: cardOrbFloat 8s ease-in-out infinite;
+      opacity: 0.6;
+      z-index: 0;
+    }
+    
+    @keyframes cardOrbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(15px, -15px) scale(1.15); }
+    }
+    
+    /* Each card has unique orb color + position */
+    .task-card--calendar .task-card__orb {
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(125, 211, 192, 0.5) 0%, transparent 70%);
+      top: -30px; right: -40px;
+      animation-delay: 0s;
+    }
+    .task-card--calendar::after {
+      content: '';
+      position: absolute;
+      width: 70px; height: 70px;
+      background: radial-gradient(circle, rgba(100, 180, 255, 0.35) 0%, transparent 70%);
+      bottom: 20px; left: -20px;
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: floatOrb 8s ease-in-out infinite reverse;
+    }
+    .task-card--sehaj .task-card__orb {
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(139, 126, 200, 0.5) 0%, transparent 70%);
+      top: 10px; right: -30px;
+      animation-delay: -2s;
+    }
+    .task-card--sehaj::after {
+      content: '';
+      position: absolute;
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, rgba(100, 200, 255, 0.35) 0%, transparent 70%);
+      bottom: 10px; left: 20px;
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: floatOrb 7s ease-in-out infinite;
+    }
+    /* Nitnem Tracker - Beautiful Kesari/Blue/White Fusion */
+    .task-card--nitnem .task-card__orb {
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(255, 153, 51, 0.55) 0%, rgba(255, 200, 100, 0.3) 50%, transparent 70%);
+      bottom: -35px; left: -35px;
+      animation-delay: -4s;
+    }
+    .task-card--nitnem::before {
+      content: '';
+      position: absolute;
+      width: 90px; height: 90px;
+      background: radial-gradient(circle, rgba(66, 133, 244, 0.4) 0%, transparent 70%);
+      top: -20px; right: 20px;
+      border-radius: 50%;
+      filter: blur(3px);
+      z-index: 0;
+      animation: floatOrb 9s ease-in-out infinite;
+    }
+    .task-card--nitnem::after {
+      content: '';
+      position: absolute;
+      width: 60px; height: 60px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, transparent 70%);
+      top: 40%; right: -15px;
+      border-radius: 50%;
+      filter: blur(2px);
+      z-index: 0;
+      animation: floatOrb 6s ease-in-out infinite reverse;
+    }
+    .task-card--naam .task-card__orb {
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(212, 160, 58, 0.5) 0%, transparent 70%);
+      top: -40px; left: -40px;
+      animation-delay: -6s;
+    }
+    .task-card--naam::after {
+      content: '';
+      position: absolute;
+      width: 70px; height: 70px;
+      background: radial-gradient(circle, rgba(255, 200, 100, 0.4) 0%, transparent 70%);
+      bottom: 10px; right: 30px;
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+    
+    .task-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg), 0 0 40px rgba(255, 255, 255, 0.15);
+      border-color: rgba(212, 160, 58, 0.35);
+    }
+    
+    .task-card:hover .task-card__orb {
+      opacity: 0.9;
+      animation-play-state: paused;
+      transform: scale(1.3);
+    }
+    
+    .task-card:active { transform: scale(0.98); }
+    
+    .task-card__content {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .task-card__tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .tag {
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    
+    .tag--gold { background: var(--tag-gold); color: var(--tag-gold-text); }
+    .tag--lavender { background: var(--tag-lavender); color: var(--tag-lavender-text); }
+    .tag--mint { background: var(--tag-mint); color: var(--tag-mint-text); }
+    .tag--rose { background: var(--tag-rose); color: var(--tag-rose-text); }
+    .tag--blue { background: var(--tag-blue); color: var(--tag-blue-text); }
+    
+    .task-card__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    .task-card__subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+    
+    .task-card__status {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-style: italic;
+    }
+    
+    .task-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .task-card__time {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .task-card__time--highlight {
+      color: var(--gold-500);
+    }
+    
+    /* iOS-Style Streak Badge */
+    .task-card__time--streak {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    
+    /* Header Row for Cards with Progress Ring */
+    .task-card__header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    /* iOS-Style Progress Ring */
+    .nitnem-progress-ring {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+    
+    .nitnem-progress-ring .progress-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    
+    .nitnem-progress-ring .progress-bg {
+      fill: none;
+      stroke: var(--bg-soft);
+      stroke-width: 5;
+    }
+    
+    .nitnem-progress-ring .progress-fill {
+      fill: none;
+      stroke: url(#emeraldGradient);
+      stroke-width: 5;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .nitnem-progress-ring .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    
+    .task-card__arrow {
+      width: 42px;
+      height: 42px;
+      background: var(--bg-soft);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 14px;
+      transition: all 0.3s var(--ease-spring);
+    }
+    
+    .task-card:hover .task-card__arrow {
+      background: var(--gold-gradient);
+      color: white;
+      box-shadow: var(--shadow-gold);
+      transform: translateX(5px);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ BOTTOM NAVIGATION - FLOATING GLASS
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 24px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+    }
+    
+    .bottom-nav__container {
+      max-width: 380px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 12px 24px;
+      background: var(--glass-white);
+      backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .nav-item {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s var(--ease-spring);
+      text-decoration: none;
+      font-size: 20px;
+    }
+    
+    .nav-item--active {
+      background: var(--gold-gradient);
+      color: white;
+      box-shadow: var(--shadow-gold);
+    }
+    
+    .nav-item:not(.nav-item--active):hover {
+      color: var(--gold-400);
+      background: var(--gold-50);
+    }
+    
+    .nav-item:active { transform: scale(0.88); }
+    
+    /* Install Button in Header */
+    .header-install-btn {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: var(--gold-gradient);
+      color: white;
+      border: none;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+      box-shadow: 0 4px 12px rgba(212, 160, 58, 0.3);
+    }
+    
+    .header-install-btn.visible {
+      display: flex;
+    }
+    
+    .header-install-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .header-install-btn i {
+      font-size: 14px;
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ iOS INSTALL BANNER - PREMIUM STICKY BOTTOM
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .ios-install-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      padding: 16px 20px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,248,245,0.98));
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border-top: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.1);
+      transform: translateY(100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    
+    .ios-install-banner.visible {
+      transform: translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .ios-install-banner__content {
+      max-width: 420px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    
+    .ios-install-banner__icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--gold-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(212, 160, 58, 0.35);
+      flex-shrink: 0;
+    }
+    
+    .ios-install-banner__icon img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+    
+    .ios-install-banner__text {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .ios-install-banner__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    
+    .ios-install-banner__subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .ios-install-banner__actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    
+    .ios-install-banner__btn {
+      padding: 12px 20px;
+      border-radius: 100px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s var(--ease-spring);
+    }
+    
+    .ios-install-banner__btn--primary {
+      background: var(--gold-gradient);
+      color: white;
+      box-shadow: 0 4px 16px rgba(212, 160, 58, 0.35);
+    }
+    
+    .ios-install-banner__btn--primary:active {
+      transform: scale(0.95);
+    }
+    
+    .ios-install-banner__btn--dismiss {
+      background: transparent;
+      color: var(--text-tertiary);
+      padding: 12px;
+    }
+    
+    .ios-install-banner__btn--dismiss:hover {
+      color: var(--text-secondary);
+    }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════════════════
+       ✦ FILTER PANEL - iOS DROPDOWN
+    ═══════════════════════════════════════════════════════════════════════════════════════ */
+    .filter-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 3000;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .filter-panel.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .filter-panel__sheet {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      width: calc(100% - 40px);
+      max-width: 340px;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    
+    .filter-panel.active .filter-panel__sheet {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .filter-panel__header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .filter-panel__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .filter-panel__close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-panel__close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .filter-panel__options {
+      padding: 12px;
+    }
+    
+    .filter-panel__option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-panel__option:hover {
+      background: var(--bg-soft);
+    }
+    
+    .filter-panel__option.selected {
+      background: var(--gold-50);
+    }
+    
+    .filter-panel__option-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    
+    .filter-panel__option-icon--radio { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+    .filter-panel__option-icon--paath { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+    .filter-panel__option-icon--khoj { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+    .filter-panel__option-icon--calendar { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+    
+    .filter-panel__option-text {
+      flex: 1;
+    }
+    
+    .filter-panel__option-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .filter-panel__option-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    
+    .filter-panel__option-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-panel__option.selected .filter-panel__option-check {
+      background: var(--gold-gradient);
+      border-color: var(--gold-400);
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
-  <svg width="0" height="0" style="position:absolute; width:0; height:0" aria-hidden="true" focusable="false">
-    <filter id="glassRefraction" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
-      <feTurbulence id="glassRefractionNoise" type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="2" result="noise" />
-      <feDisplacementMap id="glassRefractionDisplacement" in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
-    </filter>
+  <!-- SVG Gradient Definitions -->
+  <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+    <defs>
+      <linearGradient id="emeraldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#6EE7B7;stop-opacity:1" />
+      </linearGradient>
+    </defs>
   </svg>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════════
-       DARBAR SAHIB BACKGROUND IMAGE
-  ═══════════════════════════════════════════════════════════════════════════ -->
-  <div class="page-background" aria-hidden="true"></div>
-
-  <!-- COSMIC BACKGROUND (Now Hidden - replaced by image) -->
-  <div class="cosmic-bg" aria-hidden="true">
-    <div class="cosmic-bg__mesh"></div>
-    <div class="cosmic-bg__vignette"></div>
+  
+  <!-- Animated Light Orbs Background -->
+  <div class="light-orbs" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="orb orb--4"></div>
+    <div class="orb orb--5"></div>
   </div>
-
-  <!-- LOADING SCREEN -->
-  <div class="loading-screen" id="loadingScreen" role="status" aria-label="Loading">
-    <div class="loader">
-      <span class="loader__symbol" aria-hidden="true">☬</span>
-      <span class="loader__title">ANHAD</span>
-    </div>
-  </div>
-
-  <!-- MAIN APPLICATION -->
-  <main class="app" role="main">
-    
-    <!-- HEADER -->
-    <header class="header" role="banner">
-      <div class="header__content">
-        <div class="khanda-wrapper">
-          <div class="khanda-glow"></div>
-          <span class="khanda-icon" aria-hidden="true">☬</span>
-          <div class="khanda-rings">
-            <span class="khanda-ring"></span>
-            <span class="khanda-ring"></span>
-            <span class="khanda-ring"></span>
-          </div>
-          <div class="khanda-sparkles">
-            <span class="sparkle"></span>
-            <span class="sparkle"></span>
-            <span class="sparkle"></span>
-            <span class="sparkle"></span>
-          </div>
-        </div>
-        
-        <div class="header__title-group">
-          <h1 class="header__title">
-            <span class="header__title-line header__title-line--primary">ਅਨਹਦ</span>
-            <span class="header__title-line header__title-line--secondary">ANHAD</span>
-          </h1>
-          <div class="header__tagline">
-          <span class="header__mool-mantar" lang="pa">ੴ ਸਤਿ ਨਾਮੁ</span>
-            <span class="header__divider-dot"></span>
-            <span class="header__subtitle">Divine Gurbani Experience</span>
-          </div>
-        </div>
-
-        <div class="header__actions">
-          <!-- Install App Button - Shown when PWA install is available -->
-          <button class="header-install-btn" id="headerInstallBtn" type="button" aria-label="Install App" style="display: none;">
-            <span class="header-install-btn__icon">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                <polyline points="7,10 12,15 17,10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-            </span>
-            <span class="header-install-btn__text">Install</span>
-          </button>
-          
-          <button class="header-settings-btn" id="settingsBtn" type="button" aria-label="Settings">
-            <i class="fas fa-gear" aria-hidden="true"></i>
-          </button>
-        </div>
+  
+  <main class="app">
+    <!-- Header with Real-Time Greeting -->
+    <header class="header">
+      <div class="header-brand">
+        <div class="header-brand__greeting" id="greeting">Good Morning</div>
+        <h1 class="header-brand__title">ANHAD<span>ਅਨਹਦ</span></h1>
+      </div>
+      <div class="header-actions">
+        <button class="header-install-btn" id="headerInstallBtn" aria-label="Install App">
+          <i class="fas fa-download"></i>
+          <span>Install</span>
+        </button>
+        <button class="header-btn header-btn--glass theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" onclick="toggleTheme()">
+          <i class="fas fa-sun" id="themeIcon"></i>
+        </button>
+        <a href="Homepage/ios-homepage.html" class="header-btn header-btn--glass" aria-label="Back">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <button class="header-btn header-btn--primary" aria-label="Notifications">
+          <i class="fas fa-bell"></i>
+          <span class="header-btn__badge" id="notifBadge">3</span>
+        </button>
       </div>
     </header>
-
-    <!-- STATUS BAR -->
-    <section class="status-bar" aria-label="Stream Status">
-      <div class="status-bar__glass"></div>
-      <div class="status-bar__content">
-        <div class="status-item status-item--live" role="status" aria-live="polite">
-          <div class="status-item__pulse-rings">
-            <span></span><span></span><span></span>
+    
+    <!-- Real-Time Status Bar -->
+    <div class="status-bar">
+      <div class="status-item status-item--live">
+        <i class="fas fa-circle"></i>
+        <span>Live Kirtan</span>
+      </div>
+      <div class="status-item">
+        <i class="fas fa-clock"></i>
+        <span id="currentTime">10:12 AM</span>
+      </div>
+      <div class="status-item">
+        <i class="fas fa-users"></i>
+        <span id="listenerCount">1,247 listening</span>
+      </div>
+    </div>
+    
+    <!-- Category Pills -->
+    <div class="categories">
+      <button class="filter-btn" aria-label="Filter"><i class="fas fa-sliders"></i></button>
+      <button class="category-pill category-pill--active">Radio</button>
+      <button class="category-pill category-pill--inactive">Paath</button>
+      <button class="category-pill category-pill--inactive">Khoj</button>
+      <button class="category-pill category-pill--inactive">Calendar</button>
+    </div>
+    
+    <!-- Swipeable Hero Cards Container -->
+    <div class="hero-carousel" id="heroCarousel">
+      <div class="hero-carousel__track" id="heroCarouselTrack">
+        
+        <!-- Card 1: Darbar Sahib Live -->
+        <article class="hero-card hero-card--live" id="gurbaniRadioCard" data-stream="darbar-sahib">
+          <img class="hero-card__image" src="assets/DARBAR.jpg" alt="Sri Harmandir Sahib" loading="eager" fetchpriority="high" decoding="async">
+          <div class="hero-card__overlay"></div>
+          <div class="hero-card__content">
+            <div class="hero-card__badge hero-card__badge--live">
+              <span class="hero-card__badge-dot"></span>
+              LIVE
+            </div>
+            <h2 class="hero-card__title">Darbar Sahib<br><span>Live Kirtan</span></h2>
+            <p class="hero-card__desc"><span id="heroListeners">1,247</span> listening now • Real-time broadcast</p>
+            <!-- Controls at Bottom -->
+            <div class="hero-card__controls" onclick="event.stopPropagation()">
+              <button type="button" class="hero-card__ctrl-btn hero-card__ctrl-btn--play" id="heroPlayBtn1" aria-label="Play" onclick="event.stopPropagation(); if(window.AnhadAudio){window.AnhadAudio.toggle('darbar')}">
+                <i class="fas fa-play" id="heroPlayIcon1"></i>
+              </button>
+              <button type="button" class="hero-card__ctrl-btn hero-card__ctrl-btn--live" id="heroLiveBtn1" aria-label="Jump to Live" onclick="event.stopPropagation(); if(window.AnhadAudio){window.AnhadAudio.jumpToLive('darbar')}">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live</span>
+              </button>
+              <a href="GurbaniRadio/ios17-gurbani-radio.html" class="hero-card__ctrl-btn hero-card__ctrl-btn--open" aria-label="Open Full Player" onclick="event.stopPropagation()">
+                <i class="fas fa-expand"></i>
+              </a>
+            </div>
           </div>
-          <span class="status-item__dot"></span>
-          <span class="status-item__label">LIVE</span>
-        </div>
+        </article>
         
-        <div class="status-bar__separator"></div>
-        
-        <div class="status-item status-item--listeners">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ios-icon" aria-hidden="true">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-          <span class="status-item__value" id="listenerCount">12,847</span>
-          <span class="status-item__label">Listeners</span>
-        </div>
-        
-        <div class="status-bar__separator"></div>
-        
-        <div class="status-item status-item--quality">
-          <div class="quality-bars" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span>
+        <!-- Card 2: Amritvela Smagams -->
+        <article class="hero-card hero-card--curated" id="amritvelaCard" data-stream="amritvela">
+          <img class="hero-card__image" src="assets/amritvela.jpg" alt="Amritvela Kirtan" loading="lazy" 
+               onerror="this.src='assets/DARBAR.jpg'">
+          <div class="hero-card__overlay"></div>
+          <div class="hero-card__content">
+            <div class="hero-card__badge hero-card__badge--curated">
+              <i class="fas fa-music"></i>
+              CURATED
+            </div>
+            <h2 class="hero-card__title">Amritvela<br><span>Smagams</span></h2>
+            <p class="hero-card__desc">Curated Kirtan tracks from Cloudflare</p>
+            <!-- Controls at Bottom -->
+            <div class="hero-card__controls" onclick="event.stopPropagation()">
+              <button type="button" class="hero-card__ctrl-btn hero-card__ctrl-btn--play" id="heroPlayBtn2" aria-label="Play" onclick="event.stopPropagation(); if(window.AnhadAudio){window.AnhadAudio.toggle('amritvela')}">
+                <i class="fas fa-play" id="heroPlayIcon2"></i>
+              </button>
+              <button type="button" class="hero-card__ctrl-btn hero-card__ctrl-btn--live" id="heroLiveBtn2" aria-label="Go Live" onclick="event.stopPropagation(); if(window.AnhadAudio){window.AnhadAudio.jumpToLive('amritvela')}">
+                <i class="fas fa-broadcast-tower"></i>
+                <span>Live</span>
+              </button>
+              <a href="GurbaniRadio/gurbani-radio.html" class="hero-card__ctrl-btn hero-card__ctrl-btn--open" aria-label="Open Full Player" onclick="event.stopPropagation()">
+                <i class="fas fa-expand"></i>
+              </a>
+            </div>
           </div>
-          <span class="status-item__label">HQ AUDIO</span>
+        </article>
+        
+      </div>
+      
+      <!-- Carousel Indicators -->
+      <div class="hero-carousel__dots">
+        <button class="hero-carousel__dot hero-carousel__dot--active" data-index="0" aria-label="Darbar Sahib Live"></button>
+        <button class="hero-carousel__dot" data-index="1" aria-label="Amritvela Smagams"></button>
+      </div>
+    </div>
+    
+    <!-- Radio Menu Popup -->
+    <div class="radio-menu" id="radioMenu">
+      <div class="radio-menu__sheet">
+        <div class="radio-menu__header">
+          <h3 class="radio-menu__title">Choose Radio Stream</h3>
+          <p class="radio-menu__subtitle">Select your preferred Gurbani experience</p>
+        </div>
+        <div class="radio-menu__options">
+          <!-- Darbar Sahib Live -->
+          <a href="GurbaniRadio/ios17-gurbani-radio.html" class="radio-menu__option">
+            <div class="radio-menu__option-icon radio-menu__option-icon--live">
+              <i class="fas fa-broadcast-tower"></i>
+            </div>
+            <div class="radio-menu__option-text">
+              <div class="radio-menu__option-title">🔴 Darbar Sahib Live</div>
+              <div class="radio-menu__option-desc">Real-time Kirtan from Sri Harmandir Sahib</div>
+            </div>
+            <i class="fas fa-chevron-right radio-menu__option-arrow"></i>
+          </a>
+          <!-- Amritvela Smagams -->
+          <a href="GurbaniRadio/gurbani-radio.html" class="radio-menu__option">
+            <div class="radio-menu__option-icon radio-menu__option-icon--tracks">
+              <i class="fas fa-music"></i>
+            </div>
+            <div class="radio-menu__option-text">
+              <div class="radio-menu__option-title">🎵 Amritvela Smagams</div>
+              <div class="radio-menu__option-desc">Curated Kirtan tracks from Cloudflare</div>
+            </div>
+            <i class="fas fa-chevron-right radio-menu__option-arrow"></i>
+          </a>
+        </div>
+        <button class="radio-menu__cancel" id="radioMenuCancel">Cancel</button>
+      </div>
+    </div>
+    
+    <!-- Progress Card -->
+    <div class="progress-card">
+      <div class="progress-card__header">
+        <div class="progress-card__label" id="progressLabel">3/5 Banis</div>
+        <div class="progress-card__percent" id="progressPercent">60%</div>
+      </div>
+      <div class="progress-card__bar">
+        <div class="progress-card__fill" id="progressFill"></div>
+      </div>
+      <div class="progress-card__footer">
+        <div class="progress-card__icon"><i class="fas fa-fire"></i></div>
+        <span class="progress-card__text" id="progressText">Great progress! Just 2 banis to go.</span>
+      </div>
+    </div>
+    
+    <!-- Features Grid -->
+    <div class="section-header">
+      <h3 class="section-header__title">Explore Features</h3>
+      <a href="#" class="section-header__link">View all</a>
+    </div>
+    
+    <div class="features-grid" id="featuresGrid">
+      <article class="feature-card feature-card--hukam" id="DailyHukamnamaCard" tabindex="0" data-category="paath">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__bg"></div>
+        <div class="feature-card__shine"></div>
+        <div class="feature-card__content">
+          <div class="feature-card__icon">📜</div>
+          <div class="feature-card__title">Daily Hukamnama</div>
+          <div class="feature-card__subtitle" id="hukamDate">Today's Message</div>
+        </div>
+      </article>
+      
+      <article class="feature-card feature-card--shabad" id="randomShabadCard" tabindex="0" data-category="paath">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__bg"></div>
+        <div class="feature-card__shine"></div>
+        <div class="feature-card__content">
+          <div class="feature-card__icon">✨</div>
+          <div class="feature-card__title">Random Shabad</div>
+          <div class="feature-card__subtitle">Divine Message</div>
+        </div>
+      </article>
+      
+      <article class="feature-card feature-card--nitnem" id="nitnemCard" tabindex="0" data-category="paath">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__bg"></div>
+        <div class="feature-card__shine"></div>
+        <div class="feature-card__content">
+          <div class="feature-card__icon">📿</div>
+          <div class="feature-card__title">Nitnem Paath</div>
+          <div class="feature-card__subtitle" id="nitnemSubtitle">Daily Prayers</div>
+        </div>
+      </article>
+      
+      <article class="feature-card feature-card--khoj" id="gurbaniKhojCard" tabindex="0" data-category="khoj">
+        <div class="feature-card__glow"></div>
+        <div class="feature-card__bg"></div>
+        <div class="feature-card__shine"></div>
+        <div class="feature-card__content">
+          <div class="feature-card__icon">🔍</div>
+          <div class="feature-card__title">Gurbani Khoj</div>
+          <div class="feature-card__subtitle">Search Gurbani</div>
+        </div>
+      </article>
+    </div>
+    
+    <!-- Quick Access -->
+    <div class="section-header">
+      <h3 class="section-header__title">Quick Access</h3>
+      <a href="#" class="section-header__link">View all</a>
+    </div>
+    
+    <article class="task-card task-card--calendar" id="calendarCard" tabindex="0" data-category="calendar">
+      <div class="task-card__orb"></div>
+      <div class="task-card__content">
+        <div class="task-card__tags">
+          <span class="tag tag--mint">Events</span>
+          <span class="tag tag--gold">2026</span>
+        </div>
+        <div class="task-card__title">📅 Gurpurab Calendar</div>
+        <div class="task-card__subtitle" id="nextGurpurab">Loading next event...</div>
+        <div class="task-card__footer">
+          <span class="task-card__time task-card__time--highlight" id="gurpurabDate">Loading...</span>
+          <div class="task-card__arrow"><i class="fas fa-arrow-right"></i></div>
         </div>
       </div>
-    </section>
-
-    <!-- PLAYER SECTION -->
-    <section class="player" aria-label="Audio Player">
-      <article class="player__card" id="playerCard">
-        <div class="player__border-glow"></div>
-        <div class="player__glass">
-          <div class="player__glass-shine"></div>
-          <div class="player__glass-reflection"></div>
+    </article>
+    
+    <article class="task-card task-card--sehaj" id="sehajPaathCard" tabindex="0" data-category="paath">
+      <div class="task-card__orb"></div>
+      <div class="task-card__content">
+        <div class="task-card__tags">
+          <span class="tag tag--lavender">Journey</span>
+          <span class="tag tag--blue">Sri Guru Granth Sahib Ji</span>
         </div>
-        <div class="player__ambient-light"></div>
-
-        <!-- SACRED IMAGE -->
-        <div class="player__visualizer-section">
-          <div class="album-art" id="albumArt" role="img" aria-label="Sacred Symbol">
-            <div class="sacred-image-container">
-              <div class="sacred-image-glow"></div>
-              <div class="sacred-frame">
-                <div class="sacred-frame__inner"></div>
-              </div>
-              <div class="sacred-orbit">
-                <div class="orbit-ring"></div>
-                <div class="orbit-ring"></div>
-                <div class="orbit-ring"></div>
-                <span class="orbit-particle"></span>
-                <span class="orbit-particle"></span>
-                <span class="orbit-particle"></span>
-                <span class="orbit-particle"></span>
-              </div>
-              <div class="sacred-image-disc">
-                <div class="sacred-image-aura"></div>
-                <img 
-                  src="assets/sacred-symbol.png" 
-                  alt="ੴ - Ik Onkar Sacred Symbol" 
-                  class="sacred-image"
-                  loading="eager"
-                  width="200"
-                  height="200"
-                  onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 text-anchor=%22middle%22 x=%2250%25%22>☬</text></svg>'"
-                >
-                <div class="sacred-visualizer" aria-hidden="true">
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                  <span class="viz-bar"></span><span class="viz-bar"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TRACK INFO -->
-        <div class="track-info">
-          <div class="track-info__badge">
-            <span class="badge-dot"></span>
-            <span class="badge-text">Now Broadcasting</span>
-            <span class="badge-shimmer"></span>
-          </div>
-          <h2 class="track-info__title" id="trackTitle">
-            <span class="title-text">Live Kirtan</span>
-          </h2>
-          <p class="track-info__artist" id="trackArtist">
-            <i class="fas fa-broadcast-tower" aria-hidden="true"></i>
-            <span>Live Kirtan from Amritvela Smagam</span>
-          </p>
-          <div class="track-info__waveform" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
-        </div>
-
-        <!-- PROGRESS SECTION -->
-        <div class="progress-section">
-          <div class="progress-time">
-            <span class="progress-time__current" id="currentTime">00:00</span>
-            <div class="progress-time__live">
-              <span class="live-dot"></span>
-              <span>Streaming Live</span>
-            </div>
-            <span class="progress-time__total" id="totalTime">LIVE</span>
-          </div>
-          <div class="progress-track" id="progressTrack" role="slider" aria-label="Seek timeline" tabindex="0">
-            <div class="progress-waveform" aria-hidden="true">
-              <span style="--h: 30%"></span><span style="--h: 60%"></span>
-              <span style="--h: 45%"></span><span style="--h: 80%"></span>
-              <span style="--h: 55%"></span><span style="--h: 70%"></span>
-              <span style="--h: 40%"></span><span style="--h: 90%"></span>
-              <span style="--h: 50%"></span><span style="--h: 65%"></span>
-              <span style="--h: 35%"></span><span style="--h: 75%"></span>
-              <span style="--h: 45%"></span><span style="--h: 85%"></span>
-              <span style="--h: 55%"></span><span style="--h: 60%"></span>
-              <span style="--h: 40%"></span><span style="--h: 70%"></span>
-              <span style="--h: 50%"></span><span style="--h: 80%"></span>
-            </div>
-            <div class="progress-fill" id="progressFill" style="width: 0%;">
-              <div class="progress-fill__glow"></div>
-            </div>
-            <div class="progress-scrubber" id="progressScrubber"></div>
-          </div>
-        </div>
-
-        <!-- MAIN CONTROLS -->
-        <div class="controls">
-          <div class="control-group">
-            <button class="control-btn control-btn--secondary" id="prevBtn" type="button" aria-label="Previous station">
-              <span class="control-btn__bg"></span>
-              <span class="control-btn__icon"><i class="fas fa-backward-step"></i></span>
-              <span class="control-btn__ripple"></span>
-            </button>
-          </div>
-          
-          <div class="control-group">
-            <button class="play-btn" id="playBtn" type="button" aria-label="Play radio" aria-pressed="false">
-              <div class="play-btn__glow play-btn__glow--1"></div>
-              <div class="play-btn__glow play-btn__glow--2"></div>
-              <div class="play-btn__main">
-                <div class="play-btn__gradient"></div>
-                <div class="play-btn__shine"></div>
-              </div>
-              <span class="play-btn__icon">
-                <i class="fas fa-play" id="playIcon"></i>
-              </span>
-              <div class="play-btn__ripples">
-                <span class="ripple"></span><span class="ripple"></span><span class="ripple"></span>
-              </div>
-              <div class="play-btn__particles"></div>
-            </button>
-          </div>
-          
-          <div class="control-group">
-            <button class="control-btn control-btn--secondary" id="nextBtn" type="button" aria-label="Next station">
-              <span class="control-btn__bg"></span>
-              <span class="control-btn__icon"><i class="fas fa-forward-step"></i></span>
-              <span class="control-btn__ripple"></span>
-            </button>
-          </div>
-        </div>
-
-        <!-- iOS STYLE BOTTOM CONTROLS -->
-        <div class="ios-bottom-controls">
-          <!-- Volume Slider Row -->
-          <div class="ios-volume-row">
-            <button class="ios-volume-icon ios-volume-icon--low" id="volumeMuteBtn" type="button" aria-label="Mute">
-              <i class="fas fa-volume-off"></i>
-            </button>
-            <div class="ios-volume-slider-container">
-              <div class="ios-volume-track">
-                <div class="ios-volume-fill" id="iosVolumeFill" style="width: 80%;"></div>
-                <div class="ios-volume-thumb" id="iosVolumeThumb" style="left: 80%;"></div>
-              </div>
-              <input type="range" class="ios-volume-input" id="iosVolumeSlider" min="0" max="100" value="80" aria-label="Volume">
-            </div>
-            <button class="ios-volume-icon ios-volume-icon--high" id="volumeMaxBtn" type="button" aria-label="Max volume">
-              <i class="fas fa-volume-high"></i>
-            </button>
-          </div>
-          
-          <!-- Action Icons Row -->
-          <div class="ios-action-row">
-            <button class="ios-action-btn" id="lyricsBtn" type="button" aria-label="Lyrics">
-              <i class="fas fa-closed-captioning"></i>
-            </button>
-            <button class="ios-action-btn ios-action-btn--badge" id="repeatBtn" type="button" aria-label="Repeat" data-count="3">
-              <i class="fas fa-rotate-right"></i>
-              <span class="ios-action-badge">3</span>
-            </button>
-            <button class="ios-action-btn" id="airplayBtn" type="button" aria-label="AirPlay">
-              <i class="fas fa-podcast"></i>
-            </button>
-            <button class="ios-action-btn" id="queueBtn" type="button" aria-label="Queue">
-              <i class="fas fa-list"></i>
-            </button>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- BENTO GRID - Quick Actions -->
-    <section class="bento-grid" aria-label="Quick Actions">
-      
-      <!-- Daily Hukamnama Card -->
-      <article class="bento-card bento-card--hukam" id="DailyHukamnamaCard" tabindex="0" role="button" aria-label="View Daily Hukamnama">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-scroll"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Daily Hukamnama</span>
-            <span class="bento-card__subtitle">Today's Divine Message</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Nitnem Paath Card -->
-      <article class="bento-card bento-card--paath" id="nitnemCard" tabindex="0" role="button" aria-label="Listen to Nitnem Paath">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-book"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Nitnem Paath</span>
-            <span class="bento-card__subtitle">Daily Prayers</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Notes Card -->
-      <article class="bento-card bento-card--notes" id="notesCard" tabindex="0" role="button" aria-label="Open Notes">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-sticky-note"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">My Notes</span>
-            <span class="bento-card__subtitle">Spiritual Reflections</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Random Shabad Card -->
-      <article class="bento-card bento-card--shabad" id="randomShabadCard" tabindex="0" role="button" aria-label="Get Random Shabad">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-wand-magic-sparkles"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Random Shabad</span>
-            <span class="bento-card__subtitle">Divine Message for You</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Gurpurab Calendar Card -->
-      <article class="bento-card bento-card--calendar" id="calendarCard" tabindex="0" role="button" aria-label="View Gurpurab Calendar">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-calendar-days"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Gurpurab Calendar</span>
-            <span class="bento-card__subtitle">Sacred Dates & Events</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Gurbani Khoj (Search) Card -->
-      <article class="bento-card bento-card--search" id="gurbaniKhojCard" tabindex="0" role="button" aria-label="Gurbani Khoj - Search Gurbani">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-magnifying-glass"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Gurbani Khoj</span>
-            <span class="bento-card__subtitle">ਗੁਰਬਾਣੀ ਖੋਜ • Search Gurbani</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Sehaj Paath Card -->
-      <article class="bento-card bento-card--sehaj" id="sehajPaathCard" tabindex="0" role="button" aria-label="Personalized Sehaj Paath">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-hourglass-half"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Sehaj Paath</span>
-            <span class="bento-card__subtitle">Personalized Reading Journey</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Intelligent Reminders Card -->
-      <article class="bento-card bento-card--reminders" id="remindersCard" tabindex="0" role="button" aria-label="Intelligent Reminders">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-bell"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Smart Reminders</span>
-            <span class="bento-card__subtitle">AI-Powered Path Times</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Enhanced Nitnem Tracker Card -->
-      <article class="bento-card bento-card--nitnem-tracker" id="nitnemTrackerCard" tabindex="0" role="button" aria-label="Enhanced Nitnem Tracker">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-chart-simple"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Nitnem Tracker</span>
-            <span class="bento-card__subtitle">Progress & Analytics</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-      
-      <!-- Naam Abhyas Card -->
-      <article class="bento-card bento-card--naam-abhyas" id="naamAbhyasCard" tabindex="0" role="button" aria-label="Naam Abhyas - Hourly Meditation">
-        <div class="bento-card__bg"></div>
-        <div class="bento-card__gradient"></div>
-        <div class="bento-card__pattern"></div>
-        <div class="bento-card__content">
-          <div class="bento-card__icon-wrapper">
-            <div class="bento-card__icon"><i class="fas fa-hand-sparkles"></i></div>
-            <div class="bento-card__icon-glow"></div>
-          </div>
-          <div class="bento-card__text">
-            <span class="bento-card__title">Naam Abhyas</span>
-            <span class="bento-card__subtitle">ਨਾਮ ਅਭਿਆਸ • Hourly Meditation</span>
-          </div>
-          <i class="fas fa-chevron-right bento-card__arrow"></i>
-        </div>
-        <div class="bento-card__shimmer"></div>
-      </article>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer" role="contentinfo">
-      <div class="footer__divider">
-        <div class="footer__divider-ornament">
-          <span>✦</span><span>☬</span><span>✦</span>
+        <div class="task-card__title">📖 Sehaj Paath</div>
+        <div class="task-card__subtitle" id="sehajSubtitle">Begin your personalized reading journey</div>
+        <div class="task-card__footer">
+          <span class="task-card__time task-card__time--highlight" id="sehajAng">Start Ang 1</span>
+          <div class="task-card__arrow"><i class="fas fa-arrow-right"></i></div>
         </div>
       </div>
-      <div class="footer__content">
-        <div class="footer__brand">
-          <div class="footer__logo">
-            <span class="footer__logo-icon">☬</span>
-            <span class="footer__logo-text">ANHAD</span>
+    </article>
+    
+    <article class="task-card task-card--nitnem" id="nitnemTrackerCard" tabindex="0" data-category="paath">
+      <div class="task-card__orb"></div>
+      <div class="task-card__content">
+        <div class="task-card__header-row">
+          <div>
+            <div class="task-card__tags">
+              <span class="tag tag--mint">🙏 Daily Practice</span>
+            </div>
+            <div class="task-card__title">Nitnem Tracker</div>
+            <div class="task-card__subtitle" id="streakText">Start your daily practice</div>
           </div>
-          <span class="footer__tagline">ਅਨਹਦ • Spreading Divine Light Worldwide</span>
+          <!-- iOS-Style Progress Ring -->
+          <div class="nitnem-progress-ring" id="nitnemProgressRing">
+            <svg viewBox="0 0 60 60" class="progress-svg">
+              <circle cx="30" cy="30" r="26" class="progress-bg" />
+              <circle cx="30" cy="30" r="26" class="progress-fill" id="nitnemRingFill" 
+                      stroke-dasharray="163.36" stroke-dashoffset="163.36" />
+            </svg>
+            <span class="progress-text" id="nitnemRingText">0/11</span>
+          </div>
         </div>
-        <nav class="footer__links" aria-label="Footer navigation">
-          <a href="#about" class="footer__link">About</a>
-          <a href="#privacy" class="footer__link">Privacy</a>
-          <a href="#contact" class="footer__link">Contact</a>
-          <a href="#donate" class="footer__link">Donate</a>
-        </nav>
-        <p class="footer__mool-mantar" lang="pa">
-          ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ ॥
-        </p>
-        <p class="footer__copyright">
-          Made with <span class="footer__heart">♥</span> for Sangat Worldwide
-          <br><small>© 2026 ANHAD. All Rights Reserved.</small>
-        </p>
+        <div class="task-card__footer">
+          <span class="task-card__time task-card__time--streak" id="streakDays">🔥 0 Days</span>
+          <div class="task-card__arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
       </div>
-    </footer>
+    </article>
+    
+    <article class="task-card task-card--naam" id="naamAbhyasCard" tabindex="0" data-category="paath">
+      <div class="task-card__orb"></div>
+      <div class="task-card__content">
+        <div class="task-card__tags">
+          <span class="tag tag--gold">Meditation</span>
+        </div>
+        <div class="task-card__title">🙏 Naam Abhyas</div>
+        <div class="task-card__subtitle" id="nextSession">Next session calculating...</div>
+        <div class="task-card__footer">
+          <span class="task-card__time task-card__time--highlight" id="sessionTime">--:--</span>
+          <div class="task-card__arrow"><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </div>
+    </article>
+    
+    <div style="display:none;">
+      <div id="remindersCard"></div>
+      <div id="notesCard"></div>
+    </div>
   </main>
-
-  <!-- SHARE MODAL -->
-  <dialog class="modal" id="shareModal" aria-labelledby="shareModalTitle">
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__container" role="document">
-      <div class="modal__glass"></div>
-      <header class="modal__header">
-        <div class="modal__icon"><i class="fas fa-share-nodes"></i></div>
-        <h2 class="modal__title" id="shareModalTitle">Share Station</h2>
-        <button class="modal__close" id="closeShareModal" data-close-modal aria-label="Close modal" type="button">
-          <i class="fas fa-xmark"></i>
-        </button>
-      </header>
-      <div class="modal__body">
-        <div class="share-options">
-          <button class="share-option share-option--whatsapp" id="shareWhatsapp" type="button">
-            <i class="fab fa-whatsapp"></i><span>WhatsApp</span>
-          </button>
-          <button class="share-option share-option--telegram" id="shareTelegram" type="button">
-            <i class="fab fa-telegram-plane"></i><span>Telegram</span>
-          </button>
-          <button class="share-option share-option--facebook" id="shareFacebook" type="button">
-            <i class="fab fa-facebook-f"></i><span>Facebook</span>
-          </button>
-          <button class="share-option share-option--twitter" id="shareTwitter" type="button">
-            <i class="fab fa-x-twitter"></i><span>Twitter</span>
-          </button>
-        </div>
-        <button class="copy-link-btn" id="copyLinkBtn" type="button">
-          <i class="fas fa-link"></i><span>Copy Link</span>
-          <div class="copy-link-btn__success">
-            <i class="fas fa-check"></i><span>Copied!</span>
-          </div>
-        </button>
-      </div>
+  
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav__container">
+      <button class="nav-item nav-item--active" aria-label="Home"><i class="fas fa-house"></i></button>
+      <a href="Insights/insights.html" class="nav-item" aria-label="Insights"><i class="fas fa-lightbulb"></i></a>
+      <a href="Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
+      <a href="Profile/profile.html" class="nav-item" aria-label="Profile"><i class="fas fa-user"></i></a>
     </div>
-  </dialog>
-
-  <!-- SCHEDULE MODAL -->
-  <dialog class="modal" id="scheduleModal" aria-labelledby="scheduleModalTitle">
-    <div class="modal__backdrop" data-close-modal></div>
-    <div class="modal__container" role="document">
-      <div class="modal__glass"></div>
-      <header class="modal__header">
-        <div class="modal__icon"><i class="far fa-clock"></i></div>
-        <h2 class="modal__title" id="scheduleModalTitle">Today's Schedule</h2>
-        <button class="modal__close" id="closeScheduleModal" data-close-modal aria-label="Close modal" type="button">
-          <i class="fas fa-xmark"></i>
-        </button>
-      </header>
-      <div class="modal__body">
-        <div class="schedule-list">
-          <div class="schedule-item schedule-item--active">
-            <div class="schedule-item__time">Now</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Asa Di Var Kirtan</span>
-              <span class="schedule-item__desc">Sri Harmandir Sahib</span>
-            </div>
-            <div class="schedule-item__live"><span class="live-pulse"></span><span>LIVE</span></div>
-          </div>
-          <div class="schedule-item">
-            <div class="schedule-item__time">6:00 AM</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Japji Sahib Path</span>
-              <span class="schedule-item__desc">Morning Nitnem</span>
-            </div>
-          </div>
-          <div class="schedule-item">
-            <div class="schedule-item__time">9:00 AM</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Sukhmani Sahib</span>
-              <span class="schedule-item__desc">Complete Path</span>
-            </div>
-          </div>
-          <div class="schedule-item">
-            <div class="schedule-item__time">12:00 PM</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Rehras Sahib</span>
-              <span class="schedule-item__desc">Evening Path</span>
-            </div>
-          </div>
-          <div class="schedule-item">
-            <div class="schedule-item__time">6:00 PM</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Kirtan Darbar</span>
-              <span class="schedule-item__desc">Live Raagi Jatha</span>
-            </div>
-          </div>
-          <div class="schedule-item">
-            <div class="schedule-item__time">9:00 PM</div>
-            <div class="schedule-item__info">
-              <span class="schedule-item__title">Sohila Sahib</span>
-              <span class="schedule-item__desc">Night Prayer</span>
-            </div>
-          </div>
-        </div>
+  </nav>
+  
+  <!-- iOS Install Banner -->
+  <div class="ios-install-banner" id="iosInstallBanner">
+    <div class="ios-install-banner__content">
+      <div class="ios-install-banner__icon">
+        <img src="assets/khanda-symbol.png" alt="ANHAD" loading="lazy" onerror="this.style.display='none'">
       </div>
-    </div>
-  </dialog>
-
-  <!-- NOTES OVERLAY -->
-  <div class="notes-overlay" id="notesOverlay">
-    <div class="notes-modal" id="notesModal">
-      <div class="notes-header">
-        <div class="notes-header__title">
-          <div class="notes-header__icon">
-            <i class="fas fa-sticky-note"></i>
-          </div>
-          <h2>My Notes <span>Spiritual Reflections</span></h2>
-        </div>
-        <button class="notes-close" id="notesClose" type="button" aria-label="Close">
+      <div class="ios-install-banner__text">
+        <div class="ios-install-banner__title">Install ANHAD</div>
+        <div class="ios-install-banner__subtitle">Get the full app experience</div>
+      </div>
+      <div class="ios-install-banner__actions">
+        <button class="ios-install-banner__btn ios-install-banner__btn--dismiss" id="installDismiss">
           <i class="fas fa-times"></i>
         </button>
-      </div>
-      <div class="notes-container">
-        <textarea 
-          id="notesTextarea" 
-          class="notes-textarea" 
-          placeholder="Write your spiritual notes, reflections, or favorite shabads here..."
-          maxlength="5000"
-        ></textarea>
-        <div class="notes-char-count" id="notesCharCount">0 / 5000</div>
-      </div>
-      <div class="notes-actions">
-        <button class="notes-btn notes-btn--save" id="saveNotesBtn" type="button">
-          <i class="fas fa-save"></i><span>Save</span>
+        <button class="ios-install-banner__btn ios-install-banner__btn--primary" id="installBtn">
+          Install
         </button>
-        <button class="notes-btn notes-btn--download" id="downloadNotesBtn" type="button">
-          <i class="fas fa-download"></i><span>Download</span>
-        </button>
-        <button class="notes-btn notes-btn--clear" id="clearNotesBtn" type="button">
-          <i class="fas fa-trash"></i><span>Clear</span>
-        </button>
-      </div>
-      <p class="notes-hint">
-        <i class="fas fa-info-circle"></i>
-        Notes are saved locally on your device
-      </p>
-    </div>
-    <div class="notes-toast" id="notesToast">
-      <i class="fas fa-check"></i>
-      <span id="notesToastMessage">Saved!</span>
-    </div>
-  </div>
-
-  <!-- Confirmation Dialog -->
-  <div class="notes-confirm-overlay" id="notesConfirmOverlay">
-    <div class="notes-confirm-dialog">
-      <h3>Unsaved Changes</h3>
-      <p>Do you want to save your notes before closing?</p>
-      <div class="notes-confirm-actions">
-        <button class="notes-confirm-save" id="confirmSaveBtn">Save</button>
-        <button class="notes-confirm-discard" id="confirmDiscardBtn">Discard</button>
-        <button class="notes-confirm-cancel" id="confirmCancelBtn">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <!-- RANDOM SHABAD - iOS 18+ LIQUID GLASS EXPERIENCE -->
-  <!-- ═══════════════════════════════════════════════════════════════════════════════ -->
-  <div class="shabad-overlay" id="shabadOverlay">
-    <div class="shabad-backdrop-blur"></div>
-    
-    <!-- Floating Particles -->
-    <div class="shabad-particles" aria-hidden="true">
-      <span class="particle"></span><span class="particle"></span>
-      <span class="particle"></span><span class="particle"></span>
-      <span class="particle"></span><span class="particle"></span>
-    </div>
-    
-    <!-- Main Modal Card -->
-    <div class="shabad-modal-card" id="shabadContainer">
-      <!-- Glass Effect Layers -->
-      <div class="shabad-glass-layer"></div>
-      <div class="shabad-glass-shine"></div>
-      <div class="shabad-glass-border"></div>
-      
-      <!-- Close Button (iOS Style) -->
-      <button class="shabad-close-btn" id="shabadClose" aria-label="Close">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      
-      <!-- Settings Trigger -->
-      <button class="shabad-settings-btn" id="shabadSettingsBtn" aria-label="Display Settings">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-      </button>
-      
-      <!-- Header Section -->
-      <header class="shabad-header">
-        <div class="shabad-header-icon">
-          <span class="icon-glow"></span>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-          </svg>
-        </div>
-        <h2 class="shabad-title">ਰੈਂਡਮ ਸ਼ਬਦ</h2>
-        <p class="shabad-subtitle">Divine Wisdom • Random Shabad</p>
-        
-        <!-- Ang Badge -->
-        <div class="shabad-ang-badge" id="shabadAngNumber">
-          <span class="ang-label">ਅੰਗ</span>
-          <span class="ang-value">---</span>
-        </div>
-        
-        <!-- Source Info -->
-        <div class="shabad-source-info" id="shabadSource"></div>
-      </header>
-      
-      <!-- Content Section -->
-      <div class="shabad-body">
-        <!-- Loading State -->
-        <div class="shabad-loading-state" id="shabadLoading">
-          <div class="loading-orb">
-            <div class="orb-ring"></div>
-            <div class="orb-ring"></div>
-            <div class="orb-ring"></div>
-            <div class="orb-center">☬</div>
-          </div>
-          <p class="loading-text">ਹੁਕਮ ਪ੍ਰਾਪਤ ਕਰ ਰਿਹਾ ਹੈ...</p>
-          <p class="loading-subtext">Receiving Divine Command</p>
-        </div>
-        
-        <!-- Error State -->
-        <div class="shabad-error-state" id="shabadError" style="display: none;">
-          <div class="error-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M12 8v4M12 16h.01"/>
-            </svg>
-          </div>
-          <p class="error-title">Connection Issue</p>
-          <p class="error-message">Unable to receive Hukam. Please check your connection.</p>
-          <button class="shabad-retry-btn" id="shabadRetryBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 12a9 9 0 11-2.2-5.98"/>
-              <path d="M21 3v6h-6"/>
-            </svg>
-            Try Again
-          </button>
-        </div>
-        
-        <!-- Content Area -->
-        <div class="shabad-content-area" id="shabadContent" style="display: none;">
-          <div class="shabad-scroll-container">
-            <div class="shabad-lines-wrapper" id="shabadGurmukhi"></div>
-          </div>
-          
-          <!-- Scroll Indicator -->
-          <div class="scroll-indicator">
-            <span>Scroll for more</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Action Bar -->
-      <footer class="shabad-actions">
-        <button class="shabad-action-btn primary" id="newShabadBtn">
-          <span class="action-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 12a9 9 0 11-2.2-5.98"/>
-              <path d="M21 3v6h-6"/>
-            </svg>
-          </span>
-          <span class="action-label">New Shabad</span>
-        </button>
-        
-        <div class="action-divider"></div>
-        
-        <button class="shabad-action-btn" id="copyShabadBtn">
-          <span class="action-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-            </svg>
-          </span>
-          <span class="action-label">Copy</span>
-        </button>
-        
-        <button class="shabad-action-btn" id="shareShabadBtn">
-          <span class="action-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-              <polyline points="16,6 12,2 8,6"/>
-              <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-          </span>
-          <span class="action-label">Share</span>
-        </button>
-        
-        <button class="shabad-action-btn" id="bookmarkShabadBtn">
-          <span class="action-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
-            </svg>
-          </span>
-          <span class="action-label">Save</span>
-        </button>
-      </footer>
-      
-      <!-- Swipe Hint -->
-      <div class="swipe-hint">
-        <div class="swipe-line"></div>
-        <span>Swipe down to close</span>
       </div>
     </div>
   </div>
   
-  <!-- Shabad Settings Bottom Sheet -->
-  <div class="shabad-settings-backdrop" id="shabadSettingsBackdrop"></div>
-  <div class="shabad-settings-sheet" id="shabadSettingsSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h3>Display Settings</h3>
-      <button class="sheet-close" id="shabadSettingsClose">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="sheet-body">
-      <div class="settings-group">
-        <div class="setting-item">
-          <div class="setting-info">
-            <span class="setting-label">ਲੜੀਵਾਰ</span>
-            <span class="setting-desc">Continuous script without spaces</span>
+  <!-- Filter Panel -->
+  <div class="filter-panel" id="filterPanel">
+    <div class="filter-panel__sheet">
+      <div class="filter-panel__header">
+        <span class="filter-panel__title">Filter Categories</span>
+        <button class="filter-panel__close" id="filterClose"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="filter-panel__options">
+        <div class="filter-panel__option selected" data-filter="radio">
+          <div class="filter-panel__option-icon filter-panel__option-icon--radio"><i class="fas fa-broadcast-tower"></i></div>
+          <div class="filter-panel__option-text">
+            <div class="filter-panel__option-title">Radio</div>
+            <div class="filter-panel__option-desc">All content & live kirtan</div>
           </div>
-          <label class="ios-toggle">
-            <input type="checkbox" id="toggleShabadLarivaar">
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
+          <div class="filter-panel__option-check"><i class="fas fa-check"></i></div>
         </div>
-        
-        <div class="setting-item">
-          <div class="setting-info">
-            <span class="setting-label">Transliteration</span>
-            <span class="setting-desc">Roman script pronunciation</span>
+        <div class="filter-panel__option" data-filter="paath">
+          <div class="filter-panel__option-icon filter-panel__option-icon--paath"><i class="fas fa-book"></i></div>
+          <div class="filter-panel__option-text">
+            <div class="filter-panel__option-title">Paath</div>
+            <div class="filter-panel__option-desc">Nitnem, Sehaj Paath & prayers</div>
           </div>
-          <label class="ios-toggle">
-            <input type="checkbox" id="toggleShabadTranslit" checked>
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
+          <div class="filter-panel__option-check"><i class="fas fa-check"></i></div>
         </div>
-        
-        <div class="setting-item">
-          <div class="setting-info">
-            <span class="setting-label">English Translation</span>
-            <span class="setting-desc">Show meaning in English</span>
+        <div class="filter-panel__option" data-filter="khoj">
+          <div class="filter-panel__option-icon filter-panel__option-icon--khoj"><i class="fas fa-search"></i></div>
+          <div class="filter-panel__option-text">
+            <div class="filter-panel__option-title">Khoj</div>
+            <div class="filter-panel__option-desc">Gurbani search & shabads</div>
           </div>
-          <label class="ios-toggle">
-            <input type="checkbox" id="toggleShabadEnglish" checked>
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
+          <div class="filter-panel__option-check"><i class="fas fa-check"></i></div>
         </div>
-        
-        <div class="setting-item">
-          <div class="setting-info">
-            <span class="setting-label">ਪੰਜਾਬੀ ਅਰਥ</span>
-            <span class="setting-desc">Punjabi translation</span>
+        <div class="filter-panel__option" data-filter="calendar">
+          <div class="filter-panel__option-icon filter-panel__option-icon--calendar"><i class="fas fa-calendar"></i></div>
+          <div class="filter-panel__option-text">
+            <div class="filter-panel__option-title">Calendar</div>
+            <div class="filter-panel__option-desc">Gurpurab events & dates</div>
           </div>
-          <label class="ios-toggle">
-            <input type="checkbox" id="toggleShabadPunjabi">
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-          </label>
+          <div class="filter-panel__option-check"><i class="fas fa-check"></i></div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- TOAST NOTIFICATION -->
-  <div class="toast" id="toast" role="alert" aria-live="polite">
-    <div class="toast__icon"><i class="fas fa-check"></i></div>
-    <div class="toast__content">
-      <span class="toast__title">Success</span>
-      <span class="toast__message">Action completed successfully</span>
-    </div>
-    <button class="toast__close" aria-label="Dismiss notification" type="button">
-      <i class="fas fa-xmark"></i>
-    </button>
-    <div class="toast__progress"></div>
-  </div>
-
-  <!-- OFFLINE INDICATOR -->
-  <div class="offline-indicator" id="offlineIndicator" role="status" aria-live="assertive">
-    <span class="offline-indicator__icon"><i class="fas fa-wifi-slash"></i></span>
-    <span class="offline-indicator__text">You're offline</span>
-  </div>
-
-  <!-- HIDDEN AUDIO -->
-  <audio id="audioPlayer" class="audio-player" preload="none" crossorigin="anonymous">
-    <source src="https://stream.example.com/gurbani-live" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
-
-  <!-- Screen Reader Announcements -->
-  <div class="sr-only" aria-live="polite" id="srAnnouncements"></div>
-
-  <!-- PWA INSTALL PROMPT - Premium Glass Design -->
-  <div id="pwaInstallPrompt" class="pwa-install-prompt-v2" style="display: none;">
-    <div class="pwa-prompt-glass">
-      <div class="pwa-prompt-glow"></div>
-      <div class="pwa-prompt-content">
-        <div class="pwa-prompt-icon">
-          <span class="pwa-prompt-khanda">☬</span>
-          <div class="pwa-prompt-icon-ring"></div>
-        </div>
-        <div class="pwa-prompt-info">
-          <h3 class="pwa-prompt-title">Install ANHAD</h3>
-          <p class="pwa-prompt-desc">Add to home screen for the best experience</p>
-        </div>
-        <div class="pwa-prompt-actions">
-          <button id="pwaInstallBtn" class="pwa-prompt-btn pwa-prompt-btn--install">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-              <polyline points="7,10 12,15 17,10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Install
-          </button>
-          <button id="pwaInstallDismiss" class="pwa-prompt-btn pwa-prompt-btn--dismiss">Later</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT -->
-  <script src="lib/capacitor-bridge.js"></script>
-  <script src="lib/unified-storage.js"></script>
-  <script src="pwa-register.js"></script>
-
-  <script src="script.js" defer></script>
-  <script src="lib/native-notifications.js"></script>
-  <script src="lib/path-validator.js"></script>
-  <script src="lib/global-alarm-system.js?v=3.0.0" defer></script>
-  <script src="lib/ios-android-notifications.js?v=3.0.0" defer></script>
-  <script src="lib/alarm-persistence.js?v=1.0.0" defer></script>
+  
+  <!-- Global Theme System (handles dark/light mode across all pages) -->
+  <script src="lib/global-theme.js"></script>
   
   <script>
-    (function(){
-      var links = document.querySelectorAll('link[rel="preload"][as="style"]');
-      links.forEach(function(link) {
-        if (link.onload === null) {
-          link.rel = 'stylesheet';
-        }
-      });
-    })();
+    // ═══════════════════════════════════════════════════════════════════════════════════════
+    // ✦ REAL-TIME DATA & PREMIUM INTERACTIONS
+    // ═══════════════════════════════════════════════════════════════════════════════════════
     
     document.addEventListener('DOMContentLoaded', function() {
-      var loadingScreen = document.getElementById('loadingScreen');
-      if (loadingScreen) {
-        loadingScreen.classList.add('hidden');
+      
+      // ━━━ NAVIGATION PATHS ━━━
+      const NAV_PATHS = {
+        gurbaniRadioCard: 'GurbaniRadio/ios17-gurbani-radio.html',
+        DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
+        randomShabadCard: 'RandomShabad/random-shabad.html',
+        nitnemCard: 'nitnem/indexbani.html',
+        sehajPaathCard: 'SehajPaath/sehaj-paath.html',
+        gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
+        naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
+        calendarCard: 'Calendar/Gurupurab-Calendar.html',
+        nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
+        remindersCard: 'reminders/smart-reminders.html',
+        notesCard: 'Notes/notes.html'
+      };
+      
+      // Initialize card navigation
+      Object.entries(NAV_PATHS).forEach(([id, path]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('click', () => {
+            el.style.transform = 'scale(0.97)';
+            if (navigator.vibrate) navigator.vibrate(10);
+            setTimeout(() => window.location.href = path, 100);
+          });
+          el.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+          });
+        }
+      });
+      
+      // ━━━ REAL-TIME GREETING ━━━
+      function updateGreeting() {
+        const hour = new Date().getHours();
+        let greeting = 'Good Evening';
+        if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
+        else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
+        else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
+        else greeting = 'Waheguru Ji 🌙';
+        document.getElementById('greeting').textContent = greeting;
       }
-
-      // Force SW update check
-      if ('serviceWorker' in navigator) {
-         navigator.serviceWorker.getRegistrations().then(function(registrations) {
-           registrations.forEach(function(registration) {
-             registration.update();
-           });
-         });
+      
+      // ━━━ REAL-TIME CLOCK ━━━
+      function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        document.getElementById('currentTime').textContent = timeStr;
       }
+      
+      // ━━━ SIMULATED LISTENER COUNT (with variation) ━━━
+      let baseListeners = 1247;
+      function updateListenerCount() {
+        const variation = Math.floor(Math.random() * 50) - 25;
+        const current = Math.max(1000, baseListeners + variation);
+        const formatted = current.toLocaleString();
+        const listenerEl = document.getElementById('listenerCount');
+        const heroListenerEl = document.getElementById('heroListeners');
+        if (listenerEl) listenerEl.textContent = `${formatted} listening`;
+        if (heroListenerEl) heroListenerEl.textContent = formatted;
+      }
+      
+      // ━━━ HUKAMNAMA DATE ━━━
+      function updateHukamDate() {
+        const now = new Date();
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        document.getElementById('hukamDate').textContent = now.toLocaleDateString('en-US', options);
+      }
+      
+      // ━━━ NEXT GURPURAB (2026 Events - Loaded from comprehensive data) ━━━
+      async function updateNextGurpurab() {
+        const subtitleEl = document.getElementById('nextGurpurab');
+        const dateEl = document.getElementById('gurpurabDate');
+        
+        try {
+          // Load comprehensive event data (70+ events)
+          const response = await fetch('data/gurpurab-events-2026.json');
+          const data = await response.json();
+          const events2026 = data.years['2026'] || [];
+          
+          // Parse dates and sort by date
+          const gurpurabs = events2026.map(e => ({
+            name: e.name_en,
+            namePa: e.name_pa,
+            date: new Date(e.gregorian_date),
+            type: e.type
+          })).sort((a, b) => a.date - b.date);
+          
+          const now = new Date();
+          const todayStr = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+          
+          // First check if today is a Gurpurab
+          const todayEvent = gurpurabs.find(g => {
+            const eventDateStr = g.date.toISOString().split('T')[0];
+            return eventDateStr === todayStr;
+          });
+          
+          if (todayEvent) {
+            subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`;
+            dateEl.textContent = '🎉 Celebrate!';
+            return;
+          }
+          
+          // Find next upcoming event (including today's remaining events if any passed)
+          const upcoming = gurpurabs.find(g => g.date >= now);
+          
+          if (upcoming) {
+            const daysLeft = Math.ceil((upcoming.date - now) / (1000 * 60 * 60 * 24));
+            const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            subtitleEl.textContent = `Up Next: ${upcoming.name}`;
+            
+            if (daysLeft === 0) {
+              dateEl.textContent = '🎊 Today!';
+            } else if (daysLeft === 1) {
+              dateEl.textContent = '🎊 Tomorrow!';
+            } else {
+              dateEl.textContent = `${daysLeft} days • ${dateStr}`;
+            }
+          } else {
+            subtitleEl.textContent = 'View all events for 2026';
+            dateEl.textContent = '📅 Calendar';
+          }
+        } catch (error) {
+          console.error('Error loading Gurpurab events:', error);
+          // Fallback to static text
+          subtitleEl.textContent = 'View Gurpurab Calendar';
+          dateEl.textContent = '📅 Open';
+        }
+      }
+      
+      // ━━━ NAAM ABHYAS LAST SESSION (REAL from actual storage) ━━━
+      function updateNextSession() {
+        let lastSessionTime = null;
+        let totalMinutesToday = 0;
+        let nextScheduledHour = null;
+        let completedToday = 0;
+        let totalSessions = 0;
+        
+        try {
+          // PRIMARY: Try naam_abhyas_history (main app storage)
+          const historyData = localStorage.getItem('naam_abhyas_history');
+          if (historyData) {
+            const parsed = JSON.parse(historyData);
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Check daily data for today's sessions
+            if (parsed.daily && parsed.daily[today]) {
+              const todayData = parsed.daily[today];
+              completedToday = todayData.completed || 0;
+              totalMinutesToday = todayData.totalMinutes || todayData.durationSeconds / 60 || 0;
+            }
+            
+            // Get last completed sessions from history
+            if (parsed.sessions && parsed.sessions.length > 0) {
+              const sortedSessions = [...parsed.sessions].sort((a, b) => 
+                new Date(b.endTime || b.date) - new Date(a.endTime || a.date)
+              );
+              const lastSession = sortedSessions[0];
+              if (lastSession.endTime) {
+                lastSessionTime = new Date(lastSession.endTime);
+              } else if (lastSession.date) {
+                lastSessionTime = new Date(lastSession.date);
+              }
+            }
+            
+            totalSessions = parsed.totalCompleted || 0;
+          }
+          
+          // Get scheduled next session from schedule
+          const scheduleData = localStorage.getItem('naam_abhyas_schedule');
+          if (scheduleData) {
+            const parsed = JSON.parse(scheduleData);
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            // Find next pending session in schedule
+            if (typeof parsed === 'object') {
+              // Schedule is keyed by hour (object format)
+              // Start from next hour if we're past the start of current hour session
+              const startHour = currentMinute >= 30 ? currentHour + 1 : currentHour;
+              for (let h = startHour; h < 24; h++) {
+                if (parsed[h] && parsed[h].status === 'pending') {
+                  nextScheduledHour = h;
+                  break;
+                }
+              }
+            }
+          }
+          
+          // Fallback: Check config for active hours
+          if (nextScheduledHour === null) {
+            const configData = localStorage.getItem('naam_abhyas_config');
+            if (configData) {
+              const config = JSON.parse(configData);
+              if (config.enabled && config.activeHours) {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                // Next session is at the next hour within active hours
+                // If past 30 mins into current hour, show next hour
+                const effectiveHour = currentMinute >= 30 ? currentHour + 1 : currentHour;
+                if (effectiveHour >= config.activeHours.start && effectiveHour < config.activeHours.end) {
+                  nextScheduledHour = effectiveHour;
+                } else if (effectiveHour < config.activeHours.start) {
+                  nextScheduledHour = config.activeHours.start;
+                }
+              }
+            }
+          }
+        } catch(e) { console.log('Naam Abhyas data not found:', e); }
+        
+        const subtitleEl = document.getElementById('nextSession');
+        const timeEl = document.getElementById('sessionTime');
+        
+        // If there's a scheduled next session hour, show that
+        if (nextScheduledHour !== null) {
+          const now = new Date();
+          const currentHour = now.getHours();
+          const currentMinute = now.getMinutes();
+          
+          // Get the actual startMinute and startTime from schedule
+          let nextSessionMinute = 0;
+          let nextSessionTime = null;
+          try {
+            const scheduleData = localStorage.getItem('naam_abhyas_schedule');
+            if (scheduleData) {
+              const schedule = JSON.parse(scheduleData);
+              if (schedule[nextScheduledHour]) {
+                nextSessionMinute = schedule[nextScheduledHour].startMinute || 0;
+                nextSessionTime = schedule[nextScheduledHour].startTime; // e.g., "11:44 PM"
+              }
+            }
+          } catch(e) {}
+          
+          // Use the startTime from schedule if available, otherwise format it
+          let timeStr;
+          if (nextSessionTime) {
+            timeStr = nextSessionTime;
+          } else {
+            const ampm = nextScheduledHour >= 12 ? 'PM' : 'AM';
+            const hour12 = nextScheduledHour % 12 || 12;
+            timeStr = `${hour12}:${String(nextSessionMinute).padStart(2, '0')} ${ampm}`;
+          }
+          
+          subtitleEl.textContent = completedToday > 0 
+            ? `${completedToday} sessions today • Next at` 
+            : 'Next session at';
+          timeEl.textContent = timeStr;
+        } else if (lastSessionTime && !isNaN(lastSessionTime.getTime())) {
+          const timeStr = lastSessionTime.toLocaleTimeString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit', 
+            hour12: true 
+          });
+          
+          // Check if it was today
+          const today = new Date().toISOString().split('T')[0];
+          const sessionDate = lastSessionTime.toISOString().split('T')[0];
+          
+          if (sessionDate === today) {
+            subtitleEl.textContent = completedToday > 0 
+              ? `${completedToday} sessions today` 
+              : `Completed today`;
+            timeEl.textContent = `✓ ${timeStr}`;
+          } else {
+            subtitleEl.textContent = `Last: ${lastSessionTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+            timeEl.textContent = timeStr;
+          }
+        } else {
+          // No session yet - show invitation
+          subtitleEl.textContent = 'Start your meditation journey';
+          timeEl.textContent = 'Begin Now';
+        }
+      }
+      
+      // ━━━ NITNEM TRACKER (REAL from actual storage) ━━━
+      function updateNitnemTracker() {
+        let streak = 0;
+        let completedToday = 0;
+        
+        // Get total banis dynamically from selectedBanis storage
+        let totalBanis = 11; // Default fallback
+        try {
+          const selectedBanis = localStorage.getItem('nitnemTracker_selectedBanis');
+          if (selectedBanis) {
+            const parsed = JSON.parse(selectedBanis);
+            totalBanis = (parsed.amritvela?.length || 0) + 
+                         (parsed.rehras?.length || 0) + 
+                         (parsed.sohila?.length || 0);
+            if (totalBanis === 0) totalBanis = 11; // Fallback if empty
+          }
+        } catch(e) { console.log('Could not load selectedBanis:', e); }
+        
+        try {
+          // Get today's completed banis from nitnemTracker_nitnemLog
+          const today = new Date().toISOString().split('T')[0];
+          const nitnemLog = localStorage.getItem('nitnemTracker_nitnemLog');
+          if (nitnemLog) {
+            const parsed = JSON.parse(nitnemLog);
+            // Count today's completed banis
+            if (parsed[today]) {
+              if (Array.isArray(parsed[today])) {
+                completedToday = parsed[today].length;
+              } else if (typeof parsed[today] === 'object') {
+                // Handle object format with amritvela, rehras, sohila arrays
+                const todayData = parsed[today];
+                completedToday = (todayData.amritvela?.length || 0) + 
+                                 (todayData.rehras?.length || 0) + 
+                                 (todayData.sohila?.length || 0);
+              }
+            }
+          }
+          
+          // Get streak from nitnemTracker_streakData or calculate from log
+          const streakData = localStorage.getItem('nitnemTracker_streakData');
+          if (streakData) {
+            const parsed = JSON.parse(streakData);
+            streak = parsed.current || parsed.currentStreak || 0;
+          }
+          
+          // Fallback to userData
+          if (streak === 0) {
+            const userData = localStorage.getItem('nitnemTracker_userData');
+            if (userData) {
+              const parsed = JSON.parse(userData);
+              streak = parsed.streaks?.current || parsed.streak?.current || 0;
+            }
+          }
+        } catch(e) { console.log('Nitnem data not found'); }
+        
+        const streakEl = document.getElementById('streakDays');
+        const textEl = document.getElementById('streakText');
+        const ringFill = document.getElementById('nitnemRingFill');
+        const ringText = document.getElementById('nitnemRingText');
+        
+        // Animate progress ring (circumference = 2 * PI * 26 = 163.36)
+        const circumference = 163.36;
+        const progress = completedToday / totalBanis;
+        const offset = circumference * (1 - progress);
+        
+        if (ringFill) {
+          // Small delay for animation effect
+          setTimeout(() => {
+            ringFill.style.strokeDashoffset = offset;
+          }, 150);
+        }
+        
+        if (ringText) {
+          ringText.textContent = `${completedToday}/${totalBanis}`;
+        }
+        
+        // Show completed/total banis and streak
+        if (completedToday > 0) {
+          textEl.textContent = completedToday >= totalBanis 
+            ? '🎉 All banis completed! Waheguru ji!'
+            : `${completedToday}/${totalBanis} banis completed today`;
+          streakEl.textContent = streak > 0 
+            ? `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak` 
+            : `✓ ${completedToday}/${totalBanis}`;
+        } else if (streak > 0) {
+          textEl.textContent = `${streak}-day streak! Start today's Nitnem`;
+          streakEl.textContent = `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak`;
+        } else {
+          textEl.textContent = 'Track your daily Nitnem practice';
+          streakEl.textContent = `📿 Start Today`;
+        }
+      }
+      
+      // ━━━ SEHAJ PAATH PROGRESS (REAL from actual storage) ━━━
+      function updateSehajPaath() {
+        let currentAng = 1;
+        let angsRead = 0;
+        let hasData = false;
+        
+        try {
+          // PRIMARY: Try sehajPaathState (main app state)
+          const stateData = localStorage.getItem('sehajPaathState');
+          if (stateData) {
+            const parsed = JSON.parse(stateData);
+            // State has structure: { currentPaath: { currentAng: N } }
+            currentAng = parsed.currentPaath?.currentAng || parsed.currentAng || 1;
+            hasData = currentAng > 1;
+          }
+          
+          // Get stats for angsRead count
+          const statsData = localStorage.getItem('sehajPaathStats');
+          if (statsData) {
+            const parsed = JSON.parse(statsData);
+            angsRead = parsed.totalAngsRead || (currentAng - 1);
+          } else {
+            // Estimate angsRead from currentAng if no stats
+            angsRead = currentAng > 1 ? currentAng - 1 : 0;
+          }
+          
+          // Also try gurbani_sehajPaath_progress as fallback
+          if (!hasData) {
+            const backupData = localStorage.getItem('gurbani_sehajPaath_progress');
+            if (backupData) {
+              const parsed = JSON.parse(backupData);
+              currentAng = parsed.data?.currentAng || parsed.currentAng || 1;
+              angsRead = parsed.data?.angsRead || parsed.angsRead || (currentAng - 1);
+              hasData = currentAng > 1 || angsRead > 0;
+            }
+          }
+        } catch(e) { console.log('Sehaj Paath data not found:', e); }
+        
+        const totalAngs = 1430;
+        const progress = ((currentAng / totalAngs) * 100).toFixed(1);
+        const subtitleEl = document.getElementById('sehajSubtitle');
+        const angEl = document.getElementById('sehajAng');
+        
+        if (currentAng >= totalAngs) {
+          subtitleEl.textContent = '🎉 Sehaj Paath completed! Start again';
+          angEl.textContent = `${totalAngs} Angs read ✨`;
+        } else if (currentAng > 1) {
+          subtitleEl.textContent = `${progress}% complete • ${totalAngs - currentAng + 1} angs remaining`;
+          angEl.textContent = `Continue Ang ${currentAng}`;
+        } else {
+          subtitleEl.textContent = 'Begin your personalized reading journey';
+          angEl.textContent = 'Start Ang 1';
+        }
+      }
+      
+      // ━━━ PROGRESS CARD (Time-based Nitnem suggestions) ━━━
+      function updateProgressCard() {
+        const now = new Date();
+        const hour = now.getHours();
+        let completed = 0;
+        let suggestion = '';
+        
+        // Get total banis dynamically from selectedBanis storage
+        let total = 11; // Default fallback
+        try {
+          const selectedBanis = localStorage.getItem('nitnemTracker_selectedBanis');
+          if (selectedBanis) {
+            const parsed = JSON.parse(selectedBanis);
+            total = (parsed.amritvela?.length || 0) + 
+                    (parsed.rehras?.length || 0) + 
+                    (parsed.sohila?.length || 0);
+            if (total === 0) total = 11; // Fallback if empty
+          }
+        } catch(e) {}
+        
+        // Get today's progress from nitnemTracker_nitnemLog
+        try {
+          const today = now.toISOString().split('T')[0];
+          const nitnemLog = localStorage.getItem('nitnemTracker_nitnemLog');
+          if (nitnemLog) {
+            const parsed = JSON.parse(nitnemLog);
+            if (parsed[today]) {
+              if (Array.isArray(parsed[today])) {
+                completed = parsed[today].length;
+              } else if (typeof parsed[today] === 'object') {
+                const todayData = parsed[today];
+                completed = (todayData.amritvela?.length || 0) + 
+                           (todayData.rehras?.length || 0) + 
+                           (todayData.sohila?.length || 0);
+              }
+            }
+          }
+        } catch(e) {}
+        
+        // Time-based suggestions
+        if (hour >= 4 && hour < 9) {
+          suggestion = 'Start Japji Sahib 🌅';
+        } else if (hour >= 9 && hour < 12) {
+          suggestion = 'Continue morning Nitnem ☀️';
+        } else if (hour >= 12 && hour < 17) {
+          suggestion = 'Rehras Sahib in evening 🙏';
+        } else if (hour >= 17 && hour < 20) {
+          suggestion = 'Time for Rehras Sahib 🌆';
+        } else {
+          suggestion = 'Sohila Sahib before bed 🌙';
+        }
+        
+        const percent = Math.round((completed / total) * 100);
+        
+        document.getElementById('progressLabel').textContent = `${completed}/${total} Banis`;
+        document.getElementById('progressPercent').textContent = `${percent}%`;
+        
+        if (completed === 0) {
+          document.getElementById('progressText').textContent = suggestion;
+        } else if (completed >= total) {
+          document.getElementById('progressText').textContent = 'Amazing! All banis completed today! 🎉';
+        } else {
+          document.getElementById('progressText').textContent = `${completed} done! ${suggestion}`;
+        }
+        
+        setTimeout(() => {
+          document.getElementById('progressFill').style.width = `${percent}%`;
+        }, 600);
+      }
+      
+      // ━━━ TIME-BASED NITNEM SUBTITLE (Dynamic) ━━━
+      function updateNitnemSubtitle() {
+        const hour = new Date().getHours();
+        const subtitle = document.getElementById('nitnemSubtitle');
+        if (!subtitle) return;
+        
+        if (hour >= 4 && hour < 9) {
+          subtitle.textContent = 'Morning Banis 🌅';
+        } else if (hour >= 17 && hour < 20) {
+          subtitle.textContent = 'Rehras Sahib 🌆';
+        } else if (hour >= 20 || hour < 4) {
+          subtitle.textContent = 'Sohila Sahib 🌙';
+        } else {
+          subtitle.textContent = 'Daily Prayers';
+        }
+      }
+      
+      // ━━━ CATEGORY FILTER FUNCTIONALITY ━━━
+      function setupCategoryFilters() {
+        const pills = document.querySelectorAll('.category-pill');
+        const cards = document.querySelectorAll('[data-category]');
+        
+        pills.forEach(pill => {
+          pill.addEventListener('click', function() {
+            // Update active states
+            pills.forEach(p => {
+              p.classList.remove('category-pill--active');
+              p.classList.add('category-pill--inactive');
+            });
+            this.classList.remove('category-pill--inactive');
+            this.classList.add('category-pill--active');
+            
+            const category = this.textContent.toLowerCase();
+            
+            // Filter cards
+            cards.forEach(card => {
+              const cardCategory = card.dataset.category;
+              if (category === 'radio') {
+                card.style.display = ''; // Show all for Radio (home)
+              } else if (cardCategory === category || cardCategory?.includes(category)) {
+                card.style.display = '';
+              } else {
+                card.style.display = 'none';
+              }
+            });
+            
+            // For Radio category, show all
+            if (category === 'radio') {
+              cards.forEach(card => card.style.display = '');
+            }
+          });
+        });
+      }
+      
+      // ━━━ NOTIFICATION BADGE (Check for pending reminders) ━━━
+      function updateNotificationBadge() {
+        let count = 0;
+        
+        try {
+          // Check for pending reminders
+          const reminders = localStorage.getItem('smart_reminders_v1');
+          if (reminders) {
+            const parsed = JSON.parse(reminders);
+            const pendingCustom = parsed.custom?.filter(r => !r.completed)?.length || 0;
+            count += pendingCustom;
+          }
+          
+          // Add 1 if Nitnem not done today
+          const hour = new Date().getHours();
+          if (hour >= 6 && hour < 10) count++; // Morning reminder
+          if (hour >= 17 && hour < 20) count++; // Evening reminder
+          
+        } catch(e) {}
+        
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+          if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : count;
+            badge.style.display = 'flex';
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      }
+      
+      // ━━━ NOTIFICATION BUTTON CLICK ━━━
+      document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => {
+        window.location.href = 'reminders/smart-reminders.html';
+      });
+      
+      // ━━━ FILTER PANEL FUNCTIONALITY ━━━
+      const filterPanel = document.getElementById('filterPanel');
+      const filterClose = document.getElementById('filterClose');
+      const filterOptions = document.querySelectorAll('.filter-panel__option');
+      
+      function openFilterPanel() {
+        filterPanel?.classList.add('active');
+      }
+      
+      function closeFilterPanel() {
+        filterPanel?.classList.remove('active');
+      }
+      
+      document.querySelector('.filter-btn')?.addEventListener('click', openFilterPanel);
+      filterClose?.addEventListener('click', closeFilterPanel);
+      filterPanel?.addEventListener('click', (e) => {
+        if (e.target === filterPanel) closeFilterPanel();
+      });
+      
+      // Filter option selection
+      filterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const filter = option.dataset.filter;
+          
+          // Update selection UI
+          filterOptions.forEach(opt => opt.classList.remove('selected'));
+          option.classList.add('selected');
+          
+          // Also update the category pills
+          const pills = document.querySelectorAll('.category-pill');
+          pills.forEach(pill => {
+            const pillFilter = pill.dataset.filter;
+            pill.classList.remove('category-pill--active');
+            pill.classList.add('category-pill--inactive');
+            if (pillFilter === filter) {
+              pill.classList.add('category-pill--active');
+              pill.classList.remove('category-pill--inactive');
+              pill.click(); // Trigger the filter
+            }
+          });
+          
+          closeFilterPanel();
+        });
+      });
+      
+      // ━━━ iOS INSTALL BANNER FUNCTIONALITY ━━━
+      let deferredInstallPrompt = null;
+      const iosInstallBanner = document.getElementById('iosInstallBanner');
+      const installBtn = document.getElementById('installBtn');
+      const installDismiss = document.getElementById('installDismiss');
+      const headerInstallBtn = document.getElementById('headerInstallBtn');
+      
+      function isStandalone() {
+        try {
+          const mq = window.matchMedia && window.matchMedia('(display-mode: standalone)');
+          return mq?.matches || navigator.standalone || localStorage.getItem('pwaInstalled') === 'true';
+        } catch (e) { return false; }
+      }
+      
+      function showInstallUI() {
+        if (isStandalone()) return;
+        // Always show header button if not installed
+        headerInstallBtn?.classList.add('visible');
+        // Check if banner dismissed recently (within 24 hours)
+        try {
+          const dismissed = localStorage.getItem('installBannerDismissed');
+          if (dismissed && (Date.now() - parseInt(dismissed)) < 86400000) return;
+        } catch(e) {}
+        iosInstallBanner?.classList.add('visible');
+      }
+      
+      function hideInstallUI() {
+        iosInstallBanner?.classList.remove('visible');
+        headerInstallBtn?.classList.remove('visible');
+      }
+      
+      async function triggerInstall() {
+        if (deferredInstallPrompt) {
+          deferredInstallPrompt.prompt();
+          const { outcome } = await deferredInstallPrompt.userChoice;
+          if (outcome === 'accepted') {
+            try { localStorage.setItem('pwaInstalled', 'true'); } catch(e) {}
+            hideInstallUI();
+          }
+          deferredInstallPrompt = null;
+        } else {
+          // iOS or browser without prompt - show instructions
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          if (isIOS) {
+            alert('To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm');
+          } else {
+            alert('Use your browser\'s menu to install this app.');
+          }
+        }
+      }
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        // Show install UI after short delay
+        setTimeout(showInstallUI, 1500);
+      });
+      
+      // Show header button immediately if not installed (for browsers that don't fire beforeinstallprompt)
+      if (!isStandalone()) {
+        headerInstallBtn?.classList.add('visible');
+      }
+      
+      installBtn?.addEventListener('click', triggerInstall);
+      headerInstallBtn?.addEventListener('click', triggerInstall);
+      
+      installDismiss?.addEventListener('click', () => {
+        try { localStorage.setItem('installBannerDismissed', Date.now().toString()); } catch(e) {}
+        iosInstallBanner?.classList.remove('visible');
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        try { localStorage.setItem('pwaInstalled', 'true'); } catch(e) {}
+        hideInstallUI();
+      });
+      
+      // ━━━ RADIO MENU FUNCTIONALITY ━━━
+      const radioMenu = document.getElementById('radioMenu');
+      const radioMenuBtn = document.getElementById('radioMenuBtn');
+      const radioMenuCancel = document.getElementById('radioMenuCancel');
+      const gurbaniRadioCard = document.getElementById('gurbaniRadioCard');
+      
+      function openRadioMenu() {
+        radioMenu?.classList.add('active');
+      }
+      
+      function closeRadioMenu() {
+        radioMenu?.classList.remove('active');
+      }
+      
+      // Open menu from three-dot button ONLY
+      radioMenuBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openRadioMenu();
+      });
+      
+      // Clicking the hero card goes directly to Darbar Sahib Live
+      gurbaniRadioCard?.addEventListener('click', (e) => {
+        // If clicking the menu button, don't navigate (menu opens instead)
+        if (e.target.closest('.hero-card__menu-btn')) return;
+        // Navigate directly to Darbar Sahib Live
+        window.location.href = 'GurbaniRadio/ios17-gurbani-radio.html';
+      });
+      
+      // Close menu
+      radioMenuCancel?.addEventListener('click', closeRadioMenu);
+      
+      // Close when clicking overlay
+      radioMenu?.addEventListener('click', (e) => {
+        if (e.target === radioMenu) closeRadioMenu();
+      });
+      
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && radioMenu?.classList.contains('active')) {
+          closeRadioMenu();
+        }
+      });
+      
+      // ━━━ INITIALIZE ALL ━━━
+      updateGreeting();
+      updateClock();
+      updateListenerCount();
+      updateHukamDate();
+      updateNextGurpurab();
+      updateNextSession();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+      setupCategoryFilters();
+      
+      // ━━━ REAL-TIME UPDATES ━━━
+      setInterval(updateClock, 1000);
+      setInterval(updateListenerCount, 5000);
+      setInterval(updateGreeting, 60000);
+      setInterval(updateNitnemSubtitle, 60000);
+      setInterval(updateNotificationBadge, 60000);
+      
+      console.log('✨ ANHAD Premium Homepage Initialized');
+      console.log('📊 Real-time: Clock, Listeners, Greeting, Notifications');
+      console.log('🎯 Data sources: sehaj_paath_progress, nitnemTracker_nitnemLog, nitnemTracker_streakData, naam_abhyas_sessions');
+      
+      // ━━━ REFRESH DATA ON PAGE RETURN ━━━
+      // When user navigates back from Nitnem Tracker or other pages
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('📊 Page visible - refreshing data...');
+          updateNitnemTracker();
+          updateSehajPaath();
+          updateProgressCard();
+          updateNextSession();
+          updateNitnemSubtitle();
+        }
+      });
+      
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+          console.log('📊 Page restored from cache - refreshing data...');
+          updateNitnemTracker();
+          updateSehajPaath();
+          updateProgressCard();
+          updateNextSession();
+          updateNitnemSubtitle();
+        }
+      });
     });
   </script>
+  
+  <!-- Persistent Audio System -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="lib/persistent-audio.js"></script>
+  
+  <script>
+    // ━━━ HERO CAROUSEL & AUDIO STATE SYNC ━━━
+    // NOTE: Button click handlers are inline in HTML (onclick) to prevent conflicts
+    (function() {
+      'use strict';
+      
+      function init() {
+        const track = document.getElementById('heroCarouselTrack');
+        const dots = document.querySelectorAll('.hero-carousel__dot');
+        const playIcon1 = document.getElementById('heroPlayIcon1');
+        const card1 = document.getElementById('gurbaniRadioCard');
+        
+        let currentIndex = 0;
+        
+        // ═══════════════ CAROUSEL NAVIGATION ═══════════════
+        function updateDots(index) {
+          dots.forEach((dot, i) => {
+            dot.classList.toggle('hero-carousel__dot--active', i === index);
+          });
+          currentIndex = index;
+        }
+        
+        if (track) {
+          track.addEventListener('scroll', function() {
+            const scrollLeft = track.scrollLeft;
+            const cardWidth = track.offsetWidth;
+            const newIndex = Math.round(scrollLeft / cardWidth);
+            if (newIndex !== currentIndex) {
+              updateDots(newIndex);
+            }
+          });
+        }
+        
+        dots.forEach((dot, i) => {
+          dot.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (track) {
+              track.scrollTo({ left: i * track.offsetWidth, behavior: 'smooth' });
+              updateDots(i);
+            }
+          });
+        });
+        
+        // ═══════════════ AUDIO STATE SYNC ═══════════════
+        // Update play icons based on which stream is playing
+        window.addEventListener('anhadAudioStateChange', function(e) {
+          const isPlaying = e.detail.isPlaying;
+          const stream = e.detail.stream || 'darbar';
+          console.log('🔊 Audio:', isPlaying ? 'playing' : 'paused', '| Stream:', stream);
+          
+          const playIcon2 = document.getElementById('heroPlayIcon2');
+          const card2 = document.getElementById('amritvelaCard');
+          
+          if (stream === 'darbar') {
+            // Darbar Sahib is playing
+            if (playIcon1) playIcon1.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+            if (card1) card1.classList.toggle('playing', isPlaying);
+            // Reset Amritvela card
+            if (playIcon2) playIcon2.className = 'fas fa-play';
+            if (card2) card2.classList.remove('playing');
+          } else if (stream === 'amritvela') {
+            // Amritvela is playing
+            if (playIcon2) playIcon2.className = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+            if (card2) card2.classList.toggle('playing', isPlaying);
+            // Reset Darbar Sahib card
+            if (playIcon1) playIcon1.className = 'fas fa-play';
+            if (card1) card1.classList.remove('playing');
+          }
+        });
+        
+        // Check initial state
+        setTimeout(function() {
+          if (window.AnhadAudio && window.AnhadAudio.isPlaying()) {
+            const stream = window.AnhadAudio.getCurrentStream() || 'darbar';
+            const playIcon2 = document.getElementById('heroPlayIcon2');
+            const card2 = document.getElementById('amritvelaCard');
+            
+            if (stream === 'darbar') {
+              if (playIcon1) playIcon1.className = 'fas fa-pause';
+              if (card1) card1.classList.add('playing');
+            } else if (stream === 'amritvela') {
+              if (playIcon2) playIcon2.className = 'fas fa-pause';
+              if (card2) card2.classList.add('playing');
+            }
+          }
+        }, 600);
+        
+        console.log('🪯 Carousel initialized. Multi-stream audio support enabled.');
+      }
+      
+      // Initialize after DOM ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(init, 50));
+      } else {
+        setTimeout(init, 50);
+      }
+    })();
+  </script>
+  
+  <!-- User Stats System (tracks engagement, streaks, goals) -->
+  <script src="lib/user-stats.js" defer></script>
+  
+  <!-- PWA Service Worker Registration -->
+  <script src="pwa-register.js" defer></script>
 </body>
 </html>

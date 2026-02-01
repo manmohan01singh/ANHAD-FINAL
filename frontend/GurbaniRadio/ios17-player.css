@@ -1,0 +1,475 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   iOS 17 MUSIC PLAYER - EXACT REPLICA
+   Pixel-perfect match to Apple Music Now Playing screen
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESET & BASE
+   ───────────────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+.ios17-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text',
+        system-ui, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DYNAMIC BACKGROUND - Blurred Album Art (The "Solarium" Effect)
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.ios17-bg__art {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    filter: blur(80px) saturate(180%) brightness(0.6);
+    -webkit-filter: blur(80px) saturate(180%) brightness(0.6);
+}
+
+.ios17-bg__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.3) 50%,
+            rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN PLAYER LAYOUT
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-player {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 24px 40px;
+    padding-top: max(60px, env(safe-area-inset-top, 60px));
+    padding-bottom: max(40px, env(safe-area-inset-bottom, 40px));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ALBUM ARTWORK - Large, Dominant
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-artwork-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 16px 0;
+}
+
+.ios17-artwork {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.ios17-artwork--paused {
+    transform: scale(0.9);
+}
+
+.ios17-artwork__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   METADATA - Title, Artist, Actions
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    margin-bottom: 16px;
+}
+
+.ios17-meta__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ios17-meta__title {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.ios17-meta__artist {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.ios17-meta__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.ios17-meta__btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.ios17-meta__btn:active {
+    transform: scale(0.9);
+    opacity: 0.7;
+}
+
+.ios17-meta__btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.ios17-meta__btn.active {
+    color: #FFD60A;
+}
+
+.ios17-meta__btn.active svg {
+    fill: currentColor;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TIMELINE - Progress Bar & Labels
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-timeline {
+    margin-bottom: 20px;
+}
+
+.ios17-timeline__bar {
+    position: relative;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.ios17-timeline__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 2px;
+    transition: width 0.2s ease;
+}
+
+.ios17-timeline__labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ios17-timeline__time {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    font-variant-numeric: tabular-nums;
+    min-width: 35px;
+}
+
+.ios17-timeline__status {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: capitalize;
+}
+
+.ios17-timeline__live {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRANSPORT CONTROLS - Play, Skip
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+    margin-bottom: 32px;
+}
+
+.ios17-controls__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+    padding: 0;
+}
+
+.ios17-controls__btn:active {
+    transform: scale(0.85);
+    opacity: 0.7;
+}
+
+.ios17-controls__skip {
+    width: 44px;
+    height: 44px;
+}
+
+.ios17-controls__skip svg {
+    width: 36px;
+    height: 36px;
+}
+
+.ios17-controls__play {
+    width: 72px;
+    height: 72px;
+}
+
+.ios17-controls__play svg {
+    width: 56px;
+    height: 56px;
+}
+
+/* Play icon offset for optical centering */
+.ios17-controls__play--playing svg {
+    margin-left: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VOLUME SLIDER - Thin iOS Style
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-volume {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.ios17-volume__icon {
+    width: 16px;
+    height: 16px;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.ios17-volume__icon--max {
+    width: 22px;
+    height: 22px;
+}
+
+.ios17-volume__track {
+    flex: 1;
+    position: relative;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ios17-volume__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 60%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 2px;
+    pointer-events: none;
+}
+
+.ios17-volume__input {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 24px;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOOTER ACTIONS - 3 Icons
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 64px;
+}
+
+.ios17-footer__btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.ios17-footer__btn:active {
+    transform: scale(0.9);
+}
+
+.ios17-footer__btn.active {
+    color: #fff;
+}
+
+.ios17-footer__btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 390px) {
+    .ios17-player {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .ios17-artwork {
+        max-width: 300px;
+        border-radius: 10px;
+    }
+
+    .ios17-meta__title {
+        font-size: 19px;
+    }
+
+    .ios17-meta__artist {
+        font-size: 16px;
+    }
+
+    .ios17-controls {
+        gap: 44px;
+    }
+
+    .ios17-controls__skip svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .ios17-controls__play svg {
+        width: 48px;
+        height: 48px;
+    }
+
+    .ios17-footer {
+        gap: 48px;
+    }
+}
+
+@media (min-width: 500px) {
+    .ios17-artwork {
+        max-width: 400px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+    .ios17-timeline__live,
+    .ios17-artwork {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+.ios17-controls__btn:focus-visible,
+.ios17-meta__btn:focus-visible,
+.ios17-footer__btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+    border-radius: 50%;
+}

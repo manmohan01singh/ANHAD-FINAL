@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid Glass | ਅਨਹਦ • Spatial Interface</title>
+  <meta name="theme-color" content="#050507">
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════════════
+       LIQUID GLASS — CORE STYLES
+       Based on visionOS Spatial Materials & iOS 18 Glassmorphism
+    ═══════════════════════════════════════════════════════════════════════════ */
+    
+    :root {
+      /* ─── Core Colors ─── */
+      --bg-void: #050507;
+      --bg-elevated: #0a0a0f;
+      --glass-tint: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-highlight: rgba(255, 255, 255, 0.25);
+      
+      /* ─── Text ─── */
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-tertiary: rgba(255, 255, 255, 0.5);
+      
+      /* ─── Accent Colors (Vibrant) ─── */
+      --accent-pink: #ff2d55;
+      --accent-purple: #bf5af2;
+      --accent-blue: #0a84ff;
+      --accent-cyan: #64d2ff;
+      --accent-green: #30d158;
+      --accent-orange: #ff9f0a;
+      
+      /* ─── Dimensions ─── */
+      --blur-heavy: 80px;
+      --blur-medium: 40px;
+      --blur-light: 20px;
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      
+      /* ─── Animation ─── */
+      --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+      --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-void);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* ═══ CANVAS CONTAINER ═══ */
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+    
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* ═══ UI OVERLAY (iOS Typography) ═══ */
+    .ui-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      padding: 40px;
+    }
+    
+    .ui-overlay__content {
+      text-align: center;
+      max-width: 800px;
+    }
+    
+    .ui-overlay__title {
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text-primary);
+      text-shadow: 
+        0 4px 40px rgba(0, 0, 0, 0.5),
+        0 0 120px rgba(191, 90, 242, 0.3);
+      mix-blend-mode: difference;
+      margin-bottom: 16px;
+    }
+    
+    .ui-overlay__subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+    }
+    
+    .ui-overlay__cta {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 32px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: 
+        transform 0.3s var(--ease-spring),
+        background 0.3s,
+        box-shadow 0.3s;
+      box-shadow: 
+        0 4px 24px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 var(--glass-highlight);
+    }
+    
+    .ui-overlay__cta:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
+      box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(191, 90, 242, 0.2),
+        inset 0 1px 0 var(--glass-highlight);
+    }
+    
+    .ui-overlay__cta:active {
+      transform: scale(0.98);
+    }
+    
+    .ui-overlay__cta-icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    
+    /* ═══ CONTROLS PANEL ═══ */
+    .controls-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      width: 320px;
+      background: rgba(20, 20, 28, 0.85);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: 
+        0 24px 80px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 var(--glass-highlight);
+      transform: translateX(calc(100% + 40px));
+      transition: transform 0.5s var(--ease-spring);
+    }
+    
+    .controls-panel.is-open {
+      transform: translateX(0);
+    }
+    
+    .controls-panel__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .controls-panel__title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .controls-panel__close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.2s;
+    }
+    
+    .controls-panel__close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .control-group {
+      margin-bottom: 16px;
+    }
+    
+    .control-group__label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .control-group__value {
+      font-family: "SF Mono", "Monaco", monospace;
+      font-size: 12px;
+      color: var(--accent-cyan);
+    }
+    
+    .control-group__slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    
+    .control-group__slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .control-group__slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    
+    /* ═══ TOGGLE BUTTON ═══ */
+    .controls-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 99;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: 
+        transform 0.3s var(--ease-spring),
+        background 0.3s;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .controls-toggle:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.08);
+    }
+    
+    .controls-toggle.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* ═══ LOADING STATE ═══ */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--bg-void);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s, visibility 0.8s;
+    }
+    
+    .loading-overlay.is-loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-purple);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-text {
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.05em;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* ═══ AMBIENT BACKGROUND ═══ */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .ambient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+      animation: orbFloat 20s ease-in-out infinite alternate;
+    }
+    
+    .ambient-orb--1 {
+      top: -20%;
+      left: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: var(--accent-purple);
+      animation-delay: 0s;
+    }
+    
+    .ambient-orb--2 {
+      bottom: -20%;
+      right: -10%;
+      width: 70vw;
+      height: 70vw;
+      background: var(--accent-cyan);
+      animation-delay: -7s;
+    }
+    
+    .ambient-orb--3 {
+      top: 40%;
+      left: 30%;
+      width: 40vw;
+      height: 40vw;
+      background: var(--accent-pink);
+      opacity: 0.25;
+      animation-delay: -14s;
+    }
+    
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -40px) scale(1.1); }
+      100% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+    
+    /* ═══ INFO BADGE ═══ */
+    .info-badge {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    .info-badge__fps {
+      font-family: "SF Mono", monospace;
+      color: var(--accent-green);
+      font-weight: 500;
+    }
+    
+    /* ═══ RESPONSIVE ═══ */
+    @media (max-width: 768px) {
+      .controls-panel {
+        width: calc(100% - 40px);
+        max-width: 360px;
+      }
+      
+      .ui-overlay {
+        padding: 20px;
+      }
+      
+      .info-badge {
+        bottom: 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ═══ LOADING OVERLAY ═══ -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Initializing Liquid Glass...</p>
+  </div>
+  
+  <!-- ═══ AMBIENT BACKGROUND ═══ -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-orb ambient-orb--1"></div>
+    <div class="ambient-orb ambient-orb--2"></div>
+    <div class="ambient-orb ambient-orb--3"></div>
+  </div>
+  
+  <!-- ═══ 3D CANVAS ═══ -->
+  <div id="canvas-container"></div>
+  
+  <!-- ═══ UI OVERLAY ═══ -->
+  <div class="ui-overlay">
+    <div class="ui-overlay__content">
+      <h1 class="ui-overlay__title">Liquid Glass</h1>
+      <p class="ui-overlay__subtitle">Amorphous Optical Simulation • Spatial Interface</p>
+      <button class="ui-overlay__cta" id="ctaButton">
+        <svg class="ui-overlay__cta-icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <span>Explore Physics</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- ═══ CONTROLS TOGGLE ═══ -->
+  <button class="controls-toggle" id="controlsToggle" aria-label="Open controls">
+    ⚙️
+  </button>
+  
+  <!-- ═══ CONTROLS PANEL ═══ -->
+  <div class="controls-panel" id="controlsPanel">
+    <div class="controls-panel__header">
+      <h2 class="controls-panel__title">Physics Parameters</h2>
+      <button class="controls-panel__close" id="controlsClose" aria-label="Close">×</button>
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>IOR (Refractive Index)</span>
+        <span class="control-group__value" id="iorValue">1.50</span>
+      </label>
+      <input type="range" class="control-group__slider" id="iorSlider" 
+             min="1.0" max="2.5" step="0.01" value="1.5">
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>Chromatic Aberration</span>
+        <span class="control-group__value" id="chromaValue">0.08</span>
+      </label>
+      <input type="range" class="control-group__slider" id="chromaSlider" 
+             min="0" max="0.3" step="0.01" value="0.08">
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>Distortion (Liquid)</span>
+        <span class="control-group__value" id="distortValue">0.40</span>
+      </label>
+      <input type="range" class="control-group__slider" id="distortSlider" 
+             min="0" max="1.5" step="0.01" value="0.4">
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>Thickness</span>
+        <span class="control-group__value" id="thickValue">1.20</span>
+      </label>
+      <input type="range" class="control-group__slider" id="thickSlider" 
+             min="0" max="3" step="0.05" value="1.2">
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>Roughness</span>
+        <span class="control-group__value" id="roughValue">0.00</span>
+      </label>
+      <input type="range" class="control-group__slider" id="roughSlider" 
+             min="0" max="1" step="0.01" value="0">
+    </div>
+    
+    <div class="control-group">
+      <label class="control-group__label">
+        <span>Temporal Distortion</span>
+        <span class="control-group__value" id="tempValue">0.05</span>
+      </label>
+      <input type="range" class="control-group__slider" id="tempSlider" 
+             min="0" max="0.3" step="0.01" value="0.05">
+    </div>
+  </div>
+  
+  <!-- ═══ INFO BADGE ═══ -->
+  <div class="info-badge">
+    <span>FPS: <span class="info-badge__fps" id="fpsCounter">60</span></span>
+    <span>•</span>
+    <span>WebGL 2.0</span>
+  </div>
+  
+  <!-- ═══ THREE.JS (ES Module) ═══ -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    
+    /**
+     * ═══════════════════════════════════════════════════════════════════════════
+     * LIQUID GLASS — COMPLETE THREE.JS IMPLEMENTATION
+     * 
+     * This implementation synthesizes:
+     * 1. Physics of Amorphous Solids (Glass Transition, Rayleigh Scattering)
+     * 2. Optical Mechanics (Snell's Law, Chromatic Aberration, Dispersion)
+     * 3. visionOS Spatial Materials Aesthetic
+     * ═══════════════════════════════════════════════════════════════════════════
+     */
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SIMPLEX NOISE (For Fluid Distortion)
+    // ═══════════════════════════════════════════════════════════════════════════
+    const SimplexNoise = `
+      vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+      vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+      
+      float snoise(vec3 v) {
+        const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+        const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+        
+        vec3 i  = floor(v + dot(v, C.yyy));
+        vec3 x0 = v - i + dot(i, C.xxx);
+        
+        vec3 g = step(x0.yzx, x0.xyz);
+        vec3 l = 1.0 - g;
+        vec3 i1 = min(g.xyz, l.zxy);
+        vec3 i2 = max(g.xyz, l.zxy);
+        
+        vec3 x1 = x0 - i1 + C.xxx;
+        vec3 x2 = x0 - i2 + C.yyy;
+        vec3 x3 = x0 - D.yyy;
+        
+        i = mod289(i);
+        vec4 p = permute(permute(permute(
+                  i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+        
+        float n_ = 0.142857142857;
+        vec3 ns = n_ * D.wyz - D.xzx;
+        
+        vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+        
+        vec4 x_ = floor(j * ns.z);
+        vec4 y_ = floor(j - 7.0 * x_);
+        
+        vec4 x = x_ *ns.x + ns.yyyy;
+        vec4 y = y_ *ns.x + ns.yyyy;
+        vec4 h = 1.0 - abs(x) - abs(y);
+        
+        vec4 b0 = vec4(x.xy, y.xy);
+        vec4 b1 = vec4(x.zw, y.zw);
+        
+        vec4 s0 = floor(b0)*2.0 + 1.0;
+        vec4 s1 = floor(b1)*2.0 + 1.0;
+        vec4 sh = -step(h, vec4(0.0));
+        
+        vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+        vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+        
+        vec3 p0 = vec3(a0.xy, h.x);
+        vec3 p1 = vec3(a0.zw, h.y);
+        vec3 p2 = vec3(a1.xy, h.z);
+        vec3 p3 = vec3(a1.zw, h.w);
+        
+        vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+        p0 *= norm.x;
+        p1 *= norm.y;
+        p2 *= norm.z;
+        p3 *= norm.w;
+        
+        vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+        m = m * m;
+        return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+      }
+    `;
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LIQUID GLASS SHADER MATERIAL
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const LiquidGlassVertexShader = `
+      varying vec3 vWorldPosition;
+      varying vec3 vWorldNormal;
+      varying vec3 vViewDirection;
+      varying vec2 vUv;
+      varying vec3 vPosition;
+      
+      uniform float uTime;
+      uniform float uDistortion;
+      uniform float uDistortionScale;
+      
+      ${SimplexNoise}
+      
+      void main() {
+        vUv = uv;
+        vPosition = position;
+        
+        // Apply fluid distortion to vertex positions
+        vec3 pos = position;
+        float noise = snoise(position * uDistortionScale + uTime * 0.5);
+        pos += normal * noise * uDistortion * 0.1;
+        
+        vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+        vWorldPosition = worldPosition.xyz;
+        vWorldNormal = normalize(mat3(modelMatrix) * normal);
+        vViewDirection = normalize(cameraPosition - worldPosition.xyz);
+        
+        gl_Position = projectionMatrix * viewMatrix * worldPosition;
+      }
+    `;
+    
+    const LiquidGlassFragmentShader = `
+      uniform float uTime;
+      uniform float uIOR;
+      uniform float uChromaticAberration;
+      uniform float uDistortion;
+      uniform float uTemporalDistortion;
+      uniform float uThickness;
+      uniform float uRoughness;
+      uniform vec3 uTint;
+      uniform samplerCube uEnvMap;
+      uniform sampler2D uBackBuffer;
+      uniform vec2 uResolution;
+      
+      varying vec3 vWorldPosition;
+      varying vec3 vWorldNormal;
+      varying vec3 vViewDirection;
+      varying vec2 vUv;
+      varying vec3 vPosition;
+      
+      ${SimplexNoise}
+      
+      // Fresnel equation (Schlick approximation)
+      float fresnel(vec3 viewDir, vec3 normal, float ior) {
+        float f0 = pow((1.0 - ior) / (1.0 + ior), 2.0);
+        return f0 + (1.0 - f0) * pow(1.0 - max(dot(viewDir, normal), 0.0), 5.0);
+      }
+      
+      // Refraction with chromatic aberration
+      vec3 refractChromatic(vec3 viewDir, vec3 normal, float ior, float aberration) {
+        vec3 refractedR = refract(-viewDir, normal, 1.0 / (ior + aberration));
+        vec3 refractedG = refract(-viewDir, normal, 1.0 / ior);
+        vec3 refractedB = refract(-viewDir, normal, 1.0 / (ior - aberration));
+        
+        // Sample environment with chromatic split
+        vec3 colorR = textureCube(uEnvMap, refractedR).rgb;
+        vec3 colorG = textureCube(uEnvMap, refractedG).rgb;
+        vec3 colorB = textureCube(uEnvMap, refractedB).rgb;
+        
+        return vec3(colorR.r, colorG.g, colorB.b);
+      }
+      
+      void main() {
+        vec3 normal = normalize(vWorldNormal);
+        vec3 viewDir = normalize(vViewDirection);
+        
+        // Temporal noise for fluid effect
+        float temporalNoise = snoise(vPosition * 2.0 + uTime * uTemporalDistortion);
+        vec3 distortedNormal = normalize(normal + temporalNoise * uDistortion * 0.15);
+        
+        // Fresnel effect
+        float fresnelFactor = fresnel(viewDir, distortedNormal, uIOR);
+        
+        // Reflection
+        vec3 reflectDir = reflect(-viewDir, distortedNormal);
+        vec3 reflection = textureCube(uEnvMap, reflectDir).rgb;
+        
+        // Refraction with chromatic aberration
+        vec3 refraction = refractChromatic(viewDir, distortedNormal, uIOR, uChromaticAberration);
+        
+        // Mix reflection and refraction based on Fresnel
+        vec3 glassColor = mix(refraction, reflection, fresnelFactor);
+        
+        // Apply tint and thickness absorption
+        vec3 absorption = exp(-uTint * uThickness);
+        glassColor *= absorption;
+        
+        // Add subtle rim lighting
+        float rim = 1.0 - max(dot(viewDir, normal), 0.0);
+        rim = pow(rim, 3.0);
+        glassColor += vec3(1.0) * rim * 0.3;
+        
+        // Apply roughness as blur approximation
+        glassColor = mix(glassColor, vec3(0.5), uRoughness * 0.3);
+        
+        // Caustics approximation
+        float curvature = length(fwidth(normal)) * 100.0;
+        float caustics = pow(1.0 - curvature, 8.0) * 0.5;
+        glassColor += vec3(caustics);
+        
+        gl_FragColor = vec4(glassColor, 1.0);
+      }
+    `;
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BACKGROUND OBJECTS SHADER (Emissive Floating Elements)
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    const EmissiveVertexShader = `
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      uniform float uTime;
+      
+      void main() {
+        vUv = uv;
+        vNormal = normalize(normalMatrix * normal);
+        
+        vec3 pos = position;
+        pos += normal * sin(uTime * 2.0 + position.x * 5.0) * 0.02;
+        
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `;
+    
+    const EmissiveFragmentShader = `
+      uniform vec3 uColor;
+      uniform float uIntensity;
+      uniform float uTime;
+      
+      varying vec2 vUv;
+      varying vec3 vNormal;
+      
+      void main() {
+        float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.0);
+        vec3 color = uColor * uIntensity;
+        color += uColor * fresnel * 2.0;
+        
+        // Pulsing
+        color *= 0.9 + 0.1 * sin(uTime * 3.0);
+        
+        gl_FragColor = vec4(color, 1.0);
+      }
+    `;
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // APPLICATION CLASS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    class LiquidGlassApp {
+      constructor() {
+        this.container = document.getElementById('canvas-container');
+        this.loadingOverlay = document.getElementById('loadingOverlay');
+        this.fpsCounter = document.getElementById('fpsCounter');
+        
+        // Physics parameters
+        this.params = {
+          ior: 1.5,
+          chromaticAberration: 0.08,
+          distortion: 0.4,
+          thickness: 1.2,
+          roughness: 0.0,
+          temporalDistortion: 0.05,
+        };
+        
+        // Performance tracking
+        this.frames = 0;
+        this.lastTime = performance.now();
+        
+        this.init();
+      }
+      
+      async init() {
+        this.setupScene();
+        this.setupLights();
+        await this.setupEnvironment();
+        this.createBackgroundObjects();
+        this.createLiquidGlass();
+        this.setupPostProcessing();
+        this.setupControls();
+        this.bindUIControls();
+        
+        // Hide loading
+        setTimeout(() => {
+          this.loadingOverlay.classList.add('is-loaded');
+        }, 500);
+        
+        this.animate();
+      }
+      
+      setupScene() {
+        // Scene
+        this.scene = new THREE.Scene();
+        
+        // Camera
+        this.camera = new THREE.PerspectiveCamera(
+          40,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
+        );
+        this.camera.position.set(0, 0, 8);
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.2;
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.container.appendChild(this.renderer.domElement);
+        
+        // Handle resize
+        window.addEventListener('resize', this.onResize.bind(this));
+      }
+      
+      setupLights() {
+        // Ambient
+        const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+        this.scene.add(ambient);
+        
+        // Key light
+        const keyLight = new THREE.SpotLight(0xffffff, 2);
+        keyLight.position.set(5, 5, 5);
+        keyLight.angle = 0.3;
+        keyLight.penumbra = 1;
+        this.scene.add(keyLight);
+        
+        // Fill light
+        const fillLight = new THREE.PointLight(0x8b5cf2, 1);
+        fillLight.position.set(-5, -3, 2);
+        this.scene.add(fillLight);
+        
+        // Rim light
+        const rimLight = new THREE.PointLight(0x64d2ff, 0.8);
+        rimLight.position.set(0, 3, -5);
+        this.scene.add(rimLight);
+      }
+      
+      async setupEnvironment() {
+        // Create procedural environment cube
+        const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
+        cubeRenderTarget.texture.type = THREE.HalfFloatType;
+        
+        const cubeCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget);
+        
+        // Create gradient sphere for environment
+        const envScene = new THREE.Scene();
+        const envGeometry = new THREE.SphereGeometry(5, 32, 32);
+        const envMaterial = new THREE.ShaderMaterial({
+          side: THREE.BackSide,
+          uniforms: {
+            uColorTop: { value: new THREE.Color(0x1a1a2e) },
+            uColorBottom: { value: new THREE.Color(0x0f0f1a) },
+            uColorAccent: { value: new THREE.Color(0x8b5cf2) },
+          },
+          vertexShader: `
+            varying vec3 vWorldPosition;
+            void main() {
+              vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform vec3 uColorTop;
+            uniform vec3 uColorBottom;
+            uniform vec3 uColorAccent;
+            varying vec3 vWorldPosition;
+            void main() {
+              float t = normalize(vWorldPosition).y * 0.5 + 0.5;
+              vec3 color = mix(uColorBottom, uColorTop, t);
+              
+              // Add accent spots
+              float spot1 = smoothstep(0.8, 0.9, dot(normalize(vWorldPosition), normalize(vec3(1.0, 0.5, 0.5))));
+              float spot2 = smoothstep(0.8, 0.9, dot(normalize(vWorldPosition), normalize(vec3(-0.5, -0.3, 1.0))));
+              color = mix(color, uColorAccent * 2.0, spot1 * 0.5);
+              color = mix(color, vec3(0.4, 0.8, 1.0) * 2.0, spot2 * 0.3);
+              
+              gl_FragColor = vec4(color, 1.0);
+            }
+          `,
+        });
+        const envMesh = new THREE.Mesh(envGeometry, envMaterial);
+        envScene.add(envMesh);
+        
+        // Render to cube
+        cubeCamera.update(this.renderer, envScene);
+        
+        this.envMap = cubeRenderTarget.texture;
+        this.scene.environment = this.envMap;
+        this.scene.background = new THREE.Color(0x050507);
+      }
+      
+      createBackgroundObjects() {
+        this.backgroundObjects = [];
+        
+        // Floating sphere (pink/magenta)
+        const sphere1Geometry = new THREE.SphereGeometry(1.2, 64, 64);
+        const sphere1Material = new THREE.ShaderMaterial({
+          uniforms: {
+            uColor: { value: new THREE.Color(0xff4eb8) },
+            uIntensity: { value: 1.5 },
+            uTime: { value: 0 },
+          },
+          vertexShader: EmissiveVertexShader,
+          fragmentShader: EmissiveFragmentShader,
+        });
+        const sphere1 = new THREE.Mesh(sphere1Geometry, sphere1Material);
+        sphere1.position.set(-3, 1.5, -4);
+        this.scene.add(sphere1);
+        this.backgroundObjects.push({ mesh: sphere1, baseY: 1.5, speed: 1.5 });
+        
+        // Floating cube (cyan)
+        const cube1Geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+        const cube1Material = new THREE.ShaderMaterial({
+          uniforms: {
+            uColor: { value: new THREE.Color(0x00ffff) },
+            uIntensity: { value: 1.2 },
+            uTime: { value: 0 },
+          },
+          vertexShader: EmissiveVertexShader,
+          fragmentShader: EmissiveFragmentShader,
+        });
+        const cube1 = new THREE.Mesh(cube1Geometry, cube1Material);
+        cube1.position.set(3.5, -1, -3);
+        cube1.rotation.set(0.5, 0.3, 0);
+        this.scene.add(cube1);
+        this.backgroundObjects.push({ mesh: cube1, baseY: -1, speed: 1.2 });
+        
+        // Floating torus (purple)
+        const torus1Geometry = new THREE.TorusGeometry(0.8, 0.35, 32, 64);
+        const torus1Material = new THREE.ShaderMaterial({
+          uniforms: {
+            uColor: { value: new THREE.Color(0xbf5af2) },
+            uIntensity: { value: 1.3 },
+            uTime: { value: 0 },
+          },
+          vertexShader: EmissiveVertexShader,
+          fragmentShader: EmissiveFragmentShader,
+        });
+        const torus1 = new THREE.Mesh(torus1Geometry, torus1Material);
+        torus1.position.set(-2, -2, -5);
+        this.scene.add(torus1);
+        this.backgroundObjects.push({ mesh: torus1, baseY: -2, speed: 1.8 });
+        
+        // Floating icosahedron (orange)
+        const ico1Geometry = new THREE.IcosahedronGeometry(0.9, 0);
+        const ico1Material = new THREE.ShaderMaterial({
+          uniforms: {
+            uColor: { value: new THREE.Color(0xff9f0a) },
+            uIntensity: { value: 1.4 },
+            uTime: { value: 0 },
+          },
+          vertexShader: EmissiveVertexShader,
+          fragmentShader: EmissiveFragmentShader,
+        });
+        const ico1 = new THREE.Mesh(ico1Geometry, ico1Material);
+        ico1.position.set(2, 2.5, -6);
+        this.scene.add(ico1);
+        this.backgroundObjects.push({ mesh: ico1, baseY: 2.5, speed: 1.0 });
+      }
+      
+      createLiquidGlass() {
+        // Main glass geometry: Torus Knot
+        const geometry = new THREE.TorusKnotGeometry(1.2, 0.4, 200, 50);
+        
+        // Create uniform object for shader
+        this.glassUniforms = {
+          uTime: { value: 0 },
+          uIOR: { value: this.params.ior },
+          uChromaticAberration: { value: this.params.chromaticAberration },
+          uDistortion: { value: this.params.distortion },
+          uDistortionScale: { value: 0.3 },
+          uTemporalDistortion: { value: this.params.temporalDistortion },
+          uThickness: { value: this.params.thickness },
+          uRoughness: { value: this.params.roughness },
+          uTint: { value: new THREE.Color(0.95, 0.95, 1.0) },
+          uEnvMap: { value: this.envMap },
+          uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        };
+        
+        const material = new THREE.ShaderMaterial({
+          uniforms: this.glassUniforms,
+          vertexShader: LiquidGlassVertexShader,
+          fragmentShader: LiquidGlassFragmentShader,
+          transparent: true,
+          side: THREE.DoubleSide,
+        });
+        
+        this.glassMesh = new THREE.Mesh(geometry, material);
+        this.scene.add(this.glassMesh);
+        
+        // Also create a Physical Material version as fallback/alternative
+        this.createPhysicalGlass();
+      }
+      
+      createPhysicalGlass() {
+        // Secondary glass using Three.js MeshPhysicalMaterial
+        const geometry2 = new THREE.IcosahedronGeometry(0.6, 3);
+        
+        const physicalMaterial = new THREE.MeshPhysicalMaterial({
+          transmission: 1,
+          thickness: this.params.thickness,
+          roughness: this.params.roughness,
+          ior: this.params.ior,
+          clearcoat: 1,
+          clearcoatRoughness: 0.1,
+          envMapIntensity: 1.5,
+          side: THREE.DoubleSide,
+        });
+        
+        this.physicalGlass = new THREE.Mesh(geometry2, physicalMaterial);
+        this.physicalGlass.position.set(2.5, 0, 1);
+        this.scene.add(this.physicalGlass);
+        
+        // Third glass object
+        const geometry3 = new THREE.SphereGeometry(0.5, 64, 64);
+        const physicalMaterial2 = physicalMaterial.clone();
+        this.physicalGlass2 = new THREE.Mesh(geometry3, physicalMaterial2);
+        this.physicalGlass2.position.set(-2.5, 0, 1);
+        this.scene.add(this.physicalGlass2);
+      }
+      
+      setupPostProcessing() {
+        this.composer = new EffectComposer(this.renderer);
+        
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+        
+        const bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.5,  // strength
+          0.4,  // radius
+          0.85  // threshold
+        );
+        this.composer.addPass(bloomPass);
+      }
+      
+      setupControls() {
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.enableZoom = true;
+        this.controls.minDistance = 3;
+        this.controls.maxDistance = 15;
+        this.controls.enablePan = false;
+        this.controls.autoRotate = true;
+        this.controls.autoRotateSpeed = 0.5;
+      }
+      
+      bindUIControls() {
+        // Controls panel toggle
+        const toggle = document.getElementById('controlsToggle');
+        const panel = document.getElementById('controlsPanel');
+        const close = document.getElementById('controlsClose');
+        
+        toggle.addEventListener('click', () => {
+          panel.classList.add('is-open');
+          toggle.classList.add('is-hidden');
+        });
+        
+        close.addEventListener('click', () => {
+          panel.classList.remove('is-open');
+          toggle.classList.remove('is-hidden');
+        });
+        
+        // Sliders
+        this.bindSlider('ior', 'iorValue', 'iorSlider', (val) => {
+          this.params.ior = val;
+          this.glassUniforms.uIOR.value = val;
+          this.physicalGlass.material.ior = val;
+          this.physicalGlass2.material.ior = val;
+        });
+        
+        this.bindSlider('chroma', 'chromaValue', 'chromaSlider', (val) => {
+          this.params.chromaticAberration = val;
+          this.glassUniforms.uChromaticAberration.value = val;
+        });
+        
+        this.bindSlider('distort', 'distortValue', 'distortSlider', (val) => {
+          this.params.distortion = val;
+          this.glassUniforms.uDistortion.value = val;
+        });
+        
+        this.bindSlider('thick', 'thickValue', 'thickSlider', (val) => {
+          this.params.thickness = val;
+          this.glassUniforms.uThickness.value = val;
+          this.physicalGlass.material.thickness = val;
+          this.physicalGlass2.material.thickness = val;
+        });
+        
+        this.bindSlider('rough', 'roughValue', 'roughSlider', (val) => {
+          this.params.roughness = val;
+          this.glassUniforms.uRoughness.value = val;
+          this.physicalGlass.material.roughness = val;
+          this.physicalGlass2.material.roughness = val;
+        });
+        
+        this.bindSlider('temp', 'tempValue', 'tempSlider', (val) => {
+          this.params.temporalDistortion = val;
+          this.glassUniforms.uTemporalDistortion.value = val;
+        });
+        
+        // CTA Button
+        document.getElementById('ctaButton').addEventListener('click', () => {
+          panel.classList.add('is-open');
+          toggle.classList.add('is-hidden');
+        });
+      }
+      
+      bindSlider(name, valueId, sliderId, callback) {
+        const valueEl = document.getElementById(valueId);
+        const sliderEl = document.getElementById(sliderId);
+        
+        sliderEl.addEventListener('input', (e) => {
+          const val = parseFloat(e.target.value);
+          valueEl.textContent = val.toFixed(2);
+          callback(val);
+        });
+      }
+      
+      onResize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        
+        this.renderer.setSize(width, height);
+        this.composer.setSize(width, height);
+        
+        this.glassUniforms.uResolution.value.set(width, height);
+      }
+      
+      animate() {
+        requestAnimationFrame(this.animate.bind(this));
+        
+        const time = performance.now() * 0.001;
+        
+        // Update shader uniforms
+        this.glassUniforms.uTime.value = time;
+        
+        // Animate background objects
+        this.backgroundObjects.forEach((obj, i) => {
+          obj.mesh.position.y = obj.baseY + Math.sin(time * obj.speed + i) * 0.3;
+          obj.mesh.rotation.x += 0.003;
+          obj.mesh.rotation.y += 0.005;
+          
+          if (obj.mesh.material.uniforms) {
+            obj.mesh.material.uniforms.uTime.value = time;
+          }
+        });
+        
+        // Animate main glass
+        this.glassMesh.rotation.x = time * 0.1;
+        this.glassMesh.rotation.y = time * 0.15;
+        
+        // Animate secondary glass objects
+        this.physicalGlass.rotation.x = time * 0.2;
+        this.physicalGlass.rotation.y = time * 0.3;
+        this.physicalGlass.position.y = Math.sin(time) * 0.3;
+        
+        this.physicalGlass2.rotation.x = -time * 0.15;
+        this.physicalGlass2.rotation.z = time * 0.2;
+        this.physicalGlass2.position.y = Math.cos(time * 0.8) * 0.4;
+        
+        // Update controls
+        this.controls.update();
+        
+        // Render
+        this.composer.render();
+        
+        // FPS counter
+        this.frames++;
+        if (time - this.lastTime >= 1) {
+          this.fpsCounter.textContent = this.frames;
+          this.frames = 0;
+          this.lastTime = time;
+        }
+      }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      new LiquidGlassApp();
+    });
+  </script>
+</body>
+</html>

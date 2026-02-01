@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font="raavi" data-display="padchhed">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f8f6f2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <title>Shabad Reader • ANHAD</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="shabad-reader.css">
+</head>
+<body>
+    <!-- iOS Blur Orbs Background -->
+    <div class="orbs-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    
+    <!-- iOS Navigation -->
+    <nav class="ios-nav">
+        <button class="nav-back" id="navBack">
+            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+                <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Search</span>
+        </button>
+        <h1 class="nav-title" id="navTitle">Shabad</h1>
+        <div class="nav-actions">
+            <button class="theme-toggle" id="themeToggle">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+            </button>
+            <button class="nav-settings" id="settingsBtn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Shabad Meta -->
+    <header class="shabad-meta glass" id="shabadMeta">
+        <div class="meta-left">
+            <span class="ang-badge" id="angBadge">Ang 0</span>
+            <span class="raag-name" id="raagName">Loading...</span>
+        </div>
+        <span class="writer-name" id="writerName"></span>
+    </header>
+
+    <!-- Shabad Content -->
+    <main class="shabad-content" id="shabadContent">
+        <!-- Loading State -->
+        <div class="loading-state active" id="loadingState">
+            <div class="loader">
+                <div class="loader-ring"></div>
+                <span class="loader-icon">☬</span>
+            </div>
+            <p>Loading Shabad...</p>
+        </div>
+        
+        <!-- Shabad Lines -->
+        <div class="shabad-lines" id="shabadLines"></div>
+    </main>
+
+    <!-- Bottom Controls -->
+    <footer class="bottom-controls glass">
+        <button class="control-btn fav-btn" id="favBtn">🤍</button>
+        <button class="control-btn" id="fontSizeDown">
+            <span style="font-size: 14px;">ੳ</span>
+        </button>
+        <button class="control-btn" id="fontSizeUp">
+            <span style="font-size: 22px;">ੳ</span>
+        </button>
+        <button class="control-btn share-btn" id="shareBtn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                <polyline points="16,6 12,2 8,6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+        </button>
+    </footer>
+
+    <!-- Settings Sheet -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-backdrop"></div>
+        <div class="settings-sheet glass">
+            <div class="sheet-handle"></div>
+            <h2 class="settings-title">Reader Settings</h2>
+            
+            <!-- Display Mode -->
+            <div class="setting-group">
+                <label class="setting-label">Display Mode</label>
+                <div class="setting-options display-options">
+                    <button class="setting-opt active" data-display="padchhed">
+                        <span class="opt-sample">ਪਦ ਛੇਦ</span>
+                        <span>Padchhed</span>
+                    </button>
+                    <button class="setting-opt" data-display="larivaar">
+                        <span class="opt-sample">ਲੜੀਵਾਰ</span>
+                        <span>Larivaar</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Translation Language -->
+            <div class="setting-group">
+                <label class="setting-label">Translation</label>
+                <div class="setting-options trans-options">
+                    <button class="setting-opt active" data-trans="english">English</button>
+                    <button class="setting-opt" data-trans="punjabi">ਪੰਜਾਬੀ</button>
+                    <button class="setting-opt" data-trans="hindi">हिंदी</button>
+                    <button class="setting-opt" data-trans="none">None</button>
+                </div>
+            </div>
+            
+            <!-- Transliteration -->
+            <div class="setting-group">
+                <label class="setting-label">Transliteration</label>
+                <div class="toggle-row">
+                    <span>Show Roman transliteration</span>
+                    <button class="toggle-switch" id="translitToggle">
+                        <span class="toggle-handle"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Font Selection -->
+            <div class="setting-group">
+                <label class="setting-label">Gurmukhi Font</label>
+                <div class="setting-options font-options">
+                    <button class="setting-opt active" data-font="raavi">Raavi</button>
+                    <button class="setting-opt" data-font="noto">Noto Sans</button>
+                    <button class="setting-opt" data-font="mukta">Mukta</button>
+                </div>
+            </div>
+            
+            <button class="settings-done" id="settingsDone">Done</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastText"></span>
+    </div>
+
+    <script src="shabad-reader.js"></script>
+</body>
+</html>

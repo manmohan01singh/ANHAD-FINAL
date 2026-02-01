@@ -1,378 +1,491 @@
 <!DOCTYPE html>
-<html lang="pa" dir="ltr" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Read Sacred Gurbani with translations">
-  <meta name="theme-color" content="#0A0A0F">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  
-  <title>Bani Reader | Gurbani Live</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/reader.css">
-</head>
-
-<body>
-  <!-- Loading -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-content">
-      <div class="loading-ik">ੴ</div>
-      <p id="loadingText">Loading Bani...</p>
-    </div>
-  </div>
-
-  <!-- Error State -->
-  <div class="error-state" id="errorState" style="display: none;">
-    <div class="error-icon">⚠️</div>
-    <h2>Unable to Load</h2>
-    <p id="errorMessage">Please check your connection.</p>
-    <button class="error-btn" id="retryBtn">Try Again</button>
-    <a href="index.html" class="error-link">Back to Library</a>
-  </div>
-
-  <!-- Reader App -->
-  <div class="reader-app" id="readerApp" style="display: none;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Bani Reader | ANHAD</title>
     
-    <!-- Header -->
-    <header class="reader-header glass">
-      <a href="index.html" class="reader-back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </a>
-      
-      <div class="reader-title" id="readerTitle">
-        <span class="reader-gurmukhi">ਬਾਣੀ</span>
-        <span class="reader-english">Bani</span>
-      </div>
-      
-      <div class="reader-actions">
-        <button class="reader-btn" id="bookmarkBtn" aria-label="Bookmark">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
-          </svg>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/fonts.css">
+    <link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+
+    <!-- Background Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-ik">ੴ</div>
+            <p id="loadingText">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="errorState" style="display: none;">
+        <div class="error-icon">😔</div>
+        <h2>Unable to Load</h2>
+        <p id="errorMessage">Something went wrong</p>
+        <button class="error-btn" id="retryBtn">Try Again</button>
+        <a href="index.html" class="error-link">Return Home</a>
+    </div>
+
+    <!-- Paper Background -->
+    <div class="paper-background" id="paperBackground"></div>
+
+    <!-- Reader App -->
+    <div class="reader-app" id="readerApp" style="display: none;">
+
+        <!-- Progress Bar -->
+        <div class="reader-progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- iOS Navigation Bar -->
+        <header class="reader-header">
+            <a href="index.html" class="reader-back">
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 2L2 10L10 18"/>
+                </svg>
+                <span>Banis</span>
+            </a>
+
+            <div class="reader-title" id="readerTitle">
+                <span class="reader-gurmukhi">ਬਾਣੀ</span>
+                <span class="reader-english">Bani</span>
+            </div>
+
+            <div class="reader-actions">
+                <button class="reader-btn" id="bookmarkBtn" aria-label="Bookmark">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                    </svg>
+                </button>
+                <button class="reader-btn" id="settingsBtn" aria-label="Settings">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Display Toggles (Hide on scroll) -->
+        <nav class="reader-toggles">
+            <button class="toggle-btn active" id="toggleGurmukhi">ਗੁਰਮੁਖੀ</button>
+            <button class="toggle-btn active" id="toggleRoman">Roman</button>
+            <button class="toggle-btn active" id="toggleEnglish">English</button>
+            <button class="toggle-btn" id="togglePunjabi">ਪੰਜਾਬੀ</button>
+        </nav>
+
+        <!-- Progress Text -->
+        <div class="progress-text" id="progressText">0%</div>
+
+        <!-- Content -->
+        <main class="reader-content">
+            <div class="reader-info" id="readerInfo"></div>
+            <div class="verses-container" id="versesContainer"></div>
+
+            <!-- End Card -->
+            <div class="reader-end" id="readerEnd" style="display: none;">
+                <div class="end-khanda">☬</div>
+                <h2 class="end-gurmukhi">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ</h2>
+                <p class="end-english">The Khalsa belongs to God, Victory belongs to God</p>
+                <div class="end-actions">
+                    <button class="end-btn primary" id="readAgainBtn">Read Again</button>
+                    <a href="index.html" class="end-btn secondary">Browse Banis</a>
+                </div>
+            </div>
+        </main>
+
+        <!-- Scroll Top -->
+        <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 15l-6-6-6 6"/>
+            </svg>
         </button>
-        <button class="reader-btn" id="settingsBtn" aria-label="Settings">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-          </svg>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay"></div>
+
+    <!-- Settings Drawer - PURE iOS STYLE -->
+    <div class="settings-drawer" id="settingsDrawer">
+        <div class="settings-handle"></div>
+        <button class="settings-close-floating" id="settingsCloseFloat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
         </button>
-      </div>
-    </header>
 
-    <!-- Display Toggles -->
-    <div class="reader-toggles glass">
-      <button class="toggle-btn active" id="toggleGurmukhi" data-active="true">ਗੁਰਮੁਖੀ</button>
-      <button class="toggle-btn active" id="toggleRoman" data-active="true">Roman</button>
-      <button class="toggle-btn active" id="toggleEnglish" data-active="true">English</button>
-      <button class="toggle-btn" id="togglePunjabi" data-active="false">ਪੰਜਾਬੀ</button>
+        <div class="settings-header">
+            <h2>ਸੈਟਿੰਗਜ਼</h2>
+            <span class="settings-subtitle">Reading Preferences</span>
+        </div>
+
+        <div class="settings-body">
+
+            <!-- GENERAL -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">General</h3>
+                <div class="setting-card">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Keep Screen Awake</span>
+                        </div>
+                        <button class="ios-toggle" id="wakeLockToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Larivaar</span>
+                            <span class="setting-desc">Remove spaces between words</span>
+                        </div>
+                        <button class="ios-toggle" id="larivaarToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider" id="larivaarAssistDivider" style="display: none;"></div>
+                    <div class="setting-row" id="larivaarAssistRow" style="display: none;">
+                        <div class="setting-info">
+                            <span class="setting-label">Larivaar Assist</span>
+                            <span class="setting-desc">Alternate word colors</span>
+                        </div>
+                        <button class="ios-toggle" id="larivaarAssistToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Continuous Reading</span>
+                            <span class="setting-desc">Flow text without line breaks</span>
+                        </div>
+                        <button class="ios-toggle" id="continuousReadingToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Paragraph Mode</span>
+                            <span class="setting-desc">Reduce spacing between verses</span>
+                        </div>
+                        <button class="ios-toggle" id="paragraphModeToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Paper Background</span>
+                            <span class="setting-desc">Classic paper reading feel</span>
+                        </div>
+                        <button class="ios-toggle" id="paperBackgroundToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Show Section Titles</span>
+                        </div>
+                        <button class="ios-toggle" id="showTitlesToggle" aria-checked="true">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TRANSLATION -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Translation</h3>
+                <div class="setting-card">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Size</span>
+                        </div>
+                        <div class="size-controls">
+                            <button class="size-btn" data-target="translation" data-action="decrease">−</button>
+                            <button class="size-btn" data-target="translation" data-action="increase">+</button>
+                        </div>
+                        <span class="setting-value" id="translationSizeValue">16 px</span>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">English Translation</span>
+                        </div>
+                        <button class="ios-toggle active" id="englishTranslationToggle" aria-checked="true">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Punjabi Translation</span>
+                        </div>
+                        <button class="ios-toggle" id="punjabiTranslationToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TRANSLITERATION -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Transliteration</h3>
+                <div class="setting-card">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Size</span>
+                        </div>
+                        <div class="size-controls">
+                            <button class="size-btn" data-target="translit" data-action="decrease">−</button>
+                            <button class="size-btn" data-target="translit" data-action="increase">+</button>
+                        </div>
+                        <span class="setting-value" id="translitSizeValue">17 px</span>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">English (Roman)</span>
+                        </div>
+                        <button class="ios-toggle active" id="englishTranslitToggle" aria-checked="true">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- APPEARANCE -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Appearance</h3>
+                <div class="setting-card">
+                    <div class="setting-row theme-row">
+                        <span class="setting-subsection">Theme</span>
+                        <div class="theme-selector">
+                            <button class="theme-bubble" data-theme="light">
+                                <div class="bubble-inner light"></div>
+                                <span class="bubble-label">Light</span>
+                            </button>
+                            <button class="theme-bubble active" data-theme="dark">
+                                <div class="bubble-inner dark"></div>
+                                <span class="bubble-label">Dark</span>
+                            </button>
+                            <button class="theme-bubble" data-theme="sepia">
+                                <div class="bubble-inner sepia"></div>
+                                <span class="bubble-label">Sepia</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FONT -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Font</h3>
+                <div class="setting-card">
+                    <!-- Preview -->
+                    <div class="font-preview" id="fontPreview">
+                        <span class="font-preview-text">ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ</span>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Gurbani Size</span>
+                        </div>
+                        <div class="size-controls">
+                            <button class="size-btn" data-target="gurbani" data-action="decrease">−</button>
+                            <button class="size-btn" data-target="gurbani" data-action="increase">+</button>
+                        </div>
+                        <span class="setting-value" id="gurbaniFontSizeValue">28 px</span>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Font Family</span>
+                        </div>
+                        <select class="setting-select font-select" id="fontFamilySelect">
+                            <option value="noto" selected>Noto Sans</option>
+                            <option value="puratan">Puratan Hastlikhat</option>
+                            <option value="riyasti-hast">Riyasti Hastlikhat</option>
+                            <option value="riyasti-naveen">Riyasti Naveen</option>
+                        </select>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Font Weight</span>
+                        </div>
+                        <select class="setting-select" id="fontWeightSelect">
+                            <option value="400">Regular</option>
+                            <option value="500" selected>Medium</option>
+                            <option value="600">Semi-Bold</option>
+                            <option value="700">Bold</option>
+                        </select>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Text Align</span>
+                        </div>
+                        <select class="setting-select" id="textAlignSelect">
+                            <option value="left">Left</option>
+                            <option value="center" selected>Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DATA -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Data</h3>
+                <div class="setting-card">
+                    <button class="setting-action" id="resetBtn">
+                        <div class="action-info">
+                            <span class="action-icon">↺</span>
+                            <div class="action-text">
+                                <span class="action-label">Reset Settings</span>
+                                <span class="action-desc">Restore defaults</span>
+                            </div>
+                        </div>
+                        <span class="action-arrow">›</span>
+                    </button>
+                </div>
+            </section>
+
+            <footer class="settings-footer">
+                <p class="version-info">ANHAD v5.0 • Pure iOS</p>
+                <p class="api-credit">Powered by BaniDB</p>
+            </footer>
+
+        </div>
     </div>
 
-    <!-- Progress -->
-    <div class="reader-progress">
-      <div class="progress-bar" id="progressBar"></div>
-      <span class="progress-text" id="progressText">0%</span>
+    <!-- Color Picker Modal -->
+    <div class="color-picker-modal" id="colorPickerModal">
+        <div class="picker-backdrop"></div>
+        <div class="picker-content">
+            <h3 class="picker-title" id="pickerTitle">Select Color</h3>
+            <div class="picker-colors" id="pickerColors"></div>
+            <button class="picker-close" id="pickerClose">Done</button>
+        </div>
     </div>
 
-    <!-- Content -->
-    <main class="reader-content">
-      <div class="reader-info" id="readerInfo"></div>
-      <div class="verses-container" id="versesContainer"></div>
-      
-      <!-- End Card -->
-      <div class="reader-end" id="readerEnd" style="display: none;">
-        <div class="end-khanda">☬</div>
-        <p class="end-gurmukhi">ਬਾਣੀ ਸੰਪੂਰਨ</p>
-        <p class="end-english">Bani Complete</p>
-        <div class="end-actions">
-          <button class="end-btn primary" id="readAgainBtn">Read Again</button>
-          <a href="index.html" class="end-btn secondary">Back to Library</a>
-        </div>
-      </div>
-    </main>
-
-    <!-- Scroll Top -->
-    <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M18 15l-6-6-6 6"/>
-      </svg>
-    </button>
-
-  </div>
-
-  <!-- Settings Panel - iOS Style -->
-  <div class="settings-overlay" id="settingsOverlay"></div>
-  <div class="settings-drawer" id="settingsDrawer">
-    <div class="settings-handle"></div>
-    <div class="settings-header">
-      <h2>ਬਾਣੀ ਸੈਟਿੰਗਜ਼</h2>
-      <span class="settings-subtitle">Bani Settings</span>
-      <button class="settings-close" id="settingsClose">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-    <div class="settings-body">
-      
-      <!-- 📖 DISPLAY Section -->
-      <div class="setting-section">
-        <h3 class="setting-section-title">📖 DISPLAY</h3>
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Font Size</span>
-              <span class="setting-value" id="fontSizeValue">28pt</span>
-            </div>
-            <input type="range" class="setting-slider" id="fontSizeSlider" min="18" max="48" value="28">
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Font Family</span>
-            </div>
-            <select class="setting-select" id="fontFamilySelect">
-              <option value="gurmukhi" selected>Gurmukhi</option>
-              <option value="raavi">Raavi</option>
-              <option value="anmol">Anmol Lipi</option>
-            </select>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Line Spacing</span>
-              <span class="setting-value" id="lineSpacingValue">1.8</span>
-            </div>
-            <input type="range" class="setting-slider" id="lineSpacingSlider" min="12" max="28" value="18" step="2">
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Text Alignment</span>
-            </div>
-            <div class="setting-segmented" id="textAlignmentControl">
-              <button class="segment-btn" data-value="left">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h12M3 18h18"/></svg>
-              </button>
-              <button class="segment-btn active" data-value="center">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M3 18h18"/></svg>
-              </button>
-              <button class="segment-btn" data-value="right">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M9 12h12M3 18h18"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 🌓 APPEARANCE Section -->
-      <div class="setting-section">
-        <h3 class="setting-section-title">🌓 APPEARANCE</h3>
-        <div class="setting-card">
-          <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 12px;">
-            <span class="setting-label">Theme</span>
-            <div class="theme-pills" id="themePills">
-              <button class="theme-pill" data-theme="light">☀️ Light</button>
-              <button class="theme-pill active" data-theme="dark">🌙 Dark</button>
-              <button class="theme-pill" data-theme="sepia">📜 Sepia</button>
-              <button class="theme-pill" data-theme="gold">✨ Gold</button>
-              <button class="theme-pill" data-theme="amoled">⬛ AMOLED</button>
-            </div>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <span class="setting-label">Accent Color</span>
-            <div class="color-picker" id="accentColorPicker">
-              <button class="color-dot active" data-color="#D4AF37" style="--dot-color: #D4AF37" title="Sacred Gold"></button>
-              <button class="color-dot" data-color="#3B82F6" style="--dot-color: #3B82F6" title="Divine Blue"></button>
-              <button class="color-dot" data-color="#EC4899" style="--dot-color: #EC4899" title="Rose Pink"></button>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 📝 READING Section -->
-      <div class="setting-section">
-        <h3 class="setting-section-title">📝 READING</h3>
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Show Translation</span>
-            </div>
-            <button class="ios-toggle active" id="translationToggle" aria-checked="true">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Translation Language</span>
-            </div>
-            <select class="setting-select" id="translationLangSelect">
-              <option value="english" selected>English</option>
-              <option value="punjabi">Punjabi</option>
-              <option value="hindi">Hindi</option>
-              <option value="spanish">Spanish</option>
-            </select>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Show Transliteration</span>
-              <span class="setting-desc">Roman text pronunciation</span>
-            </div>
-            <button class="ios-toggle active" id="transliterationToggle" aria-checked="true">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Paragraph Mode</span>
-              <span class="setting-desc">Continuous flow reading</span>
-            </div>
-            <button class="ios-toggle" id="paragraphModeToggle" aria-checked="false">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Larivaar Mode</span>
-              <span class="setting-desc">Continuous text without spaces</span>
-            </div>
-            <button class="ios-toggle" id="larivaarToggle" aria-checked="false">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Keep Screen Awake</span>
-              <span class="setting-desc">Prevent screen from sleeping</span>
-            </div>
-            <button class="ios-toggle" id="wakeLockToggle" aria-checked="false">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 🔊 AUDIO Section -->
-      <div class="setting-section">
-        <h3 class="setting-section-title">🔊 AUDIO</h3>
-        <div class="setting-card">
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Auto-play Next Verse</span>
-              <span class="setting-desc">Automatically continue playback</span>
-            </div>
-            <button class="ios-toggle" id="autoPlayToggle" aria-checked="false">
-              <span class="toggle-track"></span>
-              <span class="toggle-thumb"></span>
-            </button>
-          </div>
-          
-          <div class="setting-divider"></div>
-          
-          <div class="setting-row">
-            <div class="setting-info">
-              <span class="setting-label">Playback Speed</span>
-            </div>
-            <select class="setting-select" id="playbackSpeedSelect">
-              <option value="0.5">0.5x</option>
-              <option value="0.75">0.75x</option>
-              <option value="1" selected>1.0x</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 💾 DATA Section -->
-      <div class="setting-section">
-        <h3 class="setting-section-title">💾 DATA</h3>
-        <div class="setting-card">
-          <button class="setting-action" id="downloadOfflineBtn">
-            <div class="action-info">
-              <span class="action-icon">⬇️</span>
-              <div class="action-text">
-                <span class="action-label">Download for Offline</span>
-                <span class="action-desc">Save this Bani for offline reading</span>
-              </div>
-            </div>
-            <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          
-          <div class="setting-divider"></div>
-          
-          <button class="setting-action" id="clearHistoryBtn">
-            <div class="action-info">
-              <span class="action-icon">🗑️</span>
-              <div class="action-text">
-                <span class="action-label">Clear Reading History</span>
-                <span class="action-desc">Remove all reading progress</span>
-              </div>
-            </div>
-            <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-          
-          <div class="setting-divider"></div>
-          
-          <button class="setting-action danger" id="resetBtn">
-            <div class="action-info">
-              <span class="action-icon">🔄</span>
-              <div class="action-text">
-                <span class="action-label">Reset All Settings</span>
-                <span class="action-desc">Restore default preferences</span>
-              </div>
-            </div>
-            <svg class="action-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Version Info -->
-      <div class="settings-footer">
-        <p class="version-info">Gurbani Live v2.1.0</p>
-        <p class="api-credit">Gurbani content from BaniDB.com</p>
-      </div>
-      
-    </div>
-  </div>
-
-  <script src="js/bani-metadata.js"></script>
-  <script src="js/banidb-api.js"></script>
-  <script src="js/reader-engine.js"></script>
+    <script src="js/banidb-api.js"></script>
+    <script src="js/bani-metadata.js"></script>
+    <script src="js/reader-engine.js"></script>
+    
+    <!-- Persistent Audio for Cross-Page Playback -->
+    <script src="../lib/persistent-audio.js"></script>
+    <script src="../lib/background-audio-loader.js"></script>
+    
+    <!-- Dynamic Orb Scroll Effects -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        'use strict';
+        
+        console.log('🌈 Initializing dynamic orb effects...');
+        
+        const orb1 = document.querySelector('.orb-1');
+        const orb2 = document.querySelector('.orb-2');
+        const orb3 = document.querySelector('.orb-3');
+        
+        if (!orb1 || !orb2) {
+            console.warn('⚠️ Orbs not found in DOM');
+            return;
+        }
+        
+        console.log('✅ Orbs found:', { orb1, orb2, orb3 });
+        
+        // Sacred color palettes for scroll journey
+        const darkThemeColors = [
+            { orb1: 'conic-gradient(from 0deg, #D4AF37, #FF8C00, #FFD700, #D4AF37)', orb2: 'conic-gradient(from 180deg, #AF52DE, #5856D6, #007AFF, #AF52DE)', orb3: 'conic-gradient(from 90deg, #30D158, #34C759, #32D74B, #30D158)' },
+            { orb1: 'conic-gradient(from 45deg, #FF6B6B, #FF8E53, #FED766, #FF6B6B)', orb2: 'conic-gradient(from 225deg, #A855F7, #6366F1, #2DD4BF, #A855F7)', orb3: 'conic-gradient(from 135deg, #F59E0B, #D97706, #B45309, #F59E0B)' },
+            { orb1: 'conic-gradient(from 90deg, #EC4899, #8B5CF6, #6366F1, #EC4899)', orb2: 'conic-gradient(from 270deg, #10B981, #059669, #047857, #10B981)', orb3: 'conic-gradient(from 0deg, #FF8C00, #FFD700, #FF6347, #FF8C00)' },
+            { orb1: 'conic-gradient(from 135deg, #3B82F6, #06B6D4, #10B981, #3B82F6)', orb2: 'conic-gradient(from 315deg, #F43F5E, #EC4899, #A855F7, #F43F5E)', orb3: 'conic-gradient(from 180deg, #D4AF37, #B8860B, #DAA520, #D4AF37)' },
+            { orb1: 'conic-gradient(from 180deg, #8B4513, #CD853F, #D4AF37, #8B4513)', orb2: 'conic-gradient(from 0deg, #6D28D9, #4C1D95, #7C3AED, #6D28D9)', orb3: 'conic-gradient(from 270deg, #14B8A6, #0D9488, #0F766E, #14B8A6)' }
+        ];
+        
+        let ticking = false;
+        
+        function updateOrbs() {
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollProgress = docHeight > 0 ? window.scrollY / docHeight : 0;
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+            
+            // Only apply dynamic colors in dark mode
+            if (theme === 'dark') {
+                // Calculate which color palette to use
+                const colorIndex = Math.min(Math.floor(scrollProgress * darkThemeColors.length), darkThemeColors.length - 1);
+                const currentColors = darkThemeColors[colorIndex];
+                
+                // Apply colors with smooth CSS transition
+                if (orb1 && currentColors) orb1.style.background = currentColors.orb1;
+                if (orb2 && currentColors) orb2.style.background = currentColors.orb2;
+                if (orb3 && currentColors) orb3.style.background = currentColors.orb3;
+            }
+            
+            // Dynamic position based on scroll - MORE NOTICEABLE movement
+            const moveX = Math.sin(scrollProgress * Math.PI * 4) * 80;
+            const moveY = Math.cos(scrollProgress * Math.PI * 4) * 60;
+            
+            if (orb1) {
+                orb1.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${scrollProgress * 360}deg)`;
+            }
+            if (orb2) {
+                orb2.style.transform = `translate(${-moveX * 0.8}px, ${-moveY * 0.8}px) rotate(${-scrollProgress * 270}deg)`;
+            }
+            if (orb3) {
+                orb3.style.transform = `translate(${moveX * 0.6}px, ${moveY * 1.5}px) rotate(${scrollProgress * 180}deg)`;
+            }
+            
+            // Adjust opacity based on scroll - MORE VISIBLE
+            const baseOpacity = theme === 'dark' ? 0.35 : 0.18;
+            const opacityBoost = scrollProgress * 0.15;
+            if (orb1) orb1.style.opacity = baseOpacity + opacityBoost;
+            if (orb2) orb2.style.opacity = (baseOpacity * 0.9) + opacityBoost;
+            if (orb3) orb3.style.opacity = (baseOpacity * 0.7) + (opacityBoost * 0.8);
+            
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                window.requestAnimationFrame(updateOrbs);
+                ticking = true;
+            }
+        }, { passive: true });
+        
+        // Initial call
+        updateOrbs();
+        console.log('🎨 Orb scroll effects initialized!');
+    });
+    </script>
 </body>
 </html>

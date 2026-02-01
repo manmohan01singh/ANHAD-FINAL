@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <title>Dashboard • ANHAD</title>
+  
+  <!-- Global Theme (must be first!) -->
+  <script src="../lib/global-theme.js"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #FAF8F5;
+      --bg-white: #FFFFFF;
+      --bg-soft: #F5F2EE;
+      --gold-400: #D4A03A;
+      --gold-500: #B8860B;
+      --gold-gradient: linear-gradient(135deg, #D4A03A 0%, #B8860B 100%);
+      --gold-glow: rgba(212, 160, 58, 0.3);
+      --text-primary: #1A1D26;
+      --text-secondary: #5A5F72;
+      --text-tertiary: #9CA3B8;
+      --glass-white: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 34px);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: calc(100px + var(--safe-bottom));
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 0 20px;
+      padding-top: calc(var(--safe-top) + 16px);
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    
+    .header__back {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass-white);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease;
+    }
+    
+    .header__back:hover { transform: scale(1.05); }
+    .header__back:active { transform: scale(0.95); }
+    
+    .header__title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .header__actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .header__btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass-white);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      transition: all 0.2s ease;
+    }
+    
+    /* Streak Hero */
+    .streak-hero {
+      background: var(--gold-gradient);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), 0 0 40px var(--gold-glow);
+    }
+    
+    .streak-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+    
+    .streak-hero__label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .streak-hero__count {
+      font-size: 72px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 4px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .streak-hero__subtitle {
+      font-size: 16px;
+      color: rgba(255,255,255,0.9);
+    }
+    
+    .streak-hero__freeze {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    /* Stats Grid */
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    
+    .stat-card {
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--glass-border);
+    }
+    
+    .stat-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    
+    .stat-card__icon--gold { background: rgba(212, 160, 58, 0.15); color: var(--gold-500); }
+    .stat-card__icon--blue { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+    .stat-card__icon--green { background: rgba(34, 197, 94, 0.15); color: #22C55E; }
+    .stat-card__icon--purple { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; }
+    
+    .stat-card__value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    
+    .stat-card__label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    
+    /* Goals Section */
+    .goals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    
+    .goal-card {
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--glass-border);
+      transition: all 0.2s ease;
+    }
+    
+    .goal-card--complete {
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.05);
+    }
+    
+    .goal-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    
+    .goal-card__content {
+      flex: 1;
+    }
+    
+    .goal-card__title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    
+    .goal-card__progress {
+      height: 8px;
+      background: var(--bg-soft);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    
+    .goal-card__fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 0.5s ease;
+    }
+    
+    .goal-card__fill--gold { background: var(--gold-gradient); }
+    .goal-card__fill--blue { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+    .goal-card__fill--green { background: linear-gradient(90deg, #22C55E, #4ADE80); }
+    .goal-card__fill--purple { background: linear-gradient(90deg, #8B5CF6, #A78BFA); }
+    
+    .goal-card__status {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+    
+    .goal-card__check {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #22C55E;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    /* Milestones */
+    .milestones {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 28px;
+      scrollbar-width: none;
+    }
+    
+    .milestones::-webkit-scrollbar { display: none; }
+    
+    .milestone {
+      flex-shrink: 0;
+      width: 80px;
+      padding: 16px 12px;
+      background: var(--bg-white);
+      border-radius: var(--radius-md);
+      text-align: center;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--glass-border);
+      opacity: 0.5;
+    }
+    
+    .milestone--achieved {
+      opacity: 1;
+      border-color: var(--gold-400);
+      background: rgba(212, 160, 58, 0.08);
+    }
+    
+    .milestone__emoji {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    
+    .milestone__days {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .milestone__label {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      padding-bottom: calc(12px + var(--safe-bottom));
+      background: rgba(250, 248, 245, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--glass-border);
+      z-index: 100;
+    }
+    
+    .bottom-nav__container {
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-around;
+      background: var(--bg-white);
+      border-radius: 100px;
+      padding: 8px 16px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .nav-item {
+      padding: 12px 18px;
+      border-radius: 100px;
+      border: none;
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 18px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-item--active {
+      color: var(--gold-400);
+      background: rgba(212, 160, 58, 0.1);
+    }
+    
+    /* Animations */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .app > * {
+      animation: slideUp 0.5s ease backwards;
+    }
+    
+    .app > *:nth-child(1) { animation-delay: 0.05s; }
+    .app > *:nth-child(2) { animation-delay: 0.1s; }
+    .app > *:nth-child(3) { animation-delay: 0.15s; }
+    .app > *:nth-child(4) { animation-delay: 0.2s; }
+    .app > *:nth-child(5) { animation-delay: 0.25s; }
+    .app > *:nth-child(6) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <a href="../index.html" class="header__back">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+      <h1 class="header__title">My Journey</h1>
+      <div class="header__actions">
+        <button class="header__btn" onclick="AnhadTheme.toggle()">
+          <i class="fas fa-sun" id="themeIcon"></i>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Streak Hero -->
+    <section class="streak-hero">
+      <div class="streak-hero__freeze" id="freezeStatus">
+        <i class="fas fa-snowflake"></i>
+        <span id="freezeCount">1</span> Freeze
+      </div>
+      <p class="streak-hero__label">
+        <i class="fas fa-fire"></i> Current Streak
+      </p>
+      <h2 class="streak-hero__count" id="streakCount">0</h2>
+      <p class="streak-hero__subtitle">days of devotion</p>
+    </section>
+    
+    <!-- Stats Grid -->
+    <h2 class="section-title">
+      <i class="fas fa-chart-line"></i> Your Progress
+    </h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--gold">
+          <i class="fas fa-headphones"></i>
+        </div>
+        <div class="stat-card__value" id="totalHours">0</div>
+        <div class="stat-card__label">Hours Listened</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="stat-card__value" id="totalPages">0</div>
+        <div class="stat-card__label">Ang Read</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--green">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-card__value" id="totalNitnem">0</div>
+        <div class="stat-card__label">Nitnem Done</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-card__value" id="totalDays">0</div>
+        <div class="stat-card__label">Days Active</div>
+      </div>
+    </div>
+    
+    <!-- Daily Goals -->
+    <h2 class="section-title">
+      <i class="fas fa-bullseye"></i> Today's Goals
+    </h2>
+    <div class="goals-list" id="goalsList">
+      <!-- Goals will be populated by JS -->
+    </div>
+    
+    <!-- Milestones -->
+    <h2 class="section-title">
+      <i class="fas fa-trophy"></i> Milestones
+    </h2>
+    <div class="milestones" id="milestones">
+      <div class="milestone" data-days="1">
+        <div class="milestone__emoji">🌱</div>
+        <div class="milestone__days">1</div>
+        <div class="milestone__label">day</div>
+      </div>
+      <div class="milestone" data-days="7">
+        <div class="milestone__emoji">🙏</div>
+        <div class="milestone__days">7</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="21">
+        <div class="milestone__emoji">⭐</div>
+        <div class="milestone__days">21</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="40">
+        <div class="milestone__emoji">🪷</div>
+        <div class="milestone__days">40</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="108">
+        <div class="milestone__emoji">📿</div>
+        <div class="milestone__days">108</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="365">
+        <div class="milestone__emoji">👑</div>
+        <div class="milestone__days">365</div>
+        <div class="milestone__label">days</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav__container">
+      <a href="../index.html" class="nav-item" aria-label="Home"><i class="fas fa-house"></i></a>
+      <a href="../Insights/insights.html" class="nav-item" aria-label="Insights"><i class="fas fa-lightbulb"></i></a>
+      <a href="../Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
+      <a href="../Profile/profile.html" class="nav-item" aria-label="Profile"><i class="fas fa-user"></i></a>
+    </div>
+  </nav>
+  
+  <!-- Scripts -->
+  <script src="../lib/user-stats.js"></script>
+  <script>
+    (function() {
+      'use strict';
+      
+      function updateDashboard() {
+        if (!window.AnhadStats) {
+          setTimeout(updateDashboard, 100);
+          return;
+        }
+        
+        const summary = AnhadStats.getSummary();
+        
+        // Streak
+        document.getElementById('streakCount').textContent = summary.currentStreak;
+        document.getElementById('freezeCount').textContent = summary.freezesAvailable;
+        
+        // Stats
+        document.getElementById('totalHours').textContent = summary.totalListeningHours;
+        document.getElementById('totalPages').textContent = summary.totalPagesRead;
+        document.getElementById('totalNitnem').textContent = summary.totalNitnemCompleted;
+        document.getElementById('totalDays').textContent = summary.totalDaysActive;
+        
+        // Goals
+        renderGoals(summary.goals);
+        
+        // Milestones
+        updateMilestones(summary.milestones);
+      }
+      
+      function renderGoals(goals) {
+        const container = document.getElementById('goalsList');
+        const goalConfig = {
+          listenMinutes: { icon: 'fas fa-headphones', label: 'Listen to Kirtan', color: 'gold', unit: 'min' },
+          readPages: { icon: 'fas fa-book-open', label: 'Read Gurbani', color: 'blue', unit: 'Ang' },
+          completeNitnem: { icon: 'fas fa-sun', label: 'Complete Nitnem', color: 'green', unit: '' },
+          naamAbhyas: { icon: 'fas fa-om', label: 'Naam Simran', color: 'purple', unit: 'session' }
+        };
+        
+        container.innerHTML = Object.entries(goals)
+          .filter(([_, goal]) => goal.enabled)
+          .map(([key, goal]) => {
+            const config = goalConfig[key];
+            const isComplete = goal.complete;
+            return `
+              <div class="goal-card ${isComplete ? 'goal-card--complete' : ''}">
+                <div class="goal-card__icon" style="background: rgba(var(--${config.color}-rgb, 212, 160, 58), 0.15); color: var(--${config.color === 'gold' ? 'gold-500' : config.color === 'blue' ? 'blue-500, #3B82F6' : config.color === 'green' ? 'green-500, #22C55E' : 'purple-500, #8B5CF6'});">
+                  <i class="${config.icon}" style="color: ${config.color === 'gold' ? '#B8860B' : config.color === 'blue' ? '#3B82F6' : config.color === 'green' ? '#22C55E' : '#8B5CF6'}"></i>
+                </div>
+                <div class="goal-card__content">
+                  <div class="goal-card__title">${config.label}</div>
+                  <div class="goal-card__progress">
+                    <div class="goal-card__fill goal-card__fill--${config.color}" style="width: ${goal.percent}%"></div>
+                  </div>
+                  <div class="goal-card__status">${goal.current}/${goal.target} ${config.unit}</div>
+                </div>
+                ${isComplete ? '<div class="goal-card__check"><i class="fas fa-check"></i></div>' : ''}
+              </div>
+            `;
+          }).join('');
+      }
+      
+      function updateMilestones(milestones) {
+        const container = document.getElementById('milestones');
+        const milestoneElements = container.querySelectorAll('.milestone');
+        
+        milestoneElements.forEach(el => {
+          const days = parseInt(el.dataset.days);
+          const key = `day${days}`;
+          if (milestones[key]) {
+            el.classList.add('milestone--achieved');
+          }
+        });
+      }
+      
+      // Initialize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateDashboard);
+      } else {
+        updateDashboard();
+      }
+      
+      // Listen for stats updates
+      window.addEventListener('statsUpdated', updateDashboard);
+      window.addEventListener('streakUpdated', updateDashboard);
+      window.addEventListener('goalsUpdated', updateDashboard);
+    })();
+  </script>
+</body>
+</html>

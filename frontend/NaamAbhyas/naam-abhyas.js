@@ -255,9 +255,97 @@ class NaamAbhyas {
             this.isInitialized = true;
             console.log('✅ Naam Abhyas initialized successfully');
 
+            // Setup Service Worker message listener for background notifications
+            this.setupServiceWorkerListener();
+
+            // Check for auto-start from notification (when user clicks "Start Now" on a notification)
+            this.checkAutoStart();
+
         } catch (error) {
             console.error('❌ Failed to initialize Naam Abhyas:', error);
             this.showToast('Failed to initialize. Please refresh.', 'error');
+        }
+    }
+
+    /**
+     * Setup listener for Service Worker queries (for background notification support)
+     * The SW may ask for schedule data when checking for due notifications
+     */
+    setupServiceWorkerListener() {
+        if (!('serviceWorker' in navigator)) return;
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            const { type, currentHour, currentMinute, today } = event.data || {};
+
+            // Respond to schedule queries from service worker
+            if (type === 'GET_NAAM_ABHYAS_SCHEDULE' && event.ports[0]) {
+                const sessions = [];
+                const schedule = this.currentSchedule || {};
+
+                Object.entries(schedule).forEach(([hour, session]) => {
+                    if (session && session.status === 'pending') {
+                        sessions.push({
+                            hour: parseInt(hour),
+                            startMinute: session.startMinute,
+                            duration: this.config.duration || 2,
+                            notified: !!session.notified
+                        });
+                    }
+                });
+
+                event.ports[0].postMessage({
+                    sessions,
+                    enabled: this.config.enabled,
+                    duration: this.config.duration
+                });
+            }
+
+            // Handle notification-shown confirmation from SW
+            if (type === 'NAAM_ABHYAS_NOTIFIED' && event.data.hour !== undefined) {
+                const hour = event.data.hour;
+                if (this.currentSchedule[hour]) {
+                    this.currentSchedule[hour].notified = true;
+                    // Trigger the session alert modal since notification was shown
+                    this.triggerSessionAlert(this.currentSchedule[hour]);
+                }
+            }
+        });
+    }
+
+    /**
+     * Check URL params for auto-start request from notification click
+     * Opens the session modal directly when user clicked "Start Now" from notification
+     */
+    checkAutoStart() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoStart = urlParams.get('autoStart');
+
+        if (autoStart === 'true') {
+            console.log('[NaamAbhyas] 🚀 Auto-start requested from notification');
+
+            // Clean up URL (remove params without reload)
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, '', cleanUrl);
+
+            // Get the current session or use the provided hour/minute
+            const hour = parseInt(urlParams.get('hour')) || new Date().getHours();
+            const minute = parseInt(urlParams.get('minute')) || new Date().getMinutes();
+
+            // Find the matching session or the current one
+            let targetSession = this.currentSchedule[hour];
+            if (!targetSession) {
+                targetSession = this.getNextScheduledSession() || {
+                    hour: hour,
+                    startMinute: minute,
+                    startTime: this.formatTime12h(hour, minute),
+                    status: 'pending'
+                };
+            }
+
+            // Small delay to ensure everything is loaded, then show alert modal
+            setTimeout(() => {
+                this.triggerSessionAlert(targetSession);
+            }, 500);
         }
     }
 
@@ -804,6 +892,26 @@ class NaamAbhyas {
             const title = '🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ';
             const body = `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`;
 
+            // Build notification payload
+            const notificationPayload = {
+                id: notificationId,
+                title: title,
+                body: body,
+                scheduledTime: scheduledTime.getTime(),
+                tag: `naam-abhyas-${today}-${hour}`,
+                requireInteraction: true,
+                actions: [
+                    { action: 'start', title: '🙏 Start Now' },
+                    { action: 'dismiss', title: 'Skip' }
+                ],
+                data: {
+                    url: '/NaamAbhyas/naam-abhyas.html',
+                    type: 'naamAbhyas',
+                    hour: hour,
+                    startMinute: session.startMinute
+                }
+            };
+
             // 1. NATIVE MOBILE (Capacitor) - Works when app is completely closed!
             if (window.NativeNotifications?.isNativePlatform()) {
                 window.NativeNotifications.schedule({
@@ -812,12 +920,7 @@ class NaamAbhyas {
                     body: body,
                     at: scheduledTime,
                     recurring: false,
-                    data: {
-                        url: '/NaamAbhyas/naam-abhyas.html',
-                        type: 'naamAbhyas',
-                        hour: hour,
-                        startMinute: session.startMinute
-                    }
+                    data: notificationPayload.data
                 }).then(success => {
                     if (success) {
                         console.log(`[NaamAbhyas] ✅ NATIVE notification scheduled for ${session.startTime} (works when closed!)`);
@@ -826,29 +929,7 @@ class NaamAbhyas {
             }
 
             // 2. SERVICE WORKER (Web) - Works when browser tab is closed but browser is running
-            if (navigator.serviceWorker?.controller) {
-                const notificationPayload = {
-                    id: notificationId,
-                    title: title,
-                    body: body,
-                    scheduledTime: scheduledTime.getTime(),
-                    tag: `naam-abhyas-${today}-${hour}`,
-                    requireInteraction: true,
-                    data: {
-                        url: '/NaamAbhyas/naam-abhyas.html',
-                        type: 'naamAbhyas',
-                        hour: hour,
-                        startMinute: session.startMinute
-                    }
-                };
-
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'SCHEDULE_NOTIFICATION',
-                    payload: notificationPayload
-                });
-
-                console.log(`[NaamAbhyas] Scheduled SW notification for ${session.startTime}`);
-            }
+            this.scheduleViaSW(notificationPayload, session.startTime);
 
             // 3. ELECTRON DESKTOP - Works when minimized to system tray!
             if (window.electronAPI?.isElectron) {
@@ -863,6 +944,41 @@ class NaamAbhyas {
             }
         } catch (error) {
             console.warn('[NaamAbhyas] Failed to schedule notification:', error);
+        }
+    }
+
+    /**
+     * Schedule notification via Service Worker
+     * Uses controller if available, otherwise waits for SW ready
+     */
+    async scheduleViaSW(payload, sessionTime) {
+        if (!('serviceWorker' in navigator)) {
+            console.log('[NaamAbhyas] Service Worker not supported');
+            return;
+        }
+
+        try {
+            // Try using controller first (faster if available)
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'SCHEDULE_NOTIFICATION',
+                    payload: payload
+                });
+                console.log(`[NaamAbhyas] ✅ SW notification scheduled for ${sessionTime}`);
+                return;
+            }
+
+            // Fallback: wait for SW to be ready
+            const registration = await navigator.serviceWorker.ready;
+            if (registration.active) {
+                registration.active.postMessage({
+                    type: 'SCHEDULE_NOTIFICATION',
+                    payload: payload
+                });
+                console.log(`[NaamAbhyas] ✅ SW notification scheduled (via ready) for ${sessionTime}`);
+            }
+        } catch (error) {
+            console.warn('[NaamAbhyas] Failed to schedule via SW:', error);
         }
     }
 
@@ -1341,11 +1457,18 @@ class NaamAbhyas {
             navigator.vibrate([200, 100, 200, 100, 200]);
         }
 
-        // 2. Show browser notification (works even in background)
+        // 2. Show browser notification (works even in background via Service Worker)
         this.showBrowserNotification('🙏 Time for Naam Abhyas', {
             body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
             tag: 'naam-abhyas-session',
-            requireInteraction: true
+            requireInteraction: true,
+            data: {
+                url: '/NaamAbhyas/naam-abhyas.html',
+                type: 'naamAbhyas',
+                hour: session.hour,
+                startMinute: session.startMinute,
+                timestamp: Date.now()
+            }
         });
 
         // 3. Show the SESSION ALERT MODAL (user must click to start timer)
@@ -2125,20 +2248,57 @@ class NaamAbhyas {
         }
     }
 
-    showBrowserNotification(title, options = {}) {
+    /**
+     * Show browser notification using Service Worker for better background support
+     * Falls back to basic Notification API if SW is unavailable
+     */
+    async showBrowserNotification(title, options = {}) {
         if (!('Notification' in window) || Notification.permission !== 'granted') {
+            console.log('[NaamAbhyas] Notification permission not granted');
             return;
         }
 
+        const notificationOptions = {
+            icon: '/assets/icons/icon-192x192.png',
+            badge: '/assets/icons/icon-72x72.png',
+            vibrate: [200, 100, 200, 100, 200],
+            requireInteraction: true,
+            tag: 'naam-abhyas-session',
+            renotify: true,
+            data: {
+                url: '/NaamAbhyas/naam-abhyas.html',
+                type: 'naamAbhyas',
+                timestamp: Date.now()
+            },
+            actions: [
+                { action: 'start', title: '🙏 Start Now' },
+                { action: 'dismiss', title: 'Skip' }
+            ],
+            ...options
+        };
+
         try {
+            // PREFERRED: Use Service Worker registration for background notification support
+            if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+                const registration = await navigator.serviceWorker.ready;
+                if (registration.showNotification) {
+                    await registration.showNotification(title, notificationOptions);
+                    console.log('[NaamAbhyas] ✅ SW notification shown:', title);
+                    return;
+                }
+            }
+
+            // FALLBACK: Use basic Notification API (only works in foreground)
             new Notification(title, {
-                icon: '../assets/favicon.svg',
-                badge: '../assets/favicon.svg',
-                vibrate: [200, 100, 200],
-                ...options
+                icon: notificationOptions.icon,
+                badge: notificationOptions.badge,
+                body: options.body || '',
+                tag: notificationOptions.tag,
+                requireInteraction: notificationOptions.requireInteraction
             });
+            console.log('[NaamAbhyas] ⚠️ Fallback notification shown (foreground only):', title);
         } catch (e) {
-            console.log('Notification failed:', e);
+            console.error('[NaamAbhyas] Notification failed:', e);
         }
     }
 

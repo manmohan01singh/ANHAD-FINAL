@@ -297,7 +297,7 @@
 
       try {
         const response = await fetch(
-          `${this.baseUrl}/search/${encodeURIComponent(query)}?searchType=${typeNum}&source=G&results=${results}`,
+          `${this.baseUrl}/search/${encodeURIComponent(query)}?searchtype=${typeNum}&source=G&results=${results}`,
           { headers: { 'Accept': 'application/json' } }
         );
 

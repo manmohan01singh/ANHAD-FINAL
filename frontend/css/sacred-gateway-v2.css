@@ -1,0 +1,368 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANAHAD — PURE iOS WELCOME
+   
+   "Apple-Level Simplicity. Nothing More. Nothing Less."
+═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* iOS Dark Mode Colors */
+    --ios-black: #000000;
+    --ios-gray-1: #1C1C1E;
+    --ios-gray-2: #2C2C2E;
+    --ios-gray-3: #3A3A3C;
+    --ios-gray-4: #48484A;
+    --ios-gray-5: #636366;
+    --ios-gray-6: #8E8E93;
+
+    /* iOS Accent */
+    --ios-blue: #0A84FF;
+    --ios-orange: #FF9F0A;
+    --ios-gold: #FFD60A;
+
+    /* Sacred */
+    --sacred-gold: #C9A227;
+    --sacred-gold-light: #E8D48A;
+
+    /* Text */
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-tertiary: rgba(255, 255, 255, 0.3);
+
+    /* Font */
+    --font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+
+    /* Motion - iOS uses 0.3s for most transitions */
+    --ios-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ios-spring: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sacred-gateway-v2 {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--ios-black);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.sacred-gateway-v2.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--ios-ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BACKGROUND - Subtle Gradient (Like Apple Watch faces)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-background-image {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(ellipse 80% 60% at 50% 100%,
+            rgba(201, 162, 39, 0.15) 0%,
+            transparent 50%),
+        radial-gradient(ellipse 60% 40% at 50% 0%,
+            rgba(201, 162, 39, 0.08) 0%,
+            transparent 40%),
+        var(--ios-black);
+}
+
+/* Hide unnecessary elements */
+.sg-overlay,
+.sg-grain,
+.sg-watermark,
+.sg-corner,
+.sg-border-top,
+.sg-nishan,
+.sg-divider,
+.sg-granth--left,
+.sg-granth--right,
+.sg-weapon,
+.sg-granth-glow,
+.sg-scroll-hint {
+    display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONTENT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px;
+    max-width: 500px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HEADER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 48px;
+
+    opacity: 0;
+    animation: iosReveal 0.8s var(--ios-ease) 0.2s forwards;
+}
+
+@keyframes iosReveal {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ik Onkar - The Icon */
+.sg-ik-onkar {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: clamp(80px, 25vw, 140px);
+    font-weight: 400;
+    line-height: 1;
+
+    color: var(--sacred-gold);
+
+    /* Simple glow - no animation */
+    text-shadow: 0 0 60px rgba(201, 162, 39, 0.4);
+}
+
+/* App Name */
+.sg-title {
+    font-family: var(--font-system);
+    font-size: clamp(32px, 8vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+
+    margin-top: 32px;
+    color: var(--text-primary);
+}
+
+/* Tagline */
+.sg-subtitle {
+    font-family: var(--font-system);
+    font-size: clamp(15px, 4vw, 19px);
+    font-weight: 400;
+
+    margin-top: 12px;
+    color: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN - SGGS Image
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    opacity: 0;
+    animation: iosReveal 0.8s var(--ios-ease) 0.4s forwards;
+}
+
+.sg-trinity {
+    display: flex;
+    justify-content: center;
+}
+
+.sg-granth--center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sg-granth-image {
+    margin-bottom: 16px;
+}
+
+.sg-granth--center .sg-granth-image img {
+    width: clamp(160px, 40vw, 280px);
+    height: auto;
+
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+}
+
+/* Labels */
+.sg-granth-label {
+    text-align: center;
+}
+
+.sg-granth-title {
+    font-family: var(--font-system);
+    font-size: clamp(17px, 4vw, 21px);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.sg-granth-subtitle {
+    font-family: var(--font-system);
+    font-size: clamp(13px, 3vw, 15px);
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin: 6px 0 0 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CTA BUTTON - iOS Style
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-cta-container {
+    margin-top: 48px;
+
+    opacity: 0;
+    animation: iosReveal 0.8s var(--ios-ease) 0.6s forwards;
+}
+
+.sg-enter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 16px 32px;
+    min-width: 180px;
+
+    /* iOS Button Style */
+    background: var(--sacred-gold);
+    border: none;
+    border-radius: 14px;
+
+    font-family: var(--font-system);
+    font-size: 17px;
+    font-weight: 600;
+    color: #000000;
+
+    cursor: pointer;
+    outline: none;
+
+    transition: transform 0.2s var(--ios-ease),
+        opacity 0.2s var(--ios-ease);
+}
+
+.sg-enter-btn:hover {
+    opacity: 0.9;
+}
+
+.sg-enter-btn:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+}
+
+.sg-enter-btn span {
+    pointer-events: none;
+}
+
+.sg-enter-arrow {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOOTER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.sg-footer {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: center;
+    padding: 0 24px;
+
+    opacity: 0;
+    animation: iosReveal 0.8s var(--ios-ease) 0.8s forwards;
+}
+
+.sg-mool-mantar {
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: center;
+
+    max-width: 400px;
+    margin: 0;
+
+    color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+    .sg-header {
+        margin-bottom: 32px;
+    }
+
+    .sg-cta-container {
+        margin-top: 40px;
+    }
+
+    .sg-footer {
+        bottom: 24px;
+    }
+
+    .sg-mool-mantar {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 400px) {
+    .sg-enter-btn {
+        padding: 14px 28px;
+        font-size: 16px;
+        min-width: 160px;
+    }
+}
+
+/* Safe area for notch devices */
+@supports (padding: max(0px)) {
+    .sg-footer {
+        bottom: max(32px, env(safe-area-inset-bottom));
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sg-header,
+    .sg-main,
+    .sg-cta-container,
+    .sg-footer {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* Focus */
+.sg-enter-btn:focus-visible {
+    outline: 3px solid var(--ios-blue);
+    outline-offset: 2px;
+}

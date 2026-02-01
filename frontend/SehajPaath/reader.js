@@ -97,7 +97,10 @@ class SehajPaathReader {
             showTransliteration: false,
             translationLang: 'en',
             autoHideHeader: true,
-            hapticFeedback: true
+            hapticFeedback: true,
+            continuousReading: false,
+            paragraphMode: false,
+            larivaarAssist: false
         };
     }
 
@@ -184,7 +187,7 @@ class SehajPaathReader {
         // TASK 2: SEARCH BUTTON — Navigate to Search Page
         // ═══════════════════════════════════════════════════════════════════════════
         document.getElementById('searchBtn')?.addEventListener('click', () => {
-            window.location.href = 'gurbani-search.html';
+            this.openSearchModal();
         });
 
         // Navigation buttons
@@ -299,6 +302,7 @@ class SehajPaathReader {
                 document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.settings.displayMode = btn.dataset.mode;
+                this.applyModes();
                 this.renderGurbani();
                 this.saveSettings();
             });
@@ -359,6 +363,28 @@ class SehajPaathReader {
             this.applyLineNumbersVisibility();
             this.saveSettings();
         });
+
+        // Continuous Reading toggle
+        document.getElementById('continuousReading')?.addEventListener('change', (e) => {
+            this.settings.continuousReading = e.target.checked;
+            this.applyModes();
+            this.saveSettings();
+        });
+
+        // Paragraph Mode toggle
+        document.getElementById('paragraphMode')?.addEventListener('change', (e) => {
+            this.settings.paragraphMode = e.target.checked;
+            this.applyModes();
+            this.saveSettings();
+        });
+
+        // Larivaar Assist toggle
+        document.getElementById('larivaarAssist')?.addEventListener('change', (e) => {
+            this.settings.larivaarAssist = e.target.checked;
+            this.applyModes();
+            this.renderGurbani();
+            this.saveSettings();
+        });
     }
 
     setupSwipeGestures() {
@@ -402,16 +428,19 @@ class SehajPaathReader {
         const currentPosition = scroll.scrollTop;
         const header = document.getElementById('readerHeader');
         const footer = document.getElementById('readerFooter');
+        const container = document.getElementById('readerContainer');
 
         if (currentPosition > this.lastScrollPosition && currentPosition > 100) {
             // Scrolling down - hide
             header?.classList.add('hidden');
             footer?.classList.add('hidden');
+            container?.classList.add('ui-hidden');
             this.headerVisible = false;
         } else if (currentPosition < this.lastScrollPosition) {
             // Scrolling up - show
             header?.classList.remove('hidden');
             footer?.classList.remove('hidden');
+            container?.classList.remove('ui-hidden');
             this.headerVisible = true;
         }
 
@@ -421,14 +450,17 @@ class SehajPaathReader {
     toggleUI() {
         const header = document.getElementById('readerHeader');
         const footer = document.getElementById('readerFooter');
+        const container = document.getElementById('readerContainer');
 
         if (this.headerVisible) {
             header?.classList.add('hidden');
             footer?.classList.add('hidden');
+            container?.classList.add('ui-hidden');
             this.headerVisible = false;
         } else {
             header?.classList.remove('hidden');
             footer?.classList.remove('hidden');
+            container?.classList.remove('ui-hidden');
             this.headerVisible = true;
         }
     }
@@ -541,13 +573,18 @@ class SehajPaathReader {
         console.log('🖌️ Rendering', this.angData.lines.length, 'lines');
 
         const lines = this.angData.lines;
-        const isLarivaar = this.settings.displayMode === 'larivaar';
 
         container.innerHTML = lines.map((line, index) => {
             // Get the Gurmukhi text
-            let text = isLarivaar ?
-                (line.larivaar || line.gurmukhi || '') :
+            const isLarivaarMode = this.settings.displayMode === 'larivaar';
+            let text = isLarivaarMode ?
+                (line.larivaar || line.gurmukhi?.replace(/\s+/g, '') || '') :
                 (line.gurmukhi || '');
+
+            // Apply Larivaar Assist (alternating word colors)
+            if (isLarivaarMode && this.settings.larivaarAssist && line.gurmukhi) {
+                text = this.applyLarivaarAssist(line.gurmukhi);
+            }
 
             // Get translation
             let translation = '';
@@ -573,7 +610,7 @@ class SehajPaathReader {
 
             return `
                 <div class="gurbani-line" data-line-id="${line.id || index}" data-shabad-id="${line.shabadId || ''}">
-                    <p class="gurmukhi-text ${isLarivaar ? 'larivaar' : ''}">${text || 'ੴ'}</p>
+                    <p class="gurmukhi-text ${isLarivaarMode ? 'larivaar' : ''}">${text || 'ੴ'}</p>
                     ${this.settings.showTranslation && translation ?
                     `<p class="translation-text">${translation}</p>` : ''}
                     ${this.settings.showTransliteration && transliteration ?
@@ -674,7 +711,12 @@ class SehajPaathReader {
     }
 
     goBack() {
-        window.location.href = 'sehaj-paath.html';
+        // Use browser history if available, otherwise go to sehaj-paath.html
+        if (document.referrer && document.referrer.includes(window.location.origin)) {
+            window.history.back();
+        } else {
+            window.location.href = 'sehaj-paath.html';
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -734,7 +776,54 @@ class SehajPaathReader {
         this.applyTheme();
         this.applyFontSize();
         this.applyLineSpacing();
+        this.applyModes();
         this.updateSettingsUI();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DISPLAY MODES - Continuous Reading, Paragraph Mode, Larivaar
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    applyModes() {
+        const container = document.getElementById('gurbaniLines');
+        const larivaarAssistRow = document.getElementById('larivaarAssistRow');
+        const isLarivaar = this.settings.displayMode === 'larivaar';
+
+        // Toggle Larivaar Assist Row visibility
+        if (larivaarAssistRow) {
+            larivaarAssistRow.style.display = isLarivaar ? 'flex' : 'none';
+        }
+
+        // Apply body classes for larivaar
+        document.body.classList.toggle('larivaar-mode', isLarivaar);
+        document.body.classList.toggle('larivaar-assist', isLarivaar && this.settings.larivaarAssist);
+
+        // Apply container classes
+        if (container) {
+            container.classList.toggle('continuous-mode', this.settings.continuousReading);
+            container.classList.toggle('paragraph-mode', this.settings.paragraphMode && !this.settings.continuousReading);
+        }
+
+        // Update toggle checkboxes
+        const continuousToggle = document.getElementById('continuousReading');
+        if (continuousToggle) continuousToggle.checked = this.settings.continuousReading;
+
+        const paragraphToggle = document.getElementById('paragraphMode');
+        if (paragraphToggle) paragraphToggle.checked = this.settings.paragraphMode;
+
+        const larivaarAssistToggle = document.getElementById('larivaarAssist');
+        if (larivaarAssistToggle) larivaarAssistToggle.checked = this.settings.larivaarAssist;
+    }
+
+    applyLarivaarAssist(text) {
+        if (!text) return '';
+        const words = text.split(/\s+/);
+        return words.map((word, i) => {
+            if (i % 2 === 1) {
+                return `<span class="word-alt">${word}</span>`;
+            }
+            return word;
+        }).join('');
     }
 
     applyTheme() {
@@ -792,6 +881,58 @@ class SehajPaathReader {
 
     closeSettings() {
         document.getElementById('settingsPanel')?.classList.remove('active');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SEARCH MODAL
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    openSearchModal() {
+        const modal = document.getElementById('searchModal');
+        if (modal) {
+            modal.classList.add('active');
+            const input = document.getElementById('goToAngInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        // Setup event listeners if not already done
+        if (!this._searchModalInitialized) {
+            this._searchModalInitialized = true;
+
+            document.getElementById('closeSearchBtn')?.addEventListener('click', () => this.closeSearchModal());
+            document.querySelector('.search-modal-backdrop')?.addEventListener('click', () => this.closeSearchModal());
+
+            document.getElementById('goToAngBtn')?.addEventListener('click', () => this.goToAngFromModal());
+
+            document.getElementById('goToAngInput')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    this.goToAngFromModal();
+                }
+                if (e.key === 'Escape') {
+                    this.closeSearchModal();
+                }
+            });
+        }
+    }
+
+    closeSearchModal() {
+        document.getElementById('searchModal')?.classList.remove('active');
+    }
+
+    goToAngFromModal() {
+        const input = document.getElementById('goToAngInput');
+        if (input) {
+            const ang = parseInt(input.value);
+            if (ang >= 1 && ang <= 1430) {
+                this.closeSearchModal();
+                this.loadAng(ang);
+            } else {
+                this.showToast('Please enter a valid Ang (1-1430)', 'error');
+            }
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

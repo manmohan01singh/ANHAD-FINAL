@@ -73,6 +73,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -83,6 +84,11 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* GPU acceleration for smooth scrolling */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Main Page Container */
@@ -91,6 +97,9 @@ body {
   padding-bottom: calc(var(--space-xxl) + var(--safe-area-bottom));
   max-width: 680px;
   margin: 0 auto;
+  /* Smooth scroll optimizations */
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1475,4 +1484,211 @@ body {
   border-radius: 10px !important;
   border: none !important;
   min-width: 110px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS MODAL - iOS Style Theme Picker
+═══════════════════════════════════════════════════════════════════════════ */
+
+.settings-btn {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn svg {
+  color: var(--ios-blue);
+  stroke: var(--ios-blue);
+}
+
+.settings-modal {
+  max-width: 380px !important;
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.08px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(118, 118, 128, 0.08);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-ios);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-option:active {
+  transform: scale(0.96);
+}
+
+.theme-option.active {
+  border-color: var(--ios-blue);
+  background: rgba(0, 122, 255, 0.08);
+}
+
+.theme-option span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.theme-preview {
+  width: 100%;
+  height: 72px;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-preview-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+}
+
+.theme-preview-card {
+  position: absolute;
+  top: 18px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border-radius: 6px;
+}
+
+/* Theme Preview Colors */
+.theme-preview--light {
+  background: #F2F2F7;
+}
+
+.theme-preview--light .theme-preview-bar {
+  background: rgba(242, 242, 247, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.theme-preview--light .theme-preview-card {
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.theme-preview--dark {
+  background: #0d0d12;
+}
+
+.theme-preview--dark .theme-preview-bar {
+  background: rgba(30, 30, 35, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.theme-preview--dark .theme-preview-card {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.theme-preview--gold {
+  background: linear-gradient(180deg, #1a1510 0%, #0d0a06 100%);
+}
+
+.theme-preview--gold .theme-preview-bar {
+  background: rgba(26, 21, 16, 0.95);
+  border-bottom: 1px solid rgba(201, 168, 108, 0.15);
+}
+
+.theme-preview--gold .theme-preview-card {
+  background: rgba(201, 168, 108, 0.12);
+  border: 1px solid rgba(201, 168, 108, 0.2);
+}
+
+.theme-preview--sepia {
+  background: #f4ecd8;
+}
+
+.theme-preview--sepia .theme-preview-bar {
+  background: rgba(244, 236, 216, 0.95);
+  border-bottom: 1px solid rgba(92, 75, 55, 0.1);
+}
+
+.theme-preview--sepia .theme-preview-card {
+  background: #faf6eb;
+  box-shadow: 0 1px 3px rgba(92, 75, 55, 0.08);
+}
+
+/* Settings Info Box */
+.settings-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(118, 118, 128, 0.08);
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+.info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMOOTH SCROLL PERFORMANCE OPTIMIZATIONS
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Prevent flickering during scroll */
+.glass-card,
+.section,
+.upcoming-list,
+.event-row,
+.calendar-wrap,
+.grid,
+.day {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Optimize fixed/sticky elements */
+.page-nav {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Smooth scrolling for all containers */
+.modal-body,
+.sheet-content,
+.upcoming-list,
+#eventList {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }

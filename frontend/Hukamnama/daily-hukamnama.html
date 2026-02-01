@@ -1,499 +1,775 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="pa" dir="ltr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0A0A0F">
-    <meta name="description" content="Daily Hukamnama from Sri Darbar Sahib - Gurbani Radio">
     
-    <title>Daily Hukamnama | Gurbani Radio</title>
+    <!-- SEO -->
+    <title>ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Daily Hukamnama — ANHAD</title>
+    <meta name="description" content="Today's Hukamnama from Sri Darbar Sahib, Amritsar. Start your day with divine guidance from Guru Granth Sahib Ji.">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     
     <!-- Preconnect -->
-    <link rel="preconnect" href="https://api.banidb.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.banidb.com">
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Stylesheet -->
+    <!-- Styles -->
     <link rel="stylesheet" href="daily-hukamnama.css">
-    
-    <!-- Manifest & Icons -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
-    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 </head>
 <body>
-    <!-- Ambient Background -->
-    <div class="ambient-background">
-        <div class="ambient-orb ambient-orb-1"></div>
-        <div class="ambient-orb ambient-orb-2"></div>
-        <div class="ambient-orb ambient-orb-3"></div>
-        <div class="sacred-pattern"></div>
+    <!-- ═══════════════════════════════════════════════════════════════
+         SKELETON LOADING
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="skeleton-container" id="skeletonLoader">
+        <div class="skeleton skeleton-header"></div>
+        <div class="skeleton skeleton-hero"></div>
+        <div class="skeleton skeleton-meta"></div>
+        <div class="skeleton skeleton-content"></div>
     </div>
 
-    <!-- App Container -->
-    <div class="app-container">
+    <!-- ═══════════════════════════════════════════════════════════════
+         AMBIENT BACKGROUND
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         APP CONTAINER
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="app" id="app">
         
-        <!-- Top Bar - iOS 26+ Style -->
-        <header class="top-bar">
-            <button class="top-bar-btn" id="backBtn" aria-label="Go Back">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
-            
-            <div class="top-bar-title">
-                <span class="top-bar-title-main">ਹੁਕਮਨਾਮਾ</span>
-                <span class="top-bar-title-sub">Sri Darbar Sahib</span>
-            </div>
-            
-            <button class="top-bar-btn theme-btn" id="themeToggleBtn" aria-label="Toggle Theme">
-                <svg class="theme-dark-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
-                </svg>
-                <svg class="theme-light-icon hidden" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1z"/>
-                </svg>
-            </button>
-        </header>
-
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="hero-image-container">
-                <img src="../assets/darbar-sahib-evening.jpg" 
-                     alt="Sri Darbar Sahib, Amritsar" 
-                     class="hero-image"
-                     id="heroImage"
-                     onerror="this.src='/frontend/assets/darbar-sahib-evening.jpg'">
-                <div class="hero-overlay"></div>
-                <div class="hero-golden-border"></div>
-            </div>
-            
-            <div class="hero-content">
-                <div class="hero-icon">
-                    <svg viewBox="0 0 100 100" fill="currentColor">
-                        <path d="M50 5 L50 95 M30 20 Q50 35 70 20 M25 75 Q50 60 75 75 M20 50 L80 50 M35 30 L35 70 M65 30 L65 70"/>
+        <!-- Header -->
+        <header class="header" id="header">
+            <div class="header-inner">
+                <a href="../index.html" class="header-back">
+                    <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 2L2 10L10 18"/>
                     </svg>
+                    <span>Home</span>
+                </a>
+                
+                <div class="header-center">
+                    <h1 class="header-title">ਹੁਕਮਨਾਮਾ</h1>
+                    <p class="header-subtitle" id="headerDate"></p>
                 </div>
                 
-                <div class="hero-title">
-                    <h1 class="hero-title-gurmukhi">ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ</h1>
-                    <p class="hero-title-english">Daily Hukamnama</p>
-                </div>
-                
-                <div class="hero-location">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                        <circle cx="12" cy="9" r="2.5"/>
-                    </svg>
-                    <span>Sri Darbar Sahib, Amritsar</span>
-                </div>
-                
-                <div class="date-cards">
-                    <div class="date-card english-date" id="englishDate">
-                        <span class="date-card-label">English</span>
-                        <span class="date-card-value date-value">Loading...</span>
-                    </div>
-                    <div class="date-card nanakshahi-date" id="nanakshahiDate">
-                        <span class="date-card-label">ਨਾਨਕਸ਼ਾਹੀ</span>
-                        <span class="date-card-value date-value">Loading...</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            
-            <!-- Gurbani Card -->
-            <article class="gurbani-card" id="hukamnamaCard">
-                
-                <!-- Card Header -->
-                <header class="gurbani-card-header">
-                    <div class="gurbani-card-title">
-                        <h2>ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ</h2>
-                        <div class="gurbani-meta" id="hukamnamaMeta">
-                            <span class="meta-badge raag" id="raagDisplay">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                                </svg>
-                                <span>Loading...</span>
-                            </span>
-                            <span class="meta-badge ang" id="angDisplay">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                                </svg>
-                                <span>Ang: ---</span>
-                            </span>
-                            <span class="meta-badge writer" id="writerDisplay">
-                                <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                </svg>
-                                <span>Loading...</span>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <button class="card-settings-btn" id="settingsBtn" aria-label="Settings">
+                <div class="header-actions">
+                    <button class="header-action" id="themeToggle" aria-label="Toggle Theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path class="sun-rays" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </button>
+                    <button class="header-action" id="settingsToggle" aria-label="Settings">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                         </svg>
                     </button>
-                </header>
-
-                <!-- Loading State -->
-                <div class="loading-state" id="loadingState">
-                    <div class="loading-spinner">
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                        <div class="spinner-ring"></div>
-                    </div>
-                    <p class="loading-text">ਹੁਕਮਨਾਮਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</p>
-                    <p class="loading-subtext">Loading Sacred Words</p>
                 </div>
+            </div>
+        </header>
 
-                <!-- Error State -->
-                <div class="error-state hidden" id="errorState">
-                    <div class="error-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 8v4M12 16h.01"/>
-                        </svg>
-                    </div>
-                    <h3 class="error-title">Unable to Load Hukamnama</h3>
-                    <p class="error-message" id="errorMessage">Please check your connection and try again.</p>
-                    <button class="retry-btn" id="retryBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 4v6h-6M1 20v-6h6"/>
-                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                        </svg>
-                        <span>Try Again</span>
-                    </button>
-                </div>
-
-                <!-- Gurbani Content -->
-                <div class="gurbani-content hidden" id="hukamnamaContent">
-                    
-                    <!-- Ik Onkar -->
-                    <div class="mool-mantar-decoration">
-                        <span class="ik-onkar">ੴ</span>
-                    </div>
-
-                    <!-- Gurmukhi Section -->
-                    <section class="text-section gurmukhi-section" id="gurmukhiSection">
-                        <header class="section-header">
-                            <span class="section-label">ਗੁਰਮੁਖੀ</span>
-                            <div class="section-controls">
-                                <button class="text-size-btn" data-target="gurmukhi" data-action="decrease" aria-label="Decrease font">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
-                                    </svg>
-                                </button>
-                                <button class="text-size-btn" data-target="gurmukhi" data-action="increase" aria-label="Increase font">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="12" y1="5" x2="12" y2="19"/>
-                                        <line x1="5" y1="12" x2="19" y2="12"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </header>
-                        <div class="gurmukhi-text" id="gurmukhiText"></div>
-                    </section>
-
-                    <!-- Transliteration Section -->
-                    <section class="text-section transliteration-section" id="transliterationSection">
-                        <header class="section-header">
-                            <span class="section-label">Transliteration</span>
-                            <button class="toggle-section-btn" data-section="transliteration" aria-label="Toggle">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </button>
-                        </header>
-                        <div class="transliteration-text" id="transliterationText"></div>
-                    </section>
-
-                    <!-- English Translation -->
-                    <section class="text-section english-section" id="englishSection">
-                        <header class="section-header">
-                            <span class="section-label">English Translation</span>
-                            <button class="toggle-section-btn" data-section="english" aria-label="Toggle">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </button>
-                        </header>
-                        <div class="english-text" id="englishText"></div>
-                    </section>
-
-                    <!-- Punjabi Translation -->
-                    <section class="text-section punjabi-section" id="punjabiSection">
-                        <header class="section-header">
-                            <span class="section-label">ਪੰਜਾਬੀ ਅਰਥ</span>
-                            <button class="toggle-section-btn" data-section="punjabi" aria-label="Toggle">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"/>
-                                </svg>
-                            </button>
-                        </header>
-                        <div class="punjabi-text" id="punjabiText"></div>
-                    </section>
-
-                    <!-- End Decoration -->
-                    <div class="end-decoration">
-                        <div class="decoration-line"></div>
-                        <span class="waheguru-text">ਵਾਹਿਗੁਰੂ</span>
-                        <div class="decoration-line"></div>
-                    </div>
-                </div>
-            </article>
-
-            <!-- Action Bar -->
-            <section class="action-bar-container">
-                <div class="action-bar">
-                    <button class="action-item" id="shareBtn" aria-label="Share">
-                        <div class="action-icon-wrapper">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
-                            </svg>
-                        </div>
-                        <span>Share</span>
-                    </button>
-                    
-                    <button class="action-item" id="copyBtn" aria-label="Copy">
-                        <div class="action-icon-wrapper">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="9" y="9" width="13" height="13" rx="2"/>
-                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                            </svg>
-                        </div>
-                        <span>Copy</span>
-                    </button>
-                    
-                    <button class="action-item" id="saveBtn" aria-label="Save">
-                        <div class="action-icon-wrapper">
-                            <svg id="heartIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-                            </svg>
-                        </div>
-                        <span>Save</span>
-                    </button>
-
-                    <button class="action-item" id="readModeBtn" aria-label="Read">
-                        <div class="action-icon-wrapper">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
-                            </svg>
-                        </div>
-                        <span>Read</span>
-                    </button>
-
-                    <button class="action-item" id="refreshBtn" aria-label="Refresh">
-                        <div class="action-icon-wrapper">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M23 4v6h-6M1 20v-6h6"/>
-                                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                            </svg>
-                        </div>
-                        <span>Refresh</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- Previous Hukamnama Browser -->
-            <section class="browser-section">
-                <div class="section-title-wrapper">
-                    <h3 class="browser-title">Previous Hukamnama</h3>
-                    <p class="browser-subtitle">Explore historical divine words</p>
-                </div>
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
                 
-                <!-- Day Navigation -->
-                <div class="day-nav-container">
-                    <button class="day-nav-btn" id="prevDayBtn" aria-label="Previous Day">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M15 18l-6-6 6-6"/>
-                        </svg>
-                        <span>Previous Day</span>
-                    </button>
-                    <button class="day-nav-btn" id="nextDayBtn" aria-label="Next Day">
-                        <span>Next Day</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                            <path d="M9 18l6-6-6-6"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <!-- Date Picker -->
-                <div class="calendar-wrapper">
-                    <div class="date-picker-container">
-                        <input type="date" id="datePicker" class="ios-date-input">
-                        <div class="custom-date-trigger" id="dateTrigger">
+                <!-- Hero Section -->
+                <section class="hero">
+                    <div class="hero-symbol">☬</div>
+                    
+                    <div class="date-cards">
+                        <div class="date-card">
+                            <p class="date-label">English Date</p>
+                            <p class="date-value" id="englishDate">Loading...</p>
+                        </div>
+                        <div class="date-card">
+                            <p class="date-label">ਨਾਨਕਸ਼ਾਹੀ</p>
+                            <p class="date-value gurmukhi" id="nanakshahiDate">—</p>
+                        </div>
+                    </div>
+                    
+                    <div class="date-nav">
+                        <button class="date-nav-btn" id="dateYesterday">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                            Yesterday
+                        </button>
+                        <button class="date-nav-btn active" id="dateToday">Today</button>
+                        <button class="date-nav-btn" id="datePicker">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                                 <line x1="16" y1="2" x2="16" y2="6"/>
                                 <line x1="8" y1="2" x2="8" y2="6"/>
                                 <line x1="3" y1="10" x2="21" y2="10"/>
                             </svg>
-                            <span id="selectedDateLabel">Select Date</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Hukamnama Card -->
+                <article class="hukamnama-card" id="hukamnamaCard">
+                    
+                    <!-- Metadata Strip -->
+                    <div class="hukamnama-meta" id="hukamnamaMeta">
+                        <div class="meta-item">
+                            <p class="meta-label">ਅੰਗ</p>
+                            <p class="meta-value" id="metaAng">—</p>
+                        </div>
+                        <div class="meta-item">
+                            <p class="meta-label">Raag</p>
+                            <p class="meta-value" id="metaRaag">—</p>
+                        </div>
+                        <div class="meta-item">
+                            <p class="meta-label">Writer</p>
+                            <p class="meta-value" id="metaWriter">—</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Quick Date Chips -->
-                <div class="quick-dates" id="quickDates"></div>
-
-                <!-- History -->
-                <div class="history-section" id="historySection">
-                    <h4 class="history-title">Recent</h4>
-                    <div class="history-list" id="historyList"></div>
-                </div>
-            </section>
-
-            <div class="bottom-spacer"></div>
+                    
+                    <!-- Gurbani Content -->
+                    <div class="gurbani-container show-translation" id="gurbaniContainer">
+                        
+                        <!-- Loading State -->
+                        <div class="loading-state" id="loadingState">
+                            <div class="loading-spinner"></div>
+                            <p class="loading-text">Loading Hukamnama...</p>
+                            <p class="loading-subtext">ਹੁਕਮ ਪ੍ਰਾਪਤ ਕਰ ਰਿਹਾ ਹੈ...</p>
+                        </div>
+                        
+                        <!-- Error State -->
+                        <div class="error-state" id="errorState">
+                            <span class="error-icon">⚠️</span>
+                            <h3 class="error-title">Unable to Load</h3>
+                            <p class="error-message">Please check your internet connection and try again.</p>
+                            <button class="error-retry" id="retryBtn">Try Again</button>
+                        </div>
+                        
+                        <!-- Gurbani Content (populated by JS) -->
+                        <div class="gurbani-content" id="gurbaniContent"></div>
+                        
+                    </div>
+                </article>
+                
+            </div>
         </main>
 
-        <!-- Settings Sheet -->
-        <div class="settings-overlay" id="settingsOverlay">
-            <div class="settings-sheet" id="settingsSheet">
-                <div class="sheet-handle"></div>
+        <!-- Bottom Controls -->
+        <nav class="bottom-controls" id="bottomControls">
+            <button class="control-btn" id="btnShare" aria-label="Share">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <polyline points="16,6 12,2 8,6"/>
+                    <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+            </button>
+            <button class="control-btn" id="btnCopy" aria-label="Copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+            </button>
+            <button class="control-btn" id="btnBookmark" aria-label="Bookmark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                </svg>
+            </button>
+            
+            <div class="control-divider"></div>
+            
+            <button class="control-btn" id="btnTranslation" aria-label="Toggle Translation">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 5h12M9 3v2M12 5l-4 8H6l-4-8"/>
+                    <path d="M13 12l4 8 4-8"/>
+                    <path d="M14 18h6"/>
+                </svg>
+            </button>
+            <button class="control-btn" id="btnLarivaar" aria-label="Toggle Larivaar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </nav>
+        
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SETTINGS SHEET
+         ═══════════════════════════════════════════════════════════════ -->
+    <div class="sheet-overlay" id="settingsOverlay">
+        <aside class="settings-sheet" id="settingsSheet">
+            <div class="sheet-handle"></div>
+            <h2 class="sheet-title">Settings</h2>
+            
+            <!-- Display Settings -->
+            <div class="setting-group">
+                <h3 class="setting-group-title">Display</h3>
                 
-                <header class="sheet-header">
-                    <h3>Display Settings</h3>
-                    <button class="close-sheet" id="closeSettings">Done</button>
-                </header>
+                <div class="setting-row">
+                    <span class="setting-label">ਲੜੀਵਾਰ (Larivaar)</span>
+                    <button class="ios-toggle" id="larivaarToggle" role="switch" aria-checked="false"></button>
+                </div>
                 
-                <div class="sheet-content">
-                    <!-- Theme -->
-                    <div class="setting-group">
-                        <label>Appearance</label>
-                        <div class="theme-toggle-container">
-                            <button class="theme-option active" data-theme="dark">
-                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
-                                <span>Dark</span>
-                            </button>
-                            <button class="theme-option" data-theme="light">
-                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg>
-                                <span>Light</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Font Size -->
-                    <div class="setting-group">
-                        <div class="setting-label-row">
-                            <label>Font Size</label>
-                            <span id="fontSizeValue">24px</span>
-                        </div>
-                        <div class="slider-container">
-                            <span class="slider-icon small">A</span>
-                            <input type="range" id="fontSizeSlider" min="16" max="42" value="24" class="ios-slider">
-                            <span class="slider-icon large">A</span>
-                        </div>
-                    </div>
-
-                    <!-- Font Weight -->
-                    <div class="setting-group">
-                        <div class="setting-label-row">
-                            <label>Font Weight</label>
-                            <span id="fontWeightValue">400</span>
-                        </div>
-                        <div class="slider-container">
-                            <input type="range" id="fontWeightSlider" min="300" max="700" step="100" value="400" class="ios-slider">
-                        </div>
-                    </div>
-
-                    <!-- Line Spacing -->
-                    <div class="setting-group">
-                        <div class="setting-label-row">
-                            <label>Line Spacing</label>
-                            <span id="lineSpacingValue">1.8</span>
-                        </div>
-                        <div class="slider-container">
-                            <input type="range" id="lineSpacingSlider" min="1.2" max="2.5" step="0.1" value="1.8" class="ios-slider">
-                        </div>
-                    </div>
-
-                    <!-- Font Family -->
-                    <div class="setting-group">
-                        <label>Gurmukhi Font</label>
-                        <select id="fontFamilySelector" class="ios-select">
-                            <option value="'Noto Sans Gurmukhi', sans-serif">Noto Sans Gurmukhi</option>
-                            <option value="'Mukta Mahee', sans-serif">Mukta Mahee</option>
-                            <option value="AnmolLipi, Gurmukhi, sans-serif">Anmol Lipi</option>
-                        </select>
-                    </div>
-
-                    <!-- Display Toggles -->
-                    <div class="setting-group">
-                        <label>Display Options</label>
-                        <div class="toggles-grid">
-                            <div class="toggle-item">
-                                <span>Larivaar (ਲੜੀਵਾਰ)</span>
-                                <label class="ios-switch">
-                                    <input type="checkbox" id="larivaarToggle">
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item" id="larivaarAssistItem" style="display: none;">
-                                <span>Larivaar Assist</span>
-                                <label class="ios-switch">
-                                    <input type="checkbox" id="larivaarAssistToggle">
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <span>Transliteration</span>
-                                <label class="ios-switch">
-                                    <input type="checkbox" id="transliterationToggle" checked>
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <span>English Translation</span>
-                                <label class="ios-switch">
-                                    <input type="checkbox" id="englishToggle" checked>
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                            <div class="toggle-item">
-                                <span>Punjabi Translation</span>
-                                <label class="ios-switch">
-                                    <input type="checkbox" id="punjabiToggle" checked>
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                        </div>
+                <div class="setting-row">
+                    <span class="setting-label">Transliteration</span>
+                    <button class="ios-toggle" id="translitToggle" role="switch" aria-checked="false"></button>
+                </div>
+                
+                <div class="setting-row">
+                    <span class="setting-label">English Translation</span>
+                    <button class="ios-toggle active" id="englishToggle" role="switch" aria-checked="true"></button>
+                </div>
+            </div>
+            
+            <!-- Font Size -->
+            <div class="setting-group">
+                <h3 class="setting-group-title">Font Size</h3>
+                
+                <div class="setting-row">
+                    <span class="setting-label">Gurmukhi Size</span>
+                    <div class="font-stepper">
+                        <button class="stepper-btn" id="fontDecrease">−</button>
+                        <span class="stepper-value" id="fontValue">22</span>
+                        <button class="stepper-btn" id="fontIncrease">+</button>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Toast Container -->
-        <div class="toast-container" id="toastContainer"></div>
-
-        <!-- Reading Mode Toolbar -->
-        <div class="reading-toolbar" id="readingToolbar">
-            <button class="reading-done" id="readingDoneBtn">Done</button>
-            <div class="reading-controls">
-                <button class="reading-toggle" id="readingAutoScrollToggle">Auto Scroll</button>
+            
+            <!-- Theme -->
+            <div class="setting-group">
+                <h3 class="setting-group-title">Theme</h3>
+                <div class="theme-options">
+                    <button class="theme-btn active" id="themeDark" data-theme="dark">
+                        <div class="theme-btn-icon">🌙</div>
+                        <span class="theme-btn-label">Dark</span>
+                    </button>
+                    <button class="theme-btn" id="themeLight" data-theme="light">
+                        <div class="theme-btn-icon">☀️</div>
+                        <span class="theme-btn-label">Light</span>
+                    </button>
+                </div>
             </div>
-            <div class="reading-speed">
-                <input type="range" id="scrollSpeedSlider" min="10" max="120" value="35" class="ios-slider">
-            </div>
-        </div>
-
+        </aside>
     </div>
 
-    <!-- Scripts -->
-    <script src="../lib/unified-storage.js"></script>
-    <script src="../lib/banidb.js"></script>
-    <script src="daily-hukamnama.js" type="module"></script>
-    <script src="../lib/global-alarm-system.js" defer></script>
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Date Picker (hidden input) -->
+    <input type="date" id="dateInput" class="hidden" aria-hidden="true">
+
+    <!-- Persistent Audio for Cross-Page Playback -->
+    <script src="../lib/persistent-audio.js"></script>
+    <script src="../lib/background-audio-loader.js"></script>
+    
+    <!-- ═══════════════════════════════════════════════════════════════
+         SCRIPTS
+         ═══════════════════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        'use strict';
+
+        // ═══════════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════
+        
+        const CONFIG = {
+            API_BASE: 'https://api.banidb.com/v2',
+            ENDPOINTS: {
+                TODAY: '/hukamnamas/today',
+                BY_DATE: '/hukamnamas/{year}/{month}/{day}'
+            },
+            STORAGE_KEYS: {
+                THEME: 'hukam_theme',
+                FONT_SIZE: 'hukam_fontSize',
+                LARIVAAR: 'hukam_larivaar',
+                TRANSLIT: 'hukam_translit',
+                TRANSLATION: 'hukam_translation'
+            },
+            FONT: {
+                MIN: 16,
+                MAX: 32,
+                DEFAULT: 22,
+                STEP: 2
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════════════════════════
+        
+        const State = {
+            currentDate: new Date(),
+            hukamnama: null,
+            settings: {
+                theme: localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || 'dark',
+                fontSize: parseInt(localStorage.getItem(CONFIG.STORAGE_KEYS.FONT_SIZE)) || CONFIG.FONT.DEFAULT,
+                larivaar: localStorage.getItem(CONFIG.STORAGE_KEYS.LARIVAAR) === 'true',
+                translit: localStorage.getItem(CONFIG.STORAGE_KEYS.TRANSLIT) === 'true',
+                translation: localStorage.getItem(CONFIG.STORAGE_KEYS.TRANSLATION) !== 'false'
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // DOM ELEMENTS
+        // ═══════════════════════════════════════════════════════════════
+        
+        const DOM = {
+            // Skeleton & App
+            skeleton: document.getElementById('skeletonLoader'),
+            app: document.getElementById('app'),
+            
+            // Header
+            header: document.getElementById('header'),
+            headerDate: document.getElementById('headerDate'),
+            themeToggle: document.getElementById('themeToggle'),
+            settingsToggle: document.getElementById('settingsToggle'),
+            
+            // Dates
+            englishDate: document.getElementById('englishDate'),
+            nanakshahiDate: document.getElementById('nanakshahiDate'),
+            dateToday: document.getElementById('dateToday'),
+            dateYesterday: document.getElementById('dateYesterday'),
+            datePicker: document.getElementById('datePicker'),
+            dateInput: document.getElementById('dateInput'),
+            
+            // Hukamnama
+            hukamnamaCard: document.getElementById('hukamnamaCard'),
+            loadingState: document.getElementById('loadingState'),
+            errorState: document.getElementById('errorState'),
+            retryBtn: document.getElementById('retryBtn'),
+            gurbaniContainer: document.getElementById('gurbaniContainer'),
+            gurbaniContent: document.getElementById('gurbaniContent'),
+            
+            // Metadata
+            metaAng: document.getElementById('metaAng'),
+            metaRaag: document.getElementById('metaRaag'),
+            metaWriter: document.getElementById('metaWriter'),
+            
+            // Bottom Controls
+            btnShare: document.getElementById('btnShare'),
+            btnCopy: document.getElementById('btnCopy'),
+            btnBookmark: document.getElementById('btnBookmark'),
+            btnTranslation: document.getElementById('btnTranslation'),
+            btnLarivaar: document.getElementById('btnLarivaar'),
+            
+            // Settings Sheet
+            settingsOverlay: document.getElementById('settingsOverlay'),
+            larivaarToggle: document.getElementById('larivaarToggle'),
+            translitToggle: document.getElementById('translitToggle'),
+            englishToggle: document.getElementById('englishToggle'),
+            fontValue: document.getElementById('fontValue'),
+            fontDecrease: document.getElementById('fontDecrease'),
+            fontIncrease: document.getElementById('fontIncrease'),
+            themeDark: document.getElementById('themeDark'),
+            themeLight: document.getElementById('themeLight'),
+            
+            // Toast
+            toast: document.getElementById('toast')
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // UTILITIES
+        // ═══════════════════════════════════════════════════════════════
+        
+        const Utils = {
+            formatDate(date, format = 'full') {
+                const options = format === 'full' 
+                    ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+                    : { month: 'short', day: 'numeric', year: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            },
+            
+            formatShortDate(date) {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            },
+            
+            isToday(date) {
+                const today = new Date();
+                return date.toDateString() === today.toDateString();
+            },
+            
+            isYesterday(date) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                return date.toDateString() === yesterday.toDateString();
+            },
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            },
+            
+            detectRahao(text) {
+                return text.toLowerCase().includes('rhwau') || 
+                       text.includes('ਰਹਾਉ') || 
+                       text.includes('rhwau') ||
+                       text.includes('Rahau') ||
+                       /\|\|?\d\|\|?\s*rhwau/i.test(text);
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // API SERVICE
+        // ═══════════════════════════════════════════════════════════════
+        
+        const API = {
+            async fetchHukamnama(date = null) {
+                let url;
+                
+                if (date && !Utils.isToday(date)) {
+                    const year = date.getFullYear();
+                    const month = date.getMonth() + 1;
+                    const day = date.getDate();
+                    url = `${CONFIG.API_BASE}${CONFIG.ENDPOINTS.BY_DATE}`
+                        .replace('{year}', year)
+                        .replace('{month}', month)
+                        .replace('{day}', day);
+                } else {
+                    url = `${CONFIG.API_BASE}${CONFIG.ENDPOINTS.TODAY}`;
+                }
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            },
+            
+            parseHukamnama(data) {
+                if (!data.shabads || data.shabads.length === 0) {
+                    throw new Error('No Hukamnama data available');
+                }
+                
+                const shabad = data.shabads[0];
+                
+                return {
+                    date: data.date,
+                    pageNo: shabad.shabadInfo?.pageNo || '—',
+                    raag: shabad.shabadInfo?.raag?.english || '—',
+                    writer: shabad.shabadInfo?.writer?.english || '—',
+                    source: shabad.shabadInfo?.source?.english || 'Sri Guru Granth Sahib Ji',
+                    verses: shabad.verses.map(v => ({
+                        gurmukhi: v.verse?.unicode || '',
+                        larivaar: v.larivaar?.unicode || '',
+                        transliteration: v.transliteration?.english || '',
+                        translation: v.translation?.en?.bdb || v.translation?.en?.ms || v.translation?.en?.ssk || '',
+                        isRahao: Utils.detectRahao(v.verse?.gurmukhi || '') || Utils.detectRahao(v.transliteration?.english || '')
+                    }))
+                };
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // UI CONTROLLER
+        // ═══════════════════════════════════════════════════════════════
+        
+        const UI = {
+            showLoading() {
+                DOM.loadingState.style.display = 'flex';
+                DOM.errorState.classList.remove('visible');
+                DOM.gurbaniContent.innerHTML = '';
+            },
+            
+            showError(message) {
+                DOM.loadingState.style.display = 'none';
+                DOM.errorState.classList.add('visible');
+            },
+            
+            showContent() {
+                DOM.loadingState.style.display = 'none';
+                DOM.errorState.classList.remove('visible');
+            },
+            
+            hideSkeleton() {
+                DOM.skeleton.classList.add('hidden');
+            },
+            
+            updateDates(date) {
+                DOM.englishDate.textContent = Utils.formatDate(date, 'short');
+                DOM.headerDate.textContent = Utils.formatShortDate(date);
+                
+                // Update active state of date buttons
+                DOM.dateToday.classList.toggle('active', Utils.isToday(date));
+                
+                // Nanakshahi date (placeholder - would need a library for accurate conversion)
+                DOM.nanakshahiDate.textContent = '—';
+            },
+            
+            updateMetadata(hukamnama) {
+                DOM.metaAng.textContent = hukamnama.pageNo;
+                DOM.metaRaag.textContent = hukamnama.raag;
+                DOM.metaWriter.textContent = hukamnama.writer;
+            },
+            
+            renderVerses(hukamnama) {
+                const html = hukamnama.verses.map((verse, index) => `
+                    <div class="verse ${verse.isRahao ? 'rahao' : ''}" style="animation-delay: ${index * 0.05}s">
+                        <p class="verse-gurmukhi">${State.settings.larivaar ? verse.larivaar : verse.gurmukhi}</p>
+                        <p class="verse-transliteration">${verse.transliteration}</p>
+                        <p class="verse-translation">${verse.translation}</p>
+                    </div>
+                `).join('');
+                
+                DOM.gurbaniContent.innerHTML = html;
+            },
+            
+            applySettings() {
+                const root = document.documentElement;
+                
+                // Theme
+                root.setAttribute('data-theme', State.settings.theme);
+                DOM.themeDark.classList.toggle('active', State.settings.theme === 'dark');
+                DOM.themeLight.classList.toggle('active', State.settings.theme === 'light');
+                
+                // Font size
+                root.style.setProperty('--gurmukhi-size', `${State.settings.fontSize}px`);
+                DOM.fontValue.textContent = State.settings.fontSize;
+                
+                // Larivaar
+                DOM.gurbaniContainer.classList.toggle('larivaar-mode', State.settings.larivaar);
+                DOM.larivaarToggle.classList.toggle('active', State.settings.larivaar);
+                DOM.btnLarivaar.classList.toggle('active', State.settings.larivaar);
+                
+                // Transliteration
+                DOM.gurbaniContainer.classList.toggle('show-translit', State.settings.translit);
+                DOM.translitToggle.classList.toggle('active', State.settings.translit);
+                
+                // Translation
+                DOM.gurbaniContainer.classList.toggle('show-translation', State.settings.translation);
+                DOM.englishToggle.classList.toggle('active', State.settings.translation);
+                DOM.btnTranslation.classList.toggle('active', State.settings.translation);
+            },
+            
+            showToast(message) {
+                DOM.toast.textContent = message;
+                DOM.toast.classList.add('visible');
+                
+                setTimeout(() => {
+                    DOM.toast.classList.remove('visible');
+                }, 2500);
+            },
+            
+            toggleSettings(show) {
+                DOM.settingsOverlay.classList.toggle('active', show);
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // SETTINGS CONTROLLER
+        // ═══════════════════════════════════════════════════════════════
+        
+        const Settings = {
+            save(key, value) {
+                localStorage.setItem(CONFIG.STORAGE_KEYS[key], value);
+            },
+            
+            toggle(setting) {
+                State.settings[setting] = !State.settings[setting];
+                this.save(setting.toUpperCase(), State.settings[setting]);
+                UI.applySettings();
+                
+                // Re-render if larivaar changes
+                if (setting === 'larivaar' && State.hukamnama) {
+                    UI.renderVerses(State.hukamnama);
+                }
+            },
+            
+            setTheme(theme) {
+                State.settings.theme = theme;
+                this.save('THEME', theme);
+                UI.applySettings();
+            },
+            
+            adjustFontSize(delta) {
+                const newSize = State.settings.fontSize + delta;
+                if (newSize >= CONFIG.FONT.MIN && newSize <= CONFIG.FONT.MAX) {
+                    State.settings.fontSize = newSize;
+                    this.save('FONT_SIZE', newSize);
+                    UI.applySettings();
+                }
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // MAIN CONTROLLER
+        // ═══════════════════════════════════════════════════════════════
+        
+        const App = {
+            async loadHukamnama(date = null) {
+                UI.showLoading();
+                
+                try {
+                    const data = await API.fetchHukamnama(date);
+                    State.hukamnama = API.parseHukamnama(data);
+                    State.currentDate = date || new Date();
+                    
+                    UI.updateDates(State.currentDate);
+                    UI.updateMetadata(State.hukamnama);
+                    UI.renderVerses(State.hukamnama);
+                    UI.showContent();
+                    UI.hideSkeleton();
+                    
+                } catch (error) {
+                    console.error('Error loading Hukamnama:', error);
+                    UI.showError(error.message);
+                    UI.hideSkeleton();
+                }
+            },
+            
+            async copyHukamnama() {
+                if (!State.hukamnama) return;
+                
+                const text = State.hukamnama.verses.map(v => {
+                    let line = v.gurmukhi;
+                    if (State.settings.translation && v.translation) {
+                        line += '\n' + v.translation;
+                    }
+                    return line;
+                }).join('\n\n');
+                
+                try {
+                    await navigator.clipboard.writeText(text);
+                    UI.showToast('Hukamnama copied ✓');
+                } catch (error) {
+                    UI.showToast('Failed to copy');
+                }
+            },
+            
+            async shareHukamnama() {
+                if (!State.hukamnama || !navigator.share) {
+                    UI.showToast('Sharing not available');
+                    return;
+                }
+                
+                const text = State.hukamnama.verses.slice(0, 3).map(v => v.gurmukhi).join('\n');
+                
+                try {
+                    await navigator.share({
+                        title: "Today's Hukamnama",
+                        text: text + '\n\n— Sri Guru Granth Sahib Ji',
+                        url: window.location.href
+                    });
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        UI.showToast('Share cancelled');
+                    }
+                }
+            },
+            
+            bookmarkHukamnama() {
+                UI.showToast('Bookmark saved ✓');
+            },
+            
+            goToYesterday() {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                this.loadHukamnama(yesterday);
+            },
+            
+            goToToday() {
+                this.loadHukamnama(new Date());
+            },
+            
+            openDatePicker() {
+                DOM.dateInput.showPicker?.() || DOM.dateInput.click();
+            },
+            
+            init() {
+                // Apply initial settings
+                UI.applySettings();
+                
+                // Load today's Hukamnama
+                this.loadHukamnama();
+                
+                // Setup event listeners
+                this.bindEvents();
+            },
+            
+            bindEvents() {
+                // Header scroll effect
+                let lastScrollY = 0;
+                window.addEventListener('scroll', () => {
+                    DOM.header.classList.toggle('scrolled', window.scrollY > 20);
+                    lastScrollY = window.scrollY;
+                }, { passive: true });
+                
+                // Theme toggle
+                DOM.themeToggle.addEventListener('click', () => {
+                    const newTheme = State.settings.theme === 'dark' ? 'light' : 'dark';
+                    Settings.setTheme(newTheme);
+                });
+                
+                // Settings sheet
+                DOM.settingsToggle.addEventListener('click', () => UI.toggleSettings(true));
+                DOM.settingsOverlay.addEventListener('click', (e) => {
+                    if (e.target === DOM.settingsOverlay) UI.toggleSettings(false);
+                });
+                
+                // Date navigation
+                DOM.dateYesterday.addEventListener('click', () => this.goToYesterday());
+                DOM.dateToday.addEventListener('click', () => this.goToToday());
+                DOM.datePicker.addEventListener('click', () => this.openDatePicker());
+                DOM.dateInput.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        const [year, month, day] = e.target.value.split('-');
+                        this.loadHukamnama(new Date(year, month - 1, day));
+                    }
+                });
+                
+                // Retry button
+                DOM.retryBtn.addEventListener('click', () => this.loadHukamnama(State.currentDate));
+                
+                // Bottom controls
+                DOM.btnShare.addEventListener('click', () => this.shareHukamnama());
+                DOM.btnCopy.addEventListener('click', () => this.copyHukamnama());
+                DOM.btnBookmark.addEventListener('click', () => this.bookmarkHukamnama());
+                DOM.btnTranslation.addEventListener('click', () => Settings.toggle('translation'));
+                DOM.btnLarivaar.addEventListener('click', () => Settings.toggle('larivaar'));
+                
+                // Settings toggles
+                DOM.larivaarToggle.addEventListener('click', () => Settings.toggle('larivaar'));
+                DOM.translitToggle.addEventListener('click', () => Settings.toggle('translit'));
+                DOM.englishToggle.addEventListener('click', () => Settings.toggle('translation'));
+                
+                // Font size
+                DOM.fontDecrease.addEventListener('click', () => Settings.adjustFontSize(-CONFIG.FONT.STEP));
+                DOM.fontIncrease.addEventListener('click', () => Settings.adjustFontSize(CONFIG.FONT.STEP));
+                
+                // Theme buttons
+                DOM.themeDark.addEventListener('click', () => Settings.setTheme('dark'));
+                DOM.themeLight.addEventListener('click', () => Settings.setTheme('light'));
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // INITIALIZE
+        // ═══════════════════════════════════════════════════════════════
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => App.init());
+        } else {
+            App.init();
+        }
+        
+    })();
+    </script>
 </body>
 </html>
