@@ -35,7 +35,9 @@
         "@capacitor/status-bar": "^6.0.0",
         "dotenv": "^16.0.0",
         "express": "^4.18.2",
-        "express-rate-limit": "^7.0.0"
+        "express-rate-limit": "^7.0.0",
+        "jimp": "^1.6.0",
+        "sharp": "^0.34.5"
     },
     "devDependencies": {
         "electron": "^28.3.3",
