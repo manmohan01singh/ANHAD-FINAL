@@ -64,10 +64,10 @@ export function saveProgress(progress) {
 
 export function updateCurrentAng(angNumber) {
   const progress = loadProgress();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA');
 
   const lastDate = progress.streak.lastDate;
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toLocaleDateString('en-CA');
 
   if (lastDate === yesterday) {
     progress.streak.current += 1;
@@ -157,7 +157,7 @@ export function getStatistics() {
 
 export function getTodaysProgress() {
   const progress = loadProgress();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA');
   const todaysSessions = progress.sessions.filter((s) => s.date === today);
 
   const angsToday = todaysSessions.reduce(

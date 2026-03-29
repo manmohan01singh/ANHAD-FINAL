@@ -38,7 +38,7 @@ class ReportGenerator {
         for (let i = 0; i < 7; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            dates.push(d.toISOString().split('T')[0]);
+            dates.push(d.toLocaleDateString('en-CA'));
         }
         return dates;
     }
@@ -52,7 +52,7 @@ class ReportGenerator {
 
         for (let day = 1; day <= daysInMonth; day++) {
             const d = new Date(year, month, day);
-            dates.push(d.toISOString().split('T')[0]);
+            dates.push(d.toLocaleDateString('en-CA'));
         }
         return dates;
     }
@@ -305,7 +305,7 @@ class ReportGenerator {
      */
     generateMonthlyReport(year = new Date().getFullYear(), month = new Date().getMonth()) {
         const monthDates = this.getMonthDates(year, month);
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA');
 
         // Only include dates up to today
         const relevantDates = monthDates.filter(d => d <= today);

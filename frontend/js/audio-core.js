@@ -185,6 +185,18 @@ class StateManager extends EventEmitter {
     }
 }
 
+// API base URL for server sync
+const AC_API_BASE = (() => {
+    try {
+        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const onBackendPort = window.location.port === '3000';
+        if (isLocalhost && !onBackendPort) {
+            return `${window.location.protocol}//${window.location.hostname}:3000`;
+        }
+    } catch (e) { }
+    return '';
+})();
+
 class VirtualLiveManager extends EventEmitter {
     constructor() {
         super();
@@ -194,17 +206,65 @@ class VirtualLiveManager extends EventEmitter {
         this.pausedAt = null;
         this.isLive = true;
         this.liveThreshold = 5;
+        this.serverSynced = false;
+
+        // Sync epoch from server on init
+        this.syncWithServer();
     }
 
     loadBroadcastStart() {
         let startTime = Utils.storage.get('broadcastStartTime');
         if (!startTime) {
             const now = new Date();
-            // Use consistent epoch start to ensure all users hear same thing roughly
             startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).getTime();
             Utils.storage.set('broadcastStartTime', startTime);
         }
         return startTime;
+    }
+
+    async syncWithServer() {
+        try {
+            const _fetch = typeof fetchWithTimeout === 'function' ? fetchWithTimeout : fetch;
+            const startTime = Date.now();
+            const resp = await _fetch(`${AC_API_BASE}/api/radio/live`);
+            const endTime = Date.now();
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            const latencyMs = (endTime - startTime) / 2;
+
+            // Store server epoch
+            this.broadcastStartTime = data.epoch;
+            Utils.storage.set('broadcastStartTime', data.epoch);
+
+            // Store track durations from server
+            if (data.trackDurations) {
+                Object.entries(data.trackDurations).forEach(([idx, dur]) => {
+                    this.trackDurations.set(Number(idx), dur);
+                });
+            }
+
+            this.serverSynced = true;
+            return {
+                trackIndex: data.trackIndex,
+                position: data.trackPosition + (latencyMs / 1000),
+                totalElapsed: data.totalElapsed
+            };
+        } catch (e) {
+            console.warn('[AudioCore] Server sync failed, using local:', e.message);
+            return null;
+        }
+    }
+
+    async reportDuration(trackIndex, duration) {
+        this.setTrackDuration(trackIndex, duration);
+        try {
+            const _fetch = typeof fetchWithTimeout === 'function' ? fetchWithTimeout : fetch;
+            await _fetch(`${AC_API_BASE}/api/radio/durations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ trackIndex, duration })
+            });
+        } catch (e) { /* non-critical */ }
     }
 
     setTrackDuration(trackIndex, duration) {
@@ -222,7 +282,7 @@ class VirtualLiveManager extends EventEmitter {
         const now = Date.now();
         const elapsedSeconds = (now - this.broadcastStartTime) / 1000;
         const totalPlaylistDuration = this.getTotalPlaylistDuration();
-        const positionInPlaylist = elapsedSeconds % totalPlaylistDuration;
+        const positionInPlaylist = ((elapsedSeconds % totalPlaylistDuration) + totalPlaylistDuration) % totalPlaylistDuration;
         let accumulatedTime = 0;
         for (let i = 0; i < AUDIO_CONFIG.totalTracks; i++) {
             const trackDuration = this.getTrackDuration(i);
@@ -234,17 +294,24 @@ class VirtualLiveManager extends EventEmitter {
         return { trackIndex: 0, position: 0, totalElapsed: elapsedSeconds };
     }
 
-    // ... Helper methods for resume/pause/check omitted for brevity but required logic included below ...
+    async getLivePositionFromServer() {
+        const serverPos = await this.syncWithServer();
+        if (serverPos) return serverPos;
+        return this.getCurrentLivePosition();
+    }
+
     onPause(idx, pos) {
         this.pausedAt = { time: Date.now(), trackIndex: idx, position: pos };
         this.isLive = false;
         this.emit('liveStatusChange', { isLive: false });
     }
 
-    goToLive() {
+    async goToLive() {
         this.pausedAt = null;
         this.isLive = true;
         this.emit('liveStatusChange', { isLive: true });
+        const serverPos = await this.syncWithServer();
+        if (serverPos) return serverPos;
         return this.getCurrentLivePosition();
     }
 
@@ -306,7 +373,7 @@ class AudioEngine extends EventEmitter {
         });
         this.audio.addEventListener('ended', () => this.next());
         this.audio.addEventListener('loadedmetadata', () => {
-            this.virtualLive.setTrackDuration(this.currentTrackIndex, this.audio.duration);
+            this.virtualLive.reportDuration(this.currentTrackIndex, this.audio.duration);
             this.emit('durationchange', { duration: this.audio.duration });
         });
         this.audio.addEventListener('volumechange', () => this.emit('volumechange', { volume: this.audio.volume }));
@@ -361,10 +428,11 @@ class AudioEngine extends EventEmitter {
     async goLive() {
         if (this.isLive && this.isPlaying) {
             console.log("Already Live and Playing - Idempotent Action");
-            return; // Fix Problem 3
+            return;
         }
 
-        const livePos = this.virtualLive.goToLive();
+        // Fetch live position from server — single source of truth
+        const livePos = await this.virtualLive.goToLive();
         this.isLive = true;
 
         await this.loadTrack(livePos.trackIndex, true, livePos.position);

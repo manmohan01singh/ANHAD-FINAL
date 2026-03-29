@@ -33,7 +33,16 @@
     ENABLE_REMOTE_SYNC: false
   };
 
-  const nsCal = typeof window !== 'undefined' && window.NanakshahiCalendar ? new window.NanakshahiCalendar() : null;
+  const nsCal = (() => {
+    try {
+      return (typeof window !== 'undefined' && window.NanakshahiCalendar)
+        ? new window.NanakshahiCalendar()
+        : null;
+    } catch (e) {
+      console.warn('[GurpurabCalendar] NanakshahiCalendar init failed:', e);
+      return null;
+    }
+  })();
 
   const state = {
     today: startOfDay(new Date()),
@@ -136,6 +145,7 @@
       const modal = qs('settingsModal');
       const backdrop = qs('settingsBackdrop');
       if (modal && backdrop) {
+        lockBodyScroll();
         backdrop.classList.add('visible');
         modal.classList.add('visible');
         modal.setAttribute('aria-hidden', 'false');
@@ -152,6 +162,7 @@
         modal.classList.remove('visible');
         modal.setAttribute('aria-hidden', 'true');
         backdrop.setAttribute('aria-hidden', 'true');
+        unlockBodyScroll();
       }
     }
 
@@ -160,6 +171,35 @@
         btn.classList.toggle('active', btn.dataset.theme === this.currentTheme);
       });
     }
+  }
+
+  // ═══ Body Scroll Lock — prevents page overscroll behind modals ═══
+  let _scrollLockCount = 0;
+  let _savedScrollY = 0;
+
+  function lockBodyScroll() {
+    if (_scrollLockCount === 0) {
+      _savedScrollY = window.scrollY;
+      document.body.classList.add('modal-open');
+      document.body.style.top = `-${_savedScrollY}px`;
+    }
+    _scrollLockCount++;
+  }
+
+  function unlockBodyScroll() {
+    _scrollLockCount = Math.max(0, _scrollLockCount - 1);
+    if (_scrollLockCount === 0) {
+      document.body.classList.remove('modal-open');
+      document.body.style.top = '';
+      window.scrollTo(0, _savedScrollY);
+    }
+  }
+
+  function forceUnlockBodyScroll() {
+    _scrollLockCount = 0;
+    document.body.classList.remove('modal-open');
+    document.body.style.top = '';
+    window.scrollTo(0, _savedScrollY);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -597,6 +637,7 @@
     const eventsByISO = groupEventsByISO(filtered);
 
     grid.innerHTML = '';
+    const frag = document.createDocumentFragment();
     days.forEach((d) => {
       const iso = formatISODate(d);
       const cell = document.createElement('div');
@@ -634,8 +675,9 @@
         }
       });
 
-      grid.appendChild(cell);
+      frag.appendChild(cell);
     });
+    grid.appendChild(frag);
 
     renderLegend();
   }
@@ -929,6 +971,7 @@
   }
 
   function openModalBase() {
+    lockBodyScroll();
     qs('modalBackdrop')?.classList.add('visible');
     qs('eventModal')?.classList.add('visible');
   }
@@ -937,6 +980,7 @@
     qs('modalBackdrop')?.classList.remove('visible');
     qs('eventModal')?.classList.remove('visible');
     state.selectedEvent = null;
+    unlockBodyScroll();
   }
 
   function openArthModal(event) {
@@ -981,6 +1025,7 @@
       </div>
     `;
 
+    lockBodyScroll();
     backdrop.classList.add('visible');
     modal.classList.add('visible');
   }
@@ -988,6 +1033,7 @@
   function closeArthModal() {
     qs('arthBackdrop')?.classList.remove('visible');
     qs('arthModal')?.classList.remove('visible');
+    unlockBodyScroll();
   }
 
   function openReminderSheet(event) {
@@ -1024,6 +1070,7 @@
     const enabled = qs('reminderEnabled');
     if (enabled) enabled.checked = existing ? !!existing.enabled : true;
 
+    lockBodyScroll();
     qs('reminderBackdrop')?.classList.add('visible');
     qs('reminderSheet')?.classList.add('visible');
   }
@@ -1031,6 +1078,7 @@
   function closeReminderSheet() {
     qs('reminderBackdrop')?.classList.remove('visible');
     qs('reminderSheet')?.classList.remove('visible');
+    unlockBodyScroll();
   }
 
   function saveReminderSettings() {

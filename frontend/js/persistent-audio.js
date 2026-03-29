@@ -347,7 +347,7 @@ class PersistentAudioManager {
 
     startStateAutoSave() {
         // Save state every 5 seconds
-        setInterval(() => {
+        this._autoSaveInterval = setInterval(() => {
             if (this.isPlaying) {
                 this.saveState();
             }

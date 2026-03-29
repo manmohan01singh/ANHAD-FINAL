@@ -83,7 +83,7 @@ class StatisticsEngine {
         for (let i = 0; i < 7; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            weekDates.push(d.toISOString().split('T')[0]);
+            weekDates.push(d.toLocaleDateString('en-CA'));
         }
 
         const amritvelaLog = this.loadData(this.STORAGE_KEYS.AMRITVELA_LOG);
@@ -117,7 +117,7 @@ class StatisticsEngine {
      * Get today's statistics
      */
     getTodayStats() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA');
 
         const amritvelaLog = this.loadData(this.STORAGE_KEYS.AMRITVELA_LOG);
         const nitnemLog = this.loadData(this.STORAGE_KEYS.NITNEM_LOG);

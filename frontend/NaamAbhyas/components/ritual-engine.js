@@ -704,7 +704,7 @@ class RitualEngine {
         if (!this.app?.history) return;
 
         const stats = this.app.history.statistics;
-        const today = this.app.getTodayString ? this.app.getTodayString() : new Date().toISOString().split('T')[0];
+        const today = this.app.getTodayString ? this.app.getTodayString() : new Date().toLocaleDateString('en-CA');
         const todaysSessions = this.app.history.sessions.filter(s =>
             s.date === today && s.status === 'completed'
         ).length;

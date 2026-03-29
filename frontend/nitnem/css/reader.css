@@ -63,22 +63,22 @@
     --system-green: #34C759;
 }
 
-/* Sepia/Paper Mode */
+/* Sepia → maps to Light (backwards compat) */
 [data-theme="sepia"] {
-    --bg-primary: #F4E4C8;
-    --bg-secondary: #EBD9B8;
-    --bg-tertiary: #F4E4C8;
-    --bg-elevated: #FFFAF0;
-    --text-primary: #2C1810;
-    --text-secondary: #5D4037;
-    --text-tertiary: #8D6E63;
-    --separator: rgba(139, 90, 43, 0.2);
-    --separator-opaque: #D7C4A0;
-    --fill-primary: rgba(139, 90, 43, 0.15);
-    --accent: #8B4513;
-    --accent-rgb: 139, 69, 19;
-    --system-blue: #1565C0;
-    --system-green: #2E7D32;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #C7C7CC;
+    --separator: rgba(60, 60, 67, 0.29);
+    --separator-opaque: #C6C6C8;
+    --fill-primary: rgba(120, 120, 128, 0.2);
+    --accent: #B8860B;
+    --accent-rgb: 184, 134, 11;
+    --system-blue: #007AFF;
+    --system-green: #34C759;
 }
 
 /* ══════════════════════════════════════════════════
@@ -669,36 +669,31 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   CONTINUOUS READING - TRUE CONTINUOUS (NO LINE BREAKS)
+   CONTINUOUS READING — FIXED (Block layout, no flicker)
    ══════════════════════════════════════════════════ */
 .verses-container.continuous-mode {
     display: block;
-    /* Change from flex to block */
     gap: 0;
 }
 
 .verses-container.continuous-mode .verse {
-    display: inline;
-    /* Inline so text flows */
-    padding: 0;
+    display: block;
+    padding: 4px 0;
     margin: 0;
+    animation: none;
 }
 
 .verses-container.continuous-mode .verse-gurmukhi {
-    display: inline;
+    display: block;
     margin: 0;
-}
-
-.verses-container.continuous-mode .verse-gurmukhi::after {
-    content: ' ';
-    /* Single space between verses */
+    text-align: left;
+    line-height: 2.0;
 }
 
 .verses-container.continuous-mode .verse-roman,
 .verses-container.continuous-mode .verse-english,
 .verses-container.continuous-mode .verse-punjabi {
-    display: none;
-    /* Hide translations in continuous mode */
+    display: none !important;
 }
 
 /* ══════════════════════════════════════════════════
@@ -1343,5 +1338,153 @@ body.larivaar-assist .verse-gurmukhi .word-alt {
 @media (min-width: 768px) {
     .reader-content {
         padding: 120px 24px 120px;
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   SKELETON LOADING — Instant visual feedback
+   ══════════════════════════════════════════════════ */
+
+.skeleton-container {
+    display: none;
+    padding: 20px 0;
+}
+
+.skeleton-verse {
+    margin-bottom: 28px;
+    padding: 16px 0;
+}
+
+.skeleton-line {
+    height: 18px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--fill-primary) 25%,
+        rgba(var(--accent-rgb), 0.08) 50%,
+        var(--fill-primary) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.8s infinite ease-in-out;
+}
+
+.skeleton-line.w90 { width: 90%; }
+.skeleton-line.w85 { width: 85%; }
+.skeleton-line.w80 { width: 80%; }
+.skeleton-line.w75 { width: 75%; }
+.skeleton-line.w70 { width: 70%; }
+.skeleton-line.w65 { width: 65%; }
+.skeleton-line.w60 { width: 60%; }
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ══════════════════════════════════════════════════
+   NEXT BANI — My Pothi Navigation
+   Premium golden gradient button
+   ══════════════════════════════════════════════════ */
+
+.next-bani-container {
+    margin: 24px 0;
+    padding: 24px;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--accent-rgb), 0.08) 0%,
+        rgba(var(--accent-rgb), 0.03) 100%
+    );
+    border-radius: 20px;
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+}
+
+.next-bani-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+}
+
+.next-bani-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--accent), #FFD700);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.35);
+}
+
+.next-bani-btn:active {
+    transform: scale(0.97);
+}
+
+.next-bani-btn:hover {
+    box-shadow: 0 8px 32px rgba(var(--accent-rgb), 0.45);
+    transform: translateY(-1px);
+}
+
+.next-bani-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.next-bani-name {
+    flex: 1;
+    font-family: var(--font-gurmukhi);
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.next-bani-btn svg {
+    color: rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+/* Sepia theme orbs → map to Light theme orbs */
+[data-theme="sepia"] .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, #FFD700, #FF9500, #FF8C00, #FFD700);
+    top: -150px;
+    right: -100px;
+    opacity: 0.2;
+}
+
+[data-theme="sepia"] .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 180deg, #007AFF, #5AC8FA, #30D158, #007AFF);
+    bottom: 20%;
+    left: -120px;
+    animation-delay: -12s;
+    opacity: 0.15;
+}
+
+[data-theme="sepia"] .orb-3 {
+    background: conic-gradient(from 90deg, #FF2D55, #FF3B30, #FF9500, #FF2D55);
+    opacity: 0.12;
+}
+
+/* ══════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-line,
+    .end-khanda,
+    .orb {
+        animation: none !important;
     }
 }

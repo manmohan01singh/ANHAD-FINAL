@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -13,9 +14,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="../css/ios-liquid-glass.css" />
-  <link rel="stylesheet" href="../nitnem/css/liquid-glass.css" />
-  <link rel="stylesheet" href="../css/ios-glass.css" />
+  <!-- Calendar uses its own complete modal/sheet system -->
+  <!-- Shared glass CSS removed to prevent z-index and positioning conflicts -->
   <link rel="stylesheet" href="gurpurab-calendar.css" />
 
   <link rel="manifest" href="manifest.json">
@@ -316,5 +316,6 @@
   <script src="gurupurab-reminders.js"></script>
   <script src="gurpurab-calendar.js"></script>
   <script src="../lib/global-alarm-system.js" defer></script>
+  <script src="../lib/global-mini-player.js" defer></script>
 </body>
 </html>

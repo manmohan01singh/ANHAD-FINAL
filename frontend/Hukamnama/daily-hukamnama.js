@@ -474,7 +474,7 @@ const BaniDBService = {
             const verses = data.hukamnama || [];
 
             const metadata = {
-                date: info.date || new Date().toISOString().split('T')[0],
+                date: info.date || new Date().toLocaleDateString('en-CA'),
                 ang: info.pageno || null,
                 raagId: null,
                 writerId: null,

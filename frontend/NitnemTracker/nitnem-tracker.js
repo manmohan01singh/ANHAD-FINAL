@@ -106,7 +106,7 @@ const Utils = {
      * Get today's date as YYYY-MM-DD string
      */
     getTodayString() {
-        return new Date().toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA');
     },
 
     /**
@@ -172,7 +172,7 @@ const Utils = {
         const today = Utils.getTodayString();
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayString = yesterday.toISOString().split('T')[0];
+        const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
         // Check if streak is active (today or yesterday)
         if (sortedDates[0] !== today && sortedDates[0] !== yesterdayString) {
@@ -3999,7 +3999,7 @@ const MalaManager = {
     getDateString(offsetDays) {
         const d = new Date();
         d.setDate(d.getDate() + offsetDays);
-        return d.toISOString().split('T')[0];
+        return d.toLocaleDateString('en-CA');
     },
 
     /**
@@ -4698,7 +4698,7 @@ const AlarmManager = {
         for (let i = 0; i < 7; i++) {
             const date = new Date(weekStart);
             date.setDate(weekStart.getDate() + i);
-            const dateString = date.toISOString().split('T')[0];
+            const dateString = date.toLocaleDateString('en-CA');
 
             const dayLog = this.state.alarms[dateString] || {};
             const statuses = Object.values(dayLog).map(l => l.status || l);
@@ -6377,7 +6377,7 @@ const InsightsEngine = {
         for (let i = 0; i < 30; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            last30Days.push(d.toISOString().split('T')[0]);
+            last30Days.push(d.toLocaleDateString('en-CA'));
         }
 
         let amritvelaDays = 0;
@@ -6408,7 +6408,7 @@ const InsightsEngine = {
         for (let i = 0; i < 14; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            last14Days.push(d.toISOString().split('T')[0]);
+            last14Days.push(d.toLocaleDateString('en-CA'));
         }
 
         const wakeTimes = [];
@@ -6458,7 +6458,7 @@ const InsightsEngine = {
         for (let i = 0; i < 7; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             const dayOfWeek = d.getDay();
 
             totalPossible += 2; // Amritvela + Nitnem
@@ -6502,7 +6502,7 @@ const InsightsEngine = {
         for (let i = 0; i < 7; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             if (malaLog[dateStr]) {
                 total += malaLog[dateStr].completedMalas || 0;
             }
@@ -6521,7 +6521,7 @@ const InsightsEngine = {
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             const entry = amritvelaLog[dateStr];
 
             if (entry && entry.time) {
@@ -6692,7 +6692,7 @@ const CarryForwardSystem = {
     getYesterday() {
         const d = new Date();
         d.setDate(d.getDate() - 1);
-        return d.toISOString().split('T')[0];
+        return d.toLocaleDateString('en-CA');
     },
 
     /**
@@ -6960,7 +6960,7 @@ const AmritvelaWeekView = {
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             const entry = amritvelaLog[dateStr];
 
             weekData.push({
@@ -7169,7 +7169,7 @@ const EnhancedReports = {
         for (let i = 0; i < 7; i++) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
 
             if (nitnemLog[dateStr]) {
                 const dayData = nitnemLog[dateStr];
@@ -7441,7 +7441,7 @@ const StatisticsModal = {
 
         // Amritvela stats
         const amritvelaDates = Object.keys(amritvelaLog);
-        const thisMonth = new Date().toISOString().slice(0, 7);
+        const thisMonth = new Date().toLocaleDateString('en-CA').substring(0, 7);
         const amritvelaThisMonth = amritvelaDates.filter(d => d.startsWith(thisMonth)).length;
 
         let totalWakeMinutes = 0;

@@ -1,0 +1,295 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ANHAD — Layout System v3
+   Grid • Spacing • Responsive • Safe Areas • Cursor Glow
+   iOS 26 Spatial Computing • Every pixel sacred
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── GLOBAL OVERSCROLL ── */
+body, html {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── MAIN APP CONTAINER ── */
+.app {
+  position: relative;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 110px;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  contain: layout;
+}
+
+/* Tablet+ wider layout */
+@media (min-width: 768px) {
+  .app {
+    max-width: 560px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app {
+    max-width: 640px;
+  }
+}
+
+/* ── CONTENT SECTIONS ── */
+.content-section {
+  padding: 0 var(--space-20);
+  margin-bottom: var(--space-24);
+  contain: layout style;
+}
+
+/* ── FEATURES GRID (2x2) ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 0 var(--space-20);
+  margin-bottom: var(--space-32);
+  contain: layout;
+}
+
+@media (min-width: 768px) {
+  .features-grid {
+    gap: 16px;
+  }
+
+  .feature-card {
+    height: 200px;
+  }
+}
+
+/* ── QUICK ACCESS LIST ── */
+.quick-access {
+  padding: 0 var(--space-20);
+  margin-bottom: var(--space-32);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  contain: layout;
+}
+
+/* ── SAFE AREAS (iOS notch/Dynamic Island) ── */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .app-header {
+    padding-top: calc(var(--space-16) + var(--safe-top));
+  }
+
+  .nav-pill {
+    bottom: calc(20px + var(--safe-bottom));
+  }
+
+  .modal-sheet {
+    padding-bottom: calc(var(--space-24) + var(--safe-bottom));
+  }
+  
+  .radio-menu__sheet,
+  .filter-panel__sheet {
+    padding-bottom: calc(24px + var(--safe-bottom));
+  }
+}
+
+/* ── THEME SECTIONS ── */
+.theme-container {
+  position: relative;
+  contain: layout;
+}
+
+.theme-top-section {
+  position: relative;
+  z-index: 2;
+}
+
+/* Theme Divider — sacred gold gradient line */
+.theme-divider {
+  height: 1px;
+  margin: var(--space-8) var(--space-20);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 134, 10, 0.15) 30%,
+    rgba(212, 134, 10, 0.25) 50%,
+    rgba(212, 134, 10, 0.15) 70%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+.theme-bottom-section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── IMAGE HANDLING — prevent layout shift ── */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img[loading="lazy"] {
+  content-visibility: auto;
+}
+
+/* All images: explicit aspect-ratio hint */
+img[width][height] {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* ── ASPECT RATIOS ── */
+.aspect-16-9 { aspect-ratio: 16 / 9; }
+.aspect-4-3  { aspect-ratio: 4 / 3; }
+.aspect-1-1  { aspect-ratio: 1 / 1; }
+.aspect-3-4  { aspect-ratio: 3 / 4; }
+
+/* ── CURSOR GLOW (Desktop only) ── */
+.cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(212, 134, 10, 0.08) 0%,
+    rgba(212, 134, 10, 0.03) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+  transform: translate(-50%, -50%) translateZ(0);
+  filter: blur(40px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  mix-blend-mode: multiply;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cursor-glow {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* ── HERO IMAGE THEME SWITCHING ── */
+.hero-card__image--dark {
+  display: none;
+}
+
+.hero-card__image--light {
+  display: block;
+}
+
+html.dark-mode .hero-card__image--dark {
+  display: block;
+}
+
+html.dark-mode .hero-card__image--light {
+  display: none;
+}
+
+/* ── PARTICLE CANVAS OVERLAY ── */
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-particles, 3000);
+  will-change: contents;
+}
+
+/* ── RESPONSIVE — Small phones ── */
+@media (max-width: 380px) {
+  .hide-xs { display: none !important; }
+  
+  .hero-card { min-height: 320px; }
+  .feature-card { height: 160px; }
+  .features-grid { gap: 10px; }
+  .nav-item { padding: 8px 14px; }
+  
+  .app-header { padding: 10px 16px; }
+  .content-section { padding: 0 var(--space-16); }
+  .quick-access { padding: 0 var(--space-16); }
+  .features-grid { padding: 0 var(--space-16); }
+}
+
+/* ── RESPONSIVE — Large phones ── */
+@media (min-width: 414px) {
+  .features-grid { gap: 16px; }
+}
+
+/* ── LANDSCAPE SAFETY ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .app { padding-bottom: 70px; }
+  .nav-pill { bottom: 10px; padding: 6px 12px; }
+  .hero-card { min-height: 260px; }
+}
+
+/* ── GRID SYSTEM ── */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ── SPACING SCALE ── */
+.space-y-8 > * + * { margin-top: var(--space-8); }
+.space-y-12 > * + * { margin-top: var(--space-12); }
+.space-y-16 > * + * { margin-top: var(--space-16); }
+.space-y-24 > * + * { margin-top: var(--space-24); }
+
+/* ── CONTAINER QUERIES (Future-proof) ── */
+@container (min-width: 400px) {
+  .feature-card {
+    height: 180px;
+  }
+}
+
+/* ── PRINT STYLES ── */
+@media print {
+  .nav-pill,
+  .aurora-bg,
+  .mandana-watermark,
+  .cursor-glow,
+  .particle-canvas,
+  .header-btn,
+  .hero-card__controls {
+    display: none !important;
+  }
+  
+  .app {
+    max-width: 100%;
+    padding-bottom: 0;
+  }
+}
+
+/* ── DARK MODE LAYOUT ADJUSTMENTS ── */
+html.dark-mode .cursor-glow {
+  background: radial-gradient(
+    circle,
+    rgba(212, 134, 10, 0.12) 0%,
+    rgba(212, 134, 10, 0.05) 40%,
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+}

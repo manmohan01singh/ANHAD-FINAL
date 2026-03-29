@@ -429,7 +429,7 @@
             localStorage.setItem(CONFIG.PENDING_INTERACTIONS_KEY, JSON.stringify(existing));
 
             // Also save to alarm log
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
             const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
             if (!log[today]) log[today] = {};
             log[today][alarmId] = { status: action, timestamp: new Date().toISOString() };

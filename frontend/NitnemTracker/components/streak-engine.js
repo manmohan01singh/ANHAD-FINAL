@@ -53,7 +53,7 @@ class StreakEngine {
      * Get today's date string in YYYY-MM-DD format
      */
     getTodayString() {
-        return new Date().toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA');
     }
 
     /**
@@ -62,7 +62,7 @@ class StreakEngine {
     getYesterdayString() {
         const d = new Date();
         d.setDate(d.getDate() - 1);
-        return d.toISOString().split('T')[0];
+        return d.toLocaleDateString('en-CA');
     }
 
     /**
@@ -78,7 +78,7 @@ class StreakEngine {
         for (let i = 0; i < 365; i++) { // Check up to a year
             const d = new Date(today);
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
 
             const hasAmritvela = amritvelaLog[dateStr]?.woke === true;
             const hasNitnem = this.isNitnemComplete(nitnemLog[dateStr]);

@@ -147,7 +147,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     function syncNaamAbhyasToTracker(sessionData) {
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
 
             // Load existing Nitnem log
             const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_log') || '{}');
@@ -354,7 +354,7 @@
 
         const now = new Date();
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const today = now.toISOString().split('T')[0];
+        const today = now.toLocaleDateString('en-CA');
 
         const alarmLog = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
 
@@ -986,7 +986,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     function logAlarmInteraction(alarmId, action) {
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
             const timestamp = new Date().toISOString();
 
             // Load existing log
@@ -1169,10 +1169,12 @@
         // Check for missed alarms
         checkMissedAlarms();
 
-        // Regular check interval
-        State.checkInterval = setInterval(() => {
-            scheduleAllAlarms();
-        }, CONFIG.CHECK_INTERVAL);
+        // Regular check interval — skip when SW is active (SW is single source of truth)
+        if (!navigator.serviceWorker?.controller) {
+            State.checkInterval = setInterval(() => {
+                scheduleAllAlarms();
+            }, CONFIG.CHECK_INTERVAL);
+        }
 
         // Visibility change handler
         document.addEventListener('visibilitychange', () => {

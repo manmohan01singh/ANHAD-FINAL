@@ -331,7 +331,7 @@
             // Update last fired time in DB
             const alarm = await this.getAlarm(alarmData.id);
             if (alarm) {
-                alarm.lastFired = new Date().toISOString().split('T')[0];
+                alarm.lastFired = new Date().toLocaleDateString('en-CA');
                 await this.saveAlarm(alarm);
             }
 
@@ -437,7 +437,7 @@
             try {
                 const alarms = await this.getAllAlarms();
                 const now = new Date();
-                const today = now.toISOString().split('T')[0];
+                const today = now.toLocaleDateString('en-CA');
                 const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
                 for (const alarm of alarms) {

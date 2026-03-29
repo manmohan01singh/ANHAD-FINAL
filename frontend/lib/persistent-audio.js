@@ -57,7 +57,19 @@
         } catch (e) { }
     }
 
-    // Get broadcast start for virtual live
+    // API base URL
+    const PA_API_BASE = (() => {
+        try {
+            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            const onBackendPort = window.location.port === '3000';
+            if (isLocalhost && !onBackendPort) {
+                return `${window.location.protocol}//${window.location.hostname}:3000`;
+            }
+        } catch (e) { }
+        return '';
+    })();
+
+    // Get broadcast start for virtual live (tries server, falls back to local)
     function getBroadcastStart() {
         if (broadcastStart) return broadcastStart;
         let start = localStorage.getItem('gurbani_broadcast_start');
@@ -70,12 +82,36 @@
         return broadcastStart;
     }
 
-    // Get current position in virtual live playlist
+    // Get current position from SERVER (async)
+    async function getServerLivePosition() {
+        try {
+            const startTime = Date.now();
+            const resp = await fetch(`${PA_API_BASE}/api/radio/live`);
+            const endTime = Date.now();
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            const latencyMs = (endTime - startTime) / 2;
+
+            // Update local cached epoch
+            broadcastStart = data.epoch;
+            localStorage.setItem('gurbani_broadcast_start', data.epoch.toString());
+
+            return {
+                trackIndex: data.trackIndex,
+                trackPosition: data.trackPosition + (latencyMs / 1000)
+            };
+        } catch (e) {
+            // Fallback to local
+            return getVirtualLivePosition();
+        }
+    }
+
+    // Get current position in virtual live playlist (local fallback)
     function getVirtualLivePosition() {
         const elapsed = (Date.now() - getBroadcastStart()) / 1000;
         const trackDuration = 3600; // 1 hour per track
         const totalDuration = STREAMS.amritvela.totalTracks * trackDuration;
-        const positionInPlaylist = elapsed % totalDuration;
+        const positionInPlaylist = ((elapsed % totalDuration) + totalDuration) % totalDuration;
 
         const trackIndex = Math.floor(positionInPlaylist / trackDuration);
         const trackPosition = positionInPlaylist % trackDuration;
@@ -129,7 +165,7 @@
     }
 
     // Switch to a different stream
-    function switchStream(streamName) {
+    async function switchStream(streamName) {
         if (!STREAMS[streamName]) {
             console.error('Unknown stream:', streamName);
             return;
@@ -146,8 +182,8 @@
         if (stream.type === 'live') {
             audio.src = stream.url;
         } else if (stream.type === 'playlist') {
-            // Go to virtual live position
-            const pos = getVirtualLivePosition();
+            // Go to server-synced live position
+            const pos = await getServerLivePosition();
             currentTrackIndex = pos.trackIndex;
             audio.src = stream.getTrackUrl(currentTrackIndex);
         }
@@ -162,12 +198,12 @@
     }
 
     // Play audio
-    function play(streamName) {
+    async function play(streamName) {
         createAudio();
 
         // If stream specified and different, switch
         if (streamName && streamName !== currentStream) {
-            switchStream(streamName);
+            await switchStream(streamName);
         }
 
         const stream = STREAMS[currentStream];
@@ -177,11 +213,11 @@
             if (stream.type === 'live') {
                 audio.src = stream.url;
             } else if (stream.type === 'playlist') {
-                const pos = getVirtualLivePosition();
+                const pos = await getServerLivePosition();
                 currentTrackIndex = pos.trackIndex;
                 audio.src = stream.getTrackUrl(currentTrackIndex);
 
-                // For playlist, seek to virtual live position after load
+                // For playlist, seek to server-synced live position after load
                 audio.addEventListener('loadedmetadata', function seekToLive() {
                     audio.removeEventListener('loadedmetadata', seekToLive);
                     const duration = audio.duration || 3600;
@@ -211,8 +247,8 @@
         }
     }
 
-    // Jump to Live - forces reconnection to the live stream
-    function jumpToLive(streamName) {
+    // Jump to Live - forces reconnection to the server-synced live position
+    async function jumpToLive(streamName) {
         createAudio();
 
         // If stream specified, switch to it
@@ -229,8 +265,8 @@
             // For live stream, add cache buster to force fresh connection
             audio.src = stream.url + '?t=' + Date.now();
         } else if (stream.type === 'playlist') {
-            // For playlist, jump to current virtual live position
-            const pos = getVirtualLivePosition();
+            // For playlist, jump to server-synced live position
+            const pos = await getServerLivePosition();
             currentTrackIndex = pos.trackIndex;
             audio.src = stream.getTrackUrl(currentTrackIndex);
 

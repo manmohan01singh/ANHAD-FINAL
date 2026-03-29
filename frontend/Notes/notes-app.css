@@ -151,6 +151,8 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     min-height: 100dvh;
+    width: 100%;
+    margin: 0;
 }
 
 button {
@@ -183,6 +185,9 @@ textarea {
     position: relative;
     min-height: 100vh;
     min-height: 100dvh;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     background: radial-gradient(ellipse at top, rgba(247, 198, 52, 0.05) 0%, transparent 50%),
@@ -469,6 +474,7 @@ textarea {
     line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -491,6 +497,7 @@ textarea {
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: var(--space-md);
@@ -538,6 +545,7 @@ textarea {
     align-items: center;
     text-align: center;
     padding: var(--space-xl);
+    width: 100%;
 }
 
 .empty-state.visible {
@@ -550,17 +558,23 @@ textarea {
 }
 
 .empty-icon {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-xl);
-    font-size: 2.5rem;
+    background: #fdfaf6;
+    border-radius: 36px;
+    font-size: 3rem;
     color: var(--accent-primary);
     position: relative;
     z-index: 1;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .empty-icon {
+    background: #1c1c1e;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .empty-glow {
@@ -574,13 +588,11 @@ textarea {
 }
 
 @keyframes pulse-glow {
-
     0%,
     100% {
         opacity: 0.3;
         transform: scale(1);
     }
-
     50% {
         opacity: 0.6;
         transform: scale(1.1);
@@ -589,34 +601,53 @@ textarea {
 
 .empty-state h2 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+    max-width: 180px;
+    line-height: 1.3;
 }
 
 .empty-state p {
     font-size: 1rem;
     color: var(--text-secondary);
     max-width: 280px;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-xxl);
+    line-height: 1.6;
 }
 
 .empty-cta {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-sm);
-    padding: var(--space-md) var(--space-lg);
-    background: var(--accent-gradient);
-    border-radius: var(--radius-full);
+    width: 150px;
+    height: 150px;
+    background: #FFB703;
+    border-radius: 50%;
     font-size: 1rem;
     font-weight: 600;
     color: #000;
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 10px 30px rgba(255, 183, 3, 0.4);
     transition: var(--transition-normal);
+    text-align: left;
+    padding: 0 24px;
+    cursor: pointer;
+}
+
+.empty-cta i {
+    font-size: 1.25rem;
+}
+
+.empty-cta span {
+    display: block;
+    line-height: 1.2;
+    max-width: 80px;
 }
 
 .empty-cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 50px rgba(247, 198, 52, 0.4);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(255, 183, 3, 0.5);
 }
 
 .empty-cta:active {

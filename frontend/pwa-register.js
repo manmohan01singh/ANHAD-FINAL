@@ -230,7 +230,7 @@ class PWAManager {
         if (config.enabled) {
           const history = localStorage.getItem('naam_abhyas_history');
           const historyData = history ? JSON.parse(history) : {};
-          const today = now.toISOString().split('T')[0];
+          const today = now.toLocaleDateString('en-CA');
           const schedule = historyData.scheduleHistory?.[today] || {};
 
           Object.entries(schedule).forEach(([hour, session]) => {

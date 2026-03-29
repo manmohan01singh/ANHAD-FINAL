@@ -379,6 +379,8 @@ class RandomShabad {
         this.config.theme = this.config.theme === 'dark' ? 'light' : 'dark';
         this.applyTheme();
         this.saveConfig();
+        // Sync to global theme key
+        localStorage.setItem('anhad_theme', this.config.theme);
     }
 
     applyTheme() {
@@ -423,9 +425,17 @@ class RandomShabad {
         const saved = this.load('anhad_shabad_config');
         if (saved) this.config = { ...this.config, ...saved };
 
-        // System preference
-        if (!saved?.theme && window.matchMedia?.('(prefers-color-scheme: light)').matches) {
-            this.config.theme = 'light';
+        // ── Sync with global app theme (anhad_theme / anhad_dark_mode) ──
+        const globalTheme = localStorage.getItem('anhad_theme');
+        if (globalTheme) {
+            this.config.theme = globalTheme; // 'light' or 'dark'
+        } else {
+            const darkFlag = localStorage.getItem('anhad_dark_mode');
+            if (darkFlag === 'true') this.config.theme = 'dark';
+            else if (darkFlag === 'false') this.config.theme = 'light';
+            else if (!saved?.theme && window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+                this.config.theme = 'light';
+            }
         }
 
         this.applyFontSize();

@@ -206,7 +206,7 @@
 
         const now = new Date();
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const today = now.toISOString().split('T')[0];
+        const today = now.toLocaleDateString('en-CA');
 
         const allReminders = data.reminders;
 
@@ -689,7 +689,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     function logInteraction(alarmId, action) {
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
             const timestamp = new Date().toISOString();
 
             // Save to alarm log

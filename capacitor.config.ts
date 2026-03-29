@@ -2,21 +2,21 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
     appId: 'com.gurbaniradio.app',
-    appName: 'Gurbani Radio',
+    appName: 'ANHAD',
     webDir: 'frontend',
 
     // Server configuration for development
     server: {
         androidScheme: 'https',
-        cleartext: true // Allow HTTP for local development
+        cleartext: false // Require HTTPS in production
     },
 
     // Android-specific configuration
     android: {
-        // Allow mixed content for development
-        allowMixedContent: true,
-        // Use legacy storage for older Android versions
-        webContentsDebuggingEnabled: true
+        // Disable mixed content in production
+        allowMixedContent: false,
+        // PRODUCTION: Disable WebView debugging
+        webContentsDebuggingEnabled: false
     },
 
     // Plugin configurations

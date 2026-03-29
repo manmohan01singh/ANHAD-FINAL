@@ -43,14 +43,10 @@ if (!gotTheLock) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AUTO-LAUNCH SETTINGS
+// AUTO-LAUNCH SETTINGS — opt-in only, controlled via user settings
 // ═══════════════════════════════════════════════════════════════
-// Set the app to launch at login
-app.setLoginItemSettings({
-    openAtLogin: true,
-    path: app.getPath('exe'),
-    args: ['--hidden'] // Custom flag to check if we should start hidden
-});
+// NOTE: Auto-launch is NOT enabled by default. The user must opt in
+// via the Settings screen. See ipcMain 'set-launch-at-login' handler below.
 
 // ═══════════════════════════════════════════════════════════════
 // CREATE MAIN WINDOW
@@ -224,7 +220,18 @@ function showNotification(data) {
         mainWindow.focus();
 
         if (url) {
-            mainWindow.loadFile(`frontend${url}`);
+            const ALLOWED_NAV_PATHS = [
+                '/NaamAbhyas/naam-abhyas.html',
+                '/reminders/smart-reminders.html',
+                '/reminders/alarm.html',
+                '/NitnemTracker/nitnem-tracker.html',
+                '/SehajPaath/sehaj-paath.html',
+                '/Hukamnama/daily-hukamnama.html',
+                '/index.html'
+            ];
+            if (ALLOWED_NAV_PATHS.some(p => url.startsWith(p)) && !url.includes('..')) {
+                mainWindow.loadFile(`frontend${url}`);
+            }
         }
     });
 
@@ -252,6 +259,20 @@ ipcMain.on('cancel-notification', (event, data) => {
 
 ipcMain.on('show-notification', (event, data) => {
     showNotification(data);
+});
+
+// User opt-in to auto-launch at login
+ipcMain.on('set-launch-at-login', (event, enable) => {
+    app.setLoginItemSettings({
+        openAtLogin: !!enable,
+        path: app.getPath('exe'),
+        args: ['--hidden']
+    });
+    event.reply('launch-at-login-updated', { enabled: !!enable });
+});
+
+ipcMain.handle('get-launch-at-login', () => {
+    return app.getLoginItemSettings().openAtLogin;
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

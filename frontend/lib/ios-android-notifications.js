@@ -80,7 +80,9 @@
     // ══════════════════════════════════════════════════════════════════════════
     const IOSInstallPrompt = {
         shouldShow: function () {
-            if (!DeviceInfo.isIOS || DeviceInfo.isPWA) return false;
+            if (DeviceInfo.isPWA) return false;
+
+            if (sessionStorage.getItem('anhad_ios_install_shown')) return false;
 
             const lastPrompt = localStorage.getItem(CONFIG.IOS_INSTALL_PROMPT_KEY);
             if (lastPrompt) {
@@ -96,6 +98,23 @@
             // Remove existing prompt
             document.querySelector('.ios-install-prompt')?.remove();
 
+            const isIOS = DeviceInfo.isIOS;
+            const step1Content = isIOS 
+                ? `<p>Tap the <strong style="color:var(--ios-blue,#007AFF)">Share</strong> button</p>
+                   <div class="ios-share-icon" style="color:var(--ios-blue,#007AFF)">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                           <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                           <polyline points="16 6 12 2 8 6"/>
+                           <line x1="12" y1="2" x2="12" y2="15"/>
+                       </svg>
+                   </div>`
+                : `<p>Tap the <strong>Browser Menu</strong> (3 dots)</p>
+                   <div class="ios-share-icon">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                           <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+                       </svg>
+                   </div>`;
+
             const prompt = document.createElement('div');
             prompt.className = 'ios-install-prompt';
             prompt.innerHTML = `
@@ -110,39 +129,32 @@
                             <p>Get notifications even when app is closed</p>
                         </div>
                         <button class="ios-prompt-close" aria-label="Close">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
                         </button>
                     </div>
                     
                     <div class="ios-prompt-steps">
-                        <div class="ios-step">
+                        <div class="ios-step" style="animation-delay: 0.1s">
                             <div class="ios-step-num">1</div>
                             <div class="ios-step-content">
-                                <p>Tap the <strong>Share</strong> button</p>
-                                <div class="ios-share-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-                                        <polyline points="16 6 12 2 8 6"/>
-                                        <line x1="12" y1="2" x2="12" y2="15"/>
-                                    </svg>
-                                </div>
+                                ${step1Content}
                             </div>
                         </div>
-                        <div class="ios-step">
+                        <div class="ios-step" style="animation-delay: 0.2s">
                             <div class="ios-step-num">2</div>
                             <div class="ios-step-content">
                                 <p>Scroll down and tap <strong>"Add to Home Screen"</strong></p>
                                 <div class="ios-add-icon">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="4"/>
                                         <path d="M12 8v8M8 12h8"/>
                                     </svg>
                                 </div>
                             </div>
                         </div>
-                        <div class="ios-step">
+                        <div class="ios-step" style="animation-delay: 0.3s">
                             <div class="ios-step-num">3</div>
                             <div class="ios-step-content">
                                 <p>Tap <strong>"Add"</strong> to install</p>
@@ -183,6 +195,7 @@
 
             // Record prompt shown
             localStorage.setItem(CONFIG.IOS_INSTALL_PROMPT_KEY, Date.now().toString());
+            sessionStorage.setItem('anhad_ios_install_shown', 'true');
         },
 
         dismiss: function (prompt) {
@@ -537,12 +550,16 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background: linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 100%);
-                border-radius: 20px 20px 0 0;
-                padding: 20px;
-                padding-bottom: max(20px, env(safe-area-inset-bottom));
+                background: rgba(30, 30, 30, 0.75);
+                backdrop-filter: blur(30px) saturate(1.5);
+                -webkit-backdrop-filter: blur(30px) saturate(1.5);
+                border-radius: 28px 28px 0 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.15);
+                padding: 24px;
+                padding-bottom: max(24px, env(safe-area-inset-bottom));
                 transform: translateY(100%);
-                transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+                transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1.15);
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
             }
 
             .ios-install-prompt.visible .ios-prompt-sheet {
@@ -561,14 +578,14 @@
                 height: 60px;
                 border-radius: 14px;
                 overflow: hidden;
-                background: #000;
+                background: transparent;
                 flex-shrink: 0;
             }
 
             .ios-prompt-icon img {
                 width: 100%;
                 height: 100%;
-                object-fit: cover;
+                object-fit: contain;
             }
 
             .ios-prompt-title {
@@ -576,10 +593,11 @@
             }
 
             .ios-prompt-title h3 {
-                font-size: 18px;
-                font-weight: 600;
+                font-size: 20px;
+                font-weight: 700;
                 color: #fff;
                 margin: 0 0 4px;
+                letter-spacing: -0.5px;
             }
 
             .ios-prompt-title p {
@@ -602,18 +620,27 @@
             }
 
             .ios-prompt-steps {
-                background: rgba(255,255,255,0.05);
-                border-radius: 12px;
-                padding: 16px;
-                margin-bottom: 16px;
+                background: rgba(255,255,255,0.06);
+                border-radius: 20px;
+                padding: 16px 20px;
+                margin-bottom: 20px;
+                border: 1px solid rgba(255,255,255,0.08);
+                box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+            }
+
+            @keyframes slideInStep {
+                from { opacity: 0; transform: translateX(-10px); }
+                to { opacity: 1; transform: translateX(0); }
             }
 
             .ios-step {
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                padding: 12px 0;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
+                gap: 16px;
+                padding: 14px 0;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                opacity: 0;
+                animation: slideInStep 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
             }
 
             .ios-step:last-child {
@@ -626,17 +653,18 @@
             }
 
             .ios-step-num {
-                width: 28px;
-                height: 28px;
+                width: 32px;
+                height: 32px;
                 border-radius: 50%;
-                background: linear-gradient(135deg, #f7c634, #dba520);
+                background: linear-gradient(135deg, #FFD700, #D4AF37);
                 color: #000;
-                font-size: 14px;
-                font-weight: 700;
+                font-size: 15px;
+                font-weight: 800;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
+                box-shadow: 0 4px 12px rgba(212,175,55,0.3);
             }
 
             .ios-step-content {
@@ -648,12 +676,14 @@
 
             .ios-step-content p {
                 margin: 0;
-                font-size: 14px;
-                color: rgba(255,255,255,0.9);
+                font-size: 15px;
+                font-weight: 500;
+                color: rgba(255,255,255,0.95);
             }
 
             .ios-step-content strong {
-                color: #f7c634;
+                color: #FFD700;
+                font-weight: 700;
             }
 
             .ios-share-icon, .ios-add-icon {
@@ -689,14 +719,19 @@
 
             .ios-prompt-dismiss {
                 width: 100%;
-                padding: 16px;
-                background: rgba(255,255,255,0.1);
-                border: none;
-                border-radius: 12px;
-                color: rgba(255,255,255,0.6);
-                font-size: 16px;
-                font-weight: 500;
+                padding: 18px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 16px;
+                color: rgba(255,255,255,0.9);
+                font-size: 17px;
+                font-weight: 600;
                 cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .ios-prompt-dismiss:active {
+                background: rgba(255,255,255,0.15);
+                transform: scale(0.98);
             }
 
             /* Notification Permission Banner */
@@ -839,13 +874,17 @@
         // Initialize visibility handler
         VisibilityHandler.init();
 
-        // Show iOS install prompt after 30 seconds
-        if (DeviceInfo.isIOS && !DeviceInfo.isPWA) {
-            setTimeout(() => IOSInstallPrompt.show(), 30000);
+        // Show install prompt 1 second after load, instead of waiting 30 seconds
+        if (!DeviceInfo.isPWA) {
+            setTimeout(() => IOSInstallPrompt.show(), 1000);
         }
 
-        // Show notification permission banner after 10 seconds
-        setTimeout(() => PermissionBanner.show(), 10000);
+        // Show notification permission banner after 10 seconds (skip if prompt is shown)
+        setTimeout(() => {
+            if (!document.querySelector('.ios-install-prompt.visible')) {
+                PermissionBanner.show();
+            }
+        }, 10000);
 
         console.log('✅ iOS/Android Notification System ready');
     }

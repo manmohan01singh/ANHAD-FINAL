@@ -92,7 +92,12 @@
         settings: { ...DEFAULTS },
         isSettingsOpen: false,
         wakeLockSentinel: null,
-        currentColorPicker: null
+        currentColorPicker: null,
+        // My Pothi context
+        isFromPothi: false,
+        pothiOrder: [],
+        nextBaniId: null,
+        nextBaniMeta: null
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -210,12 +215,30 @@
             return;
         }
 
+        // Check if coming from My Pothi
+        state.isFromPothi = params.get('from') === 'pothi';
+        if (state.isFromPothi) {
+            try {
+                const saved = localStorage.getItem('anhad_my_pothi');
+                if (saved) state.pothiOrder = JSON.parse(saved);
+            } catch (e) { state.pothiOrder = []; }
+        }
+
         state.baniMeta = typeof getBaniMeta === 'function' ? getBaniMeta(state.baniId) : null;
 
         loadSettings();
         applyAllSettings();
         setupEvents();
+        
+        // Show skeleton immediately for perceived speed
+        showSkeleton();
+        
         await loadBani();
+
+        // Setup Next Bani for My Pothi
+        if (state.isFromPothi) {
+            setupNextBani();
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -223,10 +246,9 @@
     // ═══════════════════════════════════════════════════════════════
 
     async function loadBani() {
-        showLoading('Loading...');
-
-        // Check if Sarbloh Granth (IDs 201-205) - not available in BaniDB API
+        // Check if Sarbloh Granth (IDs 201-205)
         if (state.baniId >= 201 && state.baniId <= 205) {
+            hideSkeleton();
             showError('Sarbloh Granth Banis are not yet available via API. Coming soon! 🙏');
             return;
         }
@@ -240,7 +262,10 @@
             }
 
             updateHeader(data);
-            renderVerses(data.verses);
+            
+            // PROGRESSIVE RENDERING — hide skeleton, render verses in chunks
+            hideSkeleton();
+            renderVersesProgressive(data.verses);
             renderInfo(data);
 
             hideLoading();
@@ -251,7 +276,95 @@
 
         } catch (error) {
             console.error('Load failed:', error);
+            hideSkeleton();
             showError(error.message);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SKELETON UI — Instant visual feedback
+    // ═══════════════════════════════════════════════════════════════
+
+    function showSkeleton() {
+        const skeleton = document.getElementById('skeletonContainer');
+        if (skeleton) skeleton.style.display = 'block';
+        // Also show the app immediately so users see structure
+        if (els.readerApp) els.readerApp.style.display = 'block';
+    }
+
+    function hideSkeleton() {
+        const skeleton = document.getElementById('skeletonContainer');
+        if (skeleton) {
+            skeleton.style.opacity = '0';
+            skeleton.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => { skeleton.style.display = 'none'; }, 300);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // MY POTHI — Next Bani Setup
+    // ═══════════════════════════════════════════════════════════════
+
+    // Bani database for name lookup (matches my-pothi.html)
+    const ALL_BANIS_LOOKUP = [
+        { id: 2, name: 'ਜਪੁਜੀ ਸਾਹਿਬ', english: 'Japji Sahib Ji', icon: '🌅' },
+        { id: 4, name: 'ਜਾਪੁ ਸਾਹਿਬ', english: 'Jaap Sahib Ji', icon: '⚔️' },
+        { id: 6, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', english: 'Tav Prasad Savaiye', icon: '🙏' },
+        { id: 7, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਦੀਨਨ ਕੀ)', english: 'Tav Prasad Savaiye (Deenan Ki)', icon: '🙏' },
+        { id: 9, name: 'ਬੇਨਤੀ ਚੌਪਈ ਸਾਹਿਬ', english: 'Chaupai Sahib Ji', icon: '🛡️' },
+        { id: 10, name: 'ਅਨੰਦੁ ਸਾਹਿਬ', english: 'Anand Sahib Ji', icon: '😊' },
+        { id: 21, name: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ', english: 'Rehras Sahib Ji', icon: '🌇' },
+        { id: 23, name: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', english: 'Kirtan Sohila', icon: '🌙' },
+        { id: 24, name: 'ਅਰਦਾਸ', english: 'Ardas', icon: '🙏' },
+        { id: 31, name: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', english: 'Sukhmani Sahib Ji', icon: '🕊️' },
+        { id: 90, name: 'ਆਸਾ ਦੀ ਵਾਰ', english: 'Asa Di Vaar', icon: '☀️' },
+        { id: 36, name: 'ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ', english: 'Dukh Bhanjani Sahib Ji', icon: '💚' },
+        { id: 3, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ', english: 'Shabad Hazare', icon: '💎' },
+        { id: 27, name: 'ਬਾਰਹ ਮਾਹਾ', english: 'Barah Maha', icon: '📅' },
+        { id: 30, name: 'ਸਲੋਕ ਮਹਲਾ ੯', english: 'Salok Mahalla 9', icon: '📜' },
+        { id: 22, name: 'ਆਰਤੀ', english: 'Aarti', icon: '🪔' },
+        { id: 11, name: 'ਲਾਵਾਂ', english: 'Lavan', icon: '💍' },
+        { id: 33, name: 'ਬਾਵਨ ਅਖਰੀ', english: 'Bavan Akhri', icon: '📖' },
+        { id: 34, name: 'ਸਿਧ ਗੋਸਟਿ', english: 'Sidh Gosht', icon: '🧘' },
+        { id: 35, name: 'ਦਖਣੀ ਓਅੰਕਾਰੁ', english: 'Dakhni Oankar', icon: '🕉️' },
+        { id: 32, name: 'ਸੁਖਮਨਾ ਸਾਹਿਬ', english: 'Sukhmana Sahib Ji', icon: '🕊️' },
+        { id: 38, name: 'ਰਾਗ ਮਾਲਾ', english: 'Raag Mala', icon: '🎵' },
+        { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', icon: '📿' },
+        { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', icon: '🤲' },
+        { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', icon: '💎' },
+        { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', icon: '✨' },
+        { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', icon: '🌟' },
+        { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', icon: '⚔️' },
+        { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', icon: '🗡️' },
+        { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', icon: '🔱' },
+        { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', icon: '🔥' },
+    ];
+
+    function setupNextBani() {
+        if (!state.isFromPothi || state.pothiOrder.length === 0) return;
+
+        const currentIdx = state.pothiOrder.indexOf(state.baniId);
+        if (currentIdx === -1 || currentIdx >= state.pothiOrder.length - 1) return;
+
+        const nextId = state.pothiOrder[currentIdx + 1];
+        const nextBani = ALL_BANIS_LOOKUP.find(b => b.id === nextId);
+        if (!nextBani) return;
+
+        state.nextBaniId = nextId;
+        state.nextBaniMeta = nextBani;
+
+        // Show the Next Bani container
+        const container = document.getElementById('nextBaniContainer');
+        const nameEl = document.getElementById('nextBaniName');
+        const iconEl = document.getElementById('nextBaniIcon');
+        const btnEl = document.getElementById('nextBaniBtn');
+
+        if (container && nameEl && iconEl && btnEl) {
+            container.style.display = 'block';
+            nameEl.textContent = nextBani.name;
+            iconEl.textContent = nextBani.icon;
+            btnEl.href = `reader.html?id=${nextId}&from=pothi`;
+            console.log(`📖 Next Bani in Pothi: ${nextBani.english} (ID: ${nextId})`);
         }
     }
 
@@ -293,7 +406,6 @@
         verses.forEach((verseData, index) => {
             const parsed = parseVerse(verseData);
 
-            // Section headers
             if (meta?.showChhandType && state.settings.showTitles) {
                 const header = verseData.header || verseData.verse?.header;
                 if (header && header !== currentSection) {
@@ -308,6 +420,85 @@
         applyModes();
         applyFontToVerses();
         updateVisibility();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // PROGRESSIVE RENDERING — Chunked for speed
+    // Renders first batch immediately, rest via requestIdleCallback
+    // ═══════════════════════════════════════════════════════════════
+
+    function renderVersesProgressive(verses) {
+        els.versesContainer.innerHTML = '';
+
+        const FIRST_CHUNK = 30; // Render first 30 verses immediately
+        const CHUNK_SIZE = 40;  // Then 40 at a time
+        const meta = state.baniMeta;
+        let currentSection = null;
+
+        // Build document fragment for first chunk
+        const fragment = document.createDocumentFragment();
+        const firstBatch = verses.slice(0, FIRST_CHUNK);
+
+        firstBatch.forEach((verseData, index) => {
+            const parsed = parseVerse(verseData);
+            if (meta?.showChhandType && state.settings.showTitles) {
+                const header = verseData.header || verseData.verse?.header;
+                if (header && header !== currentSection) {
+                    currentSection = header;
+                    fragment.appendChild(createSectionDivider(header));
+                }
+            }
+            fragment.appendChild(createVerseElement(parsed, index));
+        });
+
+        els.versesContainer.appendChild(fragment);
+        applyModes();
+        applyFontToVerses();
+        updateVisibility();
+
+        // Render remaining chunks asynchronously
+        if (verses.length > FIRST_CHUNK) {
+            let offset = FIRST_CHUNK;
+            
+            function renderNextChunk() {
+                if (offset >= verses.length) return;
+                
+                const chunk = verses.slice(offset, offset + CHUNK_SIZE);
+                const chunkFragment = document.createDocumentFragment();
+                
+                chunk.forEach((verseData, i) => {
+                    const parsed = parseVerse(verseData);
+                    if (meta?.showChhandType && state.settings.showTitles) {
+                        const header = verseData.header || verseData.verse?.header;
+                        if (header && header !== currentSection) {
+                            currentSection = header;
+                            chunkFragment.appendChild(createSectionDivider(header));
+                        }
+                    }
+                    chunkFragment.appendChild(createVerseElement(parsed, offset + i));
+                });
+
+                els.versesContainer.appendChild(chunkFragment);
+                applyFontToVerses();
+                updateVisibility();
+
+                offset += CHUNK_SIZE;
+                
+                if (offset < verses.length) {
+                    if ('requestIdleCallback' in window) {
+                        requestIdleCallback(renderNextChunk, { timeout: 100 });
+                    } else {
+                        setTimeout(renderNextChunk, 16);
+                    }
+                }
+            }
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(renderNextChunk, { timeout: 100 });
+            } else {
+                setTimeout(renderNextChunk, 50);
+            }
+        }
     }
 
     function parseVerse(verseData) {
@@ -662,7 +853,9 @@
     // ═══════════════════════════════════════════════════════════════
 
     function setTheme(theme) {
-        state.settings.theme = theme;
+        // Normalize to only dark/light
+        const normalizedTheme = (theme === 'light' || theme === 'sepia') ? 'light' : 'dark';
+        state.settings.theme = normalizedTheme;
         state.settings.paperBackground = false;
         applyAllSettings();
         saveSettings();

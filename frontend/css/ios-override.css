@@ -1,0 +1,829 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ✦ ANHAD — iOS 18 NATIVE OVERRIDE SYSTEM
+   
+   Loaded AFTER trendora-premium.css to apply pure Apple iOS design language.
+   - iOS 18 exact color palette
+   - SF Pro Display typography
+   - Ambient light orbs (Apple-style)
+   - Emoji icon system
+   - iOS component standards (HIG)
+   - iOS spring animations
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 1. SF PRO DISPLAY FONT IMPORT
+═══════════════════════════════════════════════════════════════════════════════ */
+/* PERF: @import url('https://fonts.cdnfonts.com/css/sf-pro-display') REMOVED
+   This was render-blocking — waited for CDN before first paint.
+   The font stack already falls back to -apple-system / BlinkMacSystemFont / Inter
+   which are visually identical on their respective platforms. */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 2. iOS 18 EXACT COLOR TOKENS
+═══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── iOS System Colors ── */
+  --ios-blue: #007AFF;
+  --ios-green: #34C759;
+  --ios-indigo: #5856D6;
+  --ios-orange: #FF9500;
+  --ios-pink: #FF2D55;
+  --ios-purple: #AF52DE;
+  --ios-red: #FF3B30;
+  --ios-teal: #5AC8FA;
+  --ios-yellow: #FFCC00;
+  --ios-mint: #00C7BE;
+  --ios-cyan: #32ADE6;
+
+  /* ── iOS Backgrounds ── */
+  --ios-bg-primary: #FFFFFF;
+  --ios-bg-secondary: #F2F2F7;
+  --ios-bg-tertiary: #FFFFFF;
+  --ios-bg-grouped: #F2F2F7;
+
+  /* ── iOS Labels ── */
+  --ios-label-primary: #000000;
+  --ios-label-secondary: rgba(60, 60, 67, 0.6);
+  --ios-label-tertiary: rgba(60, 60, 67, 0.3);
+  --ios-label-quaternary: rgba(60, 60, 67, 0.18);
+
+  /* ── iOS Separators ── */
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-separator-opaque: #C6C6C8;
+
+  /* ── iOS Fill ── */
+  --ios-fill-primary: rgba(120, 120, 128, 0.2);
+  --ios-fill-secondary: rgba(120, 120, 128, 0.16);
+  --ios-fill-tertiary: rgba(118, 118, 128, 0.12);
+
+  /* ── iOS Animation Curves ── */
+  --ios-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ios-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ios-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ── Override Trendora tokens with iOS values ── */
+  --surface-secondary: var(--ios-bg-secondary);
+  --surface-tertiary: var(--ios-bg-secondary);
+  --text-primary: var(--ios-label-primary);
+  --text-secondary: var(--ios-label-secondary);
+  --text-tertiary: var(--ios-label-tertiary);
+  --text-quaternary: var(--ios-label-quaternary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 3. GLOBAL TYPOGRAPHY — SF Pro Display System
+═══════════════════════════════════════════════════════════════════════════════ */
+/* PERF: text-rendering: optimizeLegibility moved to headings only.
+   On * selector it forced expensive text shaping on EVERY element. */
+* {
+  font-family: 'SF Pro Display', 'SF Pro Text', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6,
+.greeting__salutation,
+.hero-card__title,
+.section-header__title {
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  /* PERF: scroll-behavior: smooth REMOVED — let native scrolling handle it */
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+}
+
+body {
+  background-color: var(--ios-bg-secondary);
+  overscroll-behavior-y: auto;
+  overscroll-behavior-x: none;
+  /* FIX: Ensure body can scroll and content isn't clipped */
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  /* FIX: Proper padding for nav + mini-player clearance */
+  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 80px) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 4. AMBIENT LIGHT ORBS — Apple-Style Background Magic
+   FIX: Increased opacity and size for visibility
+═══════════════════════════════════════════════════════════════════════════════ */
+.ios-orb-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ios-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: orbFloat 20s ease-in-out infinite;
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.35), transparent 70%);
+  top: -8%;
+  left: -8%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(212, 148, 58, 0.25), transparent 70%);
+  top: 35%;
+  right: -12%;
+  animation-delay: -7s;
+}
+
+.orb-3 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(90, 200, 250, 0.25), transparent 70%);
+  bottom: 5%;
+  left: 25%;
+  animation-delay: -14s;
+}
+
+.orb-4 {
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(255, 149, 0, 0.25), transparent 70%);
+  top: 18%;
+  left: 45%;
+  animation-delay: -3s;
+}
+
+@keyframes orbFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.05);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  75% {
+    transform: translate(40px, 30px) scale(1.02);
+  }
+}
+
+/* PERF: Kill orbs on mobile — #1 GPU killer (4 blur(60px) elements running 24/7) */
+@media (max-width: 768px) {
+  .ios-orb-container {
+    display: none !important;
+  }
+}
+
+.is-mobile .ios-orb-container {
+  display: none !important;
+}
+
+.reduce-motion .ios-orb-container {
+  display: none !important;
+}
+
+/* Desktop: reduce orb intensity */
+@media (min-width: 769px) {
+  .ios-orb {
+    opacity: 0.25;
+    filter: blur(80px); /* Spread blur wider to reduce sharpness = less GPU work */
+    animation-duration: 40s; /* Slower = less frequent GPU updates */
+  }
+}
+
+/* Dark mode orbs — more vivid on black */
+body.dark-mode .ios-orb {
+  opacity: 0.3;
+  filter: blur(50px);
+}
+body.dark-mode .orb-1 {
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.5), transparent 70%);
+}
+body.dark-mode .orb-2 {
+  background: radial-gradient(circle, rgba(175, 82, 222, 0.45), transparent 70%);
+}
+body.dark-mode .orb-3 {
+  background: radial-gradient(circle, rgba(90, 200, 250, 0.35), transparent 70%);
+}
+body.dark-mode .orb-4 {
+  background: radial-gradient(circle, rgba(255, 149, 0, 0.35), transparent 70%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 5. iOS GLASS EFFECTS
+═══════════════════════════════════════════════════════════════════════════════ */
+.ios-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+}
+
+body.dark-mode .ios-glass {
+  background: rgba(28, 28, 30, 0.72);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 6. EMOJI ICON SYSTEM
+═══════════════════════════════════════════════════════════════════════════════ */
+.ios-emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
+  flex-shrink: 0;
+}
+
+.ios-emoji--sm {
+  font-size: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.ios-emoji--lg {
+  font-size: 1.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.ios-emoji--nav {
+  font-size: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  transition: transform 0.2s var(--ios-spring), opacity 0.2s ease;
+  opacity: 0.5;
+}
+
+.nav-tab--active .ios-emoji--nav,
+.nav-tab[aria-current="page"] .ios-emoji--nav {
+  opacity: 1 !important;
+  transform: scale(1.35) translateY(-3px) !important;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 7. iOS COMPONENT OVERRIDES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── App Container — Ensure it sits above orbs ── */
+.app {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header--compact {
+  background: rgba(242, 242, 247, 0.94);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
+}
+
+body.dark-mode .header--compact {
+  background: rgba(0, 0, 0, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Header Emoji Buttons ── */
+.header__btn .ios-emoji {
+  font-size: 1.2rem;
+  width: auto;
+  height: auto;
+}
+
+/* ── Cards — Premium EXTRA rounded curve ── */
+.hero-card {
+  border-radius: 24px;
+}
+
+.hero-card__image-wrapper {
+  border-radius: 24px;
+}
+
+/* ── Practice Cards — MORE ROUNDED + PADDING ── */
+.practice-card {
+  border-radius: 22px;
+  padding: 24px 16px 20px;
+  background: var(--ios-bg-primary);
+  box-shadow:
+    0 0.5px 0 rgba(0, 0, 0, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 3px 8px rgba(0, 0, 0, 0.04);
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s var(--ios-ease);
+}
+
+.practice-card:active {
+  transform: scale(0.98);
+  background: var(--ios-bg-secondary);
+}
+
+/* Restore warm tints */
+.practice-card--nitnem {
+  background: linear-gradient(165deg, #FFF8EF 0%, #FFEFD8 100%);
+}
+.practice-card--sehaj {
+  background: linear-gradient(165deg, #F5F3FF 0%, #EDEBFF 100%);
+}
+.practice-card--hukam {
+  background: linear-gradient(165deg, #FFF7ED 0%, #FFECD5 100%);
+}
+
+/* Practice card emoji icon */
+.practice-card__ring-icon .ios-emoji {
+  font-size: 1.5rem;
+  width: auto;
+  height: auto;
+  filter: none;
+}
+
+/* ── Quick Access Cards — MORE ROUNDED + PADDING ── */
+.quick-card {
+  border-radius: 22px;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  transition: transform 0.3s var(--ios-ease);
+}
+
+.quick-card:active {
+  transform: scale(0.98);
+}
+
+.quick-card:last-child {
+  margin-bottom: 36px;
+}
+
+/* Quick card emoji */
+.quick-card__icon .ios-emoji {
+  font-size: 1.4rem;
+  width: auto;
+  height: auto;
+}
+
+.quick-card__icon {
+  background: rgba(255, 255, 255, 0.85);
+  width: 52px;
+  height: 52px;
+}
+
+/* ── Event Card — more rounded + padding ── */
+.event-card {
+  border-radius: 22px;
+  padding: 22px 22px;
+}
+
+.event-card__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.event-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.event-card__guru-img-wrapper {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.event-card__guru-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(212, 148, 58, 0.2);
+  border: 2px solid rgba(212, 148, 58, 0.3);
+}
+
+.event-card__countdown-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* ── Section spacing ── */
+.section-header {
+  margin-bottom: 18px;
+  margin-top: 8px;
+}
+
+.practice-grid {
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+/* ── Progress bar — more rounded ── */
+.progress-inline {
+  border-radius: 22px;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  padding: 16px 18px;
+  margin-bottom: 28px;
+}
+
+.progress-inline__fill {
+  background: linear-gradient(135deg, var(--ios-blue) 0%, #0055CC 100%);
+}
+
+.progress-inline__text {
+  color: var(--ios-blue);
+}
+
+/* ── Buttons — iOS 12px radius ── */
+.hero-card__play-btn {
+  border-radius: 50%;
+}
+
+.install-banner__cta {
+  border-radius: 12px;
+  background: var(--ios-blue);
+  min-height: 44px;
+  padding: 12px 24px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.install-banner__cta:hover {
+  background: #0071EB;
+  transform: scale(1.02);
+}
+
+.install-banner__cta:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 7.5. MINI PLAYER — FIX: Position ABOVE nav bar, hide when not playing
+═══════════════════════════════════════════════════════════════════════════════ */
+.mini-player {
+  position: fixed;
+  /* Place it above the navigation bar */
+  bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(200%);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  z-index: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.28, 0.84, 0.42, 1),
+              opacity 0.3s ease;
+}
+
+/* Only show when --visible class is added (when kirtan is playing) */
+.mini-player--visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.dark-mode .mini-player {
+  background: rgba(28, 28, 30, 0.92);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Bottom Nav — stays same, no collision now ── */
+.bottom-nav {
+  padding-bottom: calc(var(--space-3, 12px) + env(safe-area-inset-bottom, 34px));
+}
+
+.bottom-nav__glass {
+  background: rgba(249, 249, 249, 0.94);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+body.dark-mode .bottom-nav__glass {
+  background: rgba(22, 22, 24, 0.78);
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+.nav-tab {
+  gap: 2px;
+}
+
+.nav-tab__label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: color 0.2s ease;
+}
+
+.nav-tab--active .nav-tab__label,
+.nav-tab[aria-current="page"] .nav-tab__label {
+  color: var(--ios-blue);
+}
+
+/* ── Radio Sheet — iOS Bottom Sheet ── */
+.sheet {
+  border-radius: 22px 22px 0 0;
+}
+
+.sheet__option {
+  min-height: 44px;
+  border-radius: 22px;
+}
+
+.sheet__cancel {
+  border-radius: 22px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  min-height: 50px;
+}
+
+.sheet__option-icon .ios-emoji {
+  font-size: 1.5rem;
+}
+
+/* ── Install Banner ── */
+.install-banner {
+  border-radius: 22px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 8. iOS ANIMATIONS & MICRO-INTERACTIONS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes iosFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ios-animate-in {
+  animation: iosFadeInUp 0.5s var(--ios-ease) forwards;
+}
+
+/* Staggered list animation */
+.ios-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.ios-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+.ios-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.ios-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+.ios-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.ios-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+.ios-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+.ios-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+
+.ios-haptic:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
+}
+
+@keyframes iosShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.ios-skeleton {
+  background: linear-gradient(
+    90deg,
+    #F2F2F7 25%,
+    #E5E5EA 50%,
+    #F2F2F7 75%
+  );
+  background-size: 200% 100%;
+  animation: iosShimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 9. SECTION HEADER — iOS Style
+═══════════════════════════════════════════════════════════════════════════════ */
+.section-header__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ios-label-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 10. GREETING — iOS Large Title Style
+═══════════════════════════════════════════════════════════════════════════════ */
+/* greeting__salutation — respect golden 3D foil from trendora-premium.css */
+.greeting__salutation {
+  font-size: 1.55rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1.25;
+}
+
+.greeting__gurbani {
+  line-height: 1.65;
+  color: var(--ios-blue);
+}
+
+.greeting__translation {
+  color: var(--ios-label-tertiary);
+  line-height: 1.47;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 11. HERO CAROUSEL — iOS Refinements
+═══════════════════════════════════════════════════════════════════════════════ */
+.hero-carousel {
+  margin-bottom: 28px;
+}
+
+.hero-carousel__dot--active {
+  width: 22px;
+  height: 7px;
+  min-height: 7px;
+  border-radius: 9999px;
+  background: var(--accent, #D4943A);
+  box-shadow: 0 2px 8px rgba(212, 148, 58, 0.35);
+}
+
+.hero-carousel__dot {
+  min-height: 7px !important;
+  max-height: 7px;
+  width: 7px;
+  height: 7px;
+}
+
+.hero-card__badge--live {
+  background: rgba(255, 59, 48, 0.92);
+}
+
+.hero-card__badge--curated {
+  background: rgba(88, 86, 214, 0.88);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 12. DARK MODE — iOS Complete Dark Palette
+═══════════════════════════════════════════════════════════════════════════════ */
+body.dark-mode {
+  --ios-bg-primary: #000000;
+  --ios-bg-secondary: #1C1C1E;
+  --ios-bg-tertiary: #2C2C2E;
+  --ios-bg-grouped: #000000;
+  --ios-label-primary: #FFFFFF;
+  --ios-label-secondary: rgba(235, 235, 245, 0.6);
+  --ios-label-tertiary: rgba(235, 235, 245, 0.3);
+  --ios-label-quaternary: rgba(235, 235, 245, 0.18);
+  --ios-separator: rgba(84, 84, 88, 0.65);
+  --ios-separator-opaque: #38383A;
+  --ios-fill-primary: rgba(120, 120, 128, 0.36);
+  --ios-fill-secondary: rgba(120, 120, 128, 0.32);
+  --ios-fill-tertiary: rgba(118, 118, 128, 0.24);
+
+  background-color: var(--ios-bg-primary);
+}
+
+body.dark-mode .practice-card--nitnem {
+  background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%);
+}
+body.dark-mode .practice-card--sehaj {
+  background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%);
+}
+body.dark-mode .practice-card--hukam {
+  background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%);
+}
+body.dark-mode .quick-card--green {
+  background: linear-gradient(140deg, #1B3F27 0%, #234E32 100%);
+}
+body.dark-mode .quick-card--gold {
+  background: linear-gradient(140deg, #4A3A22 0%, #5C4A2E 100%);
+}
+body.dark-mode .quick-card--purple {
+  background: linear-gradient(140deg, #2E2A4A 0%, #3B365E 100%);
+}
+body.dark-mode .quick-card--blue {
+  background: linear-gradient(140deg, #1C304A 0%, #263E5E 100%);
+}
+body.dark-mode .quick-card--teal {
+  background: linear-gradient(140deg, #18423B 0%, #22564D 100%);
+}
+body.dark-mode .quick-card--rose {
+  background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%);
+}
+body.dark-mode .quick-card__icon {
+  background: rgba(44, 44, 46, 0.82);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .event-card {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.08); /* Faint border instead of dark background */
+}
+
+/* Enhancing Hero Play button visibility in Dark Mode */
+body.dark-mode .hero-card__play-btn {
+  background: rgba(255, 255, 255, 0.35); /* Brighter for extreme dark backgrounds */
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+body.dark-mode .hero-card__play-btn svg {
+  color: #FFFFFF;
+}
+
+body.dark-mode .progress-inline {
+  background: #1C1C1E;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* body.dark-mode .greeting__salutation — golden gradient preserved from trendora-premium.css */
+
+body.dark-mode .greeting__gurbani {
+  color: #0A84FF;
+}
+
+body.dark-mode .section-header__title {
+  color: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 13. ACCESSIBILITY — iOS Touch Targets & Focus States
+═══════════════════════════════════════════════════════════════════════════════ */
+button:not(.hero-carousel__dot),
+a,
+.quick-card,
+.practice-card {
+  min-height: 44px;
+}
+
+:focus-visible {
+  outline: 3.5px solid rgba(0, 122, 255, 0.4);
+  outline-offset: 2px;
+  border-radius: 22px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 14. NANAKSHAHI DATE CHIP
+═══════════════════════════════════════════════════════════════════════════════ */
+.greeting__nanakshahi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 14px;
+  background: var(--ios-fill-tertiary);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ios-label-secondary);
+  letter-spacing: -0.01em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 15. REDUCED MOTION
+═══════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .ios-orb {
+    animation: none !important;
+  }
+  .ios-animate-in {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .ios-stagger > * {
+    animation-delay: 0s !important;
+  }
+}

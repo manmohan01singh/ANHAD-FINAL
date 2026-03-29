@@ -241,7 +241,7 @@ class StatsTracker {
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today);
             date.setDate(date.getDate() - i);
-            const dateStr = date.toISOString().split('T')[0];
+            const dateStr = date.toLocaleDateString('en-CA');
 
             const daySessions = this.history.sessions.filter(s => s.date === dateStr);
             const completed = daySessions.filter(s => s.status === 'completed').length;
@@ -314,7 +314,7 @@ class StatsTracker {
     ═════════════════════════════════════════════════════════════════════════ */
 
     getTodayString() {
-        return new Date().toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA');
     }
 
     getWeekStart() {

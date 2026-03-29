@@ -74,6 +74,7 @@
                 }
 
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
+                let needsMigration = false;
 
                 request.onerror = (event) => {
                     console.error('IndexedDB error:', event.target.error);
@@ -85,6 +86,10 @@
                     this.db = event.target.result;
                     this.isReady = true;
                     console.log('UnifiedStorage: IndexedDB initialized successfully');
+                    // Run async migration AFTER the upgrade transaction is fully closed
+                    if (needsMigration) {
+                        this._migrateFromLocalStorage();
+                    }
                     resolve(true);
                 };
 
@@ -114,9 +119,9 @@
                         }
                     });
 
-                    // Handle migrations
+                    // Flag migration for after the transaction closes (cannot await inside onupgradeneeded)
                     if (oldVersion < 2) {
-                        this._migrateFromLocalStorage();
+                        needsMigration = true;
                     }
                 };
             });

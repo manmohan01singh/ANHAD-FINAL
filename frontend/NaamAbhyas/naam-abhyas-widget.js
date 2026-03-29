@@ -68,7 +68,7 @@ const NaamAbhyasWidget = {
     getTodayStats() {
         const history = this.loadHistory();
         const config = this.loadConfig();
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA');
 
         // Count today's completed and remaining
         const todaySchedule = history.scheduleHistory?.[today] || {};

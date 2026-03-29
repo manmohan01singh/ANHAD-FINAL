@@ -136,7 +136,7 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function getTodayString() {
-        return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        return new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
     }
 
     function isToday(dateString) {
@@ -146,7 +146,7 @@
     function isYesterday(dateString) {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        return dateString === yesterday.toISOString().split('T')[0];
+        return dateString === yesterday.toLocaleDateString('en-CA');
     }
 
     function daysBetween(date1, date2) {

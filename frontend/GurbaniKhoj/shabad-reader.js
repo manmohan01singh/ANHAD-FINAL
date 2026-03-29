@@ -80,13 +80,23 @@ function getParams() {
 
 const Theme = {
     init() {
-        const saved = localStorage.getItem('gurbaniTheme') || 'light';
-        this.set(saved);
+        // ── Sync with global app theme (anhad_theme) first ──
+        const globalTheme = localStorage.getItem('anhad_theme');
+        if (globalTheme) {
+            this.set(globalTheme);
+        } else {
+            const darkFlag = localStorage.getItem('anhad_dark_mode');
+            if (darkFlag === 'true') this.set('dark');
+            else if (darkFlag === 'false') this.set('light');
+            else this.set(localStorage.getItem('gurbaniTheme') || 'light');
+        }
     },
 
     toggle() {
         const newTheme = State.theme === 'light' ? 'dark' : 'light';
         this.set(newTheme);
+        // Sync to global theme key
+        localStorage.setItem('anhad_theme', newTheme);
         haptic('medium');
     },
 

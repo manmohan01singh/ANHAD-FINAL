@@ -27,7 +27,8 @@ class BaniDBAPI {
 
         try {
             console.log('🌐 Fetching from BaniDB:', url);
-            const response = await fetch(url, {
+            const _fetch = typeof fetchWithTimeout === 'function' ? fetchWithTimeout : fetch;
+            const response = await _fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -43,11 +44,14 @@ class BaniDBAPI {
             const data = await response.json();
             console.log('✅ BaniDB Response received:', endpoint);
 
-            // Cache the response
+            // Cache the response (LRU eviction: keep at most 50 entries)
             this.cache.set(cacheKey, {
                 data,
                 timestamp: Date.now()
             });
+            if (this.cache.size > 50) {
+                this.cache.delete(this.cache.keys().next().value);
+            }
 
             return data;
         } catch (error) {
@@ -64,7 +68,7 @@ class BaniDBAPI {
             throw new Error('Invalid Ang number. Must be between 1 and 1430.');
         }
 
-        const data = await this.fetch(`/angs/${angNumber}`);
+        const data = await this.fetch(`/angs/${angNumber}/G`);
         return this.formatAngData(data, angNumber);
     }
 

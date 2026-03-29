@@ -52,13 +52,13 @@
     }
 
     function getTodayString() {
-        return new Date().toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA');
     }
 
     function getYesterdayString() {
         const d = new Date();
         d.setDate(d.getDate() - 1);
-        return d.toISOString().split('T')[0];
+        return d.toLocaleDateString('en-CA');
     }
 
     function formatDate(dateStr) {
@@ -315,7 +315,7 @@
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             weekData.push({
                 label: dayNames[d.getDay()],
                 woke: amritvelaLog[dateStr]?.woke || false

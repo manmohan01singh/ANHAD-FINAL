@@ -118,8 +118,8 @@
         
         /* Bottom nav */
         html.dark-mode .bottom-nav {
-            background: rgba(13, 13, 15, 0.95);
-            border-top-color: var(--glass-border);
+            background: transparent !important;
+            border-top-color: transparent !important;
         }
         
         html.dark-mode .bottom-nav__container {
@@ -208,11 +208,20 @@
     }
 
     function applyTheme(theme) {
+        const root = document.documentElement;
+        const body = document.body;
+
         if (theme === 'dark') {
-            document.documentElement.classList.add(DARK_CLASS);
+            root.classList.add(DARK_CLASS);
+            if (body) body.classList.add(DARK_CLASS);
+            root.style.colorScheme = 'dark';
         } else {
-            document.documentElement.classList.remove(DARK_CLASS);
+            root.classList.remove(DARK_CLASS);
+            if (body) body.classList.remove(DARK_CLASS);
+            root.style.colorScheme = 'light';
         }
+
+        root.setAttribute('data-theme', theme);
 
         // Update theme toggle icons if they exist
         const icons = document.querySelectorAll('#themeIcon, .theme-icon');

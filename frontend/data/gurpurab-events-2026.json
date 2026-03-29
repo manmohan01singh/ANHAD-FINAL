@@ -14,7 +14,7 @@
             {
                 "id": "vyah-guru-gobind-2026",
                 "gregorian_date": "2026-01-23",
-                "name_en": "Vyah Purab Guru Gobind Singh Ji",
+                "name_en": "Vyah Purab Sri Guru Gobind Singh Sahib Ji",
                 "name_pa": "ਵਿਆਹ ਪੁਰਬ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
                 "type": "historical",
                 "color": "#FF6B00"
@@ -30,7 +30,7 @@
             {
                 "id": "prakash-guru-har-rai-2026",
                 "gregorian_date": "2026-01-31",
-                "name_en": "Prakash Gurpurab Guru Har Rai Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Har Rai Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -102,7 +102,7 @@
             {
                 "id": "gurgaddi-guru-har-rai-2026",
                 "gregorian_date": "2026-03-17",
-                "name_en": "Gurgaddi Guru Har Rai Ji",
+                "name_en": "Gurgaddi Sri Guru Har Rai Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -110,7 +110,7 @@
             {
                 "id": "gurgaddi-guru-amar-das-2026",
                 "gregorian_date": "2026-03-19",
-                "name_en": "Gurgaddi Guru Amar Das Ji",
+                "name_en": "Gurgaddi Sri Guru Amar Das Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -118,7 +118,7 @@
             {
                 "id": "jyoti-jot-guru-angad-2026",
                 "gregorian_date": "2026-03-22",
-                "name_en": "Jyoti Jot Guru Angad Dev Ji",
+                "name_en": "Jyoti Jot Sri Guru Angad Dev Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -126,7 +126,7 @@
             {
                 "id": "jyoti-jot-guru-hargobind-2026",
                 "gregorian_date": "2026-03-23",
-                "name_en": "Jyoti Jot Guru Hargobind Ji",
+                "name_en": "Jyoti Jot Sri Guru Hargobind Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -142,7 +142,7 @@
             {
                 "id": "jyoti-jot-guru-harkrishan-2026",
                 "gregorian_date": "2026-04-01",
-                "name_en": "Jyoti Jot Guru Harkrishan Ji",
+                "name_en": "Jyoti Jot Sri Guru Harkrishan Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -150,7 +150,7 @@
             {
                 "id": "gurgaddi-guru-tegh-bahadur-2026",
                 "gregorian_date": "2026-04-01",
-                "name_en": "Gurgaddi Guru Teg Bahadur Ji",
+                "name_en": "Gurgaddi Sri Guru Teg Bahadur Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -158,7 +158,7 @@
             {
                 "id": "prakash-guru-tegh-bahadur-2026",
                 "gregorian_date": "2026-04-07",
-                "name_en": "Prakash Gurpurab Guru Teg Bahadur Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Teg Bahadur Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -174,7 +174,7 @@
             {
                 "id": "prakash-guru-arjan-2026",
                 "gregorian_date": "2026-04-09",
-                "name_en": "Prakash Gurpurab Guru Arjan Dev Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Arjan Dev Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -198,7 +198,7 @@
             {
                 "id": "prakash-guru-angad-2026",
                 "gregorian_date": "2026-04-18",
-                "name_en": "Prakash Gurpurab Guru Angad Dev Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Angad Dev Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -222,7 +222,7 @@
             {
                 "id": "gurgaddi-guru-hargobind-2026",
                 "gregorian_date": "2026-05-10",
-                "name_en": "Gurgaddi Guru Hargobind Ji",
+                "name_en": "Gurgaddi Sri Guru Hargobind Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -278,7 +278,7 @@
             {
                 "id": "shaheedi-guru-arjan-2026",
                 "gregorian_date": "2026-06-18",
-                "name_en": "Shaheedi Gurpurab Guru Arjan Dev Ji",
+                "name_en": "Shaheedi Gurpurab Sri Guru Arjan Dev Sahib Ji",
                 "name_pa": "ਸ਼ਹੀਦੀ ਗੁਰਪੁਰਬ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
                 "type": "shaheedi",
                 "color": "#EF4444"
@@ -318,7 +318,7 @@
             {
                 "id": "prakash-guru-hargobind-2026",
                 "gregorian_date": "2026-06-30",
-                "name_en": "Prakash Gurpurab Guru Hargobind Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Hargobind Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -358,7 +358,7 @@
             {
                 "id": "prakash-guru-harkrishan-2026",
                 "gregorian_date": "2026-08-07",
-                "name_en": "Prakash Gurpurab Guru Harkrishan Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Harkrishan Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -398,7 +398,7 @@
             {
                 "id": "gurgaddi-guru-arjan-2026",
                 "gregorian_date": "2026-09-13",
-                "name_en": "Gurgaddi Guru Arjan Dev Ji",
+                "name_en": "Gurgaddi Sri Guru Arjan Dev Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -406,7 +406,7 @@
             {
                 "id": "jyoti-jot-guru-ram-das-2026",
                 "gregorian_date": "2026-09-14",
-                "name_en": "Jyoti Jot Guru Ram Das Ji",
+                "name_en": "Jyoti Jot Sri Guru Ram Das Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -422,7 +422,7 @@
             {
                 "id": "gurgaddi-guru-ram-das-2026",
                 "gregorian_date": "2026-09-24",
-                "name_en": "Gurgaddi Guru Ram Das Ji",
+                "name_en": "Gurgaddi Sri Guru Ram Das Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -430,7 +430,7 @@
             {
                 "id": "jyoti-jot-guru-amar-das-2026",
                 "gregorian_date": "2026-09-26",
-                "name_en": "Jyoti Jot Guru Amar Das Ji",
+                "name_en": "Jyoti Jot Sri Guru Amar Das Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -446,7 +446,7 @@
             {
                 "id": "gurgaddi-guru-angad-2026",
                 "gregorian_date": "2026-10-01",
-                "name_en": "Gurgaddi Guru Angad Dev Ji",
+                "name_en": "Gurgaddi Sri Guru Angad Dev Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -454,7 +454,7 @@
             {
                 "id": "jyoti-jot-guru-nanak-2026",
                 "gregorian_date": "2026-10-05",
-                "name_en": "Jyoti Jot Guru Nanak Dev Ji",
+                "name_en": "Jyoti Jot Sri Guru Nanak Dev Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -486,7 +486,7 @@
             {
                 "id": "prakash-guru-ram-das-2026",
                 "gregorian_date": "2026-10-27",
-                "name_en": "Prakash Gurpurab Guru Ram Das Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Ram Das Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -494,7 +494,7 @@
             {
                 "id": "jyoti-jot-guru-har-rai-2026",
                 "gregorian_date": "2026-11-03",
-                "name_en": "Jyoti Jot Guru Har Rai Ji",
+                "name_en": "Jyoti Jot Sri Guru Har Rai Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਹਰਿ ਰਾਇ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -502,7 +502,7 @@
             {
                 "id": "gurgaddi-guru-harkrishan-2026",
                 "gregorian_date": "2026-11-03",
-                "name_en": "Gurgaddi Guru Har Krishan Ji",
+                "name_en": "Gurgaddi Sri Guru Har Krishan Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -526,7 +526,7 @@
             {
                 "id": "jyoti-jot-guru-gobind-singh-2026",
                 "gregorian_date": "2026-11-14",
-                "name_en": "Jyoti Jot Guru Gobind Singh Ji",
+                "name_en": "Jyoti Jot Sri Guru Gobind Singh Sahib Ji",
                 "name_pa": "ਜੋਤੀ ਜੋਤ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
                 "type": "historical",
                 "color": "#22C55E"
@@ -558,7 +558,7 @@
             {
                 "id": "prakash-guru-nanak-2026",
                 "gregorian_date": "2026-11-24",
-                "name_en": "Prakash Gurpurab Guru Nanak Dev Ji",
+                "name_en": "Prakash Gurpurab Sri Guru Nanak Dev Sahib Ji",
                 "name_pa": "ਪ੍ਰਕਾਸ਼ ਗੁਰਪੁਰਬ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
                 "type": "prakash",
                 "color": "#FF6B00"
@@ -582,7 +582,7 @@
             {
                 "id": "gurgaddi-guru-gobind-singh-2026",
                 "gregorian_date": "2026-12-12",
-                "name_en": "Gurgaddi Guru Gobind Singh Ji",
+                "name_en": "Gurgaddi Sri Guru Gobind Singh Sahib Ji",
                 "name_pa": "ਗੁਰਗੱਦੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
                 "type": "gurgaddi",
                 "color": "#8B5CF6"
@@ -590,7 +590,7 @@
             {
                 "id": "shaheedi-guru-tegh-bahadur-2026",
                 "gregorian_date": "2026-12-14",
-                "name_en": "Shaheedi Gurpurab Guru Teg Bahadur Ji",
+                "name_en": "Shaheedi Gurpurab Sri Guru Teg Bahadur Sahib Ji",
                 "name_pa": "ਸ਼ਹੀਦੀ ਗੁਰਪੁਰਬ ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ",
                 "type": "shaheedi",
                 "color": "#EF4444"

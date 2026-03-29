@@ -1,42 +1,76 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
+
 <head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#FF9500">
-    <meta name="description" content="Naam Abhyas - Divine hourly spiritual practice with breathing exercises, mala counting, and mindful reminders">
-    
+    <meta name="theme-color" content="#080612">
+    <meta name="description"
+        content="Naam Abhyas — Sacred hourly practice. Pause 2 minutes every hour to remember Waheguru.">
+
     <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;500;600;700;800&family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="naam-abhyas.css">
+    <link rel="stylesheet" href="naam-abhyas-ultra-premium.css">
     <link rel="stylesheet" href="components/ritual-overlay.css">
-    
+
     <!-- Favicon & PWA -->
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
     <link rel="manifest" href="../manifest.json">
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/dark-mode.css">
+  <script src="../lib/global-theme.js"></script>
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/global-mini-player.js" defer></script>
 </head>
 
 <body>
-    <!-- ═══════════════════════════════════════════════════════════════════════════
-         LOADING SCREEN
-    ═══════════════════════════════════════════════════════════════════════════ -->
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SACRED LOADING SCREEN
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app-loading" id="appLoading">
+        <div class="load-cosmos">
+            <div class="load-ring"></div>
+            <div class="load-ring load-ring-2"></div>
+        </div>
         <div class="loading-ik-onkar">ੴ</div>
         <div class="loading-text">ਵਾਹਿਗੁਰੂ</div>
+        <div class="loading-sub">Preparing your sacred practice...</div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
-         WELCOME MODAL - Beautiful iOS-style popup on page load
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         COSMIC BACKGROUND
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="cosmos" id="cosmos">
+        <canvas id="cosmosCanvas"></canvas>
+        <div class="nebula neb-1"></div>
+        <div class="nebula neb-2"></div>
+        <div class="nebula neb-3"></div>
+        <div class="golden-rays"></div>
+        <div class="stars-field" id="starsField"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         WELCOME MODAL
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="welcome-modal" id="welcomeModal">
         <div class="welcome-backdrop"></div>
         <div class="welcome-content">
@@ -70,98 +104,69 @@
     </div>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          MAIN APPLICATION
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="app-container" id="appContainer">
-        
-        <!-- Dynamic Background Effects -->
-        <div class="background-effects">
-            <div class="gradient-orb gradient-orb-1"></div>
-            <div class="gradient-orb gradient-orb-2"></div>
-            <div class="mesh-gradient"></div>
-        </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════
-             HEADER - iOS Dynamic Island Style
-        ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════════════════════════════════════
+             HEADER — Transparent & Minimal
+        ═══════════════════════════════════════════════════════════════════ -->
         <header class="app-header" id="appHeader">
-            <div class="header-blur-bg"></div>
-            
-            <div class="header-content">
-                <!-- Back Button -->
-                <button class="header-btn back-btn" id="backBtn" aria-label="Go back">
-                    <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <path d="M15 18l-6-6 6-6"/>
+            <button class="hdr-btn back-btn" id="backBtn" aria-label="Go back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+
+            <div class="hdr-actions">
+                <button class="hdr-btn" id="settingsPageBtn" aria-label="Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
                     </svg>
                 </button>
-                
-                <!-- Status Pill (Dynamic Island) -->
-                <div class="status-pill" id="statusPill">
-                    <div class="status-pill-content">
-                        <div class="streak-fire" id="streakFire">
-                            <span class="fire-emoji">🔥</span>
-                            <span class="streak-count" id="headerStreakCount">0</span>
-                        </div>
-                        <div class="status-divider"></div>
-                        <div class="current-time" id="currentTime">00:00</div>
-                    </div>
-                </div>
-                
-                <!-- Header Title -->
-                <div class="header-title-section">
-                    <h1 class="header-title">
-                        <span class="gurmukhi-title">ਨਾਮ ਅਭਿਆਸ</span>
-                        <span class="english-title">Naam Abhyas</span>
-                    </h1>
-                </div>
-                
-                <!-- Header Actions -->
-                <div class="header-actions">
-                    <button class="header-btn" id="statsPageBtn" aria-label="Statistics">
-                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 20V10M12 20V4M6 20v-6"/>
-                        </svg>
-                    </button>
-                    <button class="header-btn" id="settingsPageBtn" aria-label="Settings">
-                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                        </svg>
-                    </button>
-                </div>
             </div>
         </header>
 
-        <!-- ═══════════════════════════════════════════════════════════════════════
-             MAIN SCROLLABLE CONTENT
-        ═══════════════════════════════════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SCROLLABLE CONTENT
+        ═══════════════════════════════════════════════════════════════════ -->
         <main class="main-content" id="mainContent">
-            
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 1: HERO CARD
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="hero-card" id="heroSection">
-                <div class="hero-glow"></div>
-                <div class="hero-content">
-                    <div class="hero-symbol">ੴ</div>
-                    <h2 class="hero-title">ਨਾਮ ਅਭਿਆਸ</h2>
-                    <p class="hero-subtitle">Remember Vaheguru Every Hour</p>
-                    <p class="hero-description">
-                        Pause your worldly activities for <strong>2 minutes</strong> every hour 
-                        to connect with the Divine Name.
-                    </p>
+
+            <!-- ═══ HERO SECTION ═══ -->
+            <section class="hero-section" id="heroSection">
+                <!-- Dynamic Sky with Sun/Moon -->
+                <div class="sky-container" id="skyContainer">
+                    <div class="celestial-body sun" id="celestialSun"></div>
+                    <div class="celestial-body moon" id="celestialMoon"></div>
+                    <div class="stars-container" id="starsContainer"></div>
                 </div>
+                
+                <div class="hero-mandala">
+                    <svg class="mandala-ring" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,179,71,0.08)"
+                            stroke-width="0.5" />
+                        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,179,71,0.06)"
+                            stroke-width="0.3" />
+                        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,179,71,0.04)"
+                            stroke-width="0.3" />
+                    </svg>
+                    <div class="hero-symbol">ੴ</div>
+                </div>
+                <h1 class="hero-title">
+                    <span class="hero-gurmukhi">ਨਾਮ ਅਭਿਆਸ</span>
+                    <span class="hero-eng">Naam Abhyas</span>
+                </h1>
+                <p class="hero-tagline">2 minutes every hour · Remember the Divine</p>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 2: ENABLE TOGGLE (Compact - Top Priority)
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card toggle-card" id="toggleSection">
-                <div class="card-glow orange-glow"></div>
-                <div class="toggle-content">
+            <!-- ═══ ENABLE TOGGLE ═══ -->
+            <section class="glass-card toggle-card" id="toggleSection">
+                <div class="toggle-row">
                     <div class="toggle-info">
-                        <div class="toggle-icon">🙏</div>
+                        <div class="toggle-icon-wrap"><span>🙏</span></div>
                         <div class="toggle-text">
                             <span class="toggle-label">Enable Naam Abhyas</span>
                             <span class="toggle-desc" id="toggleStatusText">Currently disabled</span>
@@ -174,249 +179,230 @@
                 </div>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 3: NEXT SESSION (Most Important - Top of Page)
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card next-session-card" id="nextSessionSection">
-                <div class="card-glow orange-glow"></div>
-                <div class="card-header">
-                    <div class="card-icon session-icon">
+            <!-- ═══ NEXT SESSION CARD ═══ -->
+            <section class="glass-card next-card" id="nextSessionSection">
+                <div class="next-header">
+                    <div class="next-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 6v6l4 2"/>
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 6v6l4 2" />
                         </svg>
                     </div>
-                    <div class="card-title-group">
-                        <h2 class="card-title">Next Naam Abhyas</h2>
-                        <p class="card-subtitle" id="nextSessionSubtitle">Waiting...</p>
+                    <div>
+                        <h2 class="next-title">Next Naam Abhyas</h2>
+                        <p class="next-subtitle" id="nextSessionSubtitle">Waiting...</p>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="next-session-display">
-                        <div class="session-time" id="nextSessionTime">--:-- AM</div>
-                        <div class="session-countdown" id="sessionCountdown">
-                            <span class="countdown-label">Starting in</span>
-                            <span class="countdown-value" id="countdownValue">--</span>
-                        </div>
+                <div class="next-body">
+                    <div class="session-time-display" id="nextSessionTime">--:-- AM</div>
+                    <div class="session-countdown" id="sessionCountdown">
+                        <span class="countdown-label">Starting in</span>
+                        <span class="countdown-value" id="countdownValue">--</span>
                     </div>
-                    <div class="session-progress" id="sessionProgress">
-                        <div class="progress-dots" id="progressDots"></div>
-                        <div class="progress-info">
-                            <span id="completedCount">0</span> / <span id="totalCount">0</span> completed today
-                        </div>
+                </div>
+                <div class="session-progress" id="sessionProgress">
+                    <div class="progress-dots" id="progressDots"></div>
+                    <div class="progress-info">
+                        <span id="completedCount">0</span> / <span id="totalCount">0</span> completed today
                     </div>
                 </div>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 DAILY WISDOM QUOTE
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="wisdom-card" id="wisdomCard">
-                <div class="wisdom-icon">📿</div>
-                <div class="wisdom-content">
-                    <p class="wisdom-quote" id="wisdomQuote">"ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ"</p>
-                    <p class="wisdom-translation" id="wisdomTranslation">Chanting the Naam, millions of sins are erased</p>
-                    <p class="wisdom-source" id="wisdomSource">— Sri Guru Granth Sahib Ji, Ang 289</p>
+            <!-- ═══ SACRED DAY TIMELINE ═══ -->
+            <section class="glass-card timeline-card" id="scheduleSection">
+                <div class="timeline-header">
+                    <div class="timeline-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <path d="M16 2v4M8 2v4M3 10h18" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="timeline-title">Sacred Day Timeline</h2>
+                        <p class="timeline-subtitle">Your hourly Waheguru reminders</p>
+                    </div>
+                    <button class="refresh-btn" id="refreshScheduleBtn" aria-label="Refresh schedule">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                    </button>
                 </div>
+                <div class="schedule-timeline" id="scheduleTimeline">
+                    <div class="schedule-empty">
+                        <p>Enable Naam Abhyas to see your schedule</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ WISDOM QUOTE ═══ -->
+            <section class="glass-card wisdom-card" id="wisdomCard">
+                <div class="wisdom-accent"></div>
+                <div class="wisdom-icon">📿</div>
+                <p class="wisdom-quote" id="wisdomQuote">"ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ"</p>
+                <p class="wisdom-translation" id="wisdomTranslation">Chanting the Naam, millions of sins are erased</p>
+                <p class="wisdom-source" id="wisdomSource">— Sri Guru Granth Sahib Ji, Ang 289</p>
                 <button class="wisdom-refresh" id="wisdomRefreshBtn" aria-label="New quote">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        <path
+                            d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
                     </svg>
                 </button>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 QUICK ACTIONS (Extra Sessions - Not Counted in Schedule)
-            ═══════════════════════════════════════════════════════════════════ -->
+            <!-- ═══ QUICK ACTIONS ═══ -->
             <section class="quick-actions" id="quickActions">
-                <div class="quick-actions-label">Extra Naam Simran Sessions</div>
-                <button class="quick-action-btn primary" id="startNowBtn">
-                    <div class="quick-action-icon">▶️</div>
-                    <div class="quick-action-text">
-                        <span class="quick-action-title">Start Now</span>
-                        <span class="quick-action-subtitle">2 min extra session</span>
-                    </div>
-                    <div class="quick-action-glow"></div>
-                </button>
-                <button class="quick-action-btn secondary" id="quickNaamBtn">
-                    <div class="quick-action-icon">⚡</div>
-                    <div class="quick-action-text">
-                        <span class="quick-action-title">Quick</span>
-                        <span class="quick-action-subtitle">30 sec</span>
-                    </div>
-                </button>
-                <button class="quick-action-btn secondary" id="deepModeBtn">
-                    <div class="quick-action-icon">🧘</div>
-                    <div class="quick-action-text">
-                        <span class="quick-action-title">Deep</span>
-                        <span class="quick-action-subtitle">11 min</span>
-                    </div>
-                </button>
-            </section>
-
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 4: TODAY'S SCHEDULE
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card schedule-card" id="scheduleSection">
-                <div class="card-glow purple-glow"></div>
-                <div class="card-header">
-                    <div class="card-icon schedule-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <path d="M16 2v4M8 2v4M3 10h18"/>
-                        </svg>
-                    </div>
-                    <div class="card-title-group">
-                        <h2 class="card-title">Today's Schedule</h2>
-                        <p class="card-subtitle">Your hourly reminders</p>
-                    </div>
-                    <button class="refresh-btn" id="refreshScheduleBtn" aria-label="Refresh schedule">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
+                <div class="qa-label">Extra Naam Simran</div>
+                <div class="qa-grid">
+                    <button class="qa-btn qa-primary" id="startNowBtn">
+                        <div class="qa-btn-glow"></div>
+                        <span class="qa-emoji">▶️</span>
+                        <div class="qa-text">
+                            <span class="qa-title">Start Now</span>
+                            <span class="qa-sub">2 min</span>
+                        </div>
+                    </button>
+                    <button class="qa-btn" id="quickNaamBtn">
+                        <span class="qa-emoji">⚡</span>
+                        <div class="qa-text">
+                            <span class="qa-title">Quick</span>
+                            <span class="qa-sub">30 sec</span>
+                        </div>
+                    </button>
+                    <button class="qa-btn" id="deepModeBtn">
+                        <span class="qa-emoji">🧘</span>
+                        <div class="qa-text">
+                            <span class="qa-title">Deep</span>
+                            <span class="qa-sub">11 min</span>
+                        </div>
                     </button>
                 </div>
-                <div class="card-body">
-                    <div class="schedule-timeline" id="scheduleTimeline">
-                        <div class="schedule-empty">
-                            <p>Enable Naam Abhyas to see your schedule</p>
-                        </div>
-                    </div>
-                </div>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 5: DISCIPLINE DASHBOARD
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card stats-card discipline-dashboard" id="quickStatsSection">
-                <div class="card-glow green-glow"></div>
-                <div class="card-header">
-                    <div class="card-icon stats-icon">
+            <!-- ═══ DISCIPLINE DASHBOARD ═══ -->
+            <section class="glass-card stats-card" id="quickStatsSection">
+                <div class="stats-header">
+                    <div class="stats-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                         </svg>
                     </div>
-                    <div class="card-title-group">
-                        <h2 class="card-title">Discipline Dashboard</h2>
-                        <p class="card-subtitle" id="dashboardSubtitle">Keep the streak alive!</p>
+                    <div>
+                        <h2 class="stats-title">Discipline Dashboard</h2>
+                        <p class="stats-subtitle" id="dashboardSubtitle">Keep the streak alive!</p>
                     </div>
                     <div class="perfect-day-indicator hidden" id="perfectDayIndicator">
                         <span class="perfect-badge">🌟</span>
-                        <span class="perfect-label">Perfect Day</span>
                     </div>
                 </div>
-                <div class="card-body">
-                    <!-- Completion Rate Ring -->
-                    <div class="completion-ring-section">
-                        <div class="completion-ring-container" id="completionRingContainer">
+
+                <div class="stats-body">
+                    <!-- Completion Ring -->
+                    <div class="ring-section">
+                        <div class="ring-container" id="completionRingContainer">
                             <svg class="completion-ring" viewBox="0 0 100 100">
-                                <circle class="completion-ring-bg" cx="50" cy="50" r="40"/>
-                                <circle class="completion-ring-fill" id="completionRingFill" cx="50" cy="50" r="40"
-                                    stroke-dasharray="251" stroke-dashoffset="251"/>
+                                <circle class="ring-bg" cx="50" cy="50" r="40" />
+                                <circle class="ring-fill" id="completionRingFill" cx="50" cy="50" r="40"
+                                    stroke-dasharray="251" stroke-dashoffset="251" />
                             </svg>
-                            <div class="completion-ring-center">
-                                <span class="completion-rate-value" id="completionRateValue">0</span>
-                                <span class="completion-rate-percent">%</span>
+                            <div class="ring-center">
+                                <span class="ring-value" id="completionRateValue">0</span>
+                                <span class="ring-pct">%</span>
                             </div>
                         </div>
-                        <div class="completion-label">Completion Rate</div>
+                        <div class="ring-label">Completion</div>
                     </div>
-                    
+
                     <!-- Stats Grid -->
                     <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-icon">🔥</div>
-                            <div class="stat-value" id="currentStreak">0</div>
-                            <div class="stat-label">Hour Streak</div>
+                        <div class="stat-cell">
+                            <span class="stat-emoji">🔥</span>
+                            <span class="stat-number" id="currentStreak">0</span>
+                            <span class="stat-name">Hour Streak</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-icon">📅</div>
-                            <div class="stat-value" id="todayCompleted">0</div>
-                            <div class="stat-label">Today</div>
+                        <div class="stat-cell">
+                            <span class="stat-emoji">📅</span>
+                            <span class="stat-number" id="todayCompleted">0</span>
+                            <span class="stat-name">Today</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-icon">⏱️</div>
-                            <div class="stat-value" id="totalTime">0m</div>
-                            <div class="stat-label">Total Time</div>
+                        <div class="stat-cell">
+                            <span class="stat-emoji">⏱️</span>
+                            <span class="stat-number" id="totalTime">0m</span>
+                            <span class="stat-name">Total Time</span>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-icon">🏆</div>
-                            <div class="stat-value" id="longestStreak">0</div>
-                            <div class="stat-label">Best Streak</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Today's Progress Bar -->
-                    <div class="today-progress-section">
-                        <div class="today-progress-header">
-                            <span class="today-progress-label">Today's Progress</span>
-                            <span class="today-progress-value" id="todayProgressValue">0/0</span>
-                        </div>
-                        <div class="today-progress-bar">
-                            <div class="today-progress-fill" id="todayProgressFill"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Weekly Stats Banner -->
-                    <div class="weekly-stats-banner">
-                        <div class="weekly-stat">
-                            <span class="weekly-stat-value" id="weeklyMinutes">0</span>
-                            <span class="weekly-stat-label">min this week</span>
-                        </div>
-                        <div class="weekly-divider"></div>
-                        <div class="weekly-stat">
-                            <span class="weekly-stat-value" id="perfectDaysCount">0</span>
-                            <span class="weekly-stat-label">perfect days</span>
+                        <div class="stat-cell">
+                            <span class="stat-emoji">🏆</span>
+                            <span class="stat-number" id="longestStreak">0</span>
+                            <span class="stat-name">Best Streak</span>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button class="view-stats-btn" id="viewFullStatsBtn">
-                        <span>View Full Statistics</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 18l6-6-6-6"/>
-                        </svg>
-                    </button>
+
+                <!-- Progress Bar -->
+                <div class="today-bar">
+                    <div class="today-bar-header">
+                        <span>Today's Progress</span>
+                        <span id="todayProgressValue">0/0</span>
+                    </div>
+                    <div class="today-bar-track">
+                        <div class="today-bar-fill" id="todayProgressFill"></div>
+                    </div>
                 </div>
+
+                <!-- Weekly Banner -->
+                <div class="weekly-banner">
+                    <div class="weekly-stat">
+                        <span class="weekly-val" id="weeklyMinutes">0</span>
+                        <span class="weekly-lbl">min this week</span>
+                    </div>
+                    <div class="weekly-divider"></div>
+                    <div class="weekly-stat">
+                        <span class="weekly-val" id="perfectDaysCount">0</span>
+                        <span class="weekly-lbl">perfect days</span>
+                    </div>
+                </div>
+
+                <button class="view-stats-btn" id="viewFullStatsBtn">
+                    <span>View Full Statistics</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
+                </button>
             </section>
 
-            <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 6: ACHIEVEMENTS
-            ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card achievements-card" id="achievementsSection">
-                <div class="card-glow gold-glow"></div>
-                <div class="card-header">
-                    <div class="card-icon achievements-icon">
+            <!-- ═══ ACHIEVEMENTS ═══ -->
+            <section class="glass-card achievements-card" id="achievementsSection">
+                <div class="ach-header">
+                    <div class="ach-icon-wrap">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-                            <path d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                            <path
+                                d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+                            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                         </svg>
                     </div>
-                    <div class="card-title-group">
-                        <h2 class="card-title">Achievements</h2>
-                        <p class="card-subtitle" id="achievementsUnlocked">0 unlocked</p>
+                    <div>
+                        <h2 class="ach-title">Achievements</h2>
+                        <p class="ach-subtitle" id="achievementsUnlocked">0 unlocked</p>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="achievements-preview" id="achievementsPreview">
-                        <div class="achievement-badge locked" data-id="first_session">
-                            <span class="badge-icon">🏅</span>
-                            <span class="badge-name">First Step</span>
-                        </div>
-                        <div class="achievement-badge locked" data-id="streak_10">
-                            <span class="badge-icon">🔥</span>
-                            <span class="badge-name">Dedicated</span>
-                        </div>
-                        <div class="achievement-badge locked" data-id="sessions_100">
-                            <span class="badge-icon">💯</span>
-                            <span class="badge-name">Centurion</span>
-                        </div>
-                        <div class="achievement-badge locked" data-id="time_1hour">
-                            <span class="badge-icon">⏰</span>
-                            <span class="badge-name">Hour of Devotion</span>
-                        </div>
+                <div class="achievements-preview" id="achievementsPreview">
+                    <div class="achievement-badge locked" data-id="first_session">
+                        <span class="badge-icon">🏅</span>
+                        <span class="badge-name">First Step</span>
+                    </div>
+                    <div class="achievement-badge locked" data-id="streak_10">
+                        <span class="badge-icon">🔥</span>
+                        <span class="badge-name">Dedicated</span>
+                    </div>
+                    <div class="achievement-badge locked" data-id="sessions_100">
+                        <span class="badge-icon">💯</span>
+                        <span class="badge-name">Centurion</span>
+                    </div>
+                    <div class="achievement-badge locked" data-id="time_1hour">
+                        <span class="badge-icon">⏰</span>
+                        <span class="badge-name">Devotion</span>
                     </div>
                 </div>
             </section>
@@ -425,10 +411,15 @@
         </main>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          MEDITATION OVERLAY
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="meditation-overlay" id="meditationOverlay">
+        <div class="meditation-cosmos">
+            <div class="med-ring med-ring-1"></div>
+            <div class="med-ring med-ring-2"></div>
+            <div class="med-ring med-ring-3"></div>
+        </div>
         <div class="meditation-content">
             <div class="meditation-symbol" id="meditationSymbol">ੴ</div>
             <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
@@ -445,31 +436,32 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          SESSION ALERT MODAL
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="session-alert-modal" id="sessionAlertModal">
         <div class="alert-backdrop"></div>
         <div class="alert-content">
+            <div class="alert-pulse"></div>
             <div class="alert-icon">🙏</div>
             <div class="alert-gurmukhi">ੴ ਸਤਿ ਨਾਮੁ</div>
             <h2 class="alert-title">Time for Naam Abhyas</h2>
             <p class="alert-message">Leave all work. Close your eyes.<br>Remember Vaheguru for 2 minutes.</p>
             <div class="alert-actions">
-                <button class="alert-btn primary" id="alertStartNowBtn">
+                <button class="alert-btn alert-primary" id="alertStartNowBtn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3"/>
+                        <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                     Start Now
                 </button>
-                <button class="alert-btn secondary" id="skipSessionBtn">Skip This Time</button>
+                <button class="alert-btn alert-secondary" id="skipSessionBtn">Skip This Time</button>
             </div>
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          COMPLETION MODAL
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="completion-modal" id="completionModal">
         <div class="completion-backdrop"></div>
         <div class="completion-content">
@@ -493,8 +485,8 @@
                     <span class="comp-stat-value" id="compToday">0/0</span>
                 </div>
             </div>
-            
-            <!-- Achievement Unlock Celebration -->
+
+            <!-- Achievement Unlock -->
             <div class="achievement-unlock hidden" id="achievementUnlock">
                 <div class="achievement-unlock-badge" id="achievementBadge">🏅</div>
                 <div class="achievement-unlock-text">
@@ -503,7 +495,7 @@
                     <p class="achievement-desc" id="achievementDesc">Complete your first Naam Abhyas</p>
                 </div>
             </div>
-            
+
             <div class="next-session-info" id="nextSessionInfo">
                 Next session: Loading...
             </div>
@@ -511,14 +503,14 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          STATS PANEL
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="stats-panel" id="statsPanel">
         <div class="panel-header">
             <button class="panel-close-btn" id="closeStatsBtn" aria-label="Close">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12"/>
+                    <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
             </button>
             <h2 class="panel-title">Statistics</h2>
@@ -526,9 +518,9 @@
         <div class="panel-content" id="statsPanelContent"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════════
          SETTINGS MODAL (Bottom Sheet)
-    ═══════════════════════════════════════════════════════════════════════════ -->
+    ═══════════════════════════════════════════════════════════════════════ -->
     <div class="settings-modal" id="settingsModal">
         <div class="settings-modal-backdrop" id="settingsModalBackdrop"></div>
         <div class="settings-modal-sheet" id="settingsModalSheet">
@@ -537,11 +529,12 @@
                 <h2 class="sheet-title">Settings</h2>
                 <button class="sheet-close-btn" id="closeSettingsBtn" aria-label="Close">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
+                        <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                 </button>
             </div>
             <div class="sheet-content">
+
                 <!-- Theme Setting -->
                 <div class="setting-group">
                     <div class="setting-label">
@@ -558,14 +551,14 @@
                         </label>
                         <label class="theme-option" data-theme="light">
                             <input type="radio" name="theme" value="light">
-                            <span class="theme-box light-preview">
+                            <span class="theme-box">
                                 <span class="theme-icon">☀️</span>
                                 <span class="theme-label">Light</span>
                             </span>
                         </label>
                         <label class="theme-option" data-theme="dark">
                             <input type="radio" name="theme" value="dark">
-                            <span class="theme-box dark-preview">
+                            <span class="theme-box">
                                 <span class="theme-icon">🌙</span>
                                 <span class="theme-label">Dark</span>
                             </span>
@@ -602,7 +595,7 @@
                         </label>
                     </div>
                 </div>
-                
+
                 <!-- Active Hours -->
                 <div class="setting-group">
                     <div class="setting-label">
@@ -632,7 +625,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Notifications -->
                 <div class="setting-group">
                     <div class="setting-label">
@@ -670,7 +663,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Sound Selection -->
                 <div class="setting-group">
                     <div class="setting-label">
@@ -686,22 +679,24 @@
                         </select>
                         <button class="preview-sound-btn" id="previewSoundBtn" aria-label="Preview sound">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="5 3 19 12 5 21 5 3"/>
+                                <polygon points="5 3 19 12 5 21 5 3" />
                             </svg>
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Auto-start -->
                 <div class="setting-group">
-                    <div class="setting-label">
-                        <span class="setting-title">Auto-start Timer</span>
-                        <span class="setting-desc">Automatically start meditation</span>
+                    <div class="setting-row">
+                        <div class="setting-label">
+                            <span class="setting-title">Auto-start Timer</span>
+                            <span class="setting-desc">Automatically start meditation</span>
+                        </div>
+                        <label class="mini-toggle">
+                            <input type="checkbox" id="autoStartTimer">
+                            <span class="mini-toggle-slider"></span>
+                        </label>
                     </div>
-                    <label class="mini-toggle">
-                        <input type="checkbox" id="autoStartTimer">
-                        <span class="mini-toggle-slider"></span>
-                    </label>
                 </div>
             </div>
         </div>
@@ -710,19 +705,84 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Cosmic Background Engine -->
+    <script>
+        (function () {
+            'use strict';
+            // Stars
+            const sf = document.getElementById('starsField');
+            if (sf) {
+                for (let i = 0; i < 80; i++) {
+                    const s = document.createElement('div');
+                    const size = Math.random() * 2 + 1;
+                    Object.assign(s.style, {
+                        position: 'absolute',
+                        width: size + 'px', height: size + 'px',
+                        borderRadius: '50%',
+                        background: 'rgba(255,255,255,' + (Math.random() * 0.6 + 0.2) + ')',
+                        left: Math.random() * 100 + '%',
+                        top: Math.random() * 70 + '%',
+                        animation: 'breathe ' + (2 + Math.random() * 4) + 's ease-in-out ' + (Math.random() * 3) + 's infinite'
+                    });
+                    sf.appendChild(s);
+                }
+            }
+            // Golden Particles Canvas
+            const c = document.getElementById('cosmosCanvas');
+            if (!c) return;
+            const ctx = c.getContext('2d');
+            let W, H, particles = [];
+            function resize() { W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * W, y: Math.random() * H,
+                    r: Math.random() * 1.5 + 0.5,
+                    dx: (Math.random() - 0.5) * 0.3,
+                    dy: -Math.random() * 0.4 - 0.1,
+                    a: Math.random() * 0.5 + 0.1,
+                    da: (Math.random() - 0.5) * 0.005
+                });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                particles.forEach(p => {
+                    p.x += p.dx; p.y += p.dy; p.a += p.da;
+                    if (p.a <= 0.05 || p.a >= 0.6) p.da *= -1;
+                    if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+                    if (p.x < -10) p.x = W + 10;
+                    if (p.x > W + 10) p.x = -10;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,179,71,' + p.a + ')';
+                    ctx.fill();
+                    // Glow
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,179,71,' + (p.a * 0.15) + ')';
+                    ctx.fill();
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
+
     <!-- Scripts -->
     <script src="components/timer-engine.js"></script>
     <script src="components/notification-engine.js"></script>
     <script src="components/stats-tracker.js"></script>
     <script src="components/audio-manager.js"></script>
     <script src="components/ritual-engine.js"></script>
-    
-    <!-- Native Notifications for Mobile (works when app is closed!) -->
+
+    <!-- Native Notifications for Mobile -->
     <script src="../lib/native-notifications.js"></script>
-    
+
     <!-- Global Alarm System -->
     <script src="../lib/global-alarm-system.js" defer></script>
-    
+
     <script src="naam-abhyas.js"></script>
 </body>
+
 </html>

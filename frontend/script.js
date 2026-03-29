@@ -11,8 +11,7 @@
    MOBILE PERFORMANCE SYSTEM
    ═══════════════════════════════════════════════════════════════════════ */
 
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    || window.innerWidth < 768;
+// isMobile is declared in audio-core.js (loaded first) — do not redeclare
 const isSlowDevice = navigator.deviceMemory ? navigator.deviceMemory < 4 : isMobile;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const shouldReduceAnimations = isMobile || isSlowDevice || prefersReducedMotion;
@@ -55,55 +54,7 @@ function validateNavPaths() {
     });
 }
 
-// ═══════════════════════════════════════════════════════════════
-// AUDIO CONFIG
-// ═══════════════════════════════════════════════════════════════
-const AUDIO_CONFIG = {
-    baseUrl: (() => {
-        try {
-            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const onBackendPort = window.location.port === '3000';
-            if (isLocalhost && !onBackendPort) {
-                return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
-            }
-        } catch (e) { }
-        return '/audio';
-    })(),
-
-    audioFiles: Array.from({ length: 40 }, (_, i) => `day-${i + 1}.webm`),
-
-    trackInfo: Array.from({ length: 40 }, (_, i) => ({
-        title: `Day ${i + 1} - Gurbani Kirtan`,
-        artist: 'Divine Shabad',
-        estimatedDuration: 3600
-    })),
-
-    getAudioUrl(filename) {
-        return `${this.baseUrl}/${filename}`;
-    },
-
-    getTrack(index) {
-        const safeIndex = ((index % this.audioFiles.length) + this.audioFiles.length) % this.audioFiles.length;
-        return {
-            url: this.getAudioUrl(this.audioFiles[safeIndex]),
-            info: this.trackInfo[safeIndex],
-            index: safeIndex,
-            filename: this.audioFiles[safeIndex]
-        };
-    },
-
-    getRandomIndex(currentIndex = -1) {
-        let newIndex;
-        do {
-            newIndex = Math.floor(Math.random() * this.audioFiles.length);
-        } while (newIndex === currentIndex && this.audioFiles.length > 1);
-        return newIndex;
-    },
-
-    get totalTracks() {
-        return this.audioFiles.length;
-    }
-};
+// AUDIO_CONFIG is declared in audio-core.js (loaded first) — do not redeclare
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
@@ -343,18 +294,57 @@ class StateManager extends EventEmitter {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// VIRTUAL LIVE MANAGER
+// SERVER-SYNCED LIVE MANAGER
+// Replaces client-side VirtualLiveManager with server-authoritative positions.
+// All devices hear the same audio at the same moment.
 // ═══════════════════════════════════════════════════════════════════════════════
+
+// Generate/retrieve unique listener ID
+const LISTENER_ID = (() => {
+    let id = Utils.storage.get('gurbani_listener_id');
+    if (!id) {
+        id = 'l_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8);
+        Utils.storage.set('gurbani_listener_id', id);
+    }
+    return id;
+})();
+
+// API base URL
+const API_BASE = (() => {
+    try {
+        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        const onBackendPort = window.location.port === '3000';
+        if (isLocalhost && !onBackendPort) {
+            return `${window.location.protocol}//${window.location.hostname}:3000`;
+        }
+    } catch (e) { }
+    return '';
+})();
 
 class VirtualLiveManager extends EventEmitter {
     constructor() {
         super();
-        this.broadcastStartTime = this.loadBroadcastStart();
+        this.serverEpoch = null;
         this.trackDurations = new Map();
         this.defaultDuration = 3600;
         this.pausedAt = null;
         this.isLive = true;
         this.liveThreshold = 5;
+        this.lastSyncData = null;
+        this.lastSyncTime = 0;
+        this.listenersCount = 0;
+        this.heartbeatInterval = null;
+        this.driftCheckInterval = null;
+        this.serverSynced = false;
+
+        // Load cached epoch as fallback
+        this.broadcastStartTime = this.loadBroadcastStart();
+
+        // Try to sync with server immediately
+        this.syncWithServer();
+
+        // Start heartbeat
+        this.startHeartbeat();
     }
 
     loadBroadcastStart() {
@@ -364,6 +354,95 @@ class VirtualLiveManager extends EventEmitter {
             Utils.storage.set('broadcastStartTime', startTime);
         }
         return startTime;
+    }
+
+    /**
+     * Sync with server to get the authoritative epoch and live position.
+     */
+    async syncWithServer() {
+        try {
+            const startTime = Date.now();
+            const response = await fetch(`${API_BASE}/api/radio/live`);
+            const endTime = Date.now();
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            const latencyMs = (endTime - startTime) / 2;
+
+            // Store server epoch — this is the single source of truth
+            this.serverEpoch = data.epoch;
+            this.broadcastStartTime = data.epoch;
+            Utils.storage.set('broadcastStartTime', data.epoch);
+
+            // Store all track durations from server
+            if (data.trackDurations) {
+                Object.entries(data.trackDurations).forEach(([idx, dur]) => {
+                    this.trackDurations.set(Number(idx), dur);
+                });
+            }
+
+            this.lastSyncData = data;
+            this.lastSyncTime = Date.now();
+            this.listenersCount = data.listenersCount || 0;
+            this.serverSynced = true;
+
+            console.log(`[📻 ServerSync] Synced! Epoch: ${new Date(data.epoch).toISOString()}, Latency: ${Math.round(latencyMs)}ms, Listeners: ${data.listenersCount}`);
+
+            return {
+                trackIndex: data.trackIndex,
+                position: data.trackPosition + (latencyMs / 1000),
+                totalElapsed: data.totalElapsed,
+                listenersCount: data.listenersCount
+            };
+        } catch (e) {
+            console.warn('[📻 ServerSync] Failed to sync, using local fallback:', e.message);
+            return null;
+        }
+    }
+
+    /**
+     * Report an actual track duration to the server.
+     */
+    async reportDuration(trackIndex, duration) {
+        this.setTrackDuration(trackIndex, duration);
+        try {
+            await fetch(`${API_BASE}/api/radio/durations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ trackIndex, duration })
+            });
+        } catch (e) { /* non-critical */ }
+    }
+
+    /**
+     * Start heartbeat loop (every 30s).
+     */
+    startHeartbeat() {
+        if (this.heartbeatInterval) return;
+        this.sendHeartbeat();
+        this.heartbeatInterval = setInterval(() => this.sendHeartbeat(), 30000);
+    }
+
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+    }
+
+    async sendHeartbeat() {
+        try {
+            const resp = await fetch(`${API_BASE}/api/radio/heartbeat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listenerId: LISTENER_ID })
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                this.listenersCount = data.listenersCount || 0;
+            }
+        } catch (e) { /* non-critical */ }
     }
 
     setTrackDuration(trackIndex, duration) {
@@ -390,7 +469,7 @@ class VirtualLiveManager extends EventEmitter {
         const now = Date.now();
         const elapsedSeconds = (now - this.broadcastStartTime) / 1000;
         const totalPlaylistDuration = this.getTotalPlaylistDuration();
-        const positionInPlaylist = elapsedSeconds % totalPlaylistDuration;
+        const positionInPlaylist = ((elapsedSeconds % totalPlaylistDuration) + totalPlaylistDuration) % totalPlaylistDuration;
 
         let accumulatedTime = 0;
         for (let i = 0; i < AUDIO_CONFIG.totalTracks; i++) {
@@ -406,6 +485,15 @@ class VirtualLiveManager extends EventEmitter {
         }
 
         return { trackIndex: 0, position: 0, totalElapsed: elapsedSeconds };
+    }
+
+    /**
+     * Get live position — prefers server sync, falls back to local calculation.
+     */
+    async getLivePositionFromServer() {
+        const serverPos = await this.syncWithServer();
+        if (serverPos) return serverPos;
+        return this.getCurrentLivePosition();
     }
 
     getPositionAfterElapsed(currentTrackIndex, currentPosition, elapsedSeconds) {
@@ -440,27 +528,32 @@ class VirtualLiveManager extends EventEmitter {
         this.emit('liveStatusChange', { isLive: false });
     }
 
-    getResumePosition() {
-        if (!this.pausedAt) return this.getCurrentLivePosition();
+    async getResumePosition() {
+        // Always resume at the current LIVE position (server-synced)
+        const serverPos = await this.syncWithServer();
+        this.pausedAt = null;
+        this.isLive = true;
+        this.emit('liveStatusChange', { isLive: true });
 
+        if (serverPos) return serverPos;
+
+        // Fallback to local calculation
+        if (!this.pausedAt) return this.getCurrentLivePosition();
         const elapsedSeconds = (Date.now() - this.pausedAt.time) / 1000;
-        const newPosition = this.getPositionAfterElapsed(
+        return this.getPositionAfterElapsed(
             this.pausedAt.trackIndex,
             this.pausedAt.position,
             elapsedSeconds
         );
-
-        this.pausedAt = null;
-        this.isLive = true;
-        this.emit('liveStatusChange', { isLive: true });
-
-        return newPosition;
     }
 
-    goToLive() {
+    async goToLive() {
         this.pausedAt = null;
         this.isLive = true;
         this.emit('liveStatusChange', { isLive: true });
+
+        const serverPos = await this.syncWithServer();
+        if (serverPos) return serverPos;
         return this.getCurrentLivePosition();
     }
 
@@ -611,7 +704,8 @@ class AudioEngine extends EventEmitter {
 
         this.audio.addEventListener('loadedmetadata', () => {
             this.duration = this.audio.duration;
-            this.virtualLive.setTrackDuration(this.currentTrackIndex, this.duration);
+            // Report actual duration to server for global accuracy
+            this.virtualLive.reportDuration(this.currentTrackIndex, this.duration);
             this.emit('durationchange', { duration: this.duration });
         });
 
@@ -723,7 +817,8 @@ class AudioEngine extends EventEmitter {
 
     async play() {
         if (this.config.virtualLive && this.virtualLive.pausedAt) {
-            const resumePos = this.virtualLive.getResumePosition();
+            // Always resume at LIVE position from server
+            const resumePos = await this.virtualLive.getResumePosition();
 
             if (resumePos.trackIndex !== this.currentTrackIndex) {
                 await this.loadTrack(resumePos.trackIndex, true, resumePos.position);
@@ -754,14 +849,16 @@ class AudioEngine extends EventEmitter {
     }
 
     async startLive() {
-        const livePos = this.virtualLive.getCurrentLivePosition();
+        // Fetch live position from server — single source of truth
+        const livePos = await this.virtualLive.getLivePositionFromServer();
         this.isLive = true;
         await this.loadTrack(livePos.trackIndex, true, livePos.position);
         this.emit('liveStatusChange', { isLive: true });
     }
 
     async goLive() {
-        const livePos = this.virtualLive.goToLive();
+        // Fetch live position from server — single source of truth
+        const livePos = await this.virtualLive.goToLive();
         this.isLive = true;
         await this.loadTrack(livePos.trackIndex, true, livePos.position);
         this.emit('liveStatusChange', { isLive: true });
@@ -1882,7 +1979,7 @@ class UIController extends EventEmitter {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Gurbani-Notes-${new Date().toISOString().split('T')[0]}.txt`;
+        a.download = `Gurbani-Notes-${new Date().toLocaleDateString('en-CA')}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -2470,7 +2567,11 @@ class UIController extends EventEmitter {
 
         Object.entries(shareLinks).forEach(([id, url]) => {
             this.addClickHandler(id, () => {
-                window.open(url, '_blank', 'width=600,height=400');
+                if (window.Capacitor?.isNativePlatform?.()) {
+                    navigator.clipboard?.writeText(url).catch(() => {});
+                } else {
+                    window.open(url, '_blank', 'width=600,height=400');
+                }
                 Utils.haptic('light');
             });
         });
@@ -3388,7 +3489,7 @@ document.addEventListener('visibilitychange', () => {
             try {
                 const config = JSON.parse(localStorage.getItem('naam_abhyas_config') || '{}');
                 const history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
-                const todayKey = new Date().toISOString().split('T')[0];
+                const todayKey = new Date().toLocaleDateString('en-CA');
                 const schedule = history.scheduleHistory?.[todayKey] || {};
 
                 const sessions = Object.entries(schedule)
@@ -3415,7 +3516,7 @@ document.addEventListener('visibilitychange', () => {
         if (type === 'NAAM_ABHYAS_NOTIFIED' && hour !== undefined) {
             try {
                 const history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
-                const todayKey = today || new Date().toISOString().split('T')[0];
+                const todayKey = today || new Date().toLocaleDateString('en-CA');
 
                 if (history.scheduleHistory?.[todayKey]?.[hour]) {
                     history.scheduleHistory[todayKey][hour].notified = true;

@@ -209,10 +209,20 @@ class SehajPaathReader {
             });
         }
 
-        // Scroll handling for auto-hide
+        // Scroll handling for auto-hide — THROTTLED with rAF
+        this._scrollTicking = false;
+        this._scrollHideTimer = null;
         const scroll = document.getElementById('gurbaniScroll');
         if (scroll) {
-            scroll.addEventListener('scroll', () => this.handleScroll());
+            scroll.addEventListener('scroll', () => {
+                if (!this._scrollTicking) {
+                    requestAnimationFrame(() => {
+                        this.handleScroll();
+                        this._scrollTicking = false;
+                    });
+                    this._scrollTicking = true;
+                }
+            }, { passive: true });
         }
 
         // Tap to show/hide header/footer
@@ -236,9 +246,7 @@ class SehajPaathReader {
         // Settings controls
         this.setupSettingsControls();
 
-        // ═══════════════════════════════════════════════════════════════════════════
-        // TASK 2: FLOATING ACTIONS BAR
-        // ═══════════════════════════════════════════════════════════════════════════
+        // Floating actions bar
         this.setupFloatingActionsBar();
 
         // Swipe gestures
@@ -420,28 +428,64 @@ class SehajPaathReader {
     }
 
     handleScroll() {
-        if (!this.settings.autoHideHeader) return;
-
         const scroll = document.getElementById('gurbaniScroll');
         if (!scroll) return;
 
         const currentPosition = scroll.scrollTop;
+        const delta = currentPosition - this.lastScrollPosition;
+
+        // ═══════════════════════════════════════════════════════════════════
+        // CONTINUOUS READING — Auto-load next Ang when near bottom
+        // This is the KEY to smooth, flicker-free Sehaj Paath
+        // ═══════════════════════════════════════════════════════════════════
+        if (this.settings.continuousReading && !this._isLoadingNextAng) {
+            const scrollHeight = scroll.scrollHeight;
+            const clientHeight = scroll.clientHeight;
+            const distanceFromBottom = scrollHeight - (currentPosition + clientHeight);
+
+            // Load next Ang when within 300px of bottom
+            if (distanceFromBottom < 300 && this.currentAng < 1430) {
+                this._isLoadingNextAng = true;
+                this.loadAngContinuous(this.currentAng + 1);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════
+        // AUTO-HIDE HEADER/FOOTER
+        // ═══════════════════════════════════════════════════════════════════
+        if (!this.settings.autoHideHeader) {
+            this.lastScrollPosition = currentPosition;
+            return;
+        }
+
+        // Only toggle after significant scroll delta to prevent rapid flickering
+        if (Math.abs(delta) < 8) return;
+
         const header = document.getElementById('readerHeader');
         const footer = document.getElementById('readerFooter');
         const container = document.getElementById('readerContainer');
+        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
 
-        if (currentPosition > this.lastScrollPosition && currentPosition > 100) {
+        if (delta > 0 && currentPosition > 80) {
             // Scrolling down - hide
-            header?.classList.add('hidden');
-            footer?.classList.add('hidden');
-            container?.classList.add('ui-hidden');
-            this.headerVisible = false;
-        } else if (currentPosition < this.lastScrollPosition) {
+            if (this.headerVisible) {
+                header?.classList.add('hidden');
+                footer?.classList.add('hidden');
+                this.headerVisible = false;
+                if (isContinuousOrParagraph) {
+                    container?.classList.add('fullscreen-reading');
+                }
+            }
+        } else if (delta < -5) {
             // Scrolling up - show
-            header?.classList.remove('hidden');
-            footer?.classList.remove('hidden');
-            container?.classList.remove('ui-hidden');
-            this.headerVisible = true;
+            if (!this.headerVisible) {
+                header?.classList.remove('hidden');
+                footer?.classList.remove('hidden');
+                this.headerVisible = true;
+                if (isContinuousOrParagraph) {
+                    container?.classList.remove('fullscreen-reading');
+                }
+            }
         }
 
         this.lastScrollPosition = currentPosition;
@@ -451,17 +495,20 @@ class SehajPaathReader {
         const header = document.getElementById('readerHeader');
         const footer = document.getElementById('readerFooter');
         const container = document.getElementById('readerContainer');
+        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
 
         if (this.headerVisible) {
             header?.classList.add('hidden');
             footer?.classList.add('hidden');
-            container?.classList.add('ui-hidden');
             this.headerVisible = false;
+            if (isContinuousOrParagraph) {
+                container?.classList.add('fullscreen-reading');
+            }
         } else {
             header?.classList.remove('hidden');
             footer?.classList.remove('hidden');
-            container?.classList.remove('ui-hidden');
             this.headerVisible = true;
+            container?.classList.remove('fullscreen-reading');
         }
     }
 
@@ -487,16 +534,19 @@ class SehajPaathReader {
     async loadAng(angNumber) {
         if (angNumber < 1 || angNumber > 1430) return;
 
+        // In continuous reading mode, use the seamless appender instead
+        if (this.settings.continuousReading && this.angData) {
+            await this.loadAngContinuous(angNumber);
+            return;
+        }
+
         this.showLoading();
         this.currentAng = angNumber;
 
         console.log('📖 Fetching Ang:', angNumber);
 
         try {
-            // Fetch from API
             const data = await this.api.getAng(angNumber);
-
-            console.log('📄 Ang data received:', data);
 
             if (!data || !data.lines || data.lines.length === 0) {
                 console.warn('⚠️ No lines data for Ang:', angNumber);
@@ -515,7 +565,6 @@ class SehajPaathReader {
             // Preload adjacent angs
             this.preloadAdjacentAngs();
 
-            // Haptic feedback
             this.haptic('light');
 
         } catch (error) {
@@ -523,6 +572,119 @@ class SehajPaathReader {
             this.showErrorMessage('Failed to load Gurbani. Please check your connection and try again.');
         } finally {
             this.hideLoading();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CONTINUOUS READING — SEAMLESS ANG APPENDING (ZERO FLICKER)
+    // Appends next Ang's lines below current content without clearing.
+    // No loading overlay. No scroll jump. Completely smooth.
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async loadAngContinuous(angNumber) {
+        if (angNumber < 1 || angNumber > 1430) {
+            this._isLoadingNextAng = false;
+            return;
+        }
+
+        console.log('📜 Continuous: Appending Ang', angNumber);
+
+        try {
+            const data = await this.api.getAng(angNumber);
+
+            if (!data || !data.lines || data.lines.length === 0) {
+                this._isLoadingNextAng = false;
+                return;
+            }
+
+            // Update state (but DON'T clear content)
+            this.currentAng = angNumber;
+            this.angData = data;
+
+            // Build new lines as DocumentFragment — NO innerHTML clearing
+            const container = document.getElementById('gurbaniLines');
+            if (!container) {
+                this._isLoadingNextAng = false;
+                return;
+            }
+
+            // Add a subtle Ang divider
+            const divider = document.createElement('div');
+            divider.className = 'ang-divider';
+            divider.innerHTML = `<span>ਅੰਗ ${angNumber}</span>`;
+            container.appendChild(divider);
+
+            // Build fragment with new lines
+            const fragment = document.createDocumentFragment();
+            const isLarivaarMode = this.settings.displayMode === 'larivaar';
+
+            data.lines.forEach((line, index) => {
+                let text = isLarivaarMode ?
+                    (line.larivaar || line.gurmukhi?.replace(/\s+/g, '') || '') :
+                    (line.gurmukhi || '');
+
+                if (isLarivaarMode && this.settings.larivaarAssist && line.gurmukhi) {
+                    text = this.applyLarivaarAssist(line.gurmukhi);
+                }
+
+                let translation = '';
+                if (line.translation) {
+                    if (typeof line.translation === 'string') {
+                        translation = line.translation;
+                    } else if (line.translation[this.settings.translationLang]) {
+                        translation = line.translation[this.settings.translationLang];
+                    } else if (line.translation.en) {
+                        translation = line.translation.en;
+                    }
+                }
+
+                let transliteration = '';
+                if (line.transliteration) {
+                    if (typeof line.transliteration === 'string') {
+                        transliteration = line.transliteration;
+                    } else if (line.transliteration.en) {
+                        transliteration = line.transliteration.en;
+                    }
+                }
+
+                const lineEl = document.createElement('div');
+                lineEl.className = 'gurbani-line';
+                lineEl.dataset.lineId = line.id || index;
+                lineEl.dataset.shabadId = line.shabadId || '';
+                lineEl.innerHTML = `
+                    <p class="gurmukhi-text ${isLarivaarMode ? 'larivaar' : ''}">${text || 'ੴ'}</p>
+                    ${this.settings.showTranslation && translation ?
+                    `<p class="translation-text">${translation}</p>` : ''}
+                    ${this.settings.showTransliteration && transliteration ?
+                    `<p class="transliteration-text">${transliteration}</p>` : ''}
+                    <span class="line-number">${index + 1}</span>
+                `;
+                fragment.appendChild(lineEl);
+            });
+
+            // Append WITHOUT clearing — this is what prevents flicker
+            container.appendChild(fragment);
+
+            // Update UI elements (ang display, progress, etc.)
+            this.updateUI();
+            this.saveCurrentAng();
+            this.updateStats();
+            this.updateReadingProgressBar();
+
+            // Preload the next one
+            if (this.currentAng < 1430) {
+                this.api.getAng(this.currentAng + 1).catch(() => {});
+            }
+
+            console.log('✅ Continuous: Ang', angNumber, 'appended seamlessly');
+
+        } catch (error) {
+            console.error('❌ Continuous load error:', error);
+        } finally {
+            // Allow next load after a short cooldown
+            setTimeout(() => {
+                this._isLoadingNextAng = false;
+            }, 500);
         }
     }
 
@@ -786,6 +948,7 @@ class SehajPaathReader {
 
     applyModes() {
         const container = document.getElementById('gurbaniLines');
+        const readerContainer = document.getElementById('readerContainer');
         const larivaarAssistRow = document.getElementById('larivaarAssistRow');
         const isLarivaar = this.settings.displayMode === 'larivaar';
 
@@ -802,6 +965,23 @@ class SehajPaathReader {
         if (container) {
             container.classList.toggle('continuous-mode', this.settings.continuousReading);
             container.classList.toggle('paragraph-mode', this.settings.paragraphMode && !this.settings.continuousReading);
+        }
+
+        // In continuous/paragraph mode, auto-hide header/footer for fullscreen reading
+        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
+        if (isContinuousOrParagraph && this.settings.autoHideHeader) {
+            const header = document.getElementById('readerHeader');
+            const footer = document.getElementById('readerFooter');
+            // Auto-hide after a brief delay
+            setTimeout(() => {
+                header?.classList.add('hidden');
+                footer?.classList.add('hidden');
+                readerContainer?.classList.add('fullscreen-reading');
+                this.headerVisible = false;
+            }, 800);
+        } else {
+            // Restore normal mode
+            readerContainer?.classList.remove('fullscreen-reading');
         }
 
         // Update toggle checkboxes
@@ -827,7 +1007,10 @@ class SehajPaathReader {
     }
 
     applyTheme() {
-        document.documentElement.dataset.theme = this.settings.theme;
+        // Normalize to only dark/light
+        const theme = this.settings.theme;
+        const normalizedTheme = (theme === 'light' || theme === 'sepia' || theme === 'auto') ? 'light' : 'dark';
+        document.documentElement.dataset.theme = normalizedTheme;
     }
 
     applyFontSize() {
@@ -1008,8 +1191,52 @@ class SehajPaathReader {
             stats.todayAngsRead = (stats.todayAngsRead || 0) + 1;
             stats.totalAngsRead = (stats.totalAngsRead || 0) + 1;
             stats.lastReadDate = today;
+            stats.lastReadAng = this.currentAng;
 
             localStorage.setItem('sehajPaathStats', JSON.stringify(stats));
+
+            // ═══════════════════════════════════════════════════════════════════
+            // DASHBOARD INTEGRATION — Push stats to unified storage
+            // This makes Sehaj Paath progress visible on the Dashboard
+            // ═══════════════════════════════════════════════════════════════════
+            try {
+                // Update unified stats for Dashboard insights
+                let unifiedStats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
+                unifiedStats.sehajPaath = {
+                    currentAng: this.currentAng,
+                    totalAngsRead: stats.totalAngsRead || 0,
+                    currentStreak: stats.currentStreak || 0,
+                    longestStreak: stats.longestStreak || 0,
+                    todayAngsRead: stats.todayAngsRead || 0,
+                    progress: ((this.currentAng / 1430) * 100).toFixed(1),
+                    lastReadDate: today,
+                    lastUpdated: Date.now()
+                };
+                localStorage.setItem('anhad_user_stats', JSON.stringify(unifiedStats));
+
+                // Also push to Nitnem tracker format for cross-section visibility
+                let readingLog = JSON.parse(localStorage.getItem('anhad_reading_log') || '[]');
+                const todayLog = readingLog.find(l => l.date === today);
+                if (todayLog) {
+                    todayLog.sehajPaathAngs = stats.todayAngsRead;
+                    todayLog.sehajPaathAng = this.currentAng;
+                } else {
+                    readingLog.push({
+                        date: today,
+                        sehajPaathAngs: stats.todayAngsRead,
+                        sehajPaathAng: this.currentAng,
+                        timestamp: Date.now()
+                    });
+                }
+                // Keep only last 90 days
+                if (readingLog.length > 90) readingLog = readingLog.slice(-90);
+                localStorage.setItem('anhad_reading_log', JSON.stringify(readingLog));
+
+                console.log('📊 Stats synced to Dashboard:', unifiedStats.sehajPaath);
+            } catch (e) {
+                console.warn('Dashboard sync error:', e);
+            }
+
             this.updateProgressDisplay();
         } catch (error) {
             console.error('Stats update error:', error);

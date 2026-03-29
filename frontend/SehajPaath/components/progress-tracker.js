@@ -64,7 +64,7 @@ class ProgressTracker {
      * Update daily reading history
      */
     updateDailyHistory(ang) {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA');
         let history = this.state.dailyHistory || {};
 
         if (!history[today]) {
@@ -181,7 +181,7 @@ class ProgressTracker {
         for (let i = 6; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
-            const dateKey = date.toISOString().split('T')[0];
+            const dateKey = date.toLocaleDateString('en-CA');
             const dayData = history[dateKey];
 
             data.push({
@@ -204,7 +204,7 @@ class ProgressTracker {
         for (let i = 29; i >= 0; i--) {
             const date = new Date();
             date.setDate(date.getDate() - i);
-            const dateKey = date.toISOString().split('T')[0];
+            const dateKey = date.toLocaleDateString('en-CA');
             const dayData = history[dateKey];
 
             data.push({

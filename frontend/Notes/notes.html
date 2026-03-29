@@ -1,36 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Notes | Spiritual Journal</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Capture your spiritual reflections, Gurbani insights, and daily thoughts with this beautiful notes app.">
+    <meta name="description"
+        content="Capture your spiritual reflections, Gurbani insights, and daily thoughts with this beautiful notes app.">
     <meta name="theme-color" content="#000000">
-    
+
     <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Notes">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="notes-app.css">
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/dark-mode.css">
+  <script src="../lib/global-theme.js"></script>
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/global-mini-player.js" defer></script>
 </head>
+
 <body>
     <!-- ═══════════════════════════════════════════════════════════════
          NOTES APPLICATION CONTAINER
     ═══════════════════════════════════════════════════════════════ -->
     <div class="notes-app" id="notes-app">
-        
+
         <!-- ═══════════════════════════════════════════════════════════
              HEADER
         ═══════════════════════════════════════════════════════════ -->
@@ -41,12 +55,12 @@
                     <i class="fas fa-chevron-left"></i>
                     <span>Back</span>
                 </button>
-                
+
                 <div class="header-title">
                     <h1>Gurbani Notes</h1>
                     <span class="notes-count" id="notes-count">0 Notes</span>
                 </div>
-                
+
                 <div class="header-actions">
                     <button class="header-btn" id="search-btn" aria-label="Search notes">
                         <i class="fas fa-magnifying-glass"></i>
@@ -59,16 +73,13 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Search Bar (Hidden by default) -->
             <div class="search-bar" id="search-bar">
                 <div class="search-input-wrapper">
                     <i class="fas fa-magnifying-glass search-icon"></i>
-                    <input type="text" 
-                           id="search-input" 
-                           placeholder="Search notes..." 
-                           autocomplete="off"
-                           spellcheck="false">
+                    <input type="text" id="search-input" placeholder="Search notes..." autocomplete="off"
+                        spellcheck="false">
                     <button class="search-clear" id="search-clear" aria-label="Clear search">
                         <i class="fas fa-xmark-circle"></i>
                     </button>
@@ -80,7 +91,7 @@
              MAIN CONTENT AREA
         ═══════════════════════════════════════════════════════════ -->
         <main class="notes-main" id="notes-main">
-            
+
             <!-- Folder Tabs -->
             <div class="folder-tabs" id="folder-tabs">
                 <button class="folder-tab active" data-folder="all">
@@ -100,12 +111,12 @@
                     <span>Personal</span>
                 </button>
             </div>
-            
+
             <!-- Notes List -->
             <div class="notes-list" id="notes-list">
                 <!-- Notes will be rendered here dynamically -->
             </div>
-            
+
             <!-- Empty State -->
             <div class="empty-state" id="empty-state">
                 <div class="empty-illustration">
@@ -138,14 +149,14 @@
         ═══════════════════════════════════════════════════════════ -->
         <div class="editor-overlay" id="editor-overlay">
             <div class="editor-container">
-                
+
                 <!-- Editor Header -->
                 <header class="editor-header">
                     <button class="editor-btn back" id="editor-back">
                         <i class="fas fa-chevron-left"></i>
                         <span>Notes</span>
                     </button>
-                    
+
                     <div class="editor-actions">
                         <button class="editor-btn" id="editor-pin" aria-label="Pin note">
                             <i class="fas fa-thumbtack"></i>
@@ -161,25 +172,20 @@
                         </button>
                     </div>
                 </header>
-                
+
                 <!-- Editor Body -->
                 <div class="editor-body">
-                    <input type="text" 
-                           class="editor-title" 
-                           id="editor-title" 
-                           placeholder="Title"
-                           maxlength="100">
-                    
+                    <input type="text" class="editor-title" id="editor-title" placeholder="Title" maxlength="100">
+
                     <div class="editor-meta" id="editor-meta">
                         <span class="meta-date"></span>
                         <span class="meta-chars"></span>
                     </div>
-                    
-                    <textarea class="editor-content" 
-                              id="editor-content" 
-                              placeholder="Start typing your note..."></textarea>
+
+                    <textarea class="editor-content" id="editor-content"
+                        placeholder="Start typing your note..."></textarea>
                 </div>
-                
+
                 <!-- Editor Toolbar -->
                 <div class="editor-toolbar">
                     <button class="toolbar-btn" data-format="bold" title="Bold">
@@ -199,7 +205,7 @@
                         <span class="gurmukhi-icon">ੴ</span>
                     </button>
                 </div>
-                
+
                 <!-- Folder Picker Modal -->
                 <div class="folder-picker" id="folder-picker">
                     <div class="folder-picker-header">
@@ -323,4 +329,5 @@
     <script src="notes-integration.js"></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 </body>
+
 </html>

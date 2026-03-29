@@ -283,7 +283,7 @@
         // Get data from unified storage if available
         try {
             const nitnemData = JSON.parse(localStorage.getItem('nitnemTracker_history') || '{}');
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
 
             // Completed today
             const todayData = nitnemData[today] || {};

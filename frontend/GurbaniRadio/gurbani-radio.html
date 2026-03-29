@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ਗੁਰਬਾਣੀ ਕੀਰਤਨ | ANHAD</title>
+    <title>Amritvela Kirtan | ANHAD</title>
+    <meta name="description" content="24/7 Curated Amritvela Kirtan — Live synchronized broadcast for all devices.">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,19 +17,21 @@
     
     <style>
     /* ═══════════════════════════════════════════════════════════════════════════════
-       VIRTUAL LIVE KIRTAN — iOS 18+ APPLE MUSIC PREMIUM
-       "Feels Like Live" Experience
+       AMRITVELA KIRTAN — PREMIUM APPLE MUSIC LIVE PLAYER
+       Ultra-Premium iOS 18+ Design • True Live Sync
        ═══════════════════════════════════════════════════════════════════════════════ */
 
     :root {
         --accent: #C9A227;
-        --accent-glow: rgba(201, 162, 39, 0.4);
+        --accent-glow: rgba(201, 162, 39, 0.35);
+        --accent-soft: rgba(201, 162, 39, 0.15);
         --accent-red: #FF3B30;
+        --accent-green: #34C759;
         
         --bg-primary: #000000;
         --surface-1: rgba(255, 255, 255, 0.06);
-        --surface-2: rgba(255, 255, 255, 0.12);
-        --surface-3: rgba(255, 255, 255, 0.18);
+        --surface-2: rgba(255, 255, 255, 0.10);
+        --surface-3: rgba(255, 255, 255, 0.16);
         
         --text-primary: #FFFFFF;
         --text-secondary: rgba(255, 255, 255, 0.60);
@@ -35,6 +39,48 @@
         
         --safe-top: env(safe-area-inset-top, 44px);
         --safe-bottom: env(safe-area-inset-bottom, 34px);
+    }
+
+    /* ═══ Light Theme ═══ */
+    body.light-player {
+        --bg-primary: #F2F2F7;
+        --surface-1: rgba(0, 0, 0, 0.04);
+        --surface-2: rgba(0, 0, 0, 0.06);
+        --surface-3: rgba(0, 0, 0, 0.10);
+        --text-primary: #1d1d1f;
+        --text-secondary: rgba(60, 60, 67, 0.6);
+        --text-tertiary: rgba(60, 60, 67, 0.3);
+    }
+
+    body.light-player .bg__image {
+        filter: blur(40px) saturate(120%) brightness(0.85);
+    }
+
+    body.light-player .bg__gradient {
+        background: linear-gradient(180deg,
+                rgba(242,242,247,0.3) 0%,
+                rgba(242,242,247,0.15) 30%,
+                rgba(242,242,247,0.65) 80%,
+                rgba(242,242,247,0.9) 100%);
+    }
+
+    body.light-player .controls__play {
+        background: var(--text-primary);
+        color: #fff;
+    }
+
+    body.light-player .artwork {
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1), 0 0 60px rgba(201,162,39,0.15);
+    }
+
+    body.light-player .action-sheet__group {
+        background: rgba(255, 255, 255, 0.95);
+    }
+    body.light-player .action-sheet__cancel {
+        background: rgba(255, 255, 255, 0.98);
+    }
+    body.light-player .action-sheet__option {
+        border-bottom-color: rgba(0, 0, 0, 0.06);
     }
 
     *, *::before, *::after {
@@ -63,7 +109,7 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       DYNAMIC BACKGROUND
+       DYNAMIC BACKGROUND — Cinematic Ambient Blur
        ═══════════════════════════════════════════════════════════════════════════════ */
     .bg {
         position: absolute;
@@ -71,32 +117,29 @@
         z-index: 0;
         overflow: hidden;
     }
-
     .bg__image {
         position: absolute;
-        width: 140%;
-        height: 140%;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        width: 110%;
+        height: 110%;
+        top: -5%;
+        left: -5%;
         object-fit: cover;
-        filter: blur(100px) saturate(180%) brightness(0.35);
-        animation: bgPulse 8s ease-in-out infinite;
+        filter: blur(40px) saturate(130%) brightness(0.45);
+        animation: bgDrift 25s ease-in-out infinite alternate;
     }
 
-    @keyframes bgPulse {
-        0%, 100% { filter: blur(100px) saturate(180%) brightness(0.35); }
-        50% { filter: blur(100px) saturate(200%) brightness(0.40); }
+    @keyframes bgDrift {
+        0% { transform: scale(1) translate(0, 0); }
+        100% { transform: scale(1.05) translate(-1%, -1%); }
     }
 
     .bg__gradient {
         position: absolute;
         inset: 0;
-        background: 
-            linear-gradient(180deg, 
-                rgba(0,0,0,0.4) 0%, 
+        background: linear-gradient(180deg, 
+                rgba(0,0,0,0.3) 0%, 
                 rgba(0,0,0,0.1) 30%,
-                rgba(0,0,0,0.1) 60%,
+                rgba(0,0,0,0.6) 80%,
                 rgba(0,0,0,0.85) 100%);
     }
 
@@ -153,19 +196,19 @@
         font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.2px;
         color: var(--text-secondary);
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       ARTWORK SECTION — DOMINANT
+       ARTWORK SECTION — Dominant Visual
        ═══════════════════════════════════════════════════════════════════════════════ */
     .artwork-section {
         flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 24px 0;
+        padding: 20px 0;
         min-height: 0;
     }
 
@@ -176,47 +219,81 @@
         aspect-ratio: 1;
     }
 
+    /* Ambient glow beneath artwork */
+    .artwork-wrapper::before {
+        content: '';
+        position: absolute;
+        inset: 15% 10%;
+        background: var(--accent);
+        filter: blur(60px);
+        opacity: 0.2;
+        border-radius: 50%;
+        animation: artGlow 6s ease-in-out infinite;
+        z-index: -1;
+    }
+
+    @keyframes artGlow {
+        0%, 100% { opacity: 0.15; transform: scale(0.9); }
+        50% { opacity: 0.25; transform: scale(1.05); }
+    }
+
     .artwork {
         width: 100%;
         height: 100%;
-        border-radius: 12px;
+        border-radius: 14px;
         overflow: hidden;
         position: relative;
         box-shadow: 
             0 25px 50px rgba(0, 0, 0, 0.5),
             0 10px 20px rgba(0, 0, 0, 0.3),
             0 0 80px var(--accent-glow);
-        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+                    box-shadow 0.6s ease;
+        animation: artworkBreathe 6s ease-in-out infinite;
+    }
+
+    @keyframes artworkBreathe {
+        0%, 100% { box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3), 0 0 60px var(--accent-glow); }
+        50% { box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 12px 24px rgba(0,0,0,0.35), 0 0 100px var(--accent-glow); }
     }
 
     .is-paused .artwork {
         transform: scale(0.82);
         border-radius: 10px;
+        animation: none;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.4), 0 5px 10px rgba(0,0,0,0.2);
     }
 
     .artwork__img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .is-paused .artwork__img {
+        transform: scale(1.05);
+        filter: brightness(0.7);
     }
 
     /* Live Badge on Artwork */
     .artwork__live-badge {
         position: absolute;
-        top: 12px;
-        left: 12px;
+        top: 14px;
+        left: 14px;
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 12px;
+        padding: 6px 14px;
         background: var(--accent-red);
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 11px;
         font-weight: 700;
         color: white;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 12px rgba(255, 59, 48, 0.5);
+        letter-spacing: 0.8px;
+        box-shadow: 0 4px 16px rgba(255, 59, 48, 0.5);
+        z-index: 2;
     }
 
     .artwork__live-badge::before {
@@ -241,11 +318,13 @@
         display: flex;
         align-items: flex-end;
         gap: 3px;
-        height: 24px;
-        padding: 6px 10px;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(10px);
-        border-radius: 8px;
+        height: 28px;
+        padding: 7px 12px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 10px;
+        z-index: 2;
     }
 
     .artwork__eq-bar {
@@ -253,6 +332,7 @@
         background: var(--accent);
         border-radius: 2px;
         animation: eqDance 0.6s ease-in-out infinite;
+        transform-origin: bottom;
     }
 
     .artwork__eq-bar:nth-child(1) { height: 50%; animation-delay: 0s; }
@@ -262,20 +342,21 @@
     .artwork__eq-bar:nth-child(5) { height: 40%; animation-delay: 0.25s; }
 
     @keyframes eqDance {
-        0%, 100% { transform: scaleY(0.4); }
+        0%, 100% { transform: scaleY(0.3); }
         50% { transform: scaleY(1); }
     }
 
     .is-paused .artwork__eq-bar {
         animation: none;
-        height: 4px !important;
+        height: 3px !important;
+        opacity: 0.4;
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       TRACK INFO — SIMPLE FOR LIVE FEEL
+       TRACK INFO — Clean, Premium Typography
        ═══════════════════════════════════════════════════════════════════════════════ */
     .track-info {
-        padding: 24px 0;
+        padding: 20px 0 8px;
         flex-shrink: 0;
         text-align: center;
     }
@@ -285,21 +366,42 @@
         font-weight: 700;
         letter-spacing: -0.4px;
         margin-bottom: 6px;
+        background: linear-gradient(90deg, #fff 30%, var(--accent) 50%, #fff 70%);
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleShimmer 4s ease-in-out infinite;
+    }
+
+    @keyframes titleShimmer {
+        0%, 100% { background-position: 200% center; }
+        50% { background-position: -200% center; }
+    }
+
+    .is-paused .track-info__title {
+        animation: none;
+        background: none;
+        -webkit-text-fill-color: var(--text-primary);
+        color: var(--text-primary);
     }
 
     .track-info__artist {
-        font-size: 20px;
+        font-size: 18px;
         font-weight: 400;
         color: var(--accent);
+        opacity: 0.9;
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       LIVE BUTTON (Centered)
+       LIVE INDICATOR + LISTENERS
        ═══════════════════════════════════════════════════════════════════════════════ */
     .live-section {
         display: flex;
         justify-content: center;
-        padding: 8px 0 16px;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 0 14px;
         flex-shrink: 0;
     }
 
@@ -307,7 +409,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 20px;
+        padding: 8px 22px;
         background: var(--accent-red);
         border: none;
         border-radius: 20px;
@@ -315,7 +417,7 @@
         font-weight: 700;
         color: white;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 16px rgba(255, 59, 48, 0.4);
@@ -339,6 +441,35 @@
         animation: pulse 1.2s infinite;
     }
 
+    .listeners-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: var(--surface-1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+    }
+
+    .listeners-badge__dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent-green);
+        border-radius: 50%;
+        animation: listenerPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes listenerPulse {
+        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.4); }
+        50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(52, 199, 89, 0); }
+    }
+
     /* ═══════════════════════════════════════════════════════════════════════════════
        TRANSPORT CONTROLS
        ═══════════════════════════════════════════════════════════════════════════════ */
@@ -347,7 +478,7 @@
         align-items: center;
         justify-content: center;
         gap: 48px;
-        padding: 16px 0;
+        padding: 12px 0;
         flex-shrink: 0;
     }
 
@@ -366,7 +497,7 @@
     }
 
     .controls__skip {
-        font-size: 32px;
+        font-size: 30px;
         color: var(--text-secondary);
     }
 
@@ -377,13 +508,53 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
+        font-size: 30px;
         background: var(--text-primary);
         color: var(--bg-primary);
+        position: relative;
+        transition: all 0.2s ease;
+    }
+
+    .controls__play::after {
+        content: '';
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .controls__play:active::after {
+        opacity: 1;
+        inset: -8px;
     }
 
     .controls__play .fa-play {
         margin-left: 4px;
+    }
+
+    /* Loading spinner on play button */
+    .controls__play.loading {
+        pointer-events: none;
+    }
+
+    .controls__play.loading .fa-play,
+    .controls__play.loading .fa-pause {
+        display: none;
+    }
+
+    .controls__play.loading::after {
+        content: '';
+        width: 24px; height: 24px;
+        border: 3px solid rgba(0,0,0,0.2);
+        border-top-color: var(--bg-primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
@@ -393,7 +564,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 12px 0;
+        padding: 10px 0;
         flex-shrink: 0;
     }
 
@@ -421,6 +592,7 @@
         border-radius: 2px;
         width: 80%;
         pointer-events: none;
+        transition: width 0.1s ease;
     }
 
     .volume__input {
@@ -436,13 +608,13 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       FOOTER
+       FOOTER ACTIONS
        ═══════════════════════════════════════════════════════════════════════════════ */
     .footer {
         display: flex;
         justify-content: space-around;
         align-items: center;
-        padding: 8px 24px;
+        padding: 6px 24px;
         flex-shrink: 0;
     }
 
@@ -471,7 +643,7 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       iOS ACTION SHEET (THREE DOTS MENU)
+       iOS ACTION SHEET (Switch Radio)
        ═══════════════════════════════════════════════════════════════════════════════ */
     .action-sheet {
         position: fixed;
@@ -549,37 +721,13 @@
         transition: background 0.15s ease;
     }
 
-    .action-sheet__option:last-child {
-        border-bottom: none;
-    }
-
-    .action-sheet__option:active {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .action-sheet__option i {
-        font-size: 22px;
-        width: 28px;
-        text-align: center;
-    }
-
-    .action-sheet__option--live i {
-        color: var(--accent-red);
-    }
-
-    .action-sheet__option--curated i {
-        color: var(--accent);
-    }
-
-    .action-sheet__option--active {
-        color: var(--accent) !important;
-    }
-
-    .action-sheet__option--active::after {
-        content: '✓';
-        margin-left: auto;
-        font-size: 18px;
-    }
+    .action-sheet__option:last-child { border-bottom: none; }
+    .action-sheet__option:active { background: rgba(255, 255, 255, 0.1); }
+    .action-sheet__option i { font-size: 22px; width: 28px; text-align: center; }
+    .action-sheet__option--live i { color: var(--accent-red); }
+    .action-sheet__option--curated i { color: var(--accent); }
+    .action-sheet__option--active { color: var(--accent) !important; }
+    .action-sheet__option--active::after { content: '✓'; margin-left: auto; font-size: 18px; }
 
     .action-sheet__cancel {
         display: block;
@@ -597,12 +745,10 @@
         transition: background 0.15s ease;
     }
 
-    .action-sheet__cancel:active {
-        background: rgba(60, 60, 65, 0.98);
-    }
+    .action-sheet__cancel:active { background: rgba(60, 60, 65, 0.98); }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       STATUS BAR
+       STATUS BAR — Connection / Sync Indicator
        ═══════════════════════════════════════════════════════════════════════════════ */
     .status-bar {
         position: absolute;
@@ -617,12 +763,14 @@
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-radius: 100px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
         font-size: 13px;
         color: var(--text-secondary);
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s ease;
         z-index: 100;
+        white-space: nowrap;
     }
 
     .status-bar.visible {
@@ -631,20 +779,48 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       RESPONSIVE
+       RESPONSIVE — Works on ALL devices
        ═══════════════════════════════════════════════════════════════════════════════ */
     @media (max-height: 700px) {
-        .artwork-wrapper { max-width: 260px; }
-        .track-info { padding: 16px 0; }
+        .artwork-wrapper { max-width: 240px; }
+        .artwork-section { padding: 12px 0; }
+        .track-info { padding: 12px 0 4px; }
         .track-info__title { font-size: 20px; }
-        .track-info__artist { font-size: 16px; }
-        .controls { gap: 32px; padding: 12px 0; }
-        .controls__play { width: 60px; height: 60px; font-size: 26px; }
+        .track-info__artist { font-size: 15px; }
+        .controls { gap: 32px; padding: 8px 0; }
+        .controls__play { width: 60px; height: 60px; font-size: 24px; }
+        .live-section { padding: 4px 0 8px; }
+        .volume { padding: 6px 0; }
+        .footer { padding: 4px 24px; }
+    }
+
+    @media (max-height: 600px) {
+        .artwork-wrapper { max-width: 200px; }
+        .artwork-section { padding: 8px 0; }
+        .track-info { padding: 8px 0 2px; }
+        .track-info__title { font-size: 18px; }
+        .track-info__artist { font-size: 14px; }
+        .controls { gap: 28px; padding: 6px 0; }
+        .controls__play { width: 54px; height: 54px; font-size: 22px; }
+        .live-section { padding: 2px 0 6px; }
+        .volume { padding: 4px 0; }
     }
 
     @media (max-width: 380px) {
         .player { padding-left: 20px; padding-right: 20px; }
         .artwork-wrapper { max-width: 260px; }
+    }
+
+    @media (min-width: 768px) {
+        .player { max-width: 500px; }
+        .artwork-wrapper { max-width: 380px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation: none !important;
+            transition-duration: 0.01ms !important;
+        }
     }
     </style>
 </head>
@@ -652,7 +828,7 @@
 <body>
     <!-- DYNAMIC BACKGROUND -->
     <div class="bg" aria-hidden="true">
-        <img class="bg__image" src="../assets/sacred-symbol.png" alt="" id="bgImage">
+        <img class="bg__image" src="../assets/darbar-sahib-evening.webp" alt="" id="bgImage">
         <div class="bg__gradient"></div>
     </div>
 
@@ -665,8 +841,8 @@
                 <i class="fas fa-chevron-down"></i>
             </a>
             <span class="header__title">Amritvela Kirtan</span>
-            <button class="header__btn" id="moreBtn" aria-label="More options">
-                <i class="fas fa-ellipsis"></i>
+            <button class="header__btn" id="themeToggle" aria-label="Toggle Theme">
+                <i class="fas fa-sun" id="themeIcon"></i>
             </button>
         </header>
 
@@ -674,7 +850,7 @@
         <section class="artwork-section">
             <div class="artwork-wrapper">
                 <div class="artwork" id="artwork">
-                    <img class="artwork__img" src="../assets/sacred-symbol.png" alt="ੴ" id="artworkImg">
+                    <img class="artwork__img" src="../assets/Darbar-sahib-AMRITVELA.webp" alt="Sri Darbar Sahib — Amritvela" id="artworkImg">
                     <div class="artwork__live-badge">Live</div>
                     <div class="artwork__equalizer" id="equalizer">
                         <div class="artwork__eq-bar"></div>
@@ -687,26 +863,30 @@
             </div>
         </section>
 
-        <!-- TRACK INFO — Simple for live feel -->
+        <!-- TRACK INFO -->
         <section class="track-info">
-            <h1 class="track-info__title">Live Kirtan</h1>
-            <p class="track-info__artist">Divine Gurbani Sangeet</p>
+            <h1 class="track-info__title" id="trackTitle">Live Kirtan</h1>
+            <p class="track-info__artist" id="trackArtist">Live</p>
         </section>
 
-        <!-- LIVE BUTTON -->
+        <!-- LIVE BUTTON + LISTENERS -->
         <section class="live-section">
             <button class="live-btn" id="liveBtn">Live</button>
+            <span class="listeners-badge" id="listenersBadge">
+                <span class="listeners-badge__dot"></span>
+                <span id="listenersText">—</span>
+            </span>
         </section>
 
         <!-- TRANSPORT CONTROLS -->
         <section class="controls">
-            <button class="controls__btn controls__skip" id="prevBtn" aria-label="Previous">
+            <button class="controls__btn controls__skip" id="prevBtn" aria-label="Jump to Live">
                 <i class="fas fa-backward-step"></i>
             </button>
             <button class="controls__btn controls__play" id="playBtn" aria-label="Play">
                 <i class="fas fa-play" id="playIcon"></i>
             </button>
-            <button class="controls__btn controls__skip" id="nextBtn" aria-label="Next">
+            <button class="controls__btn controls__skip" id="nextBtn" aria-label="Jump to Live">
                 <i class="fas fa-forward-step"></i>
             </button>
         </section>
@@ -767,52 +947,29 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // ═══════════════════════════════════════════════════════════════════════════
-        // CONFIGURATION — VIRTUAL LIVE (Cloudflare Tracks)
+        // API CONFIG — Server-Synced Live Radio
         // ═══════════════════════════════════════════════════════════════════════════
-        const AUDIO_CONFIG = {
-            baseUrl: (() => {
+        const API_BASE = (() => {
+            try {
                 const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
                 if (isLocalhost && window.location.port !== '3000') {
-                    return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
+                    return `${window.location.protocol}//${window.location.hostname}:3000`;
                 }
-                return '/audio';
-            })(),
-            totalTracks: 40,
-            getTrackUrl(index) {
-                return `${this.baseUrl}/day-${index + 1}.webm`;
-            }
-        };
+            } catch (e) { }
+            return '';
+        })();
 
-        // ═══════════════════════════════════════════════════════════════════════════
-        // VIRTUAL LIVE MANAGER — Simulates 24/7 broadcast
-        // ═══════════════════════════════════════════════════════════════════════════
-        class VirtualLive {
-            constructor() {
-                this.broadcastStart = this.loadBroadcastStart();
-                this.defaultDuration = 3600; // 1 hour per track
-            }
+        const AUDIO_BASE = `${API_BASE}/audio`;
 
-            loadBroadcastStart() {
-                let start = localStorage.getItem('gurbani_broadcast_start');
-                if (start) return parseInt(start, 10);
-                start = Date.now();
-                localStorage.setItem('gurbani_broadcast_start', start.toString());
-                return start;
-            }
-
-            getCurrentPosition() {
-                const elapsed = (Date.now() - this.broadcastStart) / 1000;
-                const totalDuration = AUDIO_CONFIG.totalTracks * this.defaultDuration;
-                const positionInPlaylist = elapsed % totalDuration;
-                
-                const trackIndex = Math.floor(positionInPlaylist / this.defaultDuration);
-                const trackPosition = positionInPlaylist % this.defaultDuration;
-                
-                return { trackIndex, trackPosition };
-            }
+        // Unique listener ID
+        let listenerId = null;
+        try {
+            listenerId = localStorage.getItem('gurbani_listener_id');
+        } catch(e) {}
+        if (!listenerId) {
+            listenerId = 'l_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 8);
+            try { localStorage.setItem('gurbani_listener_id', listenerId); } catch(e) {}
         }
-
-        const virtualLive = new VirtualLive();
 
         // ═══════════════════════════════════════════════════════════════════════════
         // ELEMENTS
@@ -827,56 +984,290 @@
         const volumeInput = document.getElementById('volumeInput');
         const volumeFill = document.getElementById('volumeFill');
         const starBtn = document.getElementById('starBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const airplayBtn = document.getElementById('airplayBtn');
         const moreBtn = document.getElementById('moreBtn');
         const actionSheet = document.getElementById('actionSheet');
         const actionCancel = document.getElementById('actionCancel');
         const statusBar = document.getElementById('statusBar');
         const statusText = document.getElementById('statusText');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const listenersText = document.getElementById('listenersText');
 
         let currentTrack = 0;
         let isPlaying = false;
+        let isConnecting = false;
+        let heartbeatTimer = null;
+        let driftCheckTimer = null;
+        let goLiveAbort = null;
 
         // ═══════════════════════════════════════════════════════════════════════════
-        // FUNCTIONS
+        // HELPER FUNCTIONS — All the missing ones that caused 404
+        // ═══════════════════════════════════════════════════════════════════════════
+        function formatTime(seconds) {
+            if (!seconds || !isFinite(seconds)) return '0:00';
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            if (hrs > 0) return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateTrackInfo(title, artist) {
+            if (trackTitle && title) trackTitle.textContent = title;
+            if (trackArtist && artist) trackArtist.textContent = artist;
+        }
+
+        function updateListeners(count) {
+            if (listenersText) {
+                if (count && count > 0) {
+                    listenersText.textContent = `${count} listening`;
+                } else {
+                    listenersText.textContent = '—';
+                }
+            }
+        }
+
+        async function reportDuration(trackIndex, duration) {
+            try {
+                await fetch(`${API_BASE}/api/radio/durations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trackIndex, duration })
+                });
+            } catch (e) {
+                // Non-critical, silently fail
+            }
+        }
+
+        function startHeartbeat() {
+            stopHeartbeat();
+            // Send immediately
+            sendHeartbeat();
+            // Then every 30s
+            heartbeatTimer = setInterval(sendHeartbeat, 30000);
+        }
+
+        function stopHeartbeat() {
+            if (heartbeatTimer) {
+                clearInterval(heartbeatTimer);
+                heartbeatTimer = null;
+            }
+        }
+
+        async function sendHeartbeat() {
+            try {
+                const resp = await fetch(`${API_BASE}/api/radio/heartbeat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ listenerId })
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    updateListeners(data.listenersCount);
+                }
+            } catch (e) {
+                // Silently fail
+            }
+        }
+
+        function startDriftCheck() {
+            stopDriftCheck();
+            driftCheckTimer = setInterval(async () => {
+                if (!isPlaying) return;
+                try {
+                    const livePos = await fetchLivePosition();
+                    if (!livePos) return;
+
+                    updateListeners(livePos.listeners);
+
+                    // Check track mismatch
+                    if (livePos.trackIndex !== currentTrack) {
+                        console.log(`[📻 Drift] Track mismatch. Re-syncing...`);
+                        await goLive();
+                        return;
+                    }
+
+                    // Check position drift > 5s
+                    const drift = Math.abs((audio.currentTime || 0) - livePos.position);
+                    if (drift > 5) {
+                        console.log(`[📻 Drift] ${drift.toFixed(1)}s drift. Correcting...`);
+                        audio.currentTime = livePos.position;
+                    }
+                } catch (e) {
+                    // Non-critical
+                }
+            }, 60000);
+        }
+
+        function stopDriftCheck() {
+            if (driftCheckTimer) {
+                clearInterval(driftCheckTimer);
+                driftCheckTimer = null;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // SERVER SYNC — Fetch live position from server
+        // ═══════════════════════════════════════════════════════════════════════════
+        async function fetchLivePosition() {
+            try {
+                const startTime = Date.now();
+                const resp = await fetch(`${API_BASE}/api/radio/live`);
+                const endTime = Date.now();
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                const latencyMs = (endTime - startTime) / 2;
+                const adjustedPosition = data.trackPosition + (latencyMs / 1000);
+
+                return {
+                    trackIndex: data.trackIndex,
+                    position: Math.min(adjustedPosition, (data.trackDuration || 3600) - 5),
+                    filename: data.trackFilename,
+                    title: data.trackTitle,
+                    artist: data.trackArtist,
+                    duration: data.trackDuration,
+                    listeners: data.listenersCount,
+                    latencyMs: Math.round(latencyMs)
+                };
+            } catch (e) {
+                console.warn('[Sync] Server unreachable:', e.message);
+                return null;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // PLAYBACK — Server-Synced, TRUE LIVE
+        // When play is pressed after pause, ALWAYS jump to current live position.
         // ═══════════════════════════════════════════════════════════════════════════
         async function goLive() {
-            showStatus('Going live...');
-            const pos = virtualLive.getCurrentPosition();
-            currentTrack = pos.trackIndex;
-            audio.src = AUDIO_CONFIG.getTrackUrl(currentTrack);
-            
-            audio.addEventListener('loadedmetadata', function seekAndPlay() {
-                audio.removeEventListener('loadedmetadata', seekAndPlay);
-                const duration = audio.duration || 3600;
-                audio.currentTime = Math.min(pos.trackPosition, duration - 10);
-                audio.play().then(() => {
-                    isPlaying = true;
-                    updateUI();
-                    hideStatus();
-                    saveState();
-                }).catch(e => showStatus('Tap to play'));
-            }, { once: true });
-            
-            audio.load();
+            // STABILITY: Prevent concurrent goLive() calls
+            if (isConnecting) {
+                console.log('[📻] goLive() skipped — already connecting');
+                return;
+            }
+            isConnecting = true;
+            playBtn.classList.add('loading');
+            showStatus('Syncing with live broadcast...');
+
+            try {
+                const livePos = await fetchLivePosition();
+                if (!livePos) {
+                    showStatus('⚠️ Could not connect to server');
+                    setTimeout(hideStatus, 3000);
+                    isConnecting = false;
+                    playBtn.classList.remove('loading');
+                    return;
+                }
+
+                console.log(`📻 LIVE: Track ${livePos.trackIndex + 1} "${livePos.title}" at ${formatTime(livePos.position)} (${livePos.latencyMs}ms latency)`);
+
+                currentTrack = livePos.trackIndex;
+                updateTrackInfo(livePos.title, livePos.artist);
+                updateListeners(livePos.listeners);
+
+                const audioUrl = `${AUDIO_BASE}/${livePos.filename}`;
+                const isSameTrack = audio.src && audio.src.includes(livePos.filename);
+
+                if (isSameTrack && audio.readyState >= 1) {
+                    // Same track, just seek
+                    audio.currentTime = livePos.position;
+                    try {
+                        await audio.play();
+                        onPlaySuccess();
+                    } catch (e) {
+                        onPlayFail();
+                    }
+                    return;
+                }
+
+                // Different track — load new source
+                // Remove any previous event listeners to prevent stacking
+                audio.removeEventListener('loadedmetadata', onMetadataLoaded);
+                audio.removeEventListener('error', onLoadError);
+
+                // Store livePos for the event handler
+                audio._pendingLivePos = livePos;
+                audio.src = audioUrl;
+
+                const loadTimeout = setTimeout(() => {
+                    showStatus('Loading audio...');
+                }, 5000);
+
+                function onLoadError() {
+                    audio.removeEventListener('loadedmetadata', onMetadataLoaded);
+                    clearTimeout(loadTimeout);
+                    showStatus('⚠️ Audio failed to load');
+                    setTimeout(hideStatus, 3000);
+                    isConnecting = false;
+                    playBtn.classList.remove('loading');
+                }
+
+                function onMetadataLoaded() {
+                    audio.removeEventListener('error', onLoadError);
+                    clearTimeout(loadTimeout);
+                    const pos = audio._pendingLivePos;
+                    if (!pos) { isConnecting = false; playBtn.classList.remove('loading'); return; }
+
+                    const duration = audio.duration || pos.duration || 3600;
+                    audio.currentTime = Math.min(pos.position, duration - 10);
+                    reportDuration(currentTrack, audio.duration);
+
+                    audio.play().then(() => {
+                        onPlaySuccess();
+                    }).catch(e => {
+                        onPlayFail();
+                    });
+                }
+
+                audio.addEventListener('error', onLoadError, { once: true });
+                audio.addEventListener('loadedmetadata', onMetadataLoaded, { once: true });
+                audio.load();
+
+            } catch (e) {
+                console.error('[📻] goLive error:', e);
+                showStatus('⚠️ Connection error');
+                setTimeout(hideStatus, 3000);
+                isConnecting = false;
+                playBtn.classList.remove('loading');
+            }
+        }
+
+        function onPlaySuccess() {
+            isPlaying = true;
+            isConnecting = false;
+            playBtn.classList.remove('loading');
+            updateUI();
+            hideStatus();
+            saveState();
+            startHeartbeat();
+            startDriftCheck();
+        }
+
+        function onPlayFail() {
+            isPlaying = false;
+            isConnecting = false;
+            playBtn.classList.remove('loading');
+            updateUI();
+            showStatus('Tap ▶ to play');
+            setTimeout(hideStatus, 3000);
         }
 
         function play() {
-            if (!audio.src) {
-                goLive();
-                return;
-            }
-            audio.play().then(() => {
-                isPlaying = true;
-                updateUI();
-                saveState();
-            }).catch(e => console.error(e));
+            // ALWAYS re-sync from server — ensures live position after any pause
+            goLive();
         }
 
         function pause() {
             audio.pause();
             isPlaying = false;
+            isConnecting = false;
+            playBtn.classList.remove('loading');
             updateUI();
             saveState();
+            stopHeartbeat();
+            stopDriftCheck();
         }
 
         function togglePlay() {
@@ -910,32 +1301,15 @@
             statusBar.classList.remove('visible');
         }
 
-        function nextTrack() {
-            currentTrack = (currentTrack + 1) % AUDIO_CONFIG.totalTracks;
-            audio.src = AUDIO_CONFIG.getTrackUrl(currentTrack);
-            if (isPlaying) audio.play();
-        }
-
-        function prevTrack() {
-            if (audio.currentTime > 5) {
-                audio.currentTime = 0;
-            } else {
-                currentTrack = (currentTrack - 1 + AUDIO_CONFIG.totalTracks) % AUDIO_CONFIG.totalTracks;
-                audio.src = AUDIO_CONFIG.getTrackUrl(currentTrack);
-                if (isPlaying) audio.play();
-            }
-        }
-
         function saveState() {
             try {
                 localStorage.setItem('anhad_audio_state', JSON.stringify({
                     isPlaying,
                     playerType: 'amritvela',
-                    title: 'Live Kirtan',
-                    artist: 'Amritvela',
+                    title: 'Amritvela Kirtan',
+                    artist: 'Live',
                     timestamp: Date.now()
                 }));
-                // Also save to persistent audio system
                 localStorage.setItem('anhad_persistent_audio', JSON.stringify({
                     shouldPlay: isPlaying,
                     stream: 'amritvela',
@@ -946,22 +1320,47 @@
         }
 
         // ═══════════════════════════════════════════════════════════════════════════
-        // ACTION SHEET (iOS Popup)
+        // SHARE
         // ═══════════════════════════════════════════════════════════════════════════
-        function openActionSheet() {
-            actionSheet.classList.add('active');
+        async function share() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Amritvela Kirtan — ANHAD',
+                        text: 'Listening to 24/7 Live Amritvela Kirtan on ANHAD',
+                        url: window.location.href
+                    });
+                } catch (e) { }
+            } else {
+                try {
+                    await navigator.clipboard.writeText(window.location.href);
+                    showStatus('Link copied ✓');
+                    setTimeout(hideStatus, 2000);
+                } catch (e) { }
+            }
         }
 
-        function closeActionSheet() {
-            actionSheet.classList.remove('active');
-        }
+        // ═══════════════════════════════════════════════════════════════════════════
+        // ACTION SHEET
+        // ═══════════════════════════════════════════════════════════════════════════
+        function openActionSheet() { actionSheet.classList.add('active'); }
+        function closeActionSheet() { actionSheet.classList.remove('active'); }
 
         // ═══════════════════════════════════════════════════════════════════════════
         // EVENT LISTENERS
         // ═══════════════════════════════════════════════════════════════════════════
         playBtn.addEventListener('click', togglePlay);
-        prevBtn.addEventListener('click', prevTrack);
-        nextBtn.addEventListener('click', nextTrack);
+        
+        // Prev/Next both jump to LIVE (this is live radio, not a playlist)
+        prevBtn.addEventListener('click', () => {
+            showStatus('Jumping to live...');
+            goLive();
+        });
+        nextBtn.addEventListener('click', () => {
+            showStatus('Jumping to live...');
+            goLive();
+        });
+        
         liveBtn.addEventListener('click', goLive);
         volumeInput.addEventListener('input', updateVolume);
 
@@ -978,7 +1377,31 @@
             icon.classList.toggle('fas');
         });
 
-        audio.addEventListener('ended', nextTrack);
+        shareBtn.addEventListener('click', share);
+
+        airplayBtn.addEventListener('click', () => {
+            if (audio.webkitShowPlaybackTargetPicker) {
+                audio.webkitShowPlaybackTargetPicker();
+            } else {
+                showStatus('AirPlay not available');
+                setTimeout(hideStatus, 2000);
+            }
+        });
+
+        audio.addEventListener('ended', () => {
+            console.log('🎵 Track ended, re-syncing with server...');
+            isConnecting = false; // Reset lock so goLive can proceed
+            goLive();
+        });
+
+        // Re-sync when tab becomes visible (handles pause-for-10-minutes scenario)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && isPlaying) {
+                console.log('📱 Tab visible again, checking drift...');
+                isConnecting = false; // Reset lock so goLive can proceed
+                goLive();
+            }
+        });
 
         // Keyboard
         document.addEventListener('keydown', (e) => {
@@ -987,13 +1410,20 @@
             if (e.code === 'Escape') closeActionSheet();
         });
 
+        // Save state on exit
+        window.addEventListener('beforeunload', () => {
+            saveState();
+            stopHeartbeat();
+        });
+
         // ═══════════════════════════════════════════════════════════════════════════
-        // INITIALIZE — AUTO-PLAY
+        // INITIALIZE
         // ═══════════════════════════════════════════════════════════════════════════
         updateVolume();
         setTimeout(goLive, 500);
 
-        console.log('🎵 Amritvela Virtual Live — Ready');
+        console.log('🎵 Amritvela Kirtan — Premium Live Player Ready');
+        console.log('💡 Keyboard: Space=Play/Pause, L=Jump to Live, Esc=Close menu');
     });
     </script>
 

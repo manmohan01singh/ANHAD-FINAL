@@ -30,7 +30,7 @@
     // CONFIGURATION
     // ══════════════════════════════════════════════════════════════════════════
     const CONFIG = {
-        swPath: '/sw-alarm.js',
+        swPath: '/sw.js',
         dbName: 'GurbaniAlarmsDB',
         dbVersion: 1,
         storeName: 'alarms',

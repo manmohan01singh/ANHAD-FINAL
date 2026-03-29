@@ -84,7 +84,7 @@ function checkAlarms() {
     // Fire due alarms
     dueAlarms.forEach(alarm => {
         // Mark as fired for today to prevent duplicates
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA');
         alarm.lastFired = today;
 
         // Notify main thread to fire the alarm
@@ -120,7 +120,7 @@ function getNextTriggerTime(alarm) {
 
     const [hours, minutes] = alarm.time.split(':').map(Number);
     const now = new Date();
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
 
     // Check if already fired today
     if (alarm.lastFired === today) {

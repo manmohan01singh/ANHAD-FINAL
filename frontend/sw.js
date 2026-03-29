@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.0.3';
+const CACHE_VERSION = 'anhad-v3.2.0';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -58,6 +58,10 @@ const STATIC_FILES = [
   '/lib/global-theme.js',
   '/lib/user-stats.js',
   '/lib/share-card.js',
+  '/lib/smart-back.js',
+  '/lib/gurbani-db.js',
+  '/lib/global-mini-player.js',
+  '/css/global-mini-player.css',
 
   // Dashboard
   '/Dashboard/dashboard.html',
@@ -182,6 +186,9 @@ const STORES = {
 // In-memory timer storage
 const timers = new Map();
 
+// Recurring alarm schedules (merged from sw-alarm.js)
+const scheduledAlarms = new Map();
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // INSTALL EVENT - Cache static files but DON'T skip waiting automatically
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -195,11 +202,9 @@ self.addEventListener('install', (event) => {
         // Cache files individually to handle failures gracefully
         return Promise.allSettled(
           STATIC_FILES.map(file =>
-            cache.add(file).catch(err => {
-              // Silently ignore 404s for optional files
-              if (!err.message?.includes('404')) {
-                console.warn(`[SW] Cache failed for ${file}:`, err.message);
-              }
+            cache.add(file).catch(() => {
+              // Silently ignore cache failures — expected for missing/optional files
+              // or when SW base path doesn't match dev server path
               return null;
             })
           )
@@ -277,6 +282,16 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(cacheFirst(event.request));
 });
 
+const DYNAMIC_CACHE_MAX = 200;
+
+async function evictDynamicCache(cache) {
+  const keys = await cache.keys();
+  if (keys.length > DYNAMIC_CACHE_MAX) {
+    const toDelete = keys.slice(0, keys.length - DYNAMIC_CACHE_MAX);
+    await Promise.all(toDelete.map(k => cache.delete(k)));
+  }
+}
+
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) {
@@ -287,7 +302,8 @@ async function cacheFirst(request) {
     const response = await fetch(request);
     if (response.ok) {
       const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, response.clone());
+      await cache.put(request, response.clone());
+      evictDynamicCache(cache); // fire-and-forget eviction
     }
     return response;
   } catch (error) {
@@ -365,6 +381,37 @@ self.addEventListener('message', (event) => {
     // We'll check them on the next periodic sync
     checkAndFireScheduledNotifications();
   }
+
+  // ── Alarm scheduling messages (merged from sw-alarm.js) ──
+  const { type: msgType, data: msgData } = event.data || {};
+
+  if (msgType === 'SCHEDULE_ALARMS' && Array.isArray(msgData?.alarms)) {
+    scheduleAlarms(msgData.alarms);
+  }
+
+  if (msgType === 'SCHEDULE_ALARM' && msgData?.alarm) {
+    scheduleAlarm(msgData.alarm);
+  }
+
+  if (msgType === 'CANCEL_ALARM' && msgData?.alarmId) {
+    cancelAlarm(msgData.alarmId);
+  }
+
+  if (msgType === 'SNOOZE_ALARM' && msgData?.alarmId) {
+    snoozeAlarm(msgData.alarmId, msgData.minutes ?? 5);
+  }
+
+  if (msgType === 'CHECK_ALARMS') {
+    checkAndTriggerAlarms();
+  }
+
+  if (msgType === 'GET_STATUS') {
+    event.ports[0]?.postMessage({
+      version: CACHE_VERSION,
+      scheduledCount: scheduledAlarms.size,
+      alarms: Array.from(scheduledAlarms.keys())
+    });
+  }
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -415,7 +462,7 @@ async function checkAndFireScheduledNotifications() {
   console.log('[SW] Checking scheduled notifications...');
 
   const now = Date.now();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA');
 
   // Default daily notifications (like in the Gurbani Kirtan Darbar app)
   const defaultNotifications = [
@@ -444,11 +491,35 @@ async function checkAndFireScheduledNotifications() {
       icon: '/assets/icons/icon-192x192.png'
     },
     {
+      id: 'nitnem_morning',
+      title: 'ਨਿਤਨੇਮ ਦਾ ਸਮਾਂ | Nitnem Time',
+      body: 'ਸਵੇਰ ਦੀ ਬਾਣੀ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ — Start your morning Nitnem',
+      hour: 4,
+      minute: 30,
+      icon: '/assets/icons/icon-192x192.png'
+    },
+    {
+      id: 'kirtan',
+      title: 'ਕੀਰਤਨ ਦਰਬਾਰ | Evening Kirtan',
+      body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
+      hour: 17,
+      minute: 0,
+      icon: '/assets/icons/icon-192x192.png'
+    },
+    {
       id: 'sohila',
       title: 'ਸੋਹਿਲਾ ਸਾਹਿਬ | Sohila Sahib',
       body: 'Time for night prayers before sleep - ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ',
       hour: 21,
       minute: 30,
+      icon: '/assets/icons/icon-192x192.png'
+    },
+    {
+      id: 'nitnem_pending',
+      title: 'ਨਿਤਨੇਮ ਬਾਕੀ | Nitnem Pending',
+      body: 'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਅਜੇ ਬਾਕੀ ਹੈ — Complete your Nitnem before the day ends',
+      hour: 19,
+      minute: 0,
       icon: '/assets/icons/icon-192x192.png'
     }
   ];
@@ -498,7 +569,10 @@ async function checkAndFireScheduledNotifications() {
           requireInteraction: true,
           vibrate: [200, 100, 200, 100, 400],
           data: {
-            url: notif.id === 'hukamnama' ? '/Hukamnama/daily-hukamnama.html' : '/reminders/smart-reminders.html',
+            url: notif.id === 'hukamnama' ? '/Hukamnama/daily-hukamnama.html'
+               : notif.id === 'kirtan' ? '/index.html'
+               : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? '/NitnemTracker/nitnem-tracker.html'
+               : '/reminders/smart-reminders.html',
             id: notif.id,
             timestamp: now
           },
@@ -547,7 +621,7 @@ async function checkNaamAbhyasSchedule() {
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
-  const today = now.toISOString().split('T')[0];
+  const today = now.toLocaleDateString('en-CA');
 
   // Request Naam Abhyas config from any connected client
   for (const client of clients) {
@@ -676,7 +750,7 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   if (action === 'dismiss') {
-    // Just close, already done above
+    if (data.alarmId) recordAlarmResponse(data.alarmId, 'completed');
     console.log('[SW] Notification dismissed:', data.id);
     return;
   }
@@ -714,6 +788,14 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTIFICATION CLOSE HANDLER
+// ═══════════════════════════════════════════════════════════════════════════════
+self.addEventListener('notificationclose', (event) => {
+  const data = event.notification.data || {};
+  if (data.alarmId) recordAlarmResponse(data.alarmId, 'missed');
+});
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // NOTIFICATION SCHEDULING HELPERS
@@ -796,5 +878,109 @@ function getNextAlarmTime(timeStr) {
 
   return alarm.getTime();
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RECURRING ALARM FUNCTIONS (merged from sw-alarm.js)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function scheduleAlarms(alarms) {
+  scheduledAlarms.forEach(a => { if (a.timeoutId) clearTimeout(a.timeoutId); });
+  scheduledAlarms.clear();
+  alarms.forEach(alarm => { if (alarm.enabled) scheduleAlarm(alarm); });
+  console.log(`[SW] Scheduled ${scheduledAlarms.size} recurring alarms`);
+}
+
+function scheduleAlarm(alarm) {
+  const delay = calculateDelay(alarm.time, alarm.days);
+  if (delay <= 0 || delay > 24 * 60 * 60 * 1000) return;
+
+  const timeoutId = setTimeout(() => {
+    triggerAlarm(alarm);
+    scheduleAlarm(alarm); // auto-reschedule for next occurrence
+  }, delay);
+
+  scheduledAlarms.set(alarm.id, { ...alarm, timeoutId, scheduledFor: new Date(Date.now() + delay) });
+  console.log(`[SW] ${alarm.label || alarm.id} → ${new Date(Date.now() + delay).toLocaleTimeString()}`);
+}
+
+function cancelAlarm(alarmId) {
+  const alarm = scheduledAlarms.get(alarmId);
+  if (alarm?.timeoutId) clearTimeout(alarm.timeoutId);
+  scheduledAlarms.delete(alarmId);
+}
+
+function snoozeAlarm(alarmId, minutes = 5) {
+  const alarm = scheduledAlarms.get(alarmId);
+  if (!alarm) return;
+  if (alarm.timeoutId) clearTimeout(alarm.timeoutId);
+  const delay = minutes * 60 * 1000;
+  const timeoutId = setTimeout(() => triggerAlarm(alarm), delay);
+  scheduledAlarms.set(alarmId + '_snooze', {
+    ...alarm, timeoutId, isSnooze: true, scheduledFor: new Date(Date.now() + delay)
+  });
+}
+
+function calculateDelay(time24, days = null) {
+  const now = new Date();
+  const [h, m] = time24.split(':').map(Number);
+  let next = new Date();
+  next.setHours(h, m, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  if (days && days.length > 0 && days.length < 7) {
+    let i = 0;
+    while (i++ < 7 && !days.includes(next.getDay())) next.setDate(next.getDate() + 1);
+  }
+  return next.getTime() - now.getTime();
+}
+
+async function triggerAlarm(alarm) {
+  console.log(`[SW] 🔔 Alarm: ${alarm.label || alarm.id}`);
+  const title = `🙏 ${alarm.label || 'Gurbani Reminder'}`;
+  const body = alarm.gurmukhi
+    ? `${alarm.gurmukhi} — ਸਮਾਂ ਹੋ ਗਿਆ`
+    : `Time for ${alarm.label || 'your spiritual practice'}`;
+  try {
+    await self.registration.showNotification(title, {
+      body,
+      icon: '/assets/alarm-icon.png',
+      badge: '/assets/badge.png',
+      tag: `alarm-${alarm.id}`,
+      requireInteraction: true,
+      renotify: true,
+      vibrate: [500, 200, 500, 200, 500, 200, 500],
+      actions: [
+        { action: 'dismiss', title: "✓ I'm Up!" },
+        { action: 'snooze',  title: '😴 Snooze 5min' }
+      ],
+      data: { alarm, alarmId: alarm.id, url: `/reminders/alarm.html?id=${alarm.id}`, timestamp: Date.now() }
+    });
+  } catch (e) {
+    console.error('[SW] Alarm notification error:', e);
+  }
+  const clients = await self.clients.matchAll({ type: 'window' });
+  clients.forEach(c => c.postMessage({ type: 'ALARM_TRIGGER', data: { alarm } }));
+  if (clients.length === 0) self.clients.openWindow(`/reminders/alarm.html?id=${alarm.id}`);
+}
+
+async function recordAlarmResponse(alarmId, status) {
+  const clients = await self.clients.matchAll({ type: 'window' });
+  clients.forEach(c => c.postMessage({
+    type: 'ALARM_RESPONSE',
+    data: { alarmId, status, timestamp: new Date().toISOString() }
+  }));
+}
+
+function checkAndTriggerAlarms() {
+  const now = new Date();
+  scheduledAlarms.forEach((alarm, id) => {
+    if (alarm.scheduledFor && alarm.scheduledFor <= now) {
+      triggerAlarm(alarm);
+      scheduledAlarms.delete(id);
+    }
+  });
+}
+
+// Fallback: check recurring alarms every minute in case setTimeout drifted
+setInterval(checkAndTriggerAlarms, 60000);
 
 console.log('[SW] ANHAD Service Worker v3.0.0 loaded - iOS/Android optimized');

@@ -364,13 +364,13 @@ class DisciplineMetrics {
     // ══════════════════════════════════════════════════
 
     getTodayString() {
-        return new Date().toISOString().split('T')[0];
+        return new Date().toLocaleDateString('en-CA');
     }
 
     getYesterdayString() {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        return yesterday.toISOString().split('T')[0];
+        return yesterday.toLocaleDateString('en-CA');
     }
 
     getWeekString() {

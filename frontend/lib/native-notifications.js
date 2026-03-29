@@ -3,6 +3,10 @@
  * Bridges the gap between Web and Android/iOS Native Alarms
  */
 (function () {
+    function _getLN() {
+        return window.Capacitor?.Plugins?.LocalNotifications || null;
+    }
+
     window.NativeNotifications = {
         _initialized: false,
         _listeners: [],
@@ -26,7 +30,9 @@
             if (!this.isNativePlatform()) return 'granted';
 
             try {
-                const result = await Capacitor.Plugins.LocalNotifications.requestPermissions();
+                const ln = _getLN();
+                if (!ln) return 'denied';
+                const result = await ln.requestPermissions();
                 return result.display;
             } catch (e) {
                 console.warn('[NativeNotifications] Permission request failed:', e);
@@ -54,7 +60,9 @@
                 }];
 
                 try {
-                    await Capacitor.Plugins.LocalNotifications.schedule({ notifications: notifs });
+                    const ln = _getLN();
+                    if (!ln) return false;
+                    await ln.schedule({ notifications: notifs });
                     console.log('[NativeNotifications] Scheduled natively:', options.title, options.at);
                     return true;
                 } catch (e) {
@@ -88,7 +96,9 @@
 
         addListener(callback) {
             if (this.isNativePlatform()) {
-                Capacitor.Plugins.LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+                const ln = _getLN();
+                if (!ln) return;
+                ln.addListener('localNotificationActionPerformed', (notification) => {
                     callback({
                         type: 'action',
                         actionId: notification.actionId,
@@ -114,14 +124,17 @@
     // Auto-init specific channel for Android
     if (window.Capacitor && window.Capacitor.isNativePlatform()) {
         try {
-            Capacitor.Plugins.LocalNotifications.createChannel({
-                id: 'frequent_reminders',
-                name: 'Nitnem Reminders',
-                importance: 5, // High importance
-                visibility: 1,
-                vibration: true,
-                sound: 'notification.wav'
-            }).catch(e => console.warn('Channel creation failed', e));
+            const ln = _getLN();
+            if (ln) {
+                ln.createChannel({
+                    id: 'frequent_reminders',
+                    name: 'Nitnem Reminders',
+                    importance: 5, // High importance
+                    visibility: 1,
+                    vibration: true,
+                    sound: 'notification.wav'
+                }).catch(e => console.warn('Channel creation failed', e));
+            }
         } catch (e) { }
     }
 

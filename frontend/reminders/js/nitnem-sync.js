@@ -86,19 +86,19 @@
     // ══════════════════════════════════════════════════════════════════════════
     const DateUtils = {
         today() {
-            return new Date().toISOString().split('T')[0];
+            return new Date().toLocaleDateString('en-CA');
         },
 
         yesterday() {
             const d = new Date();
             d.setDate(d.getDate() - 1);
-            return d.toISOString().split('T')[0];
+            return d.toLocaleDateString('en-CA');
         },
 
         daysAgo(n) {
             const d = new Date();
             d.setDate(d.getDate() - n);
-            return d.toISOString().split('T')[0];
+            return d.toLocaleDateString('en-CA');
         },
 
         getWeekDates() {

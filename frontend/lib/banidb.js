@@ -97,8 +97,11 @@
 
         const data = await response.json();
 
-        // Cache the result
+        // Cache the result (LRU eviction: keep at most 100 entries)
         memoryCache.set(cacheKey, { data, expiry: Date.now() + CACHE_TTL });
+        if (memoryCache.size > 100) {
+          memoryCache.delete(memoryCache.keys().next().value);
+        }
 
         if (this.storageReady && window.GurbaniStorage) {
           await window.GurbaniStorage.cacheApiData(cacheKey, data, CACHE_TTL);

@@ -647,7 +647,7 @@
             for (let i = 6; i >= 0; i--) {
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
-                const dateStr = date.toISOString().split('T')[0];
+                const dateStr = date.toLocaleDateString('en-CA');
                 const dayNum = date.getDay();
                 const isToday = i === 0;
                 const completed = State.stats.dailyLog?.[dateStr]?.completed || false;
@@ -848,7 +848,7 @@
         },
 
         recordResponse(reminderId, status) {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date().toLocaleDateString('en-CA');
 
             if (!State.stats.dailyLog) State.stats.dailyLog = {};
             if (!State.stats.dailyLog[today]) {
