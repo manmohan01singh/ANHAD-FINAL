@@ -62,6 +62,12 @@ const STATIC_FILES = [
   '/lib/gurbani-db.js',
   '/lib/global-mini-player.js',
   '/css/global-mini-player.css',
+  
+  // Offline-First Gurbani Cache Modules
+  '/lib/gurbani-local-db.js',
+  '/lib/gurbani-download-manager.js',
+  '/lib/sehaj-paath-cache.js',
+  '/lib/hukamnama-cache.js',
 
   // Dashboard
   '/Dashboard/dashboard.html',

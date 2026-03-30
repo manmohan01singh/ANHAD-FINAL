@@ -280,6 +280,9 @@
     <script src="../lib/background-audio-loader.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>
     
+    <!-- Offline-First Hukamnama Cache -->
+    <script src="../lib/hukamnama-cache.js"></script>
+    
     <!-- ═══════════════════════════════════════════════════════════════
          SCRIPTS
          ═══════════════════════════════════════════════════════════════ -->
@@ -618,10 +621,51 @@
             async loadHukamnama(date = null) {
                 UI.showLoading();
                 
+                // 1. Check cache first (offline-first)
+                let cached = null;
+                if (window.hukamnamaCache && !date) {
+                    cached = await window.hukamnamaCache.getToday();
+                }
+                
+                if (cached && cached.data) {
+                    console.log('[Hukamnama] Loaded from cache:', cached.date);
+                    State.hukamnama = cached.data;
+                    State.currentDate = new Date(cached.date);
+                    
+                    UI.updateDates(State.currentDate);
+                    UI.updateMetadata(State.hukamnama);
+                    UI.renderVerses(State.hukamnama);
+                    UI.showContent();
+                    UI.hideSkeleton();
+                    
+                    // Show offline fallback notice if using yesterday's
+                    if (cached.offlineFallback) {
+                        UI.showToast('Showing cached Hukamnama — connect to internet for today\'s');
+                    }
+                    
+                    // Still try to fetch fresh if online
+                    if (navigator.onLine && !cached.isToday) {
+                        this.fetchAndUpdate();
+                    }
+                    return;
+                }
+                
+                // 2. No cache - fetch from API
+                await this.fetchAndUpdate(date);
+            },
+            
+            async fetchAndUpdate(date = null) {
                 try {
                     const data = await API.fetchHukamnama(date);
                     State.hukamnama = API.parseHukamnama(data);
                     State.currentDate = date || new Date();
+                    
+                    // Save to cache
+                    if (window.hukamnamaCache) {
+                        const dateKey = date ? date.toLocaleDateString('en-CA') : window.hukamnamaCache.getTodayKey();
+                        await window.hukamnamaCache.save(dateKey, State.hukamnama);
+                        await window.hukamnamaCache.cleanup();
+                    }
                     
                     UI.updateDates(State.currentDate);
                     UI.updateMetadata(State.hukamnama);

@@ -242,7 +242,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // LOAD BANI
+    // LOAD BANI — Offline-first: Try IndexedDB, then API fallback
     // ═══════════════════════════════════════════════════════════════
 
     async function loadBani() {
@@ -254,7 +254,37 @@
         }
 
         try {
-            const data = await BaniDB.getBani(state.baniId);
+            let data = null;
+
+            // 1. Try IndexedDB first (offline-first approach)
+            if (window.gurbaniLocalDB) {
+                const cached = await window.gurbaniLocalDB.getBani(state.baniId);
+                if (cached && cached.verses && cached.verses.length > 0) {
+                    console.log('[ReaderEngine] ✓ Loaded from IndexedDB:', state.baniId);
+                    data = {
+                        verses: cached.verses,
+                        baniInfo: { unicode: cached.name, transliteration: cached.name }
+                    };
+                }
+            }
+
+            // 2. Fallback to API if not in IndexedDB
+            if (!data) {
+                console.log('[ReaderEngine] Fetching from API:', state.baniId);
+                data = await BaniDB.getBani(state.baniId);
+                
+                // Save to IndexedDB for future offline use
+                if (window.gurbaniLocalDB && data && data.verses) {
+                    const meta = state.baniMeta || {};
+                    await window.gurbaniLocalDB.saveBani(
+                        state.baniId, 
+                        meta.name || meta.nameEnglish || 'Bani', 
+                        data.verses
+                    );
+                    console.log('[ReaderEngine] ✓ Saved to IndexedDB for offline');
+                }
+            }
+
             state.baniData = data;
 
             if (!data.verses || data.verses.length === 0) {

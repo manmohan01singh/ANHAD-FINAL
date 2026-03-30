@@ -1087,7 +1087,19 @@
         </a>
     </nav>
     
+    <!-- Offline-First Gurbani DB -->
+    <script src="../lib/gurbani-local-db.js"></script>
+    <script src="../lib/gurbani-download-manager.js"></script>
+    
     <script>
+        // ═══════════════════════════════════════════════════════════════
+        // OFFLINE-FIRST: Check and download Gurbani on first open
+        // ═══════════════════════════════════════════════════════════════
+        
+        if (window.gurbaniDownloadManager) {
+            window.gurbaniDownloadManager.checkAndDownload();
+        }
+        
         // ═══════════════════════════════════════════════════════════════
         // SKELETON LOADING
         // ═══════════════════════════════════════════════════════════════

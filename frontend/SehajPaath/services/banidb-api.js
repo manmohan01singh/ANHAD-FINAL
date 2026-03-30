@@ -62,14 +62,65 @@ class BaniDBAPI {
 
     /**
      * Get a specific Ang (page) from Sri Guru Granth Sahib Ji
+     * With smart caching: IndexedDB first, API fallback, prefetch next 5
      */
     async getAng(angNumber) {
         if (angNumber < 1 || angNumber > 1430) {
             throw new Error('Invalid Ang number. Must be between 1 and 1430.');
         }
 
+        // 1. Check IndexedDB cache first (offline-first)
+        if (window.sehajPaathCache) {
+            const cached = await window.sehajPaathCache.getAng(angNumber);
+            if (cached && cached.verses && cached.verses.length > 0) {
+                console.log('[BaniDBAPI] ✓ Loaded from cache:', angNumber);
+                // Update history
+                window.sehajPaathCache.addToHistory(angNumber);
+                // Prefetch next 5 in background
+                this.prefetchNextAngs(angNumber);
+                return {
+                    ang: angNumber,
+                    verses: cached.verses,
+                    raag: cached.raag,
+                    source: cached.source
+                };
+            }
+        }
+
+        // 2. Not cached - fetch from API
+        console.log('[BaniDBAPI] Fetching from API:', angNumber);
         const data = await this.fetch(`/angs/${angNumber}/G`);
-        return this.formatAngData(data, angNumber);
+        const formatted = this.formatAngData(data, angNumber);
+
+        // 3. Save to IndexedDB cache
+        if (window.sehajPaathCache && formatted && formatted.verses) {
+            await window.sehajPaathCache.saveAng(angNumber, formatted);
+            window.sehajPaathCache.addToHistory(angNumber);
+            console.log('[BaniDBAPI] ✓ Saved to cache:', angNumber);
+        }
+
+        // 4. Prefetch next 5 Angs in background
+        this.prefetchNextAngs(angNumber);
+
+        return formatted;
+    }
+
+    /**
+     * Prefetch next 5 Angs in background for smooth reading
+     */
+    prefetchNextAngs(currentAng) {
+        if (!window.sehajPaathCache) return;
+
+        const nextAngs = [];
+        for (let i = 1; i <= 5; i++) {
+            if (currentAng + i <= 1430) {
+                nextAngs.push(currentAng + i);
+            }
+        }
+
+        if (nextAngs.length > 0) {
+            window.sehajPaathCache.prefetchAngs(nextAngs);
+        }
     }
 
     /**
