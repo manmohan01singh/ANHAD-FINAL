@@ -1,0 +1,373 @@
+{
+  "version": "1.0.0",
+  "achievements": [
+    {
+      "id": "first-amritvela",
+      "name": "Early Riser",
+      "nameGurmukhi": "ਸਵੇਰ ਦਾ ਉੱਠਣ ਵਾਲਾ",
+      "description": "Mark present for Amritvela for the first time",
+      "icon": "🌅",
+      "category": "amritvela",
+      "tier": "bronze",
+      "points": 10,
+      "condition": {
+        "type": "count",
+        "metric": "amritvela_presents",
+        "value": 1
+      },
+      "unlockMessage": "You've taken the first step on your spiritual journey!"
+    },
+    {
+      "id": "amritvela-excellent",
+      "name": "True Amritdhari",
+      "nameGurmukhi": "ਸੱਚਾ ਅੰਮ੍ਰਿਤਧਾਰੀ",
+      "description": "Wake up before 4 AM for the first time",
+      "icon": "⭐",
+      "category": "amritvela",
+      "tier": "silver",
+      "points": 25,
+      "condition": {
+        "type": "slot",
+        "metric": "amritvela_slot",
+        "value": "excellent"
+      },
+      "unlockMessage": "Waking in true Amritvela - the ambrosial hours!"
+    },
+    {
+      "id": "week-streak",
+      "name": "Week Warrior",
+      "nameGurmukhi": "ਹਫ਼ਤੇ ਦਾ ਯੋਧਾ",
+      "description": "Maintain a 7-day streak",
+      "icon": "🔥",
+      "category": "streak",
+      "tier": "bronze",
+      "points": 50,
+      "condition": {
+        "type": "streak",
+        "value": 7
+      },
+      "unlockMessage": "A full week of dedication! You're building a beautiful habit."
+    },
+    {
+      "id": "two-week-streak",
+      "name": "Fortnight Fighter",
+      "nameGurmukhi": "ਦੋ ਹਫ਼ਤਿਆਂ ਦਾ ਲੜਾਕੂ",
+      "description": "Maintain a 14-day streak",
+      "icon": "💪",
+      "category": "streak",
+      "tier": "silver",
+      "points": 100,
+      "condition": {
+        "type": "streak",
+        "value": 14
+      },
+      "unlockMessage": "Two weeks of unwavering commitment!"
+    },
+    {
+      "id": "month-streak",
+      "name": "Month Master",
+      "nameGurmukhi": "ਮਹੀਨੇ ਦਾ ਮਾਸਟਰ",
+      "description": "Maintain a 30-day streak",
+      "icon": "🏆",
+      "category": "streak",
+      "tier": "gold",
+      "points": 250,
+      "condition": {
+        "type": "streak",
+        "value": 30
+      },
+      "unlockMessage": "One month of spiritual excellence! You are truly blessed."
+    },
+    {
+      "id": "century-streak",
+      "name": "Century Champion",
+      "nameGurmukhi": "ਸੈਂਕੜਾ ਚੈਂਪੀਅਨ",
+      "description": "Maintain a 100-day streak",
+      "icon": "💯",
+      "category": "streak",
+      "tier": "platinum",
+      "points": 1000,
+      "condition": {
+        "type": "streak",
+        "value": 100
+      },
+      "unlockMessage": "100 days! An extraordinary spiritual achievement!"
+    },
+    {
+      "id": "year-streak",
+      "name": "Year of Devotion",
+      "nameGurmukhi": "ਸ਼ਰਧਾ ਦਾ ਸਾਲ",
+      "description": "Maintain a 365-day streak",
+      "icon": "👑",
+      "category": "streak",
+      "tier": "diamond",
+      "points": 5000,
+      "condition": {
+        "type": "streak",
+        "value": 365
+      },
+      "unlockMessage": "A full year of devotion! You are an inspiration to all!"
+    },
+    {
+      "id": "mala-master",
+      "name": "Mala Master",
+      "nameGurmukhi": "ਮਾਲਾ ਮਾਸਟਰ",
+      "description": "Complete a full mala of 108",
+      "icon": "📿",
+      "category": "mala",
+      "tier": "bronze",
+      "points": 25,
+      "condition": {
+        "type": "count",
+        "metric": "mala_complete",
+        "value": 1
+      },
+      "unlockMessage": "108 repetitions of divine naam! Waheguru!"
+    },
+    {
+      "id": "mala-devotee",
+      "name": "Mala Devotee",
+      "nameGurmukhi": "ਮਾਲਾ ਭਗਤ",
+      "description": "Complete 10 malas total",
+      "icon": "🙏",
+      "category": "mala",
+      "tier": "silver",
+      "points": 100,
+      "condition": {
+        "type": "count",
+        "metric": "total_malas",
+        "value": 10
+      },
+      "unlockMessage": "10 malas of devotion! Your naam jaap is flourishing!"
+    },
+    {
+      "id": "mala-enthusiast",
+      "name": "Mala Enthusiast",
+      "nameGurmukhi": "ਮਾਲਾ ਉਤਸ਼ਾਹੀ",
+      "description": "Complete 108 malas total (11,664 counts)",
+      "icon": "✨",
+      "category": "mala",
+      "tier": "gold",
+      "points": 500,
+      "condition": {
+        "type": "count",
+        "metric": "total_malas",
+        "value": 108
+      },
+      "unlockMessage": "108 malas! A mala of malas! Divine!"
+    },
+    {
+      "id": "nitnem-complete",
+      "name": "Nitnem Complete",
+      "nameGurmukhi": "ਨਿਤਨੇਮ ਪੂਰਾ",
+      "description": "Complete all daily banis in a single day",
+      "icon": "📖",
+      "category": "nitnem",
+      "tier": "bronze",
+      "points": 30,
+      "condition": {
+        "type": "nitnem_complete",
+        "value": 1
+      },
+      "unlockMessage": "All Nitnem banis completed! Dhan Guru Nanak!"
+    },
+    {
+      "id": "nitnem-week",
+      "name": "Weekly Reciter",
+      "nameGurmukhi": "ਹਫ਼ਤਾਵਾਰੀ ਪਾਠੀ",
+      "description": "Complete all Nitnem for 7 consecutive days",
+      "icon": "📚",
+      "category": "nitnem",
+      "tier": "silver",
+      "points": 150,
+      "condition": {
+        "type": "nitnem_streak",
+        "value": 7
+      },
+      "unlockMessage": "A week of complete Nitnem! Beautiful dedication!"
+    },
+    {
+      "id": "perfect-week",
+      "name": "Perfect Week",
+      "nameGurmukhi": "ਸੰਪੂਰਨ ਹਫ਼ਤਾ",
+      "description": "100% alarm obedience for a week",
+      "icon": "💎",
+      "category": "alarm",
+      "tier": "gold",
+      "points": 200,
+      "condition": {
+        "type": "obedience_rate",
+        "value": 100,
+        "period": "week"
+      },
+      "unlockMessage": "Perfect obedience to all reminders! Amazing discipline!"
+    },
+    {
+      "id": "early-bird",
+      "name": "Early Bird",
+      "nameGurmukhi": "ਸਵੇਰ ਦਾ ਪੰਛੀ",
+      "description": "Wake up before 4 AM for 7 consecutive days",
+      "icon": "🐦",
+      "category": "amritvela",
+      "tier": "gold",
+      "points": 200,
+      "condition": {
+        "type": "excellent_streak",
+        "value": 7
+      },
+      "unlockMessage": "7 days of true Amritvela! The divine hours are yours!"
+    },
+    {
+      "id": "japji-devotee",
+      "name": "Japji Devotee",
+      "nameGurmukhi": "ਜਪੁਜੀ ਭਗਤ",
+      "description": "Read Japji Sahib 40 times",
+      "icon": "🕉️",
+      "category": "nitnem",
+      "tier": "silver",
+      "points": 100,
+      "condition": {
+        "type": "bani_count",
+        "baniId": "japji",
+        "value": 40
+      },
+      "unlockMessage": "40 readings of Japji Sahib! Sehaj Paath of devotion!"
+    },
+    {
+      "id": "sukhmani-lover",
+      "name": "Sukhmani Lover",
+      "nameGurmukhi": "ਸੁਖਮਨੀ ਪ੍ਰੇਮੀ",
+      "description": "Read Sukhmani Sahib 7 times",
+      "icon": "☮️",
+      "category": "nitnem",
+      "tier": "gold",
+      "points": 300,
+      "condition": {
+        "type": "bani_count",
+        "baniId": "sukhmani",
+        "value": 7
+      },
+      "unlockMessage": "7 Sukhmani Sahibs! Peace and tranquility!"
+    },
+    {
+      "id": "consistent-practitioner",
+      "name": "Consistent Practitioner",
+      "nameGurmukhi": "ਲਗਾਤਾਰ ਅਭਿਆਸੀ",
+      "description": "Practice for 50 total days",
+      "icon": "📅",
+      "category": "general",
+      "tier": "silver",
+      "points": 150,
+      "condition": {
+        "type": "total_days",
+        "value": 50
+      },
+      "unlockMessage": "50 days of spiritual practice! Halfway to 100!"
+    },
+    {
+      "id": "century-days",
+      "name": "Century of Days",
+      "nameGurmukhi": "ਦਿਨਾਂ ਦਾ ਸੈਂਕੜਾ",
+      "description": "Practice for 100 total days",
+      "icon": "🎯",
+      "category": "general",
+      "tier": "gold",
+      "points": 300,
+      "condition": {
+        "type": "total_days",
+        "value": 100
+      },
+      "unlockMessage": "100 days of practice! You've built a strong foundation!"
+    },
+    {
+      "id": "all-time-periods",
+      "name": "Complete Day",
+      "nameGurmukhi": "ਪੂਰਾ ਦਿਨ",
+      "description": "Complete Amritvela, Rehras, and Sohila in one day",
+      "icon": "🌟",
+      "category": "nitnem",
+      "tier": "silver",
+      "points": 75,
+      "condition": {
+        "type": "all_periods",
+        "value": true
+      },
+      "unlockMessage": "All three Nitnem periods complete! A perfect spiritual day!"
+    },
+    {
+      "id": "thousand-counts",
+      "name": "Thousand Counts",
+      "nameGurmukhi": "ਹਜ਼ਾਰ ਗਿਣਤੀ",
+      "description": "Reach 1,000 total Mala counts",
+      "icon": "🔢",
+      "category": "mala",
+      "tier": "silver",
+      "points": 100,
+      "condition": {
+        "type": "total_counts",
+        "value": 1000
+      },
+      "unlockMessage": "1,000 naam repetitions! Waheguru Waheguru!"
+    }
+  ],
+  "tiers": {
+    "bronze": {
+      "color": "#CD7F32",
+      "multiplier": 1
+    },
+    "silver": {
+      "color": "#C0C0C0",
+      "multiplier": 2
+    },
+    "gold": {
+      "color": "#FFD700",
+      "multiplier": 3
+    },
+    "platinum": {
+      "color": "#E5E4E2",
+      "multiplier": 5
+    },
+    "diamond": {
+      "color": "#B9F2FF",
+      "multiplier": 10
+    }
+  },
+  "categories": {
+    "amritvela": {
+      "name": "Amritvela",
+      "nameGurmukhi": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ",
+      "icon": "🌅",
+      "color": "#FF9500"
+    },
+    "streak": {
+      "name": "Streak",
+      "nameGurmukhi": "ਲਗਾਤਾਰਤਾ",
+      "icon": "🔥",
+      "color": "#FF3B30"
+    },
+    "mala": {
+      "name": "Mala Jaap",
+      "nameGurmukhi": "ਮਾਲਾ ਜਾਪ",
+      "icon": "📿",
+      "color": "#AF52DE"
+    },
+    "nitnem": {
+      "name": "Nitnem",
+      "nameGurmukhi": "ਨਿਤਨੇਮ",
+      "icon": "📖",
+      "color": "#007AFF"
+    },
+    "alarm": {
+      "name": "Reminders",
+      "nameGurmukhi": "ਯਾਦ-ਦਹਾਨੀ",
+      "icon": "⏰",
+      "color": "#5AC8FA"
+    },
+    "general": {
+      "name": "General",
+      "nameGurmukhi": "ਆਮ",
+      "icon": "⭐",
+      "color": "#34C759"
+    }
+  }
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <title>ANHAD Audio Frame</title>
+    <style>
+        body { margin: 0; padding: 0; background: transparent; }
+    </style>
+</head>
+<body>
+    <audio id="audio" crossorigin="anonymous" preload="auto"></audio>
+    
+    <script>
+    /**
+     * ═══════════════════════════════════════════════════════════════════════════════
+     * ANHAD AUDIO FRAME - Persistent Audio Container
+     * 
+     * This hidden iframe hosts the audio element for persistent playback.
+     * Communicates via BroadcastChannel and postMessage.
+     * ═══════════════════════════════════════════════════════════════════════════════
+     */
+    
+    (function() {
+        'use strict';
+        
+        const audio = document.getElementById('audio');
+        const CHANNEL_NAME = 'anhad_audio_channel';
+        const bc = new BroadcastChannel(CHANNEL_NAME);
+        
+        // Audio configuration
+        const STREAMS = {
+            'darbar-sahib': 'https://stream.zeno.fm/1rwdu3yq8p8uv',
+            'amritvela': null // Curated tracks use AUDIO_CONFIG
+        };
+        
+        // State
+        let currentStream = 'darbar-sahib';
+        let isPlaying = false;
+        let currentTrackIndex = 0;
+        
+        // Broadcast current state to all listeners
+        function broadcastState() {
+            const state = {
+                type: 'state',
+                isPlaying: isPlaying,
+                currentTime: audio.currentTime || 0,
+                duration: audio.duration || 0,
+                volume: audio.volume,
+                muted: audio.muted,
+                streamType: currentStream,
+                trackIndex: currentTrackIndex,
+                src: audio.src,
+                timestamp: Date.now()
+            };
+            bc.postMessage(state);
+            
+            // Also save to localStorage for page reload recovery
+            try {
+                localStorage.setItem('anhad_audio_state', JSON.stringify({
+                    isPlaying: isPlaying,
+                    streamType: currentStream,
+                    trackIndex: currentTrackIndex,
+                    volume: audio.volume,
+                    timestamp: Date.now()
+                }));
+            } catch(e) {}
+        }
+        
+        // Audio event listeners
+        audio.addEventListener('play', () => {
+            isPlaying = true;
+            broadcastState();
+        });
+        
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            broadcastState();
+        });
+        
+        audio.addEventListener('timeupdate', () => {
+            // Throttle timeupdate broadcasts
+            if (Math.floor(audio.currentTime) % 2 === 0) {
+                broadcastState();
+            }
+        });
+        
+        audio.addEventListener('ended', () => {
+            isPlaying = false;
+            // Auto-play next track for curated mode
+            if (currentStream === 'amritvela') {
+                bc.postMessage({ type: 'request_next_track' });
+            }
+            broadcastState();
+        });
+        
+        audio.addEventListener('error', (e) => {
+            console.error('[AudioFrame] Error:', e);
+            bc.postMessage({ type: 'error', message: 'Audio playback error' });
+        });
+        
+        audio.addEventListener('loadedmetadata', () => {
+            broadcastState();
+        });
+        
+        // Handle commands from parent pages
+        bc.onmessage = (event) => {
+            const { type, data } = event.data;
+            
+            switch(type) {
+                case 'play':
+                    if (data?.src) {
+                        audio.src = data.src;
+                    }
+                    if (data?.streamType) {
+                        currentStream = data.streamType;
+                        if (STREAMS[currentStream]) {
+                            audio.src = STREAMS[currentStream];
+                        }
+                    }
+                    audio.play().catch(e => {
+                        console.warn('[AudioFrame] Play failed:', e);
+                        bc.postMessage({ type: 'error', message: 'Play failed - user interaction required' });
+                    });
+                    break;
+                    
+                case 'pause':
+                    audio.pause();
+                    break;
+                    
+                case 'toggle':
+                    if (isPlaying) {
+                        audio.pause();
+                    } else {
+                        if (!audio.src && STREAMS[currentStream]) {
+                            audio.src = STREAMS[currentStream];
+                        }
+                        audio.play().catch(e => {
+                            console.warn('[AudioFrame] Toggle play failed:', e);
+                        });
+                    }
+                    break;
+                    
+                case 'set_volume':
+                    audio.volume = Math.max(0, Math.min(1, data.volume));
+                    broadcastState();
+                    break;
+                    
+                case 'set_muted':
+                    audio.muted = data.muted;
+                    broadcastState();
+                    break;
+                    
+                case 'seek':
+                    if (isFinite(data.time)) {
+                        audio.currentTime = data.time;
+                    }
+                    break;
+                    
+                case 'load_track':
+                    if (data.src) {
+                        audio.src = data.src;
+                        currentTrackIndex = data.index || 0;
+                        currentStream = data.streamType || 'amritvela';
+                        if (data.autoplay !== false) {
+                            audio.play().catch(() => {});
+                        }
+                    }
+                    break;
+                    
+                case 'get_state':
+                    broadcastState();
+                    break;
+                    
+                case 'set_stream':
+                    currentStream = data.streamType;
+                    if (STREAMS[currentStream]) {
+                        audio.src = STREAMS[currentStream];
+                        if (data.autoplay !== false) {
+                            audio.play().catch(() => {});
+                        }
+                    }
+                    break;
+            }
+        };
+        
+        // Handle postMessage from parent window
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type) {
+                bc.postMessage(event.data);
+            }
+        });
+        
+        // Restore state on load
+        function restoreState() {
+            try {
+                const saved = localStorage.getItem('anhad_audio_state');
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    // Only restore if saved within last 30 minutes
+                    if (Date.now() - state.timestamp < 1800000) {
+                        audio.volume = state.volume || 0.7;
+                        currentStream = state.streamType || 'darbar-sahib';
+                        currentTrackIndex = state.trackIndex || 0;
+                        
+                        // Auto-resume if was playing
+                        if (state.isPlaying) {
+                            if (STREAMS[currentStream]) {
+                                audio.src = STREAMS[currentStream];
+                            }
+                            // Don't auto-play - requires user interaction
+                            // Just prepare the state
+                        }
+                    }
+                }
+            } catch(e) {
+                console.warn('[AudioFrame] Failed to restore state:', e);
+            }
+            
+            // Broadcast initial state
+            broadcastState();
+        }
+        
+        restoreState();
+        
+        // Periodic state broadcast
+        setInterval(broadcastState, 2000);
+        
+        console.log('[AudioFrame] Initialized and ready');
+    })();
+    </script>
+</body>
+</html>

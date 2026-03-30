@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="description" content="ANHAD — Immersive Gurbani experience with live Darbar Sahib Kirtan">
+    <title>ANHAD — Sri Harmandir Sahib</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Sacramento&family=Great+Vibes&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="ios-homepage.css">
+</head>
+
+<body>
+
+    <!-- L0: Entry overlay (Removed) -->
+
+    <!-- L1: Full-screen Darbar Sahib Background — Day image -->
+    <div id="scene-bg"></div>
+
+    <!-- L2: Color-grading overlay (time-of-day tint) -->
+    <div id="color-grade"></div>
+
+    <!-- L3: Vignette -->
+    <div id="vignette"></div>
+
+    <!-- L4: Soft celestial light source (sun glow / moon glow) -->
+    <div id="light-source"></div>
+
+    <!-- L5: Stars canvas (night only) -->
+    <canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+    <!-- L6: Ambient golden haze near the temple -->
+    <div id="temple-glow"></div>
+
+    <!-- Live Kirtan Audio -->
+    <audio id="kirtan-audio" preload="none">
+        <source src="https://live.sgpc.net:8443/;nocache=889869" type="audio/mpeg">
+    </audio>
+
+    <!-- L7: UI Layer -->
+    <div id="ui">
+
+        <!-- Handwritten "Anhad" SVG Animation (Removed) -->
+
+        <!-- Top -->
+        <header id="top-ui">
+            <div id="ik-onkar">
+                <span class="gurmukhi">ੴ</span>
+            </div>
+            <div id="live-badge">
+                <span class="dot"></span>
+                <span class="label">LIVE KIRTAN</span>
+            </div>
+        </header>
+
+        <!-- Center UI Removed for unobstructed Darbar Sahib view -->
+
+
+
+        <!-- Bottom -->
+        <footer id="bottom-ui">
+            <p id="shabad" class="gurmukhi">ਧੰਨੁ ਸੁ ਵੇਲਾ ਜਿਤੁ ਮੈ ਸਤਿਗੁਰੁ ਮਿਲਿਆ</p>
+            <p id="translation">Blessed is the time when I meet the True Guru</p>
+            <a href="../index.html" id="enter-btn">
+                <span class="enter-btn-main">Enter ANHAD</span>
+            </a>
+            <p id="tap-hint">Tap anywhere to start live kirtan</p>
+        </footer>
+
+    </div>
+
+    <script src="ios-homepage.js"></script>
+</body>
+
+</html>

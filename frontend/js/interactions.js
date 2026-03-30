@@ -219,7 +219,12 @@ const Interactions = {
       count = target;
     };
     el.textContent = count.toLocaleString() + ' listening';
-    setInterval(update, 30000);
+    const intervalId = setInterval(update, 30000);
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => {
+      clearInterval(intervalId);
+    }, { once: true });
   },
 
   _animateCount(from, to, el) {

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pa" data-theme="gradient">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="description" content="Sehaj Paath - Read Sri Guru Granth Sahib Ji with beautiful typography and spiritual tracking">
+    
+    <title>ਸਹਿਜ ਪਾਠ | Sehaj Paath</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.banidb.com">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="sehaj-paath.css">
+    <link rel="stylesheet" href="divine-design.css">
+    <link rel="stylesheet" href="fixes/settings-panel-fix.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+</head>
+
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         LOADING SCREEN
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-loading" id="appLoading">
+        <div class="loading-content">
+            <div class="loading-khanda">
+                <svg viewBox="0 0 100 100" class="khanda-icon">
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                    <text x="50" y="58" text-anchor="middle" font-size="24" fill="currentColor">☬</text>
+                </svg>
+            </div>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">ਵਾਹਿਗੁਰੂ</p>
+            <p class="loading-subtext">Loading Sri Guru Granth Sahib Ji...</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         MAIN APPLICATION CONTAINER
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-container" id="appContainer">
+        
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             DYNAMIC BACKGROUND EFFECTS
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="background-effects">
+            <div class="gradient-orb gradient-orb-1"></div>
+            <div class="gradient-orb gradient-orb-2"></div>
+            <div class="gradient-orb gradient-orb-3"></div>
+            <div class="mesh-gradient"></div>
+            <div class="noise-overlay"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             HEADER - iOS Dynamic Island Style
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <header class="app-header" id="appHeader">
+            <div class="header-blur-bg"></div>
+            
+            <div class="header-content">
+                <!-- Back Button -->
+                <button class="header-btn back-btn" id="backBtn" aria-label="Go back to home">
+                    <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                
+                <!-- Status Pill (Dynamic Island Inspired) -->
+                <div class="status-pill" id="statusPill">
+                    <div class="status-pill-content">
+                        <div class="streak-fire" id="streakFire">
+                            <span class="fire-emoji">📖</span>
+                            <span class="streak-count" id="headerStreakCount">0</span>
+                        </div>
+                        <div class="status-divider"></div>
+                        <div class="paath-number" id="paathNumber">Paath #1</div>
+                    </div>
+                </div>
+                
+                <!-- Header Title -->
+                <div class="header-title-section">
+                    <h1 class="header-title">
+                        <span class="gurmukhi-title">ਸਹਿਜ ਪਾਠ</span>
+                        <span class="english-title">Sehaj Paath</span>
+                    </h1>
+                    <p class="header-subtitle" id="headerSubtitle">Your Spiritual Journey</p>
+                </div>
+                
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <button class="header-btn" id="searchBtn" aria-label="Search Gurbani">
+                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </button>
+                    <button class="header-btn" id="settingsBtn" aria-label="Settings">
+                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             MAIN SCROLLABLE CONTENT
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <main class="main-content" id="mainContent">
+            
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 HERO CARD - Continue Reading
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card hero-card" id="heroSection">
+                <div class="card-glow hero-glow"></div>
+                
+                <div class="hero-content">
+                    <!-- Sri Guru Granth Sahib Ji Visual -->
+                    <div class="sggs-visual">
+                        <div class="book-container">
+                            <div class="book-cover">
+                                <div class="book-ornament top-left"></div>
+                                <div class="book-ornament top-right"></div>
+                                <div class="book-ornament bottom-left"></div>
+                                <div class="book-ornament bottom-right"></div>
+                                <div class="book-center">
+                                    <span class="khanda-symbol">☬</span>
+                                    <span class="book-title">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Progress Display -->
+                    <div class="current-progress">
+                        <div class="progress-circle-large">
+                            <svg class="progress-ring" viewBox="0 0 120 120">
+                                <circle class="progress-ring-bg" cx="60" cy="60" r="54"/>
+                                <circle class="progress-ring-fill" cx="60" cy="60" r="54" id="mainProgressRing"/>
+                            </svg>
+                            <div class="progress-center">
+                                <span class="current-ang-label">Current Ang</span>
+                                <span class="current-ang-number" id="currentAngNumber">1</span>
+                                <span class="progress-text" id="progressPercentText">0%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="progress-bar-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="progress-labels">
+                                <span>1</span>
+                                <span class="progress-center-label" id="angProgressLabel">1 / 1430</span>
+                                <span>1430</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Continue Reading Button -->
+                    <button class="continue-btn glass-btn" id="continueReadingBtn">
+                        <span class="btn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </span>
+                        <span class="btn-text">Continue Reading</span>
+                        <span class="btn-ripple"></span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 TODAY'S READING STATS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card stats-card" id="statsSection">
+                <div class="card-glow stats-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon stats-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 20V10M12 20V4M6 20v-6"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਅੱਜ ਦੀ ਪੜ੍ਹਾਈ</h2>
+                        <p class="card-subtitle">Today's Reading</p>
+                    </div>
+                </div>
+                
+                <div class="card-body stats-body">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-icon">📖</div>
+                            <div class="stat-value" id="todayAngsRead">0</div>
+                            <div class="stat-label">Angs Read</div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-value" id="todayReadingTime">0 min</div>
+                            <div class="stat-label">Time Spent</div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item highlight">
+                            <div class="stat-icon">🔥</div>
+                            <div class="stat-value" id="currentStreak">0</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 QUICK ACTIONS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card quick-actions-card" id="quickActionsSection">
+                <div class="card-glow actions-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon actions-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਤੁਰੰਤ ਕਾਰਵਾਈਆਂ</h2>
+                        <p class="card-subtitle">Quick Actions</p>
+                    </div>
+                </div>
+                
+                <div class="card-body actions-body">
+                    <div class="actions-grid">
+                        <button class="action-btn" id="bookmarksBtn">
+                            <div class="action-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <span class="action-label">Bookmarks</span>
+                            <span class="action-count" id="bookmarkCount">0</span>
+                        </button>
+                        
+                        <button class="action-btn" id="notesBtn">
+                            <div class="action-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <path d="M14 2v6h6"/>
+                                    <path d="M16 13H8M16 17H8M10 9H8"/>
+                                </svg>
+                            </div>
+                            <span class="action-label">Notes</span>
+                            <span class="action-count" id="notesCount">0</span>
+                        </button>
+                        
+                        <button class="action-btn" id="historyBtn">
+                            <div class="action-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <span class="action-label">History</span>
+                        </button>
+                        
+                        <button class="action-btn" id="achievementsBtn">
+                            <div class="action-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                                    <path d="M4 22h16"/>
+                                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+                                </svg>
+                            </div>
+                            <span class="action-label">Achievements</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 GO TO SPECIFIC ANG
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card ang-nav-card" id="angNavSection">
+                <div class="card-glow ang-nav-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon ang-nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਅੰਗ ਚੁਣੋ</h2>
+                        <p class="card-subtitle">Go to Specific Ang</p>
+                    </div>
+                </div>
+                
+                <div class="card-body ang-nav-body">
+                    <!-- Ang Slider -->
+                    <div class="ang-slider-container">
+                        <input type="range" class="ang-slider" id="angSlider" min="1" max="1430" value="1">
+                        <div class="slider-labels">
+                            <span>1</span>
+                            <span class="slider-current" id="sliderCurrentAng">1</span>
+                            <span>1430</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Ang Input -->
+                    <div class="ang-input-container">
+                        <label for="angInput" class="ang-input-label">Enter Ang Number</label>
+                        <div class="ang-input-wrapper">
+                            <input type="number" class="ang-input" id="angInput" min="1" max="1430" value="1" placeholder="1-1430">
+                            <button class="go-btn" id="goToAngBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14"/>
+                                    <path d="M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Navigation Buttons -->
+                    <div class="quick-nav-buttons">
+                        <button class="quick-nav-btn" data-ang="1">
+                            <span class="nav-icon">🙏</span>
+                            <span class="nav-label">Mool Mantar</span>
+                        </button>
+                        <button class="quick-nav-btn" data-action="random">
+                            <span class="nav-icon">🎲</span>
+                            <span class="nav-label">Random Ang</span>
+                        </button>
+                        <button class="quick-nav-btn" data-action="hukamnama">
+                            <span class="nav-icon">📜</span>
+                            <span class="nav-label">Hukamnama</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SEHAJ PAATH PROGRESS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card paath-progress-card" id="paathProgressSection">
+                <div class="card-glow paath-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon paath-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਸਹਿਜ ਪਾਠ ਪ੍ਰਗਤੀ</h2>
+                        <p class="card-subtitle">Sehaj Paath Progress</p>
+                    </div>
+                    <button class="new-paath-btn" id="newPaathBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        <span>New</span>
+                    </button>
+                </div>
+                
+                <div class="card-body paath-body">
+                    <!-- Current Paath -->
+                    <div class="current-paath" id="currentPaathCard">
+                        <div class="paath-header">
+                            <span class="paath-label">Current Paath</span>
+                            <span class="paath-id" id="currentPaathId">#1</span>
+                        </div>
+                        <div class="paath-progress-visual">
+                            <div class="paath-progress-bar">
+                                <div class="paath-progress-fill" id="paathProgressFill"></div>
+                            </div>
+                            <div class="paath-progress-stats">
+                                <span class="paath-angs" id="paathAngsProgress">1/1430 Angs</span>
+                                <span class="paath-percent" id="paathPercent">0%</span>
+                            </div>
+                        </div>
+                        <div class="paath-dates">
+                            <span class="paath-start">Started: <strong id="paathStartDate">-</strong></span>
+                            <span class="paath-est">Est. Finish: <strong id="paathEstDate">-</strong></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Completed Paaths -->
+                    <div class="completed-paaths" id="completedPaathsContainer">
+                        <h3 class="completed-title">Previous Paaths</h3>
+                        <div class="completed-list" id="completedPaathsList">
+                            <!-- Dynamically populated -->
+                            <div class="no-completed" id="noCompletedMessage">
+                                <p>No Paaths completed yet</p>
+                                <p class="subtle">Your completed Paaths will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 DAILY REMINDER
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card reminder-card" id="reminderSection">
+                <div class="card-glow reminder-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon reminder-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਯਾਦ ਦਹਾਨੀ</h2>
+                        <p class="card-subtitle">Daily Reminder</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="reminderToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="card-body reminder-body" id="reminderBody">
+                    <div class="reminder-time-container">
+                        <label for="reminderTime" class="reminder-label">Remind me every day at:</label>
+                        <input type="time" class="reminder-time-input" id="reminderTime" value="06:00">
+                    </div>
+                    <p class="reminder-note">Stay consistent in your spiritual journey</p>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 OFFLINE DOWNLOAD
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card offline-card" id="offlineSection">
+                <div class="card-glow offline-glow"></div>
+                
+                <div class="card-header">
+                    <div class="card-icon offline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਆਫ਼ਲਾਈਨ ਪੜ੍ਹਾਈ</h2>
+                        <p class="card-subtitle">Offline Reading</p>
+                    </div>
+                </div>
+                
+                <div class="card-body offline-body">
+                    <div class="offline-status" id="offlineStatus">
+                        <div class="download-progress" id="downloadProgress">
+                            <div class="download-progress-fill" id="downloadProgressFill"></div>
+                        </div>
+                        <p class="offline-info" id="offlineInfo">0 Angs saved for offline reading</p>
+                    </div>
+                    <button class="download-btn" id="downloadAngsBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <span>Download All Angs</span>
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             BOTTOM NAVIGATION
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <nav class="bottom-nav" id="bottomNav">
+            <div class="nav-blur-bg"></div>
+            <div class="nav-content">
+                <button class="nav-item active" data-tab="home" id="navHome">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </div>
+                    <span class="nav-label">Home</span>
+                </button>
+                
+                <button class="nav-item" data-tab="read" id="navRead">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-label">Read</span>
+                </button>
+                
+                <button class="nav-item" data-tab="search" id="navSearch">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <span class="nav-label">Search</span>
+                </button>
+                
+                <button class="nav-item" data-tab="bookmarks" id="navBookmarks">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-label">Bookmarks</span>
+                </button>
+                
+                <button class="nav-item" data-tab="settings" id="navSettings">
+                    <div class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-label">Settings</span>
+                </button>
+            </div>
+        </nav>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         MODALS & OVERLAYS
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    
+    <!-- Search Modal -->
+    <div class="modal" id="searchModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content search-modal-content">
+            <div class="modal-header">
+                <h2>🔍 Search Gurbani</h2>
+                <button class="modal-close" id="closeSearchModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search in Gurbani...">
+                    <div class="search-type-tabs">
+                        <button class="search-tab active" data-type="1">First Letter</button>
+                        <button class="search-tab" data-type="2">Full Word</button>
+                        <button class="search-tab" data-type="3">English</button>
+                        <button class="search-tab" data-type="4">Ang</button>
+                    </div>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <p class="search-placeholder">Enter your search query above</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content settings-modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <button class="modal-close" id="closeSettingsModal">×</button>
+            </div>
+            <div class="modal-body" id="settingsContainer">
+                <!-- Settings will be injected by settings-panel.js -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bookmarks Modal -->
+    <div class="modal" id="bookmarksModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content bookmarks-modal-content">
+            <div class="modal-header">
+                <h2>🔖 Bookmarks</h2>
+                <button class="modal-close" id="closeBookmarksModal">×</button>
+            </div>
+            <div class="modal-body" id="bookmarksContainer">
+                <!-- Bookmarks will be injected by bookmarks-manager.js -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Achievement Unlock Toast -->
+    <div class="achievement-toast" id="achievementToast">
+        <div class="achievement-icon">🏆</div>
+        <div class="achievement-content">
+            <span class="achievement-title" id="achievementTitle">Achievement Unlocked!</span>
+            <span class="achievement-name" id="achievementName">First Steps</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    
+    <!-- Services -->
+    <script src="services/storage-service.js"></script>
+    <script src="services/cache-service.js"></script>
+    <script src="services/banidb-api.js"></script>
+    <script src="services/notification-service.js"></script>
+    
+    <!-- Utils -->
+    <script src="utils/text-formatter.js"></script>
+    <script src="utils/animation-helpers.js"></script>
+    <script src="utils/haptic-feedback.js"></script>
+    
+    <!-- Components -->
+    <script src="components/progress-tracker.js"></script>
+    <script src="components/bookmarks-manager.js"></script>
+    <script src="components/search-engine.js"></script>
+    <script src="components/settings-panel.js"></script>
+    <script src="components/reminder-system.js"></script>
+    <script src="components/statistics-dashboard.js"></script>
+    <script src="components/achievements-engine.js"></script>
+    <script src="components/offline-manager.js"></script>
+    <script src="components/theme-engine.js"></script>
+    
+    <!-- Main Controller -->
+    <script src="sehaj-paath.js"></script>
+    
+    <!-- Critical Fixes -->
+    <script src="fixes/modal-scroll-fix.js"></script>
+</body>
+</html>

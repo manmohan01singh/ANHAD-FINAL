@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>⏰ Alarm</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --font-numeric: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            overflow: hidden;
+            padding: 40px 20px;
+            padding-bottom: calc(var(--safe-bottom) + 40px);
+        }
+        
+        /* ═══ TIME-BASED BACKGROUNDS ═══ */
+        body.amritvela {
+            background: linear-gradient(165deg, 
+                #0a0a1a 0%, 
+                #1a1a3e 15%, 
+                #2d1b4e 35%,
+                #4a2c4e 50%,
+                #e94560 75%, 
+                #ffd460 100%);
+        }
+        
+        body.morning {
+            background: linear-gradient(165deg, 
+                #667eea 0%, 
+                #a29bfe 30%, 
+                #fd79a8 55%,
+                #fdcb6e 80%,
+                #ffeaa7 100%);
+        }
+        
+        body.evening {
+            background: linear-gradient(165deg, 
+                #1a1a2e 0%, 
+                #2d3436 15%, 
+                #d63031 40%, 
+                #e17055 65%,
+                #fdcb6e 100%);
+        }
+        
+        body.night {
+            background: linear-gradient(165deg, 
+                #0c0c1e 0%, 
+                #1a1a3e 25%, 
+                #2d2d5a 55%,
+                #4a4a7a 80%,
+                #667eea 100%);
+        }
+        
+        /* ═══ MAIN CONTAINER ═══ */
+        .alarm-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 380px;
+        }
+        
+        /* ═══ ANIMATED PULSE RINGS ═══ */
+        .pulse-rings {
+            position: fixed;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-expand 2.5s ease-out infinite;
+        }
+        
+        .pulse-ring:nth-child(2) { animation-delay: 0.6s; }
+        .pulse-ring:nth-child(3) { animation-delay: 1.2s; }
+        .pulse-ring:nth-child(4) { animation-delay: 1.8s; }
+        
+        @keyframes pulse-expand {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+        
+        /* ═══ KHANDA ICON ═══ */
+        .khanda-icon {
+            font-size: 90px;
+            margin-bottom: 24px;
+            text-shadow: 0 0 80px rgba(255, 255, 255, 0.4);
+            animation: gentle-breathe 4s ease-in-out infinite;
+            display: inline-block;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.3));
+        }
+        
+        @keyframes gentle-breathe {
+            0%, 100% { 
+                transform: translateY(0) scale(1); 
+                opacity: 0.95;
+            }
+            50% { 
+                transform: translateY(-8px) scale(1.02); 
+                opacity: 1;
+            }
+        }
+        
+        /* ═══ TIME DISPLAY ═══ */
+        .alarm-time {
+            font-family: var(--font-numeric);
+            font-size: 72px;
+            font-weight: 200;
+            letter-spacing: -4px;
+            line-height: 1;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 40px rgba(0, 0, 0, 0.3);
+            font-variant-numeric: tabular-nums lining-nums;
+        }
+        
+        .alarm-period {
+            font-family: var(--font-numeric);
+            font-size: 24px;
+            font-weight: 400;
+            opacity: 0.85;
+            margin-left: 4px;
+            vertical-align: super;
+        }
+        
+        /* ═══ LABEL & TEXT ═══ */
+        .alarm-label {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            opacity: 0.95;
+            letter-spacing: -0.5px;
+        }
+        
+        .alarm-gurmukhi {
+            font-family: var(--font-gurmukhi);
+            font-size: 20px;
+            opacity: 0.8;
+            margin-bottom: 16px;
+        }
+        
+        .alarm-message {
+            font-family: var(--font-gurmukhi);
+            font-size: 15px;
+            opacity: 0.6;
+            max-width: 280px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+        
+        /* ═══ GLASS BUTTON CONTAINER ═══ */
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+            padding: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        /* ═══ BUTTONS ═══ */
+        .alarm-btn {
+            padding: 18px 32px;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: none;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+        
+        .btn-dismiss {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a2e;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-dismiss:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-dismiss:active {
+            transform: scale(0.97);
+        }
+        
+        .btn-snooze {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-snooze:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-snooze:active {
+            transform: scale(0.97);
+        }
+        
+        /* ═══ SNOOZE OPTIONS ═══ */
+        .snooze-options {
+            display: none;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        
+        .snooze-options.show {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+        
+        .snooze-chip {
+            padding: 10px 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.2s ease;
+        }
+        
+        .snooze-chip:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .snooze-chip:active {
+            transform: scale(0.95);
+        }
+        
+        /* ═══ SUCCESS SCREEN ═══ */
+        .success-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(165deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 100;
+            animation: fadeIn 0.3s ease;
+            padding: 40px;
+        }
+        
+        .success-check {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin-bottom: 24px;
+            animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .success-title {
+            font-family: var(--font-gurmukhi);
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .success-subtitle {
+            font-size: 16px;
+            opacity: 0.85;
+            text-align: center;
+        }
+        
+        /* ═══ SNOOZE SUCCESS SCREEN ═══ */
+        .snooze-screen {
+            background: linear-gradient(165deg, #667eea 0%, #764ba2 50%, #5b21b6 100%);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes pop-in {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* ═══ REDUCED MOTION ═══ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="amritvela">
+    <div class="pulse-rings">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+    </div>
+    
+    <div class="alarm-container">
+        <div class="khanda-icon">☬</div>
+        
+        <div class="alarm-time" id="alarmTime">
+            04:00 <span class="alarm-period" id="alarmPeriod">AM</span>
+        </div>
+        
+        <div class="alarm-label" id="alarmLabel">Amritvela Simran</div>
+        
+        <div class="alarm-gurmukhi" id="alarmGurmukhi">ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ</div>
+        
+        <div class="alarm-message" id="alarmMessage">
+            ਉੱਠੋ ਅਤੇ ਵਾਹਿਗੁਰੂ ਦਾ ਸਿਮਰਨ ਕਰੋ
+        </div>
+        
+        <div class="buttons-container">
+            <button class="alarm-btn btn-dismiss" id="dismissBtn">
+                ✓ I'm Awake - Mark Complete
+            </button>
+            
+            <button class="alarm-btn btn-snooze" id="snoozeBtn">
+                😴 Snooze
+            </button>
+            
+            <div class="snooze-options" id="snoozeOptions">
+                <button class="snooze-chip" data-minutes="5">5 min</button>
+                <button class="snooze-chip" data-minutes="10">10 min</button>
+                <button class="snooze-chip" data-minutes="15">15 min</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="alarmAudio" loop preload="auto">
+        <source src="../Audio/audio1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <script>
+        (() => {
+            'use strict';
+            
+            // ═══ GET ALARM DATA ═══
+            const params = new URLSearchParams(window.location.search);
+            const alarmId = params.get('id') || 'amritvela';
+            const ALARM_SESSION_KEY = 'alarm_active_' + alarmId;
+            
+            // ═══ ALARM DEFINITIONS ═══
+            const alarmData = {
+                amritvela: {
+                    label: 'Amritvela Simran',
+                    gurmukhi: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ',
+                    message: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥',
+                    audio: 'audio1.mp3',
+                    theme: 'amritvela'
+                },
+                rehras: {
+                    label: 'Rehras Sahib',
+                    gurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ',
+                    message: 'ਸੰਧਿਆ ਵੇਲੇ ਰਹਿਰਾਸ ਸਾਹਿਬ ਦਾ ਪਾਠ ਕਰੋ',
+                    audio: 'audio3.mp3',
+                    theme: 'evening'
+                },
+                sohila: {
+                    label: 'Sohila Sahib',
+                    gurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ',
+                    message: 'ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ ਦਾ ਪਾਠ',
+                    audio: 'audio4.mp3',
+                    theme: 'night'
+                }
+            };
+            
+            const alarm = alarmData[alarmId] || alarmData.amritvela;
+            let audioPlaying = false;
+            let vibrationInterval = null;
+            
+            // ═══ SET THEME ═══
+            function setTheme() {
+                const body = document.body;
+                body.className = '';
+                
+                if (alarm.theme) {
+                    body.classList.add(alarm.theme);
+                    return;
+                }
+                
+                const hour = new Date().getHours();
+                if (hour >= 3 && hour < 6) {
+                    body.classList.add('amritvela');
+                } else if (hour >= 6 && hour < 17) {
+                    body.classList.add('morning');
+                } else if (hour >= 17 && hour < 21) {
+                    body.classList.add('evening');
+                } else {
+                    body.classList.add('night');
+                }
+            }
+            
+            // ═══ POPULATE UI ═══
+            function populateUI() {
+                const now = new Date();
+                const hour = now.getHours();
+                const min = now.getMinutes();
+                const period = hour >= 12 ? 'PM' : 'AM';
+                const displayHour = hour % 12 || 12;
+                
+                document.getElementById('alarmTime').innerHTML = `
+                    ${displayHour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}
+                    <span class="alarm-period">${period}</span>
+                `;
+                
+                document.getElementById('alarmLabel').textContent = alarm.label;
+                document.getElementById('alarmGurmukhi').textContent = alarm.gurmukhi;
+                document.getElementById('alarmMessage').textContent = alarm.message;
+            }
+            
+            // ═══ PLAY SOUND (with restart prevention) ═══
+            async function playSound() {
+                // Check if already ringing to prevent restart on page refresh
+                const existingSession = sessionStorage.getItem(ALARM_SESSION_KEY);
+                if (existingSession) {
+                    const elapsed = Date.now() - parseInt(existingSession);
+                    if (elapsed < 120000) { // Within 2 minutes
+                        console.log('⏰ Alarm already active, not restarting audio');
+                        audioPlaying = true;
+                        return;
+                    }
+                }
+                
+                // Mark as active
+                sessionStorage.setItem(ALARM_SESSION_KEY, Date.now().toString());
+                
+                const audio = document.getElementById('alarmAudio');
+                audio.src = `../Audio/${alarm.audio}`;
+                audio.volume = 1.0;
+                
+                try {
+                    await audio.play();
+                    audioPlaying = true;
+                    console.log('🔊 Alarm sound playing');
+                } catch (e) {
+                    console.log('Audio autoplay blocked, waiting for interaction');
+                }
+                
+                // Start vibration
+                if (navigator.vibrate) {
+                    vibrationInterval = setInterval(() => {
+                        navigator.vibrate([500, 200, 500, 200, 500]);
+                    }, 2500);
+                }
+            }
+            
+            // ═══ STOP SOUND ═══
+            function stopSound() {
+                const audio = document.getElementById('alarmAudio');
+                audio.pause();
+                audio.currentTime = 0;
+                audioPlaying = false;
+                
+                // Clear session
+                sessionStorage.removeItem(ALARM_SESSION_KEY);
+                
+                // Stop vibration
+                if (vibrationInterval) {
+                    clearInterval(vibrationInterval);
+                    vibrationInterval = null;
+                }
+                if (navigator.vibrate) {
+                    navigator.vibrate(0);
+                }
+            }
+            
+            // ═══ DISMISS ═══
+            function dismiss() {
+                stopSound();
+                recordResponse('completed');
+                showSuccessScreen();
+            }
+            
+            // ═══ SNOOZE ═══
+            function snooze(minutes) {
+                stopSound();
+                recordResponse('snoozed');
+                
+                // Schedule via opener or service worker
+                if (window.opener && window.opener.ReliableAlarms) {
+                    window.opener.ReliableAlarms.snoozeAlarm(alarmId, minutes);
+                } else if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SNOOZE_ALARM',
+                        data: { alarmId, minutes }
+                    });
+                }
+                
+                showSnoozeScreen(minutes);
+            }
+            
+            // ═══ RECORD RESPONSE ═══
+            function recordResponse(status) {
+                const payload = {
+                    type: 'ALARM_RESPONSE',
+                    alarmId,
+                    status,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Try opener window
+                if (window.opener) {
+                    try { window.opener.postMessage(payload, '*'); } catch (e) {}
+                }
+                
+                // Try service worker
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'ALARM_RESPONSE',
+                        data: { alarmId, status }
+                    });
+                }
+                
+                // Try broadcast channel
+                try {
+                    const channel = new BroadcastChannel('gurbani-alarm-channel');
+                    channel.postMessage({ type: 'ALARM_RESPONSE', data: { alarmId, status } });
+                } catch (e) {}
+            }
+            
+            // ═══ SUCCESS SCREEN ═══
+            function showSuccessScreen() {
+                document.body.innerHTML = `
+                    <div class="success-screen">
+                        <div class="success-check">✓</div>
+                        <div class="success-title">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ!</div>
+                        <div class="success-subtitle">Progress synced to your tracker</div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.close();
+                    setTimeout(() => {
+                        window.location.href = 'smart-reminders.html';
+                    }, 500);
+                }, 2000);
+            }
+            
+            // ═══ SNOOZE SCREEN ═══
+            function showSnoozeScreen(minutes) {
+                document.body.innerHTML = `
+                    <div class="success-screen snooze-screen">
+                        <div class="success-check">😴</div>
+                        <div class="success-title">Snoozed for ${minutes} minutes</div>
+                        <div class="success-subtitle">We'll remind you again soon</div>
+                    </div>
+                `;
+                
+                setTimeout(() => window.close(), 2000);
+            }
+            
+            // ═══ EVENT LISTENERS ═══
+            document.getElementById('dismissBtn').addEventListener('click', dismiss);
+            
+            document.getElementById('snoozeBtn').addEventListener('click', () => {
+                document.getElementById('snoozeOptions').classList.toggle('show');
+            });
+            
+            document.querySelectorAll('.snooze-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    snooze(parseInt(chip.dataset.minutes));
+                });
+            });
+            
+            // Click anywhere to retry audio if blocked
+            document.addEventListener('click', (e) => {
+                if (!audioPlaying && e.target.tagName !== 'BUTTON') {
+                    playSound();
+                }
+            });
+            
+            // ═══ INITIALIZE ═══
+            setTheme();
+            populateUI();
+            playSound();
+            
+        })();
+    </script>
+</body>
+</html>

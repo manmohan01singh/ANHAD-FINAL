@@ -1,0 +1,647 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GURBANI RADIO — iOS 18+ REFINED DESIGN
+   Version: 3.0.0
+   
+   Principles: Content Deference • Restraint • Clarity • Muted Elegance
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+    /* Surfaces */
+    --bg-pure: #000000;
+    --surface-primary: rgba(28, 28, 30, 0.85);
+    --surface-elevated: rgba(44, 44, 46, 0.92);
+    --surface-glass: rgba(255, 255, 255, 0.08);
+
+    /* Text */
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.55);
+    --text-tertiary: rgba(255, 255, 255, 0.35);
+
+    /* Accent */
+    --accent-gold: #C9A227;
+    --accent-gold-soft: rgba(201, 162, 39, 0.15);
+
+    /* Shadows - Refined */
+    --shadow-artwork:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 16px 48px rgba(0, 0, 0, 0.35),
+        0 32px 80px rgba(0, 0, 0, 0.25);
+
+    /* Timing */
+    --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+    --duration-fast: 150ms;
+    --duration-normal: 250ms;
+    --duration-slow: 350ms;
+
+    /* Safe Areas */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIGHT MODE — body.light-player override
+   ───────────────────────────────────────────────────────────────────────────── */
+body.light-player {
+    --bg-pure: #f5f5f7;
+    --surface-primary: rgba(255, 255, 255, 0.95);
+    --surface-elevated: rgba(255, 255, 255, 0.98);
+    --surface-glass: rgba(0, 0, 0, 0.05);
+    --text-primary: rgba(0, 0, 0, 0.87);
+    --text-secondary: rgba(0, 0, 0, 0.55);
+    --text-tertiary: rgba(0, 0, 0, 0.35);
+}
+
+body.light-player .ios17-bg {
+    background: #f5f5f7;
+}
+
+body.light-player .ios17-bg__art {
+    filter: blur(80px) saturate(120%) brightness(0.85);
+    -webkit-filter: blur(80px) saturate(120%) brightness(0.85);
+}
+
+body.light-player .ios17-bg__overlay {
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.15) 40%,
+        rgba(255, 255, 255, 0.45) 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESET & BASE
+   ───────────────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+.ios17-body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-pure);
+    color: var(--text-primary);
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BACKGROUND — Static Blur (No Animation)
+   Content-deferring: muted, never competes with artwork
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: var(--bg-pure);
+}
+
+.ios17-bg__art {
+    position: absolute;
+    width: 180%;
+    height: 180%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    filter: blur(80px) saturate(180%) brightness(0.35);
+    -webkit-filter: blur(80px) saturate(180%) brightness(0.35);
+    /* NO animation - static for performance */
+}
+
+.ios17-bg__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg,
+            rgba(0, 0, 0, 0.25) 0%,
+            rgba(0, 0, 0, 0.1) 40%,
+            rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAVIGATION BAR — Minimal, Subtle
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    padding-top: calc(12px + var(--safe-top));
+}
+
+.ios17-nav__back {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 50%;
+    transition: background var(--duration-fast) ease;
+}
+
+.ios17-nav__back:active {
+    background: var(--surface-glass);
+}
+
+.ios17-nav__back svg {
+    width: 24px;
+    height: 24px;
+}
+
+.ios17-nav__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
+.ios17-nav__live-dot {
+    width: 8px;
+    height: 8px;
+    background: #FF3B30;
+    border-radius: 50%;
+    animation: livePulse 2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+}
+
+.ios17-nav__more {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background var(--duration-fast) ease;
+}
+
+.ios17-nav__more:active {
+    background: var(--surface-glass);
+}
+
+.ios17-nav__more svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN PLAYER LAYOUT
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-player {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 72px 28px 40px;
+    padding-top: calc(72px + var(--safe-top));
+    padding-bottom: calc(40px + var(--safe-bottom));
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ALBUM ARTWORK — iOS 18+ Style
+   Dominant, clean shadow, no competing effects
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-artwork-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: 20px 0;
+}
+
+.ios17-artwork {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1;
+    transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.ios17-artwork--paused {
+    transform: scale(0.88);
+}
+
+.ios17-artwork__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    box-shadow: var(--shadow-artwork);
+}
+
+/* Subtle ambient glow (static, not animated) */
+.ios17-artwork__glow {
+    position: absolute;
+    inset: -15%;
+    background: radial-gradient(circle at center,
+            rgba(255, 255, 255, 0.03) 0%,
+            transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   METADATA — Title, Artist
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 28px;
+    margin-bottom: 20px;
+}
+
+.ios17-meta__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ios17-meta__title {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.ios17-meta__artist {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.ios17-meta__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.ios17-meta__btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.ios17-meta__btn:hover {
+    color: var(--text-primary);
+}
+
+.ios17-meta__btn:active {
+    background: var(--surface-glass);
+}
+
+.ios17-meta__btn--active {
+    color: var(--accent-gold);
+}
+
+.ios17-meta__btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TIMELINE / PROGRESS
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-timeline {
+    margin-bottom: 20px;
+}
+
+.ios17-timeline__track {
+    position: relative;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ios17-timeline__progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--text-primary);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 100ms linear;
+}
+
+.ios17-timeline__knob {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform var(--duration-fast) ease;
+}
+
+.ios17-timeline__track:hover .ios17-timeline__knob,
+.ios17-timeline__track:active .ios17-timeline__knob {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.ios17-timeline__labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.ios17-timeline__time {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+}
+
+.ios17-timeline__live-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #FF3B30;
+    border: none;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ios17-timeline__live-btn:hover {
+    background: #ff5147;
+    transform: scale(1.05);
+}
+
+.ios17-timeline__live-btn:active {
+    transform: scale(0.95);
+}
+
+.ios17-timeline__live-dot {
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    animation: livePulse 1.2s infinite;
+}
+
+.ios17-timeline__times {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRANSPORT CONTROLS — Clean, Refined
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    margin-bottom: 28px;
+}
+
+.ios17-controls__btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--duration-fast) ease, opacity var(--duration-fast) ease;
+}
+
+.ios17-controls__btn:hover {
+    opacity: 0.7;
+}
+
+.ios17-controls__btn:active {
+    transform: scale(0.92);
+}
+
+.ios17-controls__btn svg {
+    width: 36px;
+    height: 36px;
+}
+
+.ios17-controls__play {
+    width: 68px;
+    height: 68px;
+}
+
+.ios17-controls__play svg {
+    width: 52px;
+    height: 52px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VOLUME SLIDER — iOS Native Style
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-volume {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.ios17-volume__icon {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+}
+
+.ios17-volume__track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+}
+
+.ios17-volume__fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--text-primary);
+    border-radius: 2px;
+    width: 70%;
+}
+
+.ios17-volume__input {
+    position: absolute;
+    inset: -10px 0;
+    width: 100%;
+    height: 24px;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ios17-volume__knob {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%) scale(0);
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform var(--duration-fast) ease;
+}
+
+.ios17-volume__track:hover .ios17-volume__knob,
+.ios17-volume__track:active .ios17-volume__knob {
+    transform: translate(50%, -50%) scale(1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOOTER ACTIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios17-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ios17-footer__btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+
+.ios17-footer__btn:hover {
+    color: var(--text-primary);
+}
+
+.ios17-footer__btn:active {
+    background: var(--surface-glass);
+}
+
+.ios17-footer__btn svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE — Larger Screens
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 430px) {
+    .ios17-player {
+        max-width: 430px;
+        margin: 0 auto;
+    }
+}
+
+@media (min-height: 800px) {
+    .ios17-artwork {
+        max-width: 360px;
+    }
+
+    .ios17-controls {
+        gap: 56px;
+        margin-bottom: 36px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION — Respect User Preference
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

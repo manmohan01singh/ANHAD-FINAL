@@ -1,0 +1,39 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANHAD — Universal Mobile Scaling Lock
+   Loaded on ALL pages to guarantee fixed layout regardless of:
+   - Android Display Size (Small → Huge)
+   - iOS Dynamic Type / Accessibility Text Size
+   - Pinch-to-zoom attempts
+   - Double-tap zoom
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+}
+
+html {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+    touch-action: manipulation !important;
+}
+
+/* Prevent any element from scaling beyond bounds */
+* {
+    max-width: 100vw;
+}
+
+/* Lock keyboard and sheet overlays to fixed positioning */
+.keyboard-overlay,
+.keyboard-sheet,
+.settings-overlay,
+.settings-sheet,
+.sheet,
+.sheet-overlay,
+.bottom-sheet {
+    -webkit-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+}

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#02000a">
+  <meta name="description" content="Cinematic Alarm — drag right to set sunset, drag left for sunrise">
+  <title>ਯਾਦ ਕਰਵਾਓ | Cinematic Alarm</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+  <link rel="manifest" href="../manifest.json">
+  <link rel="stylesheet" href="cinematic-v5.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       LOADING SCREEN
+       ══════════════════════════════════════ -->
+  <div class="load-screen" id="loadScreen">
+    <div class="load-orb"></div>
+    <div class="load-text">ਵਾਹਿਗੁਰੂ</div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCENE  (full-screen cinematic backdrop)
+       ══════════════════════════════════════ -->
+  <div class="scene" id="scene">
+
+    <!-- Gradient sky — colors driven by CSS variables -->
+    <div class="sky"></div>
+
+    <!-- Stars (CSS box-shadow, zero JS) -->
+    <div class="star-field"></div>
+
+    <!-- Aurora bands (night only) -->
+    <div class="aurora">
+      <div class="aurora-band"></div>
+      <div class="aurora-band"></div>
+      <div class="aurora-band"></div>
+    </div>
+
+    <!-- Sun (positioned via CSS vars --sun-x / --sun-y) -->
+    <div class="sun-wrap">
+      <div class="sun-core"></div>
+    </div>
+    <!-- Horizon glow that follows sun x -->
+    <div class="sun-haze"></div>
+
+    <!-- Moon (positioned via CSS vars --moon-x / --moon-y) -->
+    <div class="moon-wrap">
+      <div class="moon-halo"></div>
+      <div class="moon-disk"></div>
+    </div>
+
+    <!-- Day haze / atmospheric scattering -->
+    <div class="day-haze"></div>
+
+    <!-- Birds (daytime) -->
+    <div class="birds-layer">
+      <div class="bird bird-1"><svg viewBox="0 0 18 7"><path d="M0 3.5 Q4.5 0 9 3.5 Q13.5 0 18 3.5" fill="none" stroke="rgba(20,20,40,0.45)" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div class="bird bird-2"><svg viewBox="0 0 18 7"><path d="M0 3.5 Q4.5 0 9 3.5 Q13.5 0 18 3.5" fill="none" stroke="rgba(20,20,40,0.35)" stroke-width="1.1" stroke-linecap="round"/></svg></div>
+      <div class="bird bird-3"><svg viewBox="0 0 18 7"><path d="M0 3.5 Q4.5 0 9 3.5 Q13.5 0 18 3.5" fill="none" stroke="rgba(20,20,40,0.40)" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+      <div class="bird bird-4"><svg viewBox="0 0 18 7"><path d="M0 3.5 Q4.5 0 9 3.5 Q13.5 0 18 3.5" fill="none" stroke="rgba(20,20,40,0.30)" stroke-width="1.0" stroke-linecap="round"/></svg></div>
+    </div>
+
+    <!-- ════ LANDSCAPE (single SVG, no parallax, no DOM mutation) ════ -->
+    <svg class="landscape" viewBox="0 0 390 300" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Mountain Layer 4 — farthest -->
+      <path class="m4" d="M0 300 L0 188
+        Q28 148 68 162 Q108 178 148 148
+        Q188 118 228 138 Q268 158 308 124
+        Q348  96 390 114 L390 300Z"/>
+
+      <!-- Mountain Layer 3 — mid-far -->
+      <path class="m3" d="M0 300 L0 205
+        Q40 168 88 182 Q136 196 178 165
+        Q220 136 265 156 Q310 174 356 146
+        Q376 134 390 140 L390 300Z"/>
+
+      <!-- Mountain Layer 2 — mid-near -->
+      <path class="m2" d="M0 300 L0 222
+        Q55 192 110 208 Q165 222 215 196
+        Q265 170 315 190 Q355 204 390 192
+        L390 300Z"/>
+
+      <!-- Foreground hill -->
+      <path class="m1" d="M0 300 L0 248
+        Q80 228 158 240 Q236 252 308 234
+        Q356 224 390 230 L390 300Z"/>
+
+      <!-- ── TREES LEFT ── -->
+      <!-- tall tree -->
+      <polygon class="tree-fill2" points="28,236 16,268 40,268"/>
+      <polygon class="tree-fill"  points="28,226 14,264 42,264"/>
+      <rect    class="trunk-fill" x="25" y="268" width="6" height="12"/>
+      <!-- medium tree -->
+      <polygon class="tree-fill2" points="48,244 39,266 57,266"/>
+      <polygon class="tree-fill"  points="48,238 37,262 59,262"/>
+      <rect    class="trunk-fill" x="45" y="266" width="5" height="10"/>
+      <!-- small tree -->
+      <polygon class="tree-fill"  points="12,252 4,270 20,270"/>
+      <rect    class="trunk-fill" x="10" y="270" width="4" height="8"/>
+      <!-- tiny background tree -->
+      <polygon class="tree-fill2" points="60,248 53,266 67,266"/>
+
+      <!-- ── TREES RIGHT ── -->
+      <polygon class="tree-fill2" points="358,234 346,266 370,266"/>
+      <polygon class="tree-fill"  points="358,224 344,262 372,262"/>
+      <rect    class="trunk-fill" x="355" y="266" width="6" height="12"/>
+      <polygon class="tree-fill2" points="374,242 366,264 382,264"/>
+      <polygon class="tree-fill"  points="374,236 364,260 384,260"/>
+      <rect    class="trunk-fill" x="371" y="264" width="5" height="10"/>
+      <polygon class="tree-fill"  points="342,250 335,268 349,268"/>
+      <rect    class="trunk-fill" x="340" y="268" width="4" height="8"/>
+      <polygon class="tree-fill2" points="328,248 321,264 335,264"/>
+
+      <!-- ── CAMPER VAN (center-right) ── -->
+      <g transform="translate(228,238)">
+        <!-- shadow -->
+        <ellipse cx="44" cy="38" rx="42" ry="3.5" fill="rgba(0,0,0,0.22)"/>
+        <!-- body -->
+        <rect class="van-body"   x="2"  y="10" width="64" height="24" rx="4"/>
+        <!-- body stripe -->
+        <rect class="van-stripe" x="2"  y="28" width="64" height="3"  rx="1"/>
+        <!-- cab bump -->
+        <path class="van-roof" d="M48 10 L48 4 Q48 1 52 1 L66 1 Q70 1 70 5 L70 10Z"/>
+        <!-- roof rack bar -->
+        <rect class="van-stripe" x="5"  y="8"  width="44" height="2" rx="1"/>
+        <!-- cab window -->
+        <rect class="van-glass"  x="50" y="3"  width="18" height="7" rx="2"/>
+        <!-- main window 1 -->
+        <rect class="van-window" x="6"  y="14" width="16" height="9" rx="2"/>
+        <!-- main window 2 -->
+        <rect class="van-window" x="26" y="14" width="13" height="9" rx="2"/>
+        <!-- headlight beam (night) -->
+        <polygon class="van-beam" points="68,18 94,12 94,24 68,24" fill="rgba(255,240,160,0.55)"/>
+        <!-- headlight -->
+        <rect class="van-headlight" x="67" y="18" width="4" height="5" rx="1" fill="rgba(255,248,200,0.90)"/>
+        <!-- tail light -->
+        <rect x="2" y="22" width="3" height="4" rx="1" fill="rgba(255,50,40,0.32)"/>
+        <!-- undercarriage -->
+        <rect class="van-stripe" x="0"  y="32" width="70" height="2" rx="1"/>
+        <!-- wheels -->
+        <circle class="van-wheel" cx="18" cy="36" r="7"/>
+        <circle class="van-hub"   cx="18" cy="36" r="4"/>
+        <circle cx="18" cy="36" r="1.5" fill="#383838"/>
+        <circle class="van-wheel" cx="54" cy="36" r="7"/>
+        <circle class="van-hub"   cx="54" cy="36" r="4"/>
+        <circle cx="54" cy="36" r="1.5" fill="#383838"/>
+        <!-- antenna -->
+        <line x1="14" y1="9" x2="14" y2="1" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+        <circle cx="14" cy="1" r="1" fill="rgba(255,255,255,0.35)"/>
+      </g>
+
+      <!-- ── CAMPFIRE (center-left) ── -->
+      <g transform="translate(136,254)">
+        <!-- ground char -->
+        <ellipse cx="0" cy="10" rx="12" ry="3" fill="rgba(0,0,0,0.28)"/>
+        <!-- logs -->
+        <rect class="fire-log-a" x="-10" y="6" width="20" height="4" rx="2"
+              transform="rotate(-18,0,8)"/>
+        <rect class="fire-log-b" x=" -9" y="6" width="18" height="4" rx="2"
+              transform="rotate( 14,0,8)"/>
+        <!-- fire layers (animated via CSS) -->
+        <ellipse class="fire-o"   cx="0" cy="2" rx="8"   ry="10"/>
+        <ellipse class="fire-m"   cx="0" cy="3" rx="5.5" ry="7.5"/>
+        <ellipse class="fire-i"   cx="0" cy="4" rx="3"   ry="5"/>
+        <ellipse class="fire-tip" cx="0" cy="5" rx="1.5" ry="2.8"/>
+      </g>
+
+    </svg><!-- /landscape -->
+
+    <!-- Snow highlight overlay on mountain peaks -->
+    <div class="snow-overlay"></div>
+
+    <!-- Fire glow light spill (CSS radial, no JS) -->
+    <div class="fire-glow-light"></div>
+
+  </div><!-- /scene -->
+
+
+  <!-- ══════════════════════════════════════
+       UI OVERLAY
+       ══════════════════════════════════════ -->
+  <div class="ui-overlay">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <button class="btn-icon" id="backBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <div class="topbar-title">Alarm</div>
+      <div class="alarm-badge">
+        <span class="badge-dot"></span>
+        <span id="badgeText">3 active</span>
+      </div>
+    </div>
+
+    <!-- Time zone (the main draggable region) -->
+    <div class="time-zone">
+      <div class="time-display">
+        <span class="time-digits" id="timeDigits">6:00</span>
+        <span class="time-period" id="timePeriod">PM</span>
+      </div>
+      <div class="drag-hint" id="dragHint">
+        <div class="drag-hint-arrow">
+          <span>⟵</span>
+          <span>⟶</span>
+        </div>
+        <span>drag to set time</span>
+      </div>
+    </div>
+
+    <!-- Bottom controls (iOS Clock style) -->
+    <div class="bottom-bar">
+      <div class="ctrl-row">
+
+        <!-- Bell / View alarms -->
+        <button class="ctrl-pill" id="alarmsBtn" aria-label="My alarms">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+
+        <!-- Sound -->
+        <button class="ctrl-pill" id="soundBtn" aria-label="Sound">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </button>
+
+        <!-- Repeat -->
+        <button class="ctrl-pill" id="repeatBtn" aria-label="Repeat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"/>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- + Add Alarm pill -->
+      <button class="add-alarm-btn" id="addAlarmBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Add Alarm
+      </button>
+    </div>
+
+  </div><!-- /ui-overlay -->
+
+
+  <!-- ══════════════════════════════════════
+       ALARM SHEET
+       ══════════════════════════════════════ -->
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <div class="bottom-sheet" id="alarmSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">Your Alarms</span>
+      <button class="btn-icon btn-close" id="closeSheet" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SOUND SHEET
+       ══════════════════════════════════════ -->
+  <div class="sheet-backdrop" id="soundBackdrop"></div>
+  <div class="bottom-sheet" id="soundSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span class="sheet-title">🔔 Alarm Sound</span>
+      <button class="btn-icon btn-close" id="closeSoundSheet" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="soundSheetBody"></div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════ -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="cinematic-v5.js"></script>
+  <script src="js/reliable-alarm.js?v=2.0.0" defer></script>
+  <script src="js/bg-alarm.js?v=2.0.0" defer></script>
+  <script src="../lib/global-alarm-system.js?v=3.0.0" defer></script>
+  <script src="../lib/ios-android-notifications.js?v=3.0.0" defer></script>
+  <script>
+    if ('serviceWorker' in navigator)
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+  </script>
+
+</body>
+</html>

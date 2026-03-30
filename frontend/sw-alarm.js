@@ -350,7 +350,12 @@ function checkAndTriggerAlarms() {
 }
 
 // Check alarms every minute as fallback
-setInterval(checkAndTriggerAlarms, 60000);
+const alarmCheckInterval = setInterval(checkAndTriggerAlarms, 60000);
+
+// Cleanup on service worker termination (best effort)
+self.addEventListener('beforeunload', () => {
+    clearInterval(alarmCheckInterval);
+});
 
 // ══════════════════════════════════════════════════════════════════════════════
 // PUSH NOTIFICATION (Future)

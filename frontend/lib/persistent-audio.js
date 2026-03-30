@@ -20,11 +20,12 @@
         },
         amritvela: {
             name: 'Amritvela Kirtan',
-            baseUrl: '/audio',
+            baseUrl: null, // resolved at runtime via PA_API_BASE
             totalTracks: 40,
             type: 'playlist',
             getTrackUrl(index) {
-                return `${this.baseUrl}/day-${(index % this.totalTracks) + 1}.webm`;
+                const base = PA_API_BASE || 'https://anhad-final.onrender.com';
+                return `${base}/audio/day-${(index % this.totalTracks) + 1}.webm`;
             }
         }
     };
@@ -57,17 +58,8 @@
         } catch (e) { }
     }
 
-    // API base URL
-    const PA_API_BASE = (() => {
-        try {
-            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const onBackendPort = window.location.port === '3000';
-            if (isLocalhost && !onBackendPort) {
-                return `${window.location.protocol}//${window.location.hostname}:3000`;
-            }
-        } catch (e) { }
-        return '';
-    })();
+    // API base URL - Always use render backend
+    const PA_API_BASE = 'https://anhad-final.onrender.com';
 
     // Get broadcast start for virtual live (tries server, falls back to local)
     function getBroadcastStart() {

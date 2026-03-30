@@ -373,7 +373,7 @@
         document.querySelectorAll('.tt').forEach(p => p.setAttribute('fill', tk));
 
         // Time text
-        const h24 = Math.floor(min / 60) % 24, mn = Math.floor(min % 60);
+        const h24 = Math.floor(m / 60) % 24, mn = Math.floor(m % 60);
         const h12 = h24 % 12 || 12, prd = h24 < 12 ? 'AM' : 'PM';
         if (E.thm) E.thm.textContent = `${h12}:${String(mn).padStart(2, '0')}`;
         if (E.tp) E.tp.textContent = prd;
@@ -402,7 +402,7 @@
         const now = performance.now(), cx = gx(e), dx = cx - S.dx0, dt = now - S.lastDragTime;
         if (dt > 0) { S.velocity = lerp(S.velocity, (cx - S.lastDragX) / dt, 0.3); }
         S.lastDragX = cx; S.lastDragTime = now;
-        S.min = wrap(S.dm0 + dx * 2.0);
+        S.min = S.dm0 + dx * 2.0;
         setPx(dx);
         if (E.mfill) { E.mfill.style.transform = `translateX(${clamp((dx / innerWidth) * 120 + 45, 0, 90)}px)`; }
         if (!raf) raf = requestAnimationFrame(() => { render(); raf = null; });
@@ -414,7 +414,7 @@
             const step = () => {
                 vel *= 0.94;
                 if (Math.abs(vel) < 0.3) { S.min = Math.round(S.min); resetPx(); render(); return; }
-                S.min = wrap(S.min + vel * 0.016); render();
+                S.min = S.min + vel * 0.016; render();
                 S.momentumRaf = requestAnimationFrame(step);
             };
             S.momentumRaf = requestAnimationFrame(step);

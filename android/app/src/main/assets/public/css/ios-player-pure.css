@@ -1,0 +1,844 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PURE iOS PLAYER CARD - 3D GLOWING KHANDA EDITION
+   ─────────────────────────────────────────────────────────────────────────────
+   Transform player to 100% iOS Music Player aesthetic
+   - 3D glowing Khanda (no circular container)
+   - Compact height
+   - SF Pro style fonts
+   - iOS 18 glassmorphism
+   - iOS Music Player bottom controls
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   1. PLAYER CARD - COMPACT iOS STYLE
+   ───────────────────────────────────────────────────────────────────────────── */
+.player__card {
+    padding: 24px 20px 20px !important;
+    border-radius: 28px !important;
+
+    /* Pure iOS frosted glass - golden tint */
+    background: linear-gradient(170deg,
+            rgba(186, 149, 60, 0.12) 0%,
+            rgba(247, 198, 52, 0.08) 20%,
+            rgba(180, 140, 50, 0.10) 50%,
+            rgba(160, 130, 45, 0.06) 100%) !important;
+
+    backdrop-filter: blur(60px) saturate(1.5) brightness(1.05) !important;
+    -webkit-backdrop-filter: blur(60px) saturate(1.5) brightness(1.05) !important;
+
+    /* iOS-style subtle shadow */
+    box-shadow:
+        0 2px 20px rgba(0, 0, 0, 0.15),
+        0 8px 40px rgba(0, 0, 0, 0.12),
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -0.5px 0 rgba(0, 0, 0, 0.08) !important;
+
+    /* Refined border */
+    border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Remove extra pseudo-element overlays for cleaner look */
+.player__card::before,
+.player__card::after {
+    display: none !important;
+}
+
+.player__border-glow,
+.player__glass,
+.player__glass-shine,
+.player__glass-reflection,
+.player__ambient-light {
+    display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   2. SACRED IMAGE - 3D GLOWING KHANDA (NO CIRCLE)
+   ───────────────────────────────────────────────────────────────────────────── */
+.player__visualizer-section {
+    margin-bottom: 16px !important;
+}
+
+.album-art {
+    --sacred-image-size: 140px !important;
+    width: 140px !important;
+    height: 140px !important;
+}
+
+/* Remove circular frame completely */
+.sacred-frame {
+    display: none !important;
+}
+
+.sacred-orbit,
+.orbit-ring,
+.orbit-particle {
+    display: none !important;
+}
+
+/* Sacred Image Container - No circle, pure glow */
+.sacred-image-container {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 3D Glowing Background Effect */
+.sacred-image-glow {
+    inset: -30% !important;
+    background: radial-gradient(circle at center,
+            rgba(247, 198, 52, 0.5) 0%,
+            rgba(247, 198, 52, 0.35) 20%,
+            rgba(219, 165, 32, 0.25) 40%,
+            rgba(185, 133, 18, 0.15) 60%,
+            transparent 80%) !important;
+    filter: blur(35px) !important;
+    animation: ios-khanda-glow 3s ease-in-out infinite !important;
+}
+
+@keyframes ios-khanda-glow {
+
+    0%,
+    100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+    }
+}
+
+/* Sacred Image Disc - Remove dark background, pure transparent */
+.sacred-image-disc {
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+.sacred-image-aura {
+    inset: -20% !important;
+    background: radial-gradient(circle at center,
+            rgba(247, 198, 52, 0.3) 0%,
+            rgba(247, 198, 52, 0.15) 40%,
+            transparent 70%) !important;
+    animation: ios-aura-pulse 4s ease-in-out infinite !important;
+}
+
+@keyframes ios-aura-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 0.9;
+        transform: scale(1.05);
+    }
+}
+
+/* Main Sacred Image - 3D Glowing Effect */
+.sacred-image {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    filter:
+        drop-shadow(0 0 20px rgba(247, 198, 52, 0.6)) drop-shadow(0 0 40px rgba(247, 198, 52, 0.4)) drop-shadow(0 0 60px rgba(247, 198, 52, 0.25)) drop-shadow(0 -5px 30px rgba(255, 220, 100, 0.3)) !important;
+    animation: ios-khanda-breathe 4s ease-in-out infinite !important;
+    transform: translateZ(0);
+    z-index: 10 !important;
+}
+
+@keyframes ios-khanda-breathe {
+
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 15px rgba(247, 198, 52, 0.5)) drop-shadow(0 0 35px rgba(247, 198, 52, 0.35)) drop-shadow(0 0 50px rgba(247, 198, 52, 0.2)) drop-shadow(0 -4px 25px rgba(255, 220, 100, 0.25));
+        transform: scale(1) translateZ(0);
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 25px rgba(247, 198, 52, 0.7)) drop-shadow(0 0 50px rgba(247, 198, 52, 0.5)) drop-shadow(0 0 70px rgba(247, 198, 52, 0.3)) drop-shadow(0 -6px 35px rgba(255, 220, 100, 0.4));
+        transform: scale(1.02) translateZ(0);
+    }
+}
+
+/* Playing State - Enhanced Glow */
+.album-art.playing .sacred-image {
+    animation: ios-khanda-breathe-active 3s ease-in-out infinite !important;
+}
+
+@keyframes ios-khanda-breathe-active {
+
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 20px rgba(247, 198, 52, 0.6)) drop-shadow(0 0 45px rgba(247, 198, 52, 0.45)) drop-shadow(0 0 65px rgba(247, 198, 52, 0.3)) drop-shadow(0 -5px 30px rgba(255, 220, 100, 0.35));
+        transform: scale(1) translateZ(0);
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 35px rgba(247, 198, 52, 0.85)) drop-shadow(0 0 60px rgba(247, 198, 52, 0.6)) drop-shadow(0 0 90px rgba(247, 198, 52, 0.4)) drop-shadow(0 -8px 45px rgba(255, 220, 100, 0.5));
+        transform: scale(1.03) translateZ(0);
+    }
+}
+
+.album-art.playing .sacred-image-glow {
+    animation: ios-khanda-glow-active 2.5s ease-in-out infinite !important;
+}
+
+@keyframes ios-khanda-glow-active {
+
+    0%,
+    100% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.12);
+    }
+}
+
+/* Hide visualizer bars for clean look */
+.sacred-visualizer {
+    display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   3. TRACK INFO - iOS TYPOGRAPHY
+   ───────────────────────────────────────────────────────────────────────────── */
+.track-info {
+    margin-bottom: 12px !important;
+}
+
+.track-info__badge {
+    padding: 5px 12px !important;
+    background: rgba(247, 198, 52, 0.15) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 0.5px solid rgba(247, 198, 52, 0.3) !important;
+    box-shadow: none !important;
+    margin-bottom: 8px !important;
+}
+
+.track-info__badge::before {
+    display: none !important;
+}
+
+.track-info__badge .badge-dot {
+    width: 5px !important;
+    height: 5px !important;
+    background: #ff3b30 !important;
+    box-shadow: 0 0 6px #ff3b30 !important;
+}
+
+.track-info__badge .badge-text {
+    font-size: 9px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.track-info__badge .badge-shimmer {
+    display: none !important;
+}
+
+/* Title - SF Pro Bold Style */
+.track-info__title {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 4px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.player__card.playing .track-info__title .title-text::after {
+    display: none !important;
+}
+
+/* Artist - SF Pro Regular Style */
+.track-info__artist {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    gap: 6px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.track-info__artist i {
+    display: none !important;
+}
+
+/* Hide waveform under title */
+.track-info__waveform {
+    display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   4. PROGRESS BAR - iOS MUSIC STYLE
+   ───────────────────────────────────────────────────────────────────────────── */
+.progress-section {
+    margin-bottom: 16px !important;
+}
+
+.progress-time {
+    margin-bottom: 8px !important;
+    padding: 0 !important;
+}
+
+.progress-time__current,
+.progress-time__total {
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Mono', monospace !important;
+}
+
+.progress-time__live {
+    padding: 3px 8px !important;
+    background: rgba(239, 68, 68, 0.12) !important;
+    border: 0.5px solid rgba(239, 68, 68, 0.25) !important;
+    backdrop-filter: blur(12px) !important;
+}
+
+.progress-time__live .live-dot {
+    width: 4px !important;
+    height: 4px !important;
+    background: #ff3b30 !important;
+    box-shadow: 0 0 5px #ff3b30 !important;
+}
+
+.progress-time__live span {
+    font-size: 8px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Progress Track - Clean iOS slider */
+.progress-track {
+    height: 4px !important;
+    border-radius: 2px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+}
+
+.progress-track::before {
+    display: none !important;
+}
+
+.progress-waveform {
+    display: none !important;
+}
+
+.progress-fill {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: none !important;
+    border-radius: 2px !important;
+}
+
+.progress-fill__glow {
+    display: none !important;
+}
+
+.progress-scrubber {
+    width: 12px !important;
+    height: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3) !important;
+    opacity: 1 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   5. CONTROLS - iOS MUSIC PLAYER STYLE
+   ───────────────────────────────────────────────────────────────────────────── */
+.controls {
+    gap: 32px !important;
+    margin-bottom: 16px !important;
+    padding: 8px 0 !important;
+}
+
+/* Secondary buttons (prev/next) */
+.control-btn--secondary {
+    --control-btn-size: 50px !important;
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 22px !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.control-btn__bg {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.control-btn__bg::before {
+    display: none !important;
+}
+
+.control-btn__ripple {
+    display: none !important;
+}
+
+.control-btn--secondary:hover,
+.control-btn--secondary:focus-visible {
+    color: rgba(255, 255, 255, 0.7) !important;
+    transform: scale(1.05) !important;
+}
+
+.control-btn--secondary:hover .control-btn__bg {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.control-btn--secondary:active {
+    transform: scale(0.92) !important;
+}
+
+/* Play Button - iOS Style Golden Circle */
+.play-btn {
+    --play-btn-size: 64px !important;
+    width: 64px !important;
+    height: 64px !important;
+}
+
+.play-btn__glow,
+.play-btn__glow--1,
+.play-btn__glow--2 {
+    display: none !important;
+}
+
+.play-btn__main {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    background: linear-gradient(145deg, #f7c634, #dba520, #b98512) !important;
+    box-shadow:
+        0 4px 15px rgba(247, 198, 52, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.play-btn__gradient,
+.play-btn__shine {
+    display: none !important;
+}
+
+.play-btn__icon {
+    position: absolute !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 24px !important;
+    color: rgba(0, 0, 0, 0.85) !important;
+    z-index: 10 !important;
+}
+
+.play-btn__icon i {
+    margin-left: 3px;
+}
+
+.play-btn__ripples,
+.play-btn__particles {
+    display: none !important;
+}
+
+.play-btn:hover .play-btn__main {
+    box-shadow:
+        0 6px 20px rgba(247, 198, 52, 0.5),
+        0 3px 10px rgba(0, 0, 0, 0.25),
+        inset 0 2px 4px rgba(255, 255, 255, 0.35),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.play-btn:active .play-btn__main {
+    transform: scale(0.95) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   6. HIDE OLD SECONDARY ACTIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+.secondary-actions {
+    display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   7. iOS MUSIC PLAYER BOTTOM CONTROLS
+   ─────────────────────────────────────────────────────────────────────────────
+   Exact replica of iOS Music app bottom section:
+   - Horizontal volume slider with speaker icons
+   - Row of 4 glassmorphism action buttons in single container
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* iOS Bottom Controls Container */
+.ios-bottom-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   VOLUME SLIDER ROW - iOS Style
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios-volume-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 4px;
+}
+
+/* Volume Icons */
+.ios-volume-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.ios-volume-icon:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.ios-volume-icon:active {
+    transform: scale(0.9);
+}
+
+.ios-volume-icon--low i {
+    font-size: 12px;
+}
+
+.ios-volume-icon--high i {
+    font-size: 16px;
+}
+
+/* Volume Slider Container */
+.ios-volume-slider-container {
+    flex: 1;
+    position: relative;
+    height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+/* Volume Track */
+.ios-volume-track {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: visible;
+}
+
+/* Volume Fill */
+.ios-volume-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 2px;
+    transition: width 0.1s ease;
+}
+
+/* Volume Thumb */
+.ios-volume-thumb {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.3),
+        0 0 8px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    transition: left 0.1s ease;
+}
+
+/* Hidden native input */
+.ios-volume-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ios-volume-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.ios-volume-input::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
+/* Hover state */
+.ios-volume-slider-container:hover .ios-volume-thumb {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.35),
+        0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTION ICONS ROW - Single iOS Glassmorphism Container
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+
+    /* Single container glassmorphism */
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 14px;
+    padding: 4px 8px;
+
+    /* Subtle glass border */
+    box-shadow:
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -0.5px 0 rgba(0, 0, 0, 0.05),
+        0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Action Button - Transparent inside container */
+.ios-action-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    /* Transparent - container provides the glass effect */
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+.ios-action-btn i {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s ease;
+}
+
+.ios-action-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ios-action-btn:hover i {
+    color: #fff;
+}
+
+.ios-action-btn:active {
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Focus state */
+.ios-action-btn:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Active/Selected state */
+.ios-action-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ios-action-btn.active i {
+    color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTION BUTTON WITH BADGE (e.g., Repeat with count)
+   ───────────────────────────────────────────────────────────────────────────── */
+.ios-action-btn--badge {
+    position: relative;
+}
+
+.ios-action-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   8. MOBILE RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .player__card {
+        padding: 20px 16px 16px !important;
+        border-radius: 24px !important;
+    }
+
+    .album-art {
+        --sacred-image-size: 120px !important;
+        width: 120px !important;
+        height: 120px !important;
+    }
+
+    .track-info__title {
+        font-size: 20px !important;
+    }
+
+    .track-info__artist {
+        font-size: 12px !important;
+    }
+
+    .controls {
+        gap: 24px !important;
+    }
+
+    .control-btn--secondary {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 20px !important;
+    }
+
+    .play-btn {
+        width: 58px !important;
+        height: 58px !important;
+    }
+
+    .ios-bottom-controls {
+        gap: 12px;
+        padding-top: 12px;
+    }
+
+    .ios-volume-row {
+        gap: 10px;
+    }
+
+    .ios-action-row {
+        padding: 3px 6px;
+        border-radius: 12px;
+    }
+
+    .ios-action-btn {
+        width: 38px;
+        height: 36px;
+        border-radius: 8px;
+    }
+
+    .ios-action-btn i {
+        font-size: 15px;
+    }
+
+    .ios-action-badge {
+        min-width: 14px;
+        height: 14px;
+        font-size: 9px;
+        top: 3px;
+        right: 3px;
+    }
+}
+
+@media (max-width: 360px) {
+    .player__card {
+        padding: 16px 12px 14px !important;
+    }
+
+    .album-art {
+        --sacred-image-size: 100px !important;
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .ios-volume-row {
+        gap: 8px;
+    }
+
+    .ios-action-row {
+        padding: 2px 4px;
+    }
+
+    .ios-action-btn {
+        width: 34px;
+        height: 32px;
+        border-radius: 6px;
+    }
+
+    .ios-action-btn i {
+        font-size: 14px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   9. FOCUS & ACCESSIBILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+.play-btn:focus-visible,
+.control-btn--secondary:focus-visible {
+    outline: 2px solid rgba(247, 198, 52, 0.6) !important;
+    outline-offset: 2px !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+
+    .sacred-image,
+    .sacred-image-glow,
+    .sacred-image-aura {
+        animation: none !important;
+    }
+
+    .sacred-image {
+        filter:
+            drop-shadow(0 0 20px rgba(247, 198, 52, 0.5)) drop-shadow(0 0 40px rgba(247, 198, 52, 0.35)) !important;
+    }
+}

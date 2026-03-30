@@ -693,4 +693,54 @@
         module.exports = { UnifiedStorage, GurbaniStorage: unifiedStorage, SimpleStorage, STORES };
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // OFFLINE QUEUE FLUSH - Retry queued actions when coming online
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /**
+     * Flush the offline queue - retry queued actions
+     */
+    function flushOfflineQueue() {
+        try {
+            const queue = JSON.parse(localStorage.getItem(LS_KEYS.OFFLINE_QUEUE) || '[]');
+            if (queue.length === 0) return;
+
+            console.log(`[UnifiedStorage] Flushing ${queue.length} queued actions`);
+
+            // Process each queued action
+            const remaining = [];
+            for (const action of queue) {
+                try {
+                    // Attempt to replay the action - modules should listen for this event
+                    window.dispatchEvent(new CustomEvent('offlineQueueFlush', {
+                        detail: action
+                    }));
+                } catch (e) {
+                    // If failed, keep in queue for next attempt
+                    remaining.push(action);
+                }
+            }
+
+            // Update queue with remaining items
+            if (remaining.length > 0) {
+                localStorage.setItem(LS_KEYS.OFFLINE_QUEUE, JSON.stringify(remaining));
+                console.log(`[UnifiedStorage] ${remaining.length} actions remain in queue`);
+            } else {
+                localStorage.removeItem(LS_KEYS.OFFLINE_QUEUE);
+                console.log('[UnifiedStorage] Queue cleared');
+            }
+        } catch (e) {
+            console.error('[UnifiedStorage] Error flushing offline queue:', e);
+        }
+    }
+
+    // Listen for online event to flush queue
+    window.addEventListener('online', () => {
+        console.log('[UnifiedStorage] Device is online - flushing offline queue');
+        flushOfflineQueue();
+    });
+
+    // Expose flush function globally
+    window.flushOfflineQueue = flushOfflineQueue;
+
 })();

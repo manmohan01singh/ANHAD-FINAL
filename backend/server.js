@@ -365,7 +365,8 @@ const broadcast = new BroadcastEngine();
 app.use(express.json({ limit: '10kb' }));
 
 // CORS — only allow explicitly listed origins from ALLOWED_ORIGINS env var
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
+    'http://localhost:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
     .split(',').map(o => o.trim()).filter(Boolean);
 
 app.use((req, res, next) => {

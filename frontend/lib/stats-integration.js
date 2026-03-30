@@ -31,8 +31,15 @@
             // Track custom audio players
             this.trackCustomPlayers();
             
-            // Periodic sync
-            setInterval(() => this.syncAll(), this.SYNC_INTERVAL);
+            // Periodic sync - store for cleanup
+            this.syncIntervalId = setInterval(() => this.syncAll(), this.SYNC_INTERVAL);
+            
+            // Cleanup on pagehide
+            window.addEventListener('pagehide', () => {
+                if (this.syncIntervalId) {
+                    clearInterval(this.syncIntervalId);
+                }
+            }, { once: true });
         }
 
         trackAudioElements() {
@@ -207,9 +214,16 @@
             // Check for Nitnem completion daily
             const checkInterval = 60000; // Check every minute
             
-            setInterval(() => {
+            this.nitnemIntervalId = setInterval(() => {
                 this.checkTodayCompletion();
             }, checkInterval);
+            
+            // Cleanup on pagehide
+            window.addEventListener('pagehide', () => {
+                if (this.nitnemIntervalId) {
+                    clearInterval(this.nitnemIntervalId);
+                }
+            }, { once: true });
         }
 
         checkTodayCompletion() {
@@ -323,7 +337,14 @@
             this.checkDailyActivity();
             
             // Check every hour
-            setInterval(() => this.checkDailyActivity(), 3600000);
+            this.streakIntervalId = setInterval(() => this.checkDailyActivity(), 3600000);
+            
+            // Cleanup on pagehide
+            window.addEventListener('pagehide', () => {
+                if (this.streakIntervalId) {
+                    clearInterval(this.streakIntervalId);
+                }
+            }, { once: true });
         }
 
         checkDailyActivity() {

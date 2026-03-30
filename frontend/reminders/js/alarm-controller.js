@@ -154,23 +154,50 @@
 
             console.log('🔔 [AlarmController] Initializing...');
 
-            // Check for any scheduled alarms
-            this.checkAndScheduleAlarms();
+            // Check for any scheduled alarms (only if leader)
+            if (window.AnhadAlarmCoordinator?.isLeader()) {
+                this.checkAndScheduleAlarms();
+            }
 
-            // Periodic check for alarms
-            setInterval(() => this.checkAndScheduleAlarms(), CONFIG.CHECK_INTERVAL);
+            // Listen for coordinator leadership changes
+            if (window.AnhadAlarmCoordinator) {
+                window.AnhadAlarmCoordinator.onAlarmFired((alarmId, reminder, isPreReminder) => {
+                    console.log('[AlarmController] Received alarm from coordinator:', alarmId);
+                    if (!window.AnhadAlarmCoordinator.isLeader()) {
+                        const data = this.loadReminders();
+                        this.fireAlarm(reminder, isPreReminder, data?.options || {});
+                    }
+                });
+            }
+
+            // Periodic check for alarms (only leader schedules)
+            this.checkInterval = setInterval(() => {
+                if (window.AnhadAlarmCoordinator?.isLeader()) {
+                    this.checkAndScheduleAlarms();
+                }
+            }, CONFIG.CHECK_INTERVAL);
 
             // Listen for visibility changes
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
                     this.checkMissedAlarms();
-                    this.checkAndScheduleAlarms();
+                    if (window.AnhadAlarmCoordinator?.isLeader()) {
+                        this.checkAndScheduleAlarms();
+                    }
                 }
             });
 
             // Listen for window focus
             window.addEventListener('focus', () => {
                 this.checkMissedAlarms();
+            });
+
+            // Pagehide cleanup
+            window.addEventListener('pagehide', () => {
+                console.log('[AlarmController] Pagehide - clearing interval');
+                if (this.checkInterval) {
+                    clearInterval(this.checkInterval);
+                }
             });
 
             // Listen for alarm events from Service Worker
@@ -1250,28 +1277,51 @@
         }
 
         // ══════════════════════════════════════════════════════════════════════
-        // LOGGING
+        // LOGGING — with storage lock protection
         // ══════════════════════════════════════════════════════════════════════
         logInteraction(alarmId, action) {
             try {
                 const today = new Date().toLocaleDateString('en-CA');
                 const timestamp = new Date().toISOString();
 
-                // Alarm log
-                const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
-                if (!log[today]) log[today] = {};
-                log[today][alarmId] = { status: action, timestamp };
-                localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+                // Use storage lock for atomic update
+                if (window.AnhadStorageLock) {
+                    window.AnhadStorageLock.withLock(CONFIG.ALARM_LOG_KEY, (existing) => {
+                        const log = existing || {};
+                        if (!log[today]) log[today] = {};
+                        log[today][alarmId] = { status: action, timestamp };
+                        return log;
+                    });
+                } else {
+                    // Fallback without lock
+                    const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
+                    if (!log[today]) log[today] = {};
+                    log[today][alarmId] = { status: action, timestamp };
+                    localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+                }
 
                 // Pending interactions for Nitnem Tracker
-                const pending = JSON.parse(localStorage.getItem(CONFIG.PENDING_INTERACTIONS_KEY) || '[]');
-                pending.push({ alarmId, action, timestamp });
-                localStorage.setItem(CONFIG.PENDING_INTERACTIONS_KEY, JSON.stringify(pending));
+                if (window.AnhadStorageLock) {
+                    window.AnhadStorageLock.withLock(CONFIG.PENDING_INTERACTIONS_KEY, (existing) => {
+                        const pending = existing || [];
+                        pending.push({ alarmId, action, timestamp });
+                        return pending;
+                    });
+                } else {
+                    const pending = JSON.parse(localStorage.getItem(CONFIG.PENDING_INTERACTIONS_KEY) || '[]');
+                    pending.push({ alarmId, action, timestamp });
+                    localStorage.setItem(CONFIG.PENDING_INTERACTIONS_KEY, JSON.stringify(pending));
+                }
 
                 // Dispatch event
                 window.dispatchEvent(new CustomEvent('alarmInteraction', {
                     detail: { alarmId, action, timestamp }
                 }));
+
+                // Broadcast to coordinator
+                if (window.AnhadAlarmCoordinator) {
+                    window.AnhadAlarmCoordinator.acknowledgeAlarm(alarmId, action);
+                }
 
                 console.log(`📝 [AlarmController] Logged: ${alarmId} - ${action}`);
 

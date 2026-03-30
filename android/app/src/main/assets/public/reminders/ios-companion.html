@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="Your daily spiritual companion — Amritvela, Rehras, Sohila" />
+  
+  <title>Today — Sacred Path</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="ios-companion.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       TODAY VIEW — The only screen that matters
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <main class="today-view" id="todayView">
+    
+    <!-- Subtle ambient background -->
+    <div class="ambient" aria-hidden="true">
+      <div class="ambient-glow"></div>
+    </div>
+
+    <!-- Top Bar — Minimal -->
+    <header class="top-bar">
+      <button class="icon-btn icon-btn--back" id="backBtn" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button class="icon-btn icon-btn--settings" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Greeting Section -->
+    <section class="greeting-section">
+      <p class="greeting-text" id="greetingText">Good Morning</p>
+      <p class="path-hint" id="pathHint">Your next path begins at <span id="nextTime">4:00 AM</span></p>
+    </section>
+
+    <!-- Primary Focus: Horizontal Swipeable Cards -->
+    <section class="focus-section">
+      <div class="focus-carousel" id="focusCarousel">
+        
+        <!-- Amritvela Card -->
+        <article class="focus-card" data-bani="amritvela">
+          <div class="focus-card-inner">
+            <div class="focus-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            </div>
+            <h2 class="focus-title">Amritvela</h2>
+            <time class="focus-time">4:00 AM</time>
+            <div class="focus-status" data-enabled="true">
+              <span class="status-indicator"></span>
+              <span class="status-text">Enabled</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Rehras Sahib Card -->
+        <article class="focus-card" data-bani="rehras">
+          <div class="focus-card-inner">
+            <div class="focus-icon focus-icon--sunset">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 18a5 5 0 0 0-10 0"/>
+                <line x1="12" y1="9" x2="12" y2="2"/>
+                <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/>
+                <line x1="1" y1="18" x2="3" y2="18"/>
+                <line x1="21" y1="18" x2="23" y2="18"/>
+                <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/>
+                <polyline points="16 5 12 9 8 5"/>
+              </svg>
+            </div>
+            <h2 class="focus-title">Rehras Sahib</h2>
+            <time class="focus-time">6:30 PM</time>
+            <div class="focus-status" data-enabled="true">
+              <span class="status-indicator"></span>
+              <span class="status-text">Enabled</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sohila Sahib Card -->
+        <article class="focus-card" data-bani="sohila">
+          <div class="focus-card-inner">
+            <div class="focus-icon focus-icon--night">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </div>
+            <h2 class="focus-title">Sohila Sahib</h2>
+            <time class="focus-time">9:30 PM</time>
+            <div class="focus-status" data-enabled="false">
+              <span class="status-indicator"></span>
+              <span class="status-text">Off</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Carousel Indicators -->
+      <div class="carousel-dots" id="carouselDots">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+      </div>
+
+      <!-- Swipe Hint (disappears after first use) -->
+      <p class="swipe-hint" id="swipeHint">Swipe to see more</p>
+    </section>
+
+    <!-- Minimal Footer Actions -->
+    <footer class="footer-actions">
+      <button class="text-btn" id="customRemindersBtn">
+        <span>Custom Reminders</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </footer>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       DETAIL SCREEN — iOS Alarm-style Edit
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="detail-screen" id="detailScreen" aria-hidden="true">
+    <div class="detail-backdrop" id="detailBackdrop"></div>
+    <div class="detail-sheet">
+      
+      <!-- Sheet Handle -->
+      <div class="sheet-handle-bar"></div>
+
+      <!-- Header -->
+      <header class="detail-header">
+        <button class="detail-close" id="detailClose">Done</button>
+        <h1 class="detail-title" id="detailTitle">Amritvela</h1>
+        <div class="detail-spacer"></div>
+      </header>
+
+      <!-- Content -->
+      <div class="detail-content">
+
+        <!-- Time Picker (Large, iOS-style) -->
+        <div class="time-picker-section">
+          <div class="time-wheel" id="timeWheel">
+            <input type="time" class="time-input-native" id="timeInput" value="04:00" />
+            <div class="time-display">
+              <span class="time-hour" id="timeHour">4</span>
+              <span class="time-colon">:</span>
+              <span class="time-minute" id="timeMinute">00</span>
+              <span class="time-period" id="timePeriod">AM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Days Selection (Pill Chips) -->
+        <div class="days-section">
+          <h3 class="section-label">Repeat</h3>
+          <div class="days-pills" id="daysPills">
+            <button class="day-pill active" data-day="0">S</button>
+            <button class="day-pill active" data-day="1">M</button>
+            <button class="day-pill active" data-day="2">T</button>
+            <button class="day-pill active" data-day="3">W</button>
+            <button class="day-pill active" data-day="4">T</button>
+            <button class="day-pill active" data-day="5">F</button>
+            <button class="day-pill active" data-day="6">S</button>
+          </div>
+          <p class="days-summary" id="daysSummary">Every day</p>
+        </div>
+
+        <!-- Sound Option -->
+        <div class="option-row" id="soundOption">
+          <span class="option-label">Sound</span>
+          <div class="option-value">
+            <span id="soundValue">Peaceful Bells</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Haptic Option -->
+        <div class="option-row">
+          <span class="option-label">Silent Haptic</span>
+          <label class="ios-toggle">
+            <input type="checkbox" id="hapticToggle" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <!-- Main Toggle (Large, Bottom) -->
+        <div class="main-toggle-section">
+          <div class="main-toggle-row">
+            <span class="main-toggle-label" id="toggleLabel">Reminder Active</span>
+            <label class="ios-toggle ios-toggle--large">
+              <input type="checkbox" id="mainToggle" checked />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SETTINGS SCREEN
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="settings-screen" id="settingsScreen" aria-hidden="true">
+    <div class="settings-backdrop" id="settingsBackdrop"></div>
+    <div class="settings-sheet">
+      
+      <div class="sheet-handle-bar"></div>
+
+      <header class="detail-header">
+        <button class="detail-close" id="settingsClose">Done</button>
+        <h1 class="detail-title">Settings</h1>
+        <div class="detail-spacer"></div>
+      </header>
+
+      <div class="settings-content">
+        
+        <!-- Notification Permission -->
+        <div class="settings-group">
+          <h3 class="settings-group-title">Notifications</h3>
+          <div class="option-row" id="notifPermRow">
+            <span class="option-label">Enable Notifications</span>
+            <button class="action-btn" id="enableNotifBtn">Enable</button>
+          </div>
+          <p class="settings-note" id="notifNote">Notifications are required for reminders to work.</p>
+        </div>
+
+        <!-- Pre-reminder -->
+        <div class="settings-group">
+          <h3 class="settings-group-title">Reminders</h3>
+          <div class="option-row">
+            <span class="option-label">Remind Before</span>
+            <select class="ios-select" id="preReminderSelect">
+              <option value="0">None</option>
+              <option value="5" selected>5 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="15">15 minutes</option>
+            </select>
+          </div>
+          <div class="option-row">
+            <span class="option-label">Never Miss Mode</span>
+            <label class="ios-toggle">
+              <input type="checkbox" id="neverMissToggle" />
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <p class="settings-note">Keeps reminding until acknowledged.</p>
+        </div>
+
+        <!-- About -->
+        <div class="settings-group">
+          <h3 class="settings-group-title">About</h3>
+          <div class="option-row">
+            <span class="option-label">Version</span>
+            <span class="option-value-static">1.0.0</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CUSTOM REMINDERS SCREEN
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="custom-screen" id="customScreen" aria-hidden="true">
+    <div class="custom-backdrop" id="customBackdrop"></div>
+    <div class="custom-sheet">
+      
+      <div class="sheet-handle-bar"></div>
+
+      <header class="detail-header">
+        <button class="detail-close" id="customClose">Done</button>
+        <h1 class="detail-title">Custom Reminders</h1>
+        <button class="add-btn" id="addCustomBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="custom-content">
+        <!-- Custom reminders list will be populated here -->
+        <div class="custom-list" id="customList">
+          <!-- Empty state -->
+        </div>
+        <div class="custom-empty" id="customEmpty">
+          <div class="empty-icon">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="24" cy="24" r="18"/>
+              <line x1="24" y1="14" x2="24" y2="34"/>
+              <line x1="14" y1="24" x2="34" y2="24"/>
+            </svg>
+          </div>
+          <p class="empty-text">No custom reminders</p>
+          <p class="empty-hint">Add your own spiritual practice times</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" aria-live="polite">
+    <span class="toast-text" id="toastText">Saved</span>
+  </div>
+
+  <script src="ios-companion.js"></script>
+</body>
+</html>

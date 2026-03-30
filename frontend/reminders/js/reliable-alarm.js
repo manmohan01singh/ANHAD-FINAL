@@ -385,8 +385,20 @@
             // Request notification permission
             await requestNotificationPermission();
 
-            // Schedule existing alarms
-            await this.scheduleAll();
+            // Schedule existing alarms (only if leader)
+            if (window.AnhadAlarmCoordinator?.isLeader()) {
+                await this.scheduleAll();
+            }
+
+            // Listen for coordinator events
+            if (window.AnhadAlarmCoordinator) {
+                window.AnhadAlarmCoordinator.onAlarmFired((alarmId, reminder, isPreReminder) => {
+                    console.log('[ReliableAlarms] Received alarm from coordinator:', alarmId);
+                    if (!window.AnhadAlarmCoordinator.isLeader()) {
+                        this.handleAlarmFired({ alarm: reminder });
+                    }
+                });
+            }
 
             // Set up visibility change handler
             document.addEventListener('visibilitychange', () => {
@@ -395,11 +407,23 @@
                 }
             });
 
+            // Pagehide cleanup
+            window.addEventListener('pagehide', () => {
+                console.log('[ReliableAlarms] Pagehide - clearing timeouts');
+                State.scheduledTimeouts.forEach((timeout) => clearTimeout(timeout));
+                State.scheduledTimeouts.clear();
+            });
+
             console.log(`✅ Reliable Alarms ready with methods: ${State.methods.join(', ')}`);
         },
 
-        // Schedule all enabled alarms
+        // Schedule all enabled alarms (only leader schedules)
         async scheduleAll() {
+            // Only schedule if leader
+            if (window.AnhadAlarmCoordinator && !window.AnhadAlarmCoordinator.isLeader()) {
+                return;
+            }
+
             // Clear existing timeouts
             State.scheduledTimeouts.forEach((timeout, id) => {
                 clearTimeout(timeout);

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>My Profile | ANHAD</title>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Profile Styles -->
+  <link rel="stylesheet" href="profile.css">
+</head>
+
+<body>
+  <!-- Animated Background -->
+  <div class="profile-bg" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+  </div>
+  
+  <main class="profile-app" style="padding-top: calc(var(--safe-top) + 16px);">
+    <!-- User Card -->
+    <section class="user-card glass-card">
+      <div class="user-card__avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="user-card__info">
+        <h2 class="user-card__name" id="userName">Waheguru Ji</h2>
+        <p class="user-card__subtitle" id="memberSince">Member since loading...</p>
+      </div>
+      <div class="user-card__badge" id="streakBadge">
+        <i class="fas fa-fire"></i>
+        <span id="currentStreak">0</span>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme" style="margin-left: 8px;">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+    </section>
+
+    <!-- Quick Stats Grid -->
+    <section class="stats-grid">
+      <div class="stat-card glass-card">
+        <div class="stat-card__icon stat-card__icon--listening">
+          <i class="fas fa-headphones"></i>
+        </div>
+        <div class="stat-card__value" id="totalListeningHours">0</div>
+        <div class="stat-card__label">Hours Listened</div>
+      </div>
+      
+      <div class="stat-card glass-card">
+        <div class="stat-card__icon stat-card__icon--days">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-card__value" id="totalDaysActive">0</div>
+        <div class="stat-card__label">Days Active</div>
+      </div>
+      
+      <div class="stat-card glass-card">
+        <div class="stat-card__icon stat-card__icon--nitnem">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="stat-card__value" id="totalNitnem">0</div>
+        <div class="stat-card__label">Nitnem Done</div>
+      </div>
+      
+      <div class="stat-card glass-card">
+        <div class="stat-card__icon stat-card__icon--pages">
+          <i class="fas fa-scroll"></i>
+        </div>
+        <div class="stat-card__value" id="totalPages">0</div>
+        <div class="stat-card__label">Angs Read</div>
+      </div>
+    </section>
+
+    <!-- Today vs Yesterday -->
+    <section class="comparison-section">
+      <h3 class="section-title">📊 Today vs Yesterday</h3>
+      <div class="comparison-card glass-card">
+        <div class="comparison-row">
+          <span class="comparison-label">Listening</span>
+          <div class="comparison-values">
+            <span class="comparison-today" id="todayListening">0 min</span>
+            <span class="comparison-vs">vs</span>
+            <span class="comparison-yesterday" id="yesterdayListening">0 min</span>
+          </div>
+        </div>
+        <div class="comparison-row">
+          <span class="comparison-label">Nitnem</span>
+          <div class="comparison-values">
+            <span class="comparison-today" id="todayNitnem">0/11</span>
+            <span class="comparison-vs">vs</span>
+            <span class="comparison-yesterday" id="yesterdayNitnem">0/11</span>
+          </div>
+        </div>
+        <div class="comparison-row">
+          <span class="comparison-label">Angs Read</span>
+          <div class="comparison-values">
+            <span class="comparison-today" id="todayPages">0</span>
+            <span class="comparison-vs">vs</span>
+            <span class="comparison-yesterday" id="yesterdayPages">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Streak Section -->
+    <section class="streak-section">
+      <h3 class="section-title">🔥 Streak Progress</h3>
+      <div class="streak-card glass-card">
+        <div class="streak-main">
+          <div class="streak-ring" id="streakRing">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" class="streak-ring__bg"/>
+              <circle cx="50" cy="50" r="45" class="streak-ring__fill" id="streakRingFill"/>
+            </svg>
+            <div class="streak-ring__text">
+              <span class="streak-ring__number" id="streakNumber">0</span>
+              <span class="streak-ring__label">days</span>
+            </div>
+          </div>
+          <div class="streak-info">
+            <div class="streak-info__item">
+              <span class="streak-info__label">Current Streak</span>
+              <span class="streak-info__value" id="currentStreakDisplay">0 days</span>
+            </div>
+            <div class="streak-info__item">
+              <span class="streak-info__label">Longest Streak</span>
+              <span class="streak-info__value" id="longestStreak">0 days</span>
+            </div>
+            <div class="streak-info__item">
+              <span class="streak-info__label">Freezes Available</span>
+              <span class="streak-info__value" id="freezesAvailable">0 ❄️</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Milestones -->
+        <div class="milestones">
+          <span class="milestone" data-days="7" id="milestone7">7</span>
+          <span class="milestone" data-days="21" id="milestone21">21</span>
+          <span class="milestone" data-days="40" id="milestone40">40</span>
+          <span class="milestone" data-days="108" id="milestone108">108</span>
+          <span class="milestone" data-days="365" id="milestone365">365</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Amritvela Analytics -->
+    <section class="amritvela-section">
+      <h3 class="section-title">🌅 Amritvela Analytics</h3>
+      <div class="amritvela-card glass-card">
+        <div class="amritvela-stats">
+          <div class="amritvela-stat">
+            <i class="fas fa-sun"></i>
+            <div>
+              <span class="amritvela-stat__value" id="amritvelaDays">0</span>
+              <span class="amritvela-stat__label">Days Woken</span>
+            </div>
+          </div>
+          <div class="amritvela-stat">
+            <i class="fas fa-clock"></i>
+            <div>
+              <span class="amritvela-stat__value" id="avgWakeTime">--:--</span>
+              <span class="amritvela-stat__label">Avg Wake Time</span>
+            </div>
+          </div>
+          <div class="amritvela-stat">
+            <i class="fas fa-star"></i>
+            <div>
+              <span class="amritvela-stat__value" id="bestDay">--</span>
+              <span class="amritvela-stat__label">Best Day</span>
+            </div>
+          </div>
+        </div>
+        <div class="amritvela-week" id="amritvelaWeek">
+          <!-- Week visualization will be populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Naam Abhyas -->
+    <section class="naam-section">
+      <h3 class="section-title">🙏 Naam Abhyas</h3>
+      <div class="naam-card glass-card">
+        <div class="naam-stats">
+          <div class="naam-stat">
+            <span class="naam-stat__value" id="naamSessionsTotal">0</span>
+            <span class="naam-stat__label">Total Sessions</span>
+          </div>
+          <div class="naam-stat">
+            <span class="naam-stat__value" id="naamSessionsToday">0</span>
+            <span class="naam-stat__label">Today</span>
+          </div>
+          <div class="naam-stat">
+            <span class="naam-stat__value" id="naamMinutesToday">0</span>
+            <span class="naam-stat__label">Min Today</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sehaj Paath Progress -->
+    <section class="sehaj-section">
+      <h3 class="section-title">📖 Sehaj Paath Journey</h3>
+      <div class="sehaj-card glass-card">
+        <div class="sehaj-progress">
+          <div class="sehaj-progress__bar">
+            <div class="sehaj-progress__fill" id="sehajProgressFill"></div>
+          </div>
+          <div class="sehaj-progress__text">
+            <span>Ang <strong id="currentAng">1</strong> of 1430</span>
+            <span id="sehajPercent">0%</span>
+          </div>
+        </div>
+        <div class="sehaj-stats">
+          <div class="sehaj-stat">
+            <span class="sehaj-stat__value" id="pagesRemaining">1429</span>
+            <span class="sehaj-stat__label">Angs Remaining</span>
+          </div>
+          <div class="sehaj-stat">
+            <span class="sehaj-stat__value" id="estimatedCompletion">--</span>
+            <span class="sehaj-stat__label">Est. Completion</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Goals -->
+    <section class="goals-section">
+      <h3 class="section-title">🎯 Daily Goals</h3>
+      <div class="goals-card glass-card">
+        <div class="goal-item" id="goalListening">
+          <div class="goal-item__header">
+            <i class="fas fa-headphones"></i>
+            <span>Listen 30 min</span>
+          </div>
+          <div class="goal-item__progress">
+            <div class="goal-item__bar">
+              <div class="goal-item__fill" id="goalListeningFill"></div>
+            </div>
+            <span class="goal-item__percent" id="goalListeningPercent">0%</span>
+          </div>
+        </div>
+        
+        <div class="goal-item" id="goalPages">
+          <div class="goal-item__header">
+            <i class="fas fa-book"></i>
+            <span>Read 5 Angs</span>
+          </div>
+          <div class="goal-item__progress">
+            <div class="goal-item__bar">
+              <div class="goal-item__fill" id="goalPagesFill"></div>
+            </div>
+            <span class="goal-item__percent" id="goalPagesPercent">0%</span>
+          </div>
+        </div>
+        
+        <div class="goal-item" id="goalNitnem">
+          <div class="goal-item__header">
+            <i class="fas fa-praying-hands"></i>
+            <span>Complete Nitnem</span>
+          </div>
+          <div class="goal-item__progress">
+            <div class="goal-item__bar">
+              <div class="goal-item__fill" id="goalNitnemFill"></div>
+            </div>
+            <span class="goal-item__percent" id="goalNitnemPercent">0%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Activity -->
+    <section class="weekly-section">
+      <h3 class="section-title">📅 This Week</h3>
+      <div class="weekly-card glass-card">
+        <div class="weekly-chart" id="weeklyChart">
+          <!-- Week bars will be populated by JS -->
+        </div>
+        <div class="weekly-legend">
+          <span><i class="fas fa-circle" style="color: var(--gold-400)"></i> Listening</span>
+          <span><i class="fas fa-circle" style="color: var(--mint-400)"></i> Nitnem</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Spacer for Navigation -->
+    <div style="height: 100px;"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="bottom-nav__container">
+      <a href="../index.html" class="nav-item" aria-label="Home"><i class="fas fa-house"></i></a>
+      <a href="../Insights/insights.html" class="nav-item" aria-label="Insights"><i class="fas fa-lightbulb"></i></a>
+      <a href="../Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
+      <button class="nav-item nav-item--active" aria-label="Profile"><i class="fas fa-user"></i></button>
+    </div>
+  </nav>
+
+  <!-- Global Theme -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+  
+  <!-- User Stats Library -->
+  <script src="../lib/user-stats.js"></script>
+  
+  <!-- Profile Scripts -->
+  <script src="profile.js"></script>
+</body>
+</html>

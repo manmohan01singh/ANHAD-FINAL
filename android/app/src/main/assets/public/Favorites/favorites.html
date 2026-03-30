@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <title>Favorites • ANHAD</title>
+  
+  <!-- Global Theme -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #FAF8F5;
+      --bg-white: #FFFFFF;
+      --bg-soft: #F5F2EE;
+      --gold-400: #D4A03A;
+      --gold-500: #B8860B;
+      --gold-gradient: linear-gradient(135deg, #D4A03A 0%, #B8860B 100%);
+      --text-primary: #1A1D26;
+      --text-secondary: #5A5F72;
+      --text-tertiary: #9CA3B8;
+      --glass-white: rgba(255, 255, 255, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 34px);
+    }
+    
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: calc(100px + var(--safe-bottom));
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      padding: 0 20px;
+      padding-top: calc(var(--safe-top) + 16px);
+      width: 100%;
+      overflow-x: hidden;
+    }
+    
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .header__back {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass-white);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .header__title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .header__btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: var(--glass-white);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: var(--bg-soft);
+      padding: 6px;
+      border-radius: 16px;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .tab--active {
+      background: var(--bg-white);
+      color: var(--gold-500);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .tab__count {
+      background: var(--bg-soft);
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    .tab--active .tab__count {
+      background: rgba(212, 160, 58, 0.15);
+      color: var(--gold-500);
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-state__icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .empty-state__title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .empty-state__desc {
+      font-size: 14px;
+      color: var(--text-tertiary);
+    }
+    
+    /* Favorite Cards */
+    .favorites-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .fav-card {
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .fav-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .fav-card:active {
+      transform: scale(0.98);
+    }
+    
+    .fav-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .fav-card__type {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 5px 10px;
+      border-radius: 100px;
+      background: rgba(212, 160, 58, 0.12);
+      color: var(--gold-500);
+    }
+    
+    .fav-card__actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .fav-card__action {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-soft);
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+    
+    .fav-card__action:hover {
+      background: var(--gold-gradient);
+      color: white;
+    }
+    
+    .fav-card__action--delete:hover {
+      background: #EF4444;
+    }
+    
+    .fav-card__gurmukhi {
+      font-family: 'Noto Sans Gurmukhi', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    
+    .fav-card__translation {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    
+    .fav-card__meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 12px;
+    }
+    
+    .fav-card__read-btn {
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      background: var(--gold-gradient);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .fav-card__read-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+    }
+    
+    .fav-card__read-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* Add Note Button */
+    .add-note-btn {
+      position: fixed;
+      bottom: calc(100px + var(--safe-bottom));
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: var(--gold-gradient);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+    
+    .add-note-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .add-note-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .add-note-btn.hidden {
+      display: none;
+    }
+    
+    .fav-card__meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    /* Section Divider */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 16px;
+    }
+    
+    .section-divider__line {
+      flex: 1;
+      height: 1px;
+      background: var(--bg-soft);
+    }
+    
+    .section-divider__text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* Old bottom-nav styles removed — unified emoji navbar CSS is below */
+    
+    /* Animations */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .app > *, .favorites-list > * {
+      animation: slideUp 0.5s ease backwards;
+    }
+    
+    .favorites-list > *:nth-child(1) { animation-delay: 0.05s; }
+    .favorites-list > *:nth-child(2) { animation-delay: 0.1s; }
+    .favorites-list > *:nth-child(3) { animation-delay: 0.15s; }
+    .favorites-list > *:nth-child(4) { animation-delay: 0.2s; }
+    .favorites-list > *:nth-child(5) { animation-delay: 0.25s; }
+    
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content--active {
+      display: block;
+    }
+    /* ═══ Favorites Dark Mode ═══ */
+    html.dark-mode body { background: #0D0D0F !important; color: #F5F5F7; }
+    html.dark-mode .header__back, html.dark-mode .header__btn {
+      background: rgba(255, 255, 255, 0.06) !important; color: #F5F5F7;
+      box-shadow: none !important;
+    }
+    html.dark-mode .header__title { color: #F5F5F7 !important; }
+    html.dark-mode .tabs { background: #1A1A1E !important; }
+    html.dark-mode .tab { color: rgba(255, 255, 255, 0.5); }
+    html.dark-mode .tab--active { background: #252528 !important; color: #E8B84A !important; box-shadow: none !important; }
+    html.dark-mode .tab__count { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.5); }
+    html.dark-mode .tab--active .tab__count { background: rgba(232, 184, 74, 0.15); color: #E8B84A; }
+    html.dark-mode .fav-card {
+      background: #1E1E22 !important; border-color: rgba(255,255,255,0.06) !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+    }
+    html.dark-mode .fav-card__gurmukhi { color: #F5F5F7 !important; }
+    html.dark-mode .fav-card__translation { color: #999 !important; }
+    html.dark-mode .fav-card__meta { color: #666 !important; }
+    html.dark-mode .fav-card__type { background: rgba(232, 184, 74, 0.12); color: #E8B84A; }
+    html.dark-mode .fav-card__action { background: rgba(255,255,255,0.06) !important; color: #999; }
+    html.dark-mode .empty-state__title { color: #999 !important; }
+    html.dark-mode .empty-state__desc { color: #666 !important; }
+    html.dark-mode .section-divider__line { background: rgba(255,255,255,0.06); }
+    html.dark-mode .section-divider__text { color: #666; }
+
+    /* ═══ Unified iOS Floating Pill Navbar ═══ */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
+      display: flex; justify-content: center;
+      padding: 0 24px; padding-bottom: calc(12px + var(--safe-bottom));
+      pointer-events: none;
+    }
+    .bottom-nav__glass {
+      pointer-events: all; width: 100%; max-width: 320px;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 8px 8px; height: 64px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(80px) saturate(260%) brightness(1.08);
+      -webkit-backdrop-filter: blur(80px) saturate(260%) brightness(1.08);
+      border-radius: 9999px;
+      border: 0.5px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 6px 32px rgba(0, 0, 0, 0.10), 0 2px 10px rgba(0, 0, 0, 0.05),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -0.5px 0 rgba(0, 0, 0, 0.02);
+      position: relative; overflow: hidden;
+    }
+    .bottom-nav__glass::before {
+      content: ''; position: absolute; top: 0; left: 12px; right: 12px; height: 0.5px;
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+    }
+    .bottom-nav__glass::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(165deg, rgba(255,255,255,0.2) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 100%);
+      pointer-events: none;
+    }
+    html.dark-mode .bottom-nav__glass {
+      background: rgba(28, 28, 30, 0.65) !important;
+      backdrop-filter: blur(40px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 
+        0 6px 32px rgba(0, 0, 0, 0.40),
+        0 2px 10px rgba(0, 0, 0, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -0.5px 0 rgba(0, 0, 0, 0.2) !important;
+    }
+    html.dark-mode .bottom-nav__glass::before {
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.10) 30%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.10) 70%,
+        transparent 100%
+      ) !important;
+    }
+    html.dark-mode .bottom-nav__glass::after {
+      display: none !important;
+    }
+    .nav-tab {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding: 6px 12px; border-radius: 22px; border: none;
+      background: transparent; text-decoration: none; color: rgba(0, 0, 0, 0.32);
+      cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      -webkit-tap-highlight-color: transparent; min-width: 56px;
+      position: relative; z-index: 1;
+    }
+    html.dark-mode .nav-tab { color: rgba(255, 255, 255, 0.38); }
+    .nav-tab:active { transform: scale(0.85); }
+    .ios-emoji--nav { font-size: 22px; line-height: 1; transition: opacity 0.2s, transform 0.2s; }
+    .nav-tab__label { font-size: 10px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+    .nav-tab--active { color: #000000 !important; background: transparent; }
+    html.dark-mode .nav-tab--active { color: #FFFFFF !important; background: transparent !important; box-shadow: none; }
+    .nav-tab--active .nav-tab__label { font-weight: 700; color: #000000; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    html.dark-mode .nav-tab--active .nav-tab__label { 
+      color: #FFFFFF !important; 
+      font-weight: 800;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
+    }
+    .nav-tab--active .ios-emoji--nav { 
+      opacity: 1 !important; 
+      background: transparent !important;
+      transform: scale(1.35) translateY(-3px); 
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    html.dark-mode .nav-tab--active .ios-emoji--nav {
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <a href="../index.html" class="header__back">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+      <h1 class="header__title">Favorites</h1>
+      <button class="header__btn" onclick="AnhadTheme.toggle()">
+        <i class="fas fa-sun" id="themeIcon"></i>
+      </button>
+    </header>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab tab--active" data-tab="shabads">
+        <i class="fas fa-bookmark"></i>
+        Shabads
+        <span class="tab__count" id="shabadCount">0</span>
+      </button>
+      <button class="tab" data-tab="bookmarks">
+        <i class="fas fa-book"></i>
+        Ang
+        <span class="tab__count" id="bookmarkCount">0</span>
+      </button>
+      <button class="tab" data-tab="notes">
+        <i class="fas fa-sticky-note"></i>
+        Notes
+        <span class="tab__count" id="noteCount">0</span>
+      </button>
+    </div>
+    
+    <!-- Shabads Tab -->
+    <div class="tab-content tab-content--active" id="shabadsTab">
+      <div class="favorites-list" id="shabadsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+    
+    <!-- Bookmarks Tab -->
+    <div class="tab-content" id="bookmarksTab">
+      <div class="favorites-list" id="bookmarksList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+    
+    <!-- Notes Tab -->
+    <div class="tab-content" id="notesTab">
+      <div class="favorites-list" id="notesList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+    
+    <!-- Add Note Floating Button (only visible on Notes tab) -->
+    <button class="add-note-btn hidden" id="addNoteBtn" onclick="showAddNoteModal()">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+  
+  <!-- Bottom Navigation — Unified Emoji Navbar -->
+  <nav class="bottom-nav" aria-label="Main Navigation">
+    <div class="bottom-nav__glass">
+      <a href="../index.html" class="nav-tab" aria-label="Home" data-index="0">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="home">🏠</span>
+        <span class="nav-tab__label">Home</span>
+      </a>
+      <a href="../Insights/insights.html" class="nav-tab" aria-label="Learning" data-index="1">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="learning">📚</span>
+        <span class="nav-tab__label">Learning</span>
+      </a>
+      <button class="nav-tab nav-tab--active" aria-label="Favorites" aria-current="page" data-index="2">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="favorites">❤️</span>
+        <span class="nav-tab__label">Favorites</span>
+      </button>
+      <a href="../Dashboard/dashboard.html" class="nav-tab" aria-label="Dashboard" data-index="3">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="dashboard">📊</span>
+        <span class="nav-tab__label">Dashboard</span>
+      </a>
+    </div>
+  </nav>
+  
+  <!-- Scripts -->
+  <script src="../lib/share-card.js"></script>
+  <script>
+    (function() {
+      'use strict';
+      
+      // Storage keys (matching other modules)
+      const STORAGE_KEYS = {
+        SHABADS: 'gurbani_favorite_shabads',
+        BOOKMARKS: 'sehajPaathBookmarks',
+        NOTES: 'gurbani_notes_v2'
+      };
+      
+      // Tab switching
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const addNoteBtn = document.getElementById('addNoteBtn');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('tab--active'));
+          tab.classList.add('tab--active');
+          
+          tabContents.forEach(tc => tc.classList.remove('tab-content--active'));
+          const targetTab = document.getElementById(`${tab.dataset.tab}Tab`);
+          if (targetTab) targetTab.classList.add('tab-content--active');
+          
+          // Show/hide Add Note button based on tab
+          if (addNoteBtn) {
+            addNoteBtn.classList.toggle('hidden', tab.dataset.tab !== 'notes');
+          }
+        });
+      });
+      
+      // Load favorites
+      function loadFavorites() {
+        loadShabads();
+        loadBookmarks();
+        loadNotes();
+      }
+      
+      function loadShabads() {
+        const container = document.getElementById('shabadsList');
+        const countEl = document.getElementById('shabadCount');
+        
+        try {
+          const shabads = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHABADS) || '[]');
+          countEl.textContent = shabads.length;
+          
+          if (shabads.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-state__icon">📖</div>
+                <h3 class="empty-state__title">No saved Shabads</h3>
+                <p class="empty-state__desc">Save Shabads from Gurbani Khoj or Random Shabad</p>
+              </div>
+            `;
+            return;
+          }
+          
+          container.innerHTML = shabads.map((shabad, i) => `
+            <div class="fav-card" data-index="${i}" data-type="shabad" data-shabadid="${shabad.shabadId || shabad.id || ''}">
+              <div class="fav-card__header">
+                <span class="fav-card__type">${shabad.source || 'Shabad'}</span>
+                <div class="fav-card__actions">
+                  <button class="fav-card__action" onclick="event.stopPropagation(); shareShabad(${i})" title="Share">
+                    <i class="fas fa-share"></i>
+                  </button>
+                  <button class="fav-card__action fav-card__action--delete" onclick="event.stopPropagation(); deleteShabad(${i})" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="fav-card__gurmukhi">${shabad.gurmukhi || ''}</div>
+              <div class="fav-card__translation">${shabad.translation || shabad.english || ''}</div>
+              <div class="fav-card__meta">
+                <span class="fav-card__meta-item">
+                  <i class="fas fa-book"></i> Ang ${shabad.ang || '—'}
+                </span>
+                <span class="fav-card__meta-item">
+                  <i class="fas fa-clock"></i> ${formatDate(shabad.savedAt)}
+                </span>
+              </div>
+              <button class="fav-card__read-btn" onclick="openShabad(${i})">
+                <i class="fas fa-book-open"></i> Read Full Shabad
+              </button>
+            </div>
+          `).join('');
+        } catch (e) {
+          console.error('Error loading shabads:', e);
+          container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">❌</div><h3 class="empty-state__title">Error loading</h3></div>';
+        }
+      }
+      
+      function loadBookmarks() {
+        const container = document.getElementById('bookmarksList');
+        const countEl = document.getElementById('bookmarkCount');
+        
+        try {
+          const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+          countEl.textContent = bookmarks.length;
+          
+          if (bookmarks.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-state__icon">🔖</div>
+                <h3 class="empty-state__title">No bookmarked Ang</h3>
+                <p class="empty-state__desc">Bookmark pages in Sehaj Paath Reader</p>
+              </div>
+            `;
+            return;
+          }
+          
+          container.innerHTML = bookmarks.map((bm, i) => `
+            <div class="fav-card" onclick="window.location.href='../SehajPaath/reader.html?ang=${bm.ang}'">
+              <div class="fav-card__header">
+                <span class="fav-card__type">Ang ${bm.ang}</span>
+                <div class="fav-card__actions">
+                  <button class="fav-card__action fav-card__action--delete" onclick="event.stopPropagation(); deleteBookmark(${i})" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="fav-card__translation">${bm.note || 'Bookmarked page'}</div>
+              <div class="fav-card__meta">
+                <span class="fav-card__meta-item">
+                  <i class="fas fa-clock"></i> ${formatDate(bm.timestamp)}
+                </span>
+              </div>
+            </div>
+          `).join('');
+        } catch (e) {
+          console.error('Error loading bookmarks:', e);
+        }
+      }
+      
+      function loadNotes() {
+        const container = document.getElementById('notesList');
+        const countEl = document.getElementById('noteCount');
+        
+        try {
+          const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES) || '[]');
+          countEl.textContent = notes.length;
+          
+          if (notes.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state">
+                <div class="empty-state__icon">📝</div>
+                <h3 class="empty-state__title">No notes yet</h3>
+                <p class="empty-state__desc">Add notes while reading in Sehaj Paath</p>
+              </div>
+            `;
+            return;
+          }
+          
+          container.innerHTML = notes.map((note, i) => `
+            <div class="fav-card" onclick="window.location.href='../Notes/notes.html'">
+              <div class="fav-card__header">
+                <span class="fav-card__type">Gurbani Note</span>
+                <div class="fav-card__actions">
+                  <button class="fav-card__action fav-card__action--delete" onclick="event.stopPropagation(); deleteNote('${note.id}')" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="fav-card__translation">${note.title || 'Untitled Note'}</div>
+              <div class="fav-card__meta">
+                <span class="fav-card__meta-item">
+                  <i class="fas fa-clock"></i> ${formatDate(note.modifiedAt || note.timestamp || Date.now())}
+                </span>
+              </div>
+            </div>
+          `).join('');
+        } catch (e) {
+          console.error('Error loading notes:', e);
+        }
+      }
+      
+      function formatDate(timestamp) {
+        if (!timestamp) return 'Recently';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 86400000) return 'Today';
+        if (diff < 172800000) return 'Yesterday';
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+      
+      // Global functions for actions
+      window.shareShabad = async function(index) {
+        const shabads = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHABADS) || '[]');
+        const shabad = shabads[index];
+        if (!shabad || !window.AnhadShare) return;
+        
+        await AnhadShare.showPreview({
+          gurmukhi: shabad.gurmukhi,
+          transliteration: shabad.transliteration || '',
+          translation: shabad.translation || shabad.english,
+          source: shabad.ang || shabad.source
+        });
+      };
+      
+      window.deleteShabad = function(index) {
+        if (!confirm('Remove this Shabad from favorites?')) return;
+        const shabads = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHABADS) || '[]');
+        shabads.splice(index, 1);
+        localStorage.setItem(STORAGE_KEYS.SHABADS, JSON.stringify(shabads));
+        loadShabads();
+      };
+      
+      window.deleteBookmark = function(index) {
+        if (!confirm('Remove this bookmark?')) return;
+        const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+        bookmarks.splice(index, 1);
+        localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
+        loadBookmarks();
+      };
+      
+      window.deleteNote = function(noteId) {
+        if (!confirm('Delete this note?')) return;
+        const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES) || '[]');
+        const updatedNotes = notes.filter(n => n.id !== noteId);
+        localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(updatedNotes));
+        loadNotes();
+      };
+      
+      // Open Shabad in reader
+      window.openShabad = function(index) {
+        const shabads = JSON.parse(localStorage.getItem(STORAGE_KEYS.SHABADS) || '[]');
+        const shabad = shabads[index];
+        if (!shabad) return;
+        
+        const shabadId = shabad.shabadId || shabad.id;
+        if (shabadId) {
+          // Navigate to shabad reader
+          window.location.href = `../GurbaniKhoj/shabad-reader.html?shabad=${shabadId}`;
+        } else {
+          // Fallback: if no shabadId, try to search by ang
+          if (shabad.ang) {
+            window.location.href = `../SehajPaath/reader.html?ang=${shabad.ang}`;
+          } else {
+            alert('Cannot open this Shabad - no ID available');
+          }
+        }
+      };
+      
+      // Add Note Modal
+      window.showAddNoteModal = function() {
+        const noteText = prompt('Enter your note:');
+        if (!noteText || !noteText.trim()) return;
+        
+        const ang = prompt('Which Ang is this note for? (optional)');
+        
+        const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTES) || '[]');
+        notes.unshift({
+          text: noteText.trim(),
+          ang: ang ? parseInt(ang) : null,
+          timestamp: Date.now()
+        });
+        localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+        loadNotes();
+      };
+      
+      // Initialize
+      loadFavorites();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1216 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NITNEM TRACKER - DIVINE THEME OVERHAUL
+   Removes gradient decorations, improves gold theme, creates magical spiritual UI
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 1: DIVINE SAFFRON THEME (New Default - Replacing Gradient)
+   A sacred, calm, spiritually immersive experience
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Override gradient theme with Divine Saffron */
+:root,
+html[data-theme="gradient"],
+html[data-theme="saffron"],
+[data-theme="gradient"],
+[data-theme="saffron"] {
+    /* Sacred Saffron - Spiritual Base */
+    --bg-gradient-start: #1a1612 !important;
+    --bg-gradient-mid: #221c16 !important;
+    --bg-gradient-end: #1a1612 !important;
+    --bg-primary: #1a1612 !important;
+    --bg-secondary: rgba(255, 183, 77, 0.08) !important;
+    --bg-tertiary: rgba(255, 183, 77, 0.04) !important;
+
+    /* Glass Morphism - Warm Saffron Tones */
+    --glass-bg: rgba(42, 35, 28, 0.9) !important;
+    --glass-bg-hover: rgba(52, 44, 36, 0.95) !important;
+    --glass-bg-active: rgba(62, 52, 44, 0.98) !important;
+    --glass-border: rgba(255, 183, 77, 0.25) !important;
+    --glass-border-light: rgba(255, 183, 77, 0.12) !important;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
+    --glass-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.55) !important;
+    --glass-inner-shadow: inset 0 1px 1px rgba(255, 183, 77, 0.1) !important;
+
+    /* Text Colors - High Contrast on Dark */
+    --text-primary: #faf3e7 !important;
+    --text-secondary: #e8d5c4 !important;
+    --text-tertiary: rgba(232, 213, 196, 0.75) !important;
+    --text-quaternary: rgba(232, 213, 196, 0.5) !important;
+    --text-inverse: #1a1612 !important;
+
+    /* Saffron Accent Colors */
+    --accent-primary: #ffb74d !important;
+    --accent-secondary: #ff9800 !important;
+    --accent-glow: rgba(255, 183, 77, 0.4) !important;
+
+    /* Divine Glow */
+    --shadow-glow: 0 0 20px rgba(255, 183, 77, 0.25) !important;
+    --shadow-glow-lg: 0 0 40px rgba(255, 183, 77, 0.35) !important;
+
+/* Sacred Status Colors */
+    --status-success: #66bb6a;
+    --status-success-bg: rgba(102, 187, 106, 0.2);
+    --status-warning: #ffb74d;
+    --status-warning-bg: rgba(255, 183, 77, 0.2);
+    --status-error: #ef5350;
+    --status-error-bg: rgba(239, 83, 80, 0.2);
+    --status-info: #4fc3f7;
+    --status-info-bg: rgba(79, 195, 247, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 1.5: PURE LIGHT THEME (Fixes the !important override issue)
+   ───────────────────────────────────────────────────────────────────────────── */
+html.light-mode,
+html[data-theme="light"],
+[data-theme="light"] {
+    --bg-gradient-start: #f5f5f7 !important;
+    --bg-gradient-mid: #ffffff !important;
+    --bg-gradient-end: #f0f0f5 !important;
+    --bg-primary: #f5f5f7 !important;
+    --bg-secondary: rgba(0, 0, 0, 0.03) !important;
+    --bg-tertiary: rgba(0, 0, 0, 0.02) !important;
+
+    --glass-bg: rgba(255, 255, 255, 0.75) !important;
+    --glass-bg-hover: rgba(255, 255, 255, 0.85) !important;
+    --glass-bg-active: rgba(255, 255, 255, 0.95) !important;
+    --glass-border: rgba(0, 0, 0, 0.08) !important;
+    --glass-border-light: rgba(0, 0, 0, 0.04) !important;
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+    --glass-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+    --glass-inner-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+
+    --text-primary: #1d1d1f !important;
+    --text-secondary: #424245 !important;
+    --text-tertiary: #6e6e73 !important;
+    --text-quaternary: #aeaeb2 !important;
+    --text-inverse: #ffffff !important;
+
+    --accent-primary: #007AFF !important;
+    --accent-secondary: #5856D6 !important;
+    --accent-glow: rgba(0, 122, 255, 0.3) !important;
+
+    --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.2) !important;
+    --shadow-glow-lg: 0 0 40px rgba(0, 122, 255, 0.3) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 2: GOLD THEME - FIXED CONTRAST & READABILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="gold"] {
+    --bg-primary: linear-gradient(180deg, #0d0a06 0%, #1a1510 50%, #0d0a06 100%);
+    --bg-secondary: rgba(212, 175, 102, 0.12);
+    --bg-tertiary: rgba(212, 175, 102, 0.06);
+
+    --glass-bg: rgba(22, 18, 12, 0.92);
+    --glass-bg-hover: rgba(32, 26, 18, 0.95);
+    --glass-bg-active: rgba(42, 34, 24, 0.98);
+    --glass-border: rgba(212, 175, 102, 0.3);
+    --glass-border-light: rgba(212, 175, 102, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+
+    /* FIXED: High contrast text colors */
+    --text-primary: #f5ede0;
+    --text-secondary: #d4af66;
+    --text-tertiary: #c9a050;
+    --text-quaternary: #8a7040;
+    --text-inverse: #0d0a06;
+
+    /* Bright Gold Accents */
+    --accent-primary: #e6c060;
+    --accent-secondary: #d4af66;
+    --accent-glow: rgba(230, 192, 96, 0.5);
+
+    --shadow-glow: 0 0 24px rgba(230, 192, 96, 0.35);
+    --shadow-glow-lg: 0 0 48px rgba(230, 192, 96, 0.45);
+}
+
+/* Gold Theme - Enhanced Text Visibility */
+[data-theme="gold"] .card-title,
+[data-theme="gold"] .gurmukhi-title,
+[data-theme="gold"] h1,
+[data-theme="gold"] h2,
+[data-theme="gold"] h3 {
+    color: #f5ede0 !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="gold"] .card-subtitle,
+[data-theme="gold"] p,
+[data-theme="gold"] span {
+    color: #d4af66;
+}
+
+[data-theme="gold"] .stat-value,
+[data-theme="gold"] .count-number,
+[data-theme="gold"] .streak-number {
+    color: #f5ede0 !important;
+    text-shadow: 0 2px 8px rgba(230, 192, 96, 0.3);
+}
+
+[data-theme="gold"] .stat-label,
+[data-theme="gold"] .count-label {
+    color: #c9a050 !important;
+}
+
+[data-theme="gold"] button {
+    color: #f5ede0;
+}
+
+[data-theme="gold"] .present-btn,
+[data-theme="gold"] .complete-all-btn,
+[data-theme="gold"] .mala-action-btn.primary {
+    background: linear-gradient(135deg, #d4af66 0%, #c9a050 100%);
+    color: #0d0a06 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 3: REMOVE ALL GRADIENT BACKGROUND EFFECTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Hide animated gradient orbs completely */
+.background-effects,
+.gradient-orb,
+.gradient-orb-1,
+.gradient-orb-2,
+.gradient-orb-3,
+.mesh-gradient,
+.noise-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Simple solid background */
+body {
+    background: var(--bg-primary) !important;
+    background-attachment: fixed !important;
+}
+
+.app-container {
+    background: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 4: CARD GLOW & DECORATIVE ELEMENTS - SIMPLIFIED
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Remove card glow effects by default */
+.card-glow,
+.amritvela-glow,
+.nitnem-glow,
+.mala-glow,
+.alarm-glow,
+.streak-glow,
+.reports-glow {
+    display: none;
+}
+
+/* Cards - Clean, solid styling */
+.card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-shadow-lg);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 5: DIVINE MAGICAL ENHANCEMENTS (Subtle & Spiritual)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Sacred Border Glow - Subtle divine light */
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+            rgba(255, 183, 77, 0.15) 0%,
+            rgba(255, 183, 77, 0.05) 50%,
+            rgba(255, 183, 77, 0.15) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+/* Divine pulse animation for active elements */
+@keyframes divinePulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 183, 77, 0);
+    }
+
+    50% {
+        box-shadow: 0 0 20px 5px rgba(255, 183, 77, 0.15);
+    }
+}
+
+/* Breathing animation for spiritual elements */
+@keyframes sacredBreath {
+
+    0%,
+    100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+/* Present button - Divine styling */
+.present-btn {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    color: var(--text-inverse);
+    border-radius: var(--radius-full);
+    padding: 16px 32px;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-md);
+    box-shadow: 0 4px 20px rgba(255, 183, 77, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.present-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 183, 77, 0.4);
+}
+
+.present-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.present-btn.marked {
+    background: var(--status-success);
+    box-shadow: 0 4px 20px rgba(102, 187, 106, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 6: MALA COUNTER - ENHANCED REAL-TIME UI
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Mala ring container */
+.mala-ring {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    transition: transform 0.3s ease;
+}
+
+/* Center button - Divine tap target */
+.mala-center-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--glass-bg) 0%, var(--glass-bg-active) 100%);
+    border: 2px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.mala-center-btn:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 6px 30px rgba(255, 183, 77, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.mala-center-btn:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+.mala-center-btn.pulse {
+    animation: tapPulse 0.15s ease-out;
+}
+
+@keyframes tapPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Count display - Live update animations */
+.count-display {
+    text-align: center;
+}
+
+.count-number {
+    font-size: 2.5rem;
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.15s ease, color 0.3s ease;
+}
+
+.count-number.count-animate {
+    animation: countBounce 0.3s ease;
+}
+
+@keyframes countBounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: var(--accent-primary);
+    }
+}
+
+.count-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* Mala progress bar - Real-time fill */
+.mala-progress-bar {
+    position: relative;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.mala-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    border-radius: var(--radius-full);
+    transition: width 0.15s ease-out;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.mala-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Mala goal container - Enhanced visibility */
+.mala-goal-container {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border-light);
+}
+
+/* Glow pulse for mala completion */
+.mala-ring.glow-pulse {
+    animation: malaComplete 2s ease-out;
+}
+
+@keyframes malaComplete {
+    0% {
+        filter: brightness(1) drop-shadow(0 0 0 transparent);
+    }
+
+    25% {
+        filter: brightness(1.3) drop-shadow(0 0 30px var(--accent-primary));
+    }
+
+    50% {
+        filter: brightness(1.2) drop-shadow(0 0 20px var(--accent-primary));
+    }
+
+    100% {
+        filter: brightness(1) drop-shadow(0 0 0 transparent);
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 7: BANI LIST & COMPLETION STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.bani-item {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--glass-border-light);
+    transition: all 0.3s ease;
+}
+
+.bani-item:hover {
+    background: var(--glass-bg-hover);
+    transform: translateX(4px);
+}
+
+.bani-item.completed {
+    background: var(--status-success-bg);
+    border-color: var(--status-success);
+}
+
+.bani-item.completed .bani-name {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+/* Completion button */
+.bani-complete-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.bani-complete-btn:hover {
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
+}
+
+.bani-item.completed .bani-complete-btn {
+    background: var(--status-success);
+    border-color: var(--status-success);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 8: REPORTS & ANALYTICS - CLEAN DATA VISUALIZATION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.report-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+}
+
+.summary-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.summary-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.summary-fill[data-type="amritvela"] {
+    background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
+}
+
+.summary-fill[data-type="nitnem"] {
+    background: linear-gradient(90deg, #66bb6a 0%, #81c784 100%);
+}
+
+.summary-fill[data-type="alarms"] {
+    background: linear-gradient(90deg, #4fc3f7 0%, #81d4fa 100%);
+}
+
+/* Chart bars */
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 120px;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    min-height: 4px;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.chart-bar::after {
+    content: attr(data-value);
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.chart-bar:hover::after {
+    opacity: 1;
+}
+
+/* Insight card */
+.report-insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--accent-primary);
+    margin-top: 16px;
+}
+
+.insight-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.insight-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 9: STREAK & ACHIEVEMENTS - SPIRITUAL CELEBRATION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.main-streak-display {
+    text-align: center;
+    padding: 24px;
+    position: relative;
+}
+
+.streak-number-container {
+    margin: 16px 0;
+}
+
+.streak-number {
+    font-size: 4rem;
+    font-weight: var(--font-extrabold);
+    color: var(--text-primary);
+    line-height: 1;
+    text-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.streak-unit {
+    display: block;
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 4px;
+}
+
+.streak-message {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    max-width: 280px;
+    margin: 16px auto 0;
+}
+
+/* Flame animation - Subtle spiritual */
+.streak-flame-animation {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    opacity: 0.6;
+}
+
+.flame {
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 30px;
+    background: linear-gradient(0deg, #ff9800 0%, #ffeb3b 50%, transparent 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: flameFlicker 1s ease-in-out infinite;
+}
+
+.flame-1 {
+    left: 0;
+    animation-delay: 0s;
+}
+
+.flame-2 {
+    left: 20px;
+    animation-delay: 0.2s;
+    height: 40px;
+}
+
+.flame-3 {
+    left: 40px;
+    animation-delay: 0.4s;
+}
+
+@keyframes flameFlicker {
+
+    0%,
+    100% {
+        transform: scaleY(1) scaleX(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scaleY(1.1) scaleX(0.9);
+        opacity: 1;
+    }
+}
+
+/* Achievement cards */
+.achievement-card {
+    padding: 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    border: 1px solid var(--glass-border-light);
+    transition: all 0.3s ease;
+}
+
+.achievement-card.locked {
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+.achievement-card:not(.locked) {
+    background: linear-gradient(135deg, var(--glass-bg) 0%, var(--glass-bg-active) 100%);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.achievement-name {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.achievement-desc {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 10: MODALS & OVERLAYS - CLEAN & FUNCTIONAL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    background: var(--glass-bg);
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-bottom: none;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.modal-overlay.active .modal-container {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--glass-border-light);
+}
+
+.modal-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+}
+
+.modal-close:hover {
+    background: var(--bg-tertiary);
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 11: MALA MENU & GOAL MODALS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.mala-menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 600;
+    animation: fadeIn 0.2s ease;
+}
+
+.mala-menu-overlay.closing {
+    animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.mala-menu {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-xl);
+    width: 90%;
+    max-width: 320px;
+    padding: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border-light);
+    margin-bottom: 12px;
+}
+
+.menu-header h4 {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.menu-close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    transition: background 0.2s ease;
+}
+
+.menu-close-btn:hover {
+    background: var(--bg-tertiary);
+}
+
+.menu-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.menu-option:hover {
+    background: var(--bg-secondary);
+}
+
+.menu-icon {
+    font-size: 1.25rem;
+}
+
+.menu-text {
+    flex: 1;
+}
+
+.menu-label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+}
+
+.menu-sublabel {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+/* Goal presets */
+.goal-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.goal-preset {
+    flex: 1;
+    min-width: 60px;
+    padding: 14px 8px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-md);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.goal-preset:hover {
+    background: var(--accent-primary);
+    color: var(--text-inverse);
+    border-color: var(--accent-primary);
+}
+
+.custom-goal-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.custom-goal-input label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.custom-goal-input input {
+    flex: 1;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--glass-border-light);
+    border-radius: var(--radius-md);
+    font-size: var(--text-md);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.custom-goal-input input:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+}
+
+.set-goal-btn {
+    padding: 12px 20px;
+    background: var(--accent-primary);
+    color: var(--text-inverse);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.set-goal-btn:hover {
+    background: var(--accent-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 12: TOAST NOTIFICATIONS - CLEAN & VISIBLE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toast-container {
+    position: fixed;
+    top: calc(var(--safe-top) + 60px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 700;
+    width: 90%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast.removing {
+    animation: toastSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+}
+
+.toast-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.toast-message {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+.toast.success .toast-icon {
+    color: var(--status-success);
+}
+
+.toast.error .toast-icon {
+    color: var(--status-error);
+}
+
+.toast.warning .toast-icon {
+    color: var(--status-warning);
+}
+
+.toast.info .toast-icon {
+    color: var(--status-info);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 13: ANIMATIONS - GLOBAL KEYFRAMES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Smooth scrolling for main content */
+.main-content {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 14: RESPONSIVE & ACCESSIBILITY
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible states */
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .card {
+        border-width: 2px;
+    }
+
+    .text-primary {
+        color: #ffffff !important;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --bg-primary: #1a1612;
+    }
+}

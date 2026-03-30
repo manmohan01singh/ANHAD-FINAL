@@ -71,19 +71,29 @@
     // ══════════════════════════════════════════════════════════════════════════
     // INITIALIZATION
     // ══════════════════════════════════════════════════════════════════════════
+    let checkInterval = null;
+
     function init() {
         console.log('🔔 Background Alarm System Initialized');
 
-        // Check and schedule alarms
-        checkAndSchedule();
+        // Only schedule if leader
+        if (window.AnhadAlarmCoordinator?.isLeader()) {
+            checkAndSchedule();
+        }
 
-        // Re-check every 30 seconds for accuracy
-        setInterval(checkAndSchedule, CONFIG.CHECK_INTERVAL);
+        // Re-check every 30 seconds for accuracy (only leader schedules)
+        checkInterval = setInterval(() => {
+            if (window.AnhadAlarmCoordinator?.isLeader()) {
+                checkAndSchedule();
+            }
+        }, CONFIG.CHECK_INTERVAL);
 
         // Visibility change - check when page becomes visible
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                checkAndSchedule();
+                if (window.AnhadAlarmCoordinator?.isLeader()) {
+                    checkAndSchedule();
+                }
                 checkMissedAlarms();
             }
         });
@@ -91,6 +101,25 @@
         // Focus handler
         window.addEventListener('focus', () => {
             checkMissedAlarms();
+        });
+
+        // Listen for alarms from coordinator (non-leader tabs)
+        if (window.AnhadAlarmCoordinator) {
+            window.AnhadAlarmCoordinator.onAlarmFired((alarmId, reminder, isPreReminder) => {
+                console.log('[BgAlarm] Received alarm from coordinator:', alarmId);
+                if (!window.AnhadAlarmCoordinator.isLeader()) {
+                    fireAlarm(reminder, isPreReminder, State.options || {});
+                }
+            });
+        }
+
+        // Pagehide cleanup
+        window.addEventListener('pagehide', () => {
+            console.log('[BgAlarm] Pagehide - clearing interval');
+            if (checkInterval) {
+                clearInterval(checkInterval);
+                checkInterval = null;
+            }
         });
     }
 
@@ -685,23 +714,38 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // LOGGING
+    // LOGGING — with storage lock protection
     // ══════════════════════════════════════════════════════════════════════════
     function logInteraction(alarmId, action) {
         try {
             const today = new Date().toLocaleDateString('en-CA');
             const timestamp = new Date().toISOString();
 
-            // Save to alarm log
-            const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
-            if (!log[today]) log[today] = {};
-            log[today][alarmId] = { status: action, timestamp };
-            localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+            // Use storage lock for atomic update
+            if (window.AnhadStorageLock) {
+                window.AnhadStorageLock.withLock(CONFIG.ALARM_LOG_KEY, (existing) => {
+                    const log = existing || {};
+                    if (!log[today]) log[today] = {};
+                    log[today][alarmId] = { status: action, timestamp };
+                    return log;
+                });
+            } else {
+                // Fallback without lock
+                const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
+                if (!log[today]) log[today] = {};
+                log[today][alarmId] = { status: action, timestamp };
+                localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+            }
 
             // Dispatch event for NitnemTracker
             window.dispatchEvent(new CustomEvent('alarmInteraction', {
                 detail: { alarmId, action, timestamp }
             }));
+
+            // Broadcast to coordinator
+            if (window.AnhadAlarmCoordinator) {
+                window.AnhadAlarmCoordinator.acknowledgeAlarm(alarmId, action);
+            }
 
             console.log(`📝 Alarm interaction logged: ${alarmId} - ${action}`);
 

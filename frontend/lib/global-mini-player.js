@@ -63,6 +63,8 @@
     return 'assets/' + filename;
   }
 
+  const RENDER_BASE = 'https://anhad-final.onrender.com';
+
   function getAudioBase() {
     try {
       const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -71,7 +73,7 @@
         return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
       }
     } catch (e) { }
-    return '/audio';
+    return RENDER_BASE + '/audio';
   }
 
   const API_BASE = (() => {
@@ -82,7 +84,7 @@
         return `${window.location.protocol}//${window.location.hostname}:3000`;
       }
     } catch (e) { }
-    return '';
+    return RENDER_BASE;
   })();
 
   // ═══════════════════════════════════════════════════════════════════════════

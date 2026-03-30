@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
 
     // Server configuration for development
     server: {
+        url: 'https://anhad-final.onrender.com',
         androidScheme: 'https',
         cleartext: false // Require HTTPS in production
     },

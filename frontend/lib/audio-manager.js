@@ -68,6 +68,9 @@
                 }
             });
 
+            // Cleanup on pagehide/unload
+            this._setupLifecycleHandlers();
+
             console.log('[AudioManager] Initialized');
         }
 
@@ -135,6 +138,33 @@
                     console.error('[AudioManager] Listener error:', e);
                 }
             });
+        }
+
+        _setupLifecycleHandlers() {
+            // Cleanup on pagehide - prevents memory leaks
+            window.addEventListener('pagehide', () => {
+                console.log('[AudioManager] Pagehide - cleaning up');
+                // Don't destroy, just pause to allow resume on pageshow
+                if (this.state.isPlaying) {
+                    this._wasPlayingBeforeHide = true;
+                }
+            });
+
+            window.addEventListener('beforeunload', () => {
+                // Clean up listeners
+                this.listeners.clear();
+                this.bc.close();
+                
+                // Remove iframe
+                const frame = document.getElementById(FRAME_ID);
+                if (frame) {
+                    frame.remove();
+                }
+            });
+
+            // Handle errors with retry
+            this.retryCount = 0;
+            this.maxRetries = 3;
         }
 
         // Public API

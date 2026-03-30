@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr">
+
+<head>
+    <link rel="stylesheet" href="../../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="ਨਿਤਨੇਮ — Daily Prayers & Banis for spiritual discipline">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <title>ਨਿਤਨੇਮ | Nitnem — ANHAD</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        @font-face {
+            font-family: 'Puratan Hastlikhat';
+            src: url('../g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.woff2') format('woff2'),
+                url('../g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.woff') format('woff'),
+                url('../g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+
+        :root {
+            --ios-blue: #007AFF;
+            --ios-orange: #FF9500;
+            --ios-green: #34C759;
+            --ios-purple: #AF52DE;
+            --sacred-gold: #D4AF37;
+            --sacred-saffron: #FF8C00;
+
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a12 50%, #1a1a2e 100%);
+            --card-bg: rgba(28, 28, 30, 0.8);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --glass-blur: blur(40px);
+
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --font-hastlikhat: 'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif;
+            --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(180deg, #FFF8F0 0%, #FFFFFF 100%);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #1D1D1F;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --text-tertiary: rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Background Orbs */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 350px;
+            height: 350px;
+            background: conic-gradient(from 0deg, var(--ios-orange), var(--sacred-gold), var(--sacred-saffron), var(--ios-orange));
+            top: -150px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: conic-gradient(from 180deg, var(--ios-purple), #5856D6, var(--ios-blue), var(--ios-purple));
+            bottom: 20%;
+            left: -120px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(20px, -20px) rotate(180deg);
+            }
+        }
+
+        /* App */
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding-bottom: calc(var(--safe-bottom) + 32px);
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: calc(var(--safe-top) + 8px) 16px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        [data-theme="light"] .header {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--ios-blue);
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .back-btn svg {
+            width: 12px;
+            height: 20px;
+        }
+
+        .header h1 {
+            flex: 1;
+            font-family: var(--font-hastlikhat);
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-spacer {
+            width: 50px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-out);
+            font-size: 18px;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.9);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 32px 20px;
+            text-align: center;
+        }
+
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+        }
+
+        .hero-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .hero h2 {
+            font-family: var(--font-hastlikhat);
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            max-width: 320px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Main */
+        .main {
+            padding: 0 16px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-left: 4px;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .section-icon {
+            font-size: 22px;
+        }
+
+        /* Time Badge */
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--ios-orange), var(--sacred-saffron));
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 14px;
+        }
+
+        /* Bani Cards */
+        .bani-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bani-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            text-decoration: none;
+            color: inherit;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s var(--ease-out);
+        }
+
+        .bani-card:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+
+        .bani-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .bani-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .bani-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bani-name {
+            font-family: var(--font-gurmukhi);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .bani-english {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .bani-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .bani-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bani-arrow {
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+        }
+
+        /* Info Card */
+        .info-card {
+            display: flex;
+            gap: 14px;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .info-card-icon {
+            font-size: 32px;
+        }
+
+        .info-card h4 {
+            font-family: var(--font-hastlikhat);
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .info-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .footer-khanda {
+            font-size: 28px;
+            color: var(--sacred-gold);
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+            margin-bottom: 12px;
+        }
+
+        .footer p {
+            font-family: var(--font-gurmukhi);
+            font-size: 14px;
+            color: var(--text-tertiary);
+        }
+
+        @media (min-width: 768px) {
+            .main {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../../css/dark-mode.css">
+  <script src="../../lib/global-theme.js"></script>
+    <!-- Smart Back Navigation -->
+    <script src="../../lib/smart-back.js"></script>
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <a href="../index.html" class="back-btn">
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M10 2L2 10L10 18" />
+                </svg>
+                Back
+            </a>
+            <h1>ਨਿਤਨੇਮ</h1>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <span id="themeIcon">🌙</span>
+            </button>
+        </header>
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-icon">
+                <img src="../../assets/ikonkar_guru-gobind-singh.webp" alt="ੴ" />
+            </div>
+            <h2>ਨਿਤਨੇਮ</h2>
+            <p>Essential daily prayers for spiritual discipline and connection with Waheguru</p>
+        </section>
+
+        <main class="main">
+
+            <!-- Info -->
+            <div class="info-card">
+                <span class="info-card-icon">🌅</span>
+                <div>
+                    <h4>ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਦਾ ਨਿਤਨੇਮ</h4>
+                    <p>The Five Banis recited during Amritvela (early morning) as part of daily Sikh practice.</p>
+                </div>
+            </div>
+
+            <!-- Amritvela Banis -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">🌅</span>
+                    <h3>Amritvela Banis</h3>
+                </div>
+                <span class="time-badge">☀️ Morning (3-6 AM)</span>
+                <div class="bani-list">
+                    <a href="../reader.html?id=2" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png"
+                                alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਜਪੁਜੀ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Japji Sahib</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 20-25 min</span>
+                                <span>👤 Guru Nanak Dev Ji</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+
+                    <a href="../reader.html?id=4" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-gobind-singh-ji.png"
+                                alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਜਾਪੁ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Jaap Sahib</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 15-20 min</span>
+                                <span>👤 Guru Gobind Singh Ji</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+
+                    <a href="../reader.html?id=6" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-gobind-singh-ji.png"
+                                alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੈਯੇ</div>
+                            <div class="bani-english">Tav Prasad Savaiye</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 5-7 min</span>
+                                <span>👤 Guru Gobind Singh Ji</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+
+                    <a href="../reader.html?id=9" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-gobind-singh-ji.png"
+                                alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਚੌਪਈ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Chaupai Sahib</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 7-10 min</span>
+                                <span>👤 Guru Gobind Singh Ji</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+
+                    <a href="../reader.html?id=10" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-amar-das-ji.png"
+                                alt="Guru Amar Das Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਅਨੰਦੁ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Anand Sahib</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 15-20 min</span>
+                                <span>👤 Guru Amar Das Ji</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Evening Banis -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">🌇</span>
+                    <h3>Evening Bani</h3>
+                </div>
+                <span class="time-badge">🌆 Evening (6 PM)</span>
+                <div class="bani-list">
+                    <a href="../reader.html?id=21" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-ramdas-ji.png" alt="Guru Ram Das Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਰਹਿਰਾਸ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Rehras Sahib</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 25-30 min</span>
+                                <span>Multiple Gurus</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Night Bani -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">🌙</span>
+                    <h3>Night Bani</h3>
+                </div>
+                <span class="time-badge">🌙 Before Sleep</span>
+                <div class="bani-list">
+                    <a href="../reader.html?id=23" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਸੋਹਿਲਾ ਸਾਹਿਬ</div>
+                            <div class="bani-english">Kirtan Sohila</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 10 min</span>
+                                <span>Multiple Gurus</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Ardas -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">🙏</span>
+                    <h3>Prayer</h3>
+                </div>
+                <div class="bani-list">
+                    <a href="../reader.html?id=24" class="bani-card">
+                        <div class="bani-icon"><img src="../../assets/icons/guru-granth-sahib-ji.png" alt="Sri Guru Granth Sahib Ji"></div>
+                        <div class="bani-content">
+                            <div class="bani-name">ਅਰਦਾਸ</div>
+                            <div class="bani-english">Ardas</div>
+                            <div class="bani-meta">
+                                <span>⏱️ 5-10 min</span>
+                                <span>Sikh Prayer</span>
+                            </div>
+                        </div>
+                        <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-khanda">☬</div>
+            <p>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ ॥</p>
+        </footer>
+    </div>
+
+    <script>
+        // Theme Toggle — delegates to global AnhadTheme
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function updateThemeIcon(theme) {
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Set initial icon from AnhadTheme
+        if (window.AnhadTheme) {
+            updateThemeIcon(AnhadTheme.get());
+        }
+
+        // Toggle theme via AnhadTheme
+        themeToggle.addEventListener('click', () => {
+            if (window.AnhadTheme) {
+                const newTheme = AnhadTheme.toggle();
+                updateThemeIcon(newTheme);
+            }
+        });
+
+        // Listen for theme changes from other sources
+        window.addEventListener('themechange', (e) => {
+            updateThemeIcon(e.detail.theme);
+        });
+    </script>
+</body>
+
+</html>

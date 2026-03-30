@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr" data-theme="light">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>ਨਿਤਨੇਮ | Sacred Bani Library — ANHAD</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Gurmukhi Fonts -->
+    <style>
+        @font-face {
+            font-family: 'Puratan Hastlikhat';
+            src: url('g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.woff2') format('woff2'),
+                 url('g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.woff') format('woff'),
+                 url('g-fonts/puratan-hathlikhat/PuratanHastLikhat-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+    </style>
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+           ULTRA iOS 18+ DESIGN SYSTEM - ANHAD NITNEM HUB
+           Pure Apple-level aesthetics with sacred elements
+        ═══════════════════════════════════════════════════════════════ */
+        
+        :root {
+            /* iOS System Colors */
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-orange: #FF9500;
+            --ios-red: #FF3B30;
+            --ios-yellow: #FFCC00;
+            --ios-purple: #AF52DE;
+            --ios-pink: #FF2D55;
+            --ios-teal: #5AC8FA;
+            --ios-indigo: #5856D6;
+            
+            /* Sacred Colors */
+            --sacred-gold: #D4AF37;
+            --sacred-saffron: #FF8C00;
+            --sacred-cream: #FFF8DC;
+            
+            /* Dark Theme (Default) */
+            --bg-primary: #000000;
+            --bg-secondary: #1C1C1E;
+            --bg-tertiary: #2C2C2E;
+            --bg-elevated: #3A3A3C;
+            --card-bg: rgba(28, 28, 30, 0.85);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --separator: rgba(255, 255, 255, 0.08);
+            
+            /* Materials */
+            --glass-bg: rgba(28, 28, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --blur-regular: blur(20px);
+            --blur-thick: blur(40px);
+            --blur-ultra: blur(80px);
+            
+            /* Spacing */
+            --safe-top: env(safe-area-inset-top, 47px);
+            --safe-bottom: env(safe-area-inset-bottom, 34px);
+            
+            /* Typography */
+            --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --font-hastlikhat: 'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif;
+            
+            /* Animation */
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+            
+            /* Tab Bar */
+            --tab-bar-height: 83px;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #F2F2F7;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F2F2F7;
+            --bg-elevated: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.04);
+            --text-primary: #000000;
+            --text-secondary: rgba(0, 0, 0, 0.5);
+            --text-tertiary: rgba(0, 0, 0, 0.3);
+            --separator: rgba(0, 0, 0, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.06);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: calc(var(--tab-bar-height) + 20px);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           SKELETON LOADING
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .skeleton-container {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-primary);
+            z-index: 10000;
+            padding: 60px 20px 100px;
+            transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+        }
+        
+        .skeleton-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .skeleton {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.08) 50%,
+                transparent 100%
+            );
+            animation: shimmer 1.5s infinite;
+        }
+        
+        [data-theme="light"] .skeleton::after {
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(0, 0, 0, 0.04) 50%,
+                transparent 100%
+            );
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .skeleton-header { height: 44px; margin-bottom: 24px; }
+        .skeleton-hero { height: 220px; margin-bottom: 24px; border-radius: 20px; }
+        .skeleton-search { height: 50px; margin-bottom: 32px; border-radius: 14px; }
+        .skeleton-section-title { height: 24px; width: 140px; margin-bottom: 16px; }
+        .skeleton-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }
+        .skeleton-card { height: 120px; border-radius: 20px; }
+        .skeleton-list { display: flex; flex-direction: column; gap: 12px; }
+        .skeleton-list-item { height: 90px; border-radius: 16px; }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           BACKGROUND EFFECTS
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: var(--blur-ultra);
+            opacity: 0.5;
+            animation: orbFloat 25s ease-in-out infinite;
+        }
+        
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: conic-gradient(from 0deg, var(--sacred-gold), var(--ios-orange), var(--sacred-saffron), var(--sacred-gold));
+            top: -250px;
+            right: -200px;
+        }
+        
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: conic-gradient(from 120deg, var(--ios-purple), var(--ios-indigo), var(--ios-blue), var(--ios-purple));
+            bottom: 10%;
+            left: -200px;
+            animation-delay: -8s;
+        }
+        
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: conic-gradient(from 240deg, var(--ios-teal), var(--ios-green), var(--ios-teal));
+            bottom: -100px;
+            right: -50px;
+            animation-delay: -16s;
+        }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(30px, -40px) rotate(90deg) scale(1.05); }
+            50% { transform: translate(-20px, 30px) rotate(180deg) scale(0.95); }
+            75% { transform: translate(-40px, -20px) rotate(270deg) scale(1.02); }
+        }
+        
+        .noise-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.02;
+            mix-blend-mode: overlay;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           APP CONTAINER
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .app {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeIn 0.6s var(--ease-out) 0.3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           HEADER - iOS Style with Theme Toggle
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: calc(var(--safe-top) + 8px) 20px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-thick);
+            -webkit-backdrop-filter: var(--blur-thick);
+            border-bottom: 1px solid var(--separator);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--ios-blue);
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+        }
+        
+        .back-btn svg { width: 12px; height: 20px; }
+        
+        .header-title {
+            font-family: var(--font-hastlikhat);
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.3s var(--spring);
+        }
+        
+        .theme-toggle:active { transform: scale(0.9); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           HERO SECTION with Ik Onkar Image
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .hero {
+            padding: 32px 20px 24px;
+            text-align: center;
+        }
+        
+        .hero-ikonkar {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 16px;
+            filter: drop-shadow(0 0 60px rgba(212, 175, 55, 0.5));
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        
+        [data-theme="light"] .hero-ikonkar {
+            filter: 
+                drop-shadow(0 0 30px rgba(212, 175, 55, 0.6))
+                drop-shadow(0 0 2px rgba(139, 69, 19, 0.8))
+                drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));
+        }
+        
+        .hero-ikonkar img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { 
+                filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 80px rgba(212, 175, 55, 0.7));
+                transform: scale(1.03);
+            }
+        }
+        
+        .hero-title {
+            font-family: var(--font-hastlikhat);
+            font-size: 36px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron), var(--ios-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        
+        .hero-greeting {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            backdrop-filter: var(--blur-regular);
+            -webkit-backdrop-filter: var(--blur-regular);
+        }
+        
+        .greeting-icon { font-size: 22px; }
+        
+        .greeting-text {
+            font-family: var(--font-gurmukhi);
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           SEARCH BAR
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .search-section {
+            padding: 0 20px 28px;
+        }
+        
+        .search-trigger {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            color: var(--text-tertiary);
+            font-size: 17px;
+            cursor: pointer;
+            backdrop-filter: var(--blur-regular);
+            -webkit-backdrop-filter: var(--blur-regular);
+            transition: all 0.3s var(--ease-out);
+        }
+        
+        .search-trigger:hover {
+            border-color: var(--sacred-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .search-trigger:active { transform: scale(0.98); }
+        
+        .search-trigger svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.5;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           MAIN CONTENT
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .main { padding: 0 16px; }
+        
+        .section { margin-bottom: 32px; }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+        
+        .section-title h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        
+        .section-icon { font-size: 24px; }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           STAGGERED ANIMATIONS
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: staggerIn 0.7s var(--ease-out) forwards;
+        }
+        
+        @keyframes staggerIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.15s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(4) { animation-delay: 0.25s; }
+        .stagger-item:nth-child(5) { animation-delay: 0.3s; }
+        .stagger-item:nth-child(6) { animation-delay: 0.35s; }
+        .stagger-item:nth-child(7) { animation-delay: 0.4s; }
+        .stagger-item:nth-child(8) { animation-delay: 0.45s; }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           QUICK ACCESS GRID
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .quick-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            text-decoration: none;
+            color: inherit;
+            text-align: center;
+            overflow: hidden;
+            backdrop-filter: var(--blur-regular);
+            -webkit-backdrop-filter: var(--blur-regular);
+            transition: all 0.35s var(--ease-out);
+        }
+        
+        .quick-card:active { transform: scale(0.95); }
+        
+        .quick-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: radial-gradient(ellipse at top, rgba(255,255,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .quick-card-glow {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            top: 10%;
+            right: 10%;
+        }
+        
+        .quick-card:nth-child(1) .quick-card-glow { background: var(--ios-orange); }
+        .quick-card:nth-child(2) .quick-card-glow { background: var(--ios-pink); }
+        .quick-card:nth-child(3) .quick-card-glow { background: var(--ios-purple); }
+        .quick-card:nth-child(4) .quick-card-glow { background: var(--ios-teal); }
+        
+        .quick-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .quick-name {
+            font-family: var(--font-gurmukhi);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .quick-english {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           CATEGORY CARDS - Scripture Symbol Icons
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .categories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .category-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            text-decoration: none;
+            color: inherit;
+            overflow: hidden;
+            backdrop-filter: var(--blur-regular);
+            -webkit-backdrop-filter: var(--blur-regular);
+            transition: all 0.35s var(--ease-out);
+        }
+        
+        .category-card:active { transform: scale(0.98); }
+        
+        .category-glow {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0.3;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: opacity 0.3s;
+        }
+        
+        .category-card:hover .category-glow { opacity: 0.5; }
+        
+        .category-card.nitnem .category-glow { background: var(--ios-orange); }
+        .category-card.sggs .category-glow { background: linear-gradient(135deg, var(--ios-red), var(--ios-pink)); }
+        .category-card.dasam .category-glow { background: var(--ios-green); }
+        .category-card.sarbloh .category-glow { background: var(--ios-indigo); }
+        
+        .category-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        
+        .category-icon img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+        
+        .category-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--sacred-gold);
+            fill: none;
+            stroke-width: 1.5;
+        }
+        
+        .category-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .category-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 6px;
+        }
+        
+        .category-title .gurmukhi {
+            font-family: var(--font-gurmukhi);
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .category-title .english {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .category-desc {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+        
+        .category-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .badge.gold { 
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            color: #000;
+        }
+        
+        .category-arrow {
+            width: 20px;
+            height: 20px;
+            color: var(--text-tertiary);
+            transition: transform 0.3s;
+        }
+        
+        .category-card:hover .category-arrow { transform: translateX(4px); }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           FOOTER
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .footer {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+        
+        .footer-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-divider .line {
+            flex: 1;
+            max-width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--separator), transparent);
+        }
+        
+        .footer-divider .khanda {
+            font-size: 28px;
+            color: var(--sacred-gold);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+        }
+        
+        .footer-text {
+            font-family: var(--font-gurmukhi);
+            font-size: 14px;
+            color: var(--text-tertiary);
+            line-height: 1.6;
+        }
+        
+        .footer-version {
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            opacity: 0.4;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           FLOATING TAB BAR
+        ═══════════════════════════════════════════════════════════════ */
+        
+        .tab-bar {
+            position: fixed;
+            bottom: calc(var(--safe-bottom) + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            backdrop-filter: var(--blur-thick);
+            -webkit-backdrop-filter: var(--blur-thick);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+        
+        [data-theme="light"] .tab-bar {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.3s var(--ease-out);
+            position: relative;
+        }
+        
+        .tab-item.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-theme="light"] .tab-item.active { background: rgba(0, 0, 0, 0.05); }
+        
+        .tab-item.active::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background: var(--sacred-gold);
+            border-radius: 50%;
+        }
+        
+        .tab-item:active { transform: scale(0.9); }
+        
+        .tab-icon { font-size: 22px; line-height: 1; }
+        
+        .tab-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE
+        ═══════════════════════════════════════════════════════════════ */
+        
+        @media (min-width: 768px) {
+            .main { max-width: 600px; margin: 0 auto; }
+            .quick-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skeleton Loading -->
+    <div class="skeleton-container" id="skeletonContainer">
+        <div class="skeleton skeleton-header"></div>
+        <div class="skeleton skeleton-hero"></div>
+        <div class="skeleton skeleton-search"></div>
+        <div class="skeleton skeleton-section-title"></div>
+        <div class="skeleton-grid">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+        </div>
+        <div class="skeleton skeleton-section-title"></div>
+        <div class="skeleton-list">
+            <div class="skeleton skeleton-list-item"></div>
+            <div class="skeleton skeleton-list-item"></div>
+            <div class="skeleton skeleton-list-item"></div>
+        </div>
+    </div>
+    
+    <!-- Background Effects -->
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="noise-overlay"></div>
+    </div>
+    
+    <!-- App -->
+    <div class="app" id="app">
+        
+        <!-- Header -->
+        <header class="header">
+            <a href="../index.html" class="back-btn">
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <path d="M10 2L2 10L10 18"/>
+                </svg>
+                Home
+            </a>
+            <span class="header-title">ਸੱਚੀ ਬਾਣੀ</span>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </header>
+        
+        <!-- Hero -->
+        <section class="hero stagger-item">
+            <div class="hero-ikonkar">
+                <img src="../assets/ikonkar_guru-gobind-singh.webp" alt="ੴ" />
+            </div>
+            <h1 class="hero-title">ਸੱਚੀ ਬਾਣੀ</h1>
+            <p class="hero-subtitle">Sacred Gurbani Library</p>
+            <div class="hero-greeting" id="greeting">
+                <span class="greeting-icon">☀️</span>
+                <span class="greeting-text">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ</span>
+            </div>
+        </section>
+        
+        <!-- Search -->
+        <div class="search-section stagger-item">
+            <button class="search-trigger" id="searchTrigger">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <span>Search Banis...</span>
+            </button>
+        </div>
+        
+        <!-- Main Content -->
+        <main class="main">
+            
+            <!-- Quick Access -->
+            <section class="section stagger-item">
+                <div class="section-title">
+                    <span class="section-icon">⚡</span>
+                    <h2>Quick Access</h2>
+                </div>
+                <div class="quick-grid">
+                    <a href="reader.html?id=2" class="quick-card stagger-item">
+                        <div class="quick-card-glow"></div>
+                        <span class="quick-icon">🌅</span>
+                        <span class="quick-name">ਜਪੁਜੀ ਸਾਹਿਬ</span>
+                        <span class="quick-english">Japji Sahib</span>
+                    </a>
+                    <a href="reader.html?id=21" class="quick-card stagger-item">
+                        <div class="quick-card-glow"></div>
+                        <span class="quick-icon">🌇</span>
+                        <span class="quick-name">ਰਹਿਰਾਸ ਸਾਹਿਬ</span>
+                        <span class="quick-english">Rehras Sahib</span>
+                    </a>
+                    <a href="reader.html?id=23" class="quick-card stagger-item">
+                        <div class="quick-card-glow"></div>
+                        <span class="quick-icon">🌙</span>
+                        <span class="quick-name">ਸੋਹਿਲਾ ਸਾਹਿਬ</span>
+                        <span class="quick-english">Sohila Sahib</span>
+                    </a>
+                    <a href="reader.html?id=31" class="quick-card stagger-item">
+                        <div class="quick-card-glow"></div>
+                        <span class="quick-icon">🕊️</span>
+                        <span class="quick-name">ਸੁਖਮਨੀ</span>
+                        <span class="quick-english">Sukhmani Sahib</span>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Categories -->
+            <section class="section stagger-item">
+                <div class="section-title">
+                    <span class="section-icon">📚</span>
+                    <h2>Browse Banis</h2>
+                </div>
+                
+                <div class="categories-list">
+                    <!-- My Pothi -->
+                    <a href="my-pothi.html" class="category-card stagger-item">
+                        <div class="category-glow" style="background: var(--ios-purple);"></div>
+                        <div class="category-icon" style="font-size: 36px; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));">
+                            📿
+                        </div>
+                        <div class="category-content">
+                            <div class="category-title">
+                                <span class="gurmukhi">ਮੇਰੀ ਪੋਥੀ</span>
+                                <span class="english">My Pothi</span>
+                            </div>
+                            <p class="category-desc">Your personalized Bani collection</p>
+                            <div class="category-badges">
+                                <span class="badge gold">Personal</span>
+                            </div>
+                        </div>
+                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- Nitnem -->
+                    <a href="category/nitnem.html" class="category-card nitnem stagger-item">
+                        <div class="category-glow"></div>
+                        <div class="category-icon">
+                            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor">
+                                <path d="M8 8v32c0 2 1 3 3 3h26c2 0 3-1 3-3V8c0-2-1-3-3-3H11C9 5 8 6 8 8z"/>
+                                <path d="M14 12h20M14 18h16M14 24h12M14 30h8"/>
+                                <circle cx="35" cy="35" r="8" fill="none"/>
+                                <path d="M35 31v8M31 35h8"/>
+                            </svg>
+                        </div>
+                        <div class="category-content">
+                            <div class="category-title">
+                                <span class="gurmukhi">ਨਿਤਨੇਮ</span>
+                                <span class="english">Nitnem — Daily Prayers</span>
+                            </div>
+                            <p class="category-desc">Morning, evening & night prayers</p>
+                            <div class="category-badges">
+                                <span class="badge gold">Essential</span>
+                                <span class="badge">8 Banis</span>
+                            </div>
+                        </div>
+                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- SGGS -->
+                    <a href="category/sggs.html" class="category-card sggs stagger-item">
+                        <div class="category-glow"></div>
+                        <div class="category-icon">
+                            <img src="../assets/sggs-transparent.webp" alt="SGGS" />
+                        </div>
+                        <div class="category-content">
+                            <div class="category-title">
+                                <span class="gurmukhi">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+                                <span class="english">Sri Guru Granth Sahib Ji</span>
+                            </div>
+                            <p class="category-desc">The Eternal Guru — 1430 Ang</p>
+                            <div class="category-badges">
+                                <span class="badge">14+ Banis</span>
+                            </div>
+                        </div>
+                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- Dasam -->
+                    <a href="category/dasam.html" class="category-card dasam stagger-item">
+                        <div class="category-glow"></div>
+                        <div class="category-icon">
+                            <img src="../assets/dasam-granth-transparent.webp" alt="Dasam Granth" />
+                        </div>
+                        <div class="category-content">
+                            <div class="category-title">
+                                <span class="gurmukhi">ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+                                <span class="english">Sri Dasam Granth Sahib Ji</span>
+                            </div>
+                            <p class="category-desc">Guru Gobind Singh Ji's compositions</p>
+                            <div class="category-badges">
+                                <span class="badge">12+ Banis</span>
+                            </div>
+                        </div>
+                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                    
+                    <!-- Sarbloh -->
+                    <a href="category/sarbloh.html" class="category-card sarbloh stagger-item">
+                        <div class="category-glow"></div>
+                        <div class="category-icon">
+                            <img src="../assets/sarbloh-granth-transparent.webp" alt="Sarbloh Granth" />
+                        </div>
+                        <div class="category-content">
+                            <div class="category-title">
+                                <span class="gurmukhi">ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+                                <span class="english">Sri Sarbloh Granth Sahib Ji</span>
+                            </div>
+                            <p class="category-desc">The Granth of All-Steel</p>
+                            <div class="category-badges">
+                                <span class="badge">Coming Soon</span>
+                            </div>
+                        </div>
+                        <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 18l6-6-6-6"/>
+                        </svg>
+                    </a>
+                </div>
+            </section>
+            
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer stagger-item">
+            <div class="footer-divider">
+                <span class="line"></span>
+                <span class="khanda">☬</span>
+                <span class="line"></span>
+            </div>
+            <p class="footer-text">
+                ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ ॥
+            </p>
+            <p class="footer-version">ANHAD v5.0 — Pure iOS Edition</p>
+        </footer>
+        
+    </div>
+    
+    <!-- Floating Tab Bar -->
+    <nav class="tab-bar">
+        <a href="../index.html" class="tab-item">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">Home</span>
+        </a>
+        <a href="index.html" class="tab-item active">
+            <span class="tab-icon">📖</span>
+            <span class="tab-label">Banis</span>
+        </a>
+        <a href="../Hukamnama/daily-hukamnama.html" class="tab-item">
+            <span class="tab-icon">📜</span>
+            <span class="tab-label">Hukamnama</span>
+        </a>
+
+        <a href="../NitnemTracker/nitnem-tracker.html" class="tab-item">
+            <span class="tab-icon">📊</span>
+            <span class="tab-label">Tracker</span>
+        </a>
+    </nav>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // SKELETON LOADING
+        // ═══════════════════════════════════════════════════════════════
+        
+        setTimeout(() => {
+            document.getElementById('skeletonContainer').classList.add('hidden');
+        }, 600);
+        
+        // ═══════════════════════════════════════════════════════════════
+        // THEME TOGGLE
+        // ═══════════════════════════════════════════════════════════════
+        
+        // Use global theme from main app (anhad_theme) with light as default
+        const savedTheme = localStorage.getItem('anhad_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            // Save to global theme key so it syncs with main app
+            localStorage.setItem('anhad_theme', next);
+            themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+        });
+        
+        // ═══════════════════════════════════════════════════════════════
+        // GREETING BASED ON TIME
+        // ═══════════════════════════════════════════════════════════════
+        
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greeting = document.getElementById('greeting');
+            if (!greeting) return;
+            
+            let icon, text;
+            if (hour >= 3 && hour < 6) {
+                icon = '🌅';
+                text = 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ';
+            } else if (hour >= 6 && hour < 12) {
+                icon = '☀️';
+                text = 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ';
+            } else if (hour >= 12 && hour < 17) {
+                icon = '🌤️';
+                text = 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ';
+            } else if (hour >= 17 && hour < 21) {
+                icon = '🌇';
+                text = 'ਸ਼ੁਭ ਸੰਧਿਆ';
+            } else {
+                icon = '🌙';
+                text = 'ਸ਼ੁਭ ਰਾਤਰੀ';
+            }
+            
+            greeting.innerHTML = `
+                <span class="greeting-icon">${icon}</span>
+                <span class="greeting-text">${text}</span>
+            `;
+        }
+        updateGreeting();
+        
+        // ═══════════════════════════════════════════════════════════════
+        // RISE-UP ENTRY ANIMATION for stagger-item elements
+        // ═══════════════════════════════════════════════════════════════
+        
+        const staggerObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 80);
+                    staggerObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        
+        document.querySelectorAll('.stagger-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(24px)';
+            el.style.transition = 'opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out)';
+            staggerObserver.observe(el);
+        });
+        
+        // ═══════════════════════════════════════════════════════════════
+        // SEARCH NAVIGATION
+        // ═══════════════════════════════════════════════════════════════
+        
+        document.getElementById('searchTrigger').addEventListener('click', () => {
+            window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
+        });
+    </script>
+</body>
+</html>

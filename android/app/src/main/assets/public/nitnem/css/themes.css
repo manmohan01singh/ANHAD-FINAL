@@ -1,0 +1,451 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   THEMES.CSS — Optical Liquid Glass Edition
+   Purpose: CSS Custom Properties for Day & Night Themes with Glass Effects
+   Author: Gurbani Live
+   Version: 2.0.0 — iOS 26++ Liquid Glass
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ROOT DEFAULTS & CORE SYSTEM
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Smooth theme transition */
+  --theme-transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Font families */
+  --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+  --font-english: 'Cormorant Garamond', Georgia, serif;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Base spacing scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+  
+  /* Transitions - Liquid Motion Curves */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-liquid: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-elastic: 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Z-index scale */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-max: 9999;
+  
+  /* ═══════════════════════════════════════════════════════════════════════
+     LIQUID GLASS SYSTEM VARIABLES
+  ═══════════════════════════════════════════════════════════════════════ */
+  
+  /* Glass blur intensities */
+  --glass-blur-sm: 8px;
+  --glass-blur-md: 16px;
+  --glass-blur-lg: 24px;
+  --glass-blur-xl: 40px;
+  --glass-blur-2xl: 60px;
+  
+  /* Glass saturation */
+  --glass-saturation: 180%;
+  --glass-brightness: 105%;
+  --glass-contrast: 95%;
+  
+  /* Refraction offsets (for chromatic aberration) */
+  --refraction-offset: 2px;
+  --refraction-intensity: 0.5;
+  
+  /* Liquid physics */
+  --liquid-tension: 0.3;
+  --liquid-damping: 0.7;
+  --liquid-mass: 1;
+  
+  /* Light source position (updated by JS) */
+  --light-x: 50%;
+  --light-y: 30%;
+  --light-intensity: 1;
+  
+  /* Refraction offsets for optical droplet */
+  --refract-x: 0px;
+  --refract-y: 0px;
+  --liquid-wobble: 0;
+  
+  /* Scroll-linked variables (updated by JS) */
+  --scroll-progress: 0;
+  --scroll-velocity: 0;
+  --scroll-direction: 1;
+  
+  /* Scroll glow intensity */
+  --scroll-glow: 0;
+  
+  /* Glass glow */
+  --glass-glow: 0.35;
+  
+  /* Edge chroma */
+  --edge-chroma: 0.35;
+  
+  /* UI motion */
+  --ui-motion: 1;
+  
+  /* Viewport units for mobile */
+  --vh: 1vh;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DAY THEME — Warm, Spiritual, Premium Glass
+   Inspired by: Morning sunlight through crystal, sacred spaces
+───────────────────────────────────────────────────────────────────────────── */
+:root[data-theme="day"] {
+  /* ══════ Primary Colors ══════ */
+  --color-bg-primary: #FBF7F0;
+  --color-bg-secondary: #F5EDE0;
+  --color-bg-tertiary: #EDE4D3;
+  --color-bg-elevated: #FFFFFF;
+  
+  /* ══════ Text Colors ══════ */
+  --color-text-primary: #2C1810;
+  --color-text-secondary: #5C4A3D;
+  --color-text-tertiary: #8B7355;
+  --color-text-muted: #A69580;
+  --color-text-inverse: #FFFFFF;
+  
+  /* ══════ Accent Colors ══════ */
+  --color-accent-primary: #C4841D;
+  --color-accent-primary-hover: #A66E15;
+  --color-accent-secondary: #B8860B;
+  --color-accent-glow: rgba(196, 132, 29, 0.15);
+  --color-accent-rgb: 196 132 29;
+  --color-accent-gradient: linear-gradient(135deg, #C4841D 0%, #D4A84B 50%, #E8C36D 100%);
+  
+  /* ══════ Sacred/Spiritual Colors ══════ */
+  --color-sacred-gold: #D4A84B;
+  --color-sacred-saffron: #FF9933;
+  --color-sacred-deep: #8B4513;
+  --color-ik-onkar: #C4841D;
+  
+  /* ══════ Glass Colors ══════ */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.4);
+  --glass-bg-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-subtle: rgba(255, 255, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-shadow: rgba(44, 24, 16, 0.1);
+  
+  /* ══════ Chromatic Aberration Colors ══════ */
+  --chroma-red: rgba(255, 100, 100, 0.15);
+  --chroma-green: rgba(100, 255, 100, 0.1);
+  --chroma-blue: rgba(100, 100, 255, 0.15);
+  
+  /* ══════ Liquid Orb Colors ══════ */
+  --orb-color-1: rgba(196, 132, 29, 0.3);
+  --orb-color-2: rgba(212, 168, 75, 0.25);
+  --orb-color-3: rgba(255, 153, 51, 0.2);
+  --orb-color-4: rgba(184, 134, 11, 0.15);
+  
+  /* ══════ UI Colors ══════ */
+  --color-border-light: rgba(139, 115, 85, 0.15);
+  --color-border-medium: rgba(139, 115, 85, 0.25);
+  --color-border-strong: rgba(139, 115, 85, 0.4);
+  
+  --color-divider: rgba(139, 115, 85, 0.2);
+  --color-divider-symbol: #C4841D;
+  
+  /* ══════ Card Colors ══════ */
+  --color-card-bg: rgba(255, 255, 255, 0.75);
+  --color-card-bg-hover: rgba(255, 255, 255, 0.9);
+  --color-card-border: rgba(255, 255, 255, 0.6);
+  --color-card-shadow: rgba(44, 24, 16, 0.08);
+  
+  /* ══════ Header Colors ══════ */
+  --color-header-bg: linear-gradient(180deg, 
+    rgba(251, 247, 240, 0.95) 0%, 
+    rgba(245, 237, 224, 0.9) 100%);
+  --color-header-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L35 25H55L39 37L44 57L30 45L16 57L21 37L5 25H25L30 5Z' fill='%23C4841D' fill-opacity='0.03'/%3E%3C/svg%3E");
+  
+  /* ══════ Shadows - Enhanced for Glass ══════ */
+  --shadow-sm: 0 1px 2px rgba(44, 24, 16, 0.05);
+  --shadow-md: 0 4px 12px rgba(44, 24, 16, 0.08);
+  --shadow-lg: 0 8px 24px rgba(44, 24, 16, 0.12);
+  --shadow-xl: 0 16px 48px rgba(44, 24, 16, 0.16);
+  --shadow-glow: 0 0 30px rgba(196, 132, 29, 0.25);
+  --shadow-card-hover: 0 12px 40px rgba(44, 24, 16, 0.18);
+  
+  /* Glass-specific shadows */
+  --shadow-glass: 
+    0 8px 32px rgba(44, 24, 16, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-glass-hover: 
+    0 16px 48px rgba(44, 24, 16, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-glass-inset: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.5);
+  
+  /* ══════ Focus States ══════ */
+  --color-focus-ring: rgba(196, 132, 29, 0.5);
+  --shadow-focus: 0 0 0 3px var(--color-focus-ring);
+  
+  /* ══════ Overlay ══════ */
+  --color-overlay: rgba(44, 24, 16, 0.5);
+  --color-overlay-light: rgba(44, 24, 16, 0.3);
+  --color-overlay-glass: rgba(251, 247, 240, 0.8);
+  
+  /* ══════ Settings Panel ══════ */
+  --color-panel-bg: rgba(255, 255, 255, 0.85);
+  --color-panel-border: rgba(255, 255, 255, 0.5);
+  --color-button-bg: rgba(245, 237, 224, 0.8);
+  --color-button-bg-hover: rgba(237, 228, 211, 0.9);
+  --color-button-bg-active: #C4841D;
+  --color-button-text-active: #FFFFFF;
+  
+  /* ══════ Scrollbar ══════ */
+  --color-scrollbar-track: rgba(245, 237, 224, 0.5);
+  --color-scrollbar-thumb: rgba(196, 167, 125, 0.6);
+  --color-scrollbar-thumb-hover: rgba(166, 139, 91, 0.8);
+  
+  /* ══════ Selection ══════ */
+  --color-selection-bg: rgba(196, 132, 29, 0.25);
+  --color-selection-text: #2C1810;
+  
+  /* ══════ Caustic/Refraction Colors ══════ */
+  --caustic-color: rgba(255, 255, 255, 0.4);
+  --refraction-color: rgba(196, 132, 29, 0.1);
+  
+  /* ══════ Progress Bar ══════ */
+  --progress-bg: rgba(196, 132, 29, 0.2);
+  --progress-fill: linear-gradient(90deg, #C4841D, #D4A84B, #E8C36D);
+  --progress-glow: rgba(196, 132, 29, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NIGHT THEME — Calm, Deep, Premium Glass
+   Inspired by: Night sky, stars through glass, peaceful meditation
+───────────────────────────────────────────────────────────────────────────── */
+:root[data-theme="night"] {
+  /* ══════ Primary Colors ══════ */
+  --color-bg-primary: #0A0A0B;
+  --color-bg-secondary: #111113;
+  --color-bg-tertiary: #1A1A1D;
+  --color-bg-elevated: #141416;
+  
+  /* ══════ Text Colors ══════ */
+  --color-text-primary: #F0EDE8;
+  --color-text-secondary: #B8B0A0;
+  --color-text-tertiary: #8A8278;
+  --color-text-muted: #5A564F;
+  --color-text-inverse: #0A0A0B;
+  
+  /* ══════ Accent Colors ══════ */
+  --color-accent-primary: #F0C050;
+  --color-accent-primary-hover: #FFD470;
+  --color-accent-secondary: #D4A84B;
+  --color-accent-glow: rgba(240, 192, 80, 0.2);
+  --color-accent-rgb: 240 192 80;
+  --color-accent-gradient: linear-gradient(135deg, #F0C050 0%, #FFD470 50%, #FFE4A0 100%);
+  
+  /* ══════ Sacred/Spiritual Colors ══════ */
+  --color-sacred-gold: #F0C050;
+  --color-sacred-saffron: #FFB347;
+  --color-sacred-deep: #C4841D;
+  --color-ik-onkar: #F0C050;
+  
+  /* ══════ Glass Colors - Dark Mode ══════ */
+  --glass-bg: rgba(30, 30, 35, 0.75);
+  --glass-bg-subtle: rgba(30, 30, 35, 0.5);
+  --glass-bg-strong: rgba(30, 30, 35, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-subtle: rgba(255, 255, 255, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
+  
+  /* ══════ Chromatic Aberration Colors ══════ */
+  --chroma-red: rgba(255, 120, 120, 0.12);
+  --chroma-green: rgba(120, 255, 180, 0.08);
+  --chroma-blue: rgba(120, 160, 255, 0.12);
+  
+  /* ══════ Liquid Orb Colors ══════ */
+  --orb-color-1: rgba(240, 192, 80, 0.2);
+  --orb-color-2: rgba(255, 180, 100, 0.15);
+  --orb-color-3: rgba(100, 140, 200, 0.15);
+  --orb-color-4: rgba(150, 100, 180, 0.1);
+  
+  /* ══════ UI Colors ══════ */
+  --color-border-light: rgba(255, 255, 255, 0.06);
+  --color-border-medium: rgba(255, 255, 255, 0.1);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+  
+  --color-divider: rgba(255, 255, 255, 0.08);
+  --color-divider-symbol: #F0C050;
+  
+  /* ══════ Card Colors ══════ */
+  --color-card-bg: rgba(30, 30, 35, 0.7);
+  --color-card-bg-hover: rgba(40, 40, 45, 0.8);
+  --color-card-border: rgba(255, 255, 255, 0.08);
+  --color-card-shadow: rgba(0, 0, 0, 0.4);
+  
+  /* ══════ Header Colors ══════ */
+  --color-header-bg: linear-gradient(180deg, 
+    rgba(10, 10, 11, 0.95) 0%, 
+    rgba(17, 17, 19, 0.9) 100%);
+  --color-header-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L35 25H55L39 37L44 57L30 45L16 57L21 37L5 25H25L30 5Z' fill='%23F0C050' fill-opacity='0.02'/%3E%3C/svg%3E");
+  
+  /* ══════ Shadows ══════ */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 40px rgba(240, 192, 80, 0.2);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
+  
+  /* Glass-specific shadows */
+  --shadow-glass: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  --shadow-glass-hover: 
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  --shadow-glass-inset: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.05);
+  
+  /* ══════ Focus States ══════ */
+  --color-focus-ring: rgba(240, 192, 80, 0.5);
+  --shadow-focus: 0 0 0 3px var(--color-focus-ring);
+  
+  /* ══════ Overlay ══════ */
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-overlay-light: rgba(0, 0, 0, 0.5);
+  --color-overlay-glass: rgba(10, 10, 11, 0.85);
+  
+  /* ══════ Settings Panel ══════ */
+  --color-panel-bg: rgba(20, 20, 22, 0.9);
+  --color-panel-border: rgba(255, 255, 255, 0.08);
+  --color-button-bg: rgba(40, 40, 45, 0.8);
+  --color-button-bg-hover: rgba(50, 50, 55, 0.9);
+  --color-button-bg-active: #F0C050;
+  --color-button-text-active: #0A0A0B;
+  
+  /* ══════ Scrollbar ══════ */
+  --color-scrollbar-track: rgba(20, 20, 22, 0.5);
+  --color-scrollbar-thumb: rgba(80, 80, 85, 0.6);
+  --color-scrollbar-thumb-hover: rgba(100, 100, 105, 0.8);
+  
+  /* ══════ Selection ══════ */
+  --color-selection-bg: rgba(240, 192, 80, 0.3);
+  --color-selection-text: #F0EDE8;
+  
+  /* ══════ Caustic/Refraction Colors ══════ */
+  --caustic-color: rgba(255, 255, 255, 0.08);
+  --refraction-color: rgba(240, 192, 80, 0.08);
+  
+  /* ══════ Progress Bar ══════ */
+  --progress-bg: rgba(240, 192, 80, 0.15);
+  --progress-fill: linear-gradient(90deg, #F0C050, #FFD470, #FFE4A0);
+  --progress-glow: rgba(240, 192, 80, 0.4);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THEME TRANSITIONS — Smooth Liquid-like Changes
+───────────────────────────────────────────────────────────────────────────── */
+html {
+  transition: 
+    background-color var(--theme-transition),
+    color var(--theme-transition);
+}
+
+body,
+.gutka-header,
+.gutka-main,
+.gutka-footer,
+.bani-card,
+.bani-card__link,
+.settings-panel,
+.settings-panel__content,
+.glass-card,
+.glass-button,
+.glass-panel {
+  transition: 
+    background-color var(--theme-transition),
+    background var(--theme-transition),
+    border-color var(--theme-transition),
+    box-shadow var(--theme-transition),
+    color var(--theme-transition);
+}
+
+/* Liquid orbs transition */
+.liquid-orb {
+  transition: 
+    background var(--theme-transition),
+    opacity var(--theme-transition);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   COLOR SCHEME META
+───────────────────────────────────────────────────────────────────────────── */
+:root[data-theme="day"] {
+  color-scheme: light;
+}
+
+:root[data-theme="night"] {
+  color-scheme: dark;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION — Respect User Preferences
+───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0.01ms;
+    --transition-base: 0.01ms;
+    --transition-slow: 0.01ms;
+    --transition-liquid: 0.01ms;
+    --transition-bounce: 0.01ms;
+    --transition-elastic: 0.01ms;
+    --theme-transition: 0.01ms;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   EFFECTS DISABLED STATE
+───────────────────────────────────────────────────────────────────────────── */
+:root[data-effects="disabled"] {
+  --glass-blur-sm: 0;
+  --glass-blur-md: 0;
+  --glass-blur-lg: 0;
+  --glass-blur-xl: 0;
+  --glass-blur-2xl: 0;
+  
+  --glass-bg: var(--color-bg-elevated);
+  --glass-bg-subtle: var(--color-bg-secondary);
+  --glass-bg-strong: var(--color-bg-elevated);
+}
+
+:root[data-effects="disabled"] .liquid-orb,
+:root[data-effects="disabled"] .caustic-overlay,
+:root[data-effects="disabled"] .glass-card__shine,
+:root[data-effects="disabled"] .glass-card__refraction,
+:root[data-effects="disabled"] .light-source {
+  display: none !important;
+}

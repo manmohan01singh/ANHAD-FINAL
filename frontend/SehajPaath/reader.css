@@ -472,6 +472,12 @@ body::before {
     border-radius: 0 18px 0 0;
 }
 
+/* Content visibility for off-screen verses — reduces paint cost on scroll */
+.gurbani-line {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 120px;
+}
+
 /* GURMUKHI TEXT */
 .gurmukhi-text {
     font-family: var(--font-gurmukhi);

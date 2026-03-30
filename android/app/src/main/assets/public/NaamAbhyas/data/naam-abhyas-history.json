@@ -1,0 +1,21 @@
+{
+    "sessions": [],
+    "statistics": {
+        "totalSessions": 0,
+        "completedSessions": 0,
+        "skippedSessions": 0,
+        "totalTimeSeconds": 0,
+        "currentStreak": 0,
+        "longestStreak": 0,
+        "completionRate": 0
+    },
+    "achievements": [],
+    "scheduleHistory": {},
+    "milestones": {
+        "firstSession": null,
+        "firstPerfectDay": null,
+        "firstWeekStreak": null,
+        "first100Sessions": null,
+        "first1HourTotal": null
+    }
+}

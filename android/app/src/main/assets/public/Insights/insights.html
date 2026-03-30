@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="ANHAD Learning & Library — Your gateway to Gursikhi wisdom, sakhis, history, and spiritual knowledge">
+  <title>Learning & Library | ANHAD</title>
+  
+  <!-- Global Theme (must be first!) -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Playfair+Display+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="insights.css">
+</head>
+
+<body>
+  <!-- Animated Background (Removed for focus) -->
+  <div class="insights-bg" aria-hidden="true">
+  </div>
+
+  <!-- Header -->
+  <header class="insights-header" id="pageHeader">
+    <button class="back-btn" id="backBtn" aria-label="Go back" onclick="window.history.back()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 class="insights-header__title">Library</h1>
+    <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle theme">
+      <span id="themeIcon">🌙</span>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="insights-app" id="mainContent">
+    
+    <!-- ═══ TODAY'S INSPIRATION ═══ -->
+    <section class="inspiration-section" id="inspirationCard">
+      <div class="inspiration-header">
+        <span class="inspiration-tag">✨ Today's Inspiration</span>
+        <button class="refresh-btn" id="refreshInspirationBtn" aria-label="New quote">🔄</button>
+      </div>
+      <div class="inspiration-quote">
+        <p class="inspiration-quote__text" id="quoteText">ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥</p>
+        <p class="inspiration-quote__translation" id="quoteTranslation">O my mind, you are the embodiment of the Divine Light — recognize your own origin.</p>
+      </div>
+      <div class="inspiration-meta">
+        <span id="quoteMeta">📖 Ang 441</span>
+        <button class="share-btn" id="shareQuoteBtn">📤 Share</button>
+      </div>
+    </section>
+
+    <!-- ═══ TODAY'S WISDOM ═══ -->
+    <section class="wisdom-section">
+      <h2 class="section-title">🪷 Today's Wisdom</h2>
+      <div class="wisdom-card glass-card" id="wisdomCard">
+        <div class="wisdom-icon">🪷</div>
+        <h3 class="wisdom-title" id="wisdomTitle">Contentment (ਸੰਤੋਖ)</h3>
+        <p class="wisdom-desc" id="wisdomDesc">True peace comes from accepting Waheguru's will. Freedom from greed and desire leads to lasting happiness.</p>
+        <div class="wisdom-gurbani">
+          <p class="wisdom-pankti" id="wisdomPankti">ਸੰਤੋਖੀ ਸਦਾ ਸੁਖੀਐ ॥</p>
+          <span class="wisdom-source" id="wisdomSource">— Guru Arjan Dev Ji</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ GURSIKHI KNOWLEDGE LIBRARY ═══ -->
+    <section class="categories-section">
+      <h2 class="section-title">📖 Gursikhi Knowledge</h2>
+      <div class="categories-grid">
+        <div class="category-card" data-topic="history" onclick="openModal('history')">
+          <div class="category-icon">📜</div>
+          <span class="category-name">Sikh History</span>
+          <span class="category-desc">ਸਿੱਖ ਇਤਿਹਾਸ</span>
+        </div>
+        <div class="category-card" data-topic="sakhis" onclick="openModal('sakhis')">
+          <div class="category-icon">📕</div>
+          <span class="category-name">Sakhis</span>
+          <span class="category-desc">Stories & Teachings</span>
+        </div>
+        <div class="category-card" data-topic="raags" onclick="openModal('raags')">
+          <div class="category-icon">🎵</div>
+          <span class="category-name">31 Raags</span>
+          <span class="category-desc">Musical Melodies</span>
+        </div>
+        <div class="category-card" data-topic="composers" onclick="openModal('composers')">
+          <div class="category-icon">📝</div>
+          <span class="category-name">35 Authors</span>
+          <span class="category-desc">Contributors</span>
+        </div>
+        <div class="category-card" data-topic="themes" onclick="openModal('themes')">
+          <div class="category-icon">💕</div>
+          <span class="category-name">Spiritual Themes</span>
+          <span class="category-desc">Core Messages</span>
+        </div>
+        <div class="category-card" data-topic="guruSahibs" onclick="openModal('guruSahibs')">
+          <div class="category-icon">🙏</div>
+          <span class="category-name">Guru Sahibaan</span>
+          <span class="category-desc">10 Guru Sahib Ji</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ EXPLORE GURBANI ═══ -->
+    <section class="categories-section">
+      <h2 class="section-title">🔍 Explore Gurbani</h2>
+      <div class="topics-list">
+        <a href="../nitnem/index.html" class="topic-card">
+          <div class="topic-info">
+            <span class="topic-emoji">📖</span>
+            <div>
+              <span class="topic-name">ਸੱਚੀ ਬਾਣੀ — Sacred Gurbani</span>
+              <span class="topic-desc">Read daily Nitnem & all Banis</span>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a href="../GurbaniKhoj/gurbani-khoj.html" class="topic-card">
+          <div class="topic-info">
+            <span class="topic-emoji">🔍</span>
+            <div>
+              <span class="topic-name">ਗੁਰਬਾਣੀ ਖੋਜ — Search</span>
+              <span class="topic-desc">Search any Shabad in SGGS Ji</span>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a href="../Hukamnama/daily-hukamnama.html" class="topic-card">
+          <div class="topic-info">
+            <span class="topic-emoji">📜</span>
+            <div>
+              <span class="topic-name">ਹੁਕਮਨਾਮਾ — Daily Hukamnama</span>
+              <span class="topic-desc">Today's divine command from Darbar Sahib</span>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+        <a href="../SehajPaath/reader.html" class="topic-card">
+          <div class="topic-info">
+            <span class="topic-emoji">🕊️</span>
+            <div>
+              <span class="topic-name">ਸਹਿਜ ਪਾਠ — Sehaj Paath</span>
+              <span class="topic-desc">Read Sri Guru Granth Sahib Ji at your pace</span>
+            </div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ═══ RECOMMENDED SHABADS ═══ -->
+    <section class="recommendations-section">
+      <h2 class="section-title">🌟 Recommended Shabads</h2>
+      <div class="shabads-list">
+        <div class="shabad-card glass-card" data-ang="1">
+          <div class="shabad-info">
+            <span class="shabad-title">ਜਪੁ ਜੀ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Ang 1 • Guru Nanak Dev Ji</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">▶</button>
+        </div>
+        <div class="shabad-card glass-card" data-ang="917">
+          <div class="shabad-info">
+            <span class="shabad-title">ਅਨੰਦ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Ang 917 • Guru Amar Das Ji</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">▶</button>
+        </div>
+        <div class="shabad-card glass-card" data-ang="262">
+          <div class="shabad-info">
+            <span class="shabad-title">ਸੁਖਮਨੀ ਸਾਹਿਬ</span>
+            <span class="shabad-meta">Ang 262 • Guru Arjan Dev Ji</span>
+          </div>
+          <button class="shabad-play-btn" aria-label="Open Shabad">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ YOUR JOURNEY STATS ═══ -->
+    <section class="quick-stats-section glass-card">
+      <h2 class="section-title" style="margin-bottom: 16px;">📊 Your Journey</h2>
+      <div class="quick-stats">
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="weeklyListening">0</span>
+          <span class="quick-stat__label">Weekly Hours</span>
+        </div>
+        <div class="quick-stat__divider"></div>
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="weeklyAngs">0</span>
+          <span class="quick-stat__label">Angs Read</span>
+        </div>
+        <div class="quick-stat__divider"></div>
+        <div class="quick-stat">
+          <span class="quick-stat__value" id="currentStreak">0</span>
+          <span class="quick-stat__label">Day Streak</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Spacer -->
+    <div style="height: 100px;"></div>
+  </main>
+
+  <!-- Learn & Discover Modal -->
+  <div class="insight-modal" id="insightModal">
+    <div class="insight-modal__backdrop" onclick="closeModal()"></div>
+    <div class="insight-modal__content">
+      <div class="insight-modal__header">
+        <h2 class="insight-modal__title" id="modalTitle">Title</h2>
+        <button class="insight-modal__close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="insight-modal__lang-switch" id="langSwitch" style="display:none;">
+        <button class="lang-btn lang-btn--active" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
+      </div>
+      <div class="insight-modal__body" id="modalBody">
+        <!-- Content will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation — Unified Emoji Navbar -->
+  <nav class="bottom-nav" aria-label="Main Navigation">
+    <div class="bottom-nav__glass">
+      <a href="../index.html" class="nav-tab" aria-label="Home" data-index="0">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="home">🏠</span>
+        <span class="nav-tab__label">Home</span>
+      </a>
+      <button class="nav-tab nav-tab--active" aria-label="Learning" aria-current="page" data-index="1">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="learning">📚</span>
+        <span class="nav-tab__label">Learning</span>
+      </button>
+      <a href="../Favorites/favorites.html" class="nav-tab" aria-label="Favorites" data-index="2">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="favorites">❤️</span>
+        <span class="nav-tab__label">Favorites</span>
+      </a>
+      <a href="../Dashboard/dashboard.html" class="nav-tab" aria-label="Dashboard" data-index="3">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="dashboard">📊</span>
+        <span class="nav-tab__label">Dashboard</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Global Theme -->
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- User Stats Library -->
+  <script src="../lib/user-stats.js"></script>
+  
+  <!-- Insights Scripts -->
+  <script src="insights.js"></script>
+</body>
+</html>

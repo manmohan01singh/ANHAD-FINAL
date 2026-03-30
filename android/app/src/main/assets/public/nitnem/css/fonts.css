@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM GURMUKHI FONTS - TATTKHALSA POTHI STYLE
+   Beautiful handwritten & decorative Gurmukhi fonts
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Puratan Hastlikhat - Traditional Handwritten Style */
+@font-face {
+    font-family: 'Puratan Hastlikhat';
+    src: url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.woff2') format('woff2'),
+        url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.woff') format('woff'),
+        url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Riyasti Hastlikhat - Royal Handwritten Style */
+@font-face {
+    font-family: 'Riyasti Hastlikhat';
+    src: url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.woff2') format('woff2'),
+        url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.woff') format('woff'),
+        url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Riyasti Naveen - Modern Royal Style */
+@font-face {
+    font-family: 'Riyasti Naveen';
+    src: url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.woff2') format('woff2'),
+        url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.woff') format('woff'),
+        url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Font Classes for Easy Application */
+.font-puratan {
+    font-family: 'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-riyasti-hast {
+    font-family: 'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-riyasti-naveen {
+    font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-noto {
+    font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+}

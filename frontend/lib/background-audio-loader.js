@@ -18,17 +18,10 @@
     // CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════════════
 
+    const RENDER_BASE = 'https://anhad-final.onrender.com';
+
     const CONFIG = {
-        baseUrl: (() => {
-            try {
-                const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-                const onBackendPort = window.location.port === '3000';
-                if (isLocalhost && !onBackendPort) {
-                    return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
-                }
-            } catch (e) { }
-            return '/audio';
-        })(),
+        baseUrl: RENDER_BASE + '/audio',
 
         totalTracks: 40,
         defaultDuration: 3600,

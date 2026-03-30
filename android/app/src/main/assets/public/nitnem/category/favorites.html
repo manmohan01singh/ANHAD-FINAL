@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr" data-theme="dark">
+<head>
+    <link rel="stylesheet" href="../../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0A0F">
+  
+  <title>Favorites | Gurbani Live</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/category.css">
+</head>
+
+<body>
+  <div class="app">
+    
+    <!-- Header -->
+    <header class="header glass">
+      <a href="../index.html" class="header-back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </a>
+      <div class="header-title">
+        <span class="header-gurmukhi">⭐ Favorites</span>
+      </div>
+      <div style="width: 40px;"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="category-main">
+      
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">⭐</div>
+        <h2 class="empty-title">No Favorites Yet</h2>
+        <p class="empty-desc">Tap the bookmark icon while reading a Bani to add it to your favorites.</p>
+        <a href="../index.html" class="empty-btn">Browse Banis</a>
+      </div>
+      
+      <!-- Favorites List -->
+      <div class="bani-list" id="favoritesList" style="display: none;"></div>
+      
+      <!-- Clear Button -->
+      <button class="clear-btn" id="clearFavorites" style="display: none;">
+        Clear All Favorites
+      </button>
+
+    </main>
+
+  </div>
+
+  <style>
+    .empty-state {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-lg);
+    }
+    
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: var(--space-lg);
+      opacity: 0.5;
+    }
+    
+    .empty-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    
+    .empty-desc {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      max-width: 280px;
+      margin: 0 auto var(--space-xl);
+      line-height: 1.5;
+    }
+    
+    .empty-btn {
+      display: inline-block;
+      padding: var(--space-sm) var(--space-xl);
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      border-radius: var(--radius-lg);
+      transition: all 0.2s;
+    }
+    
+    .empty-btn:hover {
+      filter: brightness(1.1);
+    }
+    
+    .clear-btn {
+      width: 100%;
+      padding: var(--space-md);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: #F43F5E;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      margin-top: var(--space-xl);
+      transition: all 0.2s;
+    }
+    
+    .clear-btn:hover {
+      background: rgba(244, 63, 94, 0.1);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+  </style>
+
+  <script src="../js/bani-metadata.js"></script>
+  <script>
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('nitnem_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Load favorites
+    function loadFavorites() {
+      const favorites = JSON.parse(localStorage.getItem('nitnem_favorites') || '[]');
+      const emptyState = document.getElementById('emptyState');
+      const favoritesList = document.getElementById('favoritesList');
+      const clearBtn = document.getElementById('clearFavorites');
+      
+      if (favorites.length === 0) {
+        emptyState.style.display = 'block';
+        favoritesList.style.display = 'none';
+        clearBtn.style.display = 'none';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      favoritesList.style.display = 'block';
+      clearBtn.style.display = 'block';
+      
+      favoritesList.innerHTML = favorites.map(fav => {
+        const meta = BaniMetadata[fav.id] || {};
+        return `
+          <a href="../reader.html?id=${fav.id}" class="bani-item">
+            <span class="bani-icon">${meta.icon || '📖'}</span>
+            <div class="bani-content">
+              <h3 class="bani-name">${meta.nameGurmukhi || fav.name || 'Bani'}</h3>
+              <p class="bani-meta">${meta.nameEnglish || ''}</p>
+            </div>
+            <svg class="bani-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </a>
+        `;
+      }).join('');
+    }
+    
+    // Clear favorites
+    document.getElementById('clearFavorites').addEventListener('click', () => {
+      if (confirm('Remove all favorites?')) {
+        localStorage.setItem('nitnem_favorites', '[]');
+        loadFavorites();
+      }
+    });
+    
+    loadFavorites();
+  </script>
+</body>
+</html>

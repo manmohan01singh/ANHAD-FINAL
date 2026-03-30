@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <title>Dashboard • ANHAD</title>
+  
+  <!-- Global Theme (must be first!) -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="top-nav-orb"></div>
+  
+  <header class="header">
+    <a href="../index.html" class="header__back">
+      <i class="fas fa-chevron-left"></i>
+    </a>
+    <h1 class="header__title">My Journey</h1>
+    <div class="header__actions">
+      <button class="header__btn" onclick="AnhadTheme.toggle()">
+        <i class="fas fa-sun" id="themeIcon"></i>
+      </button>
+    </div>
+  </header>
+  
+  <div class="spacer"></div>
+  
+  <div class="app">
+    
+    <!-- Streak Hero -->
+    <section class="streak-hero">
+      <div class="streak-hero__freeze" id="freezeStatus">
+        <i class="fas fa-snowflake"></i>
+        <span id="freezeCount">1</span> Freeze
+      </div>
+      <p class="streak-hero__label">
+        <i class="fas fa-fire"></i> Current Streak
+      </p>
+      <h2 class="streak-hero__count" id="streakCount">0</h2>
+      <p class="streak-hero__subtitle">days of devotion</p>
+    </section>
+    
+    <!-- Stats Grid -->
+    <h2 class="section-title">
+      <i class="fas fa-chart-pie"></i> Your Progress
+    </h2>
+    <div class="stats-grid">
+      <div class="stat-card stat-card--orange">
+        <div class="stat-card__icon-wrap">
+          <i class="fas fa-headphones"></i>
+        </div>
+        <div class="stat-card__value" id="totalHours">0</div>
+        <div class="stat-card__label">Audio Hours</div>
+      </div>
+      <div class="stat-card stat-card--blue">
+        <div class="stat-card__icon-wrap">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="stat-card__value" id="totalPages">0</div>
+        <div class="stat-card__label">Ang Read</div>
+      </div>
+      <div class="stat-card stat-card--green">
+        <div class="stat-card__icon-wrap">
+          <i class="fas fa-sun"></i>
+        </div>
+        <div class="stat-card__value" id="totalNitnem">0</div>
+        <div class="stat-card__label">Nitnem Done</div>
+      </div>
+      <div class="stat-card stat-card--purple">
+        <div class="stat-card__icon-wrap">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-card__value" id="totalDays">0</div>
+        <div class="stat-card__label">Days Active</div>
+      </div>
+    </div>
+    
+    <!-- Daily Goals -->
+    <h2 class="section-title">
+      <i class="fas fa-bullseye"></i> Today's Goals
+    </h2>
+    <div class="goals-list" id="goalsList">
+      <!-- Goals will be populated by JS -->
+    </div>
+    
+    <!-- Milestones -->
+    <h2 class="section-title">
+      <i class="fas fa-award"></i> Milestones
+    </h2>
+    <div class="milestones" id="milestones">
+      <div class="milestone" data-days="1">
+        <div class="milestone__emoji">🌱</div>
+        <div class="milestone__days">1</div>
+        <div class="milestone__label">day</div>
+      </div>
+      <div class="milestone" data-days="7">
+        <div class="milestone__emoji">🙏</div>
+        <div class="milestone__days">7</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="21">
+        <div class="milestone__emoji">⭐</div>
+        <div class="milestone__days">21</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="40">
+        <div class="milestone__emoji">🪷</div>
+        <div class="milestone__days">40</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="108">
+        <div class="milestone__emoji">📿</div>
+        <div class="milestone__days">108</div>
+        <div class="milestone__label">days</div>
+      </div>
+      <div class="milestone" data-days="365">
+        <div class="milestone__emoji">👑</div>
+        <div class="milestone__days">365</div>
+        <div class="milestone__label">days</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bottom Navigation — Unified Emoji Navbar -->
+  <nav class="bottom-nav" aria-label="Main Navigation">
+    <div class="bottom-nav__glass">
+      <a href="../index.html" class="nav-tab" aria-label="Home" data-index="0">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="home">🏠</span>
+        <span class="nav-tab__label">Home</span>
+      </a>
+      <a href="../Insights/insights.html" class="nav-tab" aria-label="Learning" data-index="1">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="learning">📚</span>
+        <span class="nav-tab__label">Learning</span>
+      </a>
+      <a href="../Favorites/favorites.html" class="nav-tab" aria-label="Favorites" data-index="2">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="favorites">❤️</span>
+        <span class="nav-tab__label">Favorites</span>
+      </a>
+      <button class="nav-tab nav-tab--active" aria-label="Dashboard" aria-current="page" data-index="3">
+        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="dashboard">📊</span>
+        <span class="nav-tab__label">Dashboard</span>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Scripts -->
+  <script src="../lib/user-stats.js"></script>
+  <script>
+    (function() {
+      'use strict';
+      
+      function updateDashboard() {
+        if (!window.AnhadStats) {
+          setTimeout(updateDashboard, 100);
+          return;
+        }
+        
+        const summary = AnhadStats.getSummary();
+        
+        // Streak
+        document.getElementById('streakCount').textContent = summary.currentStreak;
+        document.getElementById('freezeCount').textContent = summary.freezesAvailable;
+        
+        // Stats
+        document.getElementById('totalHours').textContent = summary.totalListeningHours;
+        document.getElementById('totalPages').textContent = summary.totalPagesRead;
+        document.getElementById('totalNitnem').textContent = summary.totalNitnemCompleted;
+        document.getElementById('totalDays').textContent = summary.totalDaysActive;
+        
+        // Goals
+        renderGoals(summary.goals);
+        
+        // Milestones
+        updateMilestones(summary.milestones);
+      }
+      
+      function renderGoals(goals) {
+        const container = document.getElementById('goalsList');
+        const goalConfig = {
+          listenMinutes: { icon: 'fas fa-headphones', label: 'Listen to Kirtan', color: 'gold', unit: 'min' },
+          readPages: { icon: 'fas fa-book-open', label: 'Read Gurbani', color: 'blue', unit: 'Ang' },
+          completeNitnem: { icon: 'fas fa-sun', label: 'Complete Nitnem', color: 'green', unit: '' },
+          naamAbhyas: { icon: 'fas fa-om', label: 'Naam Simran', color: 'purple', unit: 'session' }
+        };
+        
+        container.innerHTML = Object.entries(goals)
+          .filter(([_, goal]) => goal.enabled)
+          .map(([key, goal]) => {
+            const config = goalConfig[key];
+            const isComplete = goal.complete;
+            return `
+              <div class="goal-card ${isComplete ? 'goal-card--complete' : ''}">
+                <div class="goal-card__icon bg-${config.color}">
+                  <i class="${config.icon}"></i>
+                </div>
+                <div class="goal-card__content">
+                  <div class="goal-card__header-row">
+                    <div class="goal-card__title">${config.label}</div>
+                    <div class="goal-card__status">${goal.current}/${goal.target} ${config.unit}</div>
+                  </div>
+                  <div class="goal-card__progress-wrap">
+                    <div class="goal-card__fill bg-${config.color}" style="width: ${goal.percent}%"></div>
+                  </div>
+                </div>
+                ${isComplete ? '<div class="goal-card__check"><i class="fas fa-check"></i></div>' : ''}
+              </div>
+            `;
+          }).join('');
+      }
+      
+      function updateMilestones(milestones) {
+        const container = document.getElementById('milestones');
+        const milestoneElements = container.querySelectorAll('.milestone');
+        
+        milestoneElements.forEach(el => {
+          const days = parseInt(el.dataset.days);
+          const key = `day${days}`;
+          if (milestones[key]) {
+            el.classList.add('milestone--achieved');
+          }
+        });
+      }
+      
+      // Initialize
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateDashboard);
+      } else {
+        updateDashboard();
+      }
+      
+      // Listen for stats updates dynamically
+      window.addEventListener('statsUpdated', updateDashboard);
+      window.addEventListener('streakUpdated', updateDashboard);
+      window.addEventListener('goalsUpdated', updateDashboard);
+      window.addEventListener('dashboardRefresh', updateDashboard);
+    })();
+  </script>
+</body>
+</html>

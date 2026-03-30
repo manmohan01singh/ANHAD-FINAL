@@ -1,0 +1,838 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * iOS LIGHT MODE DESIGN SYSTEM - GURBANI RADIO
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * Premium iOS-style light mode UI matching the reference design exactly
+ * Soft gradients, frosted glass, and spiritual elegance
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   1. CSS DESIGN TOKENS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ─────────────────────────────────────────────────────────────────────────
+     LIGHT MODE BACKGROUNDS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-light-bg: linear-gradient(180deg,
+            #F8FAFF 0%,
+            #F0F4FF 30%,
+            #E8F0FF 60%,
+            #F5F8FF 100%);
+
+    --ios-light-bg-ethereal:
+        radial-gradient(ellipse 120% 80% at 50% 0%, rgba(147, 197, 253, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(196, 181, 253, 0.2) 0%, transparent 40%),
+        radial-gradient(ellipse 80% 60% at 80% 30%, rgba(251, 207, 232, 0.2) 0%, transparent 40%),
+        linear-gradient(180deg, #F8FAFF 0%, #EEF2FF 50%, #F5F8FF 100%);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     TEXT COLORS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-light-text-primary: #1C1C1E;
+    --ios-light-text-secondary: #6B7280;
+    --ios-light-text-tertiary: #9CA3AF;
+    --ios-light-text-muted: #C7C7CC;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     ACCENT COLORS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-light-gold: #D4A418;
+    --ios-light-gold-gradient: linear-gradient(135deg, #F7C634 0%, #D4A418 50%, #B8860B 100%);
+    --ios-light-blue: #007AFF;
+    --ios-light-live-red: #FF3B30;
+    --ios-light-teal: #14B8A6;
+
+    /* Icon Background Colors */
+    --ios-icon-gold: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+    --ios-icon-orange: linear-gradient(135deg, #FB923C 0%, #EA580C 100%);
+    --ios-icon-purple: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
+    --ios-icon-green: linear-gradient(135deg, #6EE7B7 0%, #10B981 100%);
+    --ios-icon-blue: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+    --ios-icon-red: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+    --ios-icon-pink: linear-gradient(135deg, #F9A8D4 0%, #EC4899 100%);
+    --ios-icon-brown: linear-gradient(135deg, #D4A574 0%, #92400E 100%);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     CARD STYLES
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-light-card-bg: rgba(255, 255, 255, 0.85);
+    --ios-light-card-bg-hover: rgba(255, 255, 255, 0.95);
+    --ios-light-card-border: rgba(255, 255, 255, 0.6);
+    --ios-light-card-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.04),
+        0 4px 16px rgba(0, 0, 0, 0.06);
+    --ios-light-card-shadow-hover:
+        0 4px 12px rgba(0, 0, 0, 0.06),
+        0 8px 24px rgba(0, 0, 0, 0.08);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     PLAYER CARD GRADIENT
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-player-gradient:
+        linear-gradient(135deg,
+            rgba(147, 197, 253, 0.4) 0%,
+            rgba(196, 181, 253, 0.3) 25%,
+            rgba(251, 207, 232, 0.25) 50%,
+            rgba(254, 240, 138, 0.2) 75%,
+            rgba(147, 197, 253, 0.3) 100%);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     BLUR & EFFECTS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-light-blur: 40px;
+    --ios-light-blur-strong: 60px;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     SPACING
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-space-xs: 4px;
+    --ios-space-sm: 8px;
+    --ios-space-md: 16px;
+    --ios-space-lg: 24px;
+    --ios-space-xl: 32px;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     BORDER RADIUS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-radius-sm: 8px;
+    --ios-radius-md: 12px;
+    --ios-radius-lg: 16px;
+    --ios-radius-xl: 20px;
+    --ios-radius-2xl: 24px;
+    --ios-radius-full: 9999px;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     TYPOGRAPHY
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-font-system: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    --ios-font-gurmukhi: 'Noto Sans Gurmukhi', 'Raavi', sans-serif;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     TRANSITIONS
+     ───────────────────────────────────────────────────────────────────────── */
+    --ios-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --ios-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --ios-transition-bounce: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   2. BASE STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-app {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: var(--ios-light-bg-ethereal);
+    font-family: var(--ios-font-system);
+    color: var(--ios-light-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+.ios-light-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 var(--ios-space-md);
+    padding-top: env(safe-area-inset-top, 20px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 100px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   3. HEADER SECTION
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-header {
+    text-align: center;
+    padding: var(--ios-space-xl) 0 var(--ios-space-lg);
+}
+
+.ios-light-khanda {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--ios-space-md);
+    filter: drop-shadow(0 4px 12px rgba(212, 164, 24, 0.3));
+}
+
+.ios-light-khanda svg,
+.ios-light-khanda img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ios-light-header__subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ios-light-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--ios-space-xs);
+}
+
+.ios-light-header__title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ios-light-text-primary);
+    margin-bottom: var(--ios-space-xs);
+    letter-spacing: -0.02em;
+}
+
+.ios-light-header__gurmukhi {
+    font-family: var(--ios-font-gurmukhi);
+    font-size: 20px;
+    color: var(--ios-light-gold);
+    margin-bottom: var(--ios-space-sm);
+}
+
+.ios-light-header__tagline {
+    font-size: 14px;
+    color: var(--ios-light-text-tertiary);
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   4. STATUS BAR
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ios-space-md);
+    padding: var(--ios-space-sm) var(--ios-space-lg);
+    background: var(--ios-light-card-bg);
+    backdrop-filter: blur(var(--ios-light-blur));
+    -webkit-backdrop-filter: blur(var(--ios-light-blur));
+    border-radius: var(--ios-radius-full);
+    box-shadow: var(--ios-light-card-shadow);
+    border: 1px solid var(--ios-light-card-border);
+    margin-bottom: var(--ios-space-lg);
+}
+
+.ios-light-status-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ios-space-xs);
+}
+
+.ios-light-live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: rgba(255, 59, 48, 0.1);
+    border-radius: var(--ios-radius-full);
+}
+
+.ios-light-live-badge__dot {
+    width: 6px;
+    height: 6px;
+    background: var(--ios-light-live-red);
+    border-radius: 50%;
+    animation: ios-live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ios-live-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+}
+
+.ios-light-live-badge__text {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ios-light-live-red);
+    letter-spacing: 0.05em;
+}
+
+.ios-light-listeners {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-light-text-primary);
+}
+
+.ios-light-listeners__icon {
+    color: var(--ios-light-text-tertiary);
+}
+
+.ios-light-waveform {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: 16px;
+}
+
+.ios-light-waveform__bar {
+    width: 3px;
+    background: var(--ios-light-text-tertiary);
+    border-radius: 2px;
+    animation: ios-wave 1s ease-in-out infinite;
+}
+
+.ios-light-waveform__bar:nth-child(1) {
+    height: 8px;
+    animation-delay: 0s;
+}
+
+.ios-light-waveform__bar:nth-child(2) {
+    height: 12px;
+    animation-delay: 0.1s;
+}
+
+.ios-light-waveform__bar:nth-child(3) {
+    height: 6px;
+    animation-delay: 0.2s;
+}
+
+.ios-light-waveform__bar:nth-child(4) {
+    height: 14px;
+    animation-delay: 0.3s;
+}
+
+@keyframes ios-wave {
+
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(0.5);
+    }
+}
+
+.ios-light-quality-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ios-light-text-secondary);
+    letter-spacing: 0.02em;
+}
+
+.ios-light-quality-badge__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 10px;
+}
+
+.ios-light-quality-badge__bar {
+    width: 2px;
+    background: var(--ios-light-text-tertiary);
+    border-radius: 1px;
+}
+
+.ios-light-quality-badge__bar:nth-child(1) {
+    height: 4px;
+}
+
+.ios-light-quality-badge__bar:nth-child(2) {
+    height: 6px;
+}
+
+.ios-light-quality-badge__bar:nth-child(3) {
+    height: 8px;
+}
+
+.ios-light-quality-badge__bar:nth-child(4) {
+    height: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   5. PLAYER CARD
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-player {
+    position: relative;
+    padding: var(--ios-space-xl);
+    background: var(--ios-player-gradient);
+    backdrop-filter: blur(var(--ios-light-blur-strong));
+    -webkit-backdrop-filter: blur(var(--ios-light-blur-strong));
+    border-radius: var(--ios-radius-2xl);
+    box-shadow:
+        var(--ios-light-card-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    margin-bottom: var(--ios-space-lg);
+    overflow: hidden;
+}
+
+.ios-light-player::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.ios-light-player__khanda {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto var(--ios-space-md);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-player__khanda svg,
+.ios-light-player__khanda img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 16px rgba(212, 164, 24, 0.4));
+}
+
+.ios-light-player__label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ios-light-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: var(--ios-space-xs);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-player__title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ios-light-text-primary);
+    margin-bottom: var(--ios-space-xs);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-player__subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: var(--ios-light-text-secondary);
+    margin-bottom: var(--ios-space-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-player__subtitle::before {
+    content: '✦';
+    margin-right: 6px;
+    color: var(--ios-light-gold);
+}
+
+/* Progress Bar */
+.ios-light-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--ios-space-sm);
+    margin-bottom: var(--ios-space-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-progress__time {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ios-light-text-tertiary);
+    min-width: 40px;
+}
+
+.ios-light-progress__time--end {
+    text-align: right;
+}
+
+.ios-light-progress__bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--ios-radius-full);
+    overflow: hidden;
+    position: relative;
+}
+
+.ios-light-progress__fill {
+    height: 100%;
+    background: var(--ios-light-blue);
+    border-radius: var(--ios-radius-full);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.ios-light-progress__live {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ios-light-live-red);
+    background: rgba(255, 59, 48, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--ios-radius-full);
+    letter-spacing: 0.05em;
+}
+
+/* Controls */
+.ios-light-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ios-space-md);
+    position: relative;
+    z-index: 1;
+}
+
+.ios-light-controls__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--ios-transition-fast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.ios-light-controls__btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.ios-light-controls__btn:active {
+    transform: scale(0.95);
+}
+
+.ios-light-controls__btn--play {
+    width: 72px;
+    height: 72px;
+    background: var(--ios-light-blue);
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+}
+
+.ios-light-controls__btn--play:hover {
+    background: #0066DD;
+}
+
+.ios-light-controls__btn svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--ios-light-text-secondary);
+}
+
+.ios-light-controls__btn--play svg {
+    width: 32px;
+    height: 32px;
+    fill: white;
+    margin-left: 3px;
+    /* Visual centering for play icon */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   6. FEATURE CARDS LIST
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ios-space-sm);
+}
+
+.ios-light-card {
+    display: flex;
+    align-items: center;
+    gap: var(--ios-space-md);
+    padding: var(--ios-space-md);
+    background: var(--ios-light-card-bg);
+    backdrop-filter: blur(var(--ios-light-blur));
+    -webkit-backdrop-filter: blur(var(--ios-light-blur));
+    border-radius: var(--ios-radius-lg);
+    box-shadow: var(--ios-light-card-shadow);
+    border: 1px solid var(--ios-light-card-border);
+    cursor: pointer;
+    transition: all var(--ios-transition-fast);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.ios-light-card:hover {
+    background: var(--ios-light-card-bg-hover);
+    box-shadow: var(--ios-light-card-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.ios-light-card:active {
+    transform: scale(0.98);
+    background: rgba(245, 245, 250, 0.95);
+}
+
+.ios-light-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ios-radius-md);
+    flex-shrink: 0;
+}
+
+.ios-light-card__icon svg,
+.ios-light-card__icon img {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.ios-light-card__icon--gold {
+    background: var(--ios-icon-gold);
+}
+
+.ios-light-card__icon--orange {
+    background: var(--ios-icon-orange);
+}
+
+.ios-light-card__icon--purple {
+    background: var(--ios-icon-purple);
+}
+
+.ios-light-card__icon--green {
+    background: var(--ios-icon-green);
+}
+
+.ios-light-card__icon--blue {
+    background: var(--ios-icon-blue);
+}
+
+.ios-light-card__icon--red {
+    background: var(--ios-icon-red);
+}
+
+.ios-light-card__icon--pink {
+    background: var(--ios-icon-pink);
+}
+
+.ios-light-card__icon--brown {
+    background: var(--ios-icon-brown);
+}
+
+.ios-light-card__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ios-light-card__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ios-light-text-primary);
+    margin-bottom: 2px;
+}
+
+.ios-light-card__subtitle {
+    font-size: 13px;
+    color: var(--ios-light-text-tertiary);
+}
+
+.ios-light-card__arrow {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--ios-light-text-muted);
+}
+
+.ios-light-card__arrow svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   7. ICONS (SVG INLINE)
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Emoji fallback icons */
+.ios-light-card__icon-emoji {
+    font-size: 22px;
+    line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   8. LOADING OVERLAY
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--ios-light-bg-ethereal);
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.ios-light-loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.ios-light-loading__spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 122, 255, 0.2);
+    border-top-color: var(--ios-light-blue);
+    border-radius: 50%;
+    animation: ios-spin 1s linear infinite;
+}
+
+@keyframes ios-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ios-light-loading__text {
+    margin-top: var(--ios-space-md);
+    font-size: 14px;
+    color: var(--ios-light-text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   9. RESPONSIVE ADJUSTMENTS
+═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 380px) {
+    .ios-light-header__title {
+        font-size: 24px;
+    }
+
+    .ios-light-player__title {
+        font-size: 20px;
+    }
+
+    .ios-light-card {
+        padding: var(--ios-space-sm) var(--ios-space-md);
+    }
+
+    .ios-light-card__icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (min-width: 768px) {
+    .ios-light-container {
+        max-width: 480px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   10. SAFE AREA & NOTCH SUPPORT
+═══════════════════════════════════════════════════════════════════════════════ */
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    .ios-light-app {
+        padding-top: env(safe-area-inset-top);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   11. GOLDEN KHANDA SVG STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-khanda-gold {
+    fill: url(#goldGradient);
+    filter: drop-shadow(0 4px 12px rgba(212, 164, 24, 0.35));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   12. SCROLLBAR STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-light-app::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ios-light-app::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ios-light-app::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.ios-light-app::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   13. ANIMATION UTILITIES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.ios-fade-in {
+    animation: ios-fade-in 0.5s ease forwards;
+}
+
+@keyframes ios-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ios-light-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.ios-light-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.ios-light-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.ios-light-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.ios-light-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.ios-light-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.ios-light-card:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.ios-light-card:nth-child(8) {
+    animation-delay: 0.4s;
+}

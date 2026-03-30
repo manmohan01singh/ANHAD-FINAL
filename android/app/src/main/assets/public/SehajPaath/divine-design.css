@@ -1,0 +1,816 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * DIVINE DESIGN SYSTEM
+ * Sacred Color Palette & Divine Animations for Sehaj Paath
+ * 
+ * This CSS implements the specified Sacred Design Philosophy:
+ * 🕉️ DEVOTION - Every pixel serves the sacred purpose
+ * 🕉️ TRUST - User's spiritual progress is never compromised
+ * 🕉️ CALM - Interface induces peaceful, meditative state
+ * 🕉️ DISCIPLINE - Logic is precise, predictable, reliable
+ * 🕉️ BEAUTY - Aesthetics that honor Sri Guru Granth Sahib Ji
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DIVINE COLOR SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    /* ─── Sacred Gradients ─── */
+    --gradient-divine: linear-gradient(135deg,
+            #0D0D0D 0%,
+            #1A1A2E 25%,
+            #16213E 50%,
+            #0F3460 75%,
+            #1A1A2E 100%);
+
+    --gradient-golden-hour: linear-gradient(180deg,
+            rgba(255, 149, 0, 0.15) 0%,
+            rgba(255, 204, 0, 0.08) 50%,
+            transparent 100%);
+
+    --gradient-saffron-glow: radial-gradient(ellipse at center,
+            rgba(255, 149, 0, 0.2) 0%,
+            rgba(255, 149, 0, 0.05) 50%,
+            transparent 70%);
+
+    /* ─── Primary Sacred Colors ─── */
+    --saffron-primary: #FF9500;
+    --saffron-light: #FFB340;
+    --saffron-dark: #CC7700;
+    --saffron-glow: rgba(255, 149, 0, 0.4);
+
+    --royal-blue: #1E3A8A;
+    --royal-blue-light: #3B82F6;
+    --royal-blue-dark: #1E40AF;
+
+    --gold-sacred: #D4AF37;
+    --gold-light: #F4D03F;
+    --gold-warm: #B8860B;
+
+    /* ─── Spiritual Accent Colors ─── */
+    --spiritual-white: #FEFEFE;
+    --spiritual-cream: #FFF8E7;
+    --spiritual-pearl: #F5F5F0;
+
+    --deep-maroon: #722F37;
+    --lotus-pink: #E91E63;
+    --forest-green: #228B22;
+
+    /* ─── Gurmukhi Text Colors ─── */
+    --gurmukhi-dark: #2C1810;
+    --gurmukhi-light: #FFE4B5;
+    --gurmukhi-gold: #DAA520;
+    --gurmukhi-saffron: #FF8C00;
+
+    /* ─── Glass Morphism ─── */
+    --glass-white: rgba(255, 255, 255, 0.08);
+    --glass-white-hover: rgba(255, 255, 255, 0.12);
+    --glass-white-active: rgba(255, 255, 255, 0.16);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border-strong: rgba(255, 255, 255, 0.2);
+
+    --glass-saffron: rgba(255, 149, 0, 0.1);
+    --glass-saffron-hover: rgba(255, 149, 0, 0.15);
+
+    /* ─── Semantic Colors ─── */
+    --success-green: #30D158;
+    --success-glow: rgba(48, 209, 88, 0.3);
+
+    --warning-amber: #FFD60A;
+    --warning-glow: rgba(255, 214, 10, 0.3);
+
+    --error-red: #FF453A;
+    --error-glow: rgba(255, 69, 58, 0.3);
+
+    --info-blue: #0A84FF;
+    --info-glow: rgba(10, 132, 255, 0.3);
+
+    /* ─── Progress & Streaks ─── */
+    --streak-fire: #FF6B35;
+    --streak-glow: rgba(255, 107, 53, 0.4);
+
+    --progress-gradient: linear-gradient(90deg,
+            #FF9500 0%,
+            #FFB340 50%,
+            #D4AF37 100%);
+
+    /* ─── Shadow System ─── */
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.25);
+    --shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.35);
+    --shadow-glow-saffron: 0 0 40px rgba(255, 149, 0, 0.3);
+    --shadow-glow-gold: 0 0 30px rgba(212, 175, 55, 0.25);
+    --shadow-inner: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+
+    /* ─── Animation Timing ─── */
+    --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --duration-instant: 100ms;
+    --duration-fast: 200ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+    --duration-slower: 800ms;
+}
+
+/* ─── Theme-Specific Variables ─── */
+
+/* Light Theme */
+[data-theme="light"] {
+    --bg-primary: #FFFBF5;
+    --bg-secondary: #FFF8EE;
+    --bg-paper: #FFFEF9;
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-gurmukhi: var(--gurmukhi-dark);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Theme (Default) */
+[data-theme="dark"] {
+    --bg-primary: #0A0A0A;
+    --bg-secondary: #1C1C1E;
+    --bg-elevated: #2C2C2E;
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-gurmukhi: var(--gurmukhi-light);
+    --glass-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* Sepia Theme */
+[data-theme="sepia"] {
+    --bg-primary: #F4ECD8;
+    --bg-secondary: #E8DCC8;
+    --text-primary: #5C4033;
+    --text-secondary: #8B7355;
+    --text-gurmukhi: var(--gurmukhi-dark);
+    --glass-bg: rgba(244, 236, 216, 0.95);
+    --glass-border: rgba(139, 90, 43, 0.15);
+}
+
+/* OLED Theme */
+[data-theme="oled"] {
+    --bg-primary: #000000;
+    --bg-secondary: #0A0A0A;
+    --text-primary: #E5E5E5;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-gurmukhi: #FFD700;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DIVINE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Page Entry Animation ─── */
+@keyframes divineEntry {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+        filter: blur(10px);
+    }
+
+    60% {
+        opacity: 0.8;
+        transform: translateY(-5px) scale(1.01);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* ─── Gurbani Text Reveal ─── */
+@keyframes gurmukhiReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+        letter-spacing: 0.5em;
+    }
+
+    50% {
+        opacity: 0.7;
+        letter-spacing: 0.1em;
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        letter-spacing: normal;
+    }
+}
+
+/* ─── Sacred Glow Pulse ─── */
+@keyframes sacredGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 20px var(--saffron-glow),
+            0 0 40px transparent;
+    }
+
+    50% {
+        box-shadow:
+            0 0 30px var(--saffron-glow),
+            0 0 60px rgba(255, 149, 0, 0.2);
+    }
+}
+
+/* ─── Ik Onkar Symbol Animation ─── */
+@keyframes ikOnkarBreath {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.9;
+        text-shadow: 0 0 30px var(--gold-sacred);
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+        text-shadow: 0 0 50px var(--gold-sacred), 0 0 80px rgba(212, 175, 55, 0.5);
+    }
+}
+
+/* ─── Progress Ring Animation ─── */
+@keyframes progressRingFill {
+    from {
+        stroke-dashoffset: 440;
+    }
+
+    to {
+        stroke-dashoffset: var(--progress-offset);
+    }
+}
+
+@keyframes progressRingPulse {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 5px var(--saffron-primary));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 15px var(--saffron-primary));
+    }
+}
+
+/* ─── Page Turn Animation ─── */
+@keyframes pageSlideLeft {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes pageSlideRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ─── Bookmark Pop Animation ─── */
+@keyframes bookmarkPop {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.4) rotate(-10deg);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    75% {
+        transform: scale(1.3) rotate(-3deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes bookmarkShine {
+    0% {
+        background-position: -100% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ─── Streak Fire Animation ─── */
+@keyframes fireFlicker {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(-2deg);
+        filter: brightness(1);
+    }
+
+    25% {
+        transform: scale(1.1) rotate(1deg);
+        filter: brightness(1.2);
+    }
+
+    50% {
+        transform: scale(1.05) rotate(-1deg);
+        filter: brightness(1.1);
+    }
+
+    75% {
+        transform: scale(1.08) rotate(2deg);
+        filter: brightness(1.15);
+    }
+}
+
+/* ─── Loading Meditation ─── */
+@keyframes meditationBreath {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* ─── Floating Particles ─── */
+@keyframes floatParticle {
+
+    0%,
+    100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.3;
+    }
+
+    25% {
+        transform: translateY(-20px) translateX(10px);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translateY(-40px) translateX(-5px);
+        opacity: 0.4;
+    }
+
+    75% {
+        transform: translateY(-20px) translateX(-10px);
+        opacity: 0.5;
+    }
+}
+
+/* ─── Achievement Unlock ─── */
+@keyframes achievementUnlock {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.3) rotate(10deg);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(0.9) rotate(-5deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+    }
+}
+
+@keyframes achievementGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px var(--gold-sacred);
+    }
+
+    50% {
+        box-shadow: 0 0 40px var(--gold-sacred), 0 0 60px rgba(212, 175, 55, 0.5);
+    }
+}
+
+/* ─── Ripple Effect ─── */
+@keyframes rippleExpand {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ─── Slide Panel ─── */
+@keyframes slidePanelIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slidePanelOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ─── Modal Entrance ─── */
+@keyframes modalEntry {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(50px);
+        filter: blur(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* ─── Skeleton Loading ─── */
+@keyframes skeletonShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ─── Success Checkmark ─── */
+@keyframes checkmarkDraw {
+    0% {
+        stroke-dashoffset: 100;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* ─── Toast Notification ─── */
+@keyframes toastSlideIn {
+    0% {
+        transform: translateY(100%) translateX(-50%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) translateX(-50%);
+        opacity: 1;
+    }
+}
+
+@keyframes toastSlideOut {
+    0% {
+        transform: translateY(0) translateX(-50%);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100%) translateX(-50%);
+        opacity: 0;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Apply divine entry animation */
+.animate-divine-entry {
+    animation: divineEntry 0.6s var(--ease-ios) forwards;
+}
+
+/* Apply gurmukhi reveal animation */
+.animate-gurmukhi-reveal {
+    animation: gurmukhiReveal 0.8s var(--ease-smooth) forwards;
+}
+
+/* Sacred glow effect */
+.sacred-glow {
+    animation: sacredGlow 3s ease-in-out infinite;
+}
+
+/* Ik Onkar breathing */
+.ik-onkar-breath {
+    animation: ikOnkarBreath 4s ease-in-out infinite;
+}
+
+/* Streak fire effect */
+.streak-fire {
+    animation: fireFlicker 0.5s ease-in-out infinite;
+}
+
+/* Loading meditation */
+.meditation-breath {
+    animation: meditationBreath 3s ease-in-out infinite;
+}
+
+/* Skeleton loading shimmer */
+.skeleton-shimmer {
+    background: linear-gradient(90deg,
+            var(--glass-bg) 25%,
+            var(--glass-white-hover) 50%,
+            var(--glass-bg) 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s linear infinite;
+}
+
+/* Modal entry animation */
+.modal-animate-in {
+    animation: modalEntry 0.4s var(--ease-spring) forwards;
+}
+
+/* Bookmark pop animation */
+.bookmark-pop {
+    animation: bookmarkPop 0.5s var(--ease-spring) forwards;
+}
+
+/* Achievement unlock animation */
+.achievement-unlock {
+    animation: achievementUnlock 0.8s var(--ease-spring) forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Font Scaling */
+:root {
+    --gurmukhi-base-size: clamp(1.2rem, 4vw, 2rem);
+    --translation-base-size: clamp(0.875rem, 2.5vw, 1.125rem);
+    --ui-base-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+/* Safe Areas (for notched phones) */
+.reader-container,
+.sehaj-paath-container {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ENHANCED UI COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Beautiful Loading State */
+.divine-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 20px;
+}
+
+.divine-loading .ik-onkar {
+    font-size: 48px;
+    color: var(--gold-sacred);
+    animation: ikOnkarBreath 4s ease-in-out infinite;
+}
+
+.divine-loading-text {
+    font-family: var(--font-gurmukhi);
+    font-size: 18px;
+    color: var(--text-secondary);
+}
+
+.divine-loading-bar {
+    width: 120px;
+    height: 3px;
+    background: var(--glass-bg);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.divine-loading-bar::after {
+    content: '';
+    display: block;
+    width: 40%;
+    height: 100%;
+    background: var(--progress-gradient);
+    animation: loadingSlide 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingSlide {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(350%);
+    }
+}
+
+/* Premium Toast Notification */
+.divine-toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 24px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-medium);
+    animation: toastSlideIn 0.3s var(--ease-ios) forwards;
+    z-index: 10000;
+}
+
+.divine-toast.toast-success {
+    background: linear-gradient(135deg, rgba(48, 209, 88, 0.2), rgba(48, 209, 88, 0.1));
+    border-color: var(--success-green);
+}
+
+.divine-toast.toast-warning {
+    background: linear-gradient(135deg, rgba(255, 214, 10, 0.2), rgba(255, 214, 10, 0.1));
+    border-color: var(--warning-amber);
+}
+
+.divine-toast.toast-error {
+    background: linear-gradient(135deg, rgba(255, 69, 58, 0.2), rgba(255, 69, 58, 0.1));
+    border-color: var(--error-red);
+}
+
+.divine-toast-exit {
+    animation: toastSlideOut 0.3s var(--ease-ios) forwards;
+}
+
+/* Enhanced Progress Ring */
+.progress-ring-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: var(--glass-bg);
+    stroke-width: 6;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: url(#progressGradient);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 0.8s var(--ease-smooth);
+    filter: drop-shadow(0 0 6px var(--saffron-glow));
+}
+
+.progress-ring-text {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Streak Badge */
+.streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: linear-gradient(135deg, var(--streak-fire), var(--saffron-primary));
+    border-radius: 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px var(--streak-glow);
+}
+
+.streak-badge .fire-icon {
+    animation: fireFlicker 0.5s ease-in-out infinite;
+}
+
+/* Beautiful Buttons */
+.btn-divine {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--saffron-primary), var(--saffron-dark));
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-ios);
+    box-shadow: 0 4px 20px var(--saffron-glow);
+}
+
+.btn-divine:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px var(--saffron-glow);
+}
+
+.btn-divine:active {
+    transform: scale(0.98);
+}
+
+.btn-divine-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--glass-bg);
+    border: 2px solid var(--saffron-primary);
+    border-radius: 14px;
+    color: var(--saffron-primary);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-ios);
+}
+
+.btn-divine-outline:hover {
+    background: var(--glass-saffron);
+    transform: translateY(-2px);
+}
+
+/* Glass Cards */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.3s var(--ease-ios);
+}
+
+.glass-card:hover {
+    border-color: var(--glass-border-strong);
+    box-shadow: var(--shadow-medium);
+}
+
+.glass-card-glow {
+    box-shadow: var(--shadow-glow-saffron);
+}

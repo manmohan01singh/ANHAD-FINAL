@@ -1,0 +1,1490 @@
+/* ═══════════════════════════════════════════════════════════════
+   GURBANI READER - PURE iOS EXPERIENCE
+   Apple-Level Design • Clean • Minimal • Beautiful
+   v5.0.0 - PURE iOS Edition
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════
+   FONTS & VARIABLES
+   ══════════════════════════════════════════════════ */
+:root {
+    --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+    --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+
+    /* Dynamic Sizes */
+    --gurmukhi-size: 28px;
+    --roman-size: 17px;
+    --translation-size: 15px;
+    --line-spacing: 1.8;
+    --font-weight: 500;
+
+    /* iOS System Timing */
+    --ios-spring: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ios-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ══════════════════════════════════════════════════
+   PURE iOS THEME SYSTEM
+   ══════════════════════════════════════════════════ */
+
+/* Dark Mode (Default) */
+[data-theme="dark"] {
+    --bg-primary: #000000;
+    --bg-secondary: #1C1C1E;
+    --bg-tertiary: #2C2C2E;
+    --bg-elevated: #2C2C2E;
+    --text-primary: #FFFFFF;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #636366;
+    --separator: rgba(84, 84, 88, 0.65);
+    --separator-opaque: #38383A;
+    --fill-primary: rgba(120, 120, 128, 0.36);
+    --accent: #D4AF37;
+    --accent-rgb: 212, 175, 55;
+    --system-blue: #0A84FF;
+    --system-green: #30D158;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #C7C7CC;
+    --separator: rgba(60, 60, 67, 0.29);
+    --separator-opaque: #C6C6C8;
+    --fill-primary: rgba(120, 120, 128, 0.2);
+    --accent: #B8860B;
+    --accent-rgb: 184, 134, 11;
+    --system-blue: #007AFF;
+    --system-green: #34C759;
+}
+
+/* Sepia → maps to Light (backwards compat) */
+[data-theme="sepia"] {
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #8E8E93;
+    --text-tertiary: #C7C7CC;
+    --separator: rgba(60, 60, 67, 0.29);
+    --separator-opaque: #C6C6C8;
+    --fill-primary: rgba(120, 120, 128, 0.2);
+    --accent: #B8860B;
+    --accent-rgb: 184, 134, 11;
+    --system-blue: #007AFF;
+    --system-green: #34C759;
+}
+
+/* ══════════════════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════════════════ */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════════
+   BACKGROUND BLUR ORBS - ULTRA AESTHETICS
+   ══════════════════════════════════════════════════ */
+.bg-orbs {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+/* Subtle noise texture */
+.bg-orbs::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    opacity: 0.4;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: float 25s ease-in-out infinite;
+    transition: background 1.5s ease, transform 0.5s ease-out, opacity 0.5s ease;
+}
+
+.orb-3 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    right: -80px;
+    animation-delay: -18s;
+    opacity: 0.2;
+}
+
+/* Dark theme orbs */
+[data-theme="dark"] .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, #D4AF37, #FF8C00, #FFD700, #D4AF37);
+    top: -150px;
+    right: -100px;
+}
+
+[data-theme="dark"] .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 180deg, #AF52DE, #5856D6, #007AFF, #AF52DE);
+    bottom: 20%;
+    left: -120px;
+    animation-delay: -12s;
+}
+
+[data-theme="dark"] .orb-3 {
+    background: conic-gradient(from 90deg, #30D158, #34C759, #32D74B, #30D158);
+}
+
+/* Light theme orbs */
+[data-theme="light"] .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, #FFD700, #FF9500, #FF8C00, #FFD700);
+    top: -150px;
+    right: -100px;
+    opacity: 0.2;
+}
+
+[data-theme="light"] .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 180deg, #007AFF, #5AC8FA, #30D158, #007AFF);
+    bottom: 20%;
+    left: -120px;
+    animation-delay: -12s;
+    opacity: 0.15;
+}
+
+[data-theme="light"] .orb-3 {
+    background: conic-gradient(from 90deg, #FF2D55, #FF3B30, #FF9500, #FF2D55);
+    opacity: 0.12;
+}
+
+/* Sepia theme orbs */
+[data-theme="sepia"] .orb-1 {
+    width: 350px;
+    height: 350px;
+    background: conic-gradient(from 0deg, #D4AF37, #DEB887, #CD853F, #D4AF37);
+    top: -120px;
+    right: -80px;
+    opacity: 0.2;
+}
+
+[data-theme="sepia"] .orb-2 {
+    width: 250px;
+    height: 250px;
+    background: conic-gradient(from 180deg, #8B4513, #A0522D, #CD853F, #8B4513);
+    bottom: 25%;
+    left: -100px;
+    animation-delay: -12s;
+    opacity: 0.15;
+}
+
+[data-theme="sepia"] .orb-3 {
+    background: conic-gradient(from 90deg, #B8860B, #DAA520, #FFD700, #B8860B);
+    opacity: 0.1;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(30px, -30px) rotate(120deg);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   LOADING STATE - iOS Style
+   ══════════════════════════════════════════════════ */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-ik {
+    font-family: var(--font-gurmukhi);
+    font-size: 4rem;
+    color: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+.loading-content p {
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+/* ══════════════════════════════════════════════════
+   ERROR STATE
+   ══════════════════════════════════════════════════ */
+.error-state {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    text-align: center;
+    padding: 2rem;
+    z-index: 1000;
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.error-state h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.error-state p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 24px;
+}
+
+.error-btn {
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    border: none;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.error-link {
+    color: var(--system-blue);
+    font-size: 15px;
+}
+
+/* ══════════════════════════════════════════════════
+   READER APP - CLEAN iOS CONTAINER
+   ══════════════════════════════════════════════════ */
+.reader-app {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+/* ══════════════════════════════════════════════════
+   PAPER BACKGROUND - BEAUTIFUL iOS PAPER
+   ══════════════════════════════════════════════════ */
+.paper-background {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.4s var(--ios-spring);
+    background:
+        /* Subtle paper texture */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+        /* Warm paper gradient */
+        linear-gradient(180deg,
+            #F5E6D3 0%,
+            #FDF8F0 15%,
+            #FDF8F0 85%,
+            #F5E6D3 100%);
+    background-color: #FAF6ED;
+}
+
+.paper-background.visible {
+    opacity: 1;
+}
+
+/* Paper mode adjustments */
+.reader-app.paper-active {
+    background: transparent;
+}
+
+.reader-app.paper-active .reader-content {
+    background: transparent;
+}
+
+/* ══════════════════════════════════════════════════
+   HEADER - PURE iOS NAVIGATION BAR
+   ══════════════════════════════════════════════════ */
+.reader-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    padding: 0 16px;
+    padding-top: env(safe-area-inset-top, 0);
+    background: var(--bg-primary);
+    border-bottom: 0.5px solid var(--separator);
+    transition: transform 0.3s var(--ios-spring), opacity 0.3s;
+}
+
+.reader-header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.reader-back {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--system-blue);
+    font-size: 17px;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+.reader-back svg {
+    width: 12px;
+    height: 20px;
+}
+
+.reader-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    max-width: 50%;
+}
+
+.reader-gurmukhi {
+    display: block;
+    font-family: var(--font-gurmukhi);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reader-english {
+    display: none;
+}
+
+.reader-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.reader-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    color: var(--system-blue);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.reader-btn.active svg {
+    fill: var(--accent);
+    stroke: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════
+   DISPLAY TOGGLES - HIDE ON SCROLL (COMPLETELY)
+   ══════════════════════════════════════════════════ */
+.reader-toggles {
+    position: fixed;
+    top: calc(44px + env(safe-area-inset-top, 0));
+    left: 0;
+    right: 0;
+    z-index: 95;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 0.5px solid var(--separator);
+    transition: transform 0.3s var(--ios-spring), opacity 0.3s;
+}
+
+.reader-toggles.hidden {
+    transform: translateY(-200%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.toggle-btn {
+    flex: 1;
+    max-width: 100px;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s var(--ios-spring);
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.toggle-btn.active {
+    background: var(--accent);
+    color: #000;
+}
+
+/* ══════════════════════════════════════════════════
+   PROGRESS BAR - SUBTLE iOS STYLE
+   ══════════════════════════════════════════════════ */
+.reader-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 110;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.15s linear;
+}
+
+.progress-text {
+    position: fixed;
+    right: 16px;
+    top: calc(44px + env(safe-area-inset-top, 0) + 50px);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    transition: opacity 0.3s;
+}
+
+.progress-text.hidden {
+    opacity: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   CONTENT AREA - CLEAN READING SPACE
+   ══════════════════════════════════════════════════ */
+.reader-content {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 100px 20px 100px;
+    position: relative;
+    z-index: 1;
+}
+
+.reader-info {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    padding: 16px 0;
+    margin-bottom: 24px;
+    border-bottom: 0.5px solid var(--separator);
+}
+
+/* ══════════════════════════════════════════════════
+   VERSES - NO BOXES, PURE CLEAN iOS READING
+   ══════════════════════════════════════════════════ */
+.verses-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* VERSE - Clean, no boxes */
+.verse {
+    padding: 0;
+    background: transparent;
+    border: none;
+    text-align: center;
+    animation: fadeIn 0.4s var(--ios-spring) both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.verse:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.verse:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.verse:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.verse:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.verse:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+/* Gurmukhi Text */
+.verse-gurmukhi {
+    font-family: var(--font-gurmukhi);
+    font-size: var(--gurmukhi-size);
+    font-weight: var(--font-weight);
+    line-height: var(--line-spacing);
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    transition: font-family 0.3s, font-size 0.3s;
+}
+
+/* Font Classes - For handwritten fonts */
+.verse-gurmukhi.font-puratan {
+    font-family: 'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.verse-gurmukhi.font-riyasti-hast {
+    font-family: 'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.verse-gurmukhi.font-riyasti-naveen {
+    font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.verse-gurmukhi.font-noto {
+    font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+/* Roman Transliteration */
+.verse-roman {
+    font-size: var(--roman-size);
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+/* English Translation */
+.verse-english {
+    font-size: var(--translation-size);
+    line-height: 1.7;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 0.5px solid var(--separator);
+}
+
+/* Punjabi Translation */
+.verse-punjabi {
+    font-family: var(--font-gurmukhi);
+    font-size: var(--translation-size);
+    line-height: 1.8;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+}
+
+/* Hidden states */
+.verse-gurmukhi.hidden,
+.verse-roman.hidden,
+.verse-english.hidden,
+.verse-punjabi.hidden {
+    display: none;
+}
+
+/* ══════════════════════════════════════════════════
+   CONTINUOUS READING — FIXED (Block layout, no flicker)
+   ══════════════════════════════════════════════════ */
+.verses-container.continuous-mode {
+    display: block;
+    gap: 0;
+}
+
+.verses-container.continuous-mode .verse {
+    display: block;
+    padding: 4px 0;
+    margin: 0;
+    animation: none;
+}
+
+.verses-container.continuous-mode .verse-gurmukhi {
+    display: block;
+    margin: 0;
+    text-align: left;
+    line-height: 2.0;
+}
+
+.verses-container.continuous-mode .verse-roman,
+.verses-container.continuous-mode .verse-english,
+.verses-container.continuous-mode .verse-punjabi {
+    display: none !important;
+}
+
+/* ══════════════════════════════════════════════════
+   PARAGRAPH MODE - Sectional display
+   ══════════════════════════════════════════════════ */
+.verses-container.paragraph-mode {
+    gap: 8px;
+}
+
+.verses-container.paragraph-mode .verse {
+    padding: 0;
+    margin: 0;
+}
+
+.verses-container.paragraph-mode .verse-gurmukhi {
+    margin-bottom: 4px;
+}
+
+/* ══════════════════════════════════════════════════
+   LARIVAAR MODE
+   ══════════════════════════════════════════════════ */
+body.larivaar-mode .verse-gurmukhi {
+    word-spacing: -0.25em;
+    letter-spacing: 0.02em;
+}
+
+body.larivaar-assist .verse-gurmukhi .word-alt {
+    color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════
+   SECTION DIVIDER
+   ══════════════════════════════════════════════════ */
+.section-divider {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.section-divider span {
+    display: inline-block;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    background: var(--fill-primary);
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════════════
+   END CARD - iOS COMPLETION (ENHANCED)
+   ══════════════════════════════════════════════════ */
+.reader-end {
+    text-align: center;
+    padding: 48px 24px 64px;
+    margin-top: 48px;
+    position: relative;
+}
+
+.reader-end::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    max-width: 200px;
+    height: 4px;
+    background: linear-gradient(90deg,
+            transparent,
+            var(--accent) 20%,
+            var(--system-blue) 50%,
+            var(--accent) 80%,
+            transparent);
+    border-radius: 2px;
+    opacity: 0.6;
+}
+
+.end-khanda {
+    font-size: 56px;
+    margin-bottom: 20px;
+    animation: pulse 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+}
+
+.end-gurmukhi {
+    font-family: var(--font-gurmukhi);
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--system-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.end-english {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 0 0 32px;
+    font-weight: 500;
+}
+
+.end-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.end-btn {
+    padding: 14px 32px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    min-width: 220px;
+    transition: all 0.3s var(--ios-spring);
+}
+
+.end-btn:active {
+    transform: scale(0.97);
+}
+
+.end-btn.primary {
+    background: linear-gradient(135deg, var(--accent), #FFD700);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+.end-btn.primary:hover {
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.end-btn.secondary {
+    background: var(--fill-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--separator);
+}
+
+/* ══════════════════════════════════════════════════
+   SCROLL TOP - iOS FLOATING BUTTON
+   ══════════════════════════════════════════════════ */
+.scroll-top {
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0));
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s var(--ios-spring);
+    z-index: 50;
+    cursor: pointer;
+}
+
+.scroll-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-top:active {
+    transform: scale(0.95);
+}
+
+/* ══════════════════════════════════════════════════
+   SETTINGS OVERLAY - iOS SHEET
+   ══════════════════════════════════════════════════ */
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 200;
+    transition: opacity 0.3s var(--ios-spring);
+}
+
+.settings-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ══════════════════════════════════════════════════
+   SETTINGS DRAWER - PURE iOS SHEET
+   ══════════════════════════════════════════════════ */
+.settings-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 90vh;
+    background: var(--bg-secondary);
+    border-radius: 12px 12px 0 0;
+    z-index: 201;
+    transform: translateY(100%);
+    transition: transform 0.4s var(--ios-spring);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-drawer.visible {
+    transform: translateY(0);
+}
+
+/* Handle */
+.settings-handle {
+    width: 36px;
+    height: 5px;
+    background: var(--fill-primary);
+    border-radius: 3px;
+    margin: 8px auto;
+}
+
+/* Close Button */
+.settings-close-floating {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fill-primary);
+    border: none;
+    border-radius: 50%;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Header */
+.settings-header {
+    text-align: center;
+    padding: 16px 16px 20px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 140, 0, 0.05));
+    border-bottom: 1px solid var(--separator);
+}
+
+.settings-header h2 {
+    font-family: var(--font-gurmukhi);
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--system-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 4px;
+}
+
+.settings-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Body */
+.settings-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 16px 40px;
+}
+
+/* Section */
+.setting-section {
+    margin-bottom: 24px;
+}
+
+.setting-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 16px;
+    margin-bottom: 8px;
+}
+
+/* Card */
+.setting-card {
+    background: var(--bg-elevated);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--separator);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Row */
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    min-height: 44px;
+}
+
+.setting-info {
+    flex: 1;
+}
+
+.setting-label {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-primary);
+}
+
+.setting-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+    display: block;
+}
+
+.setting-value {
+    font-size: 15px;
+    color: var(--text-tertiary);
+    margin-left: 8px;
+}
+
+/* Divider */
+.setting-divider {
+    height: 0.5px;
+    background: var(--separator);
+    margin-left: 16px;
+}
+
+/* Toggle - iOS Style */
+.ios-toggle {
+    position: relative;
+    width: 51px;
+    height: 31px;
+    background: var(--fill-primary);
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s var(--ios-spring);
+    flex-shrink: 0;
+}
+
+.ios-toggle.active,
+.ios-toggle[aria-checked="true"] {
+    background: linear-gradient(135deg, var(--system-green), #32CD32);
+    box-shadow: 0 0 12px rgba(48, 209, 88, 0.4);
+}
+
+.toggle-track {
+    display: none;
+}
+
+.toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.25s var(--ios-spring);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.ios-toggle.active .toggle-thumb,
+.ios-toggle[aria-checked="true"] .toggle-thumb {
+    transform: translateX(20px);
+}
+
+/* Size Controls */
+.size-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.size-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fill-primary);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.size-btn:active {
+    transform: scale(0.9);
+}
+
+/* Select */
+.setting-select {
+    padding: 8px 12px;
+    background: var(--fill-primary);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* Font Preview */
+.font-preview {
+    padding: 20px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+    border-radius: 12px;
+    margin: 10px 16px;
+    border: 1px solid var(--separator);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.font-preview-text {
+    font-family: var(--font-gurmukhi);
+    font-size: 24px;
+    background: linear-gradient(135deg, var(--accent), var(--system-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+}
+
+/* Theme */
+.theme-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.setting-subsection {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-primary);
+}
+
+.theme-selector {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.theme-bubble {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.bubble-inner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.theme-bubble.active .bubble-inner {
+    border-color: var(--accent);
+}
+
+.bubble-inner.light {
+    background: linear-gradient(135deg, #FFFFFF, #F5F5F5);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bubble-inner.dark {
+    background: linear-gradient(135deg, #1C1C1E, #000000);
+}
+
+.bubble-inner.sepia {
+    background: linear-gradient(135deg, #F4E4C8, #DBC8A8);
+}
+
+.bubble-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* Action */
+.setting-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.action-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.action-icon {
+    font-size: 20px;
+    color: #FF3B30;
+}
+
+.action-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.action-label {
+    font-size: 17px;
+    color: var(--text-primary);
+}
+
+.action-desc {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.action-arrow {
+    font-size: 22px;
+    color: var(--text-tertiary);
+}
+
+/* Footer */
+.settings-footer {
+    text-align: center;
+    padding: 32px 16px 24px;
+    background: linear-gradient(180deg, transparent, rgba(212, 175, 55, 0.03));
+    border-top: 1px solid var(--separator);
+    margin-top: 20px;
+}
+
+.version-info {
+    font-size: 13px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--system-blue));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.api-credit {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════
+   COLOR PICKER MODAL
+   ══════════════════════════════════════════════════ */
+.color-picker-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: none;
+}
+
+.color-picker-modal.visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.picker-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.picker-content {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 280px;
+    width: 90%;
+    z-index: 1;
+}
+
+.picker-title {
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.picker-colors {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.picker-close {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #000;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .reader-content {
+        padding: 100px 16px 100px;
+    }
+
+    .toggle-btn {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .reader-content {
+        padding: 120px 24px 120px;
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   SKELETON LOADING — Instant visual feedback
+   ══════════════════════════════════════════════════ */
+
+.skeleton-container {
+    display: none;
+    padding: 20px 0;
+}
+
+.skeleton-verse {
+    margin-bottom: 28px;
+    padding: 16px 0;
+}
+
+.skeleton-line {
+    height: 18px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background: linear-gradient(
+        90deg,
+        var(--fill-primary) 25%,
+        rgba(var(--accent-rgb), 0.08) 50%,
+        var(--fill-primary) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.8s infinite ease-in-out;
+}
+
+.skeleton-line.w90 { width: 90%; }
+.skeleton-line.w85 { width: 85%; }
+.skeleton-line.w80 { width: 80%; }
+.skeleton-line.w75 { width: 75%; }
+.skeleton-line.w70 { width: 70%; }
+.skeleton-line.w65 { width: 65%; }
+.skeleton-line.w60 { width: 60%; }
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ══════════════════════════════════════════════════
+   NEXT BANI — My Pothi Navigation
+   Premium golden gradient button
+   ══════════════════════════════════════════════════ */
+
+.next-bani-container {
+    margin: 24px 0;
+    padding: 24px;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--accent-rgb), 0.08) 0%,
+        rgba(var(--accent-rgb), 0.03) 100%
+    );
+    border-radius: 20px;
+    border: 1px solid rgba(var(--accent-rgb), 0.15);
+}
+
+.next-bani-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+}
+
+.next-bani-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--accent), #FFD700);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    transition: all 0.25s ease;
+    box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.35);
+}
+
+.next-bani-btn:active {
+    transform: scale(0.97);
+}
+
+.next-bani-btn:hover {
+    box-shadow: 0 8px 32px rgba(var(--accent-rgb), 0.45);
+    transform: translateY(-1px);
+}
+
+.next-bani-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.next-bani-name {
+    flex: 1;
+    font-family: var(--font-gurmukhi);
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.next-bani-btn svg {
+    color: rgba(0, 0, 0, 0.5);
+    flex-shrink: 0;
+}
+
+/* Sepia theme orbs → map to Light theme orbs */
+[data-theme="sepia"] .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, #FFD700, #FF9500, #FF8C00, #FFD700);
+    top: -150px;
+    right: -100px;
+    opacity: 0.2;
+}
+
+[data-theme="sepia"] .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: conic-gradient(from 180deg, #007AFF, #5AC8FA, #30D158, #007AFF);
+    bottom: 20%;
+    left: -120px;
+    animation-delay: -12s;
+    opacity: 0.15;
+}
+
+[data-theme="sepia"] .orb-3 {
+    background: conic-gradient(from 90deg, #FF2D55, #FF3B30, #FF9500, #FF2D55);
+    opacity: 0.12;
+}
+
+/* ══════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton-line,
+    .end-khanda,
+    .orb {
+        animation: none !important;
+    }
+}

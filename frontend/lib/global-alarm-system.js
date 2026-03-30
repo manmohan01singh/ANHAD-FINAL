@@ -29,7 +29,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     const CONFIG = {
         // Storage Keys
-        REMINDERS_KEYS: ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'],
+        REMINDERS_KEYS: ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1', 'cine_alarms_v4'],
         SETTINGS_KEY: 'sr_settings_v4',
         ALARM_LOG_KEY: 'nitnemTracker_alarmLog',
         NAAM_ABHYAS_LOG: 'naamAbhyas_sessions',
@@ -253,7 +253,7 @@
         const now = Date.now();
 
         data.reminders.forEach(reminder => {
-            if (!reminder.enabled) return;
+            if (!reminder.enabled && !reminder.on) return;
 
             const nextTime = getNextOccurrence(reminder.time);
             if (!nextTime) return;
@@ -359,10 +359,15 @@
         const alarmLog = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
 
         data.reminders.forEach(reminder => {
-            if (!reminder.enabled) return;
+            if (!reminder.enabled && !reminder.on) return;
 
-            const [h, m] = (reminder.time || '00:00').split(':').map(Number);
-            const reminderMinutes = h * 60 + m;
+            let reminderMinutes;
+            if (typeof reminder.time === 'number') {
+                reminderMinutes = reminder.time;
+            } else {
+                const [h, m] = (reminder.time || '00:00').split(':').map(Number);
+                reminderMinutes = h * 60 + m;
+            }
 
             // Check if should have fired in last 5 minutes
             const diff = currentMinutes - reminderMinutes;
@@ -966,10 +971,20 @@
         }
     }
 
-    function getNextOccurrence(timeStr) {
-        if (!timeStr) return null;
+    function getNextOccurrence(timeVal) {
+        if (timeVal === null || timeVal === undefined) return null;
 
-        const [h, m] = timeStr.split(':').map(Number);
+        let h, m;
+        if (typeof timeVal === 'number') {
+            // Cinematic format: minutes from midnight
+            h = Math.floor(timeVal / 60) % 24;
+            m = Math.floor(timeVal % 60);
+        } else {
+            const parts = String(timeVal).split(':').map(Number);
+            h = parts[0]; m = parts[1] || 0;
+        }
+        if (isNaN(h) || isNaN(m)) return null;
+
         const now = new Date();
         const target = new Date(now);
         target.setHours(h, m, 0, 0);
@@ -982,28 +997,38 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // LOGGING
+    // LOGGING — with storage lock protection
     // ══════════════════════════════════════════════════════════════════════════
     function logAlarmInteraction(alarmId, action) {
         try {
             const today = new Date().toLocaleDateString('en-CA');
             const timestamp = new Date().toISOString();
 
-            // Load existing log
-            const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
-
-            if (!log[today]) log[today] = {};
-            log[today][alarmId] = { status: action, timestamp };
-
-            localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+            // Use storage lock for atomic update
+            if (window.AnhadStorageLock) {
+                window.AnhadStorageLock.withLock(CONFIG.ALARM_LOG_KEY, (existing) => {
+                    const log = existing || {};
+                    if (!log[today]) log[today] = {};
+                    log[today][alarmId] = { status: action, timestamp };
+                    return log;
+                });
+            } else {
+                // Fallback without lock
+                const log = JSON.parse(localStorage.getItem(CONFIG.ALARM_LOG_KEY) || '{}');
+                if (!log[today]) log[today] = {};
+                log[today][alarmId] = { status: action, timestamp };
+                localStorage.setItem(CONFIG.ALARM_LOG_KEY, JSON.stringify(log));
+            }
 
             // Dispatch event for Nitnem Tracker
             window.dispatchEvent(new CustomEvent('alarmInteraction', {
                 detail: { alarmId, action, timestamp }
             }));
 
-            // Broadcast to other tabs
-            broadcast('NITNEM_UPDATE', { alarmId, action, timestamp, date: today });
+            // Broadcast to coordinator
+            if (window.AnhadAlarmCoordinator) {
+                window.AnhadAlarmCoordinator.acknowledgeAlarm(alarmId, action);
+            }
 
             console.log(`📝 Alarm logged: ${alarmId} - ${action}`);
         } catch (e) {
@@ -1163,22 +1188,33 @@
             }, 2000);
         }
 
-        // Schedule all alarms
-        scheduleAllAlarms();
-
-        // Check for missed alarms
-        checkMissedAlarms();
-
-        // Regular check interval — skip when SW is active (SW is single source of truth)
-        if (!navigator.serviceWorker?.controller) {
-            State.checkInterval = setInterval(() => {
-                scheduleAllAlarms();
-            }, CONFIG.CHECK_INTERVAL);
+        // Schedule all alarms (only if leader)
+        if (window.AnhadAlarmCoordinator?.isLeader()) {
+            scheduleAllAlarms();
+            checkMissedAlarms();
         }
+
+        // Listen for coordinator leadership changes
+        if (window.AnhadAlarmCoordinator) {
+            setTimeout(() => {
+                if (window.AnhadAlarmCoordinator.isLeader()) {
+                    scheduleAllAlarms();
+                    checkMissedAlarms();
+                }
+            }, 1000);
+        }
+
+        // Regular check interval — only leader schedules
+        State.checkInterval = setInterval(() => {
+            if (window.AnhadAlarmCoordinator?.isLeader()) {
+                scheduleAllAlarms();
+                checkMissedAlarms();
+            }
+        }, CONFIG.CHECK_INTERVAL);
 
         // Visibility change handler
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === 'visible' && window.AnhadAlarmCoordinator?.isLeader()) {
                 scheduleAllAlarms();
                 checkMissedAlarms();
             }
@@ -1186,17 +1222,41 @@
 
         // Focus handler
         window.addEventListener('focus', () => {
-            scheduleAllAlarms();
-            checkMissedAlarms();
+            if (window.AnhadAlarmCoordinator?.isLeader()) {
+                scheduleAllAlarms();
+                checkMissedAlarms();
+            }
         });
 
-        // Storage change handler (for sync across tabs)
+        // Storage change handler (for sync across tabs) — with lock protection
         window.addEventListener('storage', (e) => {
             if (CONFIG.REMINDERS_KEYS.includes(e.key)) {
                 console.log('📋 Reminders updated, rescheduling...');
-                scheduleAllAlarms();
+                if (window.AnhadAlarmCoordinator?.isLeader()) {
+                    scheduleAllAlarms();
+                }
             }
         });
+
+        // Pagehide cleanup
+        window.addEventListener('pagehide', () => {
+            console.log('[GlobalAlarmSystem] Pagehide - clearing interval');
+            if (State.checkInterval) {
+                clearInterval(State.checkInterval);
+                State.checkInterval = null;
+            }
+        });
+
+        // Listen for alarms from coordinator (non-leader tabs)
+        if (window.AnhadAlarmCoordinator) {
+            window.AnhadAlarmCoordinator.onAlarmFired((alarmId, reminder, isPreReminder) => {
+                console.log('[GlobalAlarmSystem] Received alarm from coordinator:', alarmId);
+                // Non-leader tabs show the alarm UI
+                if (!window.AnhadAlarmCoordinator.isLeader()) {
+                    showPremiumAlarmModal(reminder, isPreReminder, State.settings || {});
+                }
+            });
+        }
 
         console.log('✅ Global Alarm System Ready!');
         console.log(`   📍 Current page: ${window.location.pathname}`);

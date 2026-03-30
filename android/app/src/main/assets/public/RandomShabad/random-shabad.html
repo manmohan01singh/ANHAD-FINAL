@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr" data-theme="dark">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>ਰੈਂਡਮ ਸ਼ਬਦ | Random Shabad — ANHAD</title>
+    
+    <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="random-shabad.css?v=5.0">
+</head>
+<body>
+    
+    <!-- ═══════════════════════════════════════════════════════════════
+         DIVINE AMBIENT BACKGROUND - Living, Breathing Light
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="divine-atmosphere" aria-hidden="true">
+        <div class="atmosphere-orb atmosphere-orb--golden"></div>
+        <div class="atmosphere-orb atmosphere-orb--celestial"></div>
+        <div class="atmosphere-orb atmosphere-orb--sacred"></div>
+        <div class="atmosphere-orb atmosphere-orb--ethereal"></div>
+        <div class="atmosphere-particles"></div>
+        <div class="atmosphere-grain"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MAIN APPLICATION
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="app" id="app">
+        
+        <!-- Floating Navigation Bar -->
+        <nav class="nav-bar">
+            <a href="../index.html" class="nav-back">
+                <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+                    <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <div class="nav-center">
+                <span class="nav-title">ਰੈਂਡਮ ਸ਼ਬਦ</span>
+            </div>
+            <button class="nav-action" id="themeToggle" aria-label="Toggle theme">
+                <svg class="icon-theme" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+            </button>
+        </nav>
+
+        <!-- Sacred Symbol Header -->
+        <header class="sacred-header">
+            <div class="ik-onkar-container">
+                <div class="ik-onkar-aura"></div>
+                <div class="ik-onkar-aura ik-onkar-aura--secondary"></div>
+                <span class="ik-onkar">ੴ</span>
+            </div>
+            <div class="ang-display">
+                <span class="ang-label">ਅੰਗ</span>
+                <span class="ang-number" id="angNumber">---</span>
+            </div>
+            <p class="source-info" id="sourceInfo">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</p>
+        </header>
+
+        <!-- Divine Message Container -->
+        <main class="shabad-container">
+            
+            <!-- Glass Card with Shabad -->
+            <article class="shabad-glass-card" id="shabadCard">
+                
+                <!-- Loading State -->
+                <div class="state state--loading" id="loadingState">
+                    <div class="divine-loader">
+                        <div class="loader-khanda">☬</div>
+                        <div class="loader-ripple"></div>
+                        <div class="loader-ripple loader-ripple--delayed"></div>
+                    </div>
+                    <p class="loading-message">ਹੁਕਮ ਆ ਰਿਹਾ ਹੈ...</p>
+                </div>
+                
+                <!-- Error State -->
+                <div class="state state--error" id="errorState">
+                    <div class="error-symbol">⚠</div>
+                    <p class="error-message">ਕੁਨੈਕਸ਼ਨ ਸਮੱਸਿਆ</p>
+                    <button class="btn-retry" id="retryBtn">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</button>
+                </div>
+                
+                <!-- Content -->
+                <div class="state state--content" id="contentState">
+                    <div class="verses-scroll" id="versesContainer"></div>
+                </div>
+                
+            </article>
+            
+        </main>
+
+        <!-- Action Controls -->
+        <footer class="action-footer">
+            
+            <!-- Primary: New Shabad Button -->
+            <button class="btn-divine" id="newShabadBtn">
+                <span class="btn-divine-glow"></span>
+                <span class="btn-divine-text">ਨਵਾਂ ਹੁਕਮ</span>
+                <svg class="btn-divine-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 12a9 9 0 11-2.2-5.98"/>
+                    <path d="M21 3v6h-6"/>
+                </svg>
+            </button>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <button class="action-pill" id="copyBtn" aria-label="Copy">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                </button>
+                <button class="action-pill" id="shareBtn" aria-label="Share">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                        <polyline points="16,6 12,2 8,6"/>
+                        <line x1="12" y1="2" x2="12" y2="15"/>
+                    </svg>
+                </button>
+                <button class="action-pill" id="saveBtn" aria-label="Save">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+                    </svg>
+                </button>
+                <button class="action-pill" id="settingsBtn" aria-label="Settings">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Sacred Footer -->
+            <div class="sacred-blessing">
+                <span class="blessing-symbol">☬</span>
+                <span class="blessing-text">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ ॥</span>
+            </div>
+            
+        </footer>
+        
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         SETTINGS SHEET
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="sheet-overlay" id="sheetOverlay"></div>
+    <aside class="settings-sheet" id="settingsSheet">
+        <div class="sheet-pill"></div>
+        <div class="sheet-header">
+            <h2>ਡਿਸਪਲੇਅ ਸੈਟਿੰਗਜ਼</h2>
+        </div>
+        <div class="sheet-body">
+            <div class="setting-item">
+                <span class="setting-label">ਲੜੀਵਾਰ (Continuous)</span>
+                <button class="toggle" id="larivaarToggle" role="switch" aria-checked="false"><span class="toggle-knob"></span></button>
+            </div>
+
+            <div class="setting-item">
+                <span class="setting-label">English</span>
+                <button class="toggle active" id="englishToggle" role="switch" aria-checked="true"><span class="toggle-knob"></span></button>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">ਪੰਜਾਬੀ ਅਰਥ</span>
+                <button class="toggle" id="punjabiToggle" role="switch" aria-checked="false"><span class="toggle-knob"></span></button>
+            </div>
+            <div class="setting-item setting-item--slider">
+                <span class="setting-label">ਅੱਖਰ ਦਾ ਆਕਾਰ</span>
+                <div class="font-slider-wrap">
+                    <span class="font-label font-label--small">ਅ</span>
+                    <input type="range" class="font-slider" id="fontSlider" min="1" max="2.2" step="0.1" value="1.5">
+                    <span class="font-label font-label--large">ਅ</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+    <!-- Persistent Audio for Cross-Page Playback -->
+    <script src="../lib/persistent-audio.js"></script>
+    <script src="../lib/background-audio-loader.js"></script>
+    
+    <script src="random-shabad.js?v=5.0"></script>
+    <script src="../lib/global-mini-player.js" defer></script>
+</body>
+</html>

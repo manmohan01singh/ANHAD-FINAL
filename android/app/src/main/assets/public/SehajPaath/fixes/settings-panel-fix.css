@@ -1,0 +1,337 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SETTINGS PANEL CRITICAL FIX - PREVENTS SCREEN FREEZE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════ MODAL SCROLL FIXES ═══════ */
+
+/* Ensure modal body is scrollable */
+.modal-body {
+    flex: 1;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    overscroll-behavior-y: contain !important;
+    touch-action: pan-y !important;
+    padding: var(--space-4);
+    padding-bottom: calc(var(--space-6) + var(--safe-bottom) + 30px);
+}
+
+/* Settings modal content specific fixes */
+.settings-modal-content {
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.settings-modal-content .modal-body {
+    flex: 1 !important;
+    min-height: 0 !important;
+    /* Critical for flex child scroll */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+}
+
+/* Settings inner panel */
+.settings-panel-inner,
+.settings-inner {
+    padding-bottom: 40px;
+    overflow: visible;
+}
+
+/* Settings sections */
+.settings-section {
+    margin-bottom: var(--space-6);
+}
+
+.settings-section h3,
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--sehaj-gold, #D4AF37);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.section-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--sehaj-gold, #D4AF37);
+    border-radius: 2px;
+}
+
+/* Theme switcher */
+.theme-switcher {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-2);
+}
+
+.theme-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.12));
+    border: 2px solid transparent;
+    border-radius: var(--radius-md, 12px);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.theme-option:hover,
+.theme-option:active {
+    background: var(--glass-bg-hover, rgba(255, 255, 255, 0.18));
+}
+
+.theme-option.active {
+    border-color: var(--sehaj-gold, #D4AF37);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.theme-icon {
+    font-size: 1.5rem;
+}
+
+/* Slider control */
+.slider-control {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.slider-control span {
+    color: var(--text-secondary, rgba(255, 255, 255, 0.85));
+}
+
+.slider-control span.large {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Setting rows */
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.12));
+    border: 1px solid var(--glass-border-light, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius-md, 12px);
+    margin-bottom: var(--space-3);
+    touch-action: manipulation;
+}
+
+.setting-label {
+    font-size: var(--text-base, 0.9375rem);
+    font-weight: 500;
+    color: var(--text-primary, #ffffff);
+}
+
+.setting-desc {
+    font-size: var(--text-sm, 0.8125rem);
+    color: var(--text-tertiary, rgba(255, 255, 255, 0.6));
+    margin-top: 2px;
+}
+
+/* Toggle row adjustments */
+.toggle-row>div {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Toggle switch */
+.toggle {
+    position: relative;
+    display: inline-block;
+    width: 51px;
+    height: 31px;
+    flex-shrink: 0;
+}
+
+.toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-track {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 31px;
+    transition: all 0.3s ease;
+}
+
+.toggle-track::before {
+    content: '';
+    position: absolute;
+    width: 27px;
+    height: 27px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.toggle input:checked+.toggle-track {
+    background: var(--sehaj-gold, #D4AF37);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.toggle input:checked+.toggle-track::before {
+    transform: translateX(20px);
+}
+
+/* Radio options */
+.radio-options {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.12));
+    border: 1px solid transparent;
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.radio-option:has(input:checked) {
+    border-color: var(--sehaj-gold, #D4AF37);
+    background: rgba(212, 175, 55, 0.15);
+}
+
+.radio-option input[type="radio"] {
+    accent-color: var(--sehaj-gold, #D4AF37);
+}
+
+/* Settings buttons */
+.settings-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-4);
+    background: var(--glass-bg, rgba(255, 255, 255, 0.12));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.2));
+    border-radius: var(--radius-md, 12px);
+    color: var(--text-primary, #ffffff);
+    font-size: var(--text-base, 0.9375rem);
+    font-weight: 500;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
+    margin-bottom: var(--space-3);
+}
+
+.settings-btn:active {
+    transform: scale(0.98);
+}
+
+.settings-btn.danger {
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.3);
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.settings-btn.danger:hover {
+    background: rgba(255, 59, 48, 0.2);
+}
+
+/* About section */
+.settings-section.about {
+    text-align: center;
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--glass-border-light, rgba(255, 255, 255, 0.1));
+}
+
+.app-version {
+    font-size: var(--text-sm, 0.8125rem);
+    color: var(--text-tertiary, rgba(255, 255, 255, 0.6));
+    margin-bottom: var(--space-2);
+}
+
+.app-credit {
+    font-size: var(--text-xs, 0.6875rem);
+    color: var(--text-quaternary, rgba(255, 255, 255, 0.4));
+}
+
+/* Range slider styling */
+input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: var(--glass-border, rgba(255, 255, 255, 0.2));
+    border-radius: 3px;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, var(--sehaj-gold, #D4AF37) 0%, var(--sehaj-saffron, #FF9500) 100%);
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, var(--sehaj-gold, #D4AF37) 0%, var(--sehaj-saffron, #FF9500) 100%);
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
+    cursor: pointer;
+}
+
+/* ═══════ PREVENT BODY SCROLL WHEN MODAL OPEN ═══════ */
+
+body.modal-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* But ensure modal can still scroll */
+body.modal-open .modal-body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* ═══════ SAFE AREA HANDLING ═══════ */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .modal-body {
+        padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom) + 30px);
+    }
+}

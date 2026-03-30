@@ -1,0 +1,337 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * DOWNLOAD UI — Floating Progress Indicator Styles
+ * Minimal, non-intrusive, iOS-inspired design
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* Floating Progress Pill */
+#gurbaniDownloadProgress {
+    position: fixed;
+    bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9998;
+    animation: gdpSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    pointer-events: auto;
+}
+
+@keyframes gdpSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+#gurbaniDownloadProgress.gdp-complete {
+    animation: gdpSlideOut 0.5s ease-in 3.5s forwards;
+}
+
+@keyframes gdpSlideOut {
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px) scale(0.9);
+    }
+}
+
+.gdp-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 10px;
+    border-radius: 50px;
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    box-shadow:
+        0 2px 20px rgba(0, 0, 0, 0.15),
+        0 1px 4px rgba(0, 0, 0, 0.1),
+        inset 0 0.5px 0 rgba(255, 255, 255, 0.15);
+    min-width: 200px;
+}
+
+/* Theme-aware backgrounds */
+[data-theme="dark"] .gdp-inner,
+:root:not([data-theme="light"]) .gdp-inner {
+    background: rgba(30, 30, 40, 0.85);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .gdp-inner {
+    background: rgba(255, 255, 255, 0.9);
+    border: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Progress Ring */
+.gdp-ring {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.gdp-ring svg {
+    width: 32px;
+    height: 32px;
+    transform: rotate(-90deg);
+}
+
+.gdp-ring-bg {
+    fill: none;
+    stroke: rgba(128, 128, 128, 0.2);
+    stroke-width: 3;
+}
+
+.gdp-ring-fill {
+    fill: none;
+    stroke: #D4AF37;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease;
+}
+
+.gdp-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    line-height: 1;
+    animation: gdpSpin 3s linear infinite;
+}
+
+.gdp-complete .gdp-icon {
+    animation: none;
+    color: #2E8B57;
+}
+
+@keyframes gdpSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Text */
+.gdp-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.gdp-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .gdp-title,
+:root:not([data-theme="light"]) .gdp-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="light"] .gdp-title {
+    color: rgba(0, 0, 0, 0.85);
+}
+
+.gdp-detail {
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .gdp-detail,
+:root:not([data-theme="light"]) .gdp-detail {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .gdp-detail {
+    color: rgba(0, 0, 0, 0.45);
+}
+
+/* Close button */
+.gdp-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    line-height: 1;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+[data-theme="dark"] .gdp-close,
+:root:not([data-theme="light"]) .gdp-close {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="light"] .gdp-close {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.gdp-close:hover {
+    background: rgba(128, 128, 128, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OFFLINE STATUS BADGE — Shown in headers
+   ═══════════════════════════════════════════════════════════════ */
+
+.offline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.offline-badge.ready {
+    background: rgba(46, 139, 87, 0.15);
+    color: #2E8B57;
+}
+
+.offline-badge.downloading {
+    background: rgba(212, 175, 55, 0.15);
+    color: #D4AF37;
+    animation: offlinePulse 2s ease infinite;
+}
+
+.offline-badge.offline {
+    background: rgba(220, 38, 38, 0.15);
+    color: #DC2626;
+}
+
+@keyframes offlinePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FULL-SCREEN DOWNLOAD OVERLAY — For initial setup
+   ═══════════════════════════════════════════════════════════════ */
+
+.download-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 40px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.download-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+[data-theme="dark"] .download-overlay,
+:root:not([data-theme="light"]) .download-overlay {
+    background: rgba(10, 10, 18, 0.96);
+}
+
+[data-theme="light"] .download-overlay {
+    background: rgba(248, 246, 242, 0.96);
+}
+
+.download-large-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.download-large-ring svg {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg);
+}
+
+.download-large-ring .ring-bg {
+    fill: none;
+    stroke: rgba(128, 128, 128, 0.15);
+    stroke-width: 4;
+}
+
+.download-large-ring .ring-fill {
+    fill: none;
+    stroke: #D4AF37;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.8s ease;
+}
+
+.download-large-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+}
+
+.download-info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.download-info p {
+    font-size: 14px;
+    opacity: 0.6;
+    max-width: 280px;
+    line-height: 1.5;
+}
+
+.download-stats {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.download-stats span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.download-stats strong {
+    font-size: 22px;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 380px) {
+    .gdp-inner {
+        min-width: 180px;
+        padding: 6px 12px 6px 8px;
+    }
+
+    .gdp-title {
+        font-size: 11px;
+    }
+
+    .gdp-detail {
+        font-size: 10px;
+    }
+}

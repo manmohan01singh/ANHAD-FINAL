@@ -14,16 +14,9 @@
     // API CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const API_BASE = (() => {
-        try {
-            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const onBackendPort = window.location.port === '3000';
-            if (isLocalhost && !onBackendPort) {
-                return `${window.location.protocol}//${window.location.hostname}:3000`;
-            }
-        } catch (e) { }
-        return '';
-    })();
+    const RENDER_BASE = 'https://anhad-final.onrender.com';
+
+    const API_BASE = RENDER_BASE;
 
     const AUDIO_BASE = `${API_BASE}/audio`;
 

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#F2F2F7" />
+  <title>Gurpurab Calendar</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Calendar uses its own complete modal/sheet system -->
+  <!-- Shared glass CSS removed to prevent z-index and positioning conflicts -->
+  <link rel="stylesheet" href="gurpurab-calendar.css" />
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+</head>
+<body>
+
+  <svg class="svg-filters" aria-hidden="true">
+    <defs>
+      <filter id="glass-distortion">
+        <feTurbulence id="glassRefractionNoise" type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" seed="1"/>
+        <feDisplacementMap id="glassRefractionDisplacement" in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+
+      <filter id="chromatic-aberration">
+        <feOffset in="SourceGraphic" dx="-1" dy="0" result="red" />
+        <feOffset in="SourceGraphic" dx="1" dy="0" result="blue" />
+        <feColorMatrix in="red" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red-channel"/>
+        <feColorMatrix in="blue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue-channel"/>
+        <feBlend in="red-channel" in2="SourceGraphic" mode="screen" result="red-blend"/>
+        <feBlend in="blue-channel" in2="red-blend" mode="screen"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="liquid-background" aria-hidden="true">
+    <div class="liquid-orb liquid-orb--1"></div>
+    <div class="liquid-orb liquid-orb--2"></div>
+    <div class="liquid-orb liquid-orb--3"></div>
+    <div class="liquid-orb liquid-orb--4"></div>
+    <div class="caustic-overlay"></div>
+  </div>
+
+  <header class="page-nav">
+    <button class="nav-btn" id="btnBack" type="button" aria-label="Back">
+      <span>‹</span>
+      <span>Back</span>
+    </button>
+    <div class="nav-title">Gurpurab Calendar</div>
+    <button class="nav-btn settings-btn" id="btnSettings" type="button" aria-label="Settings">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+  </header>
+
+  <main class="page">
+    <section class="glass-card section">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">TODAY</div>
+          <div class="section-sub">Nanakshahi + Gregorian</div>
+        </div>
+        <div class="badge">Nanakshahi</div>
+      </div>
+      <div class="today-grid">
+        <div class="today-left">
+          <div class="today-nk" id="todayNk">—</div>
+          <div class="today-g" id="todayG">—</div>
+        </div>
+        <div class="badge">Nanakshahi</div>
+      </div>
+    </section>
+
+    <section class="glass-card section">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">CONTROLS</div>
+          <div class="section-sub">Search • Filter • Views</div>
+        </div>
+      </div>
+      <div class="controls">
+        <input id="searchInput" class="search" placeholder="Search Gurpurab..." inputmode="search" />
+
+        <div class="filter-row" aria-label="Filter">
+          <button class="filter-chip active" id="filter_all" type="button">All</button>
+          <button class="filter-chip" id="filter_prakash" type="button">Prakash</button>
+          <button class="filter-chip" id="filter_shaheedi" type="button">Shaheedi</button>
+          <button class="filter-chip" id="filter_gurgaddi" type="button">Gurgaddi</button>
+          <button class="filter-chip" id="filter_historical" type="button">Historical</button>
+          <button class="filter-chip" id="filter_sangrand" type="button">Sangrand</button>
+          <button class="filter-chip" id="filter_puranmashi" type="button">Puranmashi</button>
+          <button class="filter-chip" id="filter_masya" type="button">Masya</button>
+        </div>
+
+        <div class="view-seg" aria-label="View">
+          <button class="view-btn active" id="viewMonthly" type="button">Monthly</button>
+          <button class="view-btn" id="viewYearly" type="button">Yearly</button>
+          <button class="view-btn" id="viewList" type="button">List</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass-card section">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">UPCOMING</div>
+          <div class="section-sub">Countdown • Tap for details</div>
+        </div>
+      </div>
+      <div class="upcoming-list" id="upcomingList"></div>
+    </section>
+
+    <section class="glass-card section" id="calendarSection">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">CALENDAR</div>
+          <div class="section-sub">Swipe months • Tap dots</div>
+        </div>
+      </div>
+
+      <div class="calendar-wrap">
+        <div class="calendar-head">
+          <button class="icon-pill" id="monthPrev" type="button" aria-label="Previous month">‹</button>
+          <div class="month-label" id="monthLabel">—</div>
+          <button class="icon-pill" id="monthNext" type="button" aria-label="Next month">›</button>
+        </div>
+
+        <div class="weekdays" aria-hidden="true">
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+          <div>Sun</div>
+        </div>
+
+        <div class="grid" id="calendarGrid"></div>
+      </div>
+
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="glass-card section hidden" id="yearSection">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">YEAR</div>
+          <div class="section-sub">Tap a month to open Monthly</div>
+        </div>
+      </div>
+      <div class="calendar-wrap" style="display:grid; gap: 12px;" id="yearGrid"></div>
+    </section>
+
+    <section class="glass-card section hidden" id="listSection">
+      <div class="glass-optics" aria-hidden="true"></div>
+      <div class="section-head">
+        <div>
+          <div class="section-title">ALL EVENTS</div>
+          <div class="section-sub">Chronological</div>
+        </div>
+      </div>
+      <div class="upcoming-list" id="eventList"></div>
+    </section>
+  </main>
+
+  <div class="ios-backdrop" id="modalBackdrop" aria-hidden="true"></div>
+  <div class="ios-modal" id="eventModal" aria-hidden="true">
+    <div class="modal-header">
+      <button class="modal-cancel" id="modalClose" type="button">Close</button>
+      <h2>Event</h2>
+      <div style="width: 60px;"></div>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-title-pa" id="modalTitlePa"></div>
+      <div class="modal-title-en" id="modalTitleEn"></div>
+
+      <div class="kv" id="modalKV"></div>
+
+      <div class="block" id="modalHistory">
+        <div class="block-title">History</div>
+        <div class="block-text"></div>
+      </div>
+
+      <div class="block hidden" id="modalRelated">
+        <div class="block-title">Related Shabads</div>
+        <div class="block-text"></div>
+      </div>
+
+      <div class="block hidden" id="modalCelebrations">
+        <div class="block-title">Celebrations</div>
+        <div class="block-text"></div>
+      </div>
+    </div>
+
+    <div class="actions hidden" id="modalActions">
+      <button class="primary" id="btnSetReminder" type="button">🔔 Set Reminder</button>
+      <button class="secondary" id="btnArth" type="button">📖 Arth</button>
+      <button class="secondary" id="btnAddCalendar" type="button">📅 Add to Calendar (ICS)</button>
+      <button class="secondary" id="btnShare" type="button">📤 Share</button>
+    </div>
+  </div>
+
+  <div class="ios-backdrop" id="arthBackdrop" aria-hidden="true"></div>
+  <div class="ios-modal" id="arthModal" aria-hidden="true">
+    <div class="modal-header">
+      <button class="modal-cancel" id="arthClose" type="button">Close</button>
+      <h2>Arth</h2>
+      <div style="width: 60px;"></div>
+    </div>
+
+    <div class="modal-body" id="arth-content"></div>
+  </div>
+
+  <div class="ios-backdrop" id="reminderBackdrop" aria-hidden="true"></div>
+  <div class="ios-sheet" id="reminderSheet" aria-hidden="true">
+    <div class="sheet-header">
+      <button class="sheet-close" id="reminderClose" type="button">Cancel</button>
+      <h2 id="reminderTitle">Set Reminder</h2>
+      <button class="sheet-close" id="reminderSave" type="button">Save</button>
+    </div>
+    <div class="sheet-content">
+      <label>
+        <span>Enable Notifications</span>
+        <input id="reminderEnabled" type="checkbox" checked />
+      </label>
+
+      <div class="reminder-row">
+        <span>Notification Time</span>
+        <input class="time" id="reminderTime" type="time" value="08:00" />
+      </div>
+
+      <div style="padding: 16px 0 8px; font-size: 13px; color: rgba(60,60,67,0.6); text-transform: uppercase; font-weight: 600; letter-spacing: -0.08px;">
+        Remind me before
+      </div>
+      <div class="day-pills" id="reminderDays"></div>
+
+      <div style="margin-top: 20px; padding: 12px; background: rgba(118,118,128,0.08); border-radius: 12px;">
+        <div style="font-size: 13px; color: rgba(60,60,67,0.6); font-weight: 400; line-height: 1.4;">
+          💡 Notifications work best while the app is open. For reliable reminders, add event to your device calendar.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="ios-backdrop" id="settingsBackdrop" aria-hidden="true"></div>
+  <div class="ios-modal settings-modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-header">
+      <button class="modal-cancel" id="settingsClose" type="button">Done</button>
+      <h2>Settings</h2>
+      <div style="width: 60px;"></div>
+    </div>
+
+    <div class="modal-body">
+      <div class="settings-section">
+        <div class="settings-section-title">APPEARANCE</div>
+        <div class="theme-grid" id="themeGrid">
+          <button class="theme-option" data-theme="light">
+            <div class="theme-preview theme-preview--light">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-card"></div>
+            </div>
+            <span>Light</span>
+          </button>
+          <button class="theme-option" data-theme="dark">
+            <div class="theme-preview theme-preview--dark">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-card"></div>
+            </div>
+            <span>Dark</span>
+          </button>
+          <button class="theme-option" data-theme="divineGold">
+            <div class="theme-preview theme-preview--gold">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-card"></div>
+            </div>
+            <span>Divine Gold</span>
+          </button>
+          <button class="theme-option" data-theme="sepia">
+            <div class="theme-preview theme-preview--sepia">
+              <div class="theme-preview-bar"></div>
+              <div class="theme-preview-card"></div>
+            </div>
+            <span>Sepia</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-info">
+        <div class="info-icon">🎨</div>
+        <div class="info-text">Theme preference is automatically saved and will be remembered on your next visit.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/unified-storage.js"></script>
+  <script src="../Hukamnama/optical-glass-physics.js"></script>
+  <script src="nanakshahi-calendar.js"></script>
+  <script src="gurupurab-reminders.js"></script>
+  <script src="gurpurab-calendar.js"></script>
+  <script src="../lib/global-alarm-system.js" defer></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+</body>
+</html>

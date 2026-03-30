@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1c1c1e">
+    <meta name="description"
+        content="Nitnem Tracker - Track your spiritual journey with Amritvela, Nitnem Banis, and maintain your spiritual streaks">
+
+    <title>ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ | Nitnem Tracker</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="nitnem-tracker.css?v=2.3">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/dark-mode.css">
+  <script src="../lib/global-theme.js"></script>
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/global-mini-player.js" defer></script>
+
+    <!-- Inline Critical CSS for Instant Load -->
+    <style>
+        :root {
+            /* iOS 26 System Colors */
+            --system-blue: #007AFF;
+            --system-green: #34C759;
+            --system-orange: #FF9500;
+            --system-red: #FF3B30;
+            --system-yellow: #FFCC00;
+            --system-purple: #AF52DE;
+            --system-pink: #FF2D55;
+            --system-teal: #5AC8FA;
+            --system-indigo: #5856D6;
+
+            /* Gradient Theme (Default) */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.85);
+            --text-tertiary: rgba(255, 255, 255, 0.6);
+
+            /* Glass Morphism */
+            --glass-blur: blur(20px);
+            --glass-saturate: saturate(180%);
+
+            /* Spacing System */
+            --space-xxs: 4px;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+
+            /* Typography */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+
+            /* Safe Areas */
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+
+            /* Animation Timings */
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+            --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
+            --bg-secondary: rgba(0, 0, 0, 0.03);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --text-primary: #1d1d1f;
+            --text-secondary: #424245;
+            --text-tertiary: #86868b;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(180deg, #000000 0%, #1c1c1e 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(44, 44, 46, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --text-primary: #ffffff;
+            --text-secondary: #ebebf5;
+            --text-tertiary: rgba(235, 235, 245, 0.6);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Initial Loading State */
+        .app-loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            z-index: 10000;
+            transition: opacity 0.5s var(--ease-out-expo), visibility 0.5s;
+        }
+
+        .app-loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--text-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         LOADING SCREEN
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-loading" id="appLoading">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">ਵਾਹਿਗੁਰੂ</p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         MAIN APPLICATION CONTAINER
+    ═══════════════════════════════════════════════════════════════════════════ -->
+    <div class="app-container" id="appContainer">
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             DYNAMIC BACKGROUND EFFECTS
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="background-effects">
+            <div class="gradient-orb gradient-orb-1"></div>
+            <div class="gradient-orb gradient-orb-2"></div>
+            <div class="gradient-orb gradient-orb-3"></div>
+            <div class="mesh-gradient"></div>
+            <div class="noise-overlay"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             HEADER - iOS Dynamic Island Style
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <header class="app-header" id="appHeader">
+            <div class="header-blur-bg"></div>
+
+            <div class="header-content">
+                <!-- Back Button -->
+                <button class="header-btn back-btn" id="backBtn" aria-label="Go back to home">
+                    <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
+
+                <!-- Status Pill (Dynamic Island Inspired) -->
+                <div class="status-pill" id="statusPill">
+                    <div class="status-pill-content">
+                        <div class="streak-fire" id="streakFire">
+                            <span class="fire-emoji">🔥</span>
+                            <span class="streak-count" id="headerStreakCount">0</span>
+                        </div>
+                        <div class="status-divider"></div>
+                        <div class="current-time" id="currentTime">00:00</div>
+                    </div>
+                </div>
+
+                <!-- Header Title -->
+                <div class="header-title-section">
+                    <h1 class="header-title">
+                        <span class="gurmukhi-title">ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ</span>
+                        <span class="english-title">Nitnem Tracker</span>
+                    </h1>
+                    <p class="header-subtitle" id="headerSubtitle">Your Spiritual Journey</p>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="header-actions">
+                    <button class="header-btn" id="statsBtn" aria-label="Statistics">
+                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 20V10M12 20V4M6 20v-6" />
+                        </svg>
+                    </button>
+                    <button class="header-btn" id="settingsBtn" aria-label="Settings">
+                        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             MAIN SCROLLABLE CONTENT
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <main class="main-content" id="mainContent">
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 1: AMRITVELA PRESENT CARD
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card amritvela-card" id="amritvelaSection">
+                <div class="card-glow amritvela-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon sunrise-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="4" />
+                            <path
+                                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਅੰਮ੍ਰਿਤ ਵੇਲਾ</h2>
+                        <p class="card-subtitle">Amritvela Present</p>
+                    </div>
+                    <div class="amritvela-status" id="amritvelaStatus">
+                        <span class="status-badge not-marked">Not Marked</span>
+                    </div>
+                </div>
+
+                <div class="card-body amritvela-body">
+                    <!-- Time Display -->
+                    <div class="amritvela-time-display" id="amritvelaTimeDisplay">
+                        <div class="time-circle">
+                            <svg class="time-progress" viewBox="0 0 100 100">
+                                <circle class="time-progress-bg" cx="50" cy="50" r="45" />
+                                <circle class="time-progress-fill" cx="50" cy="50" r="45" id="timeProgressFill" />
+                            </svg>
+                            <div class="time-center">
+                                <span class="current-hour" id="currentHour">--</span>
+                                <span class="time-separator">:</span>
+                                <span class="current-minute" id="currentMinute">--</span>
+                                <span class="time-period" id="timePeriod">AM</span>
+                            </div>
+                        </div>
+                        <div class="time-slots">
+                            <div class="time-slot excellent" data-time="before-4">
+                                <span class="slot-time">Before 4 AM</span>
+                                <span class="slot-label">Excellent</span>
+                            </div>
+                            <div class="time-slot good" data-time="4-5">
+                                <span class="slot-time">4-5 AM</span>
+                                <span class="slot-label">Good</span>
+                            </div>
+                            <div class="time-slot okay" data-time="5-6">
+                                <span class="slot-time">5-6 AM</span>
+                                <span class="slot-label">Okay</span>
+                            </div>
+                            <div class="time-slot late" data-time="after-6">
+                                <span class="slot-time">After 6 AM</span>
+                                <span class="slot-label">Late</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Present Button -->
+                    <button class="present-btn" id="presentBtn" aria-label="Mark Present for Amritvela">
+                        <span class="btn-content">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M20 6L9 17l-5-5" />
+                            </svg>
+                            <span class="btn-text">Mark Present</span>
+                        </span>
+                        <span class="btn-ripple"></span>
+                    </button>
+
+                    <!-- Message Display -->
+                    <div class="amritvela-message" id="amritvelaMessage">
+                        <div class="message-icon"></div>
+                        <p class="message-text"></p>
+                    </div>
+                </div>
+
+                <!-- Amritvela Stats Mini -->
+                <div class="card-footer amritvela-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="amritvelaStreak">0</span>
+                        <span class="stat-label">Day Streak</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item clickable-stat" onclick="AmritvelaWeekView.show()"
+                        title="Click to see week details">
+                        <span class="stat-value" id="amritvelaThisWeek">0/7</span>
+                        <span class="stat-label">This Week 📅</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="amritvelaAvgTime">--:--</span>
+                        <span class="stat-label">Avg Time</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 2: TODAY'S NITNEM PROGRESS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card nitnem-progress-card" id="nitnemProgressSection">
+                <div class="card-glow nitnem-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon book-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                            <path d="M8 7h8M8 11h6" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਅੱਜ ਦਾ ਨਿਤਨੇਮ</h2>
+                        <p class="card-subtitle">Today's Nitnem</p>
+                    </div>
+                    <div class="progress-ring-mini" id="progressRingMini">
+                        <svg viewBox="0 0 36 36">
+                            <circle class="progress-ring-bg" cx="18" cy="18" r="15" />
+                            <circle class="progress-ring-fill" cx="18" cy="18" r="15" id="nitnemProgressRing" />
+                        </svg>
+                        <span class="progress-percentage" id="nitnemProgressPercent">0%</span>
+                    </div>
+                </div>
+
+                <div class="card-body nitnem-body">
+                    <!-- Time Period Tabs -->
+                    <div class="time-period-tabs" id="timePeriodTabs">
+                        <button class="period-tab active" data-period="amritvela">
+                            <span class="tab-icon">🌅</span>
+                            <span class="tab-label">ਅੰਮ੍ਰਿਤ ਵੇਲਾ</span>
+                            <span class="tab-count" id="amritvelaBaniCount">0/0</span>
+                        </button>
+                        <button class="period-tab" data-period="rehras">
+                            <span class="tab-icon">🌇</span>
+                            <span class="tab-label">ਰਹਿਰਾਸ</span>
+                            <span class="tab-count" id="rehrasBaniCount">0/0</span>
+                        </button>
+                        <button class="period-tab" data-period="sohila">
+                            <span class="tab-icon">🌙</span>
+                            <span class="tab-label">ਸੋਹਿਲਾ</span>
+                            <span class="tab-count" id="sohilaBaniCount">0/0</span>
+                        </button>
+                    </div>
+
+                    <!-- Bani List Container -->
+                    <div class="bani-list-container" id="baniListContainer">
+                        <!-- Amritvela Banis -->
+                        <div class="bani-list active" data-period="amritvela" id="amritvelaBaniList">
+                            <!-- Banis will be dynamically injected -->
+                            <div class="bani-placeholder">
+                                <p>No banis added yet</p>
+                                <button class="add-bani-mini-btn" data-period="amritvela">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14M5 12h14" />
+                                    </svg>
+                                    Add Bani
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Rehras Banis -->
+                        <div class="bani-list" data-period="rehras" id="rehrasBaniList">
+                            <div class="bani-placeholder">
+                                <p>No banis added yet</p>
+                                <button class="add-bani-mini-btn" data-period="rehras">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14M5 12h14" />
+                                    </svg>
+                                    Add Bani
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sohila Banis -->
+                        <div class="bani-list" data-period="sohila" id="sohilaBaniList">
+                            <div class="bani-placeholder">
+                                <p>No banis added yet</p>
+                                <button class="add-bani-mini-btn" data-period="sohila">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14M5 12h14" />
+                                    </svg>
+                                    Add Bani
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer nitnem-footer">
+                    <button class="add-bani-btn" id="addBaniBtn">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        <span>Add Bani</span>
+                    </button>
+                    <button class="complete-all-btn" id="completeAllBtn" disabled>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                        <span>Complete All</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 3: MALA COUNTER
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card mala-card" id="malaSection">
+                <div class="card-glow mala-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon mala-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <circle cx="12" cy="6" r="1.5" fill="currentColor" />
+                            <circle cx="18" cy="12" r="1.5" fill="currentColor" />
+                            <circle cx="12" cy="18" r="1.5" fill="currentColor" />
+                            <circle cx="6" cy="12" r="1.5" fill="currentColor" />
+                            <circle cx="12" cy="12" r="3" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਮਾਲਾ ਜਾਪ</h2>
+                        <p class="card-subtitle">Mala Counter</p>
+                    </div>
+                    <button class="mala-settings-btn" id="malaSettingsBtn" aria-label="Mala Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="1" />
+                            <circle cx="19" cy="12" r="1" />
+                            <circle cx="5" cy="12" r="1" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="card-body mala-body">
+                    <!-- Mala Display -->
+                    <div class="mala-display" id="malaDisplay">
+                        <!-- Bead Animation Ring -->
+                        <div class="mala-ring" id="malaRing">
+                            <svg class="mala-beads-svg" viewBox="0 0 200 200" id="malaBeadsSvg">
+                                <!-- 108 beads will be generated via JS -->
+                            </svg>
+                            <div class="mala-center-btn" id="malaCenterBtn" role="button" tabindex="0"
+                                aria-label="Tap to count">
+                                <div class="count-display">
+                                    <span class="count-number" id="malaCount">0</span>
+                                    <span class="count-label">Counts</span>
+                                </div>
+                                <div class="tap-hint" id="tapHint">
+                                    <span>Tap</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mala Info -->
+                        <div class="mala-info">
+                            <div class="mala-stat">
+                                <span class="mala-stat-value" id="malaCompleted">0</span>
+                                <span class="mala-stat-label">Malas Done</span>
+                            </div>
+                            <div class="mala-progress-bar">
+                                <div class="mala-progress-fill" id="malaProgressFill"></div>
+                                <span class="mala-progress-text" id="malaProgressText">0/108</span>
+                            </div>
+                            <div class="mala-stat">
+                                <span class="mala-stat-value" id="totalJaap">0</span>
+                                <span class="mala-stat-label">Total Today</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mala Selection -->
+                    <div class="mala-selection" id="malaSelection">
+                        <label class="mala-select-label">Select Jaap</label>
+                        <div class="mala-options">
+                            <button class="mala-option active" data-jaap="waheguru">
+                                <span class="option-gurmukhi">ਵਾਹਿਗੁਰੂ</span>
+                                <span class="option-english">Waheguru</span>
+                            </button>
+                            <button class="mala-option" data-jaap="mool">
+                                <span class="option-gurmukhi">ਮੂਲ ਮੰਤ੍ਰ</span>
+                                <span class="option-english">Mool Mantar</span>
+                            </button>
+                            <button class="mala-option" data-jaap="satnam">
+                                <span class="option-gurmukhi">ਸਤਿਨਾਮ</span>
+                                <span class="option-english">Satnam</span>
+                            </button>
+                            <button class="mala-option" data-jaap="custom">
+                                <span class="option-gurmukhi">+</span>
+                                <span class="option-english">Custom</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mala Goal Progress Container -->
+                <div class="mala-goal-container" id="malaGoalContainer">
+                    <!-- Goal meter will be rendered by MalaGoalTracker.js -->
+                </div>
+
+                <div class="card-footer mala-footer">
+                    <button class="mala-action-btn" id="malaResetBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                        </svg>
+                        <span>Reset</span>
+                    </button>
+                    <button class="mala-action-btn primary" id="malaCompleteBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                        <span>Complete Mala</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 4: ALARM OBEDIENCE TRACKER
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card alarm-card" id="alarmSection">
+                <div class="card-glow alarm-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon alarm-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="13" r="8" />
+                            <path d="M12 9v4l2 2" />
+                            <path d="M5 3L2 6M22 6l-3-3" />
+                            <path d="M6.38 18.7L4 21M17.64 18.67L20 21" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਅਲਾਰਮ ਪਾਲਣਾ</h2>
+                        <p class="card-subtitle">Alarm Obedience</p>
+                    </div>
+                    <button class="link-reminders-btn" id="linkRemindersBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
+                        <span>Link</span>
+                    </button>
+                </div>
+
+                <div class="card-body alarm-body">
+                    <!-- Weekly Calendar View -->
+                    <div class="alarm-week-view" id="alarmWeekView">
+                        <div class="week-header">
+                            <button class="week-nav-btn" id="prevWeekBtn" aria-label="Previous Week">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 18l-6-6 6-6" />
+                                </svg>
+                            </button>
+                            <span class="week-label" id="weekLabel">This Week</span>
+                            <button class="week-nav-btn" id="nextWeekBtn" aria-label="Next Week">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 18l6-6-6-6" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="week-days" id="weekDays">
+                            <!-- Days generated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Alarm Stats -->
+                    <div class="alarm-stats-grid" id="alarmStatsGrid">
+                        <div class="alarm-stat-card">
+                            <div class="alarm-stat-icon responded">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg>
+                            </div>
+                            <div class="alarm-stat-content">
+                                <span class="alarm-stat-value" id="alarmsResponded">0</span>
+                                <span class="alarm-stat-label">Responded</span>
+                            </div>
+                        </div>
+                        <div class="alarm-stat-card">
+                            <div class="alarm-stat-icon snoozed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h6l-6 6h6M14 4h6l-6 6h6M4 14h6l-6 6h6M14 14h6l-6 6h6" />
+                                </svg>
+                            </div>
+                            <div class="alarm-stat-content">
+                                <span class="alarm-stat-value" id="alarmsSnoozed">0</span>
+                                <span class="alarm-stat-label">Snoozed</span>
+                            </div>
+                        </div>
+                        <div class="alarm-stat-card">
+                            <div class="alarm-stat-icon missed">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M15 9l-6 6M9 9l6 6" />
+                                </svg>
+                            </div>
+                            <div class="alarm-stat-content">
+                                <span class="alarm-stat-value" id="alarmsMissed">0</span>
+                                <span class="alarm-stat-label">Missed</span>
+                            </div>
+                        </div>
+                        <div class="alarm-stat-card highlight">
+                            <div class="alarm-stat-icon rate">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                </svg>
+                            </div>
+                            <div class="alarm-stat-content">
+                                <span class="alarm-stat-value" id="obedienceRate">0%</span>
+                                <span class="alarm-stat-label">Obedience Rate</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Alarms -->
+                    <div class="today-alarms" id="todayAlarms">
+                        <h3 class="today-alarms-title">Today's Reminders</h3>
+                        <div class="alarms-list" id="todayAlarmsList">
+                            <!-- Alarms dynamically loaded -->
+                            <div class="no-alarms-message">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="13" r="8" />
+                                    <path d="M12 9v4l2 2" />
+                                </svg>
+                                <p>No reminders synced</p>
+                                <button class="sync-reminders-btn" id="syncRemindersBtn">Sync from Smart
+                                    Reminders</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 5: STREAK & ACHIEVEMENTS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card streak-card" id="streakSection">
+                <div class="card-glow streak-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon streak-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path
+                                d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਲਗਾਤਾਰਤਾ</h2>
+                        <p class="card-subtitle">Streak & Achievements</p>
+                    </div>
+                </div>
+
+                <div class="card-body streak-body">
+                    <!-- Main Streak Display -->
+                    <div class="main-streak-display" id="mainStreakDisplay">
+                        <div class="streak-flame-animation">
+                            <div class="flame flame-1"></div>
+                            <div class="flame flame-2"></div>
+                            <div class="flame flame-3"></div>
+                        </div>
+                        <div class="streak-number-container">
+                            <span class="streak-number" id="mainStreakNumber">0</span>
+                            <span class="streak-unit">Days</span>
+                        </div>
+                        <p class="streak-message" id="streakMessage">Start your spiritual journey today!</p>
+                    </div>
+
+                    <!-- Streak Stats -->
+                    <div class="streak-stats-row">
+                        <div class="streak-stat-item">
+                            <span class="streak-stat-value" id="currentStreak">0</span>
+                            <span class="streak-stat-label">Current</span>
+                        </div>
+                        <div class="streak-stat-divider"></div>
+                        <div class="streak-stat-item">
+                            <span class="streak-stat-value" id="longestStreak">0</span>
+                            <span class="streak-stat-label">Longest</span>
+                        </div>
+                        <div class="streak-stat-divider"></div>
+                        <div class="streak-stat-item">
+                            <span class="streak-stat-value" id="totalDays">0</span>
+                            <span class="streak-stat-label">Total Days</span>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Grid -->
+                    <div class="achievements-section">
+                        <h3 class="achievements-title">Achievements</h3>
+                        <div class="achievements-grid" id="achievementsGrid">
+                            <!-- Achievements loaded from JSON -->
+                            <div class="achievement-card locked" data-achievement="first-amritvela">
+                                <div class="achievement-icon">🌅</div>
+                                <span class="achievement-name">Early Riser</span>
+                                <span class="achievement-desc">First Amritvela</span>
+                            </div>
+                            <div class="achievement-card locked" data-achievement="week-streak">
+                                <div class="achievement-icon">🔥</div>
+                                <span class="achievement-name">Week Warrior</span>
+                                <span class="achievement-desc">7 Day Streak</span>
+                            </div>
+                            <div class="achievement-card locked" data-achievement="mala-master">
+                                <div class="achievement-icon">📿</div>
+                                <span class="achievement-name">Mala Master</span>
+                                <span class="achievement-desc">108 in one sitting</span>
+                            </div>
+                            <div class="achievement-card locked" data-achievement="nitnem-complete">
+                                <div class="achievement-icon">📖</div>
+                                <span class="achievement-name">Nitnem Complete</span>
+                                <span class="achievement-desc">All daily banis</span>
+                            </div>
+                            <div class="achievement-card locked" data-achievement="month-streak">
+                                <div class="achievement-icon">⭐</div>
+                                <span class="achievement-name">Month Master</span>
+                                <span class="achievement-desc">30 Day Streak</span>
+                            </div>
+                            <div class="achievement-card locked" data-achievement="perfect-week">
+                                <div class="achievement-icon">💎</div>
+                                <span class="achievement-name">Perfect Week</span>
+                                <span class="achievement-desc">100% Obedience</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 5.5: NAAM ABHYAS INTEGRATION WIDGET
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="naam-widget-section" id="naamAbhyasWidget">
+                <!-- Widget content will be rendered by NaamAbhyasWidget.js -->
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════════
+                 SECTION 6: WEEKLY/MONTHLY REPORTS
+            ═══════════════════════════════════════════════════════════════════ -->
+            <section class="card reports-card" id="reportsSection">
+                <div class="card-glow reports-glow"></div>
+
+                <div class="card-header">
+                    <div class="card-icon reports-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M16 13H8M16 17H8M10 9H8" />
+                        </svg>
+                    </div>
+                    <div class="card-title-group">
+                        <h2 class="card-title">ਰਿਪੋਰਟਾਂ</h2>
+                        <p class="card-subtitle">Reports & Analytics</p>
+                    </div>
+                    <div class="report-tabs">
+                        <button class="report-tab active" data-report="weekly">Weekly</button>
+                        <button class="report-tab" data-report="monthly">Monthly</button>
+                    </div>
+                </div>
+
+                <div class="card-body reports-body">
+                    <!-- Weekly Report -->
+                    <div class="report-content active" data-report="weekly" id="weeklyReport">
+                        <div class="report-summary">
+                            <div class="report-summary-item">
+                                <span class="summary-label">Amritvela</span>
+                                <div class="summary-bar">
+                                    <div class="summary-fill" id="weeklyAmritvelaFill" style="width: 0%"></div>
+                                </div>
+                                <span class="summary-value" id="weeklyAmritvelaValue">0/7</span>
+                            </div>
+                            <div class="report-summary-item">
+                                <span class="summary-label">Nitnem</span>
+                                <div class="summary-bar">
+                                    <div class="summary-fill" id="weeklyNitnemFill" style="width: 0%"></div>
+                                </div>
+                                <span class="summary-value" id="weeklyNitnemValue">0/7</span>
+                            </div>
+                            <div class="report-summary-item">
+                                <span class="summary-label">Alarms</span>
+                                <div class="summary-bar">
+                                    <div class="summary-fill" id="weeklyAlarmsFill" style="width: 0%"></div>
+                                </div>
+                                <span class="summary-value" id="weeklyAlarmsValue">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Chart -->
+                        <div class="report-chart" id="weeklyChart">
+                            <div class="chart-bars" id="weeklyChartBars">
+                                <!-- Generated via JS -->
+                            </div>
+                            <div class="chart-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                        </div>
+
+                        <div class="report-insight" id="weeklyInsight">
+                            <div class="insight-icon">💡</div>
+                            <p class="insight-text">Complete your first week to see insights!</p>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Report -->
+                    <div class="report-content" data-report="monthly" id="monthlyReport">
+                        <div class="monthly-calendar" id="monthlyCalendar">
+                            <div class="calendar-header">
+                                <button class="calendar-nav" id="prevMonthBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 18l-6-6 6-6" />
+                                    </svg>
+                                </button>
+                                <span class="calendar-month" id="calendarMonth">January 2025</span>
+                                <button class="calendar-nav" id="nextMonthBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 18l6-6-6-6" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="calendar-weekdays">
+                                <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                            </div>
+                            <div class="calendar-days" id="calendarDays">
+                                <!-- Days generated via JS -->
+                            </div>
+                        </div>
+
+                        <div class="monthly-stats" id="monthlyStats">
+                            <div class="monthly-stat">
+                                <span class="monthly-stat-value" id="monthlyCompleteDays">0</span>
+                                <span class="monthly-stat-label">Complete Days</span>
+                            </div>
+                            <div class="monthly-stat">
+                                <span class="monthly-stat-value" id="monthlyAvgWakeTime">--:--</span>
+                                <span class="monthly-stat-label">Avg Wake Time</span>
+                            </div>
+                            <div class="monthly-stat">
+                                <span class="monthly-stat-value" id="monthlyMalas">0</span>
+                                <span class="monthly-stat-label">Malas Done</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer reports-footer">
+                    <button class="export-btn" id="exportReportBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <span>Export Report</span>
+                    </button>
+                    <button class="share-btn" id="shareReportBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" />
+                        </svg>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Bottom Spacing for Tab Bar -->
+            <div class="bottom-spacer"></div>
+        </main>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             BOTTOM TAB BAR - iOS Style
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <nav class="tab-bar" id="tabBar">
+            <div class="tab-bar-blur"></div>
+            <div class="tab-bar-content">
+                <button class="tab-item active" data-tab="home" aria-label="Home">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    <span class="tab-label">Home</span>
+                    <span class="tab-indicator"></span>
+                </button>
+                <button class="tab-item" data-tab="nitnem" aria-label="Nitnem">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    <span class="tab-label">Nitnem</span>
+                    <span class="tab-indicator"></span>
+                </button>
+                <button class="tab-item" data-tab="mala" aria-label="Mala">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="4" />
+                    </svg>
+                    <span class="tab-label">Mala</span>
+                    <span class="tab-indicator"></span>
+                </button>
+                <button class="tab-item" data-tab="stats" aria-label="Statistics">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6" />
+                    </svg>
+                    <span class="tab-label">Stats</span>
+                    <span class="tab-indicator"></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             MODALS & OVERLAYS
+        ═══════════════════════════════════════════════════════════════════════ -->
+
+        <!-- Add Bani Modal -->
+        <div class="modal-overlay" id="addBaniModal">
+            <div class="modal-backdrop" data-close-modal></div>
+            <div class="modal-container">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <h2 class="modal-title">Add Bani</h2>
+                    <button class="modal-close-btn" data-close-modal aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Search -->
+                    <div class="bani-search">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
+                        </svg>
+                        <input type="text" class="search-input" id="baniSearchInput" placeholder="Search Bani...">
+                    </div>
+
+                    <!-- Time Period Selection -->
+                    <div class="time-period-selector">
+                        <label>Add to:</label>
+                        <div class="period-buttons">
+                            <button class="period-btn active" data-add-period="amritvela">Amritvela</button>
+                            <button class="period-btn" data-add-period="rehras">Rehras</button>
+                            <button class="period-btn" data-add-period="sohila">Sohila</button>
+                        </div>
+                    </div>
+
+                    <!-- Bani Categories -->
+                    <div class="bani-categories" id="baniCategories">
+                        <div class="bani-category" data-category="nitnem">
+                            <div class="category-header">
+                                <span class="category-icon">📖</span>
+                                <span class="category-name">Nitnem Banis</span>
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                            <div class="category-banis">
+                                <!-- Populated from JSON -->
+                            </div>
+                        </div>
+
+                        <div class="bani-category" data-category="guru-granth-sahib">
+                            <div class="category-header">
+                                <span class="category-icon">🙏</span>
+                                <span class="category-name">Guru Granth Sahib Ji</span>
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                            <div class="category-banis">
+                                <!-- Populated from JSON -->
+                            </div>
+                        </div>
+
+                        <div class="bani-category" data-category="dasam-granth">
+                            <div class="category-header">
+                                <span class="category-icon">⚔️</span>
+                                <span class="category-name">Dasam Granth</span>
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                            <div class="category-banis">
+                                <!-- Populated from JSON -->
+                            </div>
+                        </div>
+
+                        <div class="bani-category" data-category="other">
+                            <div class="category-header">
+                                <span class="category-icon">✨</span>
+                                <span class="category-name">Other Banis</span>
+                                <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                            <div class="category-banis">
+                                <!-- Populated from JSON -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="modal-btn secondary" data-close-modal>Cancel</button>
+                    <button class="modal-btn primary" id="confirmAddBaniBtn">Add Selected</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal-backdrop" data-close-modal></div>
+            <div class="modal-container settings-modal">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <h2 class="modal-title">Settings</h2>
+                    <button class="modal-close-btn" data-close-modal aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body settings-body">
+                    <!-- Theme Section -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">Appearance</h3>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Theme</span>
+                            <div class="theme-options" id="themeOptions">
+                                <button class="theme-option active" data-theme="light">
+                                    <div class="theme-preview light-preview"></div>
+                                    <span>Light</span>
+                                </button>
+                                <button class="theme-option" data-theme="dark">
+                                    <div class="theme-preview dark-preview"></div>
+                                    <span>Dark</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Haptic Feedback</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="hapticToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Sound Effects</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Amritvela Settings -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">Amritvela Settings</h3>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Auto-detect wake time</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoWakeToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Present Button Available Until</span>
+                            <select class="setting-select" id="presentUntilSelect">
+                                <option value="6">6:00 AM</option>
+                                <option value="7" selected>7:00 AM</option>
+                                <option value="8">8:00 AM</option>
+                                <option value="9">9:00 AM</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Mala Settings -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">Mala Settings</h3>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Beads per Mala</span>
+                            <select class="setting-select" id="beadsPerMalaSelect">
+                                <option value="27">27</option>
+                                <option value="54">54</option>
+                                <option value="108" selected>108</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <span class="setting-label">Vibration Pattern</span>
+                            <select class="setting-select" id="vibrationPatternSelect">
+                                <option value="light">Light</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="strong">Strong</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Data Section -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">Data & Privacy</h3>
+
+                        <div class="setting-item clickable" id="exportDataBtn">
+                            <span class="setting-label">Export All Data</span>
+                            <svg class="setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+
+                        <div class="setting-item clickable" id="importDataBtn">
+                            <span class="setting-label">Import Data</span>
+                            <svg class="setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+
+                        <div class="setting-item clickable danger" id="resetDataBtn">
+                            <span class="setting-label">Reset All Data</span>
+                            <svg class="setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M9 18l6-6-6-6" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">About</h3>
+                        <div class="about-info">
+                            <p class="app-version">Nitnem Tracker v1.0.0</p>
+                            <p class="app-tagline">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Detail Modal -->
+        <div class="modal-overlay" id="statsModal">
+            <div class="modal-backdrop" data-close-modal></div>
+            <div class="modal-container stats-modal full-height">
+                <div class="modal-handle"></div>
+                <div class="modal-header">
+                    <button class="modal-back-btn" data-close-modal aria-label="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <h2 class="modal-title">Statistics</h2>
+                    <div class="modal-header-spacer"></div>
+                </div>
+
+                <div class="modal-body stats-body">
+                    <!-- Detailed stats content loaded dynamically -->
+                    <div class="stats-overview">
+                        <div class="stats-card">
+                            <h3>Overall Score</h3>
+                            <div class="score-circle">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="score-bg" cx="50" cy="50" r="45" />
+                                    <circle class="score-fill" cx="50" cy="50" r="45" id="overallScoreFill" />
+                                </svg>
+                                <span class="score-value" id="overallScoreValue">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detailed-stats" id="detailedStats">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Celebration Modal -->
+        <div class="celebration-overlay" id="celebrationOverlay">
+            <div class="celebration-content">
+                <div class="celebration-icon" id="celebrationIcon">🎉</div>
+                <h2 class="celebration-title" id="celebrationTitle">Congratulations!</h2>
+                <p class="celebration-message" id="celebrationMessage"></p>
+                <button class="celebration-btn" id="celebrationBtn">Continue</button>
+            </div>
+            <div class="confetti-container" id="confettiContainer"></div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toastContainer"></div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════════
+         SCRIPTS
+    ═══════════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Component Scripts -->
+    <script src="components/assets/haptic-patterns.js?v=2.1"></script>
+    <script src="components/streak-engine.js?v=2.1"></script>
+    <script src="components/statistics-engine.js?v=2.1"></script>
+    <script src="components/mala-counter.js?v=2.1"></script>
+    <script src="components/report-generator.js?v=2.1"></script>
+
+    <!-- Integration Scripts -->
+    <script src="../NaamAbhyas/naam-abhyas-widget.js?v=2.1"></script>
+
+    <!-- Core Logic -->
+    <script src="../lib/unified-storage.js?v=2.1"></script>
+    <script src="nitnem-tracker.js?v=2.3"></script>
+    <script src="../lib/global-alarm-system.js" defer></script>
+
+    <!-- Inline Initialization -->
+    <script>
+        // Remove loading screen after content loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('appLoading').classList.add('hidden');
+
+                // Render Naam Abhyas Widget
+                if (typeof NaamAbhyasWidget !== 'undefined') {
+                    NaamAbhyasWidget.render('naamAbhyasWidget');
+                }
+            }, 500);
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed:', err));
+        }
+    </script>
+</body>
+
+</html>

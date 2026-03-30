@@ -1,0 +1,1113 @@
+/**
+ * iOS 26+ Liquid Glass Design System
+ * Optical glass effects, depth, and modern Apple aesthetics
+ */
+
+/* ============================================
+   CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+   ============================================ */
+
+:root {
+    /* Light Mode - Liquid Glass */
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-bg-elevated: rgba(255, 255, 255, 0.85);
+    --glass-bg-translucent: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-border-subtle: rgba(0, 0, 0, 0.06);
+
+    /* Blur values */
+    --blur-standard: 20px;
+    --blur-elevated: 40px;
+    --blur-intense: 60px;
+
+    /* Shadows - Light Mode */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.04),
+        0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.1);
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12),
+        0 16px 48px rgba(0, 0, 0, 0.16);
+    --shadow-glow: 0 0 20px rgba(255, 149, 0, 0.4);
+    --shadow-glow-active: 0 0 30px rgba(255, 149, 0, 0.6),
+        0 0 60px rgba(255, 149, 0, 0.3);
+
+    /* Text Colors - Light Mode */
+    --text-primary: rgba(0, 0, 0, 0.88);
+    --text-secondary: rgba(0, 0, 0, 0.6);
+    --text-tertiary: rgba(0, 0, 0, 0.4);
+    --text-inverse: rgba(255, 255, 255, 0.95);
+
+    /* Compatibility variables (used by older/newer components) */
+    --app-bg: var(--surface-primary);
+    --bg-color: var(--surface-primary);
+    --text-color: var(--text-primary);
+    --secondary-text: var(--text-secondary);
+    --border-color: var(--glass-border-subtle);
+
+    --chrome-bg: var(--glass-bg-translucent);
+    --chrome-bg-strong: var(--glass-bg-elevated);
+    --chrome-border: var(--glass-border);
+
+    --surface-bg: var(--glass-bg);
+    --surface-border: var(--glass-border);
+    --hover-bg: rgba(255, 255, 255, 0.06);
+    --backdrop-bg: rgba(0, 0, 0, 0.45);
+
+    --settings-bg: rgba(48, 48, 54, 0.92);
+    --settings-border: var(--glass-border);
+
+    /* Accent Colors - Sikh Theme */
+    --accent-saffron: #FF9500;
+    --accent-saffron-light: #FFB340;
+    --accent-saffron-dark: #E68600;
+    --accent-blue: #007AFF;
+    --accent-green: #34C759;
+    --accent-red: #FF3B30;
+    --accent-gold: #FFD700;
+
+    /* Semantic Colors */
+    --color-success: #34C759;
+    --color-warning: #FF9500;
+    --color-error: #FF3B30;
+    --color-info: #007AFF;
+
+    /* Surface Colors */
+    --surface-primary: #FFFFFF;
+    --surface-secondary: #F2F2F7;
+    --surface-tertiary: #E5E5EA;
+
+    /* Gurbani specific */
+    --gurmukhi-color: #1C1C1E;
+    --transliteration-color: #3A3A3C;
+    --translation-color: #636366;
+
+    /* Spacing Scale */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    /* Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   DARK MODE - TRUE DARK THEME
+   ============================================ */
+
+[data-theme="dark"],
+.dark-mode {
+    /* Dark Mode - Deep Blacks with Glass */
+    --glass-bg: rgba(28, 28, 30, 0.82);
+    --glass-bg-elevated: rgba(44, 44, 46, 0.88);
+    --glass-bg-translucent: rgba(28, 28, 30, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-border-subtle: rgba(255, 255, 255, 0.06);
+
+    /* Shadows - Dark Mode (subtle glows) */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4),
+        0 0 1px rgba(255, 255, 255, 0.08);
+    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 1px rgba(255, 255, 255, 0.1);
+    --shadow-glow: 0 0 24px rgba(255, 149, 0, 0.5);
+    --shadow-glow-active: 0 0 40px rgba(255, 149, 0, 0.7),
+        0 0 80px rgba(255, 149, 0, 0.35);
+
+    /* Text Colors - Dark Mode */
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.68);
+    --text-tertiary: rgba(255, 255, 255, 0.45);
+    --text-inverse: rgba(0, 0, 0, 0.88);
+
+    /* Surface Colors - Dark Mode */
+    --surface-primary: #000000;
+    --surface-secondary: #1C1C1E;
+    --surface-tertiary: #2C2C2E;
+
+    /* Gurbani specific - Dark Mode */
+    --gurmukhi-color: #FFFFFF;
+    --transliteration-color: #E5E5EA;
+    --translation-color: #AEAEB2;
+
+    /* Accent adjustments for dark */
+    --accent-saffron: #FF9F0A;
+    --accent-saffron-light: #FFB940;
+    --accent-blue: #0A84FF;
+    --accent-green: #30D158;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    :root:not([data-theme="light"]):not([data-theme="sepia"]),
+    body:not([data-theme="light"]):not([data-theme="sepia"]):not([data-theme-mode="light"]) {
+        /* Dark Mode - Deep Blacks with Glass */
+        --glass-bg: rgba(28, 28, 30, 0.82);
+        --glass-bg-elevated: rgba(44, 44, 46, 0.88);
+        --glass-bg-translucent: rgba(28, 28, 30, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-border-subtle: rgba(255, 255, 255, 0.06);
+
+        /* Shadows - Dark Mode (subtle glows) */
+        --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.3),
+            0 0 1px rgba(255, 255, 255, 0.05);
+        --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4),
+            0 0 1px rgba(255, 255, 255, 0.08);
+        --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.5),
+            0 0 1px rgba(255, 255, 255, 0.1);
+        --shadow-glow: 0 0 24px rgba(255, 149, 0, 0.5);
+        --shadow-glow-active: 0 0 40px rgba(255, 149, 0, 0.7),
+            0 0 80px rgba(255, 149, 0, 0.35);
+
+        /* Text Colors - Dark Mode */
+        --text-primary: rgba(255, 255, 255, 0.92);
+        --text-secondary: rgba(255, 255, 255, 0.68);
+        --text-tertiary: rgba(255, 255, 255, 0.45);
+        --text-inverse: rgba(0, 0, 0, 0.88);
+
+        /* Surface Colors - Dark Mode */
+        --surface-primary: #000000;
+        --surface-secondary: #1C1C1E;
+        --surface-tertiary: #2C2C2E;
+
+        /* Gurbani specific - Dark Mode */
+        --gurmukhi-color: #FFFFFF;
+        --transliteration-color: #E5E5EA;
+        --translation-color: #AEAEB2;
+
+        /* Accent adjustments for dark */
+        --accent-saffron: #FF9F0A;
+        --accent-saffron-light: #FFB940;
+        --accent-blue: #0A84FF;
+        --accent-green: #30D158;
+    }
+}
+
+/* ============================================
+   DARK MODE FIXES FOR COMPONENTS
+   ============================================ */
+
+/* Grey bars and dividers in dark mode */
+[data-theme="dark"] .divider,
+[data-theme="dark"] .grey-bar,
+[data-theme="dark"] .gray-bar,
+.dark-mode .divider,
+.dark-mode .grey-bar,
+.dark-mode .gray-bar {
+    background: var(--glass-border) !important;
+    border-color: var(--glass-border-subtle) !important;
+}
+
+/* Fix for smart reminders and nitnem tracker grey bars */
+[data-theme="dark"] .section-head,
+[data-theme="dark"] .card,
+.dark-mode .section-head,
+.dark-mode .card {
+    border-color: var(--glass-border) !important;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+/* Circular Loader */
+.circular-loader {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--glass-border);
+    border-top: 3px solid var(--accent-saffron);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.circular-loader.hero-loader {
+    width: 48px;
+    height: 48px;
+    border-width: 4px;
+    border-top-color: var(--accent-saffron);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading Skeleton */
+.loading-skeleton {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   LIQUID GLASS COMPONENTS
+   ============================================ */
+
+/* Header Scroll Behavior */
+.header-scroll-hidden {
+    transform: translateY(-100%) !important;
+    transition: transform var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.header-scroll-visible {
+    transform: translateY(0) !important;
+    transition: transform var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Base Glass Card - LIQUID GLASS PREMIUM */
+.ios-glass,
+.liquid-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-standard)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--blur-standard)) saturate(180%);
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    box-shadow:
+        /* Inner highlight (fresnel top-left) */
+        inset 1px 1px 0 rgba(255, 255, 255, 0.15),
+        /* Inner shadow (fresnel bottom-right) */
+        inset -1px -1px 0 rgba(0, 0, 0, 0.05),
+        /* Outer glow */
+        var(--shadow-soft);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fresnel Edge Glow */
+.ios-glass::before,
+.liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0.08) 30%,
+            rgba(255, 255, 255, 0.03) 50%,
+            rgba(255, 255, 255, 0.08) 70%,
+            rgba(255, 255, 255, 0.2) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Caustic Top Highlight */
+.ios-glass::after,
+.liquid-glass::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            transparent 100%);
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ios-glass:hover,
+.liquid-glass:hover {
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.2),
+        inset -1px -1px 0 rgba(0, 0, 0, 0.08),
+        var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.ios-glass:hover::before,
+.liquid-glass:hover::before {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            rgba(255, 255, 255, 0.12) 30%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0.12) 70%,
+            rgba(255, 255, 255, 0.3) 100%);
+}
+
+/* Elevated Glass (for modals, popups) */
+.ios-glass-elevated,
+.liquid-glass-elevated {
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--blur-elevated));
+    -webkit-backdrop-filter: blur(var(--blur-elevated));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-elevated);
+}
+
+/* Translucent Glass (subtle backgrounds) */
+.ios-glass-translucent {
+    background: var(--glass-bg-translucent);
+    backdrop-filter: blur(var(--blur-intense));
+    -webkit-backdrop-filter: blur(var(--blur-intense));
+    border: 1px solid var(--glass-border-subtle);
+}
+
+/* ============================================
+   BUTTONS - iOS 26+ STYLE
+   ============================================ */
+
+.btn-ios {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    min-height: 44px;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-ios-primary {
+    background: var(--accent-saffron);
+    color: white;
+}
+
+.btn-ios-primary:hover {
+    background: var(--accent-saffron-light);
+    transform: scale(1.02);
+}
+
+.btn-ios-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-ios-secondary {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-standard));
+    color: var(--text-primary);
+    border: 1px solid var(--glass-border);
+}
+
+.btn-ios-glass {
+    background: var(--glass-bg-translucent);
+    backdrop-filter: blur(var(--blur-standard));
+    color: var(--accent-saffron);
+    border: 1px solid var(--glass-border);
+}
+
+/* ============================================
+   SETTINGS PANEL - iOS STYLE
+   ============================================ */
+
+.settings-panel-ios {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 380px;
+    height: 100vh;
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--blur-elevated));
+    -webkit-backdrop-filter: blur(var(--blur-elevated));
+    border-left: 1px solid var(--glass-border);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transform: translateX(100%);
+    transition: transform var(--transition-slow);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.settings-panel-ios.open {
+    transform: translateX(0);
+}
+
+.settings-panel-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-lg);
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--blur-elevated));
+    border-bottom: 1px solid var(--glass-border-subtle);
+    z-index: 10;
+}
+
+.settings-panel-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.settings-close-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-tertiary);
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 18px;
+    transition: all var(--transition-fast);
+}
+
+.settings-close-btn:hover {
+    background: var(--accent-saffron);
+    color: white;
+}
+
+/* Settings Groups */
+.settings-group {
+    padding: var(--space-md) var(--space-lg);
+}
+
+.settings-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-sm);
+    padding-left: var(--space-sm);
+}
+
+.settings-group-content {
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--glass-border-subtle);
+}
+
+/* Settings Row */
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--glass-border-subtle);
+    transition: background var(--transition-fast);
+    cursor: pointer;
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-row:active {
+    background: var(--surface-tertiary);
+}
+
+.settings-row-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.settings-row-label span:first-child {
+    font-size: 17px;
+    color: var(--text-primary);
+}
+
+.settings-row-label span:last-child {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.settings-row-chevron {
+    color: var(--text-tertiary);
+    font-size: 18px;
+}
+
+/* iOS Toggle Switch - LIQUID GLASS */
+.toggle-ios {
+    position: relative;
+    width: 51px;
+    height: 31px;
+    background: var(--surface-tertiary);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.toggle-ios::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+    border-radius: var(--radius-full);
+    pointer-events: none;
+}
+
+.toggle-ios::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+    background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
+    border-radius: var(--radius-full);
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.2),
+        0 1px 2px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: transform var(--transition-fast);
+}
+
+.toggle-ios.active {
+    background: linear-gradient(135deg, var(--accent-saffron) 0%, var(--accent-saffron-dark) 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.15),
+        0 0 12px rgba(255, 149, 0, 0.3);
+}
+
+.toggle-ios.active::after {
+    transform: translateX(20px);
+}
+
+/* ============================================
+   FONT WEIGHT SLIDER WITH PREVIEW
+   ============================================ */
+
+.font-weight-control {
+    padding: var(--space-lg);
+}
+
+.font-weight-preview {
+    background: var(--glass-bg);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    text-align: center;
+    border: 1px solid var(--glass-border-subtle);
+}
+
+.font-weight-preview .preview-text {
+    font-family: 'Noto Sans Gurmukhi', serif;
+    font-size: 32px;
+    color: var(--gurmukhi-color);
+    line-height: 1.4;
+    transition: font-weight var(--transition-normal);
+}
+
+.font-weight-preview .preview-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: var(--space-sm);
+}
+
+/* Slider - iOS Style */
+.slider-ios {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--surface-tertiary);
+    border-radius: var(--radius-full);
+    outline: none;
+    cursor: pointer;
+}
+
+.slider-ios::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: var(--radius-full);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15),
+        0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.slider-ios::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.slider-ios::-webkit-slider-thumb:active {
+    transform: scale(0.95);
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-sm);
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+/* ============================================
+   BOOKMARK ICON WITH GLOW EFFECT
+   ============================================ */
+
+.bookmark-btn {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.bookmark-btn svg,
+.bookmark-btn .bookmark-icon {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--text-secondary);
+    stroke-width: 2;
+    transition: all var(--transition-normal);
+}
+
+/* Bookmark Active State with Glow */
+.bookmark-btn.active svg,
+.bookmark-btn.active .bookmark-icon,
+.bookmark-btn.bookmarked svg,
+.bookmark-btn.bookmarked .bookmark-icon {
+    fill: var(--accent-saffron);
+    stroke: var(--accent-saffron);
+    filter: drop-shadow(0 0 8px rgba(255, 149, 0, 0.6));
+}
+
+.bookmark-btn.active,
+.bookmark-btn.bookmarked {
+    animation: bookmark-glow 0.6s ease-out;
+}
+
+@keyframes bookmark-glow {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.3);
+    }
+
+    60% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Bookmark Glow Ring Effect */
+.bookmark-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, rgba(255, 149, 0, 0.4) 0%, transparent 70%);
+    border-radius: var(--radius-full);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: all var(--transition-normal);
+}
+
+.bookmark-btn.active::before,
+.bookmark-btn.bookmarked::before {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 1;
+    animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    50% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+}
+
+/* Bookmark Toast Notification */
+.bookmark-toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--blur-elevated));
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-elevated);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 15px;
+    color: var(--text-primary);
+    opacity: 0;
+    transition: all var(--transition-normal);
+    z-index: 9999;
+}
+
+.bookmark-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.bookmark-toast .toast-icon {
+    font-size: 20px;
+}
+
+/* ============================================
+   POPUPS & MODALS - FIXED VISIBILITY
+   ============================================ */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-normal);
+}
+
+.popup-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-content {
+    width: 90%;
+    max-width: 340px;
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--blur-elevated));
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-elevated);
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform var(--transition-normal);
+}
+
+.popup-overlay.show .popup-content {
+    transform: scale(1);
+}
+
+.popup-header {
+    padding: var(--space-lg);
+    text-align: center;
+    border-bottom: 1px solid var(--glass-border-subtle);
+}
+
+.popup-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.popup-body {
+    padding: var(--space-lg);
+}
+
+/* Popup Options List - FIXED TEXT VISIBILITY */
+.popup-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+    color: var(--text-primary);
+}
+
+.popup-option:hover {
+    background: var(--surface-tertiary);
+}
+
+.popup-option.selected {
+    background: rgba(255, 149, 0, 0.15);
+}
+
+.popup-option .option-label {
+    font-size: 17px;
+    color: var(--text-primary);
+}
+
+.popup-option .option-check {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--text-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.popup-option.selected .option-check {
+    background: var(--accent-saffron);
+    border-color: var(--accent-saffron);
+}
+
+.popup-option.selected .option-check::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.popup-footer {
+    padding: var(--space-md) var(--space-lg);
+    border-top: 1px solid var(--glass-border-subtle);
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.popup-footer .btn-cancel {
+    flex: 1;
+    padding: var(--space-md);
+    background: var(--surface-tertiary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.popup-footer .btn-confirm {
+    flex: 1;
+    padding: var(--space-md);
+    background: var(--accent-saffron);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ============================================
+   SETTINGS ICON - IMPROVED
+   ============================================ */
+
+.settings-icon-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--blur-standard));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.settings-icon-btn svg {
+    width: 22px;
+    height: 22px;
+    color: var(--text-secondary);
+    transition: all var(--transition-normal);
+}
+
+.settings-icon-btn:hover {
+    background: var(--glass-bg-elevated);
+    box-shadow: var(--shadow-medium);
+}
+
+.settings-icon-btn:hover svg {
+    color: var(--accent-saffron);
+    transform: rotate(45deg);
+}
+
+.settings-icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* ============================================
+   DARK MODE SPECIFIC OVERRIDES
+   ============================================ */
+
+[data-theme="dark"] {
+    /* Ensure truly dark backgrounds */
+    background-color: #000000 !important;
+}
+
+[data-theme="dark"] body {
+    background-color: #000000;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .page-container,
+[data-theme="dark"] .main-content,
+[data-theme="dark"] .app-container {
+    background-color: #000000;
+}
+
+/* Dark mode cards */
+[data-theme="dark"] .card,
+[data-theme="dark"] .ios-glass,
+[data-theme="dark"] .liquid-glass {
+    background: rgba(28, 28, 30, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode elevated surfaces */
+[data-theme="dark"] .ios-glass-elevated,
+[data-theme="dark"] .settings-panel-ios,
+[data-theme="dark"] .popup-content {
+    background: rgba(44, 44, 46, 0.92);
+}
+
+/* Dark mode inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background: rgba(58, 58, 60, 0.8);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode slider track */
+[data-theme="dark"] .slider-ios {
+    background: rgba(72, 72, 74, 0.8);
+}
+
+/* Dark mode toggle inactive */
+[data-theme="dark"] .toggle-ios {
+    background: rgba(72, 72, 74, 0.8);
+}
+
+/* Dark mode settings rows */
+[data-theme="dark"] .settings-row {
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .settings-row:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode popup - ENSURE TEXT VISIBILITY */
+[data-theme="dark"] .popup-header h3,
+[data-theme="dark"] .popup-option .option-label,
+[data-theme="dark"] .popup-footer .btn-cancel {
+    color: rgba(255, 255, 255, 0.92);
+}
+
+[data-theme="dark"] .popup-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode Gurbani text */
+[data-theme="dark"] .gurmukhi-text,
+[data-theme="dark"] .gurbani-line,
+[data-theme="dark"] .bani-text {
+    color: #FFFFFF;
+}
+
+[data-theme="dark"] .transliteration {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+[data-theme="dark"] .translation {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Dark mode header/navigation */
+[data-theme="dark"] header,
+[data-theme="dark"] .nav-bar,
+[data-theme="dark"] .top-bar {
+    background: rgba(28, 28, 30, 0.9);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode bottom navigation */
+[data-theme="dark"] .bottom-nav,
+[data-theme="dark"] .tab-bar {
+    background: rgba(28, 28, 30, 0.95);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Ensure scrollbars are visible in dark mode */
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

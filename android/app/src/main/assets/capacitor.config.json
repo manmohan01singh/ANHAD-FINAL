@@ -1,0 +1,28 @@
+{
+	"appId": "com.gurbaniradio.app",
+	"appName": "ANHAD",
+	"webDir": "frontend",
+	"server": {
+		"url": "https://anhad-final.onrender.com",
+		"androidScheme": "https",
+		"cleartext": false
+	},
+	"android": {
+		"allowMixedContent": false,
+		"webContentsDebuggingEnabled": false
+	},
+	"plugins": {
+		"LocalNotifications": {
+			"smallIcon": "ic_stat_notify",
+			"iconColor": "#f7c634",
+			"sound": "notification.wav"
+		},
+		"SplashScreen": {
+			"launchShowDuration": 2000,
+			"backgroundColor": "#000000",
+			"showSpinner": false,
+			"androidSpinnerStyle": "small",
+			"spinnerColor": "#f7c634"
+		}
+	}
+}

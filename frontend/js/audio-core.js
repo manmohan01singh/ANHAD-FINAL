@@ -14,17 +14,10 @@
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     || window.innerWidth < 768;
 
+const RENDER_BASE_URL = 'https://anhad-final.onrender.com';
+
 const AUDIO_CONFIG = {
-    baseUrl: (() => {
-        try {
-            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const onBackendPort = window.location.port === '3000';
-            if (isLocalhost && !onBackendPort) {
-                return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
-            }
-        } catch (e) { }
-        return '/audio';
-    })(),
+    baseUrl: RENDER_BASE_URL + '/audio',
 
     audioFiles: Array.from({ length: 40 }, (_, i) => `day-${i + 1}.webm`),
 
@@ -185,17 +178,8 @@ class StateManager extends EventEmitter {
     }
 }
 
-// API base URL for server sync
-const AC_API_BASE = (() => {
-    try {
-        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const onBackendPort = window.location.port === '3000';
-        if (isLocalhost && !onBackendPort) {
-            return `${window.location.protocol}//${window.location.hostname}:3000`;
-        }
-    } catch (e) { }
-    return '';
-})();
+// API base URL for server sync - Always use render backend
+const AC_API_BASE = RENDER_BASE_URL;
 
 class VirtualLiveManager extends EventEmitter {
     constructor() {

@@ -1,0 +1,444 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   ANHAD Dark Mode — Static CSS (extracted from global-theme.js)
+   This file is loaded statically instead of being injected via JS.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ═══════ ROOT DARK MODE — CLEAN BLINKIT-STYLE ═══════ */
+html.dark-mode {
+    color-scheme: dark;
+    
+    /* ─── Background — Clean dark, not dead black ─── */
+    --bg-primary: #121212;
+    --bg-white: #1E1E1E;
+    --bg-soft: #1A1A1A;
+    --bg-secondary: #121212;
+    --bg-tertiary: #252525;
+    --bg-card: #1E1E1E;
+    --bg-modal: #1E1E1E;
+    --bg-input: #1A1A1A;
+    
+    /* ─── Gold Spectrum ─── */
+    --gold-50: #2A2515;
+    --gold-100: #3D351A;
+    --gold-300: #D4A03A;
+    --gold-400: #E8B84A;
+    --gold-500: #F5C75A;
+    --gold-gradient: linear-gradient(135deg, #E8B84A 0%, #D4A03A 100%);
+    --gold-glow: rgba(232, 184, 74, 0.3);
+    
+    /* ─── Lavender ─── */
+    --lavender-400: #B8A8F0;
+    --lavender-500: #9A8CD8;
+    --lavender-gradient: linear-gradient(135deg, #C4B5FD 0%, #9A8CD8 100%);
+    
+    /* ─── Orbs (subtle in dark) ─── */
+    --orb-gold: rgba(232, 184, 74, 0.06);
+    --orb-lavender: rgba(154, 140, 216, 0.04);
+    --orb-mint: rgba(125, 211, 192, 0.03);
+    --orb-rose: rgba(251, 113, 133, 0.03);
+    
+    /* ─── Text ─── */
+    --text-primary: #F5F5F5;
+    --text-secondary: #999999;
+    --text-tertiary: #666666;
+    --text-muted: #666666;
+    --text-accent: #E8B84A;
+    
+    /* ─── Tags ─── */
+    --tag-gold: rgba(232, 184, 74, 0.15);
+    --tag-gold-text: #F5D485;
+    --tag-lavender: rgba(154, 140, 216, 0.15);
+    --tag-lavender-text: #C4B5FD;
+    --tag-mint: rgba(125, 211, 192, 0.15);
+    --tag-mint-text: #7DD3C0;
+    --tag-rose: rgba(244, 63, 94, 0.15);
+    --tag-rose-text: #FDA4AF;
+    --tag-blue: rgba(59, 130, 246, 0.15);
+    --tag-blue-text: #93C5FD;
+    
+    /* ─── Shadows (clean) ─── */
+    --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 8px 40px rgba(0, 0, 0, 0.6);
+    --shadow-gold: 0 4px 16px rgba(232, 184, 74, 0.3);
+    --shadow-lavender: 0 4px 16px rgba(154, 140, 216, 0.2);
+    
+    /* ─── Clean solid surfaces (no glass) ─── */
+    --glass-white: #1E1E1E;
+    --glass-white-heavy: #252525;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    
+    /* ─── Borders ─── */
+    --border-primary: rgba(255, 255, 255, 0.1);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    
+    /* ─── Semantic ─── */
+    --success: #30D158;
+    --warning: #FFD60A;
+    --error: #FF453A;
+    --info: #0A84FF;
+}
+
+/* ═══════ BODY & SPLIT THEME ═══════ */
+html.dark-mode body {
+    background: #0D0D0F !important;
+    color: var(--text-primary);
+}
+
+html.dark-mode .theme-bottom-section {
+    background: #0D0D0F !important;
+}
+
+html.dark-mode .theme-divider {
+    background-color: #0D0D0F !important;
+}
+
+/* ═══════ LIGHT ORBS ═══════ */
+html.dark-mode .light-orbs {
+    background: #0D0D0F !important;
+}
+
+/* ═══════ TRENDORA SURFACE TOKENS OVERRIDE ═══════ */
+html.dark-mode {
+    --surface-primary: #1A1A1E;
+    --surface-secondary: #0D0D0F;
+    --surface-tertiary: #252528;
+    --surface-elevated: #1E1E22;
+    --surface-sunken: #0A0A0C;
+    --surface-warm: #1A1816;
+    --accent-light: rgba(212, 148, 58, 0.15);
+    --accent-lighter: rgba(212, 148, 58, 0.08);
+    --accent-surface: rgba(212, 148, 58, 0.05);
+    --border-hairline: 0.33px solid rgba(255, 255, 255, 0.08);
+    --border-thin: 0.5px solid rgba(255, 255, 255, 0.06);
+    --border-light: 1px solid rgba(255, 255, 255, 0.04);
+    --border-card: 1px solid rgba(255, 255, 255, 0.06);
+    --shadow-card: 0 2px 24px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+    --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+}
+
+/* ═══════ GREETING SECTION ═══════ */
+html.dark-mode .greeting__salutation { color: #F5F5F7 !important; }
+html.dark-mode .greeting__gurbani { color: #E8B84A !important; }
+html.dark-mode .greeting__translation { color: #999 !important; }
+html.dark-mode .greeting__context { color: #999 !important; }
+
+/* ═══════ PROGRESS INLINE ═══════ */
+html.dark-mode .progress-inline {
+    background: #1E1E22 !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+}
+html.dark-mode .progress-inline__label { color: #999 !important; }
+html.dark-mode .progress-inline__bar { background: rgba(255, 255, 255, 0.08) !important; }
+
+/* ═══════ QUICK CARDS — Color-Tinted Dark Surfaces ═══════ */
+html.dark-mode .quick-card {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3) !important;
+}
+/* Remove glass overlay in dark mode */
+html.dark-mode .quick-card::before {
+    display: none !important;
+}
+/* Green card → Deep emerald dark */
+html.dark-mode .quick-card--green {
+    background: linear-gradient(140deg, rgba(48, 209, 88, 0.10) 0%, rgba(48, 209, 88, 0.05) 100%) !important;
+    border-color: rgba(48, 209, 88, 0.15) !important;
+}
+/* Gold card → Deep amber dark */
+html.dark-mode .quick-card--gold {
+    background: linear-gradient(140deg, rgba(212, 148, 58, 0.10) 0%, rgba(212, 148, 58, 0.05) 100%) !important;
+    border-color: rgba(212, 148, 58, 0.15) !important;
+}
+/* Purple card → Deep violet dark */
+html.dark-mode .quick-card--purple {
+    background: linear-gradient(140deg, rgba(88, 86, 214, 0.12) 0%, rgba(88, 86, 214, 0.05) 100%) !important;
+    border-color: rgba(88, 86, 214, 0.15) !important;
+}
+/* Blue card → Deep sapphire dark */
+html.dark-mode .quick-card--blue {
+    background: linear-gradient(140deg, rgba(0, 122, 255, 0.10) 0%, rgba(0, 122, 255, 0.05) 100%) !important;
+    border-color: rgba(0, 122, 255, 0.15) !important;
+}
+/* Rose card → Deep crimson dark */
+html.dark-mode .quick-card--rose {
+    background: linear-gradient(140deg, rgba(255, 107, 107, 0.10) 0%, rgba(255, 107, 107, 0.05) 100%) !important;
+    border-color: rgba(255, 107, 107, 0.15) !important;
+}
+/* Teal card → Deep teal dark */
+html.dark-mode .quick-card--teal {
+    background: linear-gradient(140deg, rgba(26, 188, 156, 0.10) 0%, rgba(26, 188, 156, 0.05) 100%) !important;
+    border-color: rgba(26, 188, 156, 0.15) !important;
+}
+html.dark-mode .quick-card__title { color: #F5F5F7 !important; }
+html.dark-mode .quick-card__subtitle { color: #999 !important; }
+html.dark-mode .quick-card__meta-value { color: #E8B84A !important; }
+
+/* ═══════ QUICK CARD EMOJI ICONS — Clean tinted bg, no glass ═══════ */
+html.dark-mode .quick-card__icon {
+    background: rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+}
+html.dark-mode .quick-card--green .quick-card__icon {
+    background: rgba(48, 209, 88, 0.15) !important;
+    border-color: rgba(48, 209, 88, 0.2) !important;
+}
+html.dark-mode .quick-card--gold .quick-card__icon {
+    background: rgba(212, 148, 58, 0.15) !important;
+    border-color: rgba(212, 148, 58, 0.2) !important;
+}
+html.dark-mode .quick-card--purple .quick-card__icon {
+    background: rgba(88, 86, 214, 0.15) !important;
+    border-color: rgba(88, 86, 214, 0.2) !important;
+}
+html.dark-mode .quick-card--blue .quick-card__icon {
+    background: rgba(0, 122, 255, 0.15) !important;
+    border-color: rgba(0, 122, 255, 0.2) !important;
+}
+html.dark-mode .quick-card--rose .quick-card__icon {
+    background: rgba(255, 107, 107, 0.15) !important;
+    border-color: rgba(255, 107, 107, 0.2) !important;
+}
+html.dark-mode .quick-card--teal .quick-card__icon {
+    background: rgba(26, 188, 156, 0.15) !important;
+    border-color: rgba(26, 188, 156, 0.2) !important;
+}
+
+/* ═══════ PRACTICE CARDS — Color-Tinted Dark Surfaces ═══════ */
+/* Remove glass overlay in dark mode */
+html.dark-mode .practice-card::before {
+    display: none !important;
+}
+html.dark-mode .practice-card--nitnem {
+    background: linear-gradient(165deg, rgba(212, 148, 58, 0.12) 0%, rgba(212, 148, 58, 0.05) 100%) !important;
+    border-color: rgba(212, 148, 58, 0.15) !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 148, 58, 0.05) !important;
+}
+html.dark-mode .practice-card--sehaj {
+    background: linear-gradient(165deg, rgba(88, 86, 214, 0.12) 0%, rgba(88, 86, 214, 0.05) 100%) !important;
+    border-color: rgba(88, 86, 214, 0.15) !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(88, 86, 214, 0.05) !important;
+}
+html.dark-mode .practice-card--hukam {
+    background: linear-gradient(165deg, rgba(255, 149, 0, 0.12) 0%, rgba(255, 149, 0, 0.05) 100%) !important;
+    border-color: rgba(255, 149, 0, 0.15) !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 149, 0, 0.05) !important;
+}
+html.dark-mode .practice-card__title { color: #F5F5F7 !important; }
+html.dark-mode .practice-card__status { color: #999 !important; }
+
+/* ═══════ PRACTICE RING VISIBILITY + GLOW ═══════ */
+html.dark-mode .practice-card__ring-bg {
+    stroke: rgba(255, 255, 255, 0.12) !important;
+}
+html.dark-mode .practice-card__ring svg {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.08)) !important;
+}
+html.dark-mode .practice-card--nitnem .practice-card__ring-fill {
+    filter: drop-shadow(0 0 8px rgba(212, 148, 58, 0.6));
+}
+html.dark-mode .practice-card--sehaj .practice-card__ring-fill {
+    filter: drop-shadow(0 0 8px rgba(88, 86, 214, 0.6));
+}
+html.dark-mode .practice-card--hukam .practice-card__ring-fill {
+    filter: drop-shadow(0 0 8px rgba(255, 149, 0, 0.6));
+}
+
+/* ═══════ EVENT CARDS — Dark Mode ═══════ */
+html.dark-mode .event-card {
+    background: linear-gradient(160deg, rgba(212, 148, 58, 0.08) 0%, rgba(212, 148, 58, 0.03) 100%) !important;
+    border-color: rgba(212, 148, 58, 0.12) !important;
+}
+html.dark-mode .event-card__title { color: #F5F5F7 !important; }
+html.dark-mode .event-card__date { color: #E8B84A !important; }
+html.dark-mode .event-card__desc { color: #999 !important; }
+/* Fix skeleton black background */
+html.dark-mode .event-card__title.skeleton {
+    color: transparent !important;
+    background: linear-gradient(90deg, #2A2A2E 25%, #353538 50%, #2A2A2E 75%) !important;
+    background-size: 200% 100% !important;
+    animation: skeleton-shimmer 1.5s infinite !important;
+    border-radius: 6px !important;
+    min-height: 20px;
+}
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ═══════ QUICK ACTIONS & CARDS ═══════ */
+html.dark-mode .quick-action-icon {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark-mode .task-card,
+html.dark-mode .feature-card,
+html.dark-mode .progress-card {
+    background: #1E1E1E !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+
+/* ═══════ FEATURE CARDS (Dark Mode) ═══════ */
+html.dark-mode .feature-card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6) !important;
+    border-color: rgba(212, 160, 58, 0.3) !important;
+    transform: translateY(-2px) !important;
+}
+html.dark-mode .feature-card::before,
+html.dark-mode .feature-card::after,
+html.dark-mode .feature-card__shine { display: none !important; }
+
+html.dark-mode .feature-card__title { color: #F5F5F5 !important; }
+html.dark-mode .feature-card__subtitle { color: #999 !important; }
+html.dark-mode .task-card__title { color: #F5F5F5 !important; }
+html.dark-mode .task-card__subtitle { color: #999 !important; }
+html.dark-mode .section-title__text { color: #E8B84A !important; }
+
+/* Feature card backgrounds (subtle color tints) */
+html.dark-mode .feature-card--hukam .feature-card__bg { background: linear-gradient(145deg, rgba(255, 184, 108, 0.08) 0%, rgba(255, 159, 67, 0.04) 100%) !important; }
+html.dark-mode .feature-card--shabad .feature-card__bg { background: linear-gradient(145deg, rgba(167, 139, 250, 0.08) 0%, rgba(139, 92, 246, 0.04) 100%) !important; }
+html.dark-mode .feature-card--nitnem .feature-card__bg { background: linear-gradient(145deg, rgba(110, 231, 183, 0.08) 0%, rgba(52, 211, 153, 0.04) 100%) !important; }
+html.dark-mode .feature-card--khoj .feature-card__bg { background: linear-gradient(145deg, rgba(96, 165, 250, 0.08) 0%, rgba(59, 130, 246, 0.04) 100%) !important; }
+
+/* Feature card icons */
+html.dark-mode .feature-card--hukam .feature-card__icon { color: #F59E0B; background: rgba(245, 158, 11, 0.15) !important; border-color: rgba(245, 158, 11, 0.15) !important; box-shadow: none !important; }
+html.dark-mode .feature-card--shabad .feature-card__icon { color: #A78BFA; background: rgba(167, 139, 250, 0.15) !important; border-color: rgba(167, 139, 250, 0.15) !important; box-shadow: none !important; }
+html.dark-mode .feature-card--nitnem .feature-card__icon { color: #34D399; background: rgba(52, 211, 153, 0.15) !important; border-color: rgba(52, 211, 153, 0.15) !important; box-shadow: none !important; }
+html.dark-mode .feature-card--khoj .feature-card__icon { color: #60A5FA; background: rgba(96, 165, 250, 0.15) !important; border-color: rgba(96, 165, 250, 0.15) !important; box-shadow: none !important; }
+
+/* ═══════ PROGRESS CARD ═══════ */
+html.dark-mode .progress-card {
+    background: linear-gradient(145deg, rgba(88, 28, 135, 0.25) 0%, rgba(49, 10, 90, 0.15) 100%) !important;
+    border-color: rgba(139, 92, 246, 0.15) !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+}
+html.dark-mode .progress-card__label { color: #FFB366; background: rgba(255, 153, 0, 0.12); border-color: rgba(255, 153, 0, 0.15); }
+html.dark-mode .progress-card__percent { color: #FFB366; }
+html.dark-mode .progress-card__bar { background: rgba(255, 255, 255, 0.06); }
+html.dark-mode .progress-card__icon { background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.15); color: #A78BFA; }
+html.dark-mode .progress-card__text { color: #C4B5FD; }
+
+/* ═══════ HEADER ═══════ */
+html.dark-mode .header-btn--glass { background: #252525 !important; border-color: rgba(255,255,255,0.06) !important; color: #F5F5F5; }
+html.dark-mode .header-brand__title { color: #F5F5F5 !important; -webkit-text-fill-color: #F5F5F5 !important; }
+
+/* ═══════ STATUS BAR ═══════ */
+html.dark-mode .status-bar { background: rgba(0,0,0,0.6) !important; border-color: rgba(255,255,255,0.1) !important; }
+
+/* ═══════ BOTTOM NAV — Premium Dark Glass ═══════ */
+html.dark-mode .bottom-nav__container {
+    background: rgba(18, 18, 18, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.6) !important;
+}
+html.dark-mode .nav-item { color: #666; }
+html.dark-mode .nav-item--active { color: white; }
+html.dark-mode .nav-item:not(.nav-item--active):hover { background: rgba(255,255,255,0.04); }
+
+/* Glass Navbar (unified all pages) — Clean Premium Dark Glass */
+html.dark-mode .bottom-nav__glass {
+    background: rgba(22, 22, 24, 0.78) !important;
+    backdrop-filter: blur(80px) saturate(220%) brightness(0.95) !important;
+    -webkit-backdrop-filter: blur(80px) saturate(220%) brightness(0.95) !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 
+        0 6px 32px rgba(0, 0, 0, 0.45),
+        0 2px 10px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        inset 0 -0.5px 0 rgba(0, 0, 0, 0.15) !important;
+}
+html.dark-mode .bottom-nav__glass::before {
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.06) 30%,
+        rgba(255, 255, 255, 0.09) 50%,
+        rgba(255, 255, 255, 0.06) 70%,
+        transparent 100%
+    ) !important;
+}
+html.dark-mode .nav-tab { color: rgba(255, 255, 255, 0.35); -webkit-tap-highlight-color: transparent; }
+html.dark-mode .nav-tab--active {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+html.dark-mode .nav-tab--active .nav-tab__label {
+    color: #E8B84A !important;
+    font-weight: 700 !important;
+}
+
+/* ═══════ TASK CARDS ═══════ */
+html.dark-mode .task-card:hover { box-shadow: 0 6px 16px rgba(0,0,0,0.6) !important; border-color: rgba(212, 160, 58, 0.3) !important; }
+html.dark-mode .task-card__arrow { background: #252525 !important; border-color: rgba(255,255,255,0.1) !important; color: #FFF !important; }
+html.dark-mode .task-card:hover .task-card__arrow { background: var(--gold-gradient) !important; border-color: transparent !important; }
+
+/* ═══════ HERO CARD — Dark Mode ═══════ */
+html.dark-mode .hero-card { box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important; }
+
+/* Hero Play Button — VISIBLE in dark mode */
+html.dark-mode .hero-card__play-btn {
+    background: rgba(255, 255, 255, 0.28) !important;
+    border: 2px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
+                0 0 24px rgba(255, 255, 255, 0.08) !important;
+}
+html.dark-mode .hero-card__play-btn:active {
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+html.dark-mode .hero-card__play-btn svg {
+    color: #FFFFFF !important;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4)) !important;
+}
+html.dark-mode .hero-card--playing .hero-card__play-btn {
+    background: rgba(212, 148, 58, 0.35) !important;
+    border-color: rgba(212, 148, 58, 0.5) !important;
+    box-shadow: 0 0 24px rgba(212, 148, 58, 0.25) !important;
+}
+
+/* ═══════ MODALS ═══════ */
+html.dark-mode .filter-panel__sheet, html.dark-mode .radio-menu__sheet { background: #1E1E1E !important; border: 1px solid rgba(255,255,255,0.06); }
+html.dark-mode .filter-panel__header, html.dark-mode .radio-menu__header { border-bottom-color: rgba(255,255,255,0.06); }
+html.dark-mode .filter-panel__close { background: rgba(255,255,255,0.06); }
+html.dark-mode .filter-panel__option:hover, html.dark-mode .radio-menu__option:hover { background: rgba(255,255,255,0.04); }
+html.dark-mode .filter-panel__option.selected { background: rgba(232, 184, 74, 0.1); }
+html.dark-mode .radio-menu__cancel { background: rgba(255,255,255,0.04); color: #999; }
+
+/* ═══════ MISC ═══════ */
+html.dark-mode .section-header__title { color: #F5F5F5; }
+html.dark-mode .section-header__link { color: var(--gold-400); background: rgba(232,160,58,0.08) !important; }
+html.dark-mode input, html.dark-mode textarea, html.dark-mode select { background: #1A1A1A; border-color: rgba(255,255,255,0.06); color: #F5F5F5; }
+html.dark-mode input::placeholder, html.dark-mode textarea::placeholder { color: #666; }
+html.dark-mode .ios-install-banner { background: #1A1A1A !important; border-top-color: rgba(255,255,255,0.06); }
+html.dark-mode .hero-card__price { background: #252525; color: #F5F5F5; border-color: rgba(255,255,255,0.06); }
+html.dark-mode .hero-carousel__dot { background: rgba(255,255,255,0.15); }
+html.dark-mode .filter-btn { background: #252525 !important; border-color: rgba(255,255,255,0.06) !important; color: #999; }
+html.dark-mode .header-btn__badge { border-color: #121212; }
+html.dark-mode .cursor-glow { display: none !important; }
+html.dark-mode .feature-card__hero-img { opacity: 0.1; filter: saturate(0.3) brightness(1.2); }
+html.dark-mode .feature-card:hover .feature-card__hero-img { opacity: 0.2; }
+html.dark-mode .hero-card__waveform span { background: rgba(255,255,255,0.6) !important; }
+
+/* ═══════ SUB-PAGE OVERRIDES ═══════ */
+html.dark-mode .page-header, html.dark-mode .app-header { background: rgba(18,18,18,0.95); backdrop-filter: blur(20px); border-bottom-color: rgba(255,255,255,0.06); }
+html.dark-mode .back-btn, html.dark-mode .btn-back { color: #F5F5F5; background: rgba(255,255,255,0.06); }
+html.dark-mode .card, html.dark-mode .panel, html.dark-mode .section-card,
+html.dark-mode .content-card, html.dark-mode .stat-card, html.dark-mode .info-card,
+html.dark-mode .bani-card, html.dark-mode .achievement-card,
+html.dark-mode .note-card, html.dark-mode .reminder-card, html.dark-mode .event-card { background: #1E1E1E; border-color: rgba(255,255,255,0.06); color: #F5F5F5; }
+html.dark-mode .list-item, html.dark-mode .menu-item, html.dark-mode .option-item { border-bottom-color: rgba(255,255,255,0.04); }
+html.dark-mode .list-item:hover, html.dark-mode .menu-item:hover { background: rgba(255,255,255,0.04); }
+html.dark-mode .modal-content, html.dark-mode .sheet-content, html.dark-mode .dialog-content, html.dark-mode .popup, html.dark-mode .dropdown-menu { background: #1E1E1E; border-color: rgba(255,255,255,0.06); color: #F5F5F5; }
+html.dark-mode .btn-secondary, html.dark-mode .btn-outline { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); color: #F5F5F5; }
+html.dark-mode table, html.dark-mode th, html.dark-mode td { border-color: rgba(255,255,255,0.06); }
+html.dark-mode th { background: rgba(255,255,255,0.03); }
+html.dark-mode ::-webkit-scrollbar-track { background: #121212; }
+html.dark-mode ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+html.dark-mode hr { border-color: rgba(255,255,255,0.06); }
+html.dark-mode pre, html.dark-mode code { background: rgba(255,255,255,0.04); }

@@ -1,0 +1,31 @@
+{
+    "enabled": false,
+    "duration": 2,
+    "activeHours": {
+        "start": 5,
+        "end": 22
+    },
+    "quietHours": {
+        "duringNitnem": false,
+        "duringMeetings": false,
+        "sleepHours": true
+    },
+    "notifications": {
+        "hourStart": true,
+        "preReminder": true,
+        "preReminderMinutes": 2,
+        "sound": "gentle-bell",
+        "vibration": true,
+        "lockScreen": true,
+        "soundEnabled": true
+    },
+    "autoStartTimer": false,
+    "theme": "dark",
+    "showGurmukhiText": true,
+    "meditationSettings": {
+        "showBreathingGuide": true,
+        "showWaheguruText": true,
+        "keepScreenAwake": true,
+        "ambientSoundVolume": 0.3
+    }
+}

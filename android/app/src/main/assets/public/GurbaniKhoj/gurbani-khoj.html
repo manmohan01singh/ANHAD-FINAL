@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-bg="default" data-font="raavi">
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f8f6f2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <title>Gurbani Search • ANHAD</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="gurbani-khoj.css">
+</head>
+<body>
+    <!-- iOS Blur Orbs Background -->
+    <div class="orbs-container" id="orbsContainer">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    
+    <!-- iOS Navigation -->
+    <nav class="ios-nav">
+        <button class="nav-back" onclick="if(history.length > 1) { history.back(); } else { window.location.href='../index.html'; }">
+            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+                <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Back</span>
+        </button>
+        <h1 class="nav-title">Gurbani Search</h1>
+        <div class="nav-actions">
+            <!-- Theme Toggle -->
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                </svg>
+            </button>
+            <!-- Settings -->
+            <button class="nav-settings" id="settingsBtn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Search Section -->
+        <section class="search-section">
+            <!-- Premium Search Bar -->
+            <div class="search-bar glass" id="searchBar">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.5"/>
+                    <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput"
+                    placeholder="Search Gurbani..."
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                >
+                <button class="search-btn clear-btn" id="clearBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2"/>
+                        <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="search-btn mic-btn" id="micBtn">
+                    <div class="mic-waves" id="micWaves">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <svg class="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="2"/>
+                        <path d="M5 10v1a7 7 0 0014 0v-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 19v3M9 22h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="search-btn keyboard-btn" id="keyboardBtn">
+                    <span class="gurmukhi-letter">ੳ</span>
+                </button>
+            </div>
+
+            <!-- Voice Indicator -->
+            <div class="voice-panel glass" id="voicePanel">
+                <div class="voice-visual">
+                    <div class="voice-ring"></div>
+                    <div class="voice-ring"></div>
+                    <div class="voice-ring"></div>
+                    <svg class="voice-mic" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="9" y="2" width="6" height="11" rx="3"/>
+                        <path d="M5 10v1a7 7 0 0014 0v-1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        <path d="M12 19v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <p class="voice-status">Listening...</p>
+                <p class="voice-hint">Speak your Shabad line</p>
+                <button class="voice-cancel" id="voiceCancel">Cancel</button>
+            </div>
+
+            <!-- Search Filters -->
+            <div class="search-filters">
+                <button class="filter-pill active" data-type="0">First Letter</button>
+                <button class="filter-pill" data-type="1">Gurmukhi</button>
+                <button class="filter-pill" data-type="2">English</button>
+            </div>
+        </section>
+
+        <!-- Results View -->
+        <section class="results-view" id="resultsView">
+            <div class="results-header">
+                <span class="results-count" id="resultsCount"></span>
+            </div>
+            <div class="results-list" id="resultsList"></div>
+            <button class="load-more glass" id="loadMoreBtn">Load More</button>
+        </section>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState">
+            <div class="loader">
+                <div class="loader-ring"></div>
+                <span class="loader-icon">☬</span>
+            </div>
+            <p>Searching Gurbani...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🔍</div>
+            <h3>No Results</h3>
+            <p id="emptyMessage">Try searching with first letters</p>
+        </div>
+
+        <!-- Welcome State -->
+        <div class="welcome-state active" id="welcomeState">
+            <div class="welcome-icon">☬</div>
+            <h2 class="welcome-title">Gurbani Khoj</h2>
+            <p class="welcome-desc">Search the sacred scriptures</p>
+            <div class="welcome-tips">
+                <div class="tip">
+                    <span class="tip-icon">🎤</span>
+                    <span>Sing or speak a line</span>
+                </div>
+                <div class="tip">
+                    <span class="tip-icon">⌨️</span>
+                    <span>Type first letters: ਤਮਮਪ</span>
+                </div>
+            </div>
+            
+            <!-- Search History -->
+            <section class="history-section" id="historySection" style="display: none;">
+                <h3 class="history-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    Recent Searches
+                </h3>
+                <div class="history-list" id="historyList"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Premium Gurmukhi Keyboard -->
+    <div class="keyboard-overlay" id="keyboardOverlay">
+        <div class="keyboard-backdrop"></div>
+        <div class="keyboard-sheet glass">
+            <div class="sheet-handle"></div>
+            <div class="keyboard-header">
+                <span class="keyboard-lang">ਪੰਜਾਬੀ</span>
+                <button class="keyboard-done" id="keyboardDone">Done</button>
+            </div>
+            <div class="keyboard-preview" id="keyboardPreview">
+                <span class="preview-text"></span>
+                <span class="preview-cursor"></span>
+            </div>
+            <div class="keyboard-body">
+                <div class="kb-row">
+                    <button class="kb-key">ੳ</button>
+                    <button class="kb-key">ਅ</button>
+                    <button class="kb-key">ੲ</button>
+                    <button class="kb-key">ਸ</button>
+                    <button class="kb-key">ਹ</button>
+                    <button class="kb-key">ਕ</button>
+                    <button class="kb-key">ਖ</button>
+                    <button class="kb-key">ਗ</button>
+                    <button class="kb-key">ਘ</button>
+                    <button class="kb-key">ਙ</button>
+                </div>
+                <div class="kb-row">
+                    <button class="kb-key">ਚ</button>
+                    <button class="kb-key">ਛ</button>
+                    <button class="kb-key">ਜ</button>
+                    <button class="kb-key">ਝ</button>
+                    <button class="kb-key">ਞ</button>
+                    <button class="kb-key">ਟ</button>
+                    <button class="kb-key">ਠ</button>
+                    <button class="kb-key">ਡ</button>
+                    <button class="kb-key">ਢ</button>
+                    <button class="kb-key">ਣ</button>
+                </div>
+                <div class="kb-row">
+                    <button class="kb-key">ਤ</button>
+                    <button class="kb-key">ਥ</button>
+                    <button class="kb-key">ਦ</button>
+                    <button class="kb-key">ਧ</button>
+                    <button class="kb-key">ਨ</button>
+                    <button class="kb-key">ਪ</button>
+                    <button class="kb-key">ਫ</button>
+                    <button class="kb-key">ਬ</button>
+                    <button class="kb-key">ਭ</button>
+                    <button class="kb-key">ਮ</button>
+                </div>
+                <div class="kb-row">
+                    <button class="kb-key">ਯ</button>
+                    <button class="kb-key">ਰ</button>
+                    <button class="kb-key">ਲ</button>
+                    <button class="kb-key">ਵ</button>
+                    <button class="kb-key">ੜ</button>
+                    <button class="kb-key">ਸ਼</button>
+                    <button class="kb-key">ਖ਼</button>
+                    <button class="kb-key">ਗ਼</button>
+                    <button class="kb-key">ਜ਼</button>
+                    <button class="kb-key">ਫ਼</button>
+                </div>
+                <div class="kb-row matras">
+                    <button class="kb-key matra">ਾ</button>
+                    <button class="kb-key matra">ਿ</button>
+                    <button class="kb-key matra">ੀ</button>
+                    <button class="kb-key matra">ੁ</button>
+                    <button class="kb-key matra">ੂ</button>
+                    <button class="kb-key matra">ੇ</button>
+                    <button class="kb-key matra">ੈ</button>
+                    <button class="kb-key matra">ੋ</button>
+                    <button class="kb-key matra">ੌ</button>
+                    <button class="kb-key matra">ੰ</button>
+                    <button class="kb-key matra">ੱ</button>
+                </div>
+                <div class="kb-row actions">
+                    <button class="kb-key action" data-action="backspace">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/>
+                            <line x1="18" y1="9" x2="12" y2="15"/>
+                            <line x1="12" y1="9" x2="18" y2="15"/>
+                        </svg>
+                    </button>
+                    <button class="kb-key space" data-action="space">Space</button>
+                    <button class="kb-key action search-action" data-action="search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="11" cy="11" r="7"/>
+                            <path d="M20 20L16.5 16.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Sheet -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-backdrop"></div>
+        <div class="settings-sheet glass">
+            <div class="sheet-handle"></div>
+            <h2 class="settings-title">Settings</h2>
+            
+            <div class="setting-group">
+                <label class="setting-label">Gurmukhi Font</label>
+                <div class="setting-options font-options">
+                    <button class="setting-opt active" data-font="raavi">Raavi</button>
+                    <button class="setting-opt" data-font="noto">Noto Sans</button>
+                    <button class="setting-opt" data-font="mukta">Mukta</button>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <label class="setting-label">Background</label>
+                <div class="setting-options bg-options">
+                    <button class="setting-opt active" data-bg="default">
+                        <span class="bg-preview default"></span>
+                        <span>Default</span>
+                    </button>
+                    <button class="setting-opt" data-bg="paper">
+                        <span class="bg-preview paper"></span>
+                        <span>Paper</span>
+                    </button>
+                    <button class="setting-opt" data-bg="marble">
+                        <span class="bg-preview marble"></span>
+                        <span>Marble</span>
+                    </button>
+                </div>
+            </div>
+            
+            <button class="settings-done" id="settingsDone">Done</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastText"></span>
+    </div>
+
+    <script src="gurbani-khoj.js"></script>
+    <script src="../lib/global-mini-player.js" defer></script>
+</body>
+</html>

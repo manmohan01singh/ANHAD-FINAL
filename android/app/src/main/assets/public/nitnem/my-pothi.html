@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr">
+
+<head>
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="ਮੇਰੀ ਪੋਥੀ — Your Personal Gurbani Collection">
+    <meta name="theme-color" content="#000000">
+    <title>ਮੇਰੀ ਪੋਥੀ | My Pothi — ANHAD</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- GurbaniDB — IndexedDB offline cache -->
+    <script src="../lib/gurbani-db.js"></script>
+    <!-- Smart Back Navigation -->
+    <script src="../lib/smart-back.js"></script>
+
+    <style>
+        :root {
+            --ios-blue: #007AFF;
+            --ios-green: #34C759;
+            --ios-orange: #FF9500;
+            --ios-red: #FF3B30;
+            --sacred-gold: #D4AF37;
+            --sacred-saffron: #FF8C00;
+            --bg-primary: #000000;
+            --bg-secondary: #1C1C1E;
+            --bg-tertiary: #2C2C2E;
+            --card-bg: rgba(28, 28, 30, 0.85);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --separator: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(28, 28, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --blur-thick: blur(40px);
+            --safe-top: env(safe-area-inset-top, 20px);
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F2F2F7;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F2F2F7;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.04);
+            --text-primary: #000000;
+            --text-secondary: rgba(0, 0, 0, 0.5);
+            --text-tertiary: rgba(0, 0, 0, 0.3);
+            --separator: rgba(0, 0, 0, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: var(--font-primary);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: calc(var(--safe-bottom) + 40px);
+        }
+
+        /* Background */
+        .bg-effects { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; }
+        .orb-1 { width: 400px; height: 400px; background: conic-gradient(from 0deg, #D4AF37, #FF8C00, #FFD700, #D4AF37); top: -150px; right: -100px; animation: floatOrb 25s ease-in-out infinite; }
+        .orb-2 { width: 300px; height: 300px; background: conic-gradient(from 180deg, #AF52DE, #5856D6, #007AFF, #AF52DE); bottom: 20%; left: -120px; animation: floatOrb 25s ease-in-out infinite reverse; }
+        @keyframes floatOrb { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, -20px); } }
+
+        .app { position: relative; z-index: 1; min-height: 100vh; }
+
+        /* Header */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            padding: calc(var(--safe-top) + 8px) 20px 12px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-thick); -webkit-backdrop-filter: var(--blur-thick);
+            border-bottom: 1px solid var(--separator);
+        }
+        .back-btn { display: flex; align-items: center; gap: 6px; color: var(--ios-blue); text-decoration: none; font-size: 17px; }
+        .back-btn svg { width: 12px; height: 20px; }
+        .header-title {
+            font-family: var(--font-gurmukhi); font-size: 18px; font-weight: 600;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .edit-btn {
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 50%; cursor: pointer; font-size: 16px;
+            transition: transform 0.3s var(--spring);
+        }
+        .edit-btn:active { transform: scale(0.9); }
+        .edit-btn.active { background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron)); border-color: var(--sacred-gold); }
+
+        /* ═══════════════════════════════════════════════════
+           READING MODE
+           ═══════════════════════════════════════════════════ */
+        .reading-view.hidden { display: none; }
+
+        .empty-state { text-align: center; padding: 60px 30px; }
+        .empty-state .icon { font-size: 56px; margin-bottom: 16px; }
+        .empty-state h2 { font-family: var(--font-gurmukhi); font-size: 22px; margin-bottom: 8px; }
+        .empty-state p { font-size: 15px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 24px; }
+        .empty-state .start-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            color: #000; font-weight: 700; font-size: 16px;
+            border: none; border-radius: 14px; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .pothi-hero { text-align: center; padding: 24px 20px 8px; }
+        .pothi-hero .icon { font-size: 48px; margin-bottom: 8px; filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4)); }
+        .pothi-hero h1 {
+            font-family: var(--font-gurmukhi); font-size: 24px; font-weight: 700;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .pothi-hero .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+        .reorder-hint {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin: 8px 20px 12px; padding: 8px 14px;
+            background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 10px; font-size: 12px; color: var(--text-secondary);
+        }
+
+        /* Bani Cards — Draggable */
+        .pothi-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+
+        .pothi-bani-card {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; text-decoration: none; color: inherit;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 18px; overflow: hidden; position: relative;
+            transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out), opacity 0.2s;
+            touch-action: manipulation;
+        }
+        .pothi-bani-card:active:not(.dragging) { transform: scale(0.98); }
+        .pothi-bani-card .card-glow {
+            position: absolute; width: 100px; height: 100px;
+            border-radius: 50%; filter: blur(40px); opacity: 0.2;
+            right: -20px; top: 50%; transform: translateY(-50%);
+            background: var(--sacred-gold);
+        }
+        .pothi-bani-card .card-num {
+            width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: var(--sacred-gold);
+            background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 50%; flex-shrink: 0;
+        }
+        .pothi-bani-card .card-icon {
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+            font-size: 26px; background: rgba(255, 255, 255, 0.06);
+            border-radius: 14px; flex-shrink: 0;
+        }
+        .pothi-bani-card .card-content { flex: 1; min-width: 0; z-index: 1; }
+        .pothi-bani-card .card-name { font-family: var(--font-gurmukhi); font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+        .pothi-bani-card .card-english { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+        .pothi-bani-card .card-drag {
+            width: 24px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+            z-index: 1; flex-shrink: 0; padding: 8px 0; cursor: grab;
+        }
+        .card-drag span { display: block; width: 18px; height: 2px; background: var(--text-tertiary); border-radius: 1px; }
+
+        /* Dragging state */
+        .pothi-bani-card.dragging {
+            opacity: 0.9; z-index: 999;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(1.03);
+            border-color: var(--sacred-gold);
+        }
+        .pothi-bani-card.drag-over { border-color: var(--ios-blue); background: rgba(0, 122, 255, 0.06); }
+
+        /* ═══════════════════════════════════════════════════
+           EDIT MODE
+           ═══════════════════════════════════════════════════ */
+        .edit-view { display: none; }
+        .edit-view.visible { display: block; }
+
+        .edit-hero { text-align: center; padding: 20px; }
+        .edit-hero h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .edit-hero p { font-size: 14px; color: var(--text-secondary); }
+
+        .selected-count {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin: 0 20px 16px; padding: 10px 16px;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 12px; font-size: 14px; color: var(--text-secondary);
+        }
+        .selected-count .count { font-weight: 700; font-size: 20px; color: var(--sacred-gold); }
+
+        .edit-section { padding: 0 16px; margin-bottom: 24px; }
+        .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding-left: 4px; }
+        .section-header h3 { font-size: 17px; font-weight: 700; }
+        .section-icon { font-size: 20px; }
+        .bani-list { display: flex; flex-direction: column; gap: 6px; }
+
+        .bani-select-card {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px;
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            border-radius: 14px; cursor: pointer;
+            transition: all 0.25s var(--ease-out);
+            user-select: none; -webkit-user-select: none;
+        }
+        .bani-select-card:active { transform: scale(0.98); }
+        .bani-select-card.selected { border-color: var(--sacred-gold); background: rgba(212, 175, 55, 0.08); }
+
+        .bani-select-icon { font-size: 22px; flex-shrink: 0; }
+        .bani-select-content { flex: 1; min-width: 0; }
+        .bani-select-name { font-family: var(--font-gurmukhi); font-size: 15px; font-weight: 600; }
+        .bani-select-english { font-size: 12px; color: var(--text-secondary); }
+
+        .bani-checkbox {
+            width: 26px; height: 26px; border-radius: 50%;
+            border: 2px solid var(--text-tertiary);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s var(--spring);
+        }
+        .bani-select-card.selected .bani-checkbox {
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            border-color: var(--sacred-gold);
+        }
+        .bani-checkbox svg { width: 14px; height: 14px; color: #000; opacity: 0; transform: scale(0.5); transition: all 0.2s var(--spring); }
+        .bani-select-card.selected .bani-checkbox svg { opacity: 1; transform: scale(1); }
+
+        /* Save Button */
+        .save-section { position: fixed; bottom: calc(var(--safe-bottom) + 14px); left: 16px; right: 16px; z-index: 100; }
+        .save-section.hidden { display: none; }
+        .save-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
+            color: #000; font-size: 17px; font-weight: 700;
+            border: none; border-radius: 14px; cursor: pointer;
+            box-shadow: 0 6px 24px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s var(--ease-out);
+        }
+        .save-btn:active { transform: scale(0.97); }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: calc(var(--safe-top) + 60px); left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            padding: 12px 24px; background: var(--ios-green);
+            color: #fff; font-weight: 600; font-size: 15px;
+            border-radius: 12px; opacity: 0; pointer-events: none;
+            transition: all 0.4s var(--ease-out); z-index: 200;
+        }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .footer { padding: 40px 20px; text-align: center; }
+        .footer p { font-family: var(--font-gurmukhi); font-size: 14px; color: var(--text-tertiary); }
+
+        @media (min-width: 768px) {
+            .pothi-list, .edit-section { max-width: 600px; margin-left: auto; margin-right: auto; }
+        }
+    </style>
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/dark-mode.css">
+    <script src="../lib/global-theme.js"></script>
+</head>
+
+<body>
+    <div class="bg-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="app">
+        <header class="header">
+            <a href="index.html" class="back-btn">
+                <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 2L2 10L10 18" /></svg>
+                Back
+            </a>
+            <span class="header-title">ਮੇਰੀ ਪੋਥੀ</span>
+            <button class="edit-btn" id="editBtn" title="Edit My Pothi">✏️</button>
+        </header>
+
+        <!-- READING MODE -->
+        <div class="reading-view" id="readingView">
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <div class="icon">📖</div>
+                <h2>ਮੇਰੀ ਪੋਥੀ ਖਾਲੀ ਹੈ</h2>
+                <p>Your Pothi is empty. Tap the ✏️ edit button to select Banis for your daily reading.</p>
+                <button class="start-btn" onclick="enterEditMode()">✏️ Add Banis</button>
+            </div>
+
+            <div id="pothiReading" style="display:none;">
+                <div class="pothi-hero">
+                    <div class="icon">📖</div>
+                    <h1>ਮੇਰੀ ਪੋਥੀ</h1>
+                    <div class="subtitle" id="readingSubtitle">Your daily reading</div>
+                </div>
+                <div class="reorder-hint">
+                    <span>☰</span> Long press & drag to reorder
+                </div>
+                <div class="pothi-list" id="pothiList"></div>
+            </div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div class="edit-view" id="editView">
+            <div class="edit-hero">
+                <h2>✏️ Edit My Pothi</h2>
+                <p>Select Banis for your daily reading</p>
+            </div>
+            <div class="selected-count">
+                <span class="count" id="countNumber">0</span>
+                <span>Banis Selected</span>
+            </div>
+            <div id="editContainer"></div>
+        </div>
+
+        <footer class="footer">
+            <p>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ ॥</p>
+        </footer>
+    </div>
+
+    <div class="save-section hidden" id="saveSection">
+        <button class="save-btn" id="saveBtn">✅ Save My Pothi</button>
+    </div>
+
+    <div class="toast" id="toast">✅ Pothi Saved!</div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // BANI DATABASE
+        // ═══════════════════════════════════════════════════════════════
+        const ALL_BANIS = [
+            { id: 2, name: 'ਜਪੁਜੀ ਸਾਹਿਬ', english: 'Japji Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🌅' },
+            { id: 4, name: 'ਜਾਪੁ ਸਾਹਿਬ', english: 'Jaap Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '⚔️' },
+            { id: 6, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', english: 'Tav Prasad Savaiye', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
+            { id: 7, name: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ (ਦੀਨਨ ਕੀ)', english: 'Tav Prasad Savaiye (Deenan Ki)', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
+            { id: 9, name: 'ਬੇਨਤੀ ਚੌਪਈ ਸਾਹਿਬ', english: 'Chaupai Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🛡️' },
+            { id: 10, name: 'ਅਨੰਦੁ ਸਾਹਿਬ', english: 'Anand Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '😊' },
+            { id: 21, name: 'ਰਹਿਰਾਸਿ ਸਾਹਿਬ', english: 'Rehras Sahib Ji', category: 'ਨਿਤਨੇਮ', icon: '🌇' },
+            { id: 23, name: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', english: 'Kirtan Sohila', category: 'ਨਿਤਨੇਮ', icon: '🌙' },
+            { id: 24, name: 'ਅਰਦਾਸ', english: 'Ardas', category: 'ਨਿਤਨੇਮ', icon: '🙏' },
+            { id: 31, name: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', english: 'Sukhmani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕊️' },
+            { id: 90, name: 'ਆਸਾ ਦੀ ਵਾਰ', english: 'Asa Di Vaar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '☀️' },
+            { id: 36, name: 'ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ', english: 'Dukh Bhanjani Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💚' },
+            { id: 3, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ', english: 'Shabad Hazare', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💎' },
+            { id: 27, name: 'ਬਾਰਹ ਮਾਹਾ', english: 'Barah Maha', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📅' },
+            { id: 30, name: 'ਸਲੋਕ ਮਹਲਾ ੯', english: 'Salok Mahalla 9', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📜' },
+            { id: 22, name: 'ਆਰਤੀ', english: 'Aarti', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🪔' },
+            { id: 11, name: 'ਲਾਵਾਂ', english: 'Lavan', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💍' },
+            { id: 33, name: 'ਬਾਵਨ ਅਖਰੀ', english: 'Bavan Akhri', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📖' },
+            { id: 34, name: 'ਸਿਧ ਗੋਸਟਿ', english: 'Sidh Gosht', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🧘' },
+            { id: 35, name: 'ਦਖਣੀ ਓਅੰਕਾਰੁ', english: 'Dakhni Oankar', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕉️' },
+            { id: 32, name: 'ਸੁਖਮਨਾ ਸਾਹਿਬ', english: 'Sukhmana Sahib Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🕊️' },
+            { id: 38, name: 'ਰਾਗ ਮਾਲਾ', english: 'Raag Mala', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🎵' },
+            { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '📿' },
+            { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', category: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🤲' },
+            { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '💎' },
+            { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '✨' },
+            { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🌟' },
+            { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '⚔️' },
+            { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🗡️' },
+            { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🔱' },
+            { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', category: 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ', icon: '🔥' },
+        ];
+
+        // ═══════════════════════════════════════════════════════════════
+        // STATE — Ordered array preserving user arrangement
+        // ═══════════════════════════════════════════════════════════════
+        let pothiOrder = []; // Ordered array of Bani IDs
+        let isEditMode = false;
+
+        // ═══════════════════════════════════════════════════════════════
+        // PERSISTENCE — Order-preserving
+        // ═══════════════════════════════════════════════════════════════
+        function loadPothi() {
+            try {
+                const saved = localStorage.getItem('anhad_my_pothi');
+                if (saved) pothiOrder = JSON.parse(saved);
+            } catch (e) { pothiOrder = []; }
+        }
+
+        function savePothi() {
+            localStorage.setItem('anhad_my_pothi', JSON.stringify(pothiOrder));
+
+            // Sync data array (in user's order)
+            const pothiData = pothiOrder.map(id => {
+                const bani = ALL_BANIS.find(b => b.id === id);
+                return bani ? { id: bani.id, name: bani.name, english: bani.english } : null;
+            }).filter(Boolean);
+            localStorage.setItem('anhad_my_pothi_data', JSON.stringify(pothiData));
+
+            showToast('✅ Pothi Saved!');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 2500);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // MODE SWITCHING
+        // ═══════════════════════════════════════════════════════════════
+        function enterEditMode() {
+            isEditMode = true;
+            document.getElementById('readingView').classList.add('hidden');
+            document.getElementById('editView').classList.add('visible');
+            document.getElementById('saveSection').classList.remove('hidden');
+            document.getElementById('editBtn').classList.add('active');
+            renderEditView();
+            updateCount();
+        }
+
+        function exitEditMode() {
+            isEditMode = false;
+            document.getElementById('readingView').classList.remove('hidden');
+            document.getElementById('editView').classList.remove('visible');
+            document.getElementById('saveSection').classList.add('hidden');
+            document.getElementById('editBtn').classList.remove('active');
+            renderReadingView();
+        }
+
+        function toggleEditMode() {
+            if (isEditMode) {
+                savePothi();
+                exitEditMode();
+            } else {
+                enterEditMode();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // READING VIEW — with from=pothi links & numbering
+        // ═══════════════════════════════════════════════════════════════
+        function renderReadingView() {
+            const isEmpty = pothiOrder.length === 0;
+            document.getElementById('emptyState').style.display = isEmpty ? 'block' : 'none';
+            document.getElementById('pothiReading').style.display = isEmpty ? 'none' : 'block';
+            if (isEmpty) return;
+
+            const list = document.getElementById('pothiList');
+            document.getElementById('readingSubtitle').textContent = `${pothiOrder.length} Banis in your Pothi`;
+
+            let html = '';
+            pothiOrder.forEach((id, idx) => {
+                const bani = ALL_BANIS.find(b => b.id === id);
+                if (!bani) return;
+                html += `
+                    <a href="reader.html?id=${bani.id}&from=pothi" class="pothi-bani-card" data-id="${bani.id}" draggable="false">
+                        <div class="card-glow"></div>
+                        <div class="card-num">${idx + 1}</div>
+                        <div class="card-icon">${bani.icon}</div>
+                        <div class="card-content">
+                            <div class="card-name">${bani.name}</div>
+                            <div class="card-english">${bani.english}</div>
+                        </div>
+                        <div class="card-drag" title="Hold to reorder">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </a>
+                `;
+            });
+            list.innerHTML = html;
+            initDragAndDrop();
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // DRAG & DROP REORDER (Touch + Mouse)
+        // ═══════════════════════════════════════════════════════════════
+        function initDragAndDrop() {
+            const list = document.getElementById('pothiList');
+            if (!list) return;
+
+            let dragItem = null;
+            let longPressTimer = null;
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            const cards = list.querySelectorAll('.pothi-bani-card');
+
+            cards.forEach(card => {
+                // Touch events
+                card.addEventListener('touchstart', handleStart, { passive: false });
+                card.addEventListener('touchmove', handleMove, { passive: false });
+                card.addEventListener('touchend', handleEnd);
+                card.addEventListener('touchcancel', handleEnd);
+            });
+
+            function handleStart(e) {
+                const card = e.currentTarget;
+                startY = e.touches[0].clientY;
+
+                // Long press = 400ms
+                longPressTimer = setTimeout(() => {
+                    isDragging = true;
+                    dragItem = card;
+                    card.classList.add('dragging');
+
+                    // Haptic feedback if available
+                    if (navigator.vibrate) navigator.vibrate(30);
+                }, 400);
+            }
+
+            function handleMove(e) {
+                if (!isDragging || !dragItem) {
+                    // Cancel long press if moved too much before trigger
+                    const moveY = Math.abs(e.touches[0].clientY - startY);
+                    if (moveY > 10 && longPressTimer) {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
+                    }
+                    return;
+                }
+
+                e.preventDefault();
+                currentY = e.touches[0].clientY;
+
+                // Find which card we're over
+                const cards = list.querySelectorAll('.pothi-bani-card:not(.dragging)');
+                cards.forEach(c => c.classList.remove('drag-over'));
+
+                const overCard = document.elementFromPoint(e.touches[0].clientX, currentY);
+                const target = overCard?.closest('.pothi-bani-card:not(.dragging)');
+                if (target) target.classList.add('drag-over');
+            }
+
+            function handleEnd(e) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+
+                if (!isDragging || !dragItem) return;
+
+                // Find drop target
+                const cards = list.querySelectorAll('.pothi-bani-card');
+                let dropTarget = null;
+                cards.forEach(c => {
+                    if (c.classList.contains('drag-over')) dropTarget = c;
+                    c.classList.remove('dragging', 'drag-over');
+                });
+
+                if (dropTarget && dropTarget !== dragItem) {
+                    const fromId = parseInt(dragItem.dataset.id);
+                    const toId = parseInt(dropTarget.dataset.id);
+                    const fromIdx = pothiOrder.indexOf(fromId);
+                    const toIdx = pothiOrder.indexOf(toId);
+
+                    if (fromIdx !== -1 && toIdx !== -1) {
+                        // Swap positions
+                        pothiOrder.splice(fromIdx, 1);
+                        pothiOrder.splice(toIdx, 0, fromId);
+                        savePothi();
+                        renderReadingView();
+                    }
+                } else {
+                    dragItem.classList.remove('dragging');
+                }
+
+                isDragging = false;
+                dragItem = null;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EDIT VIEW
+        // ═══════════════════════════════════════════════════════════════
+        function renderEditView() {
+            const container = document.getElementById('editContainer');
+            const categories = {};
+            const selectedSet = new Set(pothiOrder);
+
+            ALL_BANIS.forEach(bani => {
+                if (!categories[bani.category]) categories[bani.category] = [];
+                categories[bani.category].push(bani);
+            });
+
+            const catIcons = { 'ਨਿਤਨੇਮ': '📿', 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ': '📕', 'ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ': '📗' };
+
+            let html = '';
+            Object.entries(categories).forEach(([cat, banis]) => {
+                html += `<div class="edit-section"><div class="section-header">
+                    <span class="section-icon">${catIcons[cat] || '📖'}</span><h3>${cat}</h3></div><div class="bani-list">`;
+
+                banis.forEach(bani => {
+                    const sel = selectedSet.has(bani.id);
+                    html += `
+                        <div class="bani-select-card ${sel ? 'selected' : ''}" data-id="${bani.id}" onclick="toggleBani(${bani.id}, this)">
+                            <span class="bani-select-icon">${bani.icon}</span>
+                            <div class="bani-select-content">
+                                <div class="bani-select-name">${bani.name}</div>
+                                <div class="bani-select-english">${bani.english}</div>
+                            </div>
+                            <div class="bani-checkbox">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                        </div>`;
+                });
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleBani(id, el) {
+            const idx = pothiOrder.indexOf(id);
+            if (idx !== -1) {
+                pothiOrder.splice(idx, 1);
+            } else {
+                pothiOrder.push(id);
+            }
+            if (el) el.classList.toggle('selected', pothiOrder.includes(id));
+            updateCount();
+        }
+
+        function updateCount() {
+            const el = document.getElementById('countNumber');
+            if (el) el.textContent = pothiOrder.length;
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // INIT
+        // ═══════════════════════════════════════════════════════════════
+        const savedTheme = localStorage.getItem('anhad_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        loadPothi();
+        renderReadingView();
+
+        document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            savePothi();
+            exitEditMode();
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // BACKGROUND PRE-CACHE — Silently download all Pothi Banis
+        // ═══════════════════════════════════════════════════════════════
+        setTimeout(() => {
+            try {
+                if (typeof GurbaniDB !== 'undefined' && pothiOrder.length > 0) {
+                    const db = new GurbaniDB();
+                    console.log(`📖 My Pothi: Background pre-caching ${pothiOrder.length} Banis...`);
+                    db.preCacheBanis(pothiOrder).then(count => {
+                        console.log(`✅ My Pothi: ${count} Banis ready for instant offline reading.`);
+                    }).catch(e => console.warn('Pre-cache error:', e));
+                }
+            } catch (e) {
+                console.warn('Pre-cache init error:', e);
+            }
+        }, 1000); // 1s delay after page load — never blocks rendering
+    </script>
+</body>
+</html>
