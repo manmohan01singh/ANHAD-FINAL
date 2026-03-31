@@ -372,7 +372,7 @@ class SehajPaathApp {
 
         // Search button (header) - go to dedicated search page
         document.getElementById('searchBtn')?.addEventListener('click', () => {
-            window.location.href = 'gurbani-search.html';
+            window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
         });
 
         // Settings button (header)
@@ -749,7 +749,7 @@ class SehajPaathApp {
                 break;
             case 'search':
                 // Open dedicated Gurmukhi search page
-                window.location.href = 'gurbani-search.html';
+                window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
                 break;
             case 'bookmarks':
                 this.renderBookmarksModal();

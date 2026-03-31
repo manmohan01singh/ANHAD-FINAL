@@ -515,198 +515,20 @@
     };
 
     // ══════════════════════════════════════════════════════════════════════════
-    // CSS STYLES FOR iOS INSTALL PROMPT - EXTREME CLAYMORPHISM EDITION
+    // LOAD EXTERNAL CLAYMORPHISM CSS
     // ══════════════════════════════════════════════════════════════════════════
     const injectStyles = function () {
         if (document.getElementById('ios-android-notification-styles')) return;
 
-        const style = document.createElement('style');
-        style.id = 'ios-android-notification-styles';
-        style.textContent = `
-            /* ============================================
-               EXTREME CLAYMORPHISM - iOS INSTALL PROMPT
-               Soft 3D, tactile, glossy clay aesthetic
-               ============================================ */
+        // Load external CSS file
+        const link = document.createElement('link');
+        link.id = 'ios-android-notification-styles';
+        link.rel = 'stylesheet';
+        link.href = 'lib/ios-android-notifications-clay.css';
+        document.head.appendChild(link);
 
-            .ios-install-prompt {
-                position: fixed;
-                inset: 0;
-                z-index: 999999;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            }
-
-            .ios-install-prompt.visible {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .ios-prompt-backdrop {
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-            }
-
-            /* ============================================
-               MAIN CLAY SHEET - The centerpiece
-               ============================================ */
-            .ios-prompt-sheet {
-                position: absolute;
-                bottom: 20px;
-                left: 16px;
-                right: 16px;
-                background: linear-gradient(145deg, 
-                    rgba(255,255,255,0.15) 0%, 
-                    rgba(255,255,255,0.08) 50%,
-                    rgba(0,0,0,0.1) 100%);
-                backdrop-filter: blur(40px) saturate(2);
-                -webkit-backdrop-filter: blur(40px) saturate(2);
-                border-radius: 32px;
-                border: 1px solid rgba(255,255,255,0.25);
-                padding: 28px 24px 32px;
-                padding-bottom: max(32px, env(safe-area-inset-bottom));
-                transform: translateY(calc(100% + 40px));
-                transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-                box-shadow: 
-                    /* Outer soft glow */
-                    0 20px 60px rgba(0,0,0,0.4),
-                    0 8px 24px rgba(0,0,0,0.3),
-                    /* Top highlight rim */
-                    inset 0 2px 1px rgba(255,255,255,0.4),
-                    /* Left highlight */
-                    inset 2px 0 2px rgba(255,255,255,0.15),
-                    /* Inner depth shadow */
-                    inset 0 -2px 2px rgba(0,0,0,0.1),
-                    /* Subtle ambient */
-                    0 0 0 1px rgba(255,255,255,0.1);
-            }
-
-            .ios-install-prompt.visible .ios-prompt-sheet {
-                transform: translateY(0);
-            }
-
-            /* ============================================
-               HEADER SECTION - App Icon Clay Style
-               ============================================ */
-            .ios-prompt-header {
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                margin-bottom: 24px;
-                padding-bottom: 20px;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-
-            .ios-prompt-icon {
-                width: 64px;
-                height: 64px;
-                border-radius: 18px;
-                overflow: hidden;
-                background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
-                flex-shrink: 0;
-                /* Extreme claymorphism on icon container */
-                box-shadow:
-                    /* Outer soft lift */
-                    0 8px 20px rgba(0,0,0,0.25),
-                    0 4px 8px rgba(0,0,0,0.15),
-                    /* Top-left highlight */
-                    inset 2px 2px 4px rgba(255,255,255,0.9),
-                    /* Bottom-right shadow */
-                    inset -2px -2px 4px rgba(0,0,0,0.1);
-                padding: 2px;
-            }
-
-            .ios-prompt-icon img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                border-radius: 16px;
-            }
-
-            .ios-prompt-title {
-                flex: 1;
-            }
-
-            .ios-prompt-title h3 {
-                font-size: 22px;
-                font-weight: 800;
-                color: #fff;
-                margin: 0 0 6px;
-                letter-spacing: -0.5px;
-                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            }
-
-            .ios-prompt-title p {
-                font-size: 13px;
-                color: rgba(255,255,255,0.7);
-                margin: 0;
-                font-weight: 500;
-            }
-
-            /* Close button - clay bubble style */
-            .ios-prompt-close {
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background: linear-gradient(145deg, 
-                    rgba(255,255,255,0.2) 0%, 
-                    rgba(255,255,255,0.1) 50%,
-                    rgba(0,0,0,0.05) 100%);
-                border: 1px solid rgba(255,255,255,0.2);
-                color: rgba(255,255,255,0.8);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-                box-shadow:
-                    0 4px 12px rgba(0,0,0,0.2),
-                    inset 0 1px 1px rgba(255,255,255,0.4),
-                    inset 0 -1px 1px rgba(0,0,0,0.1);
-            }
-
-            .ios-prompt-close:hover {
-                background: linear-gradient(145deg, 
-                    rgba(255,255,255,0.3) 0%, 
-                    rgba(255,255,255,0.15) 50%);
-                transform: scale(1.1);
-            }
-
-            .ios-prompt-close:active {
-                transform: scale(0.95);
-                box-shadow:
-                    0 2px 6px rgba(0,0,0,0.2),
-                    inset 0 2px 4px rgba(0,0,0,0.15),
-                    inset 0 -1px 1px rgba(255,255,255,0.1);
-            }
-
-            /* ============================================
-               STEPS CONTAINER - Clay Card
-               ============================================ */
-            .ios-prompt-steps {
-                background: linear-gradient(145deg,
-                    rgba(255,255,255,0.12) 0%,
-                    rgba(255,255,255,0.06) 50%,
-                    rgba(0,0,0,0.05) 100%);
-                border-radius: 24px;
-                padding: 20px;
-                margin-bottom: 24px;
-                border: 1px solid rgba(255,255,255,0.15);
-                box-shadow:
-                    /* Outer depth */
-                    0 12px 32px rgba(0,0,0,0.2),
-                    0 4px 12px rgba(0,0,0,0.15),
-                    /* Inner highlight top */
-                    inset 0 2px 2px rgba(255,255,255,0.2),
-                    /* Inner shadow bottom */
-                    inset 0 -2px 2px rgba(0,0,0,0.1);
-            }
-
-            @keyframes slideInStep {
-                from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+        console.log('✅ Claymorphism styles loaded');
+    };
                 to { opacity: 1; transform: translateX(0) scale(1); }
             }
 

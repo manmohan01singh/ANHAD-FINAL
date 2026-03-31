@@ -1389,6 +1389,136 @@ body.modal-open .page {
   line-height: 1.4;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVENT TYPE SPECIFIC STYLING — Jyoti Jyot vs Celebrations
+   Version: 2.0 — Respectful memorial styling + Ring lights for celebrations
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Memorial Events (Jyoti Jyot, Shaheedi) — Respectful, somber styling */
+.event-row.memorial,
+.event-card.memorial {
+  position: relative;
+}
+
+.event-row.memorial .event-title,
+.event-card.memorial .event-title {
+  color: var(--text-primary);
+}
+
+.event-row.memorial .badge,
+.event-card.memorial .badge {
+  background: linear-gradient(135deg, rgba(60, 60, 67, 0.6) 0%, rgba(60, 60, 67, 0.8) 100%);
+  color: white;
+}
+
+/* Celebration Events (Prakash, Gurgaddi) — Ring lights effect */
+.event-row.celebration,
+.event-card.celebration {
+  position: relative;
+}
+
+.event-row.celebration::before,
+.event-card.celebration::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, 
+    var(--kesri) 0%, 
+    #FFD700 25%, 
+    var(--kesri) 50%, 
+    #FFD700 75%, 
+    var(--kesri) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  animation: ringLightRotate 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes ringLightRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* Ring light glow for celebration cards */
+.event-card.celebration {
+  box-shadow:
+    0 0 0 0.5px var(--glass-border),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    0 0 20px rgba(255, 107, 0, 0.15),
+    0 0 40px rgba(255, 215, 0, 0.1);
+}
+
+/* Celebration badge with gradient */
+.event-row.celebration .badge,
+.event-card.celebration .badge {
+  background: linear-gradient(135deg, var(--kesri) 0%, #FFD700 50%, var(--kesri) 100%);
+  background-size: 200% 200%;
+  animation: celebrationGradient 2s ease infinite;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.35);
+}
+
+@keyframes celebrationGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Homepage Gurpurab Card — Ring lights for celebrations */
+#calendarCard.celebration {
+  position: relative;
+  overflow: visible;
+}
+
+#calendarCard.celebration::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, 
+    var(--kesri) 0%, 
+    #FFD700 25%, 
+    var(--kesri) 50%, 
+    #FFD700 75%, 
+    var(--kesri) 100%);
+  background-size: 200% 200%;
+  animation: ringLightRotate 3s linear infinite;
+  opacity: 0.7;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+#calendarCard.celebration::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, 
+    var(--kesri) 0%, 
+    #FFD700 50%, 
+    var(--kesri) 100%);
+  background-size: 200% 200%;
+  animation: celebrationGradient 2s ease infinite;
+  opacity: 0.4;
+  z-index: -1;
+}
+
+/* Memorial card — subtle, respectful styling */
+#calendarCard.memorial {
+  border: 1px solid rgba(60, 60, 67, 0.2);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE ADJUSTMENTS
 ───────────────────────────────────────────────────────────────────────────── */

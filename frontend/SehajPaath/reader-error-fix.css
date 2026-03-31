@@ -1,0 +1,139 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SEHAJ PAATH READER - ERROR MESSAGE IMPROVEMENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    min-height: 400px;
+}
+
+.error-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.error-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary, #1d1d1f);
+    margin-bottom: 12px;
+    font-family: 'Noto Sans Gurmukhi', sans-serif;
+}
+
+.error-hint {
+    font-size: 16px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 32px;
+    max-width: 400px;
+}
+
+.error-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.retry-btn,
+.back-btn-error {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.retry-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.retry-btn:active {
+    transform: translateY(0);
+}
+
+.back-btn-error {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-primary, #1d1d1f);
+}
+
+.back-btn-error:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.retry-btn svg,
+.back-btn-error svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .error-text {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .error-hint {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .back-btn-error {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .back-btn-error:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .error-message {
+        padding: 40px 20px;
+    }
+    
+    .error-icon {
+        font-size: 48px;
+    }
+    
+    .error-text {
+        font-size: 18px;
+    }
+    
+    .error-hint {
+        font-size: 14px;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .retry-btn,
+    .back-btn-error {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -259,6 +259,24 @@
       .replaceAll("'", '&#039;');
   }
 
+  // FIX: Helper function to categorize events as memorial or celebration
+  function getEventCategory(type) {
+    const memorialTypes = ['shaheedi', 'historical'];
+    const celebrationTypes = ['prakash', 'gurgaddi'];
+    
+    // Check if event name contains "Jyoti Jyot" or "Shaheedi"
+    if (memorialTypes.includes(type)) {
+      return 'memorial';
+    }
+    
+    if (celebrationTypes.includes(type)) {
+      return 'celebration';
+    }
+    
+    // Default to neutral
+    return '';
+  }
+
   function nowLocalTimeHHMM() {
     const d = new Date();
     return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
@@ -564,11 +582,20 @@
       const d = e._date;
       const days = daysBetween(state.today, d);
       const row = document.createElement('div');
-      row.className = 'event-row';
+      
+      // FIX: Add event type classes for styling (memorial vs celebration)
+      const eventCategory = getEventCategory(e.type);
+      row.className = `event-row ${eventCategory}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
 
       const dotColor = e.color || TYPE_COLORS[e.type] || '#999';
+      
+      // FIX: Different badge text for memorial vs celebration events
+      const badgeText = eventCategory === 'memorial' 
+        ? (days === 0 ? 'Remembrance Today' : `${days} days`) 
+        : (days === 0 ? 'Celebrate Today' : `${days} days`);
+      
       row.innerHTML = `
         <div class="event-left">
           <div class="event-title">${escapeHtml(e.name_en || '—')}</div>
@@ -576,7 +603,7 @@
         </div>
         <div class="event-right">
           <div class="dot" style="background:${escapeHtml(dotColor)}"></div>
-          <div class="days-left">${days === 0 ? 'Today' : `${days} days`}</div>
+          <div class="days-left">${badgeText}</div>
         </div>
       `;
 
@@ -725,7 +752,10 @@
       const d = e._date;
       const days = daysBetween(state.today, d);
       const row = document.createElement('div');
-      row.className = 'event-row';
+      
+      // FIX: Add event type classes for styling (memorial vs celebration)
+      const eventCategory = getEventCategory(e.type);
+      row.className = `event-row ${eventCategory}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
 

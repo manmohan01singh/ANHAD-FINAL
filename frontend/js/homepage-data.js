@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function updateNextGurpurab() {
     const subtitleEl = document.getElementById('nextGurpurab');
     const dateEl = document.getElementById('gurpurabDate');
+    const calendarCard = document.getElementById('calendarCard');
     if (!subtitleEl || !dateEl) return;
     try {
       const response = await fetch('data/gurpurab-events-2026.json');
@@ -88,11 +89,47 @@ document.addEventListener('DOMContentLoaded', function () {
       const now = new Date();
       const todayStr = now.toLocaleDateString('en-CA');
       const todayEvent = gurpurabs.find(g => g.date.toLocaleDateString('en-CA') === todayStr);
-      if (todayEvent) { subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`; dateEl.textContent = '🎉 Celebrate!'; return; }
+      
+      // FIX: Add event type classes to calendar card for ring lights
+      if (calendarCard) {
+        calendarCard.classList.remove('celebration', 'memorial');
+        if (todayEvent) {
+          const memorialTypes = ['shaheedi', 'historical'];
+          const celebrationTypes = ['prakash', 'gurgaddi'];
+          if (memorialTypes.includes(todayEvent.type)) {
+            calendarCard.classList.add('memorial');
+          } else if (celebrationTypes.includes(todayEvent.type)) {
+            calendarCard.classList.add('celebration');
+          }
+        }
+      }
+      
+      if (todayEvent) { 
+        // FIX: Different text for memorial vs celebration
+        const memorialTypes = ['shaheedi', 'historical'];
+        if (memorialTypes.includes(todayEvent.type)) {
+          subtitleEl.textContent = `🕯️ Remembrance: ${todayEvent.name}`;
+          dateEl.textContent = '🙏 Today';
+        } else {
+          subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`;
+          dateEl.textContent = '🎉 Celebrate!';
+        }
+        return; 
+      }
+      
       const upcoming = gurpurabs.find(g => g.date >= now);
       if (upcoming) {
         const daysLeft = Math.ceil((upcoming.date - now) / 86400000);
         const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        // FIX: Add celebration class for upcoming celebration events
+        if (calendarCard) {
+          const celebrationTypes = ['prakash', 'gurgaddi'];
+          if (celebrationTypes.includes(upcoming.type)) {
+            calendarCard.classList.add('celebration');
+          }
+        }
+        
         subtitleEl.textContent = `Up Next: ${upcoming.name}`;
         dateEl.textContent = daysLeft === 0 ? '🎊 Today!' : daysLeft === 1 ? '🎊 Tomorrow!' : `${daysLeft} days • ${dateStr}`;
       } else { subtitleEl.textContent = 'View all events for 2026'; dateEl.textContent = '📅 Calendar'; }

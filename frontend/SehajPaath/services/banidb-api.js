@@ -1,23 +1,69 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * BANIDB API SERVICE - FIXED VERSION
- * Handles all API calls to BaniDB for fetching Gurbani content
+ * BANIDB API SERVICE - STANDALONE VERSION
+ * Works without backend proxy - uses direct CORS-friendly API
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 class BaniDBAPI {
     constructor() {
-        // Use backend proxy to avoid CORS issues
-        this.baseURL = '/api/banidb';
+        // Use direct API - BaniDB v2 supports CORS
+        this.baseURL = 'https://api.banidb.com/v2';
         this.cache = new Map();
-        this.cacheTimeout = 5 * 60 * 1000;
+        this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
+        this.retryAttempts = 3;
+        this.retryDelay = 1000; // 1 second
+    }
+
+    async fetchWithRetry(url, options = {}, attempt = 1) {
+        try {
+            console.log(`🌐 Fetching from BaniDB (attempt ${attempt}):`, url);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                },
+                signal: controller.signal,
+                mode: 'cors', // Explicitly enable CORS
+                ...options
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ BaniDB Response received');
+            return data;
+
+        } catch (error) {
+            console.error(`❌ BaniDB API Error (attempt ${attempt}):`, error.message);
+
+            // Retry logic
+            if (attempt < this.retryAttempts) {
+                console.log(`⏳ Retrying in ${this.retryDelay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+                return this.fetchWithRetry(url, options, attempt + 1);
+            }
+
+            // All retries failed
+            throw new Error(`Failed to fetch from BaniDB after ${this.retryAttempts} attempts: ${error.message}`);
+        }
     }
 
     async fetch(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`;
-        const cacheKey = url;
+        const cacheKey = endpoint;
 
-        // Check cache
+        // Check cache first
         if (this.cache.has(cacheKey)) {
             const cached = this.cache.get(cacheKey);
             if (Date.now() - cached.timestamp < this.cacheTimeout) {
@@ -26,47 +72,21 @@ class BaniDBAPI {
             }
         }
 
-        try {
-            console.log('🌐 Fetching from BaniDB:', url);
-            const _fetch = typeof fetchWithTimeout === 'function' ? fetchWithTimeout : fetch;
-            const response = await _fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            });
+        // Fetch with retry
+        const data = await this.fetchWithRetry(url, options);
 
-            if (!response.ok) {
-                throw new Error(`API Error: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ BaniDB Response received:', endpoint);
-
-            // Cache the response (LRU eviction: keep at most 50 entries)
-            this.cache.set(cacheKey, {
-                data,
-                timestamp: Date.now()
-            });
-            if (this.cache.size > 50) {
-                this.cache.delete(this.cache.keys().next().value);
-            }
-
-            return data;
-        } catch (error) {
-            console.error('❌ BaniDB API Error:', error.message);
-            console.error('   URL:', url);
-            console.error('   Type:', error.name);
-            if (error.message.includes('CORS')) {
-                console.error('   ⚠️ CORS issue detected - API may be blocking requests');
-            }
-            if (error.message.includes('Failed to fetch')) {
-                console.error('   ⚠️ Network error - check internet connection or API availability');
-            }
-            throw error;
+        // Cache the response (LRU eviction: keep at most 50 entries)
+        this.cache.set(cacheKey, {
+            data,
+            timestamp: Date.now()
+        });
+        
+        if (this.cache.size > 50) {
+            const firstKey = this.cache.keys().next().value;
+            this.cache.delete(firstKey);
         }
+
+        return data;
     }
 
     /**
@@ -81,13 +101,10 @@ class BaniDBAPI {
         // 1. Check IndexedDB cache first (offline-first)
         if (window.sehajPaathCache) {
             const cached = await window.sehajPaathCache.getAng(angNumber);
-            // Support both old 'verses' format and new 'lines' format
             const lines = cached?.lines || cached?.verses || [];
             if (lines.length > 0) {
                 console.log('[BaniDBAPI] ✓ Loaded from cache:', angNumber);
-                // Update history
                 window.sehajPaathCache.addToHistory(angNumber);
-                // Prefetch next 5 in background
                 this.prefetchNextAngs(angNumber);
                 return {
                     ang: angNumber,
@@ -130,7 +147,15 @@ class BaniDBAPI {
         }
 
         if (nextAngs.length > 0) {
-            window.sehajPaathCache.prefetchAngs(nextAngs);
+            // Prefetch in background without blocking
+            setTimeout(() => {
+                nextAngs.forEach(ang => {
+                    this.getAng(ang).catch(() => {
+                        // Silent fail for prefetch
+                        console.log(`Prefetch failed for Ang ${ang}`);
+                    });
+                });
+            }, 2000);
         }
     }
 
@@ -138,7 +163,7 @@ class BaniDBAPI {
      * Format Ang data - handles BaniDB v2 response structure
      */
     formatAngData(data, angNumber) {
-        console.log('📄 Formatting Ang data:', data);
+        console.log('📄 Formatting Ang data for:', angNumber);
 
         // Handle different response structures
         let pageData = [];

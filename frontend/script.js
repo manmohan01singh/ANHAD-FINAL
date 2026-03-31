@@ -39,7 +39,7 @@ const NAV_PATHS = {
     nitnem: './nitnem/indexbani.html',
     nitnemTracker: './NitnemTracker/nitnem-tracker.html',
     sehajPaath: './SehajPaath/sehaj-paath.html',
-    gurbaniKhoj: './SehajPaath/gurbani-search.html',
+    gurbaniKhoj: './GurbaniKhoj/gurbani-khoj.html',
     calendar: './Calendar/Gurupurab-Calendar.html',
     notes: './Notes/notes.html',
     reminders: './reminders/smart-reminders.html'

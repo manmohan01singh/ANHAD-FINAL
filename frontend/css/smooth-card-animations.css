@@ -1,0 +1,153 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANHAD — SMOOTH CARD FADE-IN ANIMATIONS + SKY CRACKER TOUCH EFFECTS
+   Every card fades in smoothly with staggered timing
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── SMOOTH FADE-IN FOR ALL CARDS ─────────────────────────────────────────── */
+.hero-card,
+.practice-card,
+.quick-card,
+.event-card,
+.greeting,
+.progress-inline,
+.section-header,
+.hero-carousel {
+  opacity: 0 !important;
+  transform: translateY(20px) !important;
+  animation: smoothFadeIn 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards !important;
+}
+
+@keyframes smoothFadeIn {
+  to {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+}
+
+/* Staggered delays for smooth cascade effect */
+.header { animation-delay: 0s !important; }
+.greeting { animation-delay: 0.1s !important; }
+.progress-inline { animation-delay: 0.15s !important; }
+
+.hero-carousel { animation-delay: 0.2s !important; }
+.hero-card:nth-child(1) { animation-delay: 0.25s !important; }
+.hero-card:nth-child(2) { animation-delay: 0.3s !important; }
+.hero-card:nth-child(3) { animation-delay: 0.35s !important; }
+
+.event-card { animation-delay: 0.4s !important; }
+
+.section-header:nth-of-type(1) { animation-delay: 0.45s !important; }
+.practice-card:nth-child(1) { animation-delay: 0.5s !important; }
+.practice-card:nth-child(2) { animation-delay: 0.55s !important; }
+.practice-card:nth-child(3) { animation-delay: 0.6s !important; }
+
+.section-header:nth-of-type(2) { animation-delay: 0.65s !important; }
+.quick-card:nth-child(1) { animation-delay: 0.7s !important; }
+.quick-card:nth-child(2) { animation-delay: 0.75s !important; }
+.quick-card:nth-child(3) { animation-delay: 0.8s !important; }
+.quick-card:nth-child(4) { animation-delay: 0.85s !important; }
+.quick-card:nth-child(5) { animation-delay: 0.9s !important; }
+
+/* ─── SKY CRACKER FIREWORK EFFECT ─────────────────────────────────────────── */
+.firework-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Particle burst on touch/click */
+.firework-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: particleExplode 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes particleExplode {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Ripple effect on touch */
+.touch-ripple {
+  position: fixed;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 148, 58, 0.6);
+  pointer-events: none;
+  z-index: 9998;
+  animation: rippleExpand 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes rippleExpand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    width: 300px;
+    height: 300px;
+    opacity: 0;
+  }
+}
+
+/* Flash effect on touch */
+.touch-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at var(--x) var(--y),
+    rgba(212, 148, 58, 0.3) 0%,
+    transparent 30%
+  );
+  pointer-events: none;
+  z-index: 9997;
+  animation: flashFade 0.4s ease-out forwards;
+}
+
+@keyframes flashFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ─── ENHANCED CARD HOVER EFFECTS ─────────────────────────────────────────── */
+.hero-card,
+.practice-card,
+.quick-card {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.hero-card:hover,
+.practice-card:hover,
+.quick-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(212, 148, 58, 0.2);
+}
+
+.hero-card:active,
+.practice-card:active,
+.quick-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* ─── REDUCED MOTION ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

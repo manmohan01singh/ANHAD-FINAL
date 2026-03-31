@@ -66,7 +66,7 @@
   };
 
   // RENDER_BASE kept for legacy reference; API_BASE below does smart resolution
-  const RENDER_BASE = 'http://localhost:3000';
+  const RENDER_BASE = 'https://anhad-final.onrender.com';
 
   function getAudioBase() {
     return 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
@@ -75,6 +75,9 @@
   // Smart API URL resolution for CORS and mobile apps
   const API_BASE = (() => {
     try {
+        // For Capacitor apps, always use production URL
+        if (window.Capacitor) return 'https://anhad-final.onrender.com';
+        
         const host = window.location.hostname;
         const port = window.location.port;
         if (port === '3000' || port === '3001') return '';

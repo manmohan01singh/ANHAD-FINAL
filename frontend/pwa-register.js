@@ -62,10 +62,29 @@ class PWAManager {
           orientation: 'portrait'
         });
         console.log('🔒 Capacitor orientation locked to portrait');
+        return;
       } catch (err) {
         console.warn('Capacitor orientation lock failed:', err.message);
       }
     }
+
+    // Method 3: CSS-based orientation lock (fallback)
+    // Add viewport meta tag to prevent rotation issues
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      const content = viewport.getAttribute('content');
+      if (!content.includes('orientation=portrait')) {
+        viewport.setAttribute('content', content + ', orientation=portrait');
+      }
+    }
+
+    // Method 4: Listen for orientation changes and warn user
+    window.addEventListener('orientationchange', () => {
+      if (window.innerWidth > window.innerHeight && window.innerWidth <= 1024) {
+        // Landscape mode detected on mobile/tablet
+        console.warn('⚠️ Please rotate your device to portrait mode for the best experience');
+      }
+    });
   }
 
   async init() {

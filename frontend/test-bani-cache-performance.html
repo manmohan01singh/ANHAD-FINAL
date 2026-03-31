@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bani Cache Performance Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .test-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .test-btn:active {
+            transform: translateY(0);
+        }
+
+        .test-btn.loading {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .results {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .result-item.success {
+            border-left-color: #4ade80;
+        }
+
+        .result-item.warning {
+            border-left-color: #fbbf24;
+        }
+
+        .result-item.error {
+            border-left-color: #f87171;
+        }
+
+        .result-item.info {
+            border-left-color: #60a5fa;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .clear-btn {
+            background: rgba(239, 68, 68, 0.3);
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .clear-btn:hover {
+            background: rgba(239, 68, 68, 0.5);
+        }
+
+        .speed-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Bani Cache Performance Test</h1>
+
+        <!-- Test Bani Loading -->
+        <div class="test-section">
+            <h2>Test Bani Loading Speed</h2>
+            <div class="test-grid">
+                <button class="test-btn" onclick="testBaniLoad(2, 'Japji Sahib')">
+                    📿 Japji Sahib
+                </button>
+                <button class="test-btn" onclick="testBaniLoad(31, 'Sukhmani Sahib')">
+                    🕊️ Sukhmani Sahib
+                </button>
+                <button class="test-btn" onclick="testBaniLoad(4, 'Jaap Sahib')">
+                    ⚔️ Jaap Sahib
+                </button>
+                <button class="test-btn" onclick="testBaniLoad(9, 'Chaupai Sahib')">
+                    🛡️ Chaupai Sahib
+                </button>
+                <button class="test-btn" onclick="testBaniLoad(10, 'Anand Sahib')">
+                    😊 Anand Sahib
+                </button>
+                <button class="test-btn" onclick="testBaniLoad(21, 'Rehras Sahib')">
+                    🌇 Rehras Sahib
+                </button>
+            </div>
+            <button class="test-btn" onclick="testAllBanis()" style="width: 100%;">
+                🔥 Test All Popular Banis
+            </button>
+        </div>
+
+        <!-- Test Image Loading -->
+        <div class="test-section">
+            <h2>Test Image Loading Speed</h2>
+            <div class="test-grid">
+                <button class="test-btn" onclick="testImageLoad('/assets/darbar-sahib-day.webp')">
+                    🏛️ Darbar Day
+                </button>
+                <button class="test-btn" onclick="testImageLoad('/assets/Darbar-sahib-AMRITVELA.webp')">
+                    🌅 Amritvela
+                </button>
+                <button class="test-btn" onclick="testImageLoad('/assets/darbar-sahib-evening.webp')">
+                    🌆 Evening
+                </button>
+            </div>
+        </div>
+
+        <!-- Cache Statistics -->
+        <div class="test-section">
+            <h2>Cache Statistics</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="memoryBanis">-</div>
+                    <div class="stat-label">Memory Banis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="dbBanis">-</div>
+                    <div class="stat-label">DB Banis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="memoryImages">-</div>
+                    <div class="stat-label">Memory Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="dbImages">-</div>
+                    <div class="stat-label">DB Images</div>
+                </div>
+            </div>
+            <button class="test-btn" onclick="updateStats()" style="width: 100%;">
+                🔄 Refresh Stats
+            </button>
+            <button class="clear-btn" onclick="clearAllCaches()">
+                🗑️ Clear All Caches
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div class="test-section">
+            <h2>Test Results</h2>
+            <div class="results" id="results">
+                <div class="result-item info">
+                    Ready to test! Click any button above to start.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Cache Optimizer -->
+    <script src="lib/gurbani-db.js"></script>
+    <script src="lib/bani-cache-optimizer.js"></script>
+    <script src="lib/optimized-image-loader.js"></script>
+    <script src="nitnem/js/banidb-api.js"></script>
+
+    <script>
+        const resultsEl = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result-item ${type}`;
+            div.textContent = message;
+            resultsEl.insertBefore(div, resultsEl.firstChild);
+            
+            // Keep only last 20 results
+            while (resultsEl.children.length > 20) {
+                resultsEl.removeChild(resultsEl.lastChild);
+            }
+        }
+
+        function getSpeedIndicator(ms) {
+            if (ms < 100) return '⚡ INSTANT';
+            if (ms < 500) return '🚀 FAST';
+            if (ms < 2000) return '✅ GOOD';
+            return '🐌 SLOW';
+        }
+
+        async function testBaniLoad(baniId, name) {
+            addResult(`Testing ${name} (ID: ${baniId})...`, 'info');
+            
+            const startTime = performance.now();
+            
+            try {
+                const data = await window.baniCacheOptimizer.getBani(baniId);
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                const speed = getSpeedIndicator(duration);
+                const verses = data.verses?.length || 0;
+                
+                addResult(
+                    `${name}: ${duration}ms ${speed} (${verses} verses)`,
+                    duration < 500 ? 'success' : 'warning'
+                );
+                
+                await updateStats();
+            } catch (error) {
+                addResult(`${name}: ERROR - ${error.message}`, 'error');
+            }
+        }
+
+        async function testAllBanis() {
+            const banis = [
+                { id: 2, name: 'Japji Sahib' },
+                { id: 4, name: 'Jaap Sahib' },
+                { id: 9, name: 'Chaupai Sahib' },
+                { id: 10, name: 'Anand Sahib' },
+                { id: 21, name: 'Rehras Sahib' },
+                { id: 23, name: 'Sohila Sahib' },
+                { id: 31, name: 'Sukhmani Sahib' }
+            ];
+
+            addResult('🔥 Testing all popular banis...', 'info');
+            
+            let totalTime = 0;
+            let successCount = 0;
+
+            for (const bani of banis) {
+                const startTime = performance.now();
+                try {
+                    await window.baniCacheOptimizer.getBani(bani.id);
+                    const duration = Math.round(performance.now() - startTime);
+                    totalTime += duration;
+                    successCount++;
+                    
+                    const speed = getSpeedIndicator(duration);
+                    addResult(`${bani.name}: ${duration}ms ${speed}`, 'success');
+                } catch (error) {
+                    addResult(`${bani.name}: ERROR`, 'error');
+                }
+                
+                // Small delay between requests
+                await new Promise(r => setTimeout(r, 100));
+            }
+
+            const avgTime = Math.round(totalTime / successCount);
+            addResult(
+                `✅ Complete! ${successCount}/${banis.length} banis loaded. Average: ${avgTime}ms`,
+                'success'
+            );
+            
+            await updateStats();
+        }
+
+        async function testImageLoad(url) {
+            addResult(`Testing image: ${url}...`, 'info');
+            
+            const startTime = performance.now();
+            
+            try {
+                await window.baniCacheOptimizer.preloadImage(url);
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                const speed = getSpeedIndicator(duration);
+                
+                addResult(
+                    `Image loaded: ${duration}ms ${speed}`,
+                    duration < 200 ? 'success' : 'warning'
+                );
+                
+                await updateStats();
+            } catch (error) {
+                addResult(`Image load ERROR: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateStats() {
+            try {
+                const stats = await window.baniCacheOptimizer.getCacheStats();
+                
+                document.getElementById('memoryBanis').textContent = stats.memoryBanis;
+                document.getElementById('dbBanis').textContent = stats.dbBanis;
+                document.getElementById('memoryImages').textContent = stats.memoryImages;
+                document.getElementById('dbImages').textContent = stats.dbImages;
+                
+                addResult('📊 Stats updated', 'info');
+            } catch (error) {
+                addResult('Stats update failed', 'error');
+            }
+        }
+
+        async function clearAllCaches() {
+            if (!confirm('Clear all caches? This will reset all performance gains.')) {
+                return;
+            }
+
+            addResult('🗑️ Clearing all caches...', 'warning');
+            
+            try {
+                await window.baniCacheOptimizer.clearAllCaches();
+                await updateStats();
+                addResult('✅ All caches cleared!', 'success');
+            } catch (error) {
+                addResult(`Clear failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-update stats on load
+        window.addEventListener('load', () => {
+            setTimeout(updateStats, 1000);
+        });
+
+        // Check if cache optimizer loaded
+        if (!window.baniCacheOptimizer) {
+            addResult('❌ Cache optimizer not loaded!', 'error');
+        } else {
+            addResult('✅ Cache optimizer ready', 'success');
+        }
+    </script>
+</body>
+</html>

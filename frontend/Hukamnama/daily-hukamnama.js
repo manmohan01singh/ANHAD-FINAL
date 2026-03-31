@@ -833,21 +833,31 @@ const UIController = {
 
         // English date
         const englishFormatted = Utils.formatEnglishDate(date);
-        englishDateEl.querySelector('.date-value').textContent = englishFormatted;
+        if (englishDateEl) {
+            englishDateEl.textContent = englishFormatted;
+        }
 
         // Nanakshahi date
         const nanakshahi = Utils.getNanakshahiDate(date);
         const gurmukhiDay = Utils.toGurmukhiNumerals(nanakshahi.day);
         const gurmukhiYear = Utils.toGurmukhiNumerals(nanakshahi.year);
-        nanakshahiDateEl.querySelector('.date-value').textContent = `${gurmukhiDay} ${nanakshahi.month} ${gurmukhiYear}`;
+        if (nanakshahiDateEl) {
+            nanakshahiDateEl.textContent = `${gurmukhiDay} ${nanakshahi.month} ${gurmukhiYear}`;
+        }
 
         // Update date picker
         const dateStr = State.formatDateKey(date);
-        DOM.get('datePicker').value = dateStr;
+        const datePickerEl = DOM.get('datePicker');
+        if (datePickerEl) {
+            datePickerEl.value = dateStr;
+        }
 
         // Update label
         const relativeLabel = Utils.getRelativeDateLabel(date);
-        DOM.get('selectedDateLabel').textContent = relativeLabel || Utils.formatEnglishDate(date);
+        const selectedDateLabelEl = DOM.get('selectedDateLabel');
+        if (selectedDateLabelEl) {
+            selectedDateLabelEl.textContent = relativeLabel || Utils.formatEnglishDate(date);
+        }
     },
 
     // Update metadata display
@@ -1824,23 +1834,32 @@ const EventHandlers = {
     // Action buttons
     bindActionEvents() {
         // Share
-        DOM.get('shareBtn').addEventListener('click', () => {
-            Utils.hapticFeedback(DOM.get('shareBtn'));
-            ActionSheetController.open([
-                { label: 'Share as Text', onSelect: () => HukamnamaController.shareAsText() },
-                { label: 'Share as Image', onSelect: () => ShareImageController.shareAsImage() }
-            ]);
-        });
+        const shareBtn = DOM.get('shareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => {
+                Utils.hapticFeedback(shareBtn);
+                ActionSheetController.open([
+                    { label: 'Share as Text', onSelect: () => HukamnamaController.shareAsText() },
+                    { label: 'Share as Image', onSelect: () => ShareImageController.shareAsImage() }
+                ]);
+            });
+        }
 
         // Copy
-        DOM.get('copyBtn').addEventListener('click', () => {
-            HukamnamaController.copy();
-        });
+        const copyBtn = DOM.get('copyBtn');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                HukamnamaController.copy();
+            });
+        }
 
         // Save/Favorite
-        DOM.get('saveBtn').addEventListener('click', () => {
-            HukamnamaController.save();
-        });
+        const saveBtn = DOM.get('saveBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                HukamnamaController.save();
+            });
+        }
 
         // Reading mode
         const readModeBtn = DOM.get('readModeBtn');

@@ -212,6 +212,14 @@ class NaamAbhyas {
         this.scheduleManager = null;
         this.ritualEngine = null; // Sacred micro-commitment ritual system
         this.disciplineMetrics = null; // Product-minded KPI tracking
+
+        // SAFETY: Force hide loading screen after 10 seconds no matter what
+        setTimeout(() => {
+            if (!this.isInitialized) {
+                console.warn('⚠️ Force hiding loading screen after timeout');
+                this.hideLoadingScreen();
+            }
+        }, 10000);
     }
 
     /* ═════════════════════════════════════════════════════════════════════════
@@ -222,47 +230,86 @@ class NaamAbhyas {
         try {
             console.log('🙏 Initializing Naam Abhyas...');
 
-            // Initialize components
-            this.initializeComponents();
+            // Initialize components with error handling
+            try {
+                this.initializeComponents();
+            } catch (e) {
+                console.error('❌ Component initialization failed:', e);
+                this.showToast('Some features may not work properly', 'warning');
+                // Continue anyway - don't block the app
+            }
 
             // Bind event listeners
-            this.bindEvents();
+            try {
+                this.bindEvents();
+            } catch (e) {
+                console.error('❌ Event binding failed:', e);
+            }
 
             // Load initial state
-            this.loadInitialState();
+            try {
+                this.loadInitialState();
+            } catch (e) {
+                console.error('❌ State loading failed:', e);
+            }
 
             // Initialize engines
-            this.themeEngine = new NaamAbhyasThemeEngine();
-            this.scheduleManager = new ScheduleManager(this);
+            try {
+                this.themeEngine = new NaamAbhyasThemeEngine();
+                this.scheduleManager = new ScheduleManager(this);
+            } catch (e) {
+                console.error('❌ Engine initialization failed:', e);
+            }
 
             // Apply theme (initial sync)
-            this.themeEngine.applyTheme(this.config.theme);
+            try {
+                if (this.themeEngine) {
+                    this.themeEngine.applyTheme(this.config.theme);
+                }
+            } catch (e) {
+                console.error('❌ Theme application failed:', e);
+            }
 
             // Initialize UI
-            this.updateUI();
+            try {
+                this.updateUI();
+            } catch (e) {
+                console.error('❌ UI update failed:', e);
+            }
 
             // If enabled, start the system
             if (this.config.enabled) {
-                await this.enable();
+                try {
+                    await this.enable();
+                } catch (e) {
+                    console.error('❌ Enable failed:', e);
+                }
             }
 
-            // Hide loading screen
+            // ALWAYS hide loading screen - even if there were errors
             this.hideLoadingScreen();
-
-            // NOTE: Welcome modal removed from here - it will show via triggerSessionAlert
-            // when an actual session time is reached (notification -> popup -> timer flow)
 
             this.isInitialized = true;
             console.log('✅ Naam Abhyas initialized successfully');
 
             // Setup Service Worker message listener for background notifications
-            this.setupServiceWorkerListener();
+            try {
+                this.setupServiceWorkerListener();
+            } catch (e) {
+                console.error('❌ SW listener setup failed:', e);
+            }
 
-            // Check for auto-start from notification (when user clicks "Start Now" on a notification)
-            this.checkAutoStart();
+            // Check for auto-start from notification
+            try {
+                this.checkAutoStart();
+            } catch (e) {
+                console.error('❌ Auto-start check failed:', e);
+            }
 
         } catch (error) {
-            console.error('❌ Failed to initialize Naam Abhyas:', error);
+            console.error('❌ CRITICAL: Failed to initialize Naam Abhyas:', error);
+            // ALWAYS hide loading screen even on critical failure
+            this.hideLoadingScreen();
             this.showToast('Failed to initialize. Please refresh.', 'error');
         }
     }
@@ -801,16 +848,28 @@ class NaamAbhyas {
     ═════════════════════════════════════════════════════════════════════════ */
 
     async enable() {
+        // Request notification permission FIRST before enabling
+        if ('Notification' in window && Notification.permission === 'default') {
+            console.log('[NaamAbhyas] 🔔 Requesting notification permission...');
+            const permission = await Notification.requestPermission();
+            
+            if (permission !== 'granted') {
+                this.showToast('⚠️ Notifications blocked. Alarms may not work when app is closed.', 'warning');
+                console.warn('[NaamAbhyas] ⚠️ Notification permission denied');
+                // Continue anyway - user can still use the app
+            } else {
+                console.log('[NaamAbhyas] ✅ Notification permission granted');
+            }
+        }
+
         this.config.enabled = true;
         this.saveConfig();
 
         // Update UI state
         document.body.classList.remove('disabled-state');
-        document.getElementById('toggleStatusText').textContent = 'Active';
-
-        // Request notification permission
-        if ('Notification' in window && Notification.permission !== 'granted') {
-            await Notification.requestPermission();
+        const statusText = document.getElementById('toggleStatusText');
+        if (statusText) {
+            statusText.textContent = 'Active';
         }
 
         // Generate schedule for today
@@ -826,7 +885,7 @@ class NaamAbhyas {
         this.scheduleUpcomingNotifications();
 
         // ═══ REGISTER PERIODIC BACKGROUND SYNC for reliable background alarms ═══
-        this.registerPeriodicBackgroundSync();
+        await this.registerPeriodicBackgroundSync();
 
         // Update all UI
         this.updateUI();
@@ -963,7 +1022,22 @@ class NaamAbhyas {
             // 2. SERVICE WORKER (Web) - Works when browser tab is closed but browser is running
             this.scheduleViaSW(notificationPayload, session.startTime);
 
-            // 3. ELECTRON DESKTOP - Works when minimized to system tray!
+            // 3. FALLBACK SYSTEM - Works without Service Worker (setTimeout + localStorage)
+            if (window.fallbackAlarmSystem) {
+                window.fallbackAlarmSystem.scheduleAlarm({
+                    id: notificationId,
+                    title: title,
+                    body: body,
+                    scheduledTime: scheduledTime.getTime(),
+                    tag: notificationPayload.tag,
+                    icon: '/assets/icons/icon-192x192.png',
+                    badge: '/assets/icons/icon-72x72.png',
+                    data: notificationPayload.data
+                });
+                console.log(`[NaamAbhyas] ✅ FALLBACK alarm scheduled for ${session.startTime} (no SW needed!)`);
+            }
+
+            // 4. ELECTRON DESKTOP - Works when minimized to system tray!
             if (window.electronAPI?.isElectron) {
                 window.electronAPI.scheduleNotification({
                     id: notificationId,

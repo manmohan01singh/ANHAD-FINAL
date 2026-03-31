@@ -67,7 +67,7 @@
         // Preserve search context for back navigation
         const searchQuery = params.get('q');
         if (searchQuery) {
-            elements.backLink.href = `gurbani-search.html?q=${encodeURIComponent(searchQuery)}`;
+            elements.backLink.href = `../GurbaniKhoj/gurbani-khoj.html?q=${encodeURIComponent(searchQuery)}`;
             state.searchQuery = searchQuery;
         }
 

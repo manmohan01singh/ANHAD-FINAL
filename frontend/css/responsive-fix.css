@@ -1,0 +1,168 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE FIX - Prevent Screen Overflow
+   Ensures content fits properly on all screen sizes
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Prevent horizontal overflow */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    position: relative;
+}
+
+/* Ensure all containers respect viewport width */
+* {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix for images and media */
+img, video, iframe, embed, object {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Prevent text overflow */
+p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Fix for buttons and controls */
+button, .btn, .button {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ensure modals and overlays fit screen */
+.modal, .overlay, .popup {
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: auto;
+}
+
+/* Fix for cards and containers */
+.card, .container, .wrapper {
+    max-width: 100%;
+    padding-left: max(env(safe-area-inset-left), 16px);
+    padding-right: max(env(safe-area-inset-right), 16px);
+}
+
+/* Responsive viewport units */
+.full-height {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+/* Fix for flex containers */
+.flex, .flex-row, .flex-col {
+    min-width: 0; /* Prevent flex items from overflowing */
+}
+
+/* Fix for grid containers */
+.grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+    /* Reduce padding on mobile */
+    .container, .wrapper {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    /* Stack elements vertically on mobile */
+    .row, .flex-row {
+        flex-direction: column;
+    }
+    
+    /* Full width buttons on mobile */
+    .btn-group, .button-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group > *, .button-group > * {
+        width: 100%;
+        margin: 4px 0;
+    }
+}
+
+/* Tablet-specific fixes */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+}
+
+/* Landscape orientation fixes */
+@media (orientation: landscape) and (max-height: 600px) {
+    /* Reduce vertical spacing in landscape */
+    .hero, .header {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+    
+    /* Compact mode for landscape */
+    .card {
+        margin: 8px 0;
+    }
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-top)) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+    
+    .header {
+        padding-top: calc(env(safe-area-inset-top) + 8px);
+    }
+    
+    .footer {
+        padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
+    }
+}
+
+/* Fix for icon buttons */
+.icon-btn, .header-action, .action-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+/* Ensure touch targets are large enough */
+button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Fix for share and heart icons */
+.share-btn, .favorite-btn, .heart-btn {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, select, textarea {
+    font-size: 16px !important;
+}
+
+/* Fix for sticky elements */
+.sticky, .fixed {
+    position: -webkit-sticky;
+    position: sticky;
+    max-width: 100vw;
+}

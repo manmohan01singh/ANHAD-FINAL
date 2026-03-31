@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANHAD - Test Animations (No Redirect)</title>
+  
+  <script>
+    // Set flags to prevent redirect
+    localStorage.setItem('anhad_welcome_seen', 'true');
+    sessionStorage.setItem('anhad_session_active', 'true');
+    
+    // Redirect to main index
+    window.location.href = 'index.html';
+  </script>
+</head>
+<body>
+  <p>Setting up... redirecting to main page...</p>
+</body>
+</html>

@@ -68,6 +68,8 @@ const STATIC_FILES = [
   // Offline-First Gurbani Cache Modules
   '/lib/gurbani-local-db.js',
   '/lib/gurbani-download-manager.js',
+  '/lib/bani-cache-optimizer.js',
+  '/lib/optimized-image-loader.js',
   '/lib/sehaj-paath-cache.js',
   '/lib/hukamnama-cache.js',
 

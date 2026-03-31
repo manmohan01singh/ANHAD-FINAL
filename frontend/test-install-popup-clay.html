@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Install Popup - Extreme Claymorphism</title>
+    <link rel="stylesheet" href="lib/ios-android-notifications-clay.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .test-container {
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        p {
+            font-size: 16px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .info h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .info ul {
+            list-style: none;
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .info li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info li:last-child {
+            border-bottom: none;
+        }
+
+        .info li::before {
+            content: '✨ ';
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎨 Extreme Claymorphism Popup</h1>
+        <p>Test the completely renovated install popup</p>
+        
+        <button class="btn" onclick="showPopup()">Show Install Popup</button>
+
+        <div class="info">
+            <h3>✨ Features</h3>
+            <ul>
+                <li>Pure 3D claymorphism design</li>
+                <li>Soft tactile shadows</li>
+                <li>Glossy highlights</li>
+                <li>Gold accent badges</li>
+                <li>Smooth animations</li>
+                <li>Responsive design</li>
+                <li>Touch-optimized</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showPopup() {
+            // Remove existing popup
+            document.querySelector('.ios-install-prompt')?.remove();
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const step1Content = isIOS 
+                ? `<p>Tap the <strong style="color:#007AFF">Share</strong> button</p>
+                   <div class="ios-share-icon" style="color:#007AFF">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                           <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                           <polyline points="16 6 12 2 8 6"/>
+                           <line x1="12" y1="2" x2="12" y2="15"/>
+                       </svg>
+                   </div>`
+                : `<p>Tap the <strong>Browser Menu</strong> (3 dots)</p>
+                   <div class="ios-share-icon">
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                           <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
+                       </svg>
+                   </div>`;
+
+            const prompt = document.createElement('div');
+            prompt.className = 'ios-install-prompt';
+            prompt.innerHTML = `
+                <div class="ios-prompt-backdrop"></div>
+                <div class="ios-prompt-sheet">
+                    <div class="ios-prompt-header">
+                        <div class="ios-prompt-icon">
+                            <img src="assets/apple-touch-icon.png" alt="ANHAD" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23E8A838%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%22 y=%2255%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22white%22%3EW%3C/text%3E%3C/svg%3E'">
+                        </div>
+                        <div class="ios-prompt-title">
+                            <h3>Install ANHAD</h3>
+                            <p>Get notifications even when app is closed</p>
+                        </div>
+                        <button class="ios-prompt-close" aria-label="Close">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="ios-prompt-steps">
+                        <div class="ios-step" style="animation-delay: 0.1s">
+                            <div class="ios-step-num">1</div>
+                            <div class="ios-step-content">
+                                ${step1Content}
+                            </div>
+                        </div>
+                        <div class="ios-step" style="animation-delay: 0.2s">
+                            <div class="ios-step-num">2</div>
+                            <div class="ios-step-content">
+                                <p>Scroll down and tap <strong>"Add to Home Screen"</strong></p>
+                                <div class="ios-add-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="4"/>
+                                        <path d="M12 8v8M8 12h8"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ios-step" style="animation-delay: 0.3s">
+                            <div class="ios-step-num">3</div>
+                            <div class="ios-step-content">
+                                <p>Tap <strong>"Add"</strong> to install</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ios-prompt-benefits">
+                        <div class="ios-benefit">
+                            <span class="ios-benefit-icon">🔔</span>
+                            <span>Daily reminders for Nitnem & Rehras</span>
+                        </div>
+                        <div class="ios-benefit">
+                            <span class="ios-benefit-icon">📴</span>
+                            <span>Works offline</span>
+                        </div>
+                        <div class="ios-benefit">
+                            <span class="ios-benefit-icon">⚡</span>
+                            <span>Faster loading</span>
+                        </div>
+                    </div>
+
+                    <button class="ios-prompt-dismiss">Maybe Later</button>
+                </div>
+            `;
+
+            document.body.appendChild(prompt);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                prompt.classList.add('visible');
+            });
+
+            // Event handlers
+            const closePopup = () => {
+                prompt.classList.remove('visible');
+                setTimeout(() => prompt.remove(), 400);
+            };
+
+            prompt.querySelector('.ios-prompt-close').onclick = closePopup;
+            prompt.querySelector('.ios-prompt-dismiss').onclick = closePopup;
+            prompt.querySelector('.ios-prompt-backdrop').onclick = closePopup;
+        }
+
+        // Auto-show after 1 second for demo
+        setTimeout(showPopup, 1000);
+    </script>
+</body>
+</html>
