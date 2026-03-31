@@ -16,8 +16,10 @@ class SettingsPanel {
     }
 
     getDefaults() {
+        // Sync with global theme by default
+        const globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'light';
         return {
-            theme: 'gradient',
+            theme: globalTheme, // Use global theme (light or dark only)
             fontSize: 22,
             lineSpacing: 2.2,
             displayMode: 'padchhed',
@@ -50,7 +52,12 @@ class SettingsPanel {
     applyChange(key, value) {
         switch (key) {
             case 'theme':
-                document.documentElement.dataset.theme = value;
+                // Sync with global theme system
+                if (window.AnhadTheme) {
+                    window.AnhadTheme.set(value);
+                } else {
+                    document.documentElement.dataset.theme = value;
+                }
                 break;
             case 'fontSize':
                 // Apply to CSS variable
@@ -121,9 +128,10 @@ class SettingsPanel {
                     <div class="setting-row">
                         <span class="setting-label">Theme</span>
                         <div class="theme-switcher">
-                            ${['light', 'dark', 'sepia', 'gradient'].map(t => `
+                            ${['light', 'dark'].map(t => `
                                 <button class="theme-option ${this.get('theme') === t ? 'active' : ''}" data-theme="${t}">
-                                    <span class="theme-icon">${{ light: '☀️', dark: '🌙', sepia: '📜', gradient: '🌈' }[t]}</span>
+                                    <span class="theme-icon">${{ light: '☀️', dark: '🌙' }[t]}</span>
+                                    <span class="theme-label">${t.charAt(0).toUpperCase() + t.slice(1)}</span>
                                 </button>
                             `).join('')}
                         </div>
@@ -236,12 +244,24 @@ class SettingsPanel {
     }
 
     attachListeners(container) {
-        // Theme switcher
+        // Theme switcher - sync with global theme
         container.querySelectorAll('.theme-option').forEach(btn => {
             btn.addEventListener('click', () => {
                 container.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                this.set('theme', btn.dataset.theme);
+                const theme = btn.dataset.theme;
+                this.set('theme', theme);
+                
+                // Show toast notification
+                const toast = document.createElement('div');
+                toast.className = 'theme-toast';
+                toast.textContent = `Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 10);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
             });
         });
 

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Debug Tool</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { margin-bottom: 10px; font-size: 2rem; }
+        .subtitle { opacity: 0.9; margin-bottom: 30px; }
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .section h2 { margin-bottom: 15px; font-size: 1.4rem; }
+        .result {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+        .success { background: rgba(76, 175, 80, 0.3); border: 1px solid rgba(76, 175, 80, 0.5); }
+        .error { background: rgba(244, 67, 54, 0.3); border: 1px solid rgba(244, 67, 54, 0.5); }
+        .info { background: rgba(33, 150, 243, 0.3); border: 1px solid rgba(33, 150, 243, 0.5); }
+        .warning { background: rgba(255, 152, 0, 0.3); border: 1px solid rgba(255, 152, 0, 0.5); }
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #4CAF50; border-color: #4CAF50; }
+        .btn-danger { background: #f44336; border-color: #f44336; }
+        .progress { width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { height: 100%; background: #4CAF50; width: 0%; transition: width 0.3s; }
+        code { background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔊 Audio Debug Tool</h1>
+        <p class="subtitle">Comprehensive audio system diagnostics</p>
+
+        <!-- System Info -->
+        <div class="section">
+            <h2>1️⃣ System Information</h2>
+            <div id="systemInfo"></div>
+        </div>
+
+        <!-- Server Check -->
+        <div class="section">
+            <h2>2️⃣ Server Status</h2>
+            <div id="serverStatus"></div>
+        </div>
+
+        <!-- Audio Files Check -->
+        <div class="section">
+            <h2>3️⃣ Audio Files Accessibility</h2>
+            <button onclick="testAllAudioFiles()">Test All Audio Files</button>
+            <div class="progress" id="audioProgress" style="display:none">
+                <div class="progress-bar" id="audioProgressBar"></div>
+            </div>
+            <div id="audioResults"></div>
+        </div>
+
+        <!-- Audio Playback Test -->
+        <div class="section">
+            <h2>4️⃣ Audio Playback Test</h2>
+            <p>Click a button to test if audio can play:</p>
+            <button onclick="testPlayback('Audio/audio1.mp3')">Test Audio 1</button>
+            <button onclick="testPlayback('Audio/audio2.mp3')">Test Audio 2</button>
+            <button onclick="testPlayback('Audio/audio3.mpeg')">Test Audio 3</button>
+            <button class="btn-danger" onclick="stopPlayback()">Stop</button>
+            <div id="playbackResults"></div>
+        </div>
+
+        <!-- Browser Capabilities -->
+        <div class="section">
+            <h2>5️⃣ Browser Capabilities</h2>
+            <div id="browserCaps"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="section">
+            <h2>6️⃣ Recommendations</h2>
+            <div id="recommendations"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentAudio = null;
+
+        // 1. System Information
+        function showSystemInfo() {
+            const info = document.getElementById('systemInfo');
+            const url = window.location.href;
+            const protocol = window.location.protocol;
+            const isLocalServer = protocol === 'http:' && window.location.hostname === 'localhost';
+            
+            let html = '<div class="result info">';
+            html += `<strong>Current URL:</strong> ${url}<br>`;
+            html += `<strong>Protocol:</strong> ${protocol}<br>`;
+            html += `<strong>Hostname:</strong> ${window.location.hostname}<br>`;
+            html += `<strong>Port:</strong> ${window.location.port || 'default'}<br>`;
+            html += '</div>';
+
+            if (isLocalServer) {
+                html += '<div class="result success">✅ Using local server - GOOD!</div>';
+            } else if (protocol === 'file:') {
+                html += '<div class="result error">❌ Using file:// protocol - This is the problem!<br>';
+                html += 'You need to use a local server. Double-click START_LOCAL_SERVER.bat</div>';
+            } else {
+                html += '<div class="result warning">⚠️ Unknown protocol: ' + protocol + '</div>';
+            }
+
+            info.innerHTML = html;
+        }
+
+        // 2. Server Status
+        function checkServerStatus() {
+            const status = document.getElementById('serverStatus');
+            const protocol = window.location.protocol;
+
+            if (protocol === 'http:' || protocol === 'https:') {
+                status.innerHTML = '<div class="result success">✅ Server is running</div>';
+            } else {
+                status.innerHTML = '<div class="result error">❌ No server detected<br>Please start START_LOCAL_SERVER.bat</div>';
+            }
+        }
+
+        // 3. Test All Audio Files
+        async function testAllAudioFiles() {
+            const results = document.getElementById('audioResults');
+            const progress = document.getElementById('audioProgress');
+            const progressBar = document.getElementById('audioProgressBar');
+            
+            progress.style.display = 'block';
+            results.innerHTML = '<div class="result info">Testing audio files...</div>';
+
+            const audioFiles = [
+                'Audio/audio1.mp3',
+                'Audio/audio2.mp3',
+                'Audio/audio3.mpeg',
+                'Audio/audio4.mpeg',
+                'Audio/audio5.mpeg',
+                'Audio/audio6.mpeg'
+            ];
+
+            let html = '';
+            let successCount = 0;
+
+            for (let i = 0; i < audioFiles.length; i++) {
+                const file = audioFiles[i];
+                const result = await testAudioFile(file);
+                
+                if (result.success) {
+                    html += `<div class="result success">✅ ${file} - OK</div>`;
+                    successCount++;
+                } else {
+                    html += `<div class="result error">❌ ${file} - ${result.error}</div>`;
+                }
+
+                progressBar.style.width = ((i + 1) / audioFiles.length * 100) + '%';
+            }
+
+            html += `<div class="result ${successCount === audioFiles.length ? 'success' : 'warning'}">`;
+            html += `<strong>Result: ${successCount}/${audioFiles.length} files accessible</strong>`;
+            html += '</div>';
+
+            results.innerHTML = html;
+            progress.style.display = 'none';
+        }
+
+        function testAudioFile(path) {
+            return new Promise((resolve) => {
+                const audio = new Audio();
+                const timeout = setTimeout(() => {
+                    resolve({ success: false, error: 'Timeout' });
+                }, 3000);
+
+                audio.addEventListener('canplaythrough', () => {
+                    clearTimeout(timeout);
+                    resolve({ success: true });
+                }, { once: true });
+
+                audio.addEventListener('error', (e) => {
+                    clearTimeout(timeout);
+                    resolve({ success: false, error: e.type });
+                }, { once: true });
+
+                audio.src = path;
+                audio.load();
+            });
+        }
+
+        // 4. Test Playback
+        function testPlayback(path) {
+            const results = document.getElementById('playbackResults');
+            
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            results.innerHTML = `<div class="result info">🔊 Attempting to play: ${path}</div>`;
+
+            currentAudio = new Audio(path);
+            currentAudio.volume = 0.5;
+
+            currentAudio.play()
+                .then(() => {
+                    results.innerHTML = `<div class="result success">✅ Playing: ${path}<br>Audio is working!</div>`;
+                })
+                .catch((error) => {
+                    results.innerHTML = `<div class="result error">❌ Failed to play: ${path}<br>Error: ${error.message}<br><br>`;
+                    results.innerHTML += `<strong>Common causes:</strong><br>`;
+                    results.innerHTML += `1. File doesn't exist at this path<br>`;
+                    results.innerHTML += `2. Browser autoplay policy (click page first)<br>`;
+                    results.innerHTML += `3. Using file:// protocol instead of http://</div>`;
+                });
+        }
+
+        function stopPlayback() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.getElementById('playbackResults').innerHTML = '<div class="result info">⏹️ Stopped</div>';
+            }
+        }
+
+        // 5. Browser Capabilities
+        function checkBrowserCapabilities() {
+            const caps = document.getElementById('browserCaps');
+            let html = '<div class="result info">';
+            
+            html += `<strong>Audio Support:</strong> ${('Audio' in window) ? '✅ Yes' : '❌ No'}<br>`;
+            html += `<strong>Notification Support:</strong> ${('Notification' in window) ? '✅ Yes' : '❌ No'}<br>`;
+            html += `<strong>Service Worker:</strong> ${('serviceWorker' in navigator) ? '✅ Yes' : '❌ No'}<br>`;
+            html += `<strong>Vibration API:</strong> ${('vibrate' in navigator) ? '✅ Yes' : '❌ No'}<br>`;
+            html += `<strong>User Agent:</strong> ${navigator.userAgent}<br>`;
+            
+            html += '</div>';
+            caps.innerHTML = html;
+        }
+
+        // 6. Recommendations
+        function showRecommendations() {
+            const recs = document.getElementById('recommendations');
+            const protocol = window.location.protocol;
+            
+            let html = '';
+
+            if (protocol === 'file:') {
+                html += '<div class="result error">';
+                html += '<strong>🚨 ACTION REQUIRED:</strong><br><br>';
+                html += '1. Close this page<br>';
+                html += '2. Double-click <code>START_LOCAL_SERVER.bat</code><br>';
+                html += '3. Browser will open to <code>http://localhost:8000/...</code><br>';
+                html += '4. Navigate to this debug page again<br>';
+                html += '5. Audio will work!<br>';
+                html += '</div>';
+            } else {
+                html += '<div class="result success">';
+                html += '<strong>✅ You\'re using a local server!</strong><br><br>';
+                html += 'If audio still doesn\'t work:<br>';
+                html += '1. Check if audio files exist in <code>frontend/Audio/</code><br>';
+                html += '2. Try clicking the page before playing audio (autoplay policy)<br>';
+                html += '3. Check browser console (F12) for errors<br>';
+                html += '</div>';
+            }
+
+            recs.innerHTML = html;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            showSystemInfo();
+            checkServerStatus();
+            checkBrowserCapabilities();
+            showRecommendations();
+            
+            // Auto-test audio files after 1 second
+            setTimeout(() => {
+                testAllAudioFiles();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

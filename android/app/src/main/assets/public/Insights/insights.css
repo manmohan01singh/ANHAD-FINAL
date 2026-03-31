@@ -4,10 +4,10 @@
 
 :root {
     /* Color Palette */
-    --bg-primary: #0d0d12;
-    --bg-secondary: #1a1a24;
-    --bg-card: rgba(255, 255, 255, 0.05);
-    --bg-glass: rgba(255, 255, 255, 0.08);
+    --bg-primary: #1C1C1F;
+    --bg-secondary: #1C1C1F;
+    --bg-card: var(--bg-primary);
+    --bg-glass: var(--bg-primary);
 
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
@@ -43,26 +43,65 @@
     /* Safe Areas */
     --safe-top: env(safe-area-inset-top, 20px);
     --safe-bottom: env(safe-area-inset-bottom, 20px);
+
+    /* ═══ EXTREME CLAYMORPHISM SHADOWS ═══ */
+    /* Dark Theme Clay */
+    --clay-outer: 20px 20px 60px rgba(0, 0, 0, 0.6), 
+                   -20px -20px 60px rgba(255, 255, 255, 0.05),
+                   inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --clay-inner: inset 6px 6px 12px rgba(0, 0, 0, 0.5), 
+                  inset -6px -6px 12px rgba(255, 255, 255, 0.08);
+    --clay-outer-sm: 10px 10px 30px rgba(0, 0, 0, 0.5), 
+                      -10px -10px 30px rgba(255, 255, 255, 0.05);
+    --clay-inner-sm: inset 4px 4px 8px rgba(0, 0, 0, 0.5), 
+                      inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+    
+    /* Color-accented clay shadows */
+    --clay-gold: 0 12px 40px rgba(232, 168, 56, 0.3), 
+                 0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-mint: 0 12px 40px rgba(110, 231, 183, 0.25), 
+                  0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-blue: 0 12px 40px rgba(96, 165, 250, 0.25), 
+                  0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-purple: 0 12px 40px rgba(167, 139, 250, 0.25), 
+                    0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-red: 0 12px 40px rgba(248, 113, 113, 0.25), 
+                 0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-pink: 0 12px 40px rgba(244, 114, 182, 0.25), 
+                  0 4px 12px rgba(0, 0, 0, 0.3);
+    --clay-orange: 0 12px 40px rgba(251, 146, 60, 0.25), 
+                    0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Light Theme - works with global-theme.js */
 .light-mode,
 html:not(.dark-mode) {
-    --bg-primary: #f5f5f7;
-    --bg-secondary: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.9);
-    --bg-glass: rgba(255, 255, 255, 0.8);
+    --bg-primary: #F5F0EB;
+    --bg-secondary: #F5F0EB;
+    --bg-card: var(--bg-primary);
+    --bg-glass: var(--bg-primary);
     --text-primary: #1d1d1f;
     --text-secondary: rgba(0, 0, 0, 0.6);
     --text-tertiary: rgba(0, 0, 0, 0.4);
+
+    /* Light Theme Clay */
+    --clay-outer: 12px 12px 30px rgba(0, 0, 0, 0.12), 
+                   -12px -12px 30px rgba(255, 255, 255, 0.95),
+                   inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    --clay-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.08), 
+                  inset -4px -4px 8px rgba(255, 255, 255, 1);
+    --clay-outer-sm: 6px 6px 16px rgba(0, 0, 0, 0.1), 
+                      -6px -6px 16px rgba(255, 255, 255, 0.95);
+    --clay-inner-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.08), 
+                      inset -3px -3px 6px rgba(255, 255, 255, 1);
 }
 
 /* Dark Theme - needs html.dark-mode */
 html.dark-mode {
-    --bg-primary: #0d0d12;
-    --bg-secondary: #1a1a24;
-    --bg-card: rgba(255, 255, 255, 0.05);
-    --bg-glass: rgba(255, 255, 255, 0.08);
+    --bg-primary: #1C1C1F;
+    --bg-secondary: #1C1C1F;
+    --bg-card: var(--bg-primary);
+    --bg-glass: var(--bg-primary);
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --text-tertiary: rgba(255, 255, 255, 0.5);
@@ -121,14 +160,20 @@ body {
     justify-content: space-between;
     padding: var(--spacing-sm) var(--spacing-lg);
     padding-top: calc(var(--safe-top));
+    background: transparent;
+    border-bottom: none;
+    transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.insights-header.scrolled {
     background: rgba(13, 13, 18, 0.7);
     backdrop-filter: blur(40px) saturate(180%);
     -webkit-backdrop-filter: blur(40px) saturate(180%);
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
 }
 
-.light-mode .insights-header,
-html:not(.dark-mode) .insights-header {
+.light-mode .insights-header.scrolled,
+html:not(.dark-mode) .insights-header.scrolled {
     background: rgba(245, 245, 247, 0.75);
     border-bottom-color: rgba(0, 0, 0, 0.06);
 }
@@ -141,11 +186,11 @@ html:not(.dark-mode) .insights-header {
 
 .back-btn,
 .theme-toggle-btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border: none;
     border-radius: var(--radius-full);
-    background: var(--bg-glass);
+    background: var(--bg-primary);
     color: var(--text-primary);
     font-size: 16px;
     cursor: pointer;
@@ -153,16 +198,29 @@ html:not(.dark-mode) .insights-header {
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    /* Extreme Claymorphism */
+    box-shadow: var(--clay-outer-sm);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    z-index: 101;
+    pointer-events: auto;
 }
 
 .back-btn:active,
 .theme-toggle-btn:active {
+    box-shadow: var(--clay-inner-sm);
     transform: scale(0.95);
 }
 
 .theme-toggle-btn:hover {
-    background: var(--gold-gradient);
-    color: #fff;
+    box-shadow: var(--clay-gold), var(--clay-outer-sm);
+    color: var(--gold-400);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+    box-shadow: var(--clay-inner-sm);
+    transform: scale(0.95);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -170,13 +228,11 @@ html:not(.dark-mode) .insights-header {
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .glass-card {
-    background: var(--bg-card);
+    background: var(--bg-primary);
     border-radius: var(--radius-xl);
-    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    border: none;
     padding: var(--spacing-lg);
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: var(--clay-outer);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -184,50 +240,141 @@ html:not(.dark-mode) .insights-header {
 
 .light-mode .glass-card,
 html:not(.dark-mode) .glass-card {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.04);
-    box-shadow: 
-        0 10px 40px rgba(0, 0, 0, 0.06),
-        0 2px 10px rgba(0, 0, 0, 0.02),
-        inset 0 1px 0 rgba(255, 255, 255, 1);
+    background: var(--bg-primary);
+    border: none;
+    box-shadow: var(--clay-outer);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   INSPIRATION SECTION
+   INSPIRATION SECTION — Premium Realistic Sky & Clouds
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .inspiration-section {
     margin-bottom: var(--spacing-xl);
     padding: 28px;
     border-radius: 32px;
-    background: linear-gradient(145deg, #1E1B4B, #4C1D95, #7C3AED);
-    color: #ffffff; /* Override theme colors to always pop */
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(180deg, 
+        #E8F4FC 0%, 
+        #D6EBFA 25%,
+        #B8DFF7 50%, 
+        #A5D8F5 75%,
+        #7ECBF2 100%
+    );
+    color: #1E3A5F;
+    border: 1px solid rgba(255, 255, 255, 0.6);
     box-shadow: 
-        0 20px 40px rgba(76, 29, 149, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        /* Outer soft claymorphic glow */
+        0 20px 60px rgba(125, 211, 252, 0.3),
+        0 8px 24px rgba(14, 165, 233, 0.15),
+        /* Inner highlight for depth */
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 2px rgba(14, 165, 233, 0.1);
     position: relative;
     overflow: hidden;
 }
 
-.light-mode .inspiration-section,
-html:not(.dark-mode) .inspiration-section {
-    background: linear-gradient(135deg, #3B82F6, #2563EB, #1D4ED8); /* Rich deeper blue for premium iOS feel */
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-        0 20px 40px rgba(37, 99, 235, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-/* Premium lighting effect inside the card */
+/* Realistic fluffy clouds - multiple layers */
 .inspiration-section::before {
     content: '';
     position: absolute;
-    top: 0; right: -20%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.15), transparent 60%);
+    top: -20px;
+    right: -40px;
+    width: 180px;
+    height: 100px;
+    background: 
+        radial-gradient(ellipse 60px 40px at 30% 50%, rgba(255,255,255,0.95) 0%, transparent 70%),
+        radial-gradient(ellipse 50px 35px at 60% 45%, rgba(255,255,255,0.9) 0%, transparent 70%),
+        radial-gradient(ellipse 45px 30px at 80% 55%, rgba(255,255,255,0.85) 0%, transparent 70%);
+    filter: blur(1px);
+    opacity: 0.9;
+    animation: cloudFloat1 20s ease-in-out infinite;
+}
+
+.inspiration-section::after {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: -30px;
+    width: 140px;
+    height: 80px;
+    background: 
+        radial-gradient(ellipse 50px 35px at 35% 50%, rgba(255,255,255,0.9) 0%, transparent 70%),
+        radial-gradient(ellipse 40px 28px at 65% 45%, rgba(255,255,255,0.85) 0%, transparent 70%),
+        radial-gradient(ellipse 35px 25px at 85% 55%, rgba(255,255,255,0.8) 0%, transparent 70%);
+    filter: blur(1px);
+    opacity: 0.7;
+    animation: cloudFloat2 25s ease-in-out infinite;
+}
+
+/* Additional cloud layer */
+.inspiration-section .cloud-layer {
+    position: absolute;
+    bottom: 60px;
+    right: 20px;
+    width: 120px;
+    height: 70px;
+    background: 
+        radial-gradient(ellipse 45px 30px at 40% 50%, rgba(255,255,255,0.85) 0%, transparent 70%),
+        radial-gradient(ellipse 38px 26px at 70% 48%, rgba(255,255,255,0.8) 0%, transparent 70%);
+    filter: blur(1px);
+    opacity: 0.6;
+    animation: cloudFloat3 18s ease-in-out infinite;
+}
+
+/* Soft sun glow effect */
+.inspiration-section .sun-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,248,220,0.2) 40%, transparent 70%);
     pointer-events: none;
+}
+
+/* Cloud animations */
+@keyframes cloudFloat1 {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(15px) translateY(-5px); }
+}
+
+@keyframes cloudFloat2 {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(-10px) translateY(3px); }
+}
+
+@keyframes cloudFloat3 {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(8px) translateY(-3px); }
+}
+
+/* Dark mode - twilight sky */
+html.dark-mode .inspiration-section {
+    background: linear-gradient(180deg, 
+        #1E3A5F 0%, 
+        #0F2847 25%,
+        #0A1F3D 50%, 
+        #05152B 75%,
+        #020D1F 100%
+    );
+    color: #E0F2FE;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 8px 24px rgba(14, 165, 233, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-mode .inspiration-section::before,
+html.dark-mode .inspiration-section::after,
+html.dark-mode .inspiration-section .cloud-layer {
+    opacity: 0.25;
+    filter: blur(2px);
+}
+
+html.dark-mode .inspiration-section .sun-glow {
+    background: radial-gradient(circle, rgba(125,211,252,0.15) 0%, rgba(14,165,233,0.05) 40%, transparent 70%);
 }
 
 .inspiration-header {
@@ -240,30 +387,50 @@ html:not(.dark-mode) .inspiration-section {
 .inspiration-tag {
     font-size: 13px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: #0369A1;
     text-transform: uppercase;
     letter-spacing: 1.5px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.7);
     padding: 6px 12px;
     border-radius: 100px;
     backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+html.dark-mode .inspiration-tag {
+    color: #7DD3FC;
+    background: rgba(14, 165, 233, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .refresh-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: none;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.7);
     border-radius: var(--radius-full);
-    color: #ffffff;
+    color: #0369A1;
     cursor: pointer;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
 }
 
-.refresh-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: rotate(90deg);
+html.dark-mode .refresh-btn {
+    background: rgba(14, 165, 233, 0.2);
+    color: #7DD3FC;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.refresh-btn:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .inspiration-quote__text {
@@ -271,16 +438,29 @@ html:not(.dark-mode) .inspiration-section {
     font-weight: 700;
     line-height: 1.4;
     margin-bottom: 12px;
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: #1E3A5F;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+html.dark-mode .inspiration-quote__text {
+    color: #E0F2FE;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .inspiration-quote__translation {
     font-size: 15px;
-    color: rgba(255, 255, 255, 0.85);
+    color: #334155;
     font-style: italic;
     line-height: 1.6;
     font-weight: 500;
+    position: relative;
+    z-index: 2;
+}
+
+html.dark-mode .inspiration-quote__translation {
+    color: #BAE6FD;
 }
 
 .inspiration-meta {
@@ -289,8 +469,15 @@ html:not(.dark-mode) .inspiration-section {
     align-items: center;
     margin-top: 24px;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
-    color: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(14, 165, 233, 0.2);
+    color: #475569;
+    position: relative;
+    z-index: 2;
+}
+
+html.dark-mode .inspiration-meta {
+    border-top-color: rgba(255, 255, 255, 0.1);
+    color: #94A3B8;
 }
 
 .inspiration-meta span {
@@ -299,24 +486,30 @@ html:not(.dark-mode) .inspiration-section {
 }
 
 .share-btn {
-    padding: 8px 18px;
+    padding: 10px 20px;
     border: none;
-    background: #ffffff;
-    color: #1D4ED8; /* Will contrast with both light/dark themes natively */
+    background: #FFFFFF;
+    color: #0369A1;
     font-size: 13px;
     font-weight: 700;
     border-radius: 100px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s ease;
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 1);
+    border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 html.dark-mode .share-btn {
-    color: #4C1D95;
+    background: rgba(14, 165, 233, 0.2);
+    color: #7DD3FC;
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
 .share-btn:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -345,19 +538,31 @@ html.dark-mode .share-btn {
     align-items: center;
     text-align: center;
     padding: var(--spacing-xl) var(--spacing-lg);
-    border-radius: 32px; /* Ultra curvy */
-    background: var(--bg-card);
-    border: 1px solid rgba(255, 255, 255, 0.08); /* default dark */
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-radius: 32px;
+    background: var(--bg-primary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Extreme Claymorphism */
+    box-shadow: var(--clay-outer);
     position: relative;
     overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.wisdom-card:active {
+    box-shadow: var(--clay-inner);
+    transform: translateY(2px);
 }
 
 .light-mode .wisdom-card,
 html:not(.dark-mode) .wisdom-card {
-    background: linear-gradient(160deg, #FCF8F7, #F4EFEB);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.05), inset 0 2px 0 rgba(255, 255, 255, 1);
+    background: var(--bg-primary);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: var(--clay-outer);
+}
+
+.light-mode .wisdom-card:active,
+html:not(.dark-mode) .wisdom-card:active {
+    box-shadow: var(--clay-inner);
 }
 
 /* Subtle background glow element to make it lively */
@@ -371,23 +576,30 @@ html:not(.dark-mode) .wisdom-card {
 }
 
 .wisdom-icon {
-    font-size: 32px;
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, #A7F3D0, #10B981); /* Green matching screenshot */
+    font-size: 28px;
+    width: 72px;
+    height: 72px;
+    background: var(--bg-primary);
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: var(--spacing-md);
-    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    /* Claymorphic orb */
+    box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.wisdom-icon::before {
+    content: '';
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 html.dark-mode .wisdom-icon {
-    background: linear-gradient(135deg, #059669, #065F46);
-    box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .wisdom-title {
@@ -436,10 +648,11 @@ html.dark-mode .wisdom-gurbani {
 .wisdom-gurbani::before {
     content: '';
     position: absolute;
-    top: 14px; bottom: 14px; left: 0;
-    width: 4px;
-    background: var(--gold-400);
-    border-radius: 0 4px 4px 0;
+    top: 14px; right: -20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.15), transparent 60%);
+    pointer-events: none;
 }
 
 .wisdom-pankti {
@@ -464,6 +677,216 @@ html:not(.dark-mode) .wisdom-pankti {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   WISDOM CARD PREMIUM EFFECTS — Creative Claymorphism
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* 3D Clay orbs floating in background */
+.wisdom-glow {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(212, 165, 116, 0.3) 0%, rgba(212, 165, 116, 0.1) 100%);
+    box-shadow: 
+        8px 8px 20px rgba(0, 0, 0, 0.15),
+        -8px -8px 20px rgba(255, 255, 255, 0.8),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    z-index: 1;
+    animation: clayOrbFloat1 8s ease-in-out infinite;
+}
+
+.wisdom-glow::after {
+    content: '';
+    position: absolute;
+    top: 80px;
+    right: -150px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(167, 139, 250, 0.08) 100%);
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.12),
+        -6px -6px 16px rgba(255, 255, 255, 0.7),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4);
+    animation: clayOrbFloat2 10s ease-in-out infinite;
+}
+
+@keyframes clayOrbFloat1 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-15px) scale(1.05); }
+}
+
+@keyframes clayOrbFloat2 {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(12px) scale(0.95); }
+}
+
+/* Embossed geometric pattern instead of rays */
+.wisdom-rays {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(212, 165, 116, 0.15) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.12) 0%, transparent 20%),
+        radial-gradient(circle at 40% 80%, rgba(110, 231, 183, 0.1) 0%, transparent 18%);
+}
+
+/* Claymorphic ridges/pillars */
+.wisdom-rays::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    right: 15px;
+    width: 8px;
+    height: 80px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 100%);
+    box-shadow: 
+        3px 3px 8px rgba(0, 0, 0, 0.1),
+        -3px -3px 8px rgba(255, 255, 255, 0.8),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    animation: clayRidgePulse 6s ease-in-out infinite;
+}
+
+.wisdom-rays::after {
+    content: '';
+    position: absolute;
+    bottom: 40px;
+    left: 20px;
+    width: 6px;
+    height: 50px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%);
+    box-shadow: 
+        2px 2px 6px rgba(0, 0, 0, 0.08),
+        -2px -2px 6px rgba(255, 255, 255, 0.7),
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    animation: clayRidgePulse 8s ease-in-out infinite reverse;
+}
+
+@keyframes clayRidgePulse {
+    0%, 100% { opacity: 0.7; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+}
+
+/* Clay dots pattern instead of floating particles */
+.wisdom-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.wisdom-particles span {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
+    box-shadow: 
+        2px 2px 6px rgba(0, 0, 0, 0.1),
+        -2px -2px 6px rgba(255, 255, 255, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+.wisdom-particles span:nth-child(1) {
+    top: 25%;
+    left: 8%;
+    width: 12px;
+    height: 12px;
+    animation: clayDotBounce 5s ease-in-out infinite;
+}
+
+.wisdom-particles span:nth-child(2) {
+    top: 45%;
+    right: 10%;
+    width: 8px;
+    height: 8px;
+    animation: clayDotBounce 6s ease-in-out infinite 1s;
+}
+
+.wisdom-particles span:nth-child(3) {
+    top: 65%;
+    left: 15%;
+    width: 10px;
+    height: 10px;
+    animation: clayDotBounce 7s ease-in-out infinite 2s;
+}
+
+.wisdom-particles span:nth-child(4) {
+    top: 35%;
+    right: 20%;
+    width: 6px;
+    height: 6px;
+    animation: clayDotBounce 5.5s ease-in-out infinite 0.5s;
+}
+
+.wisdom-particles span:nth-child(5) {
+    top: 75%;
+    right: 8%;
+    width: 14px;
+    height: 14px;
+    animation: clayDotBounce 8s ease-in-out infinite 1.5s;
+}
+
+@keyframes clayDotBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.1); }
+}
+
+/* Dark mode adjustments for claymorphism effects */
+html.dark-mode .wisdom-glow {
+    background: linear-gradient(135deg, rgba(212, 165, 116, 0.2) 0%, rgba(212, 165, 116, 0.05) 100%);
+    box-shadow: 
+        8px 8px 20px rgba(0, 0, 0, 0.4),
+        -8px -8px 20px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .wisdom-glow::after {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0.05) 100%);
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.02),
+        inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+
+html.dark-mode .wisdom-rays {
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.08) 0%, transparent 20%),
+        radial-gradient(circle at 40% 80%, rgba(110, 231, 183, 0.06) 0%, transparent 18%);
+}
+
+html.dark-mode .wisdom-rays::before,
+html.dark-mode .wisdom-rays::after {
+    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+    box-shadow: 
+        3px 3px 8px rgba(0, 0, 0, 0.3),
+        -3px -3px 8px rgba(255, 255, 255, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+html.dark-mode .wisdom-particles span {
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%);
+    box-shadow: 
+        2px 2px 6px rgba(0, 0, 0, 0.2),
+        -2px -2px 6px rgba(255, 255, 255, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    CATEGORIES GRID
    ═══════════════════════════════════════════════════════════════════════════════ */
 
@@ -483,53 +906,238 @@ html:not(.dark-mode) .wisdom-pankti {
     align-items: flex-start;
     text-align: left;
     text-decoration: none;
-    color: #ffffff !important;
+    color: var(--text-primary) !important;
     padding: 20px;
-    border-radius: 20px;
-    border: none !important; /* Let the radiant backgrounds shine */
-    box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(145deg, #FFFFFF 0%, #F8F8FA 100%);
+    box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .category-card:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-/* Specific colorful widget backgrounds */
-.category-card[data-topic="history"] { background: linear-gradient(145deg, #FF6B35, #E11D48) !important; box-shadow: 0 10px 30px rgba(225, 29, 72, 0.3); }
-.category-card[data-topic="sakhis"] { background: linear-gradient(145deg, #A78BFA, #7C3AED) !important; box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3); }
-.category-card[data-topic="raags"] { background: linear-gradient(145deg, #34D399, #059669) !important; box-shadow: 0 10px 30px rgba(5, 150, 105, 0.3); }
-.category-card[data-topic="composers"] { background: linear-gradient(145deg, #60A5FA, #2563EB) !important; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3); }
-.category-card[data-topic="themes"] { background: linear-gradient(145deg, #F472B6, #DB2777) !important; box-shadow: 0 10px 30px rgba(219, 39, 119, 0.3); }
-.category-card[data-topic="guruSahibs"] { background: linear-gradient(145deg, #FBBF24, #D97706) !important; box-shadow: 0 10px 30px rgba(217, 119, 6, 0.3); }
+/* Specific colorful icon backgrounds - Premium Claymorphism */
+.category-card[data-topic="history"] { 
+    background: linear-gradient(145deg, #FFF5F5 0%, #FFEBEB 100%) !important; 
+    border-color: rgba(255, 154, 139, 0.2);
+}
+.category-card[data-topic="history"] .category-icon {
+    background: linear-gradient(135deg, #FFF0ED 0%, #FFE8E4 100%) !important;
+    color: #E07A5F;
+    box-shadow: 
+        6px 6px 16px rgba(224, 122, 95, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(224, 122, 95, 0.05);
+    border: 1px solid rgba(224, 122, 95, 0.15);
+}
+
+.category-card[data-topic="sakhis"] { 
+    background: linear-gradient(145deg, #F8F5FF 0%, #F0EBFF 100%) !important; 
+    border-color: rgba(167, 139, 250, 0.2);
+}
+.category-card[data-topic="sakhis"] .category-icon {
+    background: linear-gradient(135deg, #F5F0FF 0%, #EDE5FF 100%) !important;
+    color: #9B7AE8;
+    box-shadow: 
+        6px 6px 16px rgba(155, 122, 232, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(155, 122, 232, 0.05);
+    border: 1px solid rgba(155, 122, 232, 0.15);
+}
+
+.category-card[data-topic="raags"] { 
+    background: linear-gradient(145deg, #F0FDF7 0%, #E6FAF0 100%) !important; 
+    border-color: rgba(110, 231, 183, 0.2);
+}
+.category-card[data-topic="raags"] .category-icon {
+    background: linear-gradient(135deg, #EBFDF5 0%, #DFF9ED 100%) !important;
+    color: #4ECB9C;
+    box-shadow: 
+        6px 6px 16px rgba(78, 203, 156, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(78, 203, 156, 0.05);
+    border: 1px solid rgba(78, 203, 156, 0.15);
+}
+
+.category-card[data-topic="composers"] { 
+    background: linear-gradient(145deg, #F0F7FF 0%, #E6F0FF 100%) !important; 
+    border-color: rgba(96, 165, 250, 0.2);
+}
+.category-card[data-topic="composers"] .category-icon {
+    background: linear-gradient(135deg, #EBF3FF 0%, #DFECFF 100%) !important;
+    color: #5A9CF5;
+    box-shadow: 
+        6px 6px 16px rgba(90, 156, 245, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(90, 156, 245, 0.05);
+    border: 1px solid rgba(90, 156, 245, 0.15);
+}
+
+.category-card[data-topic="themes"] { 
+    background: linear-gradient(145deg, #FFF0F5 0%, #FFE8F0 100%) !important; 
+    border-color: rgba(244, 162, 192, 0.2);
+}
+.category-card[data-topic="themes"] .category-icon {
+    background: linear-gradient(135deg, #FFEBF2 0%, #FFE0EA 100%) !important;
+    color: #E86B9A;
+    box-shadow: 
+        6px 6px 16px rgba(232, 107, 154, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(232, 107, 154, 0.05);
+    border: 1px solid rgba(232, 107, 154, 0.15);
+}
+
+.category-card[data-topic="guruSahibs"] { 
+    background: linear-gradient(145deg, #FFFBF5 0%, #FFF5E6 100%) !important; 
+    border-color: rgba(251, 191, 36, 0.2);
+}
+.category-card[data-topic="guruSahibs"] .category-icon {
+    background: linear-gradient(135deg, #FFF8ED 0%, #FFF0D9 100%) !important;
+    color: #D4A34B;
+    box-shadow: 
+        6px 6px 16px rgba(212, 163, 75, 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 2px rgba(212, 163, 75, 0.05);
+    border: 1px solid rgba(212, 163, 75, 0.15);
+}
 
 .category-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    background: rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(8px);
-    color: #fff;
-    margin-bottom: 30px; /* Space between icon and text layout like iOS Control Center */
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    font-size: 26px;
+    margin-bottom: 16px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.category-card:active .category-icon {
+    transform: scale(0.95);
+    box-shadow: 
+        inset 3px 3px 8px rgba(0, 0, 0, 0.08),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.9);
+}
+
+/* Dark mode category icons - softer appearance */
+html.dark-mode .category-card[data-topic="history"] .category-icon {
+    background: linear-gradient(135deg, rgba(224, 122, 95, 0.15) 0%, rgba(224, 122, 95, 0.1) 100%) !important;
+    color: #F4A896;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(244, 168, 150, 0.2);
+}
+
+html.dark-mode .category-card[data-topic="sakhis"] .category-icon {
+    background: linear-gradient(135deg, rgba(155, 122, 232, 0.15) 0%, rgba(155, 122, 232, 0.1) 100%) !important;
+    color: #B8A0F0;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(184, 160, 240, 0.2);
+}
+
+html.dark-mode .category-card[data-topic="raags"] .category-icon {
+    background: linear-gradient(135deg, rgba(78, 203, 156, 0.15) 0%, rgba(78, 203, 156, 0.1) 100%) !important;
+    color: #6EE7B7;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(110, 231, 183, 0.2);
+}
+
+html.dark-mode .category-card[data-topic="composers"] .category-icon {
+    background: linear-gradient(135deg, rgba(90, 156, 245, 0.15) 0%, rgba(90, 156, 245, 0.1) 100%) !important;
+    color: #7DB8FA;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(125, 184, 250, 0.2);
+}
+
+html.dark-mode .category-card[data-topic="themes"] .category-icon {
+    background: linear-gradient(135deg, rgba(232, 107, 154, 0.15) 0%, rgba(232, 107, 154, 0.1) 100%) !important;
+    color: #F094B4;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(240, 148, 180, 0.2);
+}
+
+html.dark-mode .category-card[data-topic="guruSahibs"] .category-icon {
+    background: linear-gradient(135deg, rgba(212, 163, 75, 0.15) 0%, rgba(212, 163, 75, 0.1) 100%) !important;
+    color: #E8C87A;
+    box-shadow: 
+        6px 6px 16px rgba(0, 0, 0, 0.3),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 0 1px 2px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(232, 200, 122, 0.2);
+}
+
+/* Dark mode category card backgrounds - fix light colors */
+html.dark-mode .category-card[data-topic="history"] { 
+    background: linear-gradient(145deg, rgba(244, 168, 150, 0.15) 0%, rgba(224, 122, 95, 0.08) 100%) !important; 
+    border-color: rgba(244, 168, 150, 0.15);
+}
+
+html.dark-mode .category-card[data-topic="sakhis"] { 
+    background: linear-gradient(145deg, rgba(184, 160, 240, 0.15) 0%, rgba(155, 122, 232, 0.08) 100%) !important; 
+    border-color: rgba(184, 160, 240, 0.15);
+}
+
+html.dark-mode .category-card[data-topic="raags"] { 
+    background: linear-gradient(145deg, rgba(110, 231, 183, 0.15) 0%, rgba(78, 203, 156, 0.08) 100%) !important; 
+    border-color: rgba(110, 231, 183, 0.15);
+}
+
+html.dark-mode .category-card[data-topic="composers"] { 
+    background: linear-gradient(145deg, rgba(125, 184, 250, 0.15) 0%, rgba(90, 156, 245, 0.08) 100%) !important; 
+    border-color: rgba(125, 184, 250, 0.15);
+}
+
+html.dark-mode .category-card[data-topic="themes"] { 
+    background: linear-gradient(145deg, rgba(240, 148, 180, 0.15) 0%, rgba(232, 107, 154, 0.08) 100%) !important; 
+    border-color: rgba(240, 148, 180, 0.15);
+}
+
+html.dark-mode .category-card[data-topic="guruSahibs"] { 
+    background: linear-gradient(145deg, rgba(232, 200, 122, 0.15) 0%, rgba(212, 163, 75, 0.08) 100%) !important; 
+    border-color: rgba(232, 200, 122, 0.15);
 }
 
 .category-name {
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 700;
     margin-bottom: 4px;
     letter-spacing: -0.01em;
+    color: var(--text-primary);
 }
 
 .category-desc {
     font-size: 13px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--text-secondary);
 }
 
 /* Image-based category icons */
@@ -558,16 +1166,16 @@ html:not(.dark-mode) .wisdom-pankti {
     display: flex;
     flex-direction: column;
     border-radius: var(--radius-xl);
-    background: var(--bg-card);
-    border: 0.5px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    background: var(--bg-primary);
+    border: none;
+    box-shadow: var(--clay-outer);
     overflow: hidden;
 }
 
 .light-mode .topics-list, html:not(.dark-mode) .topics-list {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.04);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.04);
+    background: var(--bg-primary);
+    border: none;
+    box-shadow: var(--clay-outer);
 }
 
 .topic-card {
@@ -602,15 +1210,17 @@ html:not(.dark-mode) .wisdom-pankti {
 }
 
 .topic-emoji {
-    font-size: 28px;
-    width: 44px;
-    height: 44px;
-    background: var(--bg-primary); /* Slight dark/light bubble */
-    border-radius: 12px;
+    font-size: 24px;
+    width: 48px;
+    height: 48px;
+    background: var(--bg-primary);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    /* Claymorphic emoji container */
+    box-shadow: var(--clay-outer-sm);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .topic-name {
@@ -695,10 +1305,17 @@ html:not(.dark-mode) .quick-stat__divider {
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-md);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    /* Claymorphism */
+    box-shadow: var(--clay-outer-sm);
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .shabad-card:active {
+    box-shadow: var(--clay-inner-sm);
     transform: scale(0.98);
 }
 
@@ -719,16 +1336,26 @@ html:not(.dark-mode) .quick-stat__divider {
 }
 
 .shabad-play-btn {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: none;
-    background: var(--gold-gradient);
+    background: var(--bg-primary);
     border-radius: var(--radius-full);
-    color: #fff;
+    color: var(--gold-400);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 14px;
+    /* Claymorphic orb */
+    box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.shabad-play-btn:active {
+    box-shadow: var(--clay-inner-sm);
+    transform: scale(0.95);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -873,22 +1500,30 @@ html:not(.dark-mode) .insight-modal__header {
 }
 
 .insight-modal__close {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border: none;
     border-radius: var(--radius-full);
-    background: var(--bg-glass);
+    background: var(--bg-primary);
     color: var(--text-primary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    /* Claymorphic orb */
+    box-shadow: var(--clay-outer-sm);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .insight-modal__close:hover {
-    background: var(--gold-gradient);
-    color: #fff;
+    box-shadow: var(--clay-gold), var(--clay-outer-sm);
+    color: var(--gold-400);
+}
+
+.insight-modal__close:active {
+    box-shadow: var(--clay-inner-sm);
+    transform: scale(0.95);
 }
 
 .insight-modal__lang-switch {

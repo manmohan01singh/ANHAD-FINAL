@@ -18,7 +18,16 @@
     // CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const RENDER_BASE = 'https://anhad-final.onrender.com';
+    const RENDER_BASE = (() => {
+        try {
+            const port = window.location.port;
+            const host = window.location.hostname;
+            if (port === '3000' || port === '3001') return 'http://localhost:3000';
+            if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+            if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+        } catch (e) {}
+        return 'https://anhad-final.onrender.com';
+    })();
 
     const CONFIG = {
         baseUrl: RENDER_BASE + '/audio',
@@ -37,17 +46,7 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function getBroadcastStart() {
-        let start = null;
-        try {
-            start = localStorage.getItem(BROADCAST_START_KEY);
-            if (start) start = parseInt(start, 10);
-        } catch (e) { }
-
-        if (!start || isNaN(start)) {
-            start = Date.now();
-            try { localStorage.setItem(BROADCAST_START_KEY, start.toString()); } catch (e) { }
-        }
-        return start;
+        return 1704067200000; // Universal deterministic fallback epoch (Jan 1, 2024)
     }
 
     function getCurrentLivePosition() {
@@ -188,6 +187,11 @@
                         clearTimeout(timeout);
                         this.audio.removeEventListener('canplay', onCanPlay);
                         this.audio.removeEventListener('error', onError);
+                        if (e.target.error.code === 2) {
+                            this._showErrorMessage('Audio service unavailable due to server overload. Please try again later.');
+                        } else {
+                            this._showErrorMessage('Audio service temporarily unavailable. Please try again later.');
+                        }
                         reject(e);
                     };
 
@@ -211,6 +215,7 @@
 
             } catch (e) {
                 console.warn('[SeamlessAudio] Could not auto-resume:', e.message);
+                this._showErrorMessage('Audio service temporarily unavailable. Please try again later.');
                 // Store for manual resume
                 this.isInitialized = true;
             }
@@ -221,8 +226,31 @@
         }
 
         onError() {
+            this._showErrorMessage('Audio service temporarily unavailable. Please try again later.');
             console.warn('[SeamlessAudio] Error, retrying in 2s...');
             setTimeout(() => this.preloadAndPlay(), 2000);
+        }
+
+        _showErrorMessage(message) {
+            // Show toast if available
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, { type: 'error', duration: 5000 });
+                return;
+            }
+            
+            // Create a simple inline notification
+            if (!this._errorBanner) {
+                this._errorBanner = document.createElement('div');
+                this._errorBanner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:12px 24px;border-radius:8px;z-index:99999;font-family:sans-serif;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+                document.body.appendChild(this._errorBanner);
+            }
+            this._errorBanner.textContent = message;
+            this._errorBanner.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                if (this._errorBanner) this._errorBanner.style.display = 'none';
+            }, 5000);
         }
 
         onPlay() {
@@ -306,6 +334,7 @@
 
     // Don't initialize on the Gurbani Radio page itself
     const isRadioPage = window.location.pathname.includes('gurbani-radio.html') ||
+        window.location.pathname.includes('gurbani-radio-new.html') ||
         window.location.pathname.includes('GurbaniRadio');
 
     if (!isRadioPage) {

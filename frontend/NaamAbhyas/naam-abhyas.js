@@ -825,10 +825,42 @@ class NaamAbhyas {
         // ═══ SCHEDULE NOTIFICATIONS for upcoming sessions ═══
         this.scheduleUpcomingNotifications();
 
+        // ═══ REGISTER PERIODIC BACKGROUND SYNC for reliable background alarms ═══
+        this.registerPeriodicBackgroundSync();
+
         // Update all UI
         this.updateUI();
 
         this.showToast('Naam Abhyas enabled! 🙏', 'success');
+    }
+
+    /**
+     * Register periodic background sync to wake Service Worker for alarm checks
+     * This is critical for background alarm reliability when app is closed
+     */
+    async registerPeriodicBackgroundSync() {
+        if (!('serviceWorker' in navigator)) {
+            console.log('[NaamAbhyas] Service Worker not supported, skipping periodic sync');
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.ready;
+
+            // Check if periodicSync is supported
+            if ('periodicSync' in registration) {
+                // Register for Naam Abhyas alarm checks every minute minimum
+                await registration.periodicSync.register('anhad-notification-check', {
+                    minInterval: 60 * 1000 // 1 minute minimum
+                });
+                console.log('[NaamAbhyas] ✅ Periodic background sync registered (alarms will fire even when closed!)');
+            } else {
+                console.log('[NaamAbhyas] Periodic sync not supported, relying on IndexedDB + SW wake events');
+            }
+        } catch (err) {
+            console.warn('[NaamAbhyas] Failed to register periodic sync:', err);
+            // Continue - alarms will still work via IndexedDB when SW wakes for other reasons
+        }
     }
 
     /**
@@ -957,6 +989,16 @@ class NaamAbhyas {
             return;
         }
 
+        // ─── STEP 1: Persist to IndexedDB for background resilience ───
+        try {
+            await this.saveAlarmToIndexedDB(payload);
+            console.log(`[NaamAbhyas] 💾 Alarm persisted to IndexedDB for ${sessionTime}`);
+        } catch (dbError) {
+            console.warn('[NaamAbhyas] Failed to save to IndexedDB:', dbError);
+            // Continue - we'll still try the SW approach
+        }
+
+        // ─── STEP 2: Also notify Service Worker for immediate scheduling ───
         try {
             // Try using controller first (faster if available)
             if (navigator.serviceWorker.controller) {
@@ -982,6 +1024,64 @@ class NaamAbhyas {
         }
     }
 
+    /**
+     * Save alarm to IndexedDB for Service Worker background access
+     * This allows the SW to fire notifications even when the app is closed
+     */
+    async saveAlarmToIndexedDB(payload) {
+        return new Promise((resolve, reject) => {
+            const DB_NAME = 'GurbaniRadioSW';
+            const DB_VERSION = 2;
+            const STORE_NAME = 'notification_schedule';
+
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                const db = request.result;
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+
+                // Create alarm entry
+                const scheduledTime = payload.scheduledTime || Date.now();
+                const alarmId = payload.id || `naam_${payload.data?.hour || 0}_${payload.data?.startMinute || 0}_${Date.now()}`;
+
+                const entry = {
+                    id: alarmId,
+                    title: payload.title || '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                    body: payload.body || `Leave all work. Remember Vaheguru for ${payload.data?.duration || 2} minutes.`,
+                    scheduledTime: scheduledTime,
+                    hour: payload.data?.hour || 0,
+                    startMinute: payload.data?.startMinute || 0,
+                    duration: payload.data?.duration || 2,
+                    fired: false,
+                    createdAt: Date.now(),
+                    data: payload.data || {},
+                    tag: payload.tag || `naam-abhyas-${new Date().toLocaleDateString('en-CA')}-${payload.data?.hour || 0}`
+                };
+
+                const putRequest = store.put(entry);
+                putRequest.onsuccess = () => {
+                    db.close();
+                    resolve();
+                };
+                putRequest.onerror = () => {
+                    db.close();
+                    reject(putRequest.error);
+                };
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+                    store.createIndex('fired', 'fired', { unique: false });
+                }
+            };
+        });
+    }
+
     disable() {
         this.config.enabled = false;
         this.saveConfig();
@@ -998,10 +1098,33 @@ class NaamAbhyas {
             clearTimeout(this.hourlyRefreshTimeout);
         }
 
+        // ═══ CLEAR INDEXEDDB ALARMS from Service Worker ═══
+        this.clearSWAlarms();
+
         // Update UI
         this.updateUI();
 
         this.showToast('Naam Abhyas disabled', 'info');
+    }
+
+    /**
+     * Clear all Naam Abhyas alarms from Service Worker IndexedDB
+     * Called when disabling Naam Abhyas to prevent stale alarms
+     */
+    clearSWAlarms() {
+        if (!('serviceWorker' in navigator)) return;
+
+        try {
+            // Notify Service Worker to clear all Naam alarms from IndexedDB
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'CLEAR_NAAM_ALARMS'
+                });
+                console.log('[NaamAbhyas] Sent CLEAR_NAAM_ALARMS to SW');
+            }
+        } catch (err) {
+            console.warn('[NaamAbhyas] Failed to clear SW alarms:', err);
+        }
     }
 
     /* ═════════════════════════════════════════════════════════════════════════

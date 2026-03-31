@@ -11,7 +11,7 @@ class SehajPaathApp {
             currentAng: 1,
             currentPaath: null,
             isLoading: true,
-            theme: 'gradient'
+            theme: window.AnhadTheme ? window.AnhadTheme.get() : 'light' // Sync with global theme
         };
 
         this.statistics = {};
@@ -27,6 +27,9 @@ class SehajPaathApp {
     async init() {
         try {
             console.log('🚀 Initializing Sehaj Paath App...');
+
+            // Sync with global theme immediately
+            this.syncGlobalTheme();
 
             // Initialize API
             this.api = new BaniDBAPI();
@@ -46,6 +49,9 @@ class SehajPaathApp {
             // Check achievements
             this.checkAchievements();
 
+            // Sync stats with dashboard
+            this.syncDashboardStats();
+
             // Hide loading screen
             this.hideLoading();
 
@@ -54,6 +60,59 @@ class SehajPaathApp {
             console.error('❌ Failed to initialize Sehaj Paath:', error);
             this.showError('Failed to load application');
             this.hideLoading();
+        }
+    }
+
+    syncGlobalTheme() {
+        // Listen for global theme changes
+        window.addEventListener('themechange', (e) => {
+            const theme = e.detail.theme;
+            this.state.theme = theme;
+            const settings = JSON.parse(localStorage.getItem('sehajPaathSettings') || '{}');
+            settings.theme = theme;
+            localStorage.setItem('sehajPaathSettings', JSON.stringify(settings));
+            console.log('🎨 Sehaj Paath synced with global theme:', theme);
+        });
+
+        // Apply current global theme
+        if (window.AnhadTheme) {
+            const globalTheme = window.AnhadTheme.get();
+            this.state.theme = globalTheme;
+            const settings = JSON.parse(localStorage.getItem('sehajPaathSettings') || '{}');
+            if (settings.theme !== globalTheme) {
+                settings.theme = globalTheme;
+                localStorage.setItem('sehajPaathSettings', JSON.stringify(settings));
+            }
+        }
+    }
+
+    syncDashboardStats() {
+        try {
+            // Sync Sehaj Paath stats to unified dashboard system
+            const stats = this.statistics;
+            const paath = this.state.currentPaath;
+
+            // Update unified stats for dashboard
+            const unifiedStats = JSON.parse(localStorage.getItem('anhad_unified_stats') || '{}');
+            
+            if (!unifiedStats.sehajPaath) {
+                unifiedStats.sehajPaath = {};
+            }
+
+            unifiedStats.sehajPaath = {
+                currentAng: paath?.currentAng || 1,
+                totalAngsRead: stats.totalAngsRead || 0,
+                currentStreak: stats.currentStreak || 0,
+                longestStreak: stats.longestStreak || 0,
+                todayAngsRead: stats.todayAngsRead || 0,
+                totalReadingTimeMinutes: Math.floor((stats.totalReadingTimeSeconds || 0) / 60),
+                lastUpdated: new Date().toISOString()
+            };
+
+            localStorage.setItem('anhad_unified_stats', JSON.stringify(unifiedStats));
+            console.log('📊 Sehaj Paath stats synced to dashboard');
+        } catch (error) {
+            console.warn('Dashboard sync error:', error);
         }
     }
 
@@ -184,6 +243,8 @@ class SehajPaathApp {
 
     saveStatistics() {
         localStorage.setItem('sehajPaathStats', JSON.stringify(this.statistics));
+        // Also sync to dashboard
+        this.syncDashboardStats();
     }
 
     loadReminderSettings() {
@@ -735,7 +796,9 @@ class SehajPaathApp {
 
     getSettingsHTML() {
         const settings = JSON.parse(localStorage.getItem('sehajPaathSettings') || '{}');
-        const theme = settings.theme || 'gradient';
+        // Sync with global theme
+        const globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'light';
+        const theme = settings.theme || globalTheme;
 
         return `
             <div class="settings-inner">
@@ -747,12 +810,6 @@ class SehajPaathApp {
                         </button>
                         <button class="theme-btn ${theme === 'dark' ? 'active' : ''}" data-theme="dark">
                             <span>🌙</span><span>Dark</span>
-                        </button>
-                        <button class="theme-btn ${theme === 'sepia' ? 'active' : ''}" data-theme="sepia">
-                            <span>📜</span><span>Sepia</span>
-                        </button>
-                        <button class="theme-btn ${theme === 'gradient' ? 'active' : ''}" data-theme="gradient">
-                            <span>🌈</span><span>Gradient</span>
                         </button>
                     </div>
                 </section>
@@ -782,17 +839,25 @@ class SehajPaathApp {
     }
 
     attachSettingsListeners(container) {
-        // Theme buttons
+        // Theme buttons - sync with global theme
         container.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 container.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const theme = btn.dataset.theme;
-                document.documentElement.dataset.theme = theme;
+                
+                // Update global theme
+                if (window.AnhadTheme) {
+                    window.AnhadTheme.set(theme);
+                } else {
+                    document.documentElement.dataset.theme = theme;
+                }
+                
+                // Save to local settings
                 const settings = JSON.parse(localStorage.getItem('sehajPaathSettings') || '{}');
                 settings.theme = theme;
                 localStorage.setItem('sehajPaathSettings', JSON.stringify(settings));
-                this.showToast(`Theme changed to ${theme}`);
+                this.showToast(`Theme: ${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
             });
         });
 

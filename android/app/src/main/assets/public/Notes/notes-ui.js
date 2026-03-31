@@ -76,6 +76,9 @@ class NotesUI {
         // Menu
         this.elements.menuOverlay = document.getElementById('menu-overlay');
         this.elements.menuBackdrop = document.getElementById('menu-backdrop');
+        this.elements.menuTheme = document.getElementById('menu-theme');
+        this.elements.menuThemeIcon = document.getElementById('menu-theme-icon');
+        this.elements.menuThemeText = document.getElementById('menu-theme-text');
         this.elements.menuSort = document.getElementById('menu-sort');
         this.elements.menuExport = document.getElementById('menu-export');
         this.elements.menuImport = document.getElementById('menu-import');
@@ -113,12 +116,13 @@ class NotesUI {
         this.elements.searchInput?.addEventListener('input', (e) => this.handleSearch(e.target.value));
         this.elements.searchClear?.addEventListener('click', () => this.clearSearch());
 
-        // Theme toggle
-        this.elements.themeBtn?.addEventListener('click', () => this.toggleTheme());
+        // Theme toggle (now in menu)
+        // this.elements.themeBtn?.addEventListener('click', () => this.toggleTheme());
 
         // Menu
         this.elements.menuBtn?.addEventListener('click', () => this.openMenu());
         this.elements.menuBackdrop?.addEventListener('click', () => this.closeMenu());
+        this.elements.menuTheme?.addEventListener('click', () => this.toggleTheme());
         this.elements.menuSort?.addEventListener('click', () => this.openSortSheet());
         this.elements.menuExport?.addEventListener('click', () => this.handleExport());
         this.elements.menuImport?.addEventListener('click', () => this.handleImportClick());
@@ -161,9 +165,9 @@ class NotesUI {
         this.elements.editorDelete?.addEventListener('click', () => this.confirmDeleteNote());
         this.elements.closeFolderPicker?.addEventListener('click', () => this.closeFolderPicker());
 
-        // Folder picker options
-        document.querySelectorAll('.folder-option').forEach(btn => {
-            btn.addEventListener('click', () => this.changeNoteFolder(btn.dataset.folder));
+        // Editor toolbar buttons
+        document.querySelectorAll('.toolbar-btn[data-format]').forEach(btn => {
+            btn.addEventListener('click', () => this.applyFormat(btn.dataset.format));
         });
 
         // Editor auto-save with debounce
@@ -225,15 +229,18 @@ class NotesUI {
 
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.classList.toggle('dark-mode', theme === 'dark');
 
-        // Update icon
-        if (this.elements.themeIcon) {
+        // Update menu theme option
+        if (this.elements.menuThemeIcon && this.elements.menuThemeText) {
             if (theme === 'dark') {
-                this.elements.themeIcon.classList.remove('fa-moon');
-                this.elements.themeIcon.classList.add('fa-sun');
+                this.elements.menuThemeIcon.classList.remove('fa-sun');
+                this.elements.menuThemeIcon.classList.add('fa-moon');
+                this.elements.menuThemeText.textContent = 'Dark Mode';
             } else {
-                this.elements.themeIcon.classList.remove('fa-sun');
-                this.elements.themeIcon.classList.add('fa-moon');
+                this.elements.menuThemeIcon.classList.remove('fa-moon');
+                this.elements.menuThemeIcon.classList.add('fa-sun');
+                this.elements.menuThemeText.textContent = 'Light Mode';
             }
         }
     }
@@ -441,6 +448,87 @@ class NotesUI {
                 <span class="meta-chars">${charCount} characters</span>
             `;
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // EDITOR FORMATTING
+    // ═══════════════════════════════════════════════════════════════
+
+    applyFormat(format) {
+        const textarea = this.elements.editorContent;
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selectedText = text.substring(start, end);
+
+        let newText = '';
+        let newCursorPos = start;
+        let cursorOffset = 0;
+
+        switch (format) {
+            case 'bold':
+                if (selectedText) {
+                    newText = text.substring(0, start) + '**' + selectedText + '**' + text.substring(end);
+                    newCursorPos = end + 4;
+                } else {
+                    newText = text.substring(0, start) + '****' + text.substring(end);
+                    newCursorPos = start + 2;
+                    cursorOffset = -2;
+                }
+                break;
+
+            case 'italic':
+                if (selectedText) {
+                    newText = text.substring(0, start) + '*' + selectedText + '*' + text.substring(end);
+                    newCursorPos = end + 2;
+                } else {
+                    newText = text.substring(0, start) + '**' + text.substring(end);
+                    newCursorPos = start + 1;
+                    cursorOffset = -1;
+                }
+                break;
+
+            case 'list':
+                if (selectedText) {
+                    const lines = selectedText.split('\n');
+                    const bulletedLines = lines.map(line => line.trim() ? '- ' + line : line).join('\n');
+                    newText = text.substring(0, start) + bulletedLines + text.substring(end);
+                    newCursorPos = start + bulletedLines.length;
+                } else {
+                    newText = text.substring(0, start) + '- ' + text.substring(end);
+                    newCursorPos = start + 2;
+                }
+                break;
+
+            case 'checklist':
+                if (selectedText) {
+                    const lines = selectedText.split('\n');
+                    const checkLines = lines.map(line => line.trim() ? '- [ ] ' + line : line).join('\n');
+                    newText = text.substring(0, start) + checkLines + text.substring(end);
+                    newCursorPos = start + checkLines.length;
+                } else {
+                    newText = text.substring(0, start) + '- [ ] ' + text.substring(end);
+                    newCursorPos = start + 6;
+                }
+                break;
+
+            case 'gurmukhi':
+                newText = text.substring(0, start) + 'ੴ' + text.substring(end);
+                newCursorPos = start + 1;
+                break;
+
+            default:
+                return;
+        }
+
+        textarea.value = newText;
+        textarea.focus();
+        textarea.setSelectionRange(newCursorPos + cursorOffset, newCursorPos + cursorOffset);
+
+        // Trigger auto-save
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     // ═══════════════════════════════════════════════════════════════

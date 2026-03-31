@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.3.0';
+const CACHE_VERSION = 'anhad-v3.7.0';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -29,8 +29,7 @@ const STATIC_FILES = [
   '/lib/global-alarm-system.js',
 
   // Assets
-  '/assets/favicon.svg',
-  '/assets/khanda-authentic.svg',
+  // Removed missing SVG files: favicon.svg, khanda-authentic.svg
 
   // Audio files for alarms
   '/Audio/audio1.mp3',
@@ -45,6 +44,9 @@ const STATIC_FILES = [
   '/css/unified-glass-system.css',
   '/css/anhad-install.css',
   '/css/ios-liquid-glass.css',
+  '/css/anhad-core.css',
+  '/js/anhad-core.js',
+  '/offline.html',
 
   // Library files
   '/lib/unified-storage.js',
@@ -164,6 +166,11 @@ const STATIC_FILES = [
   '/reminders/js/reliable-alarm.js',
   '/reminders/js/bg-alarm.js',
   '/reminders/js/nitnem-sync.js',
+
+  // Gurbani Radio — Phase 11 rebuild
+  '/GurbaniRadio/gurbani-radio-new.html',
+  '/GurbaniRadio/gurbani-radio-new.css',
+  '/GurbaniRadio/gurbani-radio-new.js',
 
   // Notes
   '/Notes/notes.html',
@@ -313,10 +320,14 @@ async function cacheFirst(request) {
     }
     return response;
   } catch (error) {
-    // Return offline fallback if available
-    const offlinePage = await caches.match('/index.html');
-    if (offlinePage) return offlinePage;
-    return new Response('Offline', { status: 503 });
+    // For navigation requests serve the offline page; for assets return 503
+    if (request.mode === 'navigate') {
+      const offlinePage = await caches.match('/offline.html');
+      if (offlinePage) return offlinePage;
+      const fallback = await caches.match('/index.html');
+      if (fallback) return fallback;
+    }
+    return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
   }
 }
 
@@ -346,7 +357,15 @@ self.addEventListener('message', (event) => {
   }
 
   if (event.data?.type === 'SCHEDULE_NOTIFICATION' && event.data.payload) {
+    // Save to IndexedDB for background persistence (critical for closed-tab reliability)
+    saveAlarmToDB(event.data.payload);
+    // Also schedule in-memory for immediate response
     scheduleNotification(event.data.payload);
+  }
+
+  // Handle CLEAR_NAAM_ALARMS message from client when disabling Naam Abhyas
+  if (event.data?.type === 'CLEAR_NAAM_ALARMS') {
+    clearAllNaamAlarms();
   }
 
   if (event.data?.type === 'CANCEL_NOTIFICATION' && event.data.payload?.id) {
@@ -615,80 +634,135 @@ async function scheduleDailyReminders() {
 async function checkNaamAbhyasSchedule() {
   console.log('[SW] Checking Naam Abhyas schedule...');
 
-  // Get all connected clients to access localStorage
-  const clients = await self.clients.matchAll({ type: 'window' });
-
-  if (clients.length === 0) {
-    // No clients available - can't access localStorage directly
-    // Rely on the pwa_scheduled_alarms that were set by pwa-register.js
-    return;
-  }
-
   const now = new Date();
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   const today = now.toLocaleDateString('en-CA');
 
-  // Request Naam Abhyas config from any connected client
-  for (const client of clients) {
-    try {
-      const response = await new Promise((resolve) => {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = (e) => resolve(e.data);
-        client.postMessage({
-          type: 'GET_NAAM_ABHYAS_SCHEDULE',
-          currentHour,
-          currentMinute,
-          today
-        }, [channel.port2]);
-        setTimeout(() => resolve(null), 500); // Timeout after 500ms
-      });
+  // ─── STRATEGY 1: Try to get schedule from connected clients (most accurate) ───
+  const clients = await self.clients.matchAll({ type: 'window' });
 
-      if (response?.sessions) {
-        // Check each session
-        for (const session of response.sessions) {
-          const sessionTime = session.hour * 60 + session.startMinute;
-          const currentTime = currentHour * 60 + currentMinute;
-          const timeDiff = currentTime - sessionTime;
+  if (clients.length > 0) {
+    for (const client of clients) {
+      try {
+        const response = await new Promise((resolve) => {
+          const channel = new MessageChannel();
+          channel.port1.onmessage = (e) => resolve(e.data);
+          client.postMessage({
+            type: 'GET_NAAM_ABHYAS_SCHEDULE',
+            currentHour,
+            currentMinute,
+            today
+          }, [channel.port2]);
+          setTimeout(() => resolve(null), 500);
+        });
 
-          // Fire if within 0-2 minute window (more precise for Naam Abhyas)
-          if (timeDiff >= 0 && timeDiff <= 2 && !session.notified) {
-            await self.registration.showNotification('🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas', {
-              body: `Leave all work. Remember Vaheguru for ${session.duration || 2} minutes.`,
-              icon: '/assets/icons/icon-192x192.png',
-              badge: '/assets/icons/icon-72x72.png',
-              tag: `naam-abhyas-${today}-${session.hour}`,
-              renotify: true,
-              requireInteraction: true,
-              vibrate: [300, 100, 300, 100, 500],
-              data: {
-                url: '/NaamAbhyas/naam-abhyas.html?autoStart=true',
-                type: 'naamAbhyas',
-                hour: session.hour,
-                startMinute: session.startMinute
-              },
-              actions: [
-                { action: 'start', title: '🙏 Start Now' },
-                { action: 'snooze', title: 'Snooze 5min' }
-              ]
-            });
-
-            console.log(`[SW] Naam Abhyas notification fired for hour ${session.hour}`);
-
-            // Notify client that notification was shown
-            client.postMessage({
-              type: 'NAAM_ABHYAS_NOTIFIED',
-              hour: session.hour,
-              today: today
-            });
+        if (response?.sessions) {
+          // Check each session from client
+          for (const session of response.sessions) {
+            await checkAndFireSession(session, today, currentHour, currentMinute, client);
           }
+          return; // Successfully checked via client
         }
-        break; // Got data from first client, no need to ask others
+      } catch (e) {
+        console.warn('[SW] Error checking Naam Abhyas with client:', e);
       }
-    } catch (e) {
-      console.warn('[SW] Error checking Naam Abhyas with client:', e);
     }
   }
+
+  // ─── STRATEGY 2: Fallback to IndexedDB (works even when no clients open) ───
+  console.log('[SW] No clients available, checking IndexedDB for alarms...');
+  await checkAndFireAlarmsFromDB(today, currentHour, currentMinute);
+}
+
+/**
+ * Check a single session and fire notification if due
+ */
+async function checkAndFireSession(session, today, currentHour, currentMinute, client) {
+  const sessionTime = session.hour * 60 + session.startMinute;
+  const currentTime = currentHour * 60 + currentMinute;
+  const timeDiff = currentTime - sessionTime;
+
+  // Fire if within 0-15 minute window and not already notified
+  if (timeDiff >= 0 && timeDiff <= 15 && !session.notified) {
+    await fireNaamNotification(session, today);
+
+    // Notify client that notification was shown
+    client.postMessage({
+      type: 'NAAM_ABHYAS_NOTIFIED',
+      hour: session.hour,
+      today: today
+    });
+  }
+}
+
+/**
+ * Check IndexedDB for pending alarms and fire them
+ */
+async function checkAndFireAlarmsFromDB(today, currentHour, currentMinute) {
+  try {
+    const pendingAlarms = await getPendingAlarmsFromDB();
+    const currentTime = currentHour * 60 + currentMinute;
+
+    console.log(`[SW] Found ${pendingAlarms.length} pending alarms in DB`);
+
+    for (const alarm of pendingAlarms) {
+      // Check if alarm is for today
+      const alarmDate = new Date(alarm.scheduledTime);
+      const alarmToday = alarmDate.toLocaleDateString('en-CA');
+
+      if (alarmToday !== today) {
+        continue; // Skip alarms for other days
+      }
+
+      const alarmTime = alarm.hour * 60 + alarm.startMinute;
+      const timeDiff = currentTime - alarmTime;
+
+      // Fire if within 0-15 minute window
+      if (timeDiff >= 0 && timeDiff <= 15) {
+        await fireNaamNotification({
+          hour: alarm.hour,
+          startMinute: alarm.startMinute,
+          duration: alarm.duration || 2  // Fallback to 2 minutes if not specified
+        }, today);
+
+        // Mark as fired in DB
+        await markAlarmAsFired(alarm.id);
+      }
+    }
+
+    // Cleanup old alarms periodically
+    await cleanupOldAlarms();
+  } catch (e) {
+    console.error('[SW] Error checking alarms from DB:', e);
+  }
+}
+
+/**
+ * Fire the actual Naam Abhyas notification
+ */
+async function fireNaamNotification(session, today) {
+  await self.registration.showNotification('🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas', {
+    body: `Leave all work. Remember Vaheguru for ${session.duration || 2} minutes.`,
+    icon: '/assets/icons/icon-192x192.png',
+    badge: '/assets/icons/icon-72x72.png',
+    tag: `naam-abhyas-${today}-${session.hour}`,
+    renotify: true,
+    requireInteraction: true,
+    vibrate: [300, 100, 300, 100, 500],
+    data: {
+      url: '/NaamAbhyas/naam-abhyas.html?autoStart=true',
+      type: 'naamAbhyas',
+      hour: session.hour,
+      startMinute: session.startMinute
+    },
+    actions: [
+      { action: 'start', title: '🙏 Start Now' },
+      { action: 'snooze', title: 'Snooze 5min' }
+    ]
+  });
+
+  console.log(`[SW] 🔔 Naam Abhyas notification fired for hour ${session.hour}`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -990,3 +1064,201 @@ function checkAndTriggerAlarms() {
 setInterval(checkAndTriggerAlarms, 60000);
 
 console.log('[SW] ANHAD Service Worker v3.0.0 loaded - iOS/Android optimized');
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INDEXEDDB HELPERS - Naam Abhyas Alarm Persistence
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Open IndexedDB connection
+ * @returns {Promise<IDBDatabase>}
+ */
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      // Store for Naam Abhyas scheduled alarms
+      if (!db.objectStoreNames.contains(STORES.NOTIFICATION_SCHEDULE)) {
+        const store = db.createObjectStore(STORES.NOTIFICATION_SCHEDULE, { keyPath: 'id' });
+        store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+        store.createIndex('fired', 'fired', { unique: false });
+      }
+      // Store for general alarm state
+      if (!db.objectStoreNames.contains(STORES.ALARM_STATE)) {
+        db.createObjectStore(STORES.ALARM_STATE, { keyPath: 'key' });
+      }
+    };
+  });
+}
+
+/**
+ * Save Naam Abhyas alarm to IndexedDB
+ * @param {Object} alarm - Alarm data
+ * @returns {Promise<void>}
+ */
+async function saveAlarmToDB(alarm) {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readwrite');
+    const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
+
+    const entry = {
+      id: alarm.id || `naam_${alarm.hour}_${alarm.startMinute}_${Date.now()}`,
+      title: alarm.title || '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+      body: alarm.body || `Leave all work. Remember Vaheguru for ${alarm.duration || 2} minutes.`,
+      scheduledTime: alarm.scheduledTime || new Date().getTime(),
+      hour: alarm.hour,
+      startMinute: alarm.startMinute,
+      duration: alarm.duration || 2,
+      fired: false,
+      createdAt: Date.now(),
+      data: alarm.data || {}
+    };
+
+    await new Promise((resolve, reject) => {
+      const request = store.put(entry);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    console.log(`[SW] 💾 Alarm saved to IndexedDB: ${entry.id}`);
+    db.close();
+  } catch (e) {
+    console.error('[SW] Failed to save alarm to IndexedDB:', e);
+  }
+}
+
+/**
+ * Get pending alarms from IndexedDB
+ * @returns {Promise<Array>}
+ */
+async function getPendingAlarmsFromDB() {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readonly');
+    const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
+    const index = store.index('fired');
+
+    const alarms = await new Promise((resolve, reject) => {
+      const request = index.getAll(false);
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+
+    db.close();
+    return alarms;
+  } catch (e) {
+    console.error('[SW] Failed to get alarms from IndexedDB:', e);
+    return [];
+  }
+}
+
+/**
+ * Mark alarm as fired in IndexedDB
+ * @param {string} id - Alarm ID
+ * @returns {Promise<void>}
+ */
+async function markAlarmAsFired(id) {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readwrite');
+    const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
+
+    const alarm = await new Promise((resolve, reject) => {
+      const request = store.get(id);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+
+    if (alarm) {
+      alarm.fired = true;
+      alarm.firedAt = Date.now();
+      await new Promise((resolve, reject) => {
+        const request = store.put(alarm);
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+      });
+      console.log(`[SW] ✅ Alarm marked as fired: ${id}`);
+    }
+
+    db.close();
+  } catch (e) {
+    console.error('[SW] Failed to mark alarm as fired:', e);
+  }
+}
+
+/**
+ * Cleanup old fired alarms (older than 24 hours)
+ * @returns {Promise<void>}
+ */
+async function cleanupOldAlarms() {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readwrite');
+    const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
+
+    const cutoff = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
+
+    const allAlarms = await new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+
+    let cleaned = 0;
+    for (const alarm of allAlarms) {
+      if (alarm.fired && alarm.firedAt && alarm.firedAt < cutoff) {
+        await new Promise((resolve, reject) => {
+          const request = store.delete(alarm.id);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+        cleaned++;
+      }
+    }
+
+    if (cleaned > 0) {
+      console.log(`[SW] 🧹 Cleaned up ${cleaned} old alarms`);
+    }
+
+    db.close();
+  } catch (e) {
+    console.error('[SW] Failed to cleanup old alarms:', e);
+  }
+}
+
+/**
+ * Clear all Naam Abhyas alarms from IndexedDB
+ * @returns {Promise<void>}
+ */
+async function clearAllNaamAlarms() {
+  try {
+    const db = await openDB();
+    const tx = db.transaction(STORES.NOTIFICATION_SCHEDULE, 'readwrite');
+    const store = tx.objectStore(STORES.NOTIFICATION_SCHEDULE);
+
+    const allAlarms = await new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+
+    for (const alarm of allAlarms) {
+      if (alarm.id && alarm.id.startsWith('naam_')) {
+        await new Promise((resolve, reject) => {
+          const request = store.delete(alarm.id);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+    }
+
+    console.log('[SW] 🗑️ Cleared all Naam Abhyas alarms from DB');
+    db.close();
+  } catch (e) {
+    console.error('[SW] Failed to clear Naam alarms:', e);
+  }
+}

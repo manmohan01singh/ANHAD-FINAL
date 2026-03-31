@@ -8,9 +8,12 @@
   <meta name="theme-color" content="#02000a">
   <meta name="description" content="Cinematic Alarm — drag right to set sunset, drag left for sunrise">
   <title>ਯਾਦ ਕਰਵਾਓ | Cinematic Alarm</title>
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
   <link rel="manifest" href="../manifest.json">
   <link rel="stylesheet" href="cinematic-v5.css">
+  <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
 
@@ -308,9 +311,13 @@
        SCRIPTS
        ══════════════════════════════════════ -->
   <script src="../lib/smart-back.js"></script>
+  <!-- Live Stream Support -->
+  <link rel="stylesheet" href="css/livestream-sounds.css">
+  <script src="smart-reminders-v6-livestream.js"></script>
+  <script src="js/livestream-sound-options.js"></script>
+  <!-- Main Scripts -->
   <script src="cinematic-v5.js"></script>
-  <script src="js/reliable-alarm.js?v=2.0.0" defer></script>
-  <script src="js/bg-alarm.js?v=2.0.0" defer></script>
+  <script src="../lib/alarm-coordinator.js?v=1.0.0" defer></script>
   <script src="../lib/global-alarm-system.js?v=3.0.0" defer></script>
   <script src="../lib/ios-android-notifications.js?v=3.0.0" defer></script>
   <script>

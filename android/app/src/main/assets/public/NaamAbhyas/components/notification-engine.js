@@ -189,7 +189,7 @@ class NotificationEngine {
             }
         }
 
-        // 3. Start time notification
+        // 3. Start time notification - ALSO REGISTER WITH GLOBAL ALARM SYSTEM
         if (sessionTime > new Date()) {
             this.schedule(
                 `naam_start_${session.hour}`,
@@ -205,6 +205,17 @@ class NotificationEngine {
                     ]
                 }
             );
+
+            // CRITICAL FIX: Also register with global alarm system for guaranteed firing
+            if (window.GlobalAlarmSystem) {
+                window.GlobalAlarmSystem.registerNaamAbhyasAlarm({
+                    id: `naam_${session.hour}`,
+                    hour: session.hour,
+                    minute: session.startMinute,
+                    title: 'Naam Abhyas',
+                    enabled: true
+                });
+            }
         }
     }
 

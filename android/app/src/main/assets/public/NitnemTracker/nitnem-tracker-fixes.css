@@ -1,176 +1,49 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   NITNEM TRACKER - DIVINE THEME OVERHAUL
-   Removes gradient decorations, improves gold theme, creates magical spiritual UI
+   NITNEM TRACKER — SCROLL FIX + POPPING PREMIUM CLAYMORPHISM
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 1: DIVINE SAFFRON THEME (New Default - Replacing Gradient)
-   A sacred, calm, spiritually immersive experience
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Override gradient theme with Divine Saffron */
-:root,
-html[data-theme="gradient"],
-html[data-theme="saffron"],
-[data-theme="gradient"],
-[data-theme="saffron"] {
-    /* Sacred Saffron - Spiritual Base */
-    --bg-gradient-start: #1a1612 !important;
-    --bg-gradient-mid: #221c16 !important;
-    --bg-gradient-end: #1a1612 !important;
-    --bg-primary: #1a1612 !important;
-    --bg-secondary: rgba(255, 183, 77, 0.08) !important;
-    --bg-tertiary: rgba(255, 183, 77, 0.04) !important;
-
-    /* Glass Morphism - Warm Saffron Tones */
-    --glass-bg: rgba(42, 35, 28, 0.9) !important;
-    --glass-bg-hover: rgba(52, 44, 36, 0.95) !important;
-    --glass-bg-active: rgba(62, 52, 44, 0.98) !important;
-    --glass-border: rgba(255, 183, 77, 0.25) !important;
-    --glass-border-light: rgba(255, 183, 77, 0.12) !important;
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45) !important;
-    --glass-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.55) !important;
-    --glass-inner-shadow: inset 0 1px 1px rgba(255, 183, 77, 0.1) !important;
-
-    /* Text Colors - High Contrast on Dark */
-    --text-primary: #faf3e7 !important;
-    --text-secondary: #e8d5c4 !important;
-    --text-tertiary: rgba(232, 213, 196, 0.75) !important;
-    --text-quaternary: rgba(232, 213, 196, 0.5) !important;
-    --text-inverse: #1a1612 !important;
-
-    /* Saffron Accent Colors */
-    --accent-primary: #ffb74d !important;
-    --accent-secondary: #ff9800 !important;
-    --accent-glow: rgba(255, 183, 77, 0.4) !important;
-
-    /* Divine Glow */
-    --shadow-glow: 0 0 20px rgba(255, 183, 77, 0.25) !important;
-    --shadow-glow-lg: 0 0 40px rgba(255, 183, 77, 0.35) !important;
-
-/* Sacred Status Colors */
-    --status-success: #66bb6a;
-    --status-success-bg: rgba(102, 187, 106, 0.2);
-    --status-warning: #ffb74d;
-    --status-warning-bg: rgba(255, 183, 77, 0.2);
-    --status-error: #ef5350;
-    --status-error-bg: rgba(239, 83, 80, 0.2);
-    --status-info: #4fc3f7;
-    --status-info-bg: rgba(79, 195, 247, 0.2);
+/* ─── SECTION 0: CRITICAL SCROLL FIX ─── */
+html, body {
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto !important;
+    position: static !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 1.5: PURE LIGHT THEME (Fixes the !important override issue)
-   ───────────────────────────────────────────────────────────────────────────── */
-html.light-mode,
-html[data-theme="light"],
-[data-theme="light"] {
-    --bg-gradient-start: #f5f5f7 !important;
-    --bg-gradient-mid: #ffffff !important;
-    --bg-gradient-end: #f0f0f5 !important;
-    --bg-primary: #f5f5f7 !important;
-    --bg-secondary: rgba(0, 0, 0, 0.03) !important;
-    --bg-tertiary: rgba(0, 0, 0, 0.02) !important;
-
-    --glass-bg: rgba(255, 255, 255, 0.75) !important;
-    --glass-bg-hover: rgba(255, 255, 255, 0.85) !important;
-    --glass-bg-active: rgba(255, 255, 255, 0.95) !important;
-    --glass-border: rgba(0, 0, 0, 0.08) !important;
-    --glass-border-light: rgba(0, 0, 0, 0.04) !important;
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
-    --glass-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
-    --glass-inner-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
-
-    --text-primary: #1d1d1f !important;
-    --text-secondary: #424245 !important;
-    --text-tertiary: #6e6e73 !important;
-    --text-quaternary: #aeaeb2 !important;
-    --text-inverse: #ffffff !important;
-
-    --accent-primary: #007AFF !important;
-    --accent-secondary: #5856D6 !important;
-    --accent-glow: rgba(0, 122, 255, 0.3) !important;
-
-    --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.2) !important;
-    --shadow-glow-lg: 0 0 40px rgba(0, 122, 255, 0.3) !important;
+body {
+    background: var(--clay-bg-primary, #F0F0F5) !important;
+    background-attachment: scroll !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 2: GOLD THEME - FIXED CONTRAST & READABILITY
-   ───────────────────────────────────────────────────────────────────────────── */
-
-[data-theme="gold"] {
-    --bg-primary: linear-gradient(180deg, #0d0a06 0%, #1a1510 50%, #0d0a06 100%);
-    --bg-secondary: rgba(212, 175, 102, 0.12);
-    --bg-tertiary: rgba(212, 175, 102, 0.06);
-
-    --glass-bg: rgba(22, 18, 12, 0.92);
-    --glass-bg-hover: rgba(32, 26, 18, 0.95);
-    --glass-bg-active: rgba(42, 34, 24, 0.98);
-    --glass-border: rgba(212, 175, 102, 0.3);
-    --glass-border-light: rgba(212, 175, 102, 0.15);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-
-    /* FIXED: High contrast text colors */
-    --text-primary: #f5ede0;
-    --text-secondary: #d4af66;
-    --text-tertiary: #c9a050;
-    --text-quaternary: #8a7040;
-    --text-inverse: #0d0a06;
-
-    /* Bright Gold Accents */
-    --accent-primary: #e6c060;
-    --accent-secondary: #d4af66;
-    --accent-glow: rgba(230, 192, 96, 0.5);
-
-    --shadow-glow: 0 0 24px rgba(230, 192, 96, 0.35);
-    --shadow-glow-lg: 0 0 48px rgba(230, 192, 96, 0.45);
+html.dark-mode body,
+[data-theme="dark"] body,
+[data-theme="saffron"] body,
+[data-theme="gradient"] body,
+[data-theme="gold"] body {
+    background: var(--clay-bg-primary, #1C1C1E) !important;
 }
 
-/* Gold Theme - Enhanced Text Visibility */
-[data-theme="gold"] .card-title,
-[data-theme="gold"] .gurmukhi-title,
-[data-theme="gold"] h1,
-[data-theme="gold"] h2,
-[data-theme="gold"] h3 {
-    color: #f5ede0 !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+.app-container {
+    position: relative !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
 }
 
-[data-theme="gold"] .card-subtitle,
-[data-theme="gold"] p,
-[data-theme="gold"] span {
-    color: #d4af66;
+.main-content {
+    flex: 1 !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: auto !important;
 }
 
-[data-theme="gold"] .stat-value,
-[data-theme="gold"] .count-number,
-[data-theme="gold"] .streak-number {
-    color: #f5ede0 !important;
-    text-shadow: 0 2px 8px rgba(230, 192, 96, 0.3);
-}
-
-[data-theme="gold"] .stat-label,
-[data-theme="gold"] .count-label {
-    color: #c9a050 !important;
-}
-
-[data-theme="gold"] button {
-    color: #f5ede0;
-}
-
-[data-theme="gold"] .present-btn,
-[data-theme="gold"] .complete-all-btn,
-[data-theme="gold"] .mala-action-btn.primary {
-    background: linear-gradient(135deg, #d4af66 0%, #c9a050 100%);
-    color: #0d0a06 !important;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 3: REMOVE ALL GRADIENT BACKGROUND EFFECTS
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Hide animated gradient orbs completely */
+/* Hide distracting gradient background effects */
 .background-effects,
 .gradient-orb,
 .gradient-orb-1,
@@ -179,1038 +52,964 @@ html[data-theme="light"],
 .mesh-gradient,
 .noise-overlay {
     display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
 }
 
-/* Simple solid background */
+/* ─── SECTION 1: CLAYMORPHISM DESIGN TOKENS ─── */
+:root {
+    --clay-bg-primary: #EDEDED;
+    --clay-bg-secondary: #E0E0E4;
+    --clay-page-bg: #E8E8EC;
+
+    --clay-shadow-deep: 0.10;
+    --clay-shadow-mid: 0.08;
+    --clay-shadow-soft: 0.06;
+    --clay-highlight: 0.95;
+    --clay-border-glow: 0.70;
+    --clay-inset-shadow: 0.07;
+
+    --clay-gold-rgb: 212, 148, 58;
+    --clay-orange-rgb: 255, 160, 50;
+    --clay-blue-rgb: 0, 122, 255;
+    --clay-green-rgb: 48, 209, 88;
+    --clay-purple-rgb: 120, 86, 214;
+    --clay-red-rgb: 255, 59, 48;
+    --clay-teal-rgb: 48, 176, 199;
+
+    --clay-radius-card: 32px;
+    --clay-radius-btn: 9999px;
+    --clay-radius-icon: 22px;
+    --clay-radius-inner: 20px;
+
+    --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode,
+[data-theme="dark"],
+[data-theme="saffron"],
+[data-theme="gradient"],
+[data-theme="gold"] {
+    --clay-bg-primary: #1C1C1E;
+    --clay-bg-secondary: #2C2C2E;
+    --clay-page-bg: #1A1A1C;
+    --clay-shadow-deep: 0.25;
+    --clay-shadow-mid: 0.18;
+    --clay-shadow-soft: 0.15;
+    --clay-highlight: 0.12;
+    --clay-border-glow: 0.18;
+    --clay-inset-shadow: 0.22;
+}
+
+/* ─── SECTION 2: PAGE BACKGROUND ─── */
 body {
-    background: var(--bg-primary) !important;
-    background-attachment: fixed !important;
+    background: var(--clay-page-bg) !important;
 }
 
-.app-container {
-    background: transparent;
+/* ─── SECTION 3: HEADER — CLAY PILL ─── */
+.app-header {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 4: CARD GLOW & DECORATIVE ELEMENTS - SIMPLIFIED
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Remove card glow effects by default */
-.card-glow,
-.amritvela-glow,
-.nitnem-glow,
-.mala-glow,
-.alarm-glow,
-.streak-glow,
-.reports-glow {
-    display: none;
+.header-blur-bg {
+    display: none !important;
 }
 
-/* Cards - Clean, solid styling */
+.app-header.scrolled {
+    background: transparent !important;
+    backdrop-filter: none !important;
+}
+
+.header-content {
+    background: transparent !important;
+}
+
+.status-pill {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.06),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 5px rgba(255,255,255,0.8),
+        inset -2px -2px 5px rgba(0,0,0,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 9999px !important;
+}
+
+html.dark-mode .status-pill,
+[data-theme="dark"] .status-pill,
+[data-theme="saffron"] .status-pill,
+[data-theme="gold"] .status-pill {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.05),
+        inset 2px 2px 5px rgba(255,255,255,0.05),
+        inset -2px -2px 5px rgba(0,0,0,0.15) !important;
+}
+
+.header-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.06),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 5px rgba(255,255,255,0.8) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+html.dark-mode .header-btn,
+[data-theme="dark"] .header-btn,
+[data-theme="saffron"] .header-btn,
+[data-theme="gold"] .header-btn {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.05),
+        inset 2px 2px 5px rgba(255,255,255,0.05) !important;
+}
+
+.header-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.15),
+        inset -4px -4px 10px rgba(255,255,255,0.5),
+        0 0 0 1px rgba(255,255,255,0.3) !important;
+}
+
+/* ─── SECTION 4: CARDS — EXTREME CLAY 3D ─── */
 .card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border-light);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--glass-shadow);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative !important;
+    background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
+    border-radius: var(--clay-radius-card) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,1),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+    transition: all 0.4s var(--clay-spring) !important;
+    overflow: visible !important;
+    padding: 24px !important;
+}
+
+html.dark-mode .card,
+[data-theme="dark"] .card,
+[data-theme="saffron"] .card,
+[data-theme="gradient"] .card,
+[data-theme="gold"] .card {
+    background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,0.08),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+}
+
+.card::before {
+    display: none !important;
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--glass-shadow-lg);
+    transform: translateY(-4px) scale(1.01) !important;
+    box-shadow:
+        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255,255,255,1),
+        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 5: DIVINE MAGICAL ENHANCEMENTS (Subtle & Spiritual)
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Sacred Border Glow - Subtle divine light */
-.card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg,
-            rgba(255, 183, 77, 0.15) 0%,
-            rgba(255, 183, 77, 0.05) 50%,
-            rgba(255, 183, 77, 0.15) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
+html.dark-mode .card:hover,
+[data-theme="dark"] .card:hover,
+[data-theme="saffron"] .card:hover,
+[data-theme="gradient"] .card:hover,
+[data-theme="gold"] .card:hover {
+    box-shadow:
+        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255,255,255,0.08),
+        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
 }
 
-.card:hover::before {
-    opacity: 1;
+.card:active {
+    transform: scale(0.97) translateY(4px) !important;
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0, var(--clay-shadow-mid)),
+        inset -8px -8px 16px rgba(255,255,255, var(--clay-highlight)) !important;
 }
 
-/* Divine pulse animation for active elements */
-@keyframes divinePulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 183, 77, 0);
-    }
-
-    50% {
-        box-shadow: 0 0 20px 5px rgba(255, 183, 77, 0.15);
-    }
+html.dark-mode .card:active,
+[data-theme="dark"] .card:active,
+[data-theme="saffron"] .card:active,
+[data-theme="gradient"] .card:active,
+[data-theme="gold"] .card:active {
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0, var(--clay-shadow-deep)),
+        inset -8px -8px 16px rgba(255,255,255,0.02) !important;
 }
 
-/* Breathing animation for spiritual elements */
-@keyframes sacredBreath {
+/* Hide old card glow effects */
+.card-glow { display: none !important; }
 
-    0%,
-    100% {
-        opacity: 0.7;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.02);
-    }
+/* ─── SECTION 5: CARD ICONS — CLAY PILLOWS ─── */
+.card-icon {
+    border-radius: var(--clay-radius-icon) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.05),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+    transition: all 0.3s var(--clay-spring) !important;
 }
 
-/* Present button - Divine styling */
+.sunrise-icon {
+    background: linear-gradient(145deg, #FFF0D8, #FFE0B0) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-orange-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+.book-icon {
+    background: linear-gradient(145deg, #E0F0FF, #C8E4FF) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-blue-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+.mala-icon {
+    background: linear-gradient(145deg, #F0E0FF, #E0C8FF) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-purple-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+.alarm-icon {
+    background: linear-gradient(145deg, #E0F8FF, #C0ECFF) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-teal-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+.streak-icon {
+    background: linear-gradient(145deg, #FFE8E0, #FFD0C0) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-red-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+.reports-icon {
+    background: linear-gradient(145deg, #E0FFE8, #C0F5D0) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-green-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+}
+
+/* Dark mode card icons */
+html.dark-mode .card-icon,
+[data-theme="dark"] .card-icon,
+[data-theme="saffron"] .card-icon,
+[data-theme="gold"] .card-icon {
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.35),
+        -6px -6px 12px rgba(255,255,255,0.04),
+        inset 2px 2px 6px rgba(255,255,255,0.06) !important;
+}
+
+html.dark-mode .sunrise-icon,
+[data-theme="dark"] .sunrise-icon,
+[data-theme="saffron"] .sunrise-icon { background: linear-gradient(145deg, #3A2E18, #2A2010) !important; }
+html.dark-mode .book-icon,
+[data-theme="dark"] .book-icon { background: linear-gradient(145deg, #1A2840, #102030) !important; }
+html.dark-mode .mala-icon,
+[data-theme="dark"] .mala-icon { background: linear-gradient(145deg, #2A1838, #1A1028) !important; }
+html.dark-mode .alarm-icon,
+[data-theme="dark"] .alarm-icon { background: linear-gradient(145deg, #183038, #102028) !important; }
+html.dark-mode .streak-icon,
+[data-theme="dark"] .streak-icon { background: linear-gradient(145deg, #381818, #281010) !important; }
+html.dark-mode .reports-icon,
+[data-theme="dark"] .reports-icon { background: linear-gradient(145deg, #183820, #102818) !important; }
+
+/* ─── SECTION 6: BUTTONS — CLAY CAPSULES ─── */
 .present-btn {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-    color: var(--text-inverse);
-    border-radius: var(--radius-full);
-    padding: 16px 32px;
-    font-weight: var(--font-semibold);
-    font-size: var(--text-md);
-    box-shadow: 0 4px 20px rgba(255, 183, 77, 0.3);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
+    background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: var(--clay-radius-btn) !important;
+    color: #3A2000 !important;
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-orange-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,0.8),
+        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
+    transition: all 0.3s var(--clay-spring) !important;
 }
 
 .present-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 30px rgba(255, 183, 77, 0.4);
+    transform: translateY(-3px) scale(1.03) !important;
 }
 
 .present-btn:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.94) translateY(3px) !important;
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,0.15),
+        inset -8px -8px 16px rgba(255,255,255,0.5) !important;
 }
 
 .present-btn.marked {
-    background: var(--status-success);
-    box-shadow: 0 4px 20px rgba(102, 187, 106, 0.3);
+    background: linear-gradient(145deg, #60D880, #34C759) !important;
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-green-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,0.8),
+        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 6: MALA COUNTER - ENHANCED REAL-TIME UI
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Mala ring container */
-.mala-ring {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto;
-    transition: transform 0.3s ease;
+html.dark-mode .present-btn,
+[data-theme="dark"] .present-btn {
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.40),
+        -8px -8px 16px rgba(255,255,255,0.05),
+        inset 4px 4px 8px rgba(255,255,255,0.08),
+        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
 }
 
-/* Center button - Divine tap target */
-.mala-center-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--glass-bg) 0%, var(--glass-bg-active) 100%);
-    border: 2px solid var(--glass-border);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3),
-        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+html.dark-mode .present-btn:active,
+[data-theme="dark"] .present-btn:active {
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,0.30),
+        inset -8px -8px 16px rgba(255,255,255,0.05) !important;
 }
 
-.mala-center-btn:hover {
-    transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0 6px 30px rgba(255, 183, 77, 0.3),
-        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+html.dark-mode .present-btn.marked,
+[data-theme="dark"] .present-btn.marked {
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.40),
+        -8px -8px 16px rgba(255,255,255,0.05),
+        inset 4px 4px 8px rgba(255,255,255,0.08),
+        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
 }
 
-.mala-center-btn:active {
-    transform: translate(-50%, -50%) scale(0.95);
+/* Complete All, Add Bani, Actions */
+.complete-all-btn,
+.add-bani-btn,
+.mala-action-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: var(--clay-radius-btn) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.06),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,1),
+        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s var(--clay-spring) !important;
 }
 
-.mala-center-btn.pulse {
-    animation: tapPulse 0.15s ease-out;
+.mala-action-btn.primary {
+    background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
+    color: #3A2000 !important;
 }
 
-@keyframes tapPulse {
-    0% {
-        transform: translate(-50%, -50%) scale(1);
-    }
-
-    50% {
-        transform: translate(-50%, -50%) scale(0.9);
-    }
-
-    100% {
-        transform: translate(-50%, -50%) scale(1);
-    }
+.complete-all-btn:active,
+.add-bani-btn:active,
+.mala-action-btn:active {
+    transform: scale(0.94) !important;
+    box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,0.12),
+        inset -6px -6px 12px rgba(255,255,255,0.5) !important;
 }
 
-/* Count display - Live update animations */
-.count-display {
-    text-align: center;
+html.dark-mode .complete-all-btn:active,
+html.dark-mode .add-bani-btn:active,
+html.dark-mode .mala-action-btn:active,
+[data-theme="dark"] .complete-all-btn:active,
+[data-theme="dark"] .add-bani-btn:active,
+[data-theme="dark"] .mala-action-btn:active {
+    box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,0.40),
+        inset -6px -6px 12px rgba(255,255,255,0.05) !important;
 }
 
-.count-number {
-    font-size: 2.5rem;
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    transition: transform 0.15s ease, color 0.3s ease;
+html.dark-mode .mala-action-btn.primary,
+[data-theme="dark"] .mala-action-btn.primary {
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.40),
+        -8px -8px 16px rgba(255,255,255,0.05),
+        inset 4px 4px 8px rgba(255,255,255,0.05),
+        inset -4px -4px 8px rgba(0,0,0,0.2) !important;
 }
 
-.count-number.count-animate {
-    animation: countBounce 0.3s ease;
+html.dark-mode .complete-all-btn,
+html.dark-mode .add-bani-btn,
+html.dark-mode .mala-action-btn:not(.primary),
+[data-theme="dark"] .complete-all-btn,
+[data-theme="dark"] .add-bani-btn,
+[data-theme="dark"] .mala-action-btn:not(.primary) {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.30),
+        -8px -8px 16px rgba(255,255,255,0.04),
+        inset 4px 4px 8px rgba(255,255,255,0.06),
+        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
 }
 
-@keyframes countBounce {
-
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.2);
-        color: var(--accent-primary);
-    }
-}
-
-.count-label {
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 4px;
-}
-
-/* Mala progress bar - Real-time fill */
-.mala-progress-bar {
-    position: relative;
-    height: 8px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-full);
-    overflow: hidden;
-    margin: 12px 0;
-}
-
-.mala-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-    border-radius: var(--radius-full);
-    transition: width 0.15s ease-out;
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-
-.mala-progress-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: var(--text-xs);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* Mala goal container - Enhanced visibility */
-.mala-goal-container {
-    margin-top: 16px;
-    padding: 16px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border-light);
-}
-
-/* Glow pulse for mala completion */
-.mala-ring.glow-pulse {
-    animation: malaComplete 2s ease-out;
-}
-
-@keyframes malaComplete {
-    0% {
-        filter: brightness(1) drop-shadow(0 0 0 transparent);
-    }
-
-    25% {
-        filter: brightness(1.3) drop-shadow(0 0 30px var(--accent-primary));
-    }
-
-    50% {
-        filter: brightness(1.2) drop-shadow(0 0 20px var(--accent-primary));
-    }
-
-    100% {
-        filter: brightness(1) drop-shadow(0 0 0 transparent);
-    }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 7: BANI LIST & COMPLETION STATES
-   ───────────────────────────────────────────────────────────────────────────── */
-
+/* ─── SECTION 7: BANI ITEMS — CLAY ROWS ─── */
 .bani-item {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid var(--glass-border-light);
-    transition: all 0.3s ease;
+    background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(240,240,245,0.7)) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.05),
+        -6px -6px 12px rgba(255,255,255,0.80),
+        inset 2px 2px 4px rgba(255,255,255,0.9),
+        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+    transition: all 0.3s var(--clay-spring) !important;
 }
 
 .bani-item:hover {
-    background: var(--glass-bg-hover);
-    transform: translateX(4px);
+    transform: translateX(4px) scale(1.01) !important;
 }
 
 .bani-item.completed {
-    background: var(--status-success-bg);
-    border-color: var(--status-success);
+    background: linear-gradient(145deg, #E8FFE8, #D0F5D0) !important;
+    border-color: rgba(var(--clay-green-rgb),0.25) !important;
 }
 
-.bani-item.completed .bani-name {
-    text-decoration: line-through;
-    opacity: 0.7;
+html.dark-mode .bani-item,
+[data-theme="dark"] .bani-item {
+    background: linear-gradient(145deg, rgba(50,50,52,0.8), rgba(38,38,40,0.8)) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.25),
+        -6px -6px 12px rgba(255,255,255,0.03),
+        inset 2px 2px 4px rgba(255,255,255,0.05),
+        inset -2px -2px 4px rgba(0,0,0,0.10) !important;
 }
 
-/* Completion button */
-.bani-complete-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 2px solid var(--glass-border);
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    cursor: pointer;
+/* ─── SECTION 8: MALA COUNTER — CLAY RING ─── */
+.mala-center-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.08),
+        -12px -12px 24px rgba(255,255,255,0.90),
+        inset 6px 6px 12px rgba(255,255,255,1),
+        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+    transition: all 0.15s var(--clay-spring) !important;
 }
 
-.bani-complete-btn:hover {
-    border-color: var(--status-success);
-    background: var(--status-success-bg);
+html.dark-mode .mala-center-btn,
+[data-theme="dark"] .mala-center-btn {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.30),
+        -12px -12px 24px rgba(255,255,255,0.05),
+        inset 6px 6px 12px rgba(255,255,255,0.08),
+        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
 }
 
-.bani-item.completed .bani-complete-btn {
-    background: var(--status-success);
-    border-color: var(--status-success);
-    color: white;
+.mala-center-btn:active {
+    transform: translate(-50%,-50%) scale(0.92) !important;
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,0.15),
+        inset -8px -8px 16px rgba(255,255,255,0.5) !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 8: REPORTS & ANALYTICS - CLEAN DATA VISUALIZATION
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.report-summary-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    margin-bottom: 10px;
+.mala-progress-bar {
+    background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    border-radius: 9999px !important;
+    box-shadow:
+        inset 3px 3px 8px rgba(0,0,0,0.10),
+        inset -2px -2px 6px rgba(255,255,255,0.8),
+        0 2px 4px rgba(255,255,255,0.7) !important;
 }
 
-.summary-bar {
-    flex: 1;
-    height: 8px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-full);
-    overflow: hidden;
+.mala-progress-fill {
+    box-shadow:
+        inset 2px 2px 6px rgba(0,0,0,0.15),
+        inset -1px -1px 4px rgba(255,255,255,0.4) !important;
 }
 
-.summary-fill {
-    height: 100%;
-    border-radius: var(--radius-full);
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+/* ─── SECTION 9: TAB BAR — CLAY DOCK ─── */
+.tab-bar {
+    z-index: 200 !important;
 }
 
-.summary-fill[data-type="amritvela"] {
-    background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
+.tab-bar-blur {
+    background: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(240,240,245,0.92)) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border-top: none !important;
+    border-radius: 28px 28px 0 0 !important;
+    box-shadow:
+        0 -12px 24px rgba(0,0,0,0.05),
+        0 12px 24px rgba(255,255,255,1),
+        inset 4px 4px 12px rgba(255,255,255,1),
+        inset -4px -4px 12px rgba(0,0,0,0.03) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-bottom: none !important;
 }
 
-.summary-fill[data-type="nitnem"] {
-    background: linear-gradient(90deg, #66bb6a 0%, #81c784 100%);
+html.dark-mode .tab-bar-blur,
+[data-theme="dark"] .tab-bar-blur,
+[data-theme="saffron"] .tab-bar-blur,
+[data-theme="gold"] .tab-bar-blur {
+    background: linear-gradient(145deg, rgba(44,44,46,0.92), rgba(28,28,30,0.92)) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        0 -12px 24px rgba(0,0,0,0.25),
+        0 12px 24px rgba(255,255,255,0.03),
+        inset 4px 4px 12px rgba(255,255,255,0.08),
+        inset -4px -4px 12px rgba(0,0,0,0.10) !important;
 }
 
-.summary-fill[data-type="alarms"] {
-    background: linear-gradient(90deg, #4fc3f7 0%, #81d4fa 100%);
+.tab-item.active {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        4px 4px 12px rgba(0,0,0,0.08),
+        -4px -4px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1),
+        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
 }
 
-/* Chart bars */
-.chart-bars {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    height: 120px;
-    gap: 8px;
-    padding: 10px 0;
+html.dark-mode .tab-item.active,
+[data-theme="dark"] .tab-item.active {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    box-shadow:
+        4px 4px 12px rgba(0,0,0,0.30),
+        -4px -4px 12px rgba(255,255,255,0.04),
+        inset 2px 2px 4px rgba(255,255,255,0.06),
+        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
 }
 
-.chart-bar {
-    flex: 1;
-    background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    min-height: 4px;
-    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+/* ─── SECTION 10: PERIOD TABS — CLAY SEGMENTED CONTROL ─── */
+.time-period-tabs {
+    background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
+    border-radius: 20px !important;
+    padding: 4px !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.08),
+        inset -3px -3px 8px rgba(255,255,255,0.8),
+        0 3px 8px rgba(255,255,255,0.8) !important;
 }
 
-.chart-bar::after {
-    content: attr(data-value);
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    opacity: 0;
-    transition: opacity 0.2s ease;
+.period-tab.active {
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.08),
+        -4px -4px 10px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1),
+        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
 }
 
-.chart-bar:hover::after {
-    opacity: 1;
+html.dark-mode .time-period-tabs,
+[data-theme="dark"] .time-period-tabs {
+    background: linear-gradient(145deg, #1A1A1C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.25),
+        inset -3px -3px 8px rgba(255,255,255,0.03) !important;
 }
 
-/* Insight card */
-.report-insight {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 16px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    border-left: 4px solid var(--accent-primary);
-    margin-top: 16px;
+html.dark-mode .period-tab.active,
+[data-theme="dark"] .period-tab.active {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.30),
+        -4px -4px 10px rgba(255,255,255,0.04),
+        inset 2px 2px 4px rgba(255,255,255,0.06),
+        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
 }
 
-.insight-icon {
-    font-size: 1.5rem;
-    line-height: 1;
+/* ─── SECTION 11: STAT ITEMS — CLAY INSET WELLS ─── */
+.card-footer {
+    background: linear-gradient(145deg, #E5E5EA, #F0F0F5) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    margin: 16px -8px -8px !important;
+    padding: 16px !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.06),
+        inset -3px -3px 8px rgba(255,255,255,0.8),
+        0 2px 4px rgba(255,255,255,0.7) !important;
 }
 
-.insight-text {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    line-height: 1.5;
+html.dark-mode .card-footer,
+[data-theme="dark"] .card-footer {
+    background: linear-gradient(145deg, #1A1A1C, #222224) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.20),
+        inset -3px -3px 8px rgba(255,255,255,0.02) !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 9: STREAK & ACHIEVEMENTS - SPIRITUAL CELEBRATION
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.main-streak-display {
-    text-align: center;
-    padding: 24px;
-    position: relative;
+/* ─── SECTION 12: MODALS — CLAY SHEETS ─── */
+.modal-container {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%) !important;
+    border-radius: 32px 32px 0 0 !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-bottom: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        0 -16px 32px rgba(0,0,0,0.06),
+        0 8px 24px rgba(255,255,255,1),
+        inset 4px 4px 16px rgba(255,255,255,1),
+        inset -4px -4px 16px rgba(0,0,0,0.03) !important;
 }
 
-.streak-number-container {
-    margin: 16px 0;
+html.dark-mode .modal-container,
+[data-theme="dark"] .modal-container {
+    background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        0 -16px 32px rgba(0,0,0,0.35),
+        0 8px 24px rgba(255,255,255,0.03),
+        inset 4px 4px 16px rgba(255,255,255,0.08),
+        inset -4px -4px 16px rgba(0,0,0,0.15) !important;
 }
 
-.streak-number {
-    font-size: 4rem;
-    font-weight: var(--font-extrabold);
-    color: var(--text-primary);
-    line-height: 1;
-    text-shadow: 0 4px 20px var(--accent-glow);
-}
-
-.streak-unit {
-    display: block;
-    font-size: var(--text-md);
-    font-weight: var(--font-medium);
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-top: 4px;
-}
-
-.streak-message {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    max-width: 280px;
-    margin: 16px auto 0;
-}
-
-/* Flame animation - Subtle spiritual */
-.streak-flame-animation {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 60px;
-    opacity: 0.6;
-}
-
-.flame {
-    position: absolute;
-    bottom: 0;
-    width: 20px;
-    height: 30px;
-    background: linear-gradient(0deg, #ff9800 0%, #ffeb3b 50%, transparent 100%);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    animation: flameFlicker 1s ease-in-out infinite;
-}
-
-.flame-1 {
-    left: 0;
-    animation-delay: 0s;
-}
-
-.flame-2 {
-    left: 20px;
-    animation-delay: 0.2s;
-    height: 40px;
-}
-
-.flame-3 {
-    left: 40px;
-    animation-delay: 0.4s;
-}
-
-@keyframes flameFlicker {
-
-    0%,
-    100% {
-        transform: scaleY(1) scaleX(1);
-        opacity: 0.8;
-    }
-
-    50% {
-        transform: scaleY(1.1) scaleX(0.9);
-        opacity: 1;
-    }
-}
-
-/* Achievement cards */
+/* ─── SECTION 13: ACHIEVEMENT CARDS — MINI CLAY ─── */
 .achievement-card {
-    padding: 16px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
-    text-align: center;
-    border: 1px solid var(--glass-border-light);
-    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.06),
+        -8px -8px 16px rgba(255,255,255,0.85),
+        inset 4px 4px 8px rgba(255,255,255,1),
+        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s var(--clay-spring) !important;
 }
 
 .achievement-card.locked {
-    opacity: 0.5;
-    filter: grayscale(1);
+    opacity: 0.5 !important;
+    filter: grayscale(0.8) !important;
 }
 
 .achievement-card:not(.locked) {
-    background: linear-gradient(135deg, var(--glass-bg) 0%, var(--glass-bg-active) 100%);
-    border-color: var(--accent-primary);
-    box-shadow: 0 4px 20px var(--accent-glow);
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-gold-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.85),
+        inset 4px 4px 8px rgba(255,255,255,1) !important;
 }
 
-.achievement-icon {
-    font-size: 2rem;
-    margin-bottom: 8px;
+html.dark-mode .achievement-card,
+[data-theme="dark"] .achievement-card {
+    background: linear-gradient(145deg, #3A3A3C, #2A2A2C) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.30),
+        -8px -8px 16px rgba(255,255,255,0.04),
+        inset 4px 4px 8px rgba(255,255,255,0.05) !important;
 }
 
-.achievement-name {
-    display: block;
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    margin-bottom: 4px;
+/* ─── SECTION 14: STREAK DISPLAY ─── */
+.streak-number {
+    text-shadow: 0 4px 12px rgba(var(--clay-orange-rgb),0.30) !important;
 }
 
-.achievement-desc {
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 10: MODALS & OVERLAYS - CLEAN & FUNCTIONAL
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 500;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-container {
-    width: 100%;
-    max-width: 420px;
-    max-height: 90vh;
-    background: var(--glass-bg);
-    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-bottom: none;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-.modal-overlay.active .modal-container {
-    transform: translateY(0);
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--glass-border-light);
-}
-
-.modal-title {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-}
-
-.modal-close {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-}
-
-.modal-close:hover {
-    background: var(--bg-tertiary);
-}
-
-.modal-body {
-    padding: 20px;
-    overflow-y: auto;
-    max-height: calc(90vh - 120px);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 11: MALA MENU & GOAL MODALS
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.mala-menu-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 600;
-    animation: fadeIn 0.2s ease;
-}
-
-.mala-menu-overlay.closing {
-    animation: fadeOut 0.2s ease forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-    }
-}
-
-.mala-menu {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: var(--radius-xl);
-    width: 90%;
-    max-width: 320px;
-    padding: 16px;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow-lg);
-    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--glass-border-light);
-    margin-bottom: 12px;
-}
-
-.menu-header h4 {
-    font-size: var(--text-md);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-}
-
-.menu-close-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    transition: background 0.2s ease;
-}
-
-.menu-close-btn:hover {
-    background: var(--bg-tertiary);
-}
-
-.menu-option {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 12px;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: background 0.2s ease;
-    margin-bottom: 4px;
-}
-
-.menu-option:hover {
-    background: var(--bg-secondary);
-}
-
-.menu-icon {
-    font-size: 1.25rem;
-}
-
-.menu-text {
-    flex: 1;
-}
-
-.menu-label {
-    display: block;
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: var(--text-primary);
-}
-
-.menu-sublabel {
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-}
-
-/* Goal presets */
-.goal-presets {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.goal-preset {
-    flex: 1;
-    min-width: 60px;
-    padding: 14px 8px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--glass-border-light);
-    border-radius: var(--radius-md);
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.goal-preset:hover {
-    background: var(--accent-primary);
-    color: var(--text-inverse);
-    border-color: var(--accent-primary);
-}
-
-.custom-goal-input {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.custom-goal-input label {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-}
-
-.custom-goal-input input {
-    flex: 1;
-    padding: 12px 14px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--glass-border-light);
-    border-radius: var(--radius-md);
-    font-size: var(--text-md);
-    color: var(--text-primary);
-    text-align: center;
-}
-
-.custom-goal-input input:focus {
-    border-color: var(--accent-primary);
-    outline: none;
-}
-
-.set-goal-btn {
-    padding: 12px 20px;
-    background: var(--accent-primary);
-    color: var(--text-inverse);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.set-goal-btn:hover {
-    background: var(--accent-secondary);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 12: TOAST NOTIFICATIONS - CLEAN & VISIBLE
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.toast-container {
-    position: fixed;
-    top: calc(var(--safe-top) + 60px);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 700;
-    width: 90%;
-    max-width: 360px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
-}
-
+/* ─── SECTION 15: TOAST — CLAY PILL ─── */
 .toast {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: var(--radius-lg);
-    padding: 14px 18px;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: 20px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.08),
+        -12px -12px 24px rgba(255,255,255,0.9),
+        inset 6px 6px 12px rgba(255,255,255,1),
+        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+}
+
+html.dark-mode .toast,
+[data-theme="dark"] .toast {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.40),
+        -12px -12px 24px rgba(255,255,255,0.03),
+        inset 6px 6px 12px rgba(255,255,255,0.06),
+        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS ─── */
+.report-summary-item,
+.alarm-stat-card,
+.mala-goal-container,
+.mala-option,
+.goal-preset,
+.setting-item,
+.settings-section {
+    background: linear-gradient(145deg, rgba(255,255,255,0.6), rgba(240,240,245,0.6)) !important;
+    border: 1px solid rgba(255,255,255,0.50) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.05),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+    margin-bottom: 10px !important;
+    padding: 14px !important;
+}
+
+html.dark-mode .report-summary-item,
+html.dark-mode .alarm-stat-card,
+html.dark-mode .mala-goal-container,
+html.dark-mode .mala-option,
+html.dark-mode .goal-preset,
+html.dark-mode .setting-item,
+html.dark-mode .settings-section,
+[data-theme="dark"] .report-summary-item,
+[data-theme="dark"] .alarm-stat-card,
+[data-theme="dark"] .mala-goal-container,
+[data-theme="dark"] .mala-option,
+[data-theme="dark"] .goal-preset,
+[data-theme="dark"] .setting-item,
+[data-theme="dark"] .settings-section {
+    background: linear-gradient(145deg, rgba(50,50,52,0.6), rgba(38,38,40,0.6)) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.03),
+        inset 2px 2px 4px rgba(255,255,255,0.04) !important;
+}
+
+.mala-option.active {
+    background: linear-gradient(145deg, #FFE8C8, #FFD898) !important;
+    border-color: rgba(var(--clay-gold-rgb),0.30) !important;
+    box-shadow:
+        4px 4px 10px rgba(var(--clay-gold-rgb),0.20),
+        -4px -4px 10px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1) !important;
+}
+
+html.dark-mode .mala-option.active,
+[data-theme="dark"] .mala-option.active {
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.30),
+        -4px -4px 10px rgba(255,255,255,0.05),
+        inset 2px 2px 4px rgba(255,255,255,0.08) !important;
+}
+
+/* ─── SECTION 17: WEEK VIEW DAYS ─── */
+.week-days .day-item {
+    background: linear-gradient(145deg, rgba(255,255,255,0.5), rgba(240,240,245,0.5)) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 14px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.05),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+}
+
+/* ─── SECTION 18: INPUTS — CLAY INSET ─── */
+input[type="text"],
+input[type="number"],
+select,
+.search-input,
+.setting-select {
+    background: linear-gradient(145deg, #E5E5EA, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.06),
+        inset -4px -4px 10px rgba(255,255,255,0.8),
+        0 2px 4px rgba(255,255,255,0.7) !important;
+    transition: all 0.3s var(--clay-spring) !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+.search-input:focus {
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.08),
+        inset -4px -4px 10px rgba(255,255,255,0.8),
+        0 0 0 2px rgba(var(--clay-gold-rgb),0.35) !important;
+    border-color: rgba(var(--clay-gold-rgb),0.5) !important;
+}
+
+html.dark-mode input[type="text"],
+html.dark-mode input[type="number"],
+html.dark-mode select,
+html.dark-mode .search-input,
+html.dark-mode .setting-select,
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] select,
+[data-theme="dark"] .setting-select {
+    background: linear-gradient(145deg, #1A1A1C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.20),
+        inset -4px -4px 10px rgba(255,255,255,0.03) !important;
+}
+
+/* ─── SECTION 19: ANIMATIONS ─── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── SECTION 20: VISIBILITY FIXES ─── */
+/* Fix for light mode time display text visibility */
+body:not([data-theme="dark"]) .amritvela-time-display .current-hour,
+body:not([data-theme="dark"]) .amritvela-time-display .current-minute,
+body:not([data-theme="dark"]) .amritvela-time-display .time-separator,
+body:not([data-theme="dark"]) .amritvela-time-display .time-period,
+body:not([data-theme="dark"]) .status-pill,
+body:not([data-theme="dark"]) .status-pill .streak-count,
+body:not([data-theme="dark"]) .status-pill .current-time,
+body:not([data-theme="dark"]) .header-btn {
+    color: #1d1d1f !important;
+}
+
+body:not([data-theme="dark"]) .status-pill .status-divider {
+    background-color: rgba(29, 29, 31, 0.3) !important;
+}
+
+body:not([data-theme="dark"]) .complete-all-btn,
+body:not([data-theme="dark"]) .add-bani-btn {
+    color: #1d1d1f !important;
+}
+
+/* ─── SECTION 21: STREAK CARD COMPACT MODE ─── */
+.streak-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 12px;
-    pointer-events: auto;
-    animation: toastSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toast.removing {
-    animation: toastSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes toastSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes toastSlideOut {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-}
-
-.toast-icon {
-    font-size: 1.25rem;
-    line-height: 1;
-}
-
-.toast-content {
-    flex: 1;
-}
-
-.toast-title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.toast-message {
-    font-size: var(--text-xs);
+    justify-content: center;
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.06),
+        -4px -4px 10px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1),
+        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
     color: var(--text-secondary);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
-.toast.success .toast-icon {
-    color: var(--status-success);
+html.dark-mode .streak-action-btn,
+[data-theme="dark"] .streak-action-btn {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.30),
+        -4px -4px 10px rgba(255,255,255,0.04),
+        inset 2px 2px 4px rgba(255,255,255,0.06),
+        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
 }
 
-.toast.error .toast-icon {
-    color: var(--status-error);
+.streak-action-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
-.toast.warning .toast-icon {
-    color: var(--status-warning);
+.streak-action-btn.rotated {
+    transform: rotate(180deg) !important;
 }
 
-.toast.info .toast-icon {
-    color: var(--status-info);
+.streak-body .streak-stats-row,
+.streak-body .achievements-section {
+    display: none !important;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 13: ANIMATIONS - GLOBAL KEYFRAMES
-   ───────────────────────────────────────────────────────────────────────────── */
+.streak-body.expanded .streak-stats-row {
+    display: flex !important;
+    animation: fadeInUp 0.3s ease forwards;
+}
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+.streak-body.expanded .achievements-section {
+    display: block !important;
+    animation: fadeInUp 0.4s ease forwards;
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
+@keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-@keyframes flicker {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-/* Smooth scrolling for main content */
-.main-content {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 14: RESPONSIVE & ACCESSIBILITY
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* Reduce motion for accessibility */
+/* ─── SECTION 22: ACCESSIBILITY ─── */
 @media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
 }
 
-/* Focus visible states */
-button:focus-visible,
-input:focus-visible {
-    outline: 2px solid var(--accent-primary);
+button:focus-visible, input:focus-visible {
+    outline: 2px solid rgba(var(--clay-gold-rgb),0.6);
     outline-offset: 2px;
 }
 
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-    .card {
-        border-width: 2px;
-    }
-
-    .text-primary {
-        color: #ffffff !important;
-    }
+/* ─── SECTION 23: REPORT TABS— CLAY ─── */
+.report-tabs {
+    background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
+    border-radius: 14px !important;
+    padding: 3px !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.06),
+        inset -4px -4px 10px rgba(255,255,255,0.8) !important;
 }
 
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) {
-        --bg-primary: #1a1612;
-    }
+.report-tab.active {
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border-radius: 12px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.08),
+        -4px -4px 10px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1) !important;
+}
+
+/* ─── SECTION 24: CHART BARS — CLAY ─── */
+.chart-bar {
+    background: linear-gradient(180deg, #FFD080, #FFAB40) !important;
+    border-radius: 8px 8px 0 0 !important;
+    box-shadow:
+        inset 2px 2px 6px rgba(0,0,0,0.15),
+        inset -2px -2px 6px rgba(255,255,255,0.5) !important;
+}
+
+/* ─── SECTION 25: REPORT INSIGHT — CLAY ─── */
+.report-insight {
+    background: linear-gradient(145deg, rgba(255,248,240,0.8), rgba(255,240,230,0.8)) !important;
+    border: 1px solid rgba(var(--clay-gold-rgb),0.3) !important;
+    border-left: 4px solid rgba(var(--clay-gold-rgb),0.6) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        6px 6px 16px rgba(var(--clay-gold-rgb),0.15),
+        -6px -6px 16px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1) !important;
+}
+
+html.dark-mode .report-insight,
+[data-theme="dark"] .report-insight {
+    background: linear-gradient(145deg, rgba(60,48,30,0.5), rgba(40,32,20,0.5)) !important;
+    border-color: rgba(var(--clay-gold-rgb),0.20) !important;
+    box-shadow:
+        6px 6px 16px rgba(0,0,0,0.25),
+        -6px -6px 16px rgba(255,255,255,0.03),
+        inset 2px 2px 4px rgba(255,255,255,0.05) !important;
 }

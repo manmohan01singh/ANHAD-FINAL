@@ -76,14 +76,14 @@
     function init() {
         console.log('🔔 Background Alarm System Initialized');
 
-        // Only schedule if leader
-        if (window.AnhadAlarmCoordinator?.isLeader()) {
+        // Schedule (standalone or if leader)
+        if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
             checkAndSchedule();
         }
 
-        // Re-check every 30 seconds for accuracy (only leader schedules)
+        // Re-check every 30 seconds for accuracy
         checkInterval = setInterval(() => {
-            if (window.AnhadAlarmCoordinator?.isLeader()) {
+            if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                 checkAndSchedule();
             }
         }, CONFIG.CHECK_INTERVAL);
@@ -91,7 +91,7 @@
         // Visibility change - check when page becomes visible
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                if (window.AnhadAlarmCoordinator?.isLeader()) {
+                if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                     checkAndSchedule();
                 }
                 checkMissedAlarms();
@@ -107,7 +107,7 @@
         if (window.AnhadAlarmCoordinator) {
             window.AnhadAlarmCoordinator.onAlarmFired((alarmId, reminder, isPreReminder) => {
                 console.log('[BgAlarm] Received alarm from coordinator:', alarmId);
-                if (!window.AnhadAlarmCoordinator.isLeader()) {
+                if (window.AnhadAlarmCoordinator && !window.AnhadAlarmCoordinator.isLeader()) {
                     fireAlarm(reminder, isPreReminder, State.options || {});
                 }
             });

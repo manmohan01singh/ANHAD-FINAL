@@ -15,7 +15,7 @@
         gurmukhiSize: 28,
         transliterationSize: 18,
         translationSize: 16,
-        theme: 'dark',
+        theme: localStorage.getItem('anhad_theme') || 'light', // Sync with global theme
         spacing: 'normal',
         showGurmukhi: true,
         showTransliteration: true,
@@ -314,7 +314,8 @@
         root.style.setProperty('--transliteration-size', `${state.settings.transliterationSize}px`);
         root.style.setProperty('--translation-size', `${state.settings.translationSize}px`);
 
-        // Theme
+        // Theme - apply to both html and body for maximum compatibility
+        document.documentElement.setAttribute('data-theme', state.settings.theme);
         document.body.setAttribute('data-theme', state.settings.theme);
 
         // Spacing
@@ -406,6 +407,11 @@
             if (saved) {
                 state.settings = { ...DEFAULTS, ...JSON.parse(saved) };
             }
+            
+            // Always sync with global theme on load
+            const globalTheme = localStorage.getItem('anhad_theme') || 'light';
+            state.settings.theme = globalTheme;
+            
         } catch (e) {
             console.warn('Could not load settings:', e);
         }
@@ -626,6 +632,26 @@
 
         // Read again button
         elements.readAgainBtn?.addEventListener('click', scrollToTop);
+
+        // ═══════════════════════════════════════════════════════════════
+        // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                state.settings.theme = e.newValue;
+                applySettings();
+                console.log('🎨 Nitnem reader synced with global theme:', e.newValue);
+            }
+        });
+
+        // Listen for custom theme change events
+        window.addEventListener('themechange', (e) => {
+            if (e.detail?.theme) {
+                state.settings.theme = e.detail.theme;
+                applySettings();
+                console.log('🎨 Nitnem reader theme changed via event:', e.detail.theme);
+            }
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {

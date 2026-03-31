@@ -299,8 +299,12 @@
   width: 3px;
   background: var(--sacred-gold-light);
   border-radius: 2px;
-  animation: equalize 0.8s infinite alternate ease-in-out;
+  animation: equalize 1.2s infinite ease-in-out;
   transform-origin: bottom;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: transform 0.3s ease;
 }
 
 .island-waveform.paused .bar {
@@ -314,8 +318,8 @@
 .island-waveform .bar:nth-child(4) { animation-delay: 0.5s; height: 40%; }
 
 @keyframes equalize {
-  0% { transform: scaleY(0.2); }
-  100% { transform: scaleY(1); }
+  0%, 100% { transform: scaleY(0.2); }
+  50% { transform: scaleY(1); }
 }
 
 .island-info {

@@ -23,10 +23,78 @@
     const DARK_CLASS = 'dark-mode';
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // LEGACY THEME MIGRATION - Migrate old theme keys to unified anhad_theme
+    // ═══════════════════════════════════════════════════════════════════════════
+    (function migrateLegacyThemes() {
+        const legacyKeys = [
+            'gurbani_radio_theme',
+            'hukamnama_theme',
+            'nitnem_theme',
+            'sehajpaath_theme',
+            'anhad_dark_mode' // Old boolean key
+        ];
+        
+        const currentTheme = localStorage.getItem(THEME_KEY);
+        
+        // Only migrate if no unified theme is set
+        if (!currentTheme) {
+            for (const key of legacyKeys) {
+                const value = localStorage.getItem(key);
+                if (value) {
+                    // Handle old boolean anhad_dark_mode
+                    if (key === 'anhad_dark_mode') {
+                        const theme = value === 'true' ? 'dark' : 'light';
+                        localStorage.setItem(THEME_KEY, theme);
+                        console.log('🎨 Migrated anhad_dark_mode to anhad_theme:', theme);
+                    } else {
+                        localStorage.setItem(THEME_KEY, value);
+                        console.log('🎨 Migrated', key, 'to anhad_theme:', value);
+                    }
+                    break;
+                }
+            }
+        }
+    })();
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CHECK IF PAGE HAS ITS OWN THEME SYSTEM
+    // Pages with [data-theme] attribute or specific theme handling should be skipped
+    // ═══════════════════════════════════════════════════════════════════════════
+    function hasOwnThemeSystem() {
+        const root = document.documentElement;
+        
+        // FORCE GLOBAL THEME: If page explicitly requests global theme, skip detection
+        if (root.getAttribute('data-global-theme') === 'force') {
+            return false;
+        }
+        
+        // Check if page already has data-theme attribute (self-themed pages)
+        if (root.hasAttribute('data-theme')) {
+            return true;
+        }
+        // Check if body has theme-related classes that indicate custom theming
+        const body = document.body;
+        if (body) {
+            const bodyClasses = body.className;
+            if (bodyClasses.includes('theme-') || bodyClasses.includes('dark') || bodyClasses.includes('light')) {
+                return true;
+            }
+        }
+        // Check for page-specific theme indicators in CSS
+        const styles = getComputedStyle(root);
+        // If the page defines --bg-primary as a gradient or has specific theme vars
+        const bgPrimary = styles.getPropertyValue('--bg-primary').trim();
+        if (bgPrimary.includes('gradient') || bgPrimary.includes('url(')) {
+            return true;
+        }
+        return false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // DARK MODE CSS VARIABLES
     // ═══════════════════════════════════════════════════════════════════════════
     const darkModeStyles = `
-        html.dark-mode {
+        html.dark-mode:not([data-theme]) {
             /* Background */
             --bg-primary: #0D0D0F;
             --bg-white: #1A1A1E;
@@ -87,85 +155,85 @@
         }
         
         /* Body background */
-        html.dark-mode body {
+        html.dark-mode:not([data-theme]) body {
             background: var(--bg-primary);
             color: var(--text-primary);
         }
         
         /* Cards and containers */
-        html.dark-mode .task-card,
-        html.dark-mode .feature-card,
-        html.dark-mode .quick-tile,
-        html.dark-mode .hero-card,
-        html.dark-mode .progress-card {
+        html.dark-mode:not([data-theme]) .task-card,
+        html.dark-mode:not([data-theme]) .feature-card,
+        html.dark-mode:not([data-theme]) .quick-tile,
+        html.dark-mode:not([data-theme]) .hero-card,
+        html.dark-mode:not([data-theme]) .progress-card {
             background: var(--bg-white);
             border-color: var(--glass-border);
         }
         
         /* Header buttons */
-        html.dark-mode .header-btn--glass {
+        html.dark-mode:not([data-theme]) .header-btn--glass {
             background: var(--glass-white);
             border-color: var(--glass-border);
             color: var(--text-primary);
         }
         
         /* Category pills */
-        html.dark-mode .category-pill--inactive {
+        html.dark-mode:not([data-theme]) .category-pill--inactive {
             background: var(--glass-white);
             color: var(--text-secondary);
             border-color: var(--glass-border);
         }
         
         /* Bottom nav */
-        html.dark-mode .bottom-nav {
+        html.dark-mode:not([data-theme]) .bottom-nav {
             background: transparent !important;
             border-top-color: transparent !important;
         }
         
-        html.dark-mode .bottom-nav__container {
+        html.dark-mode:not([data-theme]) .bottom-nav__container {
             background: var(--glass-white);
         }
         
-        html.dark-mode .nav-item {
+        html.dark-mode:not([data-theme]) .nav-item {
             color: var(--text-tertiary);
         }
         
-        html.dark-mode .nav-item--active {
+        html.dark-mode:not([data-theme]) .nav-item--active {
             color: var(--gold-400);
         }
         
         /* Filter modal and overlays */
-        html.dark-mode .filter-modal__content,
-        html.dark-mode .radio-menu__sheet {
+        html.dark-mode:not([data-theme]) .filter-modal__content,
+        html.dark-mode:not([data-theme]) .radio-menu__sheet {
             background: var(--bg-white);
         }
         
         /* Section headers */
-        html.dark-mode .section-header__title {
+        html.dark-mode:not([data-theme]) .section-header__title {
             color: var(--text-primary);
         }
         
-        html.dark-mode .section-header__link {
+        html.dark-mode:not([data-theme]) .section-header__link {
             color: var(--gold-400);
         }
         
         /* Input fields */
-        html.dark-mode input,
-        html.dark-mode textarea,
-        html.dark-mode select {
+        html.dark-mode:not([data-theme]) input,
+        html.dark-mode:not([data-theme]) textarea,
+        html.dark-mode:not([data-theme]) select {
             background: var(--bg-soft);
             border-color: var(--glass-border);
             color: var(--text-primary);
         }
         
         /* iOS Install Banner */
-        html.dark-mode .ios-install-banner {
+        html.dark-mode:not([data-theme]) .ios-install-banner {
             background: var(--bg-white);
         }
         
-        /* Smooth theme transition */
-        html.dark-mode *,
-        html *:not(script):not(style) {
+        /* Smooth theme transition - only on global-themed pages */
+        html.dark-mode:not([data-theme]) *,
+        html:not([data-theme]) *:not(script):not(style) {
             transition: background-color 0.3s ease, 
                         border-color 0.3s ease,
                         color 0.15s ease,
@@ -210,6 +278,17 @@
     function applyTheme(theme) {
         const root = document.documentElement;
         const body = document.body;
+
+        // Skip if page has its own theme system
+        if (hasOwnThemeSystem()) {
+            console.log('🎨 Page has its own theme system - skipping global theme application');
+            // Just update the meta theme-color
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+                metaTheme.content = theme === 'dark' ? '#0D0D0F' : '#FAF8F5';
+            }
+            return;
+        }
 
         if (theme === 'dark') {
             root.classList.add(DARK_CLASS);

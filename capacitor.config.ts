@@ -5,11 +5,12 @@ const config: CapacitorConfig = {
     appName: 'ANHAD',
     webDir: 'frontend',
 
-    // Server configuration for development
+    // Server configuration
+    // NOTE: Do NOT set server.url in production — Capacitor serves from webDir (frontend/)
+    // Only set server.url when developing against a live dev server
     server: {
-        url: 'https://anhad-final.onrender.com',
         androidScheme: 'https',
-        cleartext: false // Require HTTPS in production
+        cleartext: false
     },
 
     // Android-specific configuration
@@ -30,6 +31,11 @@ const config: CapacitorConfig = {
             iconColor: '#f7c634',
             // Sound for notifications (place in android/app/src/main/res/raw)
             sound: 'notification.wav'
+        },
+
+        // Screen orientation lock
+        ScreenOrientation: {
+            default: 'portrait'
         },
 
         // Splash screen configuration

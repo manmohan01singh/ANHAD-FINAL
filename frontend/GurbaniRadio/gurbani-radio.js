@@ -14,7 +14,17 @@
     // API CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const RENDER_BASE = 'https://anhad-final.onrender.com';
+    // Smart localhost-aware API base — works on localhost:3000 AND Render
+    const RENDER_BASE = (() => {
+        try {
+            const port = window.location.port;
+            const host = window.location.hostname;
+            if (port === '3000' || port === '3001') return 'http://localhost:3000';
+            if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+            if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+        } catch (e) {}
+        return 'https://anhad-final.onrender.com';
+    })();
 
     const API_BASE = RENDER_BASE;
 
@@ -712,8 +722,11 @@
 
         onError(e) {
             console.error('Audio error:', e);
-            // Retry with fresh server sync
-            setTimeout(() => this.goLive(), 2000);
+            this.isPlaying = false;
+            this.updatePlayButton();
+            this.showToast('Reconnecting...');
+            // Retry with fresh server sync after 3 seconds
+            setTimeout(() => this.goLive(), 3000);
         }
 
         // ═══ ACTIONS ═══
@@ -778,39 +791,13 @@
         }
 
         showToast(message) {
-            let toast = document.getElementById('playerToast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'playerToast';
-                toast.style.cssText = `
-                    position: fixed;
-                    bottom: 100px;
-                    left: 50%;
-                    transform: translateX(-50%) translateY(20px);
-                    background: rgba(60, 60, 60, 0.95);
-                    color: #fff;
-                    padding: 12px 24px;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    font-weight: 500;
-                    z-index: 10000;
-                    opacity: 0;
-                    transition: all 0.3s ease;
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                `;
-                document.body.appendChild(toast);
+            // Use claymorphism toast system
+            if (window.AnhadPopup) {
+                AnhadPopup.toast(message, { type: 'info', duration: 2000 });
+            } else {
+                // Fallback console log if popup system not loaded
+                console.log('[Toast]', message);
             }
-
-            toast.textContent = message;
-            toast.style.opacity = '1';
-            toast.style.transform = 'translateX(-50%) translateY(0)';
-
-            clearTimeout(this.toastTimeout);
-            this.toastTimeout = setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(20px)';
-            }, 2000);
         }
 
         handleKeyboard(e) {

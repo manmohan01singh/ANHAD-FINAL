@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
@@ -15,6 +15,9 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reader.css">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
 </head>
 <body>
 
@@ -68,6 +71,11 @@
             </div>
 
             <div class="reader-actions">
+                <button class="reader-btn" id="offlineBadge" aria-label="Available offline" style="opacity: 0; transition: opacity 0.3s ease; pointer-events: none;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </button>
                 <button class="reader-btn" id="bookmarkBtn" aria-label="Bookmark">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
@@ -417,9 +425,12 @@
 
     <script src="js/banidb-api.js"></script>
     <script src="js/bani-metadata.js"></script>
+    <script src="../lib/user-stats.js"></script>
     <script src="js/reader-engine.js"></script>
     
     <!-- Persistent Audio for Cross-Page Playback -->
+    <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
     <script src="../lib/persistent-audio.js"></script>
     <script src="../lib/background-audio-loader.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>

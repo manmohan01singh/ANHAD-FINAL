@@ -49,12 +49,12 @@
 ═══════════════════════════════════════════════════════════════════════════════ */
 :root {
   /* ── Surface System (Trendora-inspired warm grays) ── */
-  --surface-primary: #FFFFFF;
-  --surface-secondary: #F5F5F7;
-  --surface-tertiary: #EFEFF4;
-  --surface-elevated: #FFFFFF;
-  --surface-sunken: #E8E8ED;
-  --surface-warm: #FBF8F4;
+  --surface-primary: #F1F3F6;
+  --surface-secondary: #F1F3F6;
+  --surface-tertiary: #E8EAED;
+  --surface-elevated: #F1F3F6;
+  --surface-sunken: #E2E4E8;
+  --surface-warm: #FFFDF9;
 
   /* ── Text System (iOS HIG precise) ── */
   --text-primary: #1A1A1F;
@@ -91,25 +91,28 @@
 
   /* ── Shadow System (Trendora depth layers) ── */
   --shadow-0: none;
-  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 16px 56px rgba(0, 0, 0, 0.10), 0 6px 20px rgba(0, 0, 0, 0.05);
-  --shadow-2xl: 0 24px 80px rgba(0, 0, 0, 0.12), 0 8px 28px rgba(0, 0, 0, 0.06);
-  --shadow-card: 0 2px 24px rgba(0, 0, 0, 0.05), 0 0 0 0.5px rgba(0, 0, 0, 0.03);
-  --shadow-card-hover: 0 8px 40px rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
-  --shadow-float: 0 12px 48px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
-  --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-xs: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8), inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -2px -2px 5px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 12px 12px 24px rgba(0, 0, 0, 0.08), -12px -12px 24px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 1), inset -6px -6px 12px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 16px 16px 32px rgba(0, 0, 0, 0.08), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 20px 20px 40px rgba(0, 0, 0, 0.1), -20px -20px 40px rgba(255, 255, 255, 1), inset 10px 10px 20px rgba(255, 255, 255, 1), inset -10px -10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-2xl: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.08);
+  --shadow-card: 16px 16px 32px rgba(0, 0, 0, 0.07), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 22px 22px 44px rgba(0, 0, 0, 0.09), -22px -22px 44px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.06);
+  --shadow-float: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 0.8), inset -6px -6px 12px rgba(0, 0, 0, 0.04);
+  --shadow-inset: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
+  --shadow-clay-btn: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-clay-btn-active: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
+  --shadow-clay-nav: 0 -8px 24px rgba(255,255,255,1), 0 8px 24px rgba(0, 0, 0, 0.08), inset 4px 4px 12px rgba(255,255,255,1), inset -4px -4px 12px rgba(0, 0, 0, 0.05);
 
   /* ── Radii (Trendora generous curves) ── */
-  --radius-xs: 10px;
-  --radius-sm: 14px;
-  --radius-md: 18px;
-  --radius-lg: 22px;
-  --radius-xl: 26px;
-  --radius-2xl: 32px;
-  --radius-3xl: 40px;
+  --radius-xs: 16px;
+  --radius-sm: 20px;
+  --radius-md: 26px;
+  --radius-lg: 32px;
+  --radius-xl: 40px;
+  --radius-2xl: 48px;
+  --radius-3xl: 56px;
   --radius-full: 9999px;
 
   /* ── Typography Scale (iOS 18 HIG — SF Pro) ── */
@@ -415,6 +418,21 @@ a:active {
   }
 }
 
+@keyframes glassReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-enter {
+  animation: glassReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
 /* Page exit — GPU-composited ONLY (opacity + transform), no filter:blur for 120fps */
 .app--exiting {
   animation: anhad-exit 0.18s var(--ease-smooth) forwards;
@@ -566,8 +584,9 @@ body.dark-mode .header__theme-dot {
   font-weight: 600;
   letter-spacing: 3px;
   line-height: 1.0;
-  color: var(--text-primary);
+  color: #D4943A;
   text-transform: uppercase;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,1);
 }
 
 /* Dark mode: white text */
@@ -600,15 +619,15 @@ body.dark-mode .header__title {
   align-items: center;
   justify-content: center;
   background: var(--surface-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-clay-btn);
   transition: all var(--duration-fast) var(--ease-spring);
   will-change: transform;
-  border: var(--border-card);
+  border: none;
 }
 
 .header__btn:active {
   transform: scale(0.88);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-clay-btn-active);
 }
 
 .header__btn svg {
@@ -751,17 +770,17 @@ body.dark-mode .deco-logo-home img {
   margin-bottom: 0;
   font-family: 'Trajan Pro', 'Cinzel', serif; /* Ultimate high-end Roman classical font */
 
-  /* Simple Dark Golden Color */
+  /* Embossed Clay Gold Color */
   color: #AF7D14; 
   
-  /* Remove 3D gradients and clipping */
   background: none;
   -webkit-background-clip: unset;
   background-clip: unset;
   -webkit-text-fill-color: unset;
 
-  /* Simple, elegant soft aura */
-  text-shadow: 0 4px 12px rgba(175, 125, 20, 0.25);
+  /* 3D clay text shadow */
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.15),
+               -3px -3px 6px rgba(255,255,255,0.9);
 
   /* Remove 3D tilt */
   transform: none;
@@ -788,7 +807,8 @@ body.dark-mode .greeting__salutation {
   line-height: 1.5;
   margin-bottom: var(--space-1);
   max-width: 100%;
-  text-shadow: 0 4px 16px rgba(212, 148, 58, 0.25); /* Subtle sacred glow */
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.1),
+               -2px -2px 5px rgba(255,255,255,0.8);
   letter-spacing: 0.2px;
 }
 
@@ -838,8 +858,8 @@ body.dark-mode .greeting__salutation {
   background: var(--surface-primary);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-6);
-  box-shadow: var(--shadow-sm);
-  border: var(--border-card);
+  box-shadow: var(--shadow-inset);
+  border: none;
   position: relative;
   overflow: hidden;
 }
@@ -870,9 +890,10 @@ body.dark-mode .greeting__salutation {
 
 .progress-inline__bar {
   flex: 1;
-  height: 5px;
-  background: var(--surface-tertiary);
+  height: 8px;
+  background: rgba(0, 0, 0, 0.04);
   border-radius: var(--radius-full);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1), inset -1px -1px 3px rgba(255, 255, 255, 0.7);
   overflow: hidden;
   position: relative;
 }
@@ -881,6 +902,7 @@ body.dark-mode .greeting__salutation {
   height: 100%;
   background: var(--accent-gradient);
   border-radius: var(--radius-full);
+  box-shadow: 0 2px 4px rgba(212, 148, 58, 0.4);
   width: 0%;
   transition: width 1.4s var(--ease-out-expo);
   position: relative;
@@ -970,9 +992,7 @@ body.dark-mode .golden-orb-bg {
   border-radius: 24px;
   overflow: hidden;
   background: var(--surface-primary);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18),
-              0 4px 16px rgba(0, 0, 0, 0.1),
-              0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-float);
   cursor: pointer;
   transition: transform var(--duration-normal) var(--ease-spring),
               box-shadow var(--duration-normal) ease;
@@ -983,8 +1003,7 @@ body.dark-mode .golden-orb-bg {
 
 .hero-card:active {
   transform: scale(0.975);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12),
-              0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-card);
 }
 
 .hero-card__image-wrapper {
@@ -1054,17 +1073,14 @@ body.dark-mode .golden-orb-bg {
   );
 }
 
-/* Top gradient for badge readability */
+/* Top gradient for badge readability + Inset Clay shadow for image */
 .hero-card__image-wrapper::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 35%;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.25) 0%,
-    transparent 100%
-  );
+  height: 100%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, transparent 40%);
+  box-shadow: inset 8px 8px 24px rgba(0, 0, 0, 0.4), inset -8px -8px 24px rgba(255, 255, 255, 0.3);
   pointer-events: none;
   z-index: 3;
 }
@@ -1157,10 +1173,12 @@ body.dark-mode .golden-orb-bg {
 .hero-card__play-btn {
   width: 64px; height: 64px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(var(--blur-md)) saturate(200%);
   -webkit-backdrop-filter: blur(var(--blur-md)) saturate(200%);
-  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+              inset 0 1px 2px rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1169,6 +1187,9 @@ body.dark-mode .golden-orb-bg {
   will-change: transform;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 .hero-card__play-btn::before {
@@ -1178,7 +1199,7 @@ body.dark-mode .golden-orb-bg {
   border-radius: inherit;
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.1) 0%,
     transparent 50%
   );
   pointer-events: none;
@@ -1186,21 +1207,21 @@ body.dark-mode .golden-orb-bg {
 
 .hero-card__play-btn:active {
   transform: scale(0.85);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .hero-card__play-btn svg {
   width: 22px; height: 22px;
-  color: var(--text-inverse);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  color: #ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   position: relative;
   z-index: 1;
   margin-left: 2px; /* Optical centering for play icon */
 }
 
 .hero-card--playing .hero-card__play-btn {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
   animation: playing-pulse 2s ease-in-out infinite;
 }
 
@@ -1302,23 +1323,38 @@ body.dark-mode .golden-orb-bg {
   transform: scale(0.92) translateY(2px);
 }
 
-/* Trendora-inspired warm card backgrounds */
+/* Trendora-inspired warm card backgrounds with ULTRA 3D Claymorphism */
 .practice-card--nitnem {
-  background: linear-gradient(165deg, #FFF8EF 0%, #FFEFD8 100%);
-  box-shadow: var(--shadow-sm),
-              0 4px 24px rgba(212, 148, 58, 0.08);
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
+  box-shadow: 
+    35px 35px 90px rgba(212, 148, 58, 0.55),
+    18px 18px 50px rgba(212, 148, 58, 0.4),
+    -18px -18px 50px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(212, 148, 58, 0.35) !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 32px !important;
 }
 
 .practice-card--sehaj {
-  background: linear-gradient(165deg, #F5F3FF 0%, #EDEBFF 100%);
-  box-shadow: var(--shadow-sm),
-              0 4px 24px rgba(88, 86, 214, 0.08);
+  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
+  box-shadow: 
+    35px 35px 90px rgba(88, 86, 214, 0.5),
+    18px 18px 50px rgba(88, 86, 214, 0.35),
+    -18px -18px 50px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(88, 86, 214, 0.3) !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 32px !important;
 }
 
 .practice-card--hukam {
-  background: linear-gradient(165deg, #FFF7ED 0%, #FFECD5 100%);
-  box-shadow: var(--shadow-sm),
-              0 4px 24px rgba(255, 149, 0, 0.08);
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
+  box-shadow: 
+    35px 35px 90px rgba(255, 149, 0, 0.5),
+    18px 18px 50px rgba(255, 149, 0, 0.35),
+    -18px -18px 50px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(255, 149, 0, 0.3) !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
+  border-radius: 32px !important;
 }
 
 /* Subtle inner glow */
@@ -1405,13 +1441,14 @@ body.dark-mode .golden-orb-bg {
 .practice-card__check {
   position: absolute;
   top: var(--space-2); right: var(--space-2);
-  width: 24px; height: 24px;
+  width: 28px; height: 28px;
   border-radius: var(--radius-full);
   background: var(--success);
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transform: scale(0) rotate(-180deg);
   transition: all 0.5s var(--ease-spring);
-  box-shadow: var(--success-shadow);
+  box-shadow: 2px 2px 8px rgba(48, 209, 88, 0.4), inset 2px 2px 4px rgba(255, 255, 255, 0.5);
+  border: none;
 }
 
 .practice-card__check--visible {

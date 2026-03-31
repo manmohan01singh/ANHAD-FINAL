@@ -125,35 +125,66 @@
 
         /**
          * Fetch bani from BaniDB API
+         * Uses correct endpoint: /v2/banis/{id}
          */
         async fetchFromAPI(baniId) {
-            const url = `https://api.banidb.com/v2/banis/${baniId}/texts`;
-            const response = await fetch(url);
+            // Primary endpoint (correct BaniDB v2 API)
+            const url = `https://api.banidb.com/v2/banis/${baniId}`;
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            try {
+                const response = await fetch(url, {
+                    headers: { 'Accept': 'application/json' },
+                    // Add timeout to prevent hanging
+                    signal: AbortSignal.timeout(10000)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(`[GurbaniLocalDB] API fetch failed for bani ${baniId}:`, error);
+                throw error;
             }
-
-            const data = await response.json();
-            return data;
         }
 
         /**
          * Download all Nitnem banis with progress callback
+         * Resilient: continues even if individual banis fail
          */
         async downloadAllBanis(onProgress) {
             console.log('[GurbaniLocalDB] Starting download of all banis');
 
             let downloaded = 0;
+            let failed = 0;
+            const failedBanis = [];
             const total = NITNEM_BANIS.length;
 
             for (const bani of NITNEM_BANIS) {
                 try {
+                    // Check if already cached to skip
+                    const cached = await this.getBani(bani.id);
+                    if (cached && cached.verses && cached.verses.length > 0) {
+                        console.log(`[GurbaniLocalDB] ✓ ${bani.name} already cached, skipping`);
+                        downloaded++;
+                        if (onProgress) {
+                            onProgress(downloaded, total, bani.name);
+                        }
+                        continue;
+                    }
+
                     console.log(`[GurbaniLocalDB] Downloading ${bani.name} (ID: ${bani.id})`);
                     const data = await this.fetchFromAPI(bani.id);
 
                     // Extract verses from API response
                     const verses = this.extractVerses(data);
+
+                    // Validate we got actual content
+                    if (!verses || verses.length === 0) {
+                        throw new Error('No verses extracted from API response');
+                    }
 
                     // Save to IndexedDB
                     await this.saveBani(bani.id, bani.name, verses);
@@ -164,7 +195,9 @@
                     localStorage.setItem(LS_KEY_DOWNLOAD_PROGRESS, JSON.stringify({
                         current: downloaded,
                         total: total,
-                        currentBani: bani.name
+                        currentBani: bani.name,
+                        failed: failed,
+                        failedBanis: failedBanis
                     }));
 
                     // Notify progress
@@ -175,16 +208,45 @@
                     console.log(`[GurbaniLocalDB] ✓ Downloaded ${bani.name} (${downloaded}/${total})`);
                 } catch (error) {
                     console.error(`[GurbaniLocalDB] ✗ Failed to download ${bani.name}:`, error);
-                    throw error;
+                    failed++;
+                    failedBanis.push({ id: bani.id, name: bani.name, error: error.message });
+                    // Continue with next bani instead of throwing
+                    // Notify progress with failure info
+                    if (onProgress) {
+                        onProgress(downloaded, total, `${bani.name} (failed)`);
+                    }
                 }
             }
 
-            // Mark as fully downloaded
-            localStorage.setItem(LS_KEY_DOWNLOADED, 'true');
-            localStorage.removeItem(LS_KEY_DOWNLOAD_PROGRESS);
-
-            console.log('[GurbaniLocalDB] ✓ All banis downloaded successfully');
-            return true;
+            // Mark as downloaded if we got at least 50% of banis (4 out of 8)
+            // This allows partial offline functionality
+            const successRate = downloaded / total;
+            if (successRate >= 0.5) {
+                localStorage.setItem(LS_KEY_DOWNLOADED, 'true');
+                localStorage.setItem(LS_KEY_DOWNLOAD_PROGRESS, JSON.stringify({
+                    current: downloaded,
+                    total: total,
+                    failed: failed,
+                    failedBanis: failedBanis,
+                    completedAt: Date.now(),
+                    partial: failed > 0
+                }));
+                console.log(`[GurbaniLocalDB] ✓ Downloaded ${downloaded}/${total} banis (${failed} failed)`);
+                if (failed > 0) {
+                    console.log('[GurbaniLocalDB] Some banis failed but enough succeeded - marked as downloaded');
+                }
+                return { success: true, downloaded, failed, failedBanis };
+            } else {
+                // Less than 50% success - don't mark as downloaded
+                localStorage.setItem(LS_KEY_DOWNLOAD_PROGRESS, JSON.stringify({
+                    current: downloaded,
+                    total: total,
+                    failed: failed,
+                    failedBanis: failedBanis,
+                    error: 'Too many failures - will retry'
+                }));
+                throw new Error(`Download failed: only ${downloaded}/${total} banis downloaded`);
+            }
         }
 
         /**

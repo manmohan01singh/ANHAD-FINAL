@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" data-global-theme="force">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#FAF8F5">
@@ -9,11 +10,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   
   <title>Dashboard • ANHAD</title>
+  <link rel="icon" type="image/png" href="../favicon.ico">
   
   <!-- Global Theme (must be first!) -->
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
   <script src="../lib/global-mini-player.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +31,7 @@
   <div class="top-nav-orb"></div>
   
   <header class="header">
-    <a href="../index.html" class="header__back">
+    <a href="../index.html" class="header__back glass-nav__back" aria-label="Back">
       <i class="fas fa-chevron-left"></i>
     </a>
     <h1 class="header__title">My Journey</h1>
@@ -39,7 +44,7 @@
   
   <div class="spacer"></div>
   
-  <div class="app">
+  <div class="app page-enter">
     
     <!-- Streak Hero -->
     <section class="streak-hero">
@@ -95,6 +100,11 @@
     </h2>
     <div class="goals-list" id="goalsList">
       <!-- Goals will be populated by JS -->
+    </div>
+    
+    <!-- Analytics Chart: 7-Day Progress -->
+    <div id="analyticsChart">
+      <!-- Chart will be populated by dashboard-analytics.js -->
     </div>
     
     <!-- Milestones -->
@@ -159,6 +169,7 @@
   
   <!-- Scripts -->
   <script src="../lib/user-stats.js"></script>
+  <script src="dashboard-analytics.js"></script>
   <script>
     (function() {
       'use strict';
@@ -235,18 +246,138 @@
         });
       }
       
+      function renderNitnemProgressChart() {
+        const container = document.getElementById('nitnemProgressChart');
+        if (!container) return;
+        
+        // Get Nitnem log from localStorage
+        const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+        const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{"amritvela":[],"rehras":[],"sohila":[]}');
+        
+        // Calculate total banis expected per day
+        const totalBanisPerDay = (selectedBanis.amritvela?.length || 0) + 
+                                  (selectedBanis.rehras?.length || 0) + 
+                                  (selectedBanis.sohila?.length || 0);
+        
+        if (totalBanisPerDay === 0) {
+          container.innerHTML = `
+            <div class="chart-empty">
+              <div class="chart-empty__icon">📿</div>
+              <div class="chart-empty__text">Start tracking your Nitnem to see progress here</div>
+            </div>
+          `;
+          return;
+        }
+        
+        // Get last 6 days including today
+        const days = [];
+        const today = new Date();
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        
+        for (let i = 5; i >= 0; i--) {
+          const date = new Date(today);
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toLocaleDateString('en-CA'); // YYYY-MM-DD
+          const dayName = dayNames[date.getDay()];
+          const isToday = i === 0;
+          
+          // Get completed banis for this day
+          const dayData = nitnemLog[dateStr];
+          let completedBanis = 0;
+          
+          if (dayData) {
+            completedBanis = (dayData.amritvela?.length || 0) + 
+                            (dayData.rehras?.length || 0) + 
+                            (dayData.sohila?.length || 0);
+          }
+          
+          const percentage = totalBanisPerDay > 0 ? (completedBanis / totalBanisPerDay) * 100 : 0;
+          const isComplete = completedBanis === totalBanisPerDay && totalBanisPerDay > 0;
+          
+          days.push({
+            dateStr,
+            dayName,
+            isToday,
+            completed: completedBanis,
+            total: totalBanisPerDay,
+            percentage,
+            isComplete
+          });
+        }
+        
+        // Render chart
+        const barsHTML = days.map(day => `
+          <div class="chart-bar ${day.isToday ? 'chart-bar--today' : ''} ${day.isComplete ? 'chart-bar--complete' : 'chart-bar--incomplete'}">
+            <div class="chart-bar__column">
+              <div class="chart-bar__fill" style="height: ${day.percentage}%"></div>
+              <div class="chart-bar__value">${day.completed}/${day.total}</div>
+            </div>
+            <div class="chart-bar__label">${day.isToday ? 'Today' : day.dayName}</div>
+          </div>
+        `).join('');
+        
+        container.innerHTML = `
+          <div class="chart-bars">
+            ${barsHTML}
+          </div>
+          <div class="chart-legend">
+            <div class="chart-legend__item">
+              <div class="chart-legend__dot chart-legend__dot--complete"></div>
+              <span>Complete</span>
+            </div>
+            <div class="chart-legend__item">
+              <div class="chart-legend__dot chart-legend__dot--incomplete"></div>
+              <span>In Progress</span>
+            </div>
+          </div>
+        `;
+      }
+      
       // Initialize
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', updateDashboard);
+        document.addEventListener('DOMContentLoaded', () => {
+          updateDashboard();
+          renderNitnemProgressChart();
+        });
       } else {
         updateDashboard();
+        renderNitnemProgressChart();
       }
       
       // Listen for stats updates dynamically
       window.addEventListener('statsUpdated', updateDashboard);
       window.addEventListener('streakUpdated', updateDashboard);
       window.addEventListener('goalsUpdated', updateDashboard);
-      window.addEventListener('dashboardRefresh', updateDashboard);
+      window.addEventListener('dashboardRefresh', () => {
+        updateDashboard();
+        renderNitnemProgressChart();
+      });
+      
+      // Listen for Nitnem updates
+      window.addEventListener('nitnemUpdated', renderNitnemProgressChart);
+    })();
+  </script>
+  
+  <!-- Theme Icon Update Script -->
+  <script>
+    (function() {
+      const themeIcon = document.getElementById('themeIcon');
+      
+      function updateThemeIcon() {
+        if (!themeIcon || !window.AnhadTheme) return;
+        const isDark = window.AnhadTheme.isDark();
+        themeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+      }
+      
+      // Update icon on page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+      } else {
+        updateThemeIcon();
+      }
+      
+      // Listen for theme changes
+      window.addEventListener('themechange', updateThemeIcon);
     })();
   </script>
 </body>

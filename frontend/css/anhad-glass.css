@@ -1,0 +1,304 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANHAD GLASS — Premium Glassmorphism Design System
+   Design tokens, glass surfaces, and animation primitives for the AnhadPopup system.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── DESIGN TOKENS ────────────────────────────────────────────────────────── */
+:root {
+  /* Glass surface */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-blur: 24px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --glass-radius: 20px;
+
+  /* Overlay */
+  --glass-overlay-bg: rgba(0, 0, 0, 0.45);
+
+  /* Typography */
+  --glass-title-color: #1a1a2e;
+  --glass-body-color: #3a3a4a;
+  --glass-muted-color: #6e6e80;
+
+  /* Accent colors */
+  --glass-accent: #D4943A;
+  --glass-accent-hover: #C4842A;
+  --glass-accent-glow: rgba(212, 148, 58, 0.3);
+  --glass-danger: #EF4444;
+  --glass-danger-hover: #DC2626;
+  --glass-success: #22C55E;
+  --glass-info: #3B82F6;
+
+  /* Button */
+  --glass-btn-padding: 12px 28px;
+  --glass-btn-radius: 14px;
+  --glass-btn-font-size: 15px;
+  --glass-btn-font-weight: 600;
+
+  /* Animation */
+  --glass-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --glass-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --glass-duration: 0.35s;
+}
+
+/* ─── DARK MODE TOKENS ─────────────────────────────────────────────────────── */
+html.dark-mode,
+[data-theme="dark"] {
+  --glass-bg: rgba(30, 30, 45, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --glass-overlay-bg: rgba(0, 0, 0, 0.6);
+  --glass-title-color: #f0f0f5;
+  --glass-body-color: #c8c8d5;
+  --glass-muted-color: #8888a0;
+}
+
+/* ─── OVERLAY ──────────────────────────────────────────────────────────────── */
+.anhad-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity var(--glass-duration) var(--glass-ease);
+  padding: 20px;
+}
+
+.anhad-popup-overlay.visible {
+  opacity: 1;
+}
+
+/* ─── GLASS PANEL ──────────────────────────────────────────────────────────── */
+.anhad-popup-panel {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  transform: scale(0.92) translateY(12px);
+  opacity: 0;
+  transition: transform var(--glass-duration) var(--glass-spring),
+              opacity var(--glass-duration) var(--glass-ease);
+}
+
+.anhad-popup-overlay.visible .anhad-popup-panel {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Exit animation */
+.anhad-popup-overlay.closing .anhad-popup-panel {
+  transform: scale(0.95) translateY(8px);
+  opacity: 0;
+  transition-timing-function: var(--glass-ease);
+  transition-duration: 0.2s;
+}
+
+.anhad-popup-overlay.closing {
+  opacity: 0;
+  transition-duration: 0.2s;
+}
+
+/* ─── ICON STRIP (top accent bar) ──────────────────────────────────────────── */
+.anhad-popup-icon-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 24px 8px;
+}
+
+.anhad-popup-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.anhad-popup-icon--success { background: linear-gradient(135deg, #22C55E, #16A34A); }
+.anhad-popup-icon--error   { background: linear-gradient(135deg, #EF4444, #DC2626); }
+.anhad-popup-icon--warning { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.anhad-popup-icon--info    { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+.anhad-popup-icon--confirm { background: linear-gradient(135deg, var(--glass-accent), var(--glass-accent-hover)); }
+
+/* ─── CONTENT ──────────────────────────────────────────────────────────────── */
+.anhad-popup-content {
+  padding: 16px 24px 8px;
+  text-align: center;
+}
+
+.anhad-popup-title {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--glass-title-color);
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.anhad-popup-message {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--glass-body-color);
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ─── INPUT FIELD ──────────────────────────────────────────────────────────── */
+.anhad-popup-input-wrap {
+  padding: 12px 24px 0;
+}
+
+.anhad-popup-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.4);
+  color: var(--glass-title-color);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+html.dark-mode .anhad-popup-input,
+[data-theme="dark"] .anhad-popup-input {
+  background: rgba(255,255,255,0.06);
+}
+
+.anhad-popup-input:focus {
+  border-color: var(--glass-accent);
+  box-shadow: 0 0 0 3px var(--glass-accent-glow);
+}
+
+/* ─── BUTTONS ──────────────────────────────────────────────────────────────── */
+.anhad-popup-actions {
+  display: flex;
+  gap: 10px;
+  padding: 20px 24px 24px;
+  justify-content: center;
+}
+
+.anhad-popup-btn {
+  flex: 1;
+  padding: var(--glass-btn-padding);
+  border: none;
+  border-radius: var(--glass-btn-radius);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: var(--glass-btn-font-size);
+  font-weight: var(--glass-btn-font-weight);
+  cursor: pointer;
+  transition: transform 0.15s var(--glass-spring),
+              box-shadow 0.2s,
+              background 0.2s;
+  min-height: 46px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.anhad-popup-btn:active {
+  transform: scale(0.96);
+}
+
+/* Primary (golden accent) */
+.anhad-popup-btn--primary {
+  background: linear-gradient(135deg, var(--glass-accent), var(--glass-accent-hover));
+  color: #fff;
+  box-shadow: 0 4px 14px var(--glass-accent-glow);
+}
+
+.anhad-popup-btn--primary:hover {
+  box-shadow: 0 6px 20px var(--glass-accent-glow);
+}
+
+/* Danger */
+.anhad-popup-btn--danger {
+  background: linear-gradient(135deg, var(--glass-danger), var(--glass-danger-hover));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+/* Secondary (glass) */
+.anhad-popup-btn--secondary {
+  background: rgba(120, 120, 140, 0.12);
+  color: var(--glass-body-color);
+  border: 1px solid var(--glass-border);
+}
+
+.anhad-popup-btn--secondary:hover {
+  background: rgba(120, 120, 140, 0.2);
+}
+
+/* ─── TOAST ────────────────────────────────────────────────────────────────── */
+.anhad-toast {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: var(--glass-shadow);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--glass-title-color);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--glass-duration) var(--glass-spring),
+              opacity var(--glass-duration) var(--glass-ease);
+  max-width: calc(100vw - 40px);
+  white-space: nowrap;
+}
+
+.anhad-toast.visible {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.anhad-toast.closing {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-12px);
+  transition-duration: 0.2s;
+}
+
+.anhad-toast__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.anhad-toast--success .anhad-toast__icon { color: var(--glass-success); }
+.anhad-toast--error   .anhad-toast__icon { color: var(--glass-danger); }
+.anhad-toast--warning .anhad-toast__icon { color: #F59E0B; }
+.anhad-toast--info    .anhad-toast__icon { color: var(--glass-info); }
+
+/* ─── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .anhad-popup-panel { max-width: calc(100vw - 40px); }
+  .anhad-popup-actions { flex-direction: column; }
+  .anhad-popup-btn { flex: none; }
+}

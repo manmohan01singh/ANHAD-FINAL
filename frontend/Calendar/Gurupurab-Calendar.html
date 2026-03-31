@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
@@ -19,8 +19,15 @@
   <link rel="stylesheet" href="gurpurab-calendar.css" />
 
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
+  
+  <!-- Global Theme System -->
+  <script src="../lib/global-theme.js"></script>
+  
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
 
@@ -51,7 +58,7 @@
   </div>
 
   <header class="page-nav">
-    <button class="nav-btn" id="btnBack" type="button" aria-label="Back">
+    <button class="nav-btn glass-nav__back" id="btnBack" type="button" aria-label="Back">
       <span>‹</span>
       <span>Back</span>
     </button>
@@ -315,7 +322,10 @@
   <script src="nanakshahi-calendar.js"></script>
   <script src="gurupurab-reminders.js"></script>
   <script src="gurpurab-calendar.js"></script>
+  <script src="../lib/alarm-coordinator.js" defer></script>
   <script src="../lib/global-alarm-system.js" defer></script>
+  <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
   <script src="../lib/global-mini-player.js" defer></script>
 </body>
 </html>

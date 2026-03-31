@@ -7,7 +7,8 @@
 
 class BaniDBAPI {
     constructor() {
-        this.baseURL = 'https://api.banidb.com/v2';
+        // Use backend proxy to avoid CORS issues
+        this.baseURL = '/api/banidb';
         this.cache = new Map();
         this.cacheTimeout = 5 * 60 * 1000;
     }
@@ -55,7 +56,15 @@ class BaniDBAPI {
 
             return data;
         } catch (error) {
-            console.error('❌ BaniDB API Error:', error);
+            console.error('❌ BaniDB API Error:', error.message);
+            console.error('   URL:', url);
+            console.error('   Type:', error.name);
+            if (error.message.includes('CORS')) {
+                console.error('   ⚠️ CORS issue detected - API may be blocking requests');
+            }
+            if (error.message.includes('Failed to fetch')) {
+                console.error('   ⚠️ Network error - check internet connection or API availability');
+            }
             throw error;
         }
     }
@@ -72,7 +81,9 @@ class BaniDBAPI {
         // 1. Check IndexedDB cache first (offline-first)
         if (window.sehajPaathCache) {
             const cached = await window.sehajPaathCache.getAng(angNumber);
-            if (cached && cached.verses && cached.verses.length > 0) {
+            // Support both old 'verses' format and new 'lines' format
+            const lines = cached?.lines || cached?.verses || [];
+            if (lines.length > 0) {
                 console.log('[BaniDBAPI] ✓ Loaded from cache:', angNumber);
                 // Update history
                 window.sehajPaathCache.addToHistory(angNumber);
@@ -80,9 +91,9 @@ class BaniDBAPI {
                 this.prefetchNextAngs(angNumber);
                 return {
                     ang: angNumber,
-                    verses: cached.verses,
+                    lines: lines,
                     raag: cached.raag,
-                    source: cached.source
+                    source: cached.source || 'G'
                 };
             }
         }
@@ -93,7 +104,7 @@ class BaniDBAPI {
         const formatted = this.formatAngData(data, angNumber);
 
         // 3. Save to IndexedDB cache
-        if (window.sehajPaathCache && formatted && formatted.verses) {
+        if (window.sehajPaathCache && formatted && formatted.lines) {
             await window.sehajPaathCache.saveAng(angNumber, formatted);
             window.sehajPaathCache.addToHistory(angNumber);
             console.log('[BaniDBAPI] ✓ Saved to cache:', angNumber);

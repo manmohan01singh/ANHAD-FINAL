@@ -47,6 +47,11 @@ class OfflineManager {
         }
     }
 
+    // Alias for BaniDBAPI compatibility
+    getAng(angNumber) {
+        return this.getCachedAng(angNumber);
+    }
+
     isCached(angNumber) {
         return this.cachedAngs.includes(angNumber);
     }
@@ -57,6 +62,32 @@ class OfflineManager {
 
     getCachePercent() {
         return ((this.cachedAngs.length / 1430) * 100).toFixed(1);
+    }
+
+    // Alias for BaniDBAPI compatibility
+    saveAng(angNumber, data) {
+        return this.cacheAng(angNumber, data);
+    }
+
+    // Stub for BaniDBAPI compatibility
+    addToHistory(angNumber) {
+        // Optional: track reading history
+        try {
+            const history = JSON.parse(localStorage.getItem('sehajPaathHistory') || '[]');
+            if (!history.includes(angNumber)) {
+                history.push(angNumber);
+                if (history.length > 100) history.shift();
+                localStorage.setItem('sehajPaathHistory', JSON.stringify(history));
+            }
+        } catch (e) {
+            console.warn('History tracking error:', e);
+        }
+    }
+
+    // Stub for BaniDBAPI compatibility
+    prefetchAngs(angNumbers) {
+        // Background prefetching is handled by BaniDBAPI itself
+        console.log('[OfflineManager] Prefetch requested for:', angNumbers);
     }
 
     clearCache() {

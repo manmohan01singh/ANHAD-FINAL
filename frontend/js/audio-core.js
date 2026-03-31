@@ -14,10 +14,19 @@
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     || window.innerWidth < 768;
 
-const RENDER_BASE_URL = 'https://anhad-final.onrender.com';
+const PA_API_BASE = (() => {
+    try {
+        const port = window.location.port;
+        const host = window.location.hostname;
+        if (port === '3000' || port === '3001') return 'http://localhost:3000';
+        if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+        if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+    } catch (e) {}
+    return 'https://anhad-final.onrender.com';
+})();
 
 const AUDIO_CONFIG = {
-    baseUrl: RENDER_BASE_URL + '/audio',
+    baseUrl: PA_API_BASE + '/audio',
 
     audioFiles: Array.from({ length: 40 }, (_, i) => `day-${i + 1}.webm`),
 
@@ -179,7 +188,7 @@ class StateManager extends EventEmitter {
 }
 
 // API base URL for server sync - Always use render backend
-const AC_API_BASE = RENDER_BASE_URL;
+const AC_API_BASE = PA_API_BASE;
 
 class VirtualLiveManager extends EventEmitter {
     constructor() {
@@ -197,13 +206,7 @@ class VirtualLiveManager extends EventEmitter {
     }
 
     loadBroadcastStart() {
-        let startTime = Utils.storage.get('broadcastStartTime');
-        if (!startTime) {
-            const now = new Date();
-            startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).getTime();
-            Utils.storage.set('broadcastStartTime', startTime);
-        }
-        return startTime;
+        return 1704067200000; // Jan 1, 2024 - Universal deterministic fallback epoch
     }
 
     async syncWithServer() {
@@ -361,6 +364,42 @@ class AudioEngine extends EventEmitter {
             this.emit('durationchange', { duration: this.audio.duration });
         });
         this.audio.addEventListener('volumechange', () => this.emit('volumechange', { volume: this.audio.volume }));
+        this.audio.addEventListener('error', (e) => {
+            this._handleAudioError(e);
+        });
+    }
+
+    _handleAudioError(e) {
+        const error = this.audio?.error;
+        let message = 'Failed to load audio';
+        
+        if (error) {
+            switch (error.code) {
+                case MediaError.MEDIA_ERR_NETWORK:
+                    message = 'Audio service temporarily unavailable. Please try again later.';
+                    console.warn('[AudioCore] Network error - backend may be down (503)');
+                    break;
+                case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                    message = 'Audio format not supported';
+                    break;
+                case MediaError.MEDIA_ERR_DECODE:
+                    message = 'Audio decoding error';
+                    break;
+                default:
+                    message = 'Audio playback error';
+            }
+        }
+        
+        console.error('[AudioCore] Audio error:', message, error);
+        this.emit('error', { message, error });
+        
+        // Show user-friendly notification if available
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, { type: 'error', duration: 5000 });
+        } else if (typeof window.alert === 'function' && !this._alertShown) {
+            this._alertShown = true;
+            setTimeout(() => { this._alertShown = false; }, 10000);
+        }
     }
 
     _onTimeUpdate() {

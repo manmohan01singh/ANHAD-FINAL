@@ -65,7 +65,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const NAV_PATHS = {
     gurbaniRadio: 'GurbaniRadio/ios17-gurbani-radio.html',
-    gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html',
+    gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
     randomShabad: 'RandomShabad/random-shabad.html',
     nitnem: 'nitnem/indexbani.html',
@@ -1017,14 +1017,29 @@
     },
 
     init() {
-      // Both hero play buttons
+      // Both hero play buttons - trigger mini player directly instead of navigating
       ['heroPlayBtn1', 'heroPlayBtn2'].forEach(id => {
         const btn = document.getElementById(id);
         if (!btn) return;
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
+          e.preventDefault();
           const stream = btn.dataset.stream;
-          if (window.AnhadAudio) window.AnhadAudio.toggle(stream);
+          
+          // Use GlobalMiniPlayer API properly with Toggle logic
+          if (window.GlobalMiniPlayer) {
+            if (window.GlobalMiniPlayer.isPlaying() && window.GlobalMiniPlayer.getStream() === stream) {
+              window.GlobalMiniPlayer.pause();
+            } else {
+              window.GlobalMiniPlayer.play(stream);
+            }
+          } else {
+            // If the audio engine is still lazy-loading, dispatch an event for when it finishes
+            window.dispatchEvent(new CustomEvent('anhadPlayStream', { detail: { stream } }));
+            // Add a temporary loading state
+            btn.style.opacity = '0.5';
+            setTimeout(() => btn.style.opacity = '1', 1000);
+          }
         });
       });
 
@@ -1086,32 +1101,33 @@
     _deferredPrompt: null,
 
     init() {
-      const inlineInstallCard = document.getElementById('installAppCard');
+      const installBtn = document.getElementById('installAppBtn');
       
       if (this._isStandalone()) {
-        if (inlineInstallCard) inlineInstallCard.style.display = 'none';
+        if (installBtn) installBtn.style.display = 'none';
         return;
       }
-
-      // Show inline install card if not installed
-      if (inlineInstallCard) inlineInstallCard.style.display = 'flex';
 
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         this._deferredPrompt = e;
-        setTimeout(() => this._showBanner(), 2000);
+        console.log('[PWA] Install prompt captured');
+        setTimeout(() => this._showButton(), 2000);
       });
 
       window.addEventListener('appinstalled', () => {
+        console.log('[PWA] App installed');
         Store.set(KEYS.PWA_INSTALLED, true);
-        this._hideBanner();
-        if (inlineInstallCard) inlineInstallCard.style.display = 'none';
+        this._hideButton();
       });
 
-      // Bind buttons
-      document.getElementById('installCta')?.addEventListener('click', () => this._install());
-      document.getElementById('installDismiss')?.addEventListener('click', () => this._dismiss());
-      document.getElementById('installAppCard')?.addEventListener('click', () => this._install());
+      // Fallback: Show button after 3 seconds if not standalone (for testing)
+      setTimeout(() => {
+        if (!this._isStandalone() && installBtn && installBtn.style.display === 'none') {
+          console.log('[PWA] Showing install button (fallback)');
+          this._showButton();
+        }
+      }, 3000);
     },
 
     _isStandalone() {
@@ -1122,40 +1138,54 @@
       } catch (e) { return false; }
     },
 
-    _showBanner() {
-      // Don't show if dismissed recently (24h)
-      const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
-      if (dismissed && (Date.now() - dismissed) < 86400000) return;
-
-      const banner = document.getElementById('installBanner');
-      if (banner) banner.classList.add('install-banner--visible');
-    },
-
-    _hideBanner() {
-      const banner = document.getElementById('installBanner');
-      if (banner) banner.classList.remove('install-banner--visible');
-    },
-
-    async _install() {
-      if (this._deferredPrompt) {
-        this._deferredPrompt.prompt();
-        const { outcome } = await this._deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          Store.set(KEYS.PWA_INSTALLED, true);
-          this._hideBanner();
-        }
-        this._deferredPrompt = null;
-      } else {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        alert(isIOS
-          ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Tap "Add to Home Screen"\n3. Tap "Add"'
-          : 'Use your browser\'s menu to install this app.');
+    _showButton() {
+      const installBtn = document.getElementById('installAppBtn');
+      if (!installBtn) {
+        console.log('[PWA] Install button not found in DOM');
+        return;
       }
+
+      console.log('[PWA] Showing install button');
+      installBtn.style.display = 'flex';
+      
+      // Add entrance animation
+      requestAnimationFrame(() => {
+        installBtn.classList.add('visible');
+      });
+
+      // Remove old listeners by cloning
+      const newBtn = installBtn.cloneNode(true);
+      installBtn.parentNode.replaceChild(newBtn, installBtn);
+
+      newBtn.addEventListener('click', async () => {
+        console.log('[PWA] Install button clicked');
+        if (this._deferredPrompt) {
+          this._deferredPrompt.prompt();
+          const { outcome } = await this._deferredPrompt.userChoice;
+          console.log('[PWA] User choice:', outcome);
+          if (outcome === 'accepted') {
+            Store.set(KEYS.PWA_INSTALLED, true);
+            this._hideButton();
+          }
+          this._deferredPrompt = null;
+        } else {
+          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+          alert(isIOS
+            ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Tap "Add to Home Screen"\n3. Tap "Add"'
+            : 'Use your browser\'s menu to install this app.');
+        }
+      });
     },
 
-    _dismiss() {
-      Store.set(KEYS.INSTALL_DISMISSED, Date.now());
-      this._hideBanner();
+    _hideButton() {
+      const installBtn = document.getElementById('installAppBtn');
+      if (installBtn) {
+        console.log('[PWA] Hiding install button');
+        installBtn.classList.remove('visible');
+        setTimeout(() => {
+          installBtn.style.display = 'none';
+        }, 400);
+      }
     }
   };
 

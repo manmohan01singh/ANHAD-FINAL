@@ -142,10 +142,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ━━━ NITNEM TRACKER ━━━
   function updateNitnemTracker() {
-    let streak = 0, completedToday = 0, totalBanis = 11;
+    let streak = 0, completedToday = 0, totalBanis = 0;
     try {
       const sb = localStorage.getItem('nitnemTracker_selectedBanis');
-      if (sb) { const p = JSON.parse(sb); totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0); if (totalBanis === 0) totalBanis = 11; }
+      if (sb) { 
+        const p = JSON.parse(sb); 
+        totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
+      } else {
+        totalBanis = 11; // Default only if no selection exists
+      }
     } catch (e) {}
     try {
       const today = new Date().toLocaleDateString('en-CA');
@@ -415,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
     island?.addEventListener('click', () => {
        if (island.classList.contains('playing')) {
          const stream = window.AnhadAudio?.getCurrentStream() || 'darbar';
-         window.location.href = stream === 'amritvela' ? 'GurbaniRadio/amritvela-radio.html' : 'GurbaniRadio/ios17-gurbani-radio.html';
+         window.location.href = stream === 'amritvela' ? 'GurbaniRadio/gurbani-radio.html?stream=amritvela' : 'GurbaniRadio/ios17-gurbani-radio.html';
        }
     });
 

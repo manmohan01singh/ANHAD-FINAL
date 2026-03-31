@@ -209,13 +209,16 @@
         const today = getTodayString();
         const yesterday = getYesterdayString();
 
-        // Calculate total banis
-        let totalBanis = 11; // Default
-        if (selectedBanis) {
+        // Calculate total banis based on user selection
+        let totalBanis = 0;
+        if (selectedBanis && typeof selectedBanis === 'object') {
             totalBanis = (selectedBanis.amritvela?.length || 0) +
                 (selectedBanis.rehras?.length || 0) +
                 (selectedBanis.sohila?.length || 0);
-            if (totalBanis === 0) totalBanis = 11;
+        }
+        // Only use default if no banis configuration exists at all
+        if (totalBanis === 0 && !selectedBanis) {
+            totalBanis = 11; // Default for first-time users
         }
 
         // Get today's completed count

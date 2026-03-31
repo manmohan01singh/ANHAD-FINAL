@@ -17,7 +17,7 @@
         constructor() {
             this.bc = new BroadcastChannel(CHANNEL_NAME);
             this.tabId = this._generateTabId();
-            this.isLeader = false;
+            this._isLeader = false;
             this.leaderId = null;
             this.lastHeartbeat = 0;
             this.listeners = new Map();
@@ -65,7 +65,7 @@
                     if (msg.isLeader) {
                         this.leaderId = msg.tabId;
                         this.lastHeartbeat = Date.now();
-                        if (this.isLeader && this.tabId !== msg.tabId) {
+                        if (this._isLeader && this.tabId !== msg.tabId) {
                             // Another tab claims leadership, step down
                             this._stepDown();
                         }
@@ -75,7 +75,7 @@
                 case 'election':
                     if (msg.tabId < this.tabId) {
                         // Older tab wants to be leader, let it
-                        if (this.isLeader) {
+                        if (this._isLeader) {
                             this._stepDown();
                         }
                     }
@@ -98,7 +98,7 @@
         }
 
         _attemptElection() {
-            if (this.isLeader) return;
+            if (this._isLeader) return;
 
             // Broadcast election intent with tabId (lower = older = leader)
             this.bc.postMessage({
@@ -116,7 +116,7 @@
         }
 
         _becomeLeader() {
-            this.isLeader = true;
+            this._isLeader = true;
             this.leaderId = this.tabId;
             console.log('[AlarmCoordinator] Became LEADER');
             
@@ -129,12 +129,12 @@
         }
 
         _stepDown() {
-            this.isLeader = false;
+            this._isLeader = false;
             console.log('[AlarmCoordinator] Stepped down from leadership');
         }
 
         _sendHeartbeat() {
-            if (this.isLeader) {
+            if (this._isLeader) {
                 this.bc.postMessage({
                     type: 'heartbeat',
                     tabId: this.tabId,
@@ -145,7 +145,7 @@
         }
 
         _checkLeaderHealth() {
-            if (!this.isLeader && this.leaderId) {
+            if (!this._isLeader && this.leaderId) {
                 const elapsed = Date.now() - this.lastHeartbeat;
                 if (elapsed > LEADER_TIMEOUT) {
                     console.log('[AlarmCoordinator] Leader timeout, triggering election');
@@ -306,14 +306,14 @@
          * Check if this tab is the leader
          */
         isLeader() {
-            return this.isLeader;
+            return this._isLeader;
         }
 
         /**
          * Notify all tabs that an alarm fired (call from leader only)
          */
         broadcastAlarmFired(alarmId, reminder, isPreReminder = false) {
-            if (!this.isLeader) {
+            if (!this._isLeader) {
                 console.warn('[AlarmCoordinator] Only leader should broadcast alarms');
                 return;
             }

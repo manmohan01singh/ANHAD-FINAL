@@ -17,7 +17,7 @@
         constructor() {
             this.bc = new BroadcastChannel(CHANNEL_NAME);
             this.tabId = this._generateTabId();
-            this.isLeader = false;
+            this._isLeader = false;
             this.leaderId = null;
             this.lastHeartbeat = 0;
             this.listeners = new Map();
@@ -65,7 +65,7 @@
                     if (msg.isLeader) {
                         this.leaderId = msg.tabId;
                         this.lastHeartbeat = Date.now();
-                        if (this.isLeader && this.tabId !== msg.tabId) {
+                        if (this._isLeader && this.tabId !== msg.tabId) {
                             // Another tab claims leadership, step down
                             this._stepDown();
                         }
@@ -75,7 +75,7 @@
                 case 'election':
                     if (msg.tabId < this.tabId) {
                         // Older tab wants to be leader, let it
-                        if (this.isLeader) {
+                        if (this._isLeader) {
                             this._stepDown();
                         }
                     }
@@ -98,7 +98,7 @@
         }
 
         _attemptElection() {
-            if (this.isLeader) return;
+            if (this._isLeader) return;
 
             // Broadcast election intent with tabId (lower = older = leader)
             this.bc.postMessage({
@@ -116,7 +116,7 @@
         }
 
         _becomeLeader() {
-            this.isLeader = true;
+            this._isLeader = true;
             this.leaderId = this.tabId;
             console.log('[AlarmCoordinator] Became LEADER');
             
@@ -129,12 +129,12 @@
         }
 
         _stepDown() {
-            this.isLeader = false;
+            this._isLeader = false;
             console.log('[AlarmCoordinator] Stepped down from leadership');
         }
 
         _sendHeartbeat() {
-            if (this.isLeader) {
+            if (this._isLeader) {
                 this.bc.postMessage({
                     type: 'heartbeat',
                     tabId: this.tabId,
@@ -145,7 +145,7 @@
         }
 
         _checkLeaderHealth() {
-            if (!this.isLeader && this.leaderId) {
+            if (!this._isLeader && this.leaderId) {
                 const elapsed = Date.now() - this.lastHeartbeat;
                 if (elapsed > LEADER_TIMEOUT) {
                     console.log('[AlarmCoordinator] Leader timeout, triggering election');
@@ -170,20 +170,150 @@
             setTimeout(() => this.bc.close(), 100);
         }
 
-        // Public API
+        // ═══════════════════════════════════════════════════════════════════════
+        // CAPACITOR NATIVE NOTIFICATIONS — Layer 2 for closed-app alarms
+        // ═══════════════════════════════════════════════════════════════════════
+
+        /**
+         * Schedule a native alarm using Capacitor LocalNotifications
+         * Call this when creating/updating a reminder
+         */
+        async scheduleNativeAlarm(alarm) {
+            if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+                return; // Only on native platforms
+            }
+
+            try {
+                const { LocalNotifications } = await import('@capacitor/local-notifications');
+
+                await LocalNotifications.schedule({
+                    notifications: [{
+                        id: alarm.id,
+                        title: alarm.title || 'ANHAD',
+                        body: alarm.message || 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ',
+                        schedule: { at: new Date(alarm.timestamp) },
+                        sound: alarm.sound || 'gentle_bell',
+                        smallIcon: 'ic_stat_notify',
+                        iconColor: '#D4860A',
+                        extra: {
+                            alarmId: alarm.id,
+                            reminderId: alarm.reminderId
+                        }
+                    }]
+                });
+
+                console.log('[AlarmCoordinator] Native alarm scheduled:', alarm.id);
+            } catch (e) {
+                console.error('[AlarmCoordinator] Failed to schedule native alarm:', e);
+            }
+        }
+
+        /**
+         * Cancel a native alarm
+         * Call this when deleting/disabling a reminder
+         */
+        async cancelNativeAlarm(alarmId) {
+            if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+                return;
+            }
+
+            try {
+                const { LocalNotifications } = await import('@capacitor/local-notifications');
+
+                await LocalNotifications.cancel({
+                    notifications: [{ id: alarmId }]
+                });
+
+                console.log('[AlarmCoordinator] Native alarm cancelled:', alarmId);
+            } catch (e) {
+                console.error('[AlarmCoordinator] Failed to cancel native alarm:', e);
+            }
+        }
+
+        /**
+         * Initialize all native alarms on app startup
+         * Re-syncs all active reminders to native system
+         */
+        async initNativeAlarms() {
+            if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+                return;
+            }
+
+            console.log('[AlarmCoordinator] Initializing native alarms...');
+
+            try {
+                // 1. Cancel all existing native notifications
+                const { LocalNotifications } = await import('@capacitor/local-notifications');
+                const pending = await LocalNotifications.getPending();
+
+                if (pending.notifications.length > 0) {
+                    await LocalNotifications.cancel(pending);
+                    console.log('[AlarmCoordinator] Cancelled', pending.notifications.length, 'existing native alarms');
+                }
+
+                // 2. Load all active reminders from IndexedDB
+                if (window.GurbaniStorage) {
+                    await window.GurbaniStorage.init();
+                    const reminders = await window.GurbaniStorage.getAll('reminders');
+                    const activeReminders = reminders.filter(r => r.enabled !== false);
+
+                    // 3. Schedule each reminder
+                    for (const reminder of activeReminders) {
+                        // Calculate next occurrence
+                        const nextTime = this.calculateNextAlarmTime(reminder);
+                        if (nextTime) {
+                            await this.scheduleNativeAlarm({
+                                id: parseInt(reminder.id) || Math.floor(Math.random() * 100000),
+                                title: reminder.title || 'ANHAD Reminder',
+                                message: reminder.message || 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ',
+                                timestamp: nextTime.getTime(),
+                                reminderId: reminder.id
+                            });
+                        }
+                    }
+
+                    console.log('[AlarmCoordinator] Re-synced', activeReminders.length, 'native alarms');
+                }
+            } catch (e) {
+                console.error('[AlarmCoordinator] Failed to init native alarms:', e);
+            }
+        }
+
+        /**
+         * Calculate next alarm time for a reminder
+         */
+        calculateNextAlarmTime(reminder) {
+            if (!reminder.time) return null;
+
+            const [hours, minutes] = reminder.time.split(':').map(Number);
+            const now = new Date();
+            const alarmTime = new Date();
+            alarmTime.setHours(hours, minutes, 0, 0);
+
+            // If time has passed today, schedule for tomorrow
+            if (alarmTime <= now) {
+                alarmTime.setDate(alarmTime.getDate() + 1);
+            }
+
+            return alarmTime;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // PUBLIC API
+        // ═══════════════════════════════════════════════════════════════════════
 
         /**
          * Check if this tab is the leader
          */
         isLeader() {
-            return this.isLeader;
+            return this._isLeader;
         }
 
         /**
          * Notify all tabs that an alarm fired (call from leader only)
          */
         broadcastAlarmFired(alarmId, reminder, isPreReminder = false) {
-            if (!this.isLeader) {
+            if (!this._isLeader) {
                 console.warn('[AlarmCoordinator] Only leader should broadcast alarms');
                 return;
             }

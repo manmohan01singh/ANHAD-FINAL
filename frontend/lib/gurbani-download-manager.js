@@ -52,14 +52,42 @@
             this.overlay.id = 'gurbani-download-overlay';
             this.overlay.innerHTML = `
                 <div class="download-container">
-                    <div class="download-icon">📿</div>
-                    <h2 class="download-title">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</h2>
-                    <p class="download-subtitle">Preparing Gurbani for offline use</p>
+                    <div class="download-header">
+                        <div class="download-icon">📿</div>
+                        <div class="download-header-text">
+                            <h2 class="download-title">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</h2>
+                            <p class="download-subtitle">Preparing Gurbani for offline reading</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-steps">
+                        <div class="download-step active" id="step-1">
+                            <span class="step-number">1</span>
+                            <span class="step-text">Connecting to BaniDB...</span>
+                        </div>
+                        <div class="download-step" id="step-2">
+                            <span class="step-number">2</span>
+                            <span class="step-text">Downloading Nitnem Banis...</span>
+                        </div>
+                        <div class="download-step" id="step-3">
+                            <span class="step-number">3</span>
+                            <span class="step-text">Saving to device storage...</span>
+                        </div>
+                    </div>
+                    
                     <div class="download-progress-wrapper">
                         <div class="download-progress-bar" id="download-progress-bar"></div>
                     </div>
-                    <p class="download-status" id="download-status">Starting download...</p>
-                    <p class="download-count" id="download-count">0 / 8</p>
+                    
+                    <div class="download-status-row">
+                        <span class="download-status" id="download-status">Starting download...</span>
+                        <span class="download-count" id="download-count">0 / 8</span>
+                    </div>
+                    
+                    <div class="download-badges">
+                        <span class="badge">📶 Works offline</span>
+                        <span class="badge">⚡ Instant loading</span>
+                    </div>
                 </div>
             `;
 
@@ -72,73 +100,174 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: linear-gradient(135deg, #1A0A2E 0%, #2D1B4E 100%);
+                    background: rgba(0, 0, 0, 0.4);
                     z-index: 999999;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-family: 'Noto Sans Gurmukhi', -apple-system, BlinkMacSystemFont, sans-serif;
+                    backdrop-filter: blur(40px);
+                    -webkit-backdrop-filter: blur(40px);
                 }
                 .download-container {
-                    text-align: center;
-                    padding: 40px;
-                    max-width: 400px;
-                    width: 90%;
+                    text-align: left;
+                    padding: 32px 28px;
+                    max-width: 360px;
+                    width: 85%;
+                    background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.9) 100%);
+                    border-radius: 24px;
+                    box-shadow:
+                        0 8px 32px rgba(0, 0, 0, 0.12),
+                        0 2px 8px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                    animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .download-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 28px;
                 }
                 .download-icon {
-                    font-size: 64px;
-                    margin-bottom: 20px;
-                    animation: pulse 2s infinite;
+                    width: 56px;
+                    height: 56px;
+                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 28px;
+                    box-shadow:
+                        4px 4px 12px rgba(0, 0, 0, 0.15),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+                    flex-shrink: 0;
                 }
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); opacity: 1; }
-                    50% { transform: scale(1.1); opacity: 0.8; }
+                .download-header-text {
+                    flex: 1;
                 }
                 .download-title {
-                    color: #FFD700;
-                    font-size: 24px;
-                    margin: 0 0 10px 0;
-                    font-weight: 600;
+                    color: #1a1a2e;
+                    font-size: 20px;
+                    margin: 0 0 4px 0;
+                    font-weight: 700;
+                    letter-spacing: -0.3px;
                 }
                 .download-subtitle {
-                    color: rgba(255, 255, 255, 0.7);
-                    font-size: 16px;
-                    margin: 0 0 40px 0;
+                    color: #64748b;
+                    font-size: 13px;
+                    margin: 0;
+                    font-weight: 400;
+                }
+                .download-steps {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    margin-bottom: 24px;
+                }
+                .download-step {
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    padding: 12px 16px;
+                    background: rgba(241, 245, 249, 0.6);
+                    border-radius: 14px;
+                    transition: all 0.3s ease;
+                    border: 1px solid rgba(255, 255, 255, 0.4);
+                }
+                .download-step.active {
+                    background: rgba(254, 243, 199, 0.4);
+                    border-color: rgba(251, 191, 36, 0.3);
+                }
+                .step-number {
+                    width: 32px;
+                    height: 32px;
+                    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: #1a1a2e;
+                    box-shadow:
+                        0 4px 12px rgba(251, 191, 36, 0.35),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.4);
+                    flex-shrink: 0;
+                }
+                .download-step.active .step-number {
+                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                    box-shadow:
+                        0 4px 16px rgba(245, 158, 11, 0.45),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.4);
+                }
+                .step-text {
+                    color: #475569;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .download-step.active .step-text {
+                    color: #92400e;
+                    font-weight: 600;
                 }
                 .download-progress-wrapper {
                     width: 100%;
                     height: 8px;
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 4px;
+                    background: rgba(226, 232, 240, 0.6);
+                    border-radius: 8px;
                     overflow: hidden;
-                    margin-bottom: 20px;
+                    margin-bottom: 16px;
+                    padding: 2px;
                 }
                 .download-progress-bar {
                     height: 100%;
-                    background: linear-gradient(90deg, #FFD700, #FFA500);
+                    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
                     width: 0%;
-                    transition: width 0.5s ease;
-                    border-radius: 4px;
+                    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    border-radius: 6px;
+                    background-size: 200% 100%;
+                    animation: shimmer 2s ease-in-out infinite;
+                }
+                @keyframes shimmer {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+                .download-status-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
                 }
                 .download-status {
-                    color: rgba(255, 255, 255, 0.9);
-                    font-size: 14px;
-                    margin: 0 0 10px 0;
+                    color: #64748b;
+                    font-size: 13px;
+                    font-weight: 500;
                 }
                 .download-count {
-                    color: #FFD700;
-                    font-size: 18px;
-                    font-weight: 600;
-                    margin: 0;
+                    color: #f59e0b;
+                    font-size: 15px;
+                    font-weight: 700;
                 }
-                .download-offline-msg {
-                    color: rgba(255, 255, 255, 0.8);
-                    font-size: 14px;
-                    margin-top: 30px;
-                    padding: 20px;
-                    background: rgba(255, 0, 0, 0.1);
-                    border-radius: 8px;
-                    border: 1px solid rgba(255, 0, 0, 0.3);
+                .download-badges {
+                    display: flex;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                }
+                .badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 8px 14px;
+                    background: rgba(254, 243, 199, 0.5);
+                    border-radius: 100px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #92400e;
+                    border: 1px solid rgba(251, 191, 36, 0.2);
                 }
             `;
 
@@ -246,36 +375,72 @@
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: linear-gradient(135deg, #1A0A2E 0%, #2D1B4E 100%);
+                    background: rgba(0, 0, 0, 0.4);
                     z-index: 999999;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     font-family: 'Noto Sans Gurmukhi', -apple-system, BlinkMacSystemFont, sans-serif;
+                    backdrop-filter: blur(40px);
+                    -webkit-backdrop-filter: blur(40px);
                 }
                 .download-container {
-                    text-align: center;
-                    padding: 40px;
-                    max-width: 400px;
-                    width: 90%;
+                    text-align: left;
+                    padding: 32px 28px;
+                    max-width: 360px;
+                    width: 85%;
+                    background: linear-gradient(145deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.9) 100%);
+                    border-radius: 24px;
+                    box-shadow:
+                        0 8px 32px rgba(0, 0, 0, 0.12),
+                        0 2px 8px rgba(0, 0, 0, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.5);
+                    animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .download-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 28px;
                 }
                 .download-icon {
-                    font-size: 64px;
-                    margin-bottom: 20px;
+                    width: 56px;
+                    height: 56px;
+                    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                    border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 28px;
+                    box-shadow:
+                        4px 4px 12px rgba(0, 0, 0, 0.15),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+                    flex-shrink: 0;
+                }
+                .download-header-text {
+                    flex: 1;
                 }
                 .download-title {
-                    color: #FFD700;
-                    font-size: 24px;
-                    margin: 0 0 30px 0;
-                    font-weight: 600;
+                    color: #1a1a2e;
+                    font-size: 20px;
+                    margin: 0 0 4px 0;
+                    font-weight: 700;
+                    letter-spacing: -0.3px;
                 }
                 .download-offline-msg {
-                    color: rgba(255, 255, 255, 0.8);
+                    color: #475569;
                     font-size: 14px;
+                    margin-top: 20px;
                     padding: 20px;
-                    background: rgba(255, 100, 100, 0.1);
-                    border-radius: 8px;
-                    border: 1px solid rgba(255, 100, 100, 0.3);
+                    background: rgba(241, 245, 249, 0.6);
+                    border-radius: 16px;
+                    border: 1px solid rgba(255, 100, 100, 0.2);
+                    line-height: 1.6;
                 }
             `;
 

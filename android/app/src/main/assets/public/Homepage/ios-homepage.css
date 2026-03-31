@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   ANHAD HOMEPAGE — CINEMATIC DARBAR SAHIB EXPERIENCE
-   Version: 11.0.0 — Matches new ios-homepage.html cinematic layout
+   ANHAD HOMEPAGE — CINEMATIC DARBAR SAHIB EXPERIENCE WITH EXTREME CLAYMORPHISM
+   Version: 12.0.0 — Ultimate Claymorphism UI Upgrade
    
    7-Layer Architecture:
    L0: Entry overlay (black fade-in)
@@ -10,13 +10,13 @@
    L4: Light source (sun/moon glow)
    L5: Stars canvas (night only)
    L6: Temple glow (golden haze)
-   L7: UI layer (header, wave, footer)
+   L7: UI layer (header, wave, footer) — NOW WITH EXTREME CLAYMORPHISM
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap');
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DESIGN TOKENS
+   DESIGN TOKENS — Enhanced with Claymorphism Palette
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
     --bg-void: #0a0e1a;
@@ -30,6 +30,36 @@
     --safe-bottom: env(safe-area-inset-bottom, 20px);
     --ease-ios: cubic-bezier(0.28, 0.11, 0.32, 1);
     --ease-spring: cubic-bezier(0.37, 0.01, 0.28, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* ═══════════════════════════════════════════════════════════════════════
+       CLAYMORPHISM DESIGN TOKENS — Extreme 3D Depth System
+       ═══════════════════════════════════════════════════════════════════════ */
+    --clay-bg: rgba(255, 255, 255, 0.08);
+    --clay-bg-strong: rgba(255, 255, 255, 0.12);
+    --clay-border: rgba(255, 255, 255, 0.18);
+    --clay-border-strong: rgba(255, 255, 255, 0.25);
+    
+    /* Double Shadow System — The Heart of Claymorphism */
+    --clay-shadow-light: 8px 8px 16px rgba(0, 0, 0, 0.4);
+    --clay-shadow-dark: -4px -4px 12px rgba(255, 255, 255, 0.05);
+    --clay-shadow-outer: 12px 12px 24px rgba(0, 0, 0, 0.5), 
+                          -6px -6px 16px rgba(255, 255, 255, 0.08);
+    --clay-shadow-pressed: inset 6px 6px 12px rgba(0, 0, 0, 0.4),
+                           inset -3px -3px 8px rgba(255, 255, 255, 0.05);
+    --clay-shadow-gold: 0 8px 32px rgba(201, 162, 39, 0.4),
+                        0 4px 16px rgba(201, 162, 39, 0.2);
+    --clay-shadow-gold-strong: 0 12px 48px rgba(201, 162, 39, 0.5),
+                              0 6px 24px rgba(201, 162, 39, 0.3);
+    
+    /* Blur & Depth */
+    --clay-blur: blur(20px);
+    --clay-blur-strong: blur(30px);
+    --clay-radius-sm: 16px;
+    --clay-radius-md: 24px;
+    --clay-radius-lg: 32px;
+    --clay-radius-xl: 50px;
+    --clay-radius-full: 9999px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -201,7 +231,7 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HEADER — ੴ Symbol + Live Badge
+   HEADER — ੴ Symbol + Live Badge — EXTREME CLAYMORPHISM
    ───────────────────────────────────────────────────────────────────────────── */
 #top-ui {
     display: flex;
@@ -214,13 +244,36 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Claymorphism Container for Ik Onkar */
+    padding: 16px 24px;
+    background: linear-gradient(145deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.02) 100%);
+    border-radius: var(--clay-radius-xl);
+    border: 1px solid var(--clay-border);
+    box-shadow: var(--clay-shadow-outer);
+    backdrop-filter: var(--clay-blur);
+    -webkit-backdrop-filter: var(--clay-blur);
+    transition: all 0.4s var(--ease-spring);
+}
+
+#ik-onkar:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        16px 16px 32px rgba(0, 0, 0, 0.5),
+        -8px -8px 20px rgba(255, 255, 255, 0.1),
+        0 0 40px rgba(201, 162, 39, 0.2);
 }
 
 #ik-onkar .gurmukhi {
     font-size: 48px;
     font-weight: 700;
     color: var(--gold-light);
-    text-shadow: 0 0 40px var(--gold-glow), 0 0 80px rgba(201, 162, 39, 0.2);
+    text-shadow: 
+        0 0 40px var(--gold-glow), 
+        0 0 80px rgba(201, 162, 39, 0.2),
+        2px 2px 4px rgba(0, 0, 0, 0.3);
     opacity: 0;
     transform: scale(0.8);
     animation: ikOnkarReveal 1.5s var(--ease-spring) 0.8s forwards;
@@ -233,20 +286,42 @@ body {
     }
 }
 
-/* Live Badge */
+/* Live Badge — Extreme Claymorphism */
 #live-badge {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(255, 59, 48, 0.2);
-    border: 1px solid rgba(255, 59, 48, 0.3);
-    border-radius: 100px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    gap: 10px;
+    padding: 12px 20px;
+    /* Claymorphic molded appearance */
+    background: linear-gradient(145deg,
+        rgba(255, 59, 48, 0.25) 0%,
+        rgba(255, 59, 48, 0.15) 50%,
+        rgba(255, 59, 48, 0.08) 100%);
+    border: 1px solid rgba(255, 59, 48, 0.35);
+    border-radius: var(--clay-radius-full);
+    box-shadow: 
+        /* Outer dark shadow */
+        6px 6px 16px rgba(0, 0, 0, 0.4),
+        /* Outer light shadow */
+        -3px -3px 10px rgba(255, 255, 255, 0.08),
+        /* Glow effect */
+        0 0 20px rgba(255, 59, 48, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    backdrop-filter: var(--clay-blur);
+    -webkit-backdrop-filter: var(--clay-blur);
     opacity: 0;
     transform: translateY(-10px);
     animation: badgeReveal 0.8s var(--ease-ios) 1.2s forwards;
+    transition: all 0.3s var(--ease-spring);
+}
+
+#live-badge:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 
+        10px 10px 24px rgba(0, 0, 0, 0.45),
+        -4px -4px 14px rgba(255, 255, 255, 0.1),
+        0 0 30px rgba(255, 59, 48, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
 @keyframes badgeReveal {
@@ -257,11 +332,15 @@ body {
 }
 
 #live-badge .dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background: #FF3B30;
     border-radius: 50%;
     animation: livePulse 1.5s ease-in-out infinite;
+    box-shadow: 
+        0 0 10px rgba(255, 59, 48, 0.8),
+        inset -1px -1px 2px rgba(0, 0, 0, 0.3),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.3);
 }
 
 @keyframes livePulse {
@@ -272,9 +351,10 @@ body {
 #live-badge .label {
     font-size: 11px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.95);
     letter-spacing: 1.5px;
     text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -290,27 +370,56 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FOOTER — Shabad + Enter Button
+   FOOTER — Shabad + Enter Button — EXTREME CLAYMORPHISM UPGRADE
    ───────────────────────────────────────────────────────────────────────────── */
 #bottom-ui {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     padding-bottom: calc(28px + var(--safe-bottom));
     text-align: center;
 }
 
+/* Shabad Container — Clay Card Effect — SMALLER & LOWER */
 #shabad {
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 500;
     color: var(--gold-light);
-    text-shadow: 0 0 30px var(--gold-glow);
-    line-height: 1.6;
-    max-width: 340px;
+    text-shadow: 
+        0 0 30px var(--gold-glow),
+        2px 2px 4px rgba(0, 0, 0, 0.4);
+    line-height: 1.5;
+    max-width: 300px;
     opacity: 0;
     transform: translateY(15px);
     animation: shabadReveal 1.2s var(--ease-ios) 1.8s forwards;
+    /* Claymorphism container — SMALLER */
+    padding: 14px 20px;
+    background: linear-gradient(145deg,
+        rgba(201, 162, 39, 0.12) 0%,
+        rgba(201, 162, 39, 0.06) 50%,
+        rgba(201, 162, 39, 0.03) 100%);
+    border-radius: var(--clay-radius-lg);
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    box-shadow: 
+        8px 8px 20px rgba(0, 0, 0, 0.4),
+        -4px -4px 12px rgba(255, 255, 255, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all 0.4s var(--ease-spring);
+    /* Move lower */
+    margin-top: 20vh;
+}
+
+#shabad:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        12px 12px 28px rgba(0, 0, 0, 0.45),
+        -6px -6px 16px rgba(255, 255, 255, 0.08),
+        0 0 30px rgba(201, 162, 39, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
 }
 
 @keyframes shabadReveal {
@@ -320,38 +429,87 @@ body {
     }
 }
 
+/* Translation — Clay sub-card — SMALLER */
 #translation {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--text-secondary);
     font-style: italic;
-    max-width: 280px;
+    max-width: 260px;
     opacity: 0;
     animation: fadeIn 0.8s ease 2.2s forwards;
+    /* Clay styling — SMALLER */
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--clay-radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        -2px -2px 8px rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 @keyframes fadeIn {
     to { opacity: 1; }
 }
 
-/* Enter Button */
+/* ════════════════════════════════════════════════════════════════════════════
+   ENTER BUTTON — EXTREME CLAYMORPHISM ULTIMATE EDITION
+   ════════════════════════════════════════════════════════════════════════════ */
 #enter-btn {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 18px 48px;
-    background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
-    border-radius: 100px;
+    gap: 14px;
+    padding: 22px 56px;
+    /* Multi-layer gradient for clay depth */
+    background: linear-gradient(165deg, 
+        #E8C547 0%,
+        #D4B03A 25%,
+        #C9A227 50%,
+        #B89120 75%,
+        #A6821B 100%);
+    border-radius: var(--clay-radius-full);
     text-decoration: none;
+    /* EXTREME Claymorphism Shadow Stack */
     box-shadow:
-        0 8px 32px rgba(201, 162, 39, 0.35),
-        0 2px 8px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: btnReveal 0.8s var(--ease-spring) 2.5s forwards;
+        /* Outer dark shadow (depth) */
+        12px 16px 40px rgba(0, 0, 0, 0.5),
+        8px 8px 24px rgba(0, 0, 0, 0.35),
+        /* Outer light shadow (highlight) */
+        -6px -6px 20px rgba(255, 255, 255, 0.15),
+        -3px -3px 10px rgba(255, 255, 255, 0.08),
+        /* Gold glow */
+        0 0 50px rgba(201, 162, 39, 0.4),
+        0 0 100px rgba(201, 162, 39, 0.2),
+        /* Inner highlights (molded look) */
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.35s var(--ease-spring);
+    opacity: 1;
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Shimmer effect overlay */
+#enter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%);
+    transition: left 0.6s ease;
+}
+
+#enter-btn:hover::before {
+    left: 100%;
 }
 
 @keyframes btnReveal {
@@ -361,35 +519,79 @@ body {
     }
 }
 
+/* Hover State — Elevated Clay */
 #enter-btn:hover {
-    transform: scale(1.04) translateY(-2px);
+    transform: scale(1.06) translateY(-4px);
     box-shadow:
-        0 12px 48px rgba(201, 162, 39, 0.45),
-        0 4px 12px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        /* Elevated shadows */
+        20px 24px 60px rgba(0, 0, 0, 0.55),
+        12px 12px 32px rgba(0, 0, 0, 0.4),
+        -8px -8px 24px rgba(255, 255, 255, 0.18),
+        -4px -4px 12px rgba(255, 255, 255, 0.1),
+        /* Enhanced gold glow */
+        0 0 70px rgba(201, 162, 39, 0.55),
+        0 0 140px rgba(201, 162, 39, 0.3),
+        /* Inner highlights */
+        inset 0 2px 4px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.12);
+    background: linear-gradient(165deg, 
+        #F0D050 0%,
+        #E0B840 25%,
+        #D4AC30 50%,
+        #C49C28 75%,
+        #B08A20 100%);
 }
 
+/* Active/Pressed State — Pressed Clay */
 #enter-btn:active {
-    transform: scale(0.97);
+    transform: scale(0.96) translateY(2px);
+    box-shadow:
+        /* Inset shadows for pressed look */
+        inset 8px 8px 20px rgba(0, 0, 0, 0.4),
+        inset 4px 4px 12px rgba(0, 0, 0, 0.25),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.05),
+        /* Reduced outer glow */
+        0 0 30px rgba(201, 162, 39, 0.3),
+        /* Inner gradient shift */
+        inset 0 3px 6px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(165deg, 
+        #B89120 0%,
+        #C9A227 50%,
+        #D4B03A 100%);
+}
+
+/* Focus state for accessibility */
+#enter-btn:focus-visible {
+    outline: 3px solid rgba(201, 162, 39, 0.6);
+    outline-offset: 4px;
 }
 
 .enter-btn-main {
-    font-size: 17px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 800;
     color: #0a0e1a;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
+/* Tap Hint — Clay style */
 #tap-hint {
     font-size: 12px;
     color: var(--text-ghost);
     letter-spacing: 0.5px;
     opacity: 0;
     animation: fadeIn 0.6s ease 3s forwards;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--clay-radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+        3px 3px 8px rgba(0, 0, 0, 0.2),
+        -2px -2px 6px rgba(255, 255, 255, 0.03);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   AUDIO PLAYING STATE
+   AUDIO PLAYING STATE — Enhanced Clay Glow
    ───────────────────────────────────────────────────────────────────────────── */
 body.audio-playing #temple-glow {
     opacity: 0.95;
@@ -402,11 +604,51 @@ body.audio-playing #temple-glow {
 }
 
 body.audio-playing #live-badge {
-    background: rgba(255, 59, 48, 0.35);
+    background: linear-gradient(145deg,
+        rgba(255, 59, 48, 0.4) 0%,
+        rgba(255, 59, 48, 0.25) 50%,
+        rgba(255, 59, 48, 0.12) 100%);
+    box-shadow: 
+        10px 10px 28px rgba(0, 0, 0, 0.5),
+        -5px -5px 16px rgba(255, 255, 255, 0.12),
+        0 0 40px rgba(255, 59, 48, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 59, 48, 0.5);
 }
 
 body.audio-playing #live-badge .dot {
-    box-shadow: 0 0 12px rgba(255, 59, 48, 0.6);
+    box-shadow: 
+        0 0 20px rgba(255, 59, 48, 0.9),
+        inset -1px -1px 2px rgba(0, 0, 0, 0.3),
+        inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Audio playing — Enter button glows brighter */
+body.audio-playing #enter-btn {
+    box-shadow:
+        12px 16px 40px rgba(0, 0, 0, 0.5),
+        8px 8px 24px rgba(0, 0, 0, 0.35),
+        -6px -6px 20px rgba(255, 255, 255, 0.15),
+        0 0 70px rgba(201, 162, 39, 0.6),
+        0 0 120px rgba(201, 162, 39, 0.35),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+    animation: btnGoldPulse 3s ease-in-out infinite;
+}
+
+@keyframes btnGoldPulse {
+    0%, 100% { 
+        box-shadow: 
+            12px 16px 40px rgba(0, 0, 0, 0.5),
+            0 0 70px rgba(201, 162, 39, 0.6),
+            0 0 120px rgba(201, 162, 39, 0.35);
+    }
+    50% { 
+        box-shadow: 
+            12px 16px 40px rgba(0, 0, 0, 0.5),
+            0 0 90px rgba(201, 162, 39, 0.8),
+            0 0 160px rgba(201, 162, 39, 0.45);
+    }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -464,14 +706,16 @@ body.time-evening #light-source {
    ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 380px) {
     #ik-onkar .gurmukhi { font-size: 38px; }
-    #shabad { font-size: 17px; max-width: 280px; }
+    #shabad { font-size: 15px; max-width: 260px; padding: 12px 16px; }
+    #translation { font-size: 11px; max-width: 220px; padding: 8px 12px; }
     #enter-btn { padding: 16px 36px; }
     .enter-btn-main { font-size: 15px; }
 }
 
 @media (min-width: 500px) {
     #ik-onkar .gurmukhi { font-size: 56px; }
-    #shabad { font-size: 22px; max-width: 400px; }
+    #shabad { font-size: 19px; max-width: 340px; }
+    #translation { font-size: 13px; max-width: 300px; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

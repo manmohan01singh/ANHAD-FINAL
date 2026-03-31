@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANHAD Radio Sync Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .sync-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.synced {
+            background: #10b981;
+        }
+
+        .sync-indicator.unsynced {
+            background: #ef4444;
+        }
+
+        .sync-indicator.cached {
+            background: #f59e0b;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .log-time {
+            opacity: 0.6;
+            margin-right: 10px;
+        }
+
+        .warning {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 ANHAD Radio Sync Verification</h1>
+
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">📊 Live Sync Status</h2>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">Server Status</div>
+                    <div class="status-value" id="server-status">
+                        <span class="sync-indicator unsynced"></span>
+                        Checking...
+                    </div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">Current Track</div>
+                    <div class="status-value" id="current-track">--</div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">Track Position</div>
+                    <div class="status-value" id="track-position">--</div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">Sync Method</div>
+                    <div class="status-value" id="sync-method">--</div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">Drift</div>
+                    <div class="status-value" id="drift">--</div>
+                </div>
+
+                <div class="status-item">
+                    <div class="status-label">Active Listeners</div>
+                    <div class="status-value" id="listeners">--</div>
+                </div>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <div class="controls">
+                <button onclick="checkSync()">🔄 Check Sync</button>
+                <button onclick="playRadio()">▶️ Play Radio</button>
+                <button onclick="pauseRadio()">⏸️ Pause</button>
+                <button onclick="jumpToLive()">🔴 Jump to Live</button>
+                <button onclick="clearLogs()">🗑️ Clear Logs</button>
+            </div>
+        </div>
+
+        <div class="status-card">
+            <h2 style="margin-bottom: 20px;">📝 Sync Logs</h2>
+            <div class="log-container" id="log-container">
+                <div class="log-entry">
+                    <span class="log-time">[--:--:--]</span>
+                    Waiting for sync check...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/audio-coordinator.js"></script>
+    <script src="lib/persistent-audio.js"></script>
+    <script>
+        const API_BASE = (() => {
+            const port = window.location.port;
+            const host = window.location.hostname;
+            if (port === '3000' || port === '3001') return 'http://localhost:3000';
+            if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+            return 'https://anhad-final.onrender.com';
+        })();
+
+        let lastServerTrack = null;
+        let lastServerPosition = null;
+
+        function log(message, type = 'info') {
+            const container = document.getElementById('log-container');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">[${time}]</span>${message}`;
+            
+            container.insertBefore(entry, container.firstChild);
+            
+            // Keep only last 50 entries
+            while (container.children.length > 50) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function showAlert(message, type = 'warning') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = type;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        async function checkSync() {
+            log('🔍 Checking server sync...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/radio/live`, {
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                lastServerTrack = data.trackIndex;
+                lastServerPosition = data.trackPosition;
+                
+                // Update UI
+                document.getElementById('server-status').innerHTML = 
+                    '<span class="sync-indicator synced"></span>Connected';
+                document.getElementById('current-track').textContent = 
+                    `Day ${data.trackIndex + 1}`;
+                document.getElementById('track-position').textContent = 
+                    formatTime(data.trackPosition);
+                document.getElementById('sync-method').textContent = 'Server';
+                document.getElementById('listeners').textContent = data.listenersCount || 0;
+                
+                // Check drift if audio is playing
+                const audio = window.AnhadAudio?.getAudio();
+                if (audio && !audio.paused) {
+                    const localPosition = audio.currentTime;
+                    const drift = Math.abs(localPosition - data.trackPosition);
+                    document.getElementById('drift').textContent = 
+                        `${drift.toFixed(1)}s`;
+                    
+                    if (drift > 5) {
+                        showAlert(`⚠️ Drift detected: ${drift.toFixed(1)}s off from server!`, 'warning');
+                        log(`⚠️ DRIFT: ${drift.toFixed(1)}s off from server`, 'warning');
+                    } else {
+                        document.getElementById('drift').textContent = 
+                            `${drift.toFixed(1)}s ✓`;
+                        showAlert('✅ Sync is good! Drift < 5 seconds', 'success');
+                    }
+                } else {
+                    document.getElementById('drift').textContent = 'N/A (not playing)';
+                }
+                
+                log(`✅ Server: Track ${data.trackIndex + 1} at ${formatTime(data.trackPosition)}`);
+                log(`📊 Epoch: ${new Date(data.epoch).toISOString()}`);
+                log(`👥 Listeners: ${data.listenersCount}`);
+                
+            } catch (error) {
+                document.getElementById('server-status').innerHTML = 
+                    '<span class="sync-indicator unsynced"></span>Offline';
+                log(`❌ Server error: ${error.message}`, 'error');
+                showAlert('❌ Cannot connect to server!', 'warning');
+            }
+        }
+
+        function playRadio() {
+            if (window.AnhadAudio) {
+                window.AnhadAudio.play('amritvela');
+                log('▶️ Playing Amritvela Kirtan');
+            }
+        }
+
+        function pauseRadio() {
+            if (window.AnhadAudio) {
+                window.AnhadAudio.pause();
+                log('⏸️ Paused');
+            }
+        }
+
+        function jumpToLive() {
+            if (window.AnhadAudio) {
+                window.AnhadAudio.jumpToLive('amritvela');
+                log('🔴 Jumping to live position...');
+                setTimeout(checkSync, 2000);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('log-container').innerHTML = 
+                '<div class="log-entry"><span class="log-time">[--:--:--]</span>Logs cleared</div>';
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Auto-check sync every 10 seconds
+        setInterval(checkSync, 10000);
+
+        // Initial check
+        setTimeout(checkSync, 1000);
+
+        log('🎵 Sync verification tool loaded');
+        log('📡 API Base: ' + API_BASE);
+    </script>
+</body>
+</html>

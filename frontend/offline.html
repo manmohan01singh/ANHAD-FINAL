@@ -1,181 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - ANHAD</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Noto Sans Gurmukhi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1A0A2E 0%, #2D1B4E 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            color: #fff;
-        }
-        
-        .container {
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-        }
-        
-        h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .subtitle {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 32px;
-        }
-        
-        .status-list {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 24px;
-        }
-        
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .status-item:last-child {
-            border-bottom: none;
-        }
-        
-        .status-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        
-        .status-icon.online {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
-        }
-        
-        .status-icon.offline {
-            background: rgba(244, 67, 54, 0.2);
-            color: #F44336;
-        }
-        
-        .status-text {
-            flex: 1;
-            text-align: left;
-            font-size: 15px;
-        }
-        
-        .status-text span {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 13px;
-            display: block;
-            margin-top: 2px;
-        }
-        
-        .footer {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 32px;
-        }
-        
-        .footer strong {
-            color: #FFD700;
-        }
-        
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 24px;
-            }
-            
-            .subtitle {
-                font-size: 16px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>Offline — ANHAD</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --gold: #D4943A;
+      --gold-glow: rgba(212, 148, 58, 0.25);
+      --safe-top: env(safe-area-inset-top, 20px);
+      --safe-bottom: env(safe-area-inset-bottom, 34px);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: calc(var(--safe-top) + 20px) 24px calc(var(--safe-bottom) + 20px);
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Ambient orbs */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.35;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 340px; height: 340px;
+      background: radial-gradient(circle, rgba(212,148,58,0.5) 0%, transparent 70%);
+      top: -80px; left: -60px;
+      animation-duration: 14s;
+    }
+    .orb-2 {
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(88,86,214,0.4) 0%, transparent 70%);
+      bottom: 5%; right: -40px;
+      animation-duration: 10s; animation-direction: alternate-reverse;
+    }
+    .orb-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(212,148,58,0.3) 0%, transparent 70%);
+      bottom: 30%; left: 30%;
+      animation-duration: 18s;
+    }
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(20px, 30px) scale(1.08); }
+    }
+
+    /* Content */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Ik Onkar symbol */
+    .symbol {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 0 24px var(--gold-glow));
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 16px rgba(212,148,58,0.3)); }
+      50%       { filter: drop-shadow(0 0 32px rgba(212,148,58,0.6)); }
+    }
+
+    .title-gurmukhi {
+      font-family: 'Noto Sans Gurmukhi', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #E8A84E 0%, #C4842A 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.50);
+      margin-bottom: 32px;
+      letter-spacing: -0.2px;
+    }
+
+    /* Glass card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 0.5px solid rgba(255, 255, 255, 0.10);
+      border-radius: 20px;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      padding: 4px 0;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px;
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+    }
+    .status-row:last-child { border-bottom: none; }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.ok     { background: #30D158; box-shadow: 0 0 8px rgba(48,209,88,0.6); }
+    .status-dot.no     { background: #FF3B30; box-shadow: 0 0 8px rgba(255,59,48,0.5); }
+
+    .status-label {
+      flex: 1;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .status-note {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.38);
+      text-align: right;
+    }
+
+    /* Retry button */
+    .retry-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #E8A84E 0%, #C4842A 100%);
+      color: #000;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(212,148,58,0.30);
+      transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.15s ease;
+      touch-action: manipulation;
+    }
+    .retry-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 16px rgba(212,148,58,0.20);
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: -0.1px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">📿</div>
-        <h1>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</h1>
-        <p class="subtitle">You are currently offline</p>
-        
-        <div class="status-list">
-            <div class="status-item">
-                <div class="status-icon online">✓</div>
-                <div class="status-text">
-                    Nitnem
-                    <span>Available offline</span>
-                </div>
-            </div>
-            <div class="status-item">
-                <div class="status-icon online">✓</div>
-                <div class="status-text">
-                    Sehaj Paath
-                    <span>Cached pages available</span>
-                </div>
-            </div>
-            <div class="status-item">
-                <div class="status-icon online">✓</div>
-                <div class="status-text">
-                    Hukamnama
-                    <span>Showing cached version</span>
-                </div>
-            </div>
-            <div class="status-item">
-                <div class="status-icon online">✓</div>
-                <div class="status-text">
-                    Naam Abhyas
-                    <span>Available offline</span>
-                </div>
-            </div>
-            <div class="status-item">
-                <div class="status-icon online">✓</div>
-                <div class="status-text">
-                    Reminders
-                    <span>Working offline</span>
-                </div>
-            </div>
-            <div class="status-item">
-                <div class="status-icon offline">✕</div>
-                <div class="status-text">
-                    Gurbani Radio
-                    <span>Requires internet connection</span>
-                </div>
-            </div>
-        </div>
-        
-        <p class="footer">
-            <strong>ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ</strong><br>
-            Connect to the internet for the latest content
-        </p>
+  <div class="bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="content">
+    <div class="symbol">ੴ</div>
+    <p class="title-gurmukhi">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</p>
+    <p class="subtitle">You're offline — cached content available</p>
+
+    <div class="glass-card" role="list" aria-label="Feature availability">
+      <div class="status-row" role="listitem">
+        <span class="status-dot ok" aria-hidden="true"></span>
+        <span class="status-label">Nitnem</span>
+        <span class="status-note">Available</span>
+      </div>
+      <div class="status-row" role="listitem">
+        <span class="status-dot ok" aria-hidden="true"></span>
+        <span class="status-label">Sehaj Paath</span>
+        <span class="status-note">Cached</span>
+      </div>
+      <div class="status-row" role="listitem">
+        <span class="status-dot ok" aria-hidden="true"></span>
+        <span class="status-label">Hukamnama</span>
+        <span class="status-note">Last cached</span>
+      </div>
+      <div class="status-row" role="listitem">
+        <span class="status-dot ok" aria-hidden="true"></span>
+        <span class="status-label">Naam Abhyas</span>
+        <span class="status-note">Available</span>
+      </div>
+      <div class="status-row" role="listitem">
+        <span class="status-dot ok" aria-hidden="true"></span>
+        <span class="status-label">Reminders</span>
+        <span class="status-note">Working</span>
+      </div>
+      <div class="status-row" role="listitem">
+        <span class="status-dot no" aria-hidden="true"></span>
+        <span class="status-label">Gurbani Radio</span>
+        <span class="status-note">Needs internet</span>
+      </div>
     </div>
+
+    <button class="retry-btn" onclick="window.location.reload()">
+      Try Again
+    </button>
+
+    <p class="footer-note">ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ</p>
+  </div>
+
+  <script>
+    window.addEventListener('online', function() {
+      window.location.replace('/index.html');
+    });
+  </script>
 </body>
 </html>

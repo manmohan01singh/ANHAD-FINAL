@@ -23,6 +23,25 @@
   const STATE_KEY = 'anhad_global_audio';
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
+  // ─── Compute base path from our own script src ─────────────────────────────
+  // Works with file://, http://localhost, Vercel, any subdirectory depth.
+  const GMP_BASE = (function () {
+    try {
+      const all = document.querySelectorAll('script[src]');
+      for (let i = 0; i < all.length; i++) {
+        const s = all[i].src || '';
+        if (s.includes('global-mini-player')) {
+          return s.replace(/lib\/global-mini-player\.js[^/]*$/, '');
+        }
+      }
+    } catch (e) {}
+    return '';
+  })();
+
+  function resolveAsset(filename) {
+    return GMP_BASE ? GMP_BASE + 'assets/' + filename : 'assets/' + filename;
+  }
+
   const STREAMS = {
     darbar: {
       name: 'Darbar Sahib Live',
@@ -38,7 +57,7 @@
       artwork: resolveAsset('Darbar-sahib-AMRITVELA.webp'),
       type: 'playlist',
       totalTracks: 40,
-      playerPage: 'GurbaniRadio/gurbani-radio.html',
+      playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index) {
         const base = getAudioBase();
         return `${base}/day-${((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1}.webm`;
@@ -46,45 +65,23 @@
     }
   };
 
-  function resolveAsset(filename) {
-    // Works from any page depth (e.g. /GurbaniRadio/, /NaamAbhyas/, etc.)
-    const path = window.location.pathname;
-    const depth = (path.match(/\//g) || []).length;
-    // In subdirectory pages like /GurbaniRadio/page.html, we need ../assets/
-    // In root pages like /index.html, we need assets/
-    if (path.includes('/frontend/') && !path.endsWith('/frontend/') && !path.endsWith('/frontend/index.html')) {
-      // Check if we're in a subdirectory
-      const afterFrontend = path.split('/frontend/')[1] || '';
-      const parts = afterFrontend.split('/').filter(Boolean);
-      if (parts.length > 1) {
-        return '../assets/' + filename;
-      }
-    }
-    return 'assets/' + filename;
-  }
-
-  const RENDER_BASE = 'https://anhad-final.onrender.com';
+  // RENDER_BASE kept for legacy reference; API_BASE below does smart resolution
+  const RENDER_BASE = 'http://localhost:3000';
 
   function getAudioBase() {
-    try {
-      const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      const onBackendPort = window.location.port === '3000';
-      if (isLocalhost && !onBackendPort) {
-        return `${window.location.protocol}//${window.location.hostname}:3000/audio`;
-      }
-    } catch (e) { }
-    return RENDER_BASE + '/audio';
+    return 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   }
 
+  // Smart API URL resolution for CORS and mobile apps
   const API_BASE = (() => {
     try {
-      const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      const onBackendPort = window.location.port === '3000';
-      if (isLocalhost && !onBackendPort) {
-        return `${window.location.protocol}//${window.location.hostname}:3000`;
-      }
-    } catch (e) { }
-    return RENDER_BASE;
+        const host = window.location.hostname;
+        const port = window.location.port;
+        if (port === '3000' || port === '3001') return '';
+        if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+        return 'https://anhad-final.onrender.com';
+    } catch(e){}
+    return 'https://anhad-final.onrender.com';
   })();
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -128,13 +125,10 @@
     }
   }
 
+  // Universal timeline fallback
   function getLocalLivePosition() {
-    let start;
-    try {
-      start = parseInt(localStorage.getItem('gurbani_broadcast_start') || '0', 10);
-    } catch (e) { start = 0; }
-    if (!start) { start = Date.now(); try { localStorage.setItem('gurbani_broadcast_start', start.toString()); } catch (e) { } }
-    const elapsed = (Date.now() - start) / 1000;
+    const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
+    const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
     const totalDur = 40 * 3600;
     const pos = ((elapsed % totalDur) + totalDur) % totalDur;
     return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
@@ -160,13 +154,29 @@
 
   function createAudio() {
     if (audio) return audio;
-    audio = new Audio();
-    audio.crossOrigin = 'anonymous';
-    audio.preload = 'auto';
+    
+    // Check if we have a preloaded audio element
+    if (window.__anhadPreloadedAudio && 
+        window.__anhadPreloadedAudio.stream === currentStream &&
+        Date.now() - window.__anhadPreloadedAudio.timestamp < 5000) {
+      // Use the preloaded audio element
+      audio = window.__anhadPreloadedAudio.audio;
+      console.log('[GMP] ⚡ Using preloaded audio element');
+      delete window.__anhadPreloadedAudio; // Clean up
+    } else {
+      audio = new Audio();
+      audio.preload = 'auto';
+    }
+    
+    // No crossOrigin here, Cloudflare R2 lacks Allow-Origin but video/webm plays opaquely.
     audio.volume = 0.8;
 
     audio.addEventListener('playing', () => {
       isPlaying = true;
+      // Notify coordinator that we're playing
+      if (window.AudioCoordinator) {
+        window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
+      }
       persistState();
       updateMiniPlayerUI();
       updateMediaSession();
@@ -174,6 +184,10 @@
 
     audio.addEventListener('pause', () => {
       isPlaying = false;
+      // Notify coordinator that we paused
+      if (window.AudioCoordinator) {
+        window.AudioCoordinator.notifyPause('GlobalMiniPlayer');
+      }
       persistState();
       updateMiniPlayerUI();
     });
@@ -192,8 +206,10 @@
     });
 
     audio.addEventListener('error', () => {
-      console.warn('[GMP] Audio error, retrying in 2s...');
-      setTimeout(() => resumePlayback(), 2000);
+      isPlaying = false;
+      updateMiniPlayerUI();
+      showGmpToast('Kirtan unavailable — check connection');
+      setTimeout(() => resumePlayback(), 3000);
     });
 
     return audio;
@@ -212,6 +228,12 @@
 
   async function playStream(streamName) {
     createAudio();
+    
+    // Notify AudioCoordinator BEFORE playing to pause other players
+    if (window.AudioCoordinator) {
+      window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
+    }
+    
     currentStream = streamName;
     const stream = STREAMS[streamName];
 
@@ -239,20 +261,58 @@
   async function playNextTrack() {
     const stream = STREAMS[currentStream];
     if (stream.type !== 'playlist') return;
-    currentTrackIndex = (currentTrackIndex + 1) % stream.totalTracks;
+    
+    // For Virtual Live, don't just increment. Always resync with the server
+    // so drift is corrected perfectly on every track boundary.
+    const pos = await getServerLivePosition();
+    currentTrackIndex = pos.trackIndex;
     audio.src = stream.getTrackUrl(currentTrackIndex);
+    
+    audio.addEventListener('loadedmetadata', function seek() {
+      audio.removeEventListener('loadedmetadata', seek);
+      const dur = audio.duration || 3600;
+      audio.currentTime = Math.min(pos.position, dur - 5);
+    }, { once: true });
+    
     try { await audio.play(); } catch (e) { }
     persistState();
   }
 
-  function togglePlayPause() {
+  async function togglePlayPause() {
     if (!audio || !audio.src || audio.src === window.location.href) {
       // Nothing loaded — start darbar by default
       playStream(currentStream);
       return;
     }
     if (audio.paused) {
-      audio.play().catch(() => {});
+      // Virtual Live effect: when answering pause, snap ahead to exactly the live server moment
+      if (STREAMS[currentStream].type === 'playlist') {
+        getServerLivePosition().then(pos => {
+          const expectedSrc = STREAMS[currentStream].getTrackUrl(pos.trackIndex);
+          const isSameTrack = audio.src.endsWith(expectedSrc) || audio.src === expectedSrc;
+          
+          if (isSameTrack && audio.readyState >= 1) {
+            const dur = isFinite(audio.duration) ? audio.duration : 3600;
+            const targetPos = Math.min(pos.position || 0, dur - 5);
+            // Snap if drift > 3s
+            if (Math.abs(audio.currentTime - targetPos) > 3) {
+              audio.currentTime = targetPos;
+            }
+            audio.play().catch(() => {});
+          } else {
+            currentTrackIndex = pos.trackIndex;
+            audio.src = expectedSrc;
+            audio.addEventListener('loadedmetadata', function seek() {
+               audio.removeEventListener('loadedmetadata', seek);
+               const dur = isFinite(audio.duration) ? audio.duration : 3600;
+               audio.currentTime = Math.min(pos.position || 0, dur - 5);
+               audio.play().catch(() => {});
+            }, { once: true });
+          }
+        }).catch(() => audio.play().catch(() => {})); // fallback
+      } else {
+        audio.play().catch(() => {});
+      }
     } else {
       audio.pause();
     }
@@ -265,7 +325,8 @@
       audio.load();
     }
     isPlaying = false;
-    saveState({ isPlaying: false, stream: currentStream, trackIndex: currentTrackIndex, volume: audio?.volume || 0.8, currentTime: 0 });
+    currentStream = null; // Clear current stream so mini player hides
+    saveState({ isPlaying: false, stream: null, trackIndex: 0, volume: audio?.volume || 0.8, currentTime: 0 });
     updateMiniPlayerUI();
   }
 
@@ -275,13 +336,13 @@
 
   async function resumePlayback() {
     const state = loadState();
-    if (!state || !state.isPlaying) return;
+    if (!state || !state.isPlaying || !state.stream) return; // Don't resume if no stream (user closed it)
     if (Date.now() - (state.timestamp || 0) > RESUME_THRESHOLD_MS) return;
 
     // Don't resume on player pages — those have their own audio
     if (isPlayerPage) return;
 
-    currentStream = state.stream || 'darbar';
+    currentStream = state.stream;
     currentTrackIndex = state.trackIndex || 0;
 
     createAudio();
@@ -350,12 +411,7 @@
     link.id = 'gmp-css';
     link.rel = 'stylesheet';
 
-    // Resolve CSS path based on current page depth
-    const path = window.location.pathname;
-    const afterFrontend = (path.split('/frontend/')[1] || '').split('/').filter(Boolean);
-    const prefix = afterFrontend.length > 1 ? '../' : '';
-    link.href = prefix + 'css/global-mini-player.css';
-
+    link.href = GMP_BASE ? GMP_BASE + 'css/global-mini-player.css' : 'css/global-mini-player.css';
     document.head.appendChild(link);
   }
 
@@ -369,7 +425,7 @@
     el.setAttribute('role', 'complementary');
 
     // Check if page has a bottom nav
-    const hasNav = !!document.querySelector('.bottom-nav, .nav-pill, .pill-nav, nav[class*="nav"]');
+    const hasNav = !!document.querySelector('.bottom-nav, .nav-pill, .pill-nav, nav[class*="nav"], .tab-bar');
     if (!hasNav) el.classList.add('gmp--no-nav');
 
     el.innerHTML = `
@@ -402,27 +458,29 @@
     // Event handlers
     document.getElementById('gmpPlay')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       togglePlayPause();
     });
 
     document.getElementById('gmpClose')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       stopAudio();
     });
 
-    document.getElementById('gmpTap')?.addEventListener('click', () => {
+    document.getElementById('gmpTap')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       const stream = STREAMS[currentStream];
       if (stream?.playerPage) {
-        const path = window.location.pathname;
-        const afterFrontend = (path.split('/frontend/')[1] || '').split('/').filter(Boolean);
-        const prefix = afterFrontend.length > 1 ? '../' : '';
-        window.location.href = prefix + stream.playerPage;
+        const href = GMP_BASE ? GMP_BASE + stream.playerPage : stream.playerPage;
+        window.location.href = href;
       }
     });
 
     // Also make artwork tappable
     el.querySelector('.gmp__art')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      e.preventDefault();
       document.getElementById('gmpTap')?.click();
     });
   }
@@ -431,9 +489,15 @@
     if (!miniPlayerEl) return;
 
     const stream = STREAMS[currentStream];
-    if (!stream) return;
+    if (!stream) {
+      // No stream selected, hide mini player
+      miniPlayerEl.classList.remove('gmp--visible');
+      return;
+    }
 
-    const shouldShow = isPlaying || forceVisible;
+    // Mini player should stay visible once shown, unless explicitly closed
+    // Only hide if there's no stream (user clicked close)
+    const shouldShow = true; // Always show if we have a stream
     miniPlayerEl.classList.toggle('gmp--visible', shouldShow);
 
     // Update artwork
@@ -450,12 +514,19 @@
     const liveDot = document.getElementById('gmpLiveDot');
     if (liveDot) liveDot.style.display = stream.type === 'live' ? '' : 'none';
 
-    // Update play/pause icon
+    // Update play/pause icon with smooth transition
     const playBtn = document.getElementById('gmpPlay');
     if (playBtn) {
-      playBtn.innerHTML = isPlaying
-        ? `<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>`
-        : `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+      const svg = playBtn.querySelector('svg');
+      if (svg) {
+        svg.style.opacity = '0';
+        setTimeout(() => {
+          svg.innerHTML = isPlaying
+            ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+            : '<path d="M8 5v14l11-7z"/>';
+          svg.style.opacity = '1';
+        }, 150);
+      }
     }
   }
 
@@ -491,6 +562,28 @@
     hide: () => { miniPlayerEl?.classList.remove('gmp--visible'); }
   };
 
+  // Register with AudioCoordinator if available
+  if (window.AudioCoordinator) {
+    window.AudioCoordinator.register('GlobalMiniPlayer', {
+      pause: () => { if (audio) audio.pause(); },
+      isPlaying: () => isPlaying,
+      getStream: () => currentStream
+    });
+    console.log('[GMP] Registered with AudioCoordinator');
+  } else {
+    // Wait for coordinator to load
+    setTimeout(() => {
+      if (window.AudioCoordinator) {
+        window.AudioCoordinator.register('GlobalMiniPlayer', {
+          pause: () => { if (audio) audio.pause(); },
+          isPlaying: () => isPlaying,
+          getStream: () => currentStream
+        });
+        console.log('[GMP] Registered with AudioCoordinator (delayed)');
+      }
+    }, 500);
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // LISTEN FOR PLAY EVENTS FROM OTHER SCRIPTS
   // ═══════════════════════════════════════════════════════════════════════════
@@ -503,6 +596,30 @@
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // TOAST NOTIFICATION
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  function showGmpToast(message) {
+    try {
+      let toast = document.getElementById('gmp-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'gmp-toast';
+        toast.style.cssText = 'position:fixed;bottom:160px;left:50%;transform:translateX(-50%) translateY(8px);background:rgba(30,10,50,0.92);color:#FDF6EC;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:10001;opacity:0;transition:all 0.3s ease;pointer-events:none;white-space:nowrap;backdrop-filter:blur(10px);border:1px solid rgba(212,134,10,0.3);';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._hideTimer);
+      toast._hideTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(8px)';
+      }, 3500);
+    } catch (e) { }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // INITIALIZATION
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -511,6 +628,14 @@
     injectMiniPlayer();
     resumePlayback();
   }
+
+  // ─── Listening time tracker (feeds Dashboard stats) ──────────────────────
+  // Every 60s while audio is playing, credit 1 minute to AnhadStats.
+  setInterval(function () {
+    if (isPlaying && window.AnhadStats && typeof window.AnhadStats.addListeningTime === 'function') {
+      window.AnhadStats.addListeningTime(1);
+    }
+  }, 60000);
 
   // Start as early as possible
   if (document.readyState === 'loading') {

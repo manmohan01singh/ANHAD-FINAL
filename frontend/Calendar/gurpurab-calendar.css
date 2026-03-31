@@ -124,8 +124,16 @@ body.modal-open .page {
   max-width: 680px;
   margin: 0 auto;
   -webkit-overflow-scrolling: touch;
-  contain: layout style;
+  contain: layout style paint;
   transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.calendar-cell,
+.date-item,
+.event-card {
+  contain: layout style;
+  will-change: auto;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

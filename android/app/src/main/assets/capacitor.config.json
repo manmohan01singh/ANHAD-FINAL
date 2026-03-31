@@ -3,7 +3,6 @@
 	"appName": "ANHAD",
 	"webDir": "frontend",
 	"server": {
-		"url": "https://anhad-final.onrender.com",
 		"androidScheme": "https",
 		"cleartext": false
 	},
@@ -16,6 +15,9 @@
 			"smallIcon": "ic_stat_notify",
 			"iconColor": "#f7c634",
 			"sound": "notification.wav"
+		},
+		"ScreenOrientation": {
+			"default": "portrait"
 		},
 		"SplashScreen": {
 			"launchShowDuration": 2000,

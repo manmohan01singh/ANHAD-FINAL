@@ -1,9 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="http://localhost:3000">
+  <link rel="preconnect" href="https://api.banidb.com">
+  <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
   <link rel="stylesheet" href="./css/mobile-lock.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="stylesheet" href="./css/anhad-core.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="orientation" content="portrait">
   <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
@@ -12,10 +17,12 @@
   <meta name="apple-mobile-web-app-title" content="ANHAD">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
   <meta name="description" content="ANHAD — 24/7 Gurbani Kirtan, Nitnem, Hukamnama, Sehaj Paath. Your sacred companion.">
 
+  <script src="./js/anhad-core.js" defer></script>
   <!-- Theme: inline critical snippet (no external JS blocking) -->
   <script>
     (function(){
@@ -57,6 +64,7 @@
   </script>
 
   <!-- Preloads — Critical Resources -->
+  <link rel="preload" href="assets/fonts/OptimusPrinceps.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" as="image" href="assets/darbar-sahib-day.webp" type="image/webp" fetchpriority="high">
   <!-- PERF: Removed duplicate PNG preload — WebP is sufficient for modern browsers -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,9 +73,12 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
-  <link rel="stylesheet" href="css/trendora-premium.css?v=4">
+  <link rel="stylesheet" href="css/trendora-premium.css?v=6">
+  <link rel="stylesheet" href="css/anhad-clay.css?v=1">
+  <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="css/install-button.css">
   <!-- Non-critical CSS loaded async -->
-  <link rel="stylesheet" href="css/ios-override.css?v=4" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/ios-override.css?v=6" media="print" onload="this.media='all'">
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -234,7 +245,7 @@
 
       <div class="hero-carousel__track" id="heroTrack" role="region" aria-roledescription="carousel">
         <!-- Card 1: Darbar Sahib Live -->
-        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
+        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html?stream=darbar'">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/darbar-sahib-day.webp" type="image/webp">
@@ -257,7 +268,7 @@
         </article>
 
         <!-- Card 2: Amritvela Kirtan -->
-        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
+        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html?stream=amritvela'">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
@@ -434,16 +445,15 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--gold ios-haptic" id="installAppCard" aria-label="Install App" style="display: none; margin-bottom: 24px;">
-      <div class="quick-card__icon" aria-hidden="true" style="background: transparent; border: none; box-shadow: none;"><img src="assets/new.webp" alt="ANHAD Logo" style="width: 100%; height: 100%; object-fit: contain;"></div>
-      <div class="quick-card__content">
-        <div class="quick-card__title">Install App</div>
-        <div class="quick-card__subtitle">Download for offline access</div>
-      </div>
-      <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
-    </article>
-
   </main>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       INSTALL APP BUTTON — Small Bottom Center Button
+  ════════════════════════════════════════════════════════════════════════ -->
+  <button class="install-app-btn ios-haptic" id="installAppBtn" aria-label="Install ANHAD App" style="display: none;">
+    <img src="assets/app-logo-384.png" alt="ANHAD" class="install-app-btn__icon">
+    <span class="install-app-btn__text">Install App</span>
+  </button>
 
   <!-- ════════════════════════════════════════════════════════════════════════
        BOTTOM NAV — iOS Tab Bar with Emoji Icons
@@ -555,6 +565,12 @@
   <script src="lib/fetch-utils.js"></script>
   <!-- Critical: bfcache recovery — must load first to clean stuck states on back-button -->
   <script src="lib/page-lifecycle.js"></script>
+  <script src="lib/audio-preload.js"></script>
+  <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
+  <script src="lib/audio-coordinator.js"></script>
+  <script src="lib/persistent-audio.js"></script>
+  <script src="lib/global-mini-player.js"></script>
+  
   <!-- Critical: Core UI logic -->
   <script src="js/trendora-app.js" defer></script>
   <script src="pwa-register.js" defer></script>
@@ -567,11 +583,12 @@
     // Lazy-load non-critical scripts — use idle callback for better main-thread scheduling
     var loadLazyScripts = function() {
       var lazyScripts = [
+        'js/anhad-popup.js',
         'lib/global-theme.js',
-        'lib/persistent-audio.js',
-        'lib/global-mini-player.js',
         'lib/user-stats.js',
         'lib/gurbani-db.js',
+        'lib/alarm-coordinator.js',
+        'lib/guaranteed-alarm-system.js', // CRITICAL: Ensures ALL notifications fire
         'lib/global-alarm-system.js',
         'lib/ios-android-notifications.js'
       ];

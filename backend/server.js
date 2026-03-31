@@ -24,14 +24,14 @@ const PORT = process.env.PORT || 3000;
 // ═══════════════════════════════════════════════════════════════════
 
 const CONFIG = {
-    R2_BASE_URL: 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
-    FRONTEND_ROOT: path.join(__dirname, '..', 'frontend'),
-    MAIN_UI: path.join(__dirname, '..', 'frontend'),
-    SEHAJ_PROGRESS_DIR: path.join(__dirname, '..', 'frontend', 'SehajPaath', 'data'),
-    RADIO_STATE_FILE: path.join(__dirname, 'radio-state.json'),
-    DEFAULT_TRACK_DURATION: 3600, // 1 hour fallback per track
-    LISTENER_TTL: 60000, // 60s — heartbeat timeout
-    STATE_SAVE_INTERVAL: 30000, // Save state to disk every 30s
+    R2_BASE_URL: process.env.R2_BASE_URL || 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
+    FRONTEND_ROOT: process.env.FRONTEND_ROOT || path.join(__dirname, '..', 'frontend'),
+    MAIN_UI: process.env.MAIN_UI || path.join(__dirname, '..', 'frontend'),
+    SEHAJ_PROGRESS_DIR: process.env.SEHAJ_PROGRESS_DIR || path.join(__dirname, 'data', 'sehaj-progress'),
+    RADIO_STATE_FILE: process.env.RADIO_STATE_FILE || path.join(__dirname, 'radio-state.json'),
+    DEFAULT_TRACK_DURATION: parseInt(process.env.DEFAULT_TRACK_DURATION) || 3600, // 1 hour fallback per track
+    LISTENER_TTL: parseInt(process.env.LISTENER_TTL) || 60000, // 60s — heartbeat timeout
+    STATE_SAVE_INTERVAL: parseInt(process.env.STATE_SAVE_INTERVAL) || 30000, // Save state to disk every 30s
 };
 
 const PLAYLIST = [
@@ -364,19 +364,30 @@ const broadcast = new BroadcastEngine();
 // Parse JSON body — 10kb limit prevents oversized payload attacks
 app.use(express.json({ limit: '10kb' }));
 
-// CORS — only allow explicitly listed origins from ALLOWED_ORIGINS env var
+// CORS — allow localhost variants for development, env-controlled for production
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
-    'http://localhost:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
+    'http://localhost:3000,http://127.0.0.1:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
     .split(',').map(o => o.trim()).filter(Boolean);
+
+// For local dev, be permissive; production uses strict origin list
+const IS_LOCAL_DEV = !process.env.ALLOWED_ORIGINS;
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    
+    // Local dev: allow any localhost origin
+    if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        res.setHeader('Vary', 'Origin');
+    } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
     }
+    
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    
     if (req.method === 'OPTIONS') return res.sendStatus(204);
     next();
 });
@@ -400,17 +411,7 @@ app.use((req, res, next) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
-// STATIC FILES
-// ═══════════════════════════════════════════════════════════════════
-
-// Serve entire frontend folder
-app.use(express.static(CONFIG.FRONTEND_ROOT));
-
-// Serve MainWebPage at root
-app.use('/', express.static(CONFIG.MAIN_UI));
-
-// ═══════════════════════════════════════════════════════════════════
-// 🔴 LIVE RADIO API — The Core Sync Endpoints
+// 🔴 LIVE RADIO API — The Core Sync Endpoints (MUST be before static files)
 // ═══════════════════════════════════════════════════════════════════
 
 /**
@@ -432,6 +433,16 @@ app.get('/api/radio/live', (req, res) => {
     }
 
     res.json({
+        // Compatibility shape expected by rebuilt clients
+        currentTrack: {
+            title: track.title,
+            duration: broadcast.getTrackDuration(livePos.trackIndex),
+            index: livePos.trackIndex + 1
+        },
+        position: Math.round(livePos.trackPosition * 100) / 100,
+        listeners: broadcast.getListenerCount(),
+        isPlaying: true,
+
         // What to play
         trackIndex: livePos.trackIndex,
         trackPosition: Math.round(livePos.trackPosition * 100) / 100,
@@ -753,6 +764,12 @@ app.delete('/api/sehaj-paath/bookmarks/:id', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+// STATIC AUDIO FILES - Alarm tones (must be before /audio proxy)
+// ═══════════════════════════════════════════════════════════════════
+
+app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
+
+// ═══════════════════════════════════════════════════════════════════
 // AUDIO PROXY
 // ═══════════════════════════════════════════════════════════════════
 
@@ -791,6 +808,16 @@ app.get('/audio/:filename', async (req, res) => {
             });
         }
 
+        // CORS headers for cross-origin audio streaming - allow all origins for audio
+        const origin = req.headers.origin;
+        if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+            res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Content-Type', r2Response.headers.get('content-type') || 'audio/webm');
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -857,6 +884,50 @@ app.get('/sw.js', (req, res) => {
 app.get('/manifest.json', (req, res) => {
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'manifest.json'));
 });
+
+// ═══════════════════════════════════════════════════════════════════
+// BaniDB API Proxy - Avoid CORS issues by proxying through backend
+// ═══════════════════════════════════════════════════════════════════
+
+app.use('/api/banidb', async (req, res) => {
+    const banidbPath = req.path;
+    const queryString = new URLSearchParams(req.query).toString();
+    const targetUrl = `https://api.banidb.com/v2${banidbPath}${queryString ? '?' + queryString : ''}`;
+    
+    try {
+        console.log(`[BaniDB Proxy] Fetching: ${targetUrl}`);
+        const response = await fetch(targetUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'ANHAD-Gurbani-App/1.0'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`BaniDB API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('[BaniDB Proxy] Error:', error.message);
+        res.status(500).json({
+            error: 'Failed to fetch from BaniDB',
+            message: error.message,
+            url: targetUrl
+        });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// STATIC FILES - MUST be after all API routes
+// ═══════════════════════════════════════════════════════════════════
+
+// Serve entire frontend folder
+app.use(express.static(CONFIG.FRONTEND_ROOT));
+
+// Serve MainWebPage at root
+app.use('/', express.static(CONFIG.MAIN_UI));
 
 // ═══════════════════════════════════════════════════════════════════
 // 404 HANDLER

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html lang="pa" data-theme="gradient">
+<html lang="pa" data-global-theme="force">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,14 +22,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="sehaj-paath.css">
-    <link rel="stylesheet" href="divine-design.css">
-    <link rel="stylesheet" href="fixes/settings-panel-fix.css">
+    <!-- Unified Claymorphism Design System -->
+    <link rel="stylesheet" href="sehaj-paath-unified.css">
+    <link rel="stylesheet" href="sehaj-paath-settings-theme.css">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    <script src="../js/anhad-core.js" defer></script>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
@@ -68,9 +73,9 @@
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════════════
-             HEADER - iOS Dynamic Island Style
+             HEADER - Sacred Clay Style
         ═══════════════════════════════════════════════════════════════════════ -->
-        <header class="app-header" id="appHeader">
+        <header class="app-header clay-sacred" id="appHeader">
             <div class="header-blur-bg"></div>
             
             <div class="header-content">
@@ -126,9 +131,9 @@
         <main class="main-content" id="mainContent">
             
             <!-- ═══════════════════════════════════════════════════════════════════
-                 HERO CARD - Continue Reading
+                 HERO CARD - Sacred Clay Continue Reading
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card hero-card" id="heroSection">
+            <section class="card hero-card clay-hero-sacred clay-animate-float" id="heroSection">
                 <div class="card-glow hero-glow"></div>
                 
                 <div class="hero-content">
@@ -176,7 +181,7 @@
                     </div>
                     
                     <!-- Continue Reading Button -->
-                    <button class="continue-btn glass-btn" id="continueReadingBtn">
+                    <button class="continue-btn clay-btn-sacred clay-btn-sacred--gold" id="continueReadingBtn">
                         <span class="btn-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="5 3 19 12 5 21 5 3"/>
@@ -189,9 +194,9 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 TODAY'S READING STATS
+                 TODAY'S READING STATS - Sacred Clay
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card stats-card" id="statsSection">
+            <section class="card stats-card clay-sacred" id="statsSection">
                 <div class="card-glow stats-glow"></div>
                 
                 <div class="card-header">
@@ -230,9 +235,9 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 QUICK ACTIONS
+                 QUICK ACTIONS - Sacred Clay Grid
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card quick-actions-card" id="quickActionsSection">
+            <section class="card quick-actions-card clay-sacred" id="quickActionsSection">
                 <div class="card-glow actions-glow"></div>
                 
                 <div class="card-header">
@@ -252,7 +257,7 @@
                 
                 <div class="card-body actions-body">
                     <div class="actions-grid">
-                        <button class="action-btn" id="bookmarksBtn">
+                        <button class="action-btn clay-action-btn" id="bookmarksBtn">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -262,7 +267,7 @@
                             <span class="action-count" id="bookmarkCount">0</span>
                         </button>
                         
-                        <button class="action-btn" id="notesBtn">
+                        <button class="action-btn clay-action-btn" id="notesBtn">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -274,7 +279,7 @@
                             <span class="action-count" id="notesCount">0</span>
                         </button>
                         
-                        <button class="action-btn" id="historyBtn">
+                        <button class="action-btn clay-action-btn" id="historyBtn">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
@@ -284,7 +289,7 @@
                             <span class="action-label">History</span>
                         </button>
                         
-                        <button class="action-btn" id="achievementsBtn">
+                        <button class="action-btn clay-action-btn" id="achievementsBtn">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
@@ -302,9 +307,9 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 GO TO SPECIFIC ANG
+                 GO TO SPECIFIC ANG - Sacred Clay Navigation
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card ang-nav-card" id="angNavSection">
+            <section class="card ang-nav-card clay-sacred" id="angNavSection">
                 <div class="card-glow ang-nav-glow"></div>
                 
                 <div class="card-header">
@@ -335,8 +340,8 @@
                     <div class="ang-input-container">
                         <label for="angInput" class="ang-input-label">Enter Ang Number</label>
                         <div class="ang-input-wrapper">
-                            <input type="number" class="ang-input" id="angInput" min="1" max="1430" value="1" placeholder="1-1430">
-                            <button class="go-btn" id="goToAngBtn">
+                            <input type="number" class="ang-input clay-input-sacred" id="angInput" min="1" max="1430" value="1" placeholder="1-1430">
+                            <button class="go-btn clay-btn-sacred clay-btn-sacred--circle" id="goToAngBtn">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M5 12h14"/>
                                     <path d="M12 5l7 7-7 7"/>
@@ -347,15 +352,15 @@
                     
                     <!-- Quick Navigation Buttons -->
                     <div class="quick-nav-buttons">
-                        <button class="quick-nav-btn" data-ang="1">
+                        <button class="quick-nav-btn clay-action-btn" data-ang="1">
                             <span class="nav-icon">🙏</span>
                             <span class="nav-label">Mool Mantar</span>
                         </button>
-                        <button class="quick-nav-btn" data-action="random">
+                        <button class="quick-nav-btn clay-action-btn" data-action="random">
                             <span class="nav-icon">🎲</span>
                             <span class="nav-label">Random Ang</span>
                         </button>
-                        <button class="quick-nav-btn" data-action="hukamnama">
+                        <button class="quick-nav-btn clay-action-btn" data-action="hukamnama">
                             <span class="nav-icon">📜</span>
                             <span class="nav-label">Hukamnama</span>
                         </button>
@@ -364,9 +369,9 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 SEHAJ PAATH PROGRESS
+                 SEHAJ PAATH PROGRESS - Sacred Clay
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card paath-progress-card" id="paathProgressSection">
+            <section class="card paath-progress-card clay-sacred" id="paathProgressSection">
                 <div class="card-glow paath-glow"></div>
                 
                 <div class="card-header">
@@ -379,7 +384,7 @@
                         <h2 class="card-title">ਸਹਿਜ ਪਾਠ ਪ੍ਰਗਤੀ</h2>
                         <p class="card-subtitle">Sehaj Paath Progress</p>
                     </div>
-                    <button class="new-paath-btn" id="newPaathBtn">
+                    <button class="new-paath-btn clay-btn-sacred" id="newPaathBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 5v14M5 12h14"/>
                         </svg>
@@ -424,9 +429,9 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 DAILY REMINDER
+                 DAILY REMINDER - Sacred Clay
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card reminder-card" id="reminderSection">
+            <section class="card reminder-card clay-sacred" id="reminderSection">
                 <div class="card-glow reminder-glow"></div>
                 
                 <div class="card-header">
@@ -449,16 +454,16 @@
                 <div class="card-body reminder-body" id="reminderBody">
                     <div class="reminder-time-container">
                         <label for="reminderTime" class="reminder-label">Remind me every day at:</label>
-                        <input type="time" class="reminder-time-input" id="reminderTime" value="06:00">
+                        <input type="time" class="reminder-time-input clay-input-sacred" id="reminderTime" value="06:00">
                     </div>
                     <p class="reminder-note">Stay consistent in your spiritual journey</p>
                 </div>
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 OFFLINE DOWNLOAD
+                 OFFLINE DOWNLOAD - Sacred Clay
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card offline-card" id="offlineSection">
+            <section class="card offline-card clay-sacred" id="offlineSection">
                 <div class="card-glow offline-glow"></div>
                 
                 <div class="card-header">
@@ -482,7 +487,7 @@
                         </div>
                         <p class="offline-info" id="offlineInfo">0 Angs saved for offline reading</p>
                     </div>
-                    <button class="download-btn" id="downloadAngsBtn">
+                    <button class="download-btn clay-btn-sacred" id="downloadAngsBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
@@ -623,6 +628,9 @@
     <!-- ═══════════════════════════════════════════════════════════════════════════
          SCRIPTS
     ═══════════════════════════════════════════════════════════════════════════ -->
+    
+    <!-- Offline-First Sehaj Paath Cache -->
+    <script src="../lib/sehaj-paath-cache.js"></script>
     
     <!-- Services -->
     <script src="services/storage-service.js"></script>

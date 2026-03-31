@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Path Tester</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        h1 { color: #4CAF50; }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .path-test {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+        }
+        .status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #666;
+        }
+        .status.success { background: #4CAF50; }
+        .status.error { background: #f44336; }
+        .status.testing { background: #FFC107; animation: pulse 1s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #45a049; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .path-text {
+            flex: 1;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .info {
+            background: #1e3a5f;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .log {
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <h1>🔊 Audio Path Tester</h1>
+    
+    <div class="info">
+        <strong>Current Location:</strong><br>
+        Protocol: <span id="protocol"></span><br>
+        Hostname: <span id="hostname"></span><br>
+        Pathname: <span id="pathname"></span><br>
+        Capacitor: <span id="capacitor"></span>
+    </div>
+
+    <div class="test-section">
+        <h2>Test All Paths</h2>
+        <button onclick="testAllPaths()">Run Full Test</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Audio Paths to Test</h2>
+        <div id="pathTests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        // Display current location info
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('hostname').textContent = window.location.hostname || '(none)';
+        document.getElementById('pathname').textContent = window.location.pathname;
+        document.getElementById('capacitor').textContent = window.Capacitor ? 'Yes (Native)' : 'No (Web)';
+
+        // Define paths to test
+        const AUDIO_FILE = 'audio1.mp3';
+        const PATHS_TO_TEST = [
+            '../Audio/',
+            './Audio/',
+            '/Audio/',
+            'Audio/',
+            '/android_asset/public/Audio/',
+            '../public/Audio/',
+            './public/Audio/'
+        ];
+
+        let testResults = {};
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function testAudioPath(basePath) {
+            const fullPath = basePath + AUDIO_FILE;
+            const pathId = `path-${basePath.replace(/[^a-z0-9]/gi, '-')}`;
+            
+            return new Promise((resolve) => {
+                log(`Testing: ${fullPath}`, 'info');
+                
+                const audio = new Audio(fullPath);
+                let resolved = false;
+                
+                const timeout = setTimeout(() => {
+                    if (!resolved) {
+                        resolved = true;
+                        log(`❌ Timeout: ${fullPath}`, 'error');
+                        resolve({ path: fullPath, success: false, error: 'Timeout' });
+                    }
+                }, 3000);
+                
+                audio.addEventListener('canplaythrough', () => {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timeout);
+                        log(`✅ Success: ${fullPath}`, 'success');
+                        resolve({ path: fullPath, success: true });
+                    }
+                }, { once: true });
+                
+                audio.addEventListener('error', (e) => {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timeout);
+                        log(`❌ Error: ${fullPath} - ${e.type}`, 'error');
+                        resolve({ path: fullPath, success: false, error: e.type });
+                    }
+                }, { once: true });
+                
+                audio.load();
+            });
+        }
+
+        async function testAllPaths() {
+            log('=== Starting Audio Path Tests ===', 'info');
+            testResults = {};
+            
+            for (const path of PATHS_TO_TEST) {
+                const pathId = `path-${path.replace(/[^a-z0-9]/gi, '-')}`;
+                const statusEl = document.getElementById(pathId);
+                if (statusEl) {
+                    statusEl.className = 'status testing';
+                }
+                
+                const result = await testAudioPath(path);
+                testResults[path] = result;
+                
+                if (statusEl) {
+                    statusEl.className = result.success ? 'status success' : 'status error';
+                }
+            }
+            
+            const successCount = Object.values(testResults).filter(r => r.success).length;
+            log(`=== Test Complete: ${successCount}/${PATHS_TO_TEST.length} paths working ===`, 
+                successCount > 0 ? 'success' : 'error');
+            
+            if (successCount > 0) {
+                const workingPaths = Object.values(testResults)
+                    .filter(r => r.success)
+                    .map(r => r.path);
+                log(`Working paths: ${workingPaths.join(', ')}`, 'success');
+            }
+        }
+
+        // Initialize path test UI
+        function initPathTests() {
+            const container = document.getElementById('pathTests');
+            PATHS_TO_TEST.forEach(path => {
+                const pathId = `path-${path.replace(/[^a-z0-9]/gi, '-')}`;
+                const div = document.createElement('div');
+                div.className = 'path-test';
+                div.innerHTML = `
+                    <div class="status" id="${pathId}"></div>
+                    <div class="path-text">${path}${AUDIO_FILE}</div>
+                    <button onclick="testSinglePath('${path}')">Test</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function testSinglePath(path) {
+            const pathId = `path-${path.replace(/[^a-z0-9]/gi, '-')}`;
+            const statusEl = document.getElementById(pathId);
+            statusEl.className = 'status testing';
+            
+            const result = await testAudioPath(path);
+            testResults[path] = result;
+            statusEl.className = result.success ? 'status success' : 'status error';
+        }
+
+        // Initialize on load
+        initPathTests();
+        log('Audio Path Tester ready. Click "Run Full Test" to begin.', 'info');
+    </script>
+</body>
+</html>

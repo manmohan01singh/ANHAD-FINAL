@@ -2,6 +2,8 @@
 <html lang="pa" dir="ltr" data-theme="light">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
@@ -14,6 +16,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
+    <script src="../js/anhad-core.js" defer></script>
     
     <!-- Custom Gurmukhi Fonts -->
     <style>
@@ -301,6 +307,7 @@
             text-align: center;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
@@ -367,6 +374,7 @@
             font-weight: 600;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron), var(--ios-orange));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
@@ -854,11 +862,11 @@
     </div>
     
     <!-- App -->
-    <div class="app" id="app">
+    <div class="app page-enter" id="app">
         
         <!-- Header -->
         <header class="header">
-            <a href="../index.html" class="back-btn">
+            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -1109,23 +1117,27 @@
         }, 600);
         
         // ═══════════════════════════════════════════════════════════════
-        // THEME TOGGLE
+        // THEME TOGGLE - Using Global AnhadTheme API
         // ═══════════════════════════════════════════════════════════════
         
-        // Use global theme from main app (anhad_theme) with light as default
-        const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        
         const themeToggle = document.getElementById('themeToggle');
-        themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+        
+        function updateThemeUI(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+        
+        // Initial theme from AnhadTheme
+        updateThemeUI(AnhadTheme.get());
+        
+        // Listen for theme changes from other pages
+        window.addEventListener('themechange', (e) => {
+            updateThemeUI(e.detail.theme);
+        });
         
         themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            // Save to global theme key so it syncs with main app
-            localStorage.setItem('anhad_theme', next);
-            themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+            const newTheme = AnhadTheme.toggle();
+            updateThemeUI(newTheme);
         });
         
         // ═══════════════════════════════════════════════════════════════

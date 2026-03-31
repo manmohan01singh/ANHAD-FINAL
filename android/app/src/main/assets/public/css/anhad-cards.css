@@ -629,3 +629,236 @@
     color: var(--text-secondary);
     font-weight: 500;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CLAYMORPHISM CARD EXTENSIONS
+   Import claymorphism-system.css before this file for base tokens
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Base Clay Card applied to existing card classes */
+.card--clay,
+.anhad-card--clay {
+  border-radius: 28px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F7 100%);
+  box-shadow:
+    40px 40px 100px rgba(0, 0, 0, 0.45),
+    20px 20px 60px rgba(0, 0, 0, 0.35),
+    -20px -20px 60px rgba(255, 255, 255, 0.95),
+    -10px -10px 30px rgba(255, 255, 255, 0.8),
+    0 0 0 3px rgba(255, 255, 255, 0.7),
+    inset 0 3px 6px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateY(0);
+}
+
+[data-theme="dark"] .card--clay,
+[data-theme="dark"] .anhad-card--clay {
+  background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    40px 40px 100px rgba(0, 0, 0, 0.6),
+    20px 20px 60px rgba(0, 0, 0, 0.45),
+    -20px -20px 60px rgba(255, 255, 255, 0.1),
+    -10px -10px 30px rgba(255, 255, 255, 0.05),
+    0 0 0 3px rgba(255, 255, 255, 0.15),
+    inset 0 3px 6px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.card--clay:active,
+.anhad-card--clay:active {
+  transform: scale(0.96) translateY(6px);
+  box-shadow:
+    inset 15px 15px 40px rgba(0, 0, 0, 0.35),
+    inset 8px 8px 20px rgba(0, 0, 0, 0.2),
+    inset -10px -10px 30px rgba(255, 255, 255, 0.6),
+    0 0 0 2px rgba(255, 255, 255, 0.4),
+    8px 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Clay Radio Menu Sheet */
+.radio-menu__sheet--clay {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8F8FA 100%);
+  border-radius: 32px 32px 0 0;
+  box-shadow:
+    0 -20px 60px rgba(0, 0, 0, 0.25),
+    0 -10px 30px rgba(0, 0, 0, 0.15),
+    inset 0 3px 6px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+  border-top: 3px solid rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .radio-menu__sheet--clay {
+  background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Clay Hero Card */
+.hero-card--clay {
+  border-radius: 32px;
+  background: linear-gradient(145deg, #FFFFFF 0%, #F8F8FA 100%);
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.4),
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 3px rgba(255, 255, 255, 0.5),
+    inset 0 4px 8px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .hero-card--clay {
+  background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Clay Practice Cards */
+.practice-card--clay {
+  border-radius: 28px;
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%);
+  box-shadow:
+    35px 35px 90px rgba(212, 148, 58, 0.5),
+    18px 18px 50px rgba(212, 148, 58, 0.35),
+    -18px -18px 50px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(212, 148, 58, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+  border: 3px solid rgba(212, 148, 58, 0.35);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+[data-theme="dark"] .practice-card--clay {
+  background: linear-gradient(165deg, #3D3020 0%, #2D2010 50%, #1D1808 100%);
+  box-shadow:
+    35px 35px 90px rgba(212, 148, 58, 0.3),
+    18px 18px 50px rgba(212, 148, 58, 0.2),
+    -18px -18px 50px rgba(255, 255, 255, 0.05),
+    0 0 0 3px rgba(212, 148, 58, 0.2),
+    inset 0 3px 6px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+  border-color: rgba(212, 148, 58, 0.25);
+}
+
+.practice-card--clay:active {
+  transform: scale(0.96) translateY(6px);
+  box-shadow:
+    inset 12px 12px 35px rgba(0, 0, 0, 0.25),
+    inset 6px 6px 18px rgba(0, 0, 0, 0.15),
+    inset -8px -8px 25px rgba(255, 255, 255, 0.5),
+    0 0 0 2px rgba(212, 148, 58, 0.25),
+    10px 10px 25px rgba(212, 148, 58, 0.3);
+}
+
+/* Clay Event Card */
+.event-card--clay {
+  border-radius: 28px;
+  background: linear-gradient(165deg, #FFFCF8 0%, #FFF8F0 50%, #FFF0E8 100%);
+  box-shadow:
+    40px 40px 100px rgba(212, 148, 58, 0.5),
+    20px 20px 60px rgba(212, 148, 58, 0.35),
+    -20px -20px 60px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(212, 148, 58, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.08);
+  border: 3px solid rgba(212, 148, 58, 0.35);
+}
+
+[data-theme="dark"] .event-card--clay {
+  background: linear-gradient(165deg, #3D3020 0%, #2D2010 50%, #1D1808 100%);
+  border-color: rgba(212, 148, 58, 0.25);
+  box-shadow:
+    40px 40px 100px rgba(212, 148, 58, 0.3),
+    20px 20px 60px rgba(212, 148, 58, 0.2),
+    -20px -20px 60px rgba(255, 255, 255, 0.05),
+    0 0 0 3px rgba(212, 148, 58, 0.2),
+    inset 0 3px 6px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Clay Quick Card Variants */
+.quick-card--clay-green {
+  border-radius: 24px;
+  background: linear-gradient(145deg, #F0FFF5 0%, #E8F8F0 100%);
+  box-shadow:
+    30px 30px 80px rgba(48, 209, 88, 0.4),
+    15px 15px 40px rgba(48, 209, 88, 0.25),
+    -15px -15px 40px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(48, 209, 88, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  border: 3px solid rgba(48, 209, 88, 0.3);
+}
+
+.quick-card--clay-gold {
+  background: linear-gradient(145deg, #FFFBF5 0%, #FFF5E8 100%);
+  box-shadow:
+    30px 30px 80px rgba(232, 168, 56, 0.5),
+    15px 15px 40px rgba(232, 168, 56, 0.35),
+    -15px -15px 40px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(232, 168, 56, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  border-color: rgba(232, 168, 56, 0.35);
+}
+
+.quick-card--clay-purple {
+  background: linear-gradient(145deg, #F8F5FF 0%, #F0EBFF 100%);
+  box-shadow:
+    30px 30px 80px rgba(88, 86, 214, 0.45),
+    15px 15px 40px rgba(88, 86, 214, 0.3),
+    -15px -15px 40px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(88, 86, 214, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  border-color: rgba(88, 86, 214, 0.3);
+}
+
+.quick-card--clay-blue {
+  background: linear-gradient(145deg, #F0F8FF 0%, #E0F0FF 100%);
+  box-shadow:
+    30px 30px 80px rgba(0, 122, 255, 0.45),
+    15px 15px 40px rgba(0, 122, 255, 0.3),
+    -15px -15px 40px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(0, 122, 255, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 122, 255, 0.3);
+}
+
+.quick-card--clay-rose {
+  background: linear-gradient(145deg, #FFF5F5 0%, #FFE8E8 100%);
+  box-shadow:
+    30px 30px 80px rgba(255, 107, 107, 0.35),
+    15px 15px 40px rgba(255, 107, 107, 0.2),
+    -15px -15px 40px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(255, 107, 107, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  border-color: rgba(255, 107, 107, 0.25);
+}
+
+[data-theme="dark"] .quick-card--clay-green {
+  background: linear-gradient(145deg, #183020 0%, #102818 100%);
+  border-color: rgba(48, 209, 88, 0.2);
+}
+
+[data-theme="dark"] .quick-card--clay-gold {
+  background: linear-gradient(145deg, #3D3020 0%, #2D2010 100%);
+  border-color: rgba(232, 168, 56, 0.25);
+}
+
+[data-theme="dark"] .quick-card--clay-purple {
+  background: linear-gradient(145deg, #281830 0%, #201028 100%);
+  border-color: rgba(88, 86, 214, 0.2);
+}
+
+[data-theme="dark"] .quick-card--clay-blue {
+  background: linear-gradient(145deg, #1A2840 0%, #102040 100%);
+  border-color: rgba(0, 122, 255, 0.2);
+}
+
+[data-theme="dark"] .quick-card--clay-rose {
+  background: linear-gradient(145deg, #301818 0%, #281010 100%);
+  border-color: rgba(255, 107, 107, 0.15);
+}

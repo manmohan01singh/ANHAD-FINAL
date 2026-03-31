@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -36,7 +38,10 @@
   <script src="../lib/global-theme.js"></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>
+    <script src="../js/anhad-core.js" defer></script>
 </head>
 
 <body>
@@ -51,7 +56,7 @@
         <header class="notes-header">
             <div class="header-glass"></div>
             <div class="header-content">
-                <button class="header-btn back-btn" id="back-btn" aria-label="Go back">
+                <button class="header-btn back-btn glass-nav__back" id="back-btn" aria-label="Go back">
                     <i class="fas fa-chevron-left"></i>
                     <span>Back</span>
                 </button>
@@ -64,9 +69,6 @@
                 <div class="header-actions">
                     <button class="header-btn" id="search-btn" aria-label="Search notes">
                         <i class="fas fa-magnifying-glass"></i>
-                    </button>
-                    <button class="header-btn" id="theme-btn" aria-label="Toggle theme">
-                        <i class="fas fa-sun" id="theme-icon"></i>
                     </button>
                     <button class="header-btn" id="menu-btn" aria-label="More options">
                         <i class="fas fa-ellipsis"></i>
@@ -240,6 +242,10 @@
             <div class="menu-sheet">
                 <div class="menu-handle"></div>
                 <div class="menu-options">
+                    <button class="menu-option" id="menu-theme">
+                        <i class="fas fa-moon" id="menu-theme-icon"></i>
+                        <span id="menu-theme-text">Dark Mode</span>
+                    </button>
                     <button class="menu-option" id="menu-sort">
                         <i class="fas fa-arrow-down-wide-short"></i>
                         <span>Sort Notes</span>
@@ -327,6 +333,7 @@
     <script src="notes-manager.js"></script>
     <script src="notes-ui.js"></script>
     <script src="notes-integration.js"></script>
+    <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 </body>
 

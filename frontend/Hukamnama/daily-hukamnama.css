@@ -399,18 +399,20 @@ a {
 }
 
 .header-action {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
     transition: all 0.2s;
 }
 
 .header-action:active {
-    background: var(--separator);
+    background: rgba(255, 255, 255, 0.12);
     transform: scale(0.92);
 }
 
@@ -450,6 +452,7 @@ a {
     margin-bottom: 16px;
     background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
     animation: glowPulse 4s ease-in-out infinite;
@@ -478,13 +481,11 @@ a {
 
 .date-card {
     padding: 12px 20px;
-    background: var(--surface-card);
-    border: 1px solid var(--separator);
-    border-radius: var(--radius-lg);
-    backdrop-filter: var(--blur-light);
-    -webkit-backdrop-filter: var(--blur-light);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
     text-align: center;
     min-width: 140px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .date-label {
@@ -548,13 +549,10 @@ a {
    ═══════════════════════════════════════════════════════════════ */
 
 .hukamnama-card {
-    background: var(--surface-card);
-    backdrop-filter: var(--blur-light);
-    -webkit-backdrop-filter: var(--blur-light);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--separator);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
 /* Metadata Strip */
@@ -563,12 +561,8 @@ a {
     justify-content: center;
     gap: 24px;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--separator);
-    background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .hukamnama-meta {
-    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
 }
 
 .meta-item {
@@ -600,7 +594,7 @@ a {
 }
 
 .gurbani-content {
-    /* Reading optimized */
+    /* Reading optimized - no additional styles needed */
 }
 
 /* Loading State */

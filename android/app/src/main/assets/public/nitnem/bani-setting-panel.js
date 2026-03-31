@@ -15,7 +15,7 @@
     transliterationSize: 18,
     translationSize: 16,
     punjabiSize: 16,
-    theme: 'dark',
+    theme: localStorage.getItem('anhad_theme') || 'light', // Sync with global theme
     spacing: 'normal',
     lensMode: false,
     glassGlow: 0.35,
@@ -126,7 +126,8 @@
     root.style.setProperty('--font-translation', `${settings.translationSize}px`);
     root.style.setProperty('--font-punjabi', `${settings.punjabiSize || settings.translationSize}px`);
     
-    // Apply theme to body
+    // Apply theme to both html and body for maximum compatibility
+    document.documentElement.setAttribute('data-theme', settings.theme);
     document.body.setAttribute('data-theme', settings.theme);
     
     // Apply spacing to body
@@ -660,6 +661,13 @@
         settings = { ...DEFAULTS, ...parsed };
         console.log('📂 Settings loaded:', settings);
       }
+      
+      // Always sync with global theme on load
+      const globalTheme = localStorage.getItem('anhad_theme') || 'light';
+      if (THEMES.includes(globalTheme)) {
+        settings.theme = globalTheme;
+      }
+      
     } catch (e) {
       console.warn('Could not load settings:', e);
       settings = { ...DEFAULTS };
@@ -874,6 +882,28 @@
         saveSettings();
       });
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
+    // ═══════════════════════════════════════════════════════════════
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'anhad_theme' && e.newValue) {
+        if (THEMES.includes(e.newValue)) {
+          settings.theme = e.newValue;
+          applySettings();
+          console.log('🎨 Bani reader synced with global theme:', e.newValue);
+        }
+      }
+    });
+
+    // Listen for custom theme change events
+    window.addEventListener('themechange', (e) => {
+      if (e.detail?.theme && THEMES.includes(e.detail.theme)) {
+        settings.theme = e.detail.theme;
+        applySettings();
+        console.log('🎨 Bani reader theme changed via event:', e.detail.theme);
+      }
+    });
 
     console.log('🎛️ Event listeners attached');
   }

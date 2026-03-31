@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Live Stream Alarm</title>
+    <link rel="stylesheet" href="reminders/css/livestream-sounds.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8e8e93;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff3b30 0%, #ff9500 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 59, 48, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .status-item {
+            margin: 5px 0;
+        }
+
+        .sound-selector {
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: rgba(255, 149, 0, 0.1);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #ff9500;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #cccccc;
+        }
+
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin: 3px 0;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry.success { color: #34c759; }
+        .log-entry.error { color: #ff3b30; }
+        .log-entry.info { color: #5ac8fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔴 Live Stream Alarm Test</h1>
+        <p class="subtitle">Test the new live stream alarm feature</p>
+
+        <div class="info-box">
+            <h3>📋 How to Test</h3>
+            <p>
+                1. Select a sound option below (live stream or regular audio)<br>
+                2. Click "Test Alarm Now" to simulate an alarm firing<br>
+                3. For live streams, the GlobalMiniPlayer will start automatically<br>
+                4. Check the status and logs below
+            </p>
+        </div>
+
+        <!-- Sound Selector -->
+        <div class="test-section">
+            <h2>🔔 Select Alarm Sound</h2>
+            <div class="sound-selector" id="soundSelector"></div>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="test-section">
+            <h2>🧪 Test Controls</h2>
+            <button class="btn btn-primary" onclick="testAlarm()">
+                🔥 Test Alarm Now
+            </button>
+            <button class="btn btn-secondary" onclick="stopAlarm()">
+                ⏹️ Stop Alarm
+            </button>
+            <button class="btn btn-secondary" onclick="clearLog()">
+                🗑️ Clear Log
+            </button>
+        </div>
+
+        <!-- Status -->
+        <div class="test-section">
+            <h2>📊 Status</h2>
+            <div class="status">
+                <div class="status-item">Selected Sound: <span id="selectedSound">audio1</span></div>
+                <div class="status-item">Sound Type: <span id="soundType">audio</span></div>
+                <div class="status-item">GlobalMiniPlayer: <span id="gmpStatus">Checking...</span></div>
+                <div class="status-item">GuaranteedAlarms: <span id="gasStatus">Checking...</span></div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="test-section">
+            <h2>📝 Log</h2>
+            <div class="log" id="log"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="lib/global-mini-player.js"></script>
+    <script src="lib/guaranteed-alarm-system.js"></script>
+    <script src="reminders/smart-reminders-v6-livestream.js"></script>
+    <script src="reminders/js/livestream-sound-options.js"></script>
+
+    <script>
+        let selectedSoundId = 'audio1';
+        let selectedSoundType = 'audio';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Test page loaded', 'info');
+            
+            // Check systems
+            checkSystems();
+            
+            // Initialize sound selector
+            if (window.LiveStreamSoundOptions) {
+                window.LiveStreamSoundOptions.initialize(
+                    'soundSelector',
+                    'audio1',
+                    (soundId, soundType) => {
+                        selectedSoundId = soundId;
+                        selectedSoundType = soundType;
+                        updateStatus();
+                        log(`✅ Selected: ${soundId} (${soundType})`, 'success');
+                    }
+                );
+                log('✅ Sound selector initialized', 'success');
+            } else {
+                log('❌ LiveStreamSoundOptions not loaded', 'error');
+            }
+        });
+
+        function checkSystems() {
+            // Check GlobalMiniPlayer
+            const gmpStatus = document.getElementById('gmpStatus');
+            if (window.GlobalMiniPlayer) {
+                gmpStatus.textContent = '✅ Available';
+                gmpStatus.style.color = '#34c759';
+                log('✅ GlobalMiniPlayer available', 'success');
+            } else {
+                gmpStatus.textContent = '❌ Not Available';
+                gmpStatus.style.color = '#ff3b30';
+                log('❌ GlobalMiniPlayer not available', 'error');
+            }
+
+            // Check GuaranteedAlarmSystem
+            const gasStatus = document.getElementById('gasStatus');
+            if (window.GuaranteedAlarmSystem) {
+                gasStatus.textContent = '✅ Available';
+                gasStatus.style.color = '#34c759';
+                log('✅ GuaranteedAlarmSystem available', 'success');
+            } else {
+                gasStatus.textContent = '❌ Not Available';
+                gasStatus.style.color = '#ff3b30';
+                log('❌ GuaranteedAlarmSystem not available', 'error');
+            }
+        }
+
+        function updateStatus() {
+            document.getElementById('selectedSound').textContent = selectedSoundId;
+            document.getElementById('soundType').textContent = selectedSoundType;
+        }
+
+        function testAlarm() {
+            log(`🔥 Testing alarm with: ${selectedSoundId}`, 'info');
+            
+            if (!window.GuaranteedAlarmSystem) {
+                log('❌ GuaranteedAlarmSystem not available', 'error');
+                alert('GuaranteedAlarmSystem not loaded!');
+                return;
+            }
+
+            // Create test alarm
+            const testAlarm = {
+                id: 'test_' + Date.now(),
+                title: 'Test Alarm',
+                label: 'Test Alarm',
+                time: '00:00',
+                enabled: true,
+                tone: selectedSoundId,
+                type: selectedSoundType
+            };
+
+            log(`📋 Alarm config: ${JSON.stringify(testAlarm)}`, 'info');
+
+            // Fire the alarm
+            try {
+                window.GuaranteedAlarmSystem.fireAlarm(testAlarm);
+                log(`✅ Alarm fired successfully!`, 'success');
+                
+                if (selectedSoundType === 'live') {
+                    log(`🔴 Live stream should be starting...`, 'info');
+                    setTimeout(() => {
+                        if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.isPlaying) {
+                            log(`✅ Live stream is playing!`, 'success');
+                        } else {
+                            log(`⚠️ Live stream may not be playing`, 'error');
+                        }
+                    }, 2000);
+                } else {
+                    log(`🔊 Audio file should be playing...`, 'info');
+                }
+            } catch (e) {
+                log(`❌ Error firing alarm: ${e.message}`, 'error');
+                console.error(e);
+            }
+        }
+
+        function stopAlarm() {
+            log('⏹️ Stopping alarm...', 'info');
+            
+            if (window.GuaranteedAlarmSystem) {
+                window.GuaranteedAlarmSystem.stopAlarm();
+                log('✅ Alarm stopped', 'success');
+            }
+            
+            if (window.GlobalMiniPlayer) {
+                window.GlobalMiniPlayer.pause();
+                log('✅ GlobalMiniPlayer paused', 'success');
+            }
+        }
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            log('🗑️ Log cleared', 'info');
+        }
+
+        // Toast mock
+        window.Toast = {
+            show: (message, type, duration) => {
+                log(`Toast: ${message} (${type})`, type);
+            }
+        };
+    </script>
+</body>
+</html>

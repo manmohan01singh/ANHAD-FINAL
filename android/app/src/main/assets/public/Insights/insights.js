@@ -334,14 +334,34 @@
         }
         updateIcon();
 
-        btn.addEventListener('click', () => {
-            if (window.AnhadTheme) { AnhadTheme.toggle(); }
-            else {
-                document.documentElement.classList.toggle('dark-mode');
-                localStorage.setItem('anhad_theme', document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            // Toggle the class
+            if (newTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            } else {
+                document.documentElement.classList.remove('dark-mode');
             }
+            
+            // Save to localStorage
+            localStorage.setItem('anhad_theme', newTheme);
+            
+            // Dispatch theme change event
+            window.dispatchEvent(new CustomEvent('themechange'));
+            
             updateIcon();
+            
+            // Also try global theme if available
+            if (window.AnhadTheme && typeof AnhadTheme.setTheme === 'function') {
+                AnhadTheme.setTheme(newTheme);
+            }
         });
+        
         window.addEventListener('themechange', updateIcon);
     }
 
@@ -428,6 +448,36 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER SCROLL BEHAVIOR
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    function setupHeaderScroll() {
+        const header = document.getElementById('pageHeader');
+        if (!header) return;
+
+        // Check scroll position on load
+        if (window.scrollY > 20) {
+            header.classList.add('scrolled');
+        }
+
+        // Add scroll listener with throttling
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    if (window.scrollY > 20) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════════════════════════════════
 
@@ -436,17 +486,12 @@
 
         setupNavigation();
         setupThemeToggle();
+        setupHeaderScroll();
         loadRandomQuote();
         loadDailyWisdom();
         loadQuickStats();
         setupShabadCards();
         setupShareQuote();
-
-        // Refresh quote button
-        const refreshBtn = document.getElementById('refreshInspirationBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', loadRandomQuote);
-        }
 
         console.log('✅ Learning & Library loaded');
     }

@@ -42,6 +42,21 @@
 
     // ══════════════════════════════════════════════════════════════════════════
 
+    // Dynamic audio path detection
+    const AUDIO_BASE_PATH = (() => {
+        const loc = window.location;
+        if (loc.protocol === 'file:' || (window.Capacitor && window.Capacitor.isNative)) {
+            return '../Audio/';
+        }
+        if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
+            return '/Audio/';
+        }
+        if (loc.pathname.includes('/reminders/')) {
+            return '../Audio/';
+        }
+        return '/Audio/';
+    })();
+
     const CONFIG = {
 
         version: '6.0.0',
@@ -58,7 +73,7 @@
 
         },
 
-        audioPath: '../Audio/',
+        audioPath: AUDIO_BASE_PATH,
 
         audioFiles: {
 
@@ -713,16 +728,6 @@
 
 
                 this.currentAudio.addEventListener('ended', () => this.stop());
-
-
-
-                // Auto-stop after 30 seconds
-
-                setTimeout(() => {
-
-                    if (this.currentAudio) this.stop();
-
-                }, 30000);
 
 
 

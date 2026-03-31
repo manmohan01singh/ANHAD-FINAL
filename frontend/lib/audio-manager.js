@@ -77,7 +77,7 @@
         _createAudioFrame() {
             // Don't create on player pages - they have their own audio
             const path = window.location.pathname.toLowerCase();
-            if (path.includes('ios17-gurbani-radio') || path.includes('gurbani-radio.html')) {
+            if (path.includes('ios17-gurbani-radio') || path.includes('gurbani-radio.html') || path.includes('gurbani-radio-new.html')) {
                 return;
             }
 

@@ -257,6 +257,7 @@
             let data = null;
 
             // 1. Try IndexedDB first (offline-first approach)
+            let loadedFromCache = false;
             if (window.gurbaniLocalDB) {
                 const cached = await window.gurbaniLocalDB.getBani(state.baniId);
                 if (cached && cached.verses && cached.verses.length > 0) {
@@ -265,6 +266,8 @@
                         verses: cached.verses,
                         baniInfo: { unicode: cached.name, transliteration: cached.name }
                     };
+                    loadedFromCache = true;
+                    showOfflineBadge(true); // Show immediately since cached
                 }
             }
 
@@ -282,6 +285,7 @@
                         data.verses
                     );
                     console.log('[ReaderEngine] ✓ Saved to IndexedDB for offline');
+                    showOfflineBadge(true); // Show badge after saving
                 }
             }
 
@@ -1026,6 +1030,8 @@
     let lastScrollTop = 0;
     const SCROLL_THRESHOLD = 80;
 
+    let _nitnemCompletionFired = false;
+
     function updateProgress() {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -1033,6 +1039,14 @@
 
         if (els.progressBar) els.progressBar.style.width = `${progress}%`;
         if (els.progressText) els.progressText.textContent = `${progress}%`;
+
+        // Credit one Nitnem completion when user reads 90%+ of the bani
+        if (progress >= 90 && !_nitnemCompletionFired && docHeight > 200) {
+            _nitnemCompletionFired = true;
+            if (window.AnhadStats && typeof window.AnhadStats.addNitnemCompleted === 'function') {
+                window.AnhadStats.addNitnemCompleted(1);
+            }
+        }
 
         // Scroll top button
         if (els.scrollTopBtn) {
@@ -1112,6 +1126,18 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // OFFLINE BADGE — Shows when bani is cached
+    // ═══════════════════════════════════════════════════════════════
+
+    function showOfflineBadge(show) {
+        const badge = document.getElementById('offlineBadge');
+        if (badge) {
+            badge.style.opacity = show ? '0.7' : '0';
+            badge.title = show ? 'Available offline ✓' : '';
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════

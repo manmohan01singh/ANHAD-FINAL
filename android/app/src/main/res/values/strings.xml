@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ANHAD</string>
+    <string name="title_activity_main">ANHAD</string>
+    <string name="package_name">com.gurbaniradio.app</string>
+    <string name="custom_url_scheme">com.gurbaniradio.app</string>
+</resources>

@@ -527,7 +527,7 @@ ol {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 /* Background Effects Container */
@@ -3365,13 +3365,22 @@ ol {
 
 .share-btn {
     background: var(--ios-green);
-    color: white;
+    color: #000000;
     box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
 }
 
 .share-btn:hover {
     background: var(--ios-green-dark);
     transform: translateY(-1px);
+}
+
+/* Dark mode: ensure buttons have proper contrast */
+[data-theme="dark"] .share-btn {
+    color: #000000;
+}
+
+[data-theme="dark"] .export-btn {
+    color: var(--text-primary);
 }
 
 .export-btn svg,

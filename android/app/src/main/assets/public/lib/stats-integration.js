@@ -149,28 +149,17 @@
         }
 
         recordAngRead(detail) {
-            if (!window.AnhadStats) return;
-
-            // 1 Ang = 1 page for stats purposes
-            window.AnhadStats.addPagesRead(1);
-            console.log('[SehajPaath] Recorded Ang read:', detail?.ang);
+            // This event handler is no longer needed because reader.js
+            // directly calls window.AnhadStats.addPagesRead(1) in updateStats()
+            // Keeping this would cause duplicate counting
+            console.log('[SehajPaath] Ang read event received (no action - already tracked):', detail?.ang);
         }
 
         interceptStatsUpdates() {
-            // Hook into StatisticsDashboard if it exists
-            const originalRecordAngRead = window.StatisticsDashboard?.prototype?.recordAngRead;
-            
-            if (originalRecordAngRead) {
-                window.StatisticsDashboard.prototype.recordAngRead = function(ang) {
-                    // Call original
-                    originalRecordAngRead.call(this, ang);
-                    
-                    // Sync to main stats
-                    if (window.AnhadStats) {
-                        window.AnhadStats.addPagesRead(1);
-                    }
-                };
-            }
+            // This interception is no longer needed because reader.js
+            // directly calls window.AnhadStats.addPagesRead(1)
+            // Keeping this would cause duplicate counting
+            console.log('[SehajPaath] Stats interception disabled to prevent duplicate counting');
         }
     }
 

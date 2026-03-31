@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -27,6 +29,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="naam-abhyas.css">
     <link rel="stylesheet" href="naam-abhyas-ultra-premium.css">
+    <link rel="stylesheet" href="naam-abhyas-clay.css">
     <link rel="stylesheet" href="components/ritual-overlay.css">
 
     <!-- Favicon & PWA -->
@@ -35,10 +38,21 @@
 
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/dark-mode.css">
-  <script src="../lib/global-theme.js"></script>
+    <script>
+        // FORCE GLOBAL THEME - Naam Abhyas should follow index.html theme
+        document.documentElement.setAttribute('data-global-theme', 'force');
+    </script>
+    <script src="../lib/global-theme.js"></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/audio-preload.js"></script>
+    <script src="../lib/audio-coordinator.js"></script>
+    
+    <!-- CRITICAL: Guaranteed Alarm System for Naam Abhyas notifications -->
+    <script src="../lib/guaranteed-alarm-system.js"></script>
+    
     <script src="../lib/global-mini-player.js" defer></script>
+    <script src="../js/anhad-core.js" defer></script>
 </head>
 
 <body>
@@ -780,6 +794,7 @@
     <script src="../lib/native-notifications.js"></script>
 
     <!-- Global Alarm System -->
+    <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 
     <script src="naam-abhyas.js"></script>

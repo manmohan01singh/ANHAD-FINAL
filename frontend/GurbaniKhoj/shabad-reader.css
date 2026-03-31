@@ -49,6 +49,24 @@
     /* Font */
     --font-gurmukhi: 'Raavi', 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
     --font-size-base: 22px;
+
+    /* ═══ EXTREME CLAYMORPHISM SHADOWS ═══ */
+    /* Light Theme Clay */
+    --clay-outer: 12px 12px 30px rgba(0, 0, 0, 0.12),
+                  -12px -12px 30px rgba(255, 255, 255, 0.95),
+                  inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    --clay-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.08),
+                  inset -4px -4px 8px rgba(255, 255, 255, 1);
+    --clay-outer-sm: 6px 6px 16px rgba(0, 0, 0, 0.1),
+                     -6px -6px 16px rgba(255, 255, 255, 0.95);
+    --clay-inner-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.08),
+                     inset -3px -3px 6px rgba(255, 255, 255, 1);
+
+    /* Color-accented clay shadows */
+    --clay-gold: 0 12px 40px rgba(184, 134, 11, 0.25),
+                0 4px 12px rgba(0, 0, 0, 0.1);
+    --clay-blue: 0 12px 40px rgba(0, 122, 255, 0.25),
+                 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Dark Theme */
@@ -245,21 +263,31 @@ body {
 
 .theme-toggle,
 .nav-settings {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
+    background: var(--bg);
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
     border-radius: 50%;
+    /* Claymorphism */
+    box-shadow: var(--clay-outer-sm);
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover,
+.nav-settings:hover {
+    box-shadow: var(--clay-blue), var(--clay-outer-sm);
+    color: var(--accent);
 }
 
 .theme-toggle:active,
 .nav-settings:active {
-    background: var(--accent-light);
+    box-shadow: var(--clay-inner-sm);
+    transform: scale(0.95);
 }
 
 .theme-toggle .sun-icon {
@@ -400,6 +428,14 @@ body {
     border-radius: var(--radius);
     text-align: center;
     transition: all 0.3s ease;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    /* Claymorphism */
+    box-shadow: var(--clay-outer-sm);
+}
+
+.shabad-line:hover {
+    box-shadow: var(--clay-inner-sm), 0 4px 16px var(--shadow);
 }
 
 /* Highlighted Line */

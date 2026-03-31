@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Audio Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #D4860A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+        button:hover {
+            background: #B87008;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        .info { color: #3B82F6; }
+    </style>
+</head>
+<body>
+    <h1>🎵 Quick Audio Coordinator Test</h1>
+    
+    <div>
+        <button onclick="testDarbar()">▶️ Play Darbar Sahib</button>
+        <button onclick="testAmritvela()">▶️ Play Amritvela</button>
+        <button onclick="checkStatus()">🔍 Check Status</button>
+    </div>
+
+    <div class="status" id="status">
+        <div id="output">Click "Check Status" to verify coordinator is working...</div>
+    </div>
+
+    <div class="status">
+        <h3>Expected Behavior:</h3>
+        <ol>
+            <li>Click "Play Darbar Sahib" - it should play</li>
+            <li>Click "Play Amritvela" - Darbar should STOP, Amritvela should START</li>
+            <li>Click "Check Status" - should show only ONE playing</li>
+        </ol>
+    </div>
+
+    <!-- Load coordinator FIRST -->
+    <script src="lib/audio-coordinator.js"></script>
+    <script src="lib/persistent-audio.js"></script>
+    <script src="lib/global-mini-player.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const line = document.createElement('div');
+            line.className = type;
+            line.textContent = message;
+            output.appendChild(line);
+        }
+
+        function testDarbar() {
+            log('Testing Darbar Sahib Live...', 'info');
+            if (window.GlobalMiniPlayer) {
+                window.GlobalMiniPlayer.play('darbar');
+                setTimeout(checkStatus, 1000);
+            } else {
+                log('❌ GlobalMiniPlayer not found!', 'error');
+            }
+        }
+
+        function testAmritvela() {
+            log('Testing Amritvela Kirtan...', 'info');
+            if (window.AnhadAudio) {
+                window.AnhadAudio.play('amritvela');
+                setTimeout(checkStatus, 1000);
+            } else {
+                log('❌ AnhadAudio not found!', 'error');
+            }
+        }
+
+        function checkStatus() {
+            document.getElementById('output').innerHTML = '<h3>Status Check:</h3>';
+            
+            // Check coordinator
+            if (window.AudioCoordinator) {
+                log('✅ AudioCoordinator loaded', 'success');
+                
+                const registered = window.AudioCoordinator.getRegisteredPlayers();
+                log('Registered players: ' + registered.join(', '), 'info');
+                
+                const current = window.AudioCoordinator.getCurrentlyPlaying();
+                if (current) {
+                    log('🔊 Currently playing: ' + current, 'success');
+                } else {
+                    log('⏸️ Nothing playing', 'info');
+                }
+            } else {
+                log('❌ AudioCoordinator NOT loaded!', 'error');
+            }
+
+            // Check players
+            if (window.AnhadAudio) {
+                const playing = window.AnhadAudio.isPlaying();
+                log('AnhadAudio: ' + (playing ? '▶️ Playing' : '⏸️ Paused'), playing ? 'success' : 'info');
+            } else {
+                log('❌ AnhadAudio NOT loaded!', 'error');
+            }
+
+            if (window.GlobalMiniPlayer) {
+                const playing = window.GlobalMiniPlayer.isPlaying();
+                log('GlobalMiniPlayer: ' + (playing ? '▶️ Playing' : '⏸️ Paused'), playing ? 'success' : 'info');
+            } else {
+                log('❌ GlobalMiniPlayer NOT loaded!', 'error');
+            }
+
+            // Check if both playing (BAD!)
+            if (window.AnhadAudio?.isPlaying() && window.GlobalMiniPlayer?.isPlaying()) {
+                log('⚠️ WARNING: BOTH AUDIOS ARE PLAYING! Coordinator not working!', 'error');
+            } else if (window.AnhadAudio?.isPlaying() || window.GlobalMiniPlayer?.isPlaying()) {
+                log('✅ GOOD: Only one audio playing', 'success');
+            }
+        }
+
+        // Auto-check on load
+        setTimeout(() => {
+            log('Page loaded, checking systems...', 'info');
+            checkStatus();
+        }, 2000);
+    </script>
+</body>
+</html>

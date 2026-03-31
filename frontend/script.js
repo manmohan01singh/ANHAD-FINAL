@@ -309,16 +309,16 @@ const LISTENER_ID = (() => {
     return id;
 })();
 
-// API base URL
+// API base URL - Smart resolution for CORS and mobile apps
 const API_BASE = (() => {
     try {
-        const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-        const onBackendPort = window.location.port === '3000';
-        if (isLocalhost && !onBackendPort) {
-            return `${window.location.protocol}//${window.location.hostname}:3000`;
-        }
+        const host = window.location.hostname;
+        const port = window.location.port;
+        if (port === '3000' || port === '3001') return ''; // Use relative path if hitting local node server
+        if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`; // Local network IP testing
+        return 'https://anhad-final.onrender.com'; // All other scenarios (mobile app, production)
     } catch (e) { }
-    return '';
+    return 'https://anhad-final.onrender.com';
 })();
 
 class VirtualLiveManager extends EventEmitter {
@@ -347,13 +347,9 @@ class VirtualLiveManager extends EventEmitter {
         this.startHeartbeat();
     }
 
+    // Universal fallback epoch to guarantee all devices are perfectly synced even offline
     loadBroadcastStart() {
-        let startTime = Utils.storage.get('broadcastStartTime');
-        if (!startTime) {
-            startTime = Date.now();
-            Utils.storage.set('broadcastStartTime', startTime);
-        }
-        return startTime;
+        return 1704067200000; // Jan 1, 2024
     }
 
     /**
@@ -3074,8 +3070,7 @@ function isStandaloneMode() {
 }
 
 if (isStandaloneMode()) {
-    hidePWAInstallPrompt();
-    hideHeaderInstallButton();
+    hideInstallButton();
 }
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -3085,91 +3080,45 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     console.log('[PWA] Install prompt captured');
-    showHeaderInstallButton();
-    // Show bottom prompt after a short delay for better UX
-    setTimeout(showPWAInstallPrompt, 2000);
+    // Show install button after a short delay
+    setTimeout(showInstallButton, 2000);
 });
 
-function showHeaderInstallButton() {
-    const headerInstallBtn = document.getElementById('headerInstallBtn');
-    if (headerInstallBtn && deferredPrompt) {
-        headerInstallBtn.style.display = 'flex';
+function showInstallButton() {
+    const installBtn = document.getElementById('installAppBtn');
+    if (!installBtn || deferredPrompt === null) return;
 
-        // Remove old listeners by cloning
-        const newBtn = headerInstallBtn.cloneNode(true);
-        headerInstallBtn.parentNode.replaceChild(newBtn, headerInstallBtn);
-
-        newBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('[PWA] ANHAD installed from header button');
-                    newBtn.style.display = 'none';
-                    hidePWAInstallPrompt();
-                }
-                deferredPrompt = null;
-            }
-        });
-    }
-}
-
-function showPWAInstallPrompt() {
-    const prompt = document.getElementById('pwaInstallPrompt');
-    if (!prompt || deferredPrompt === null) return;
-
-    prompt.style.display = 'flex';
-
+    installBtn.style.display = 'flex';
+    
     // Add entrance animation
     requestAnimationFrame(() => {
-        prompt.classList.add('pwa-prompt--visible');
+        installBtn.classList.add('visible');
     });
 
-    const installBtn = document.getElementById('pwaInstallBtn');
-    const dismissBtn = document.getElementById('pwaInstallDismiss');
+    // Remove old listeners by cloning
+    const newBtn = installBtn.cloneNode(true);
+    installBtn.parentNode.replaceChild(newBtn, installBtn);
 
-    if (installBtn) {
-        const newInstallBtn = installBtn.cloneNode(true);
-        installBtn.parentNode.replaceChild(newInstallBtn, installBtn);
-
-        newInstallBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('[PWA] ANHAD installed from prompt');
-                    hideHeaderInstallButton();
-                }
-                deferredPrompt = null;
-                hidePWAInstallPrompt();
+    newBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                console.log('[PWA] ANHAD installed');
+                hideInstallButton();
             }
-        });
-    }
-
-    if (dismissBtn) {
-        const newDismissBtn = dismissBtn.cloneNode(true);
-        dismissBtn.parentNode.replaceChild(newDismissBtn, dismissBtn);
-        newDismissBtn.addEventListener('click', hidePWAInstallPrompt);
-    }
-
-    // Auto-hide after 15 seconds
-    setTimeout(hidePWAInstallPrompt, 15000);
+            deferredPrompt = null;
+        }
+    });
 }
 
-function hidePWAInstallPrompt() {
-    const prompt = document.getElementById('pwaInstallPrompt');
-    if (prompt) {
-        prompt.classList.remove('pwa-prompt--visible');
+function hideInstallButton() {
+    const installBtn = document.getElementById('installAppBtn');
+    if (installBtn) {
+        installBtn.classList.remove('visible');
         setTimeout(() => {
-            prompt.style.display = 'none';
-        }, 300);
-    }
-}
-
-function hideHeaderInstallButton() {
-    const headerInstallBtn = document.getElementById('headerInstallBtn');
-    if (headerInstallBtn) {
-        headerInstallBtn.style.display = 'none';
+            installBtn.style.display = 'none';
+        }, 400);
     }
 }
 
@@ -3178,8 +3127,7 @@ window.addEventListener('appinstalled', () => {
     try {
         localStorage.setItem('pwaInstalled', 'true');
     } catch (e) { }
-    hidePWAInstallPrompt();
-    hideHeaderInstallButton();
+    hideInstallButton();
     deferredPrompt = null;
 
     if (gurbaniRadio?.uiController) {

@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -34,12 +36,37 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
 
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/dark-mode.css">
-  <script src="../lib/global-theme.js"></script>
+    <!-- Theme: Sync with global ANHAD theme -->
+    <script>
+        (function() {
+            // Check Nitnem Tracker's own theme first
+            var ownTheme = localStorage.getItem('nitnemTracker_theme');
+            if (ownTheme) {
+                // Use own theme if set
+                document.documentElement.setAttribute('data-theme', ownTheme);
+                document.body && document.body.setAttribute('data-theme', ownTheme);
+                return;
+            }
+            
+            // Otherwise sync with global ANHAD theme
+            var globalTheme = localStorage.getItem('anhad_theme');
+            if (globalTheme === 'dark' || globalTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', globalTheme);
+                document.body && document.body.setAttribute('data-theme', globalTheme);
+                // Save to own theme storage for consistency
+                localStorage.setItem('nitnemTracker_theme', globalTheme);
+            }
+        })();
+    </script>
+
+    <!-- Scroll Fix + Extreme Claymorphism Override -->
+    <link rel="stylesheet" href="nitnem-tracker-fixes.css?v=3.0">
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>
+    <script src="../js/anhad-core.js" defer></script>
 
     <!-- Inline Critical CSS for Instant Load -->
     <style>
@@ -221,7 +248,7 @@
 
             <div class="header-content">
                 <!-- Back Button -->
-                <button class="header-btn back-btn" id="backBtn" aria-label="Go back to home">
+                <button class="header-btn back-btn glass-nav__back" id="backBtn" aria-label="Go back to home">
                     <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <path d="M15 18l-6-6 6-6" />
                     </svg>
@@ -723,9 +750,14 @@
                         <h2 class="card-title">ਲਗਾਤਾਰਤਾ</h2>
                         <p class="card-subtitle">Streak & Achievements</p>
                     </div>
+                    <button class="streak-action-btn" id="streakToggleBtn" aria-label="Toggle achievements" onclick="document.getElementById('streakBody').classList.toggle('expanded'); this.classList.toggle('rotated');">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
                 </div>
 
-                <div class="card-body streak-body">
+                <div class="card-body streak-body" id="streakBody">
                     <!-- Main Streak Display -->
                     <div class="main-streak-display" id="mainStreakDisplay">
                         <div class="streak-flame-animation">
@@ -1295,7 +1327,13 @@
 
     <!-- Core Logic -->
     <script src="../lib/unified-storage.js?v=2.1"></script>
+    
+    <!-- Data Persistence & Sync Systems -->
+    <script src="data-persistence-guard.js?v=1.0"></script>
+    <script src="auto-alarm-sync.js?v=1.0"></script>
+    
     <script src="nitnem-tracker.js?v=2.3"></script>
+    <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 
     <!-- Inline Initialization -->

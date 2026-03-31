@@ -44,9 +44,10 @@
 }
 
 /* ═══ LIGHT THEME ═══ */
+:root:not(.dark-mode),
 [data-theme="light"],
 .theme-light,
-html:not([data-theme]) {
+html:not([data-theme]):not(.dark-mode) {
     --bg-primary: linear-gradient(180deg, #FFF8F0 0%, #FFFFFF 40%, #F5F0FF 100%);
     --glass-bg: rgba(255, 255, 255, 0.9);
     --glass-bg-hover: rgba(255, 255, 255, 0.95);
@@ -63,8 +64,10 @@ html:not([data-theme]) {
 }
 
 /* ═══ DARK THEME ═══ */
+.dark-mode,
 [data-theme="dark"],
-.theme-dark {
+.theme-dark,
+html.dark-mode {
     --bg-primary: linear-gradient(180deg, #0a0a14 0%, #12121f 50%, #0a0a14 100%);
     --glass-bg: rgba(25, 25, 40, 0.9);
     --glass-bg-hover: rgba(35, 35, 55, 0.95);

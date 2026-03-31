@@ -1,0 +1,345 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD CORE UI SYSTEM
+ * Unified glass nav · iOS back button · Page transitions · Offline banner
+ * Import this ONCE per page — works with or without trendora-premium.css
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ─── Design token fallbacks (resolved by trendora-premium.css if loaded) ─── */
+:root {
+  --ac-gold:          #D4943A;
+  --ac-gold-glow:     rgba(212, 148, 58, 0.22);
+  --ac-gold-border:   rgba(212, 148, 58, 0.18);
+  --ac-safe-top:      env(safe-area-inset-top,    20px);
+  --ac-safe-bottom:   env(safe-area-inset-bottom, 34px);
+  --ac-safe-left:     env(safe-area-inset-left,    0px);
+  --ac-safe-right:    env(safe-area-inset-right,   0px);
+  --ac-nav-height:    56px;
+  --ac-blur:          blur(24px) saturate(180%);
+  --ac-spring:        cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ac-smooth:        cubic-bezier(0.4, 0, 0.2, 1);
+  --ac-ios:           cubic-bezier(0.32, 0.72, 0, 1);
+  --ac-radius:        14px;
+
+  /* Dark defaults */
+  --ac-nav-bg:        rgba(18, 18, 22, 0.80);
+  --ac-nav-border:    rgba(255, 255, 255, 0.07);
+  --ac-nav-text:      rgba(255, 255, 255, 0.92);
+  --ac-nav-sub:       rgba(255, 255, 255, 0.50);
+  --ac-btn-bg:        rgba(255, 255, 255, 0.08);
+  --ac-btn-hover:     rgba(255, 255, 255, 0.13);
+  --ac-btn-active:    rgba(255, 255, 255, 0.18);
+  --ac-offline-bg:    rgba(255, 59, 48, 0.90);
+  --ac-online-bg:     rgba(48, 209, 88, 0.90);
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+  --ac-nav-bg:     rgba(248, 248, 252, 0.82);
+  --ac-nav-border: rgba(0, 0, 0, 0.07);
+  --ac-nav-text:   rgba(0, 0, 0, 0.88);
+  --ac-nav-sub:    rgba(60, 60, 67, 0.55);
+  --ac-btn-bg:     rgba(0, 0, 0, 0.05);
+  --ac-btn-hover:  rgba(0, 0, 0, 0.09);
+  --ac-btn-active: rgba(0, 0, 0, 0.13);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLASS NAV BAR
+────────────────────────────────────────────────────────────────────────────── */
+.glass-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 900;
+  height: calc(var(--ac-nav-height) + var(--ac-safe-top));
+  padding-top: var(--ac-safe-top);
+  background: var(--ac-nav-bg);
+  backdrop-filter: var(--ac-blur);
+  -webkit-backdrop-filter: var(--ac-blur);
+  border-bottom: 0.5px solid var(--ac-nav-border);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding-left: calc(var(--ac-safe-left) + 4px);
+  padding-right: calc(var(--ac-safe-right) + 4px);
+  /* GPU-composited only */
+  will-change: transform;
+  transform: translateZ(0);
+  transition: background 0.25s var(--ac-smooth),
+              border-color 0.25s var(--ac-smooth);
+}
+
+/* Thin gold hairline on scroll compact state */
+.glass-nav.compact {
+  border-bottom-color: var(--ac-gold-border);
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.10);
+}
+
+/* ─── Back Button ─────────────────────────────────────────────────────────── */
+.glass-nav__back,
+.glass-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px 0 6px;
+  border: none;
+  background: var(--ac-btn-bg);
+  color: var(--ac-gold);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.2px;
+  border-radius: 22px;
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s var(--ac-smooth),
+              transform  0.15s var(--ac-spring),
+              box-shadow 0.15s var(--ac-smooth);
+  /* touch target */
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.glass-nav__back:hover,
+.glass-back-btn:hover {
+  background: var(--ac-btn-hover);
+}
+
+.glass-nav__back:active,
+.glass-back-btn:active {
+  background: var(--ac-btn-active);
+  transform: scale(0.94);
+}
+
+/* Chevron SVG inside back button */
+.glass-nav__back .back-chevron,
+.glass-back-btn .back-chevron {
+  width: 9px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.glass-nav__back .back-label,
+.glass-back-btn .back-label {
+  line-height: 1;
+}
+
+/* ─── Nav Title ───────────────────────────────────────────────────────────── */
+.glass-nav__title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ac-nav-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.3px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0 8px;
+}
+
+/* ─── Right Action Button ─────────────────────────────────────────────────── */
+.glass-nav__action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.glass-nav__action-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--ac-btn-bg);
+  color: var(--ac-nav-text);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s var(--ac-smooth),
+              transform  0.15s var(--ac-spring);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.glass-nav__action-btn:hover,
+.icon-btn:hover {
+  background: var(--ac-btn-hover);
+}
+
+.glass-nav__action-btn:active,
+.icon-btn:active {
+  background: var(--ac-btn-active);
+  transform: scale(0.90);
+}
+
+/* ─── Nav spacer — pushes content below the fixed glass nav ──────────────── */
+.glass-nav-spacer {
+  height: calc(var(--ac-nav-height) + var(--ac-safe-top) + 8px);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAPPABLE SPRING FEEDBACK
+────────────────────────────────────────────────────────────────────────────── */
+.tappable {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s var(--ac-spring),
+              opacity  0.15s var(--ac-smooth);
+}
+
+.tappable:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PAGE TRANSITIONS
+────────────────────────────────────────────────────────────────────────────── */
+@keyframes ac-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ac-page-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+}
+
+.page-enter {
+  animation: ac-page-enter 0.48s var(--ac-spring) both;
+  will-change: opacity, transform;
+}
+
+.page-exiting {
+  animation: ac-page-exit 0.18s var(--ac-smooth) both;
+  pointer-events: none !important;
+  will-change: opacity, transform;
+}
+
+/* Staggered children */
+.page-enter > *:nth-child(1)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.00s both; }
+.page-enter > *:nth-child(2)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.04s both; }
+.page-enter > *:nth-child(3)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.08s both; }
+.page-enter > *:nth-child(4)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.12s both; }
+.page-enter > *:nth-child(5)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.16s both; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   OFFLINE BANNER
+────────────────────────────────────────────────────────────────────────────── */
+.ac-offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9990;
+  padding: 10px 16px calc(10px + var(--ac-safe-top));
+  padding-top: calc(var(--ac-safe-top) + 10px);
+  background: var(--ac-offline-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.1px;
+  text-align: center;
+  transform: translateY(-110%);
+  transition: transform 0.35s var(--ac-ios);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.ac-offline-banner.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.ac-offline-banner.online {
+  background: var(--ac-online-bg);
+}
+
+.ac-offline-banner__icon {
+  margin-right: 6px;
+  font-style: normal;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLASS CARD — shared utility
+────────────────────────────────────────────────────────────────────────────── */
+.ac-glass-card {
+  background: var(--ac-btn-bg);
+  border: 0.5px solid var(--ac-nav-border);
+  border-radius: var(--ac-radius);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GOLD DIVIDER — section separator
+────────────────────────────────────────────────────────────────────────────── */
+.ac-divider {
+  height: 0.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--ac-gold-border) 20%,
+    var(--ac-gold-border) 80%,
+    transparent 100%);
+  margin: 12px 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION — respect user accessibility preference
+────────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .page-enter > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .page-exiting {
+    animation: none;
+  }
+
+  .glass-nav,
+  .glass-nav__back,
+  .glass-back-btn,
+  .glass-nav__action-btn,
+  .icon-btn,
+  .tappable,
+  .ac-offline-banner {
+    transition: none;
+  }
+}

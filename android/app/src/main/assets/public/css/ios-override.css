@@ -330,10 +330,14 @@ body.dark-mode .header--compact {
   border-radius: 24px;
 }
 
-/* ── Practice Cards — MORE ROUNDED + PADDING ── */
+/* ── Practice Cards — TALLER CLAYMORPHISM ── */
 .practice-card {
-  border-radius: 22px;
-  padding: 24px 16px 20px;
+  border-radius: 30px !important;
+  padding: 16px 10px 14px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background: var(--ios-bg-primary);
   box-shadow:
     0 0.5px 0 rgba(0, 0, 0, 0.04),
@@ -344,19 +348,74 @@ body.dark-mode .header--compact {
 }
 
 .practice-card:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
   background: var(--ios-bg-secondary);
 }
 
-/* Restore warm tints */
+/* Restore warm tints with EXTREME 3D Claymorphism */
 .practice-card--nitnem {
-  background: linear-gradient(165deg, #FFF8EF 0%, #FFEFD8 100%);
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
+  box-shadow: 
+    12px 12px 28px rgba(212, 148, 58, 0.22),
+    6px 6px 14px rgba(212, 148, 58, 0.12),
+    -10px -10px 25px rgba(255, 255, 255, 0.95),
+    inset 6px 6px 16px rgba(255, 255, 255, 0.95),
+    inset -6px -6px 16px rgba(212, 148, 58, 0.15),
+    0 0 0 3px rgba(212, 148, 58, 0.15) !important;
+  border: 3px solid rgba(255, 255, 255, 0.8) !important;
 }
 .practice-card--sehaj {
-  background: linear-gradient(165deg, #F5F3FF 0%, #EDEBFF 100%);
+  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
+  box-shadow: 
+    12px 12px 28px rgba(88, 86, 214, 0.18),
+    6px 6px 14px rgba(88, 86, 214, 0.10),
+    -10px -10px 25px rgba(255, 255, 255, 0.95),
+    inset 6px 6px 16px rgba(255, 255, 255, 0.95),
+    inset -6px -6px 16px rgba(88, 86, 214, 0.12),
+    0 0 0 3px rgba(88, 86, 214, 0.15) !important;
+  border: 3px solid rgba(255, 255, 255, 0.8) !important;
 }
 .practice-card--hukam {
-  background: linear-gradient(165deg, #FFF7ED 0%, #FFECD5 100%);
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
+  box-shadow: 
+    12px 12px 28px rgba(255, 149, 0, 0.18),
+    6px 6px 14px rgba(255, 149, 0, 0.10),
+    -10px -10px 25px rgba(255, 255, 255, 0.95),
+    inset 6px 6px 16px rgba(255, 255, 255, 0.95),
+    inset -6px -6px 16px rgba(255, 149, 0, 0.12),
+    0 0 0 3px rgba(255, 149, 0, 0.15) !important;
+  border: 3px solid rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Practice Cards — Pressed State with Inset Shadows */
+.practice-card--nitnem:active {
+  transform: scale(0.94) translateY(2px) !important;
+  box-shadow: 
+    inset 12px 12px 25px rgba(180, 130, 50, 0.3),
+    inset 6px 6px 15px rgba(180, 130, 50, 0.2),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(212, 148, 58, 0.2),
+    4px 4px 15px rgba(212, 148, 58, 0.25) !important;
+}
+
+.practice-card--sehaj:active {
+  transform: scale(0.94) translateY(2px) !important;
+  box-shadow: 
+    inset 12px 12px 25px rgba(70, 60, 180, 0.25),
+    inset 6px 6px 15px rgba(70, 60, 180, 0.15),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(88, 86, 214, 0.2),
+    4px 4px 15px rgba(88, 86, 214, 0.2) !important;
+}
+
+.practice-card--hukam:active {
+  transform: scale(0.94) translateY(2px) !important;
+  box-shadow: 
+    inset 12px 12px 25px rgba(200, 130, 40, 0.25),
+    inset 6px 6px 15px rgba(200, 130, 40, 0.15),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(255, 149, 0, 0.2),
+    4px 4px 15px rgba(255, 149, 0, 0.2) !important;
 }
 
 /* Practice card emoji icon */
@@ -367,17 +426,25 @@ body.dark-mode .header--compact {
   filter: none;
 }
 
-/* ── Quick Access Cards — MORE ROUNDED + PADDING ── */
+/* ── Quick Access Cards — SQUARCLE CLAYMORPHISM ── */
 .quick-card {
   border-radius: 22px;
-  border: 0.5px solid rgba(0, 0, 0, 0.04);
   padding: 18px 20px;
   margin-bottom: 14px;
   transition: transform 0.3s var(--ios-ease);
+  box-shadow: 
+    10px 10px 24px rgba(0, 0, 0, 0.06),
+    -8px -8px 20px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.04) !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
 }
 
 .quick-card:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
+  box-shadow: 
+    inset 8px 8px 16px rgba(0, 0, 0, 0.08),
+    inset -8px -8px 16px rgba(255, 255, 255, 0.9) !important;
 }
 
 .quick-card:last-child {
@@ -448,12 +515,18 @@ body.dark-mode .header--compact {
   margin-bottom: 32px;
 }
 
-/* ── Progress bar — more rounded ── */
+/* ── Progress bar — Ultimate Claymorphism ── */
 .progress-inline {
-  border-radius: 22px;
-  border: 0.5px solid rgba(0, 0, 0, 0.04);
-  padding: 16px 18px;
-  margin-bottom: 28px;
+  border-radius: 36px !important;
+  padding: 18px 22px !important;
+  margin-bottom: 32px !important;
+  background: linear-gradient(165deg, #f5f5f7 0%, #ebebf0 100%) !important;
+  box-shadow: 
+    12px 12px 24px rgba(0, 0, 0, 0.08),
+    -10px -10px 20px rgba(255, 255, 255, 0.95),
+    inset 6px 6px 16px rgba(255, 255, 255, 0.95),
+    inset -6px -6px 16px rgba(0, 0, 0, 0.05) !important;
+  border: 3px solid rgba(255, 255, 255, 0.6) !important;
 }
 
 .progress-inline__fill {
@@ -464,9 +537,28 @@ body.dark-mode .header--compact {
   color: var(--ios-blue);
 }
 
-/* ── Buttons — iOS 12px radius ── */
+/* ── Buttons — iOS 12px radius & NORMAL STYLE ── */
 .hero-card__play-btn {
   border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Header Buttons Claymorphism */
+.header__btn, .header-btn--glass {
+  border-radius: 50% !important;
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.7)) !important;
+  box-shadow: 
+    6px 6px 15px rgba(0,0,0,0.06), 
+    -4px -4px 12px rgba(255,255,255,0.95),
+    inset 3px 3px 6px rgba(255,255,255,0.95),
+    inset -3px -3px 6px rgba(0,0,0,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.8) !important;
 }
 
 .install-banner__cta {
@@ -716,66 +808,133 @@ body.dark-mode {
   background-color: var(--ios-bg-primary);
 }
 
-body.dark-mode .practice-card--nitnem {
-  background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%);
+html.dark-mode body.dark-mode .practice-card--nitnem {
+  background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
+  box-shadow: 
+    15px 15px 35px rgba(0, 0, 0, 0.5),
+    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
+    inset -6px -6px 15px rgba(0, 0, 0, 0.5),
+    0 0 0 2px rgba(212, 148, 58, 0.2) !important;
+  border: 2px solid rgba(255,255,255,0.05) !important;
 }
-body.dark-mode .practice-card--sehaj {
-  background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%);
+html.dark-mode body.dark-mode .practice-card--sehaj {
+  background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%) !important;
+  box-shadow: 
+    15px 15px 35px rgba(0, 0, 0, 0.5),
+    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
+    inset -6px -6px 15px rgba(0, 0, 0, 0.5),
+    0 0 0 2px rgba(88, 86, 214, 0.2) !important;
+  border: 2px solid rgba(255,255,255,0.05) !important;
 }
-body.dark-mode .practice-card--hukam {
-  background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%);
-}
-body.dark-mode .quick-card--green {
-  background: linear-gradient(140deg, #1B3F27 0%, #234E32 100%);
-}
-body.dark-mode .quick-card--gold {
-  background: linear-gradient(140deg, #4A3A22 0%, #5C4A2E 100%);
-}
-body.dark-mode .quick-card--purple {
-  background: linear-gradient(140deg, #2E2A4A 0%, #3B365E 100%);
-}
-body.dark-mode .quick-card--blue {
-  background: linear-gradient(140deg, #1C304A 0%, #263E5E 100%);
-}
-body.dark-mode .quick-card--teal {
-  background: linear-gradient(140deg, #18423B 0%, #22564D 100%);
-}
-body.dark-mode .quick-card--rose {
-  background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%);
-}
-body.dark-mode .quick-card__icon {
-  background: rgba(44, 44, 46, 0.82);
-  border-color: rgba(255, 255, 255, 0.08);
+html.dark-mode body.dark-mode .practice-card--hukam {
+  background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%) !important;
+  box-shadow: 
+    15px 15px 35px rgba(0, 0, 0, 0.5),
+    inset 6px 6px 15px rgba(255, 255, 255, 0.06),
+    inset -6px -6px 15px rgba(0, 0, 0, 0.5),
+    0 0 0 2px rgba(255, 149, 0, 0.2) !important;
+  border: 2px solid rgba(255,255,255,0.05) !important;
 }
 
-body.dark-mode .event-card {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.08); /* Faint border instead of dark background */
+/* Dark mode Progress Card — Deep Claymorphism without white outer glow */
+html.dark-mode body.dark-mode .progress-inline {
+  background: linear-gradient(165deg, #202022 0%, #151515 100%) !important;
+  box-shadow: 
+    15px 15px 35px rgba(0, 0, 0, 0.6),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.05),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.8) !important;
+  border: 2px solid rgba(255, 255, 255, 0.03) !important;
+}
+html.dark-mode body.dark-mode .quick-card--green {
+  background: linear-gradient(140deg, #1B3F27 0%, #234E32 100%) !important;
+}
+html.dark-mode body.dark-mode .quick-card--gold {
+  background: linear-gradient(140deg, #4A3A22 0%, #5C4A2E 100%) !important;
+}
+html.dark-mode body.dark-mode .quick-card--purple {
+  background: linear-gradient(140deg, #2E2A4A 0%, #3B365E 100%) !important;
+}
+html.dark-mode body.dark-mode .quick-card--blue {
+  background: linear-gradient(140deg, #1C304A 0%, #263E5E 100%) !important;
+}
+html.dark-mode body.dark-mode .quick-card--teal {
+  background: linear-gradient(140deg, #18423B 0%, #22564D 100%) !important;
+}
+html.dark-mode body.dark-mode .quick-card--rose {
+  background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%) !important;
 }
 
-/* Enhancing Hero Play button visibility in Dark Mode */
-body.dark-mode .hero-card__play-btn {
-  background: rgba(255, 255, 255, 0.35); /* Brighter for extreme dark backgrounds */
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-}
-body.dark-mode .hero-card__play-btn svg {
-  color: #FFFFFF;
+/* Ultimate Dark Mode Claymorphism for Quick Cards */
+html.dark-mode body.dark-mode .quick-card {
+  box-shadow: 
+    12px 12px 30px rgba(0, 0, 0, 0.6),
+    inset 4px 4px 12px rgba(255, 255, 255, 0.06),
+    inset -4px -4px 12px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-body.dark-mode .progress-inline {
-  background: #1C1C1E;
-  border-color: rgba(255, 255, 255, 0.06);
+html.dark-mode body.dark-mode .quick-card:active {
+  box-shadow: 
+    inset 12px 12px 25px rgba(0, 0, 0, 0.7),
+    inset -4px -4px 12px rgba(255, 255, 255, 0.04) !important;
 }
+
+html.dark-mode body.dark-mode .quick-card__icon {
+  background: rgba(44, 44, 46, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark-mode body.dark-mode .event-card {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important; /* Faint border instead of dark background */
+}
+
+/* Enhancing Hero Play button visibility in Dark Mode - REMOVE CLAYMORPHISM */
+html.dark-mode body.dark-mode .hero-card__image-wrapper::before,
+html.dark-mode body.dark-mode .hero-card__image-wrapper::after {
+  box-shadow: none !important;
+  border: none !important; /* Removes the white/silver overlay border on the hero cards in dark mode! */
+  mix-blend-mode: normal !important;
+}
+
+html.dark-mode body.dark-mode .hero-card__play-btn {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5),
+              inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+html.dark-mode body.dark-mode .hero-card__play-btn svg {
+  color: #FFFFFF !important;
+}
+
+/* Deep Claymorphism for Header Buttons */
+html.dark-mode body.dark-mode .header__btn, html.dark-mode body.dark-mode .header-btn--glass {
+  background: linear-gradient(145deg, rgba(40,40,45,0.9), rgba(20,20,25,0.8)) !important;
+  box-shadow: 
+    6px 6px 15px rgba(0,0,0,0.6), 
+    inset 2px 2px 6px rgba(255,255,255,0.12),
+    inset -2px -2px 6px rgba(0,0,0,0.4) !important;
+  border: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+/* Removed conflicting progress-inline block here to let lines 813-820 apply! */
 
 /* body.dark-mode .greeting__salutation — golden gradient preserved from trendora-premium.css */
 
-body.dark-mode .greeting__gurbani {
-  color: #0A84FF;
+html.dark-mode body.dark-mode .greeting__gurbani {
+  color: #0A84FF !important;
+  text-shadow: none !important; /* Force remove all glowing halos */
 }
 
-body.dark-mode .section-header__title {
-  color: #FFFFFF;
+html.dark-mode body.dark-mode .section-header__title {
+  color: #FFFFFF !important;
+}
+
+/* Remove glow from Carousel dots in dark mode */
+html.dark-mode body.dark-mode .hero-carousel__dot--active {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

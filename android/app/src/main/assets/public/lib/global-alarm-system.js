@@ -29,7 +29,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     const CONFIG = {
         // Storage Keys
-        REMINDERS_KEYS: ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1', 'cine_alarms_v4'],
+        REMINDERS_KEYS: ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1', 'cine_alarms_v4', 'anhad_cine_v5'],
         SETTINGS_KEY: 'sr_settings_v4',
         ALARM_LOG_KEY: 'nitnemTracker_alarmLog',
         NAAM_ABHYAS_LOG: 'naamAbhyas_sessions',
@@ -204,11 +204,15 @@
     function loadReminders() {
         try {
             let raw = null;
+            let storageKey = null;
 
             // Try multiple storage keys
             for (const key of CONFIG.REMINDERS_KEYS) {
                 raw = localStorage.getItem(key);
-                if (raw) break;
+                if (raw) {
+                    storageKey = key;
+                    break;
+                }
             }
 
             if (!raw) {
@@ -221,7 +225,23 @@
 
             // Handle different data formats
             if (Array.isArray(data)) {
-                reminders = data;
+                // Check if this is cinematic v5 format (has 'min' field instead of 'time')
+                if (data.length > 0 && data[0].min !== undefined) {
+                    // Convert cinematic format to standard format
+                    reminders = data.map(item => ({
+                        id: item.id,
+                        title: item.label,
+                        label: item.label,
+                        time: minutesToTimeString(item.min),
+                        enabled: item.on,
+                        on: item.on,
+                        tone: item.sound,
+                        days: item.days || [0, 1, 2, 3, 4, 5, 6]
+                    }));
+                    console.log('📋 Loaded', reminders.length, 'reminders from cinematic format (anhad_cine_v5)');
+                } else {
+                    reminders = data;
+                }
             } else if (data.core || data.custom) {
                 if (data.core) {
                     Object.values(data.core).forEach(r => reminders.push(r));
@@ -241,6 +261,13 @@
             console.error('Error loading reminders:', e);
             return null;
         }
+    }
+
+    // Helper: Convert minutes (0-1439) to HH:MM time string
+    function minutesToTimeString(minutes) {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -431,6 +458,16 @@
     // FIRE ALARM 🔥
     // ══════════════════════════════════════════════════════════════════════════
     async function fireAlarm(reminder, isPreReminder, settings = {}) {
+        // localStorage dedup guard — prevents double-firing on same day
+        if (!isPreReminder) {
+            const firedKey = 'alarm_fired_' + reminder.id + '_' + new Date().toLocaleDateString('en-CA');
+            if (localStorage.getItem(firedKey)) {
+                console.log(`[ALARM] Already fired today: ${reminder.title || reminder.label}`);
+                return;
+            }
+            localStorage.setItem(firedKey, '1');
+        }
+
         console.log(`🔥 FIRING ${isPreReminder ? 'PRE-' : ''}ALARM:`, reminder.title || reminder.label);
 
         const tone = reminder.tone || 'audio1';
@@ -1188,25 +1225,27 @@
             }, 2000);
         }
 
-        // Schedule all alarms (only if leader)
-        if (window.AnhadAlarmCoordinator?.isLeader()) {
+        // Schedule all alarms — run immediately (coordinator optional)
+        // If no coordinator: act as sole leader. If coordinator: only schedule if leader.
+        if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
             scheduleAllAlarms();
             checkMissedAlarms();
         }
 
-        // Listen for coordinator leadership changes
+        // If coordinator loads late, re-check after election settles
         if (window.AnhadAlarmCoordinator) {
             setTimeout(() => {
-                if (window.AnhadAlarmCoordinator.isLeader()) {
+                if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                     scheduleAllAlarms();
                     checkMissedAlarms();
                 }
             }, 1000);
         }
 
-        // Regular check interval — only leader schedules
+        // Regular check interval — leader or standalone
         State.checkInterval = setInterval(() => {
-            if (window.AnhadAlarmCoordinator?.isLeader()) {
+            console.log('[ALARM] Polling at', new Date());
+            if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                 scheduleAllAlarms();
                 checkMissedAlarms();
             }
@@ -1214,7 +1253,8 @@
 
         // Visibility change handler
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && window.AnhadAlarmCoordinator?.isLeader()) {
+            if (document.visibilityState === 'visible' &&
+                (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader())) {
                 scheduleAllAlarms();
                 checkMissedAlarms();
             }
@@ -1222,7 +1262,7 @@
 
         // Focus handler
         window.addEventListener('focus', () => {
-            if (window.AnhadAlarmCoordinator?.isLeader()) {
+            if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                 scheduleAllAlarms();
                 checkMissedAlarms();
             }
@@ -1232,7 +1272,7 @@
         window.addEventListener('storage', (e) => {
             if (CONFIG.REMINDERS_KEYS.includes(e.key)) {
                 console.log('📋 Reminders updated, rescheduling...');
-                if (window.AnhadAlarmCoordinator?.isLeader()) {
+                if (!window.AnhadAlarmCoordinator || window.AnhadAlarmCoordinator.isLeader()) {
                     scheduleAllAlarms();
                 }
             }

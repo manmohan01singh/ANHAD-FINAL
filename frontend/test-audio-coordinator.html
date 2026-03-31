@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Coordinator Test - ANHAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e0a32 0%, #0a0514 100%);
+            color: #FDF6EC;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #D4860A;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #FDF6EC;
+            opacity: 0.7;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 134, 10, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .test-section h2 {
+            color: #D4860A;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #D4860A 0%, #B87008 100%);
+            color: #FDF6EC;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(212, 134, 10, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(212, 134, 10, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .status-item {
+            margin-bottom: 8px;
+        }
+
+        .status-label {
+            color: #D4860A;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #10B981;
+        }
+
+        .error {
+            color: #EF4444;
+        }
+
+        .info {
+            color: #3B82F6;
+        }
+
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #D4860A;
+            padding-left: 10px;
+        }
+
+        .instructions {
+            background: rgba(212, 134, 10, 0.1);
+            border-left: 4px solid #D4860A;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #D4860A;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Audio Coordinator Test</h1>
+        <p class="subtitle">Testing Mutual Exclusion for Darbar Sahib Live & Amritvela Kirtan</p>
+
+        <div class="instructions">
+            <h3>📋 Test Instructions:</h3>
+            <ol>
+                <li>Click "Play Darbar Sahib Live" - it should start playing</li>
+                <li>Click "Play Amritvela Kirtan" - Darbar should pause automatically</li>
+                <li>Click "Play Darbar Sahib Live" again - Amritvela should pause automatically</li>
+                <li>Check the status and logs below to verify mutual exclusion is working</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🕌 Darbar Sahib Live</h2>
+            <div class="player-controls">
+                <button onclick="playDarbar()">▶️ Play Darbar Sahib Live</button>
+                <button class="secondary" onclick="pauseDarbar()">⏸️ Pause</button>
+            </div>
+            <div class="status" id="darbar-status">
+                <div class="status-item"><span class="status-label">Status:</span> <span id="darbar-state">Stopped</span></div>
+                <div class="status-item"><span class="status-label">Stream:</span> SGPC Live Kirtan</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🌅 Amritvela Kirtan</h2>
+            <div class="player-controls">
+                <button onclick="playAmritvela()">▶️ Play Amritvela Kirtan</button>
+                <button class="secondary" onclick="pauseAmritvela()">⏸️ Pause</button>
+                <button class="secondary" onclick="jumpToLive()">🔴 Jump to Live</button>
+            </div>
+            <div class="status" id="amritvela-status">
+                <div class="status-item"><span class="status-label">Status:</span> <span id="amritvela-state">Stopped</span></div>
+                <div class="status-item"><span class="status-label">Stream:</span> Curated Smagam Tracks</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎛️ Coordinator Status</h2>
+            <div class="player-controls">
+                <button class="secondary" onclick="pauseAll()">⏸️ Pause All</button>
+                <button class="secondary" onclick="refreshStatus()">🔄 Refresh Status</button>
+                <button class="secondary" onclick="clearLog()">🗑️ Clear Log</button>
+            </div>
+            <div class="status" id="coordinator-status">
+                <div class="status-item"><span class="status-label">Currently Playing:</span> <span id="current-player">None</span></div>
+                <div class="status-item"><span class="status-label">Registered Players:</span> <span id="registered-players">Loading...</span></div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📜 Event Log</h2>
+            <div class="log" id="event-log">
+                <div class="log-entry">Waiting for events...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Audio Coordinator First -->
+    <script src="lib/audio-coordinator.js"></script>
+    
+    <!-- Load Audio Systems -->
+    <script src="lib/persistent-audio.js"></script>
+    <script src="lib/global-mini-player.js"></script>
+
+    <!-- Test Script -->
+    <script>
+        const log = [];
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${message}`;
+            log.push({ message: entry, type });
+            
+            const logEl = document.getElementById('event-log');
+            const entryEl = document.createElement('div');
+            entryEl.className = `log-entry ${type}`;
+            entryEl.textContent = entry;
+            logEl.appendChild(entryEl);
+            
+            // Auto-scroll to bottom
+            logEl.scrollTop = logEl.scrollHeight;
+            
+            // Keep only last 50 entries
+            if (log.length > 50) {
+                log.shift();
+                logEl.removeChild(logEl.firstChild);
+            }
+        }
+
+        function clearLog() {
+            log.length = 0;
+            document.getElementById('event-log').innerHTML = '<div class="log-entry">Log cleared</div>';
+        }
+
+        function playDarbar() {
+            addLog('🕌 Attempting to play Darbar Sahib Live...', 'info');
+            if (window.GlobalMiniPlayer) {
+                window.GlobalMiniPlayer.play('darbar');
+                addLog('✅ Darbar Sahib Live play command sent', 'success');
+            } else {
+                addLog('❌ GlobalMiniPlayer not available', 'error');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function pauseDarbar() {
+            addLog('⏸️ Pausing Darbar Sahib Live...', 'info');
+            if (window.GlobalMiniPlayer) {
+                window.GlobalMiniPlayer.pause();
+                addLog('✅ Darbar Sahib Live paused', 'success');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function playAmritvela() {
+            addLog('🌅 Attempting to play Amritvela Kirtan...', 'info');
+            if (window.AnhadAudio) {
+                window.AnhadAudio.play('amritvela');
+                addLog('✅ Amritvela Kirtan play command sent', 'success');
+            } else {
+                addLog('❌ AnhadAudio not available', 'error');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function pauseAmritvela() {
+            addLog('⏸️ Pausing Amritvela Kirtan...', 'info');
+            if (window.AnhadAudio) {
+                window.AnhadAudio.pause();
+                addLog('✅ Amritvela Kirtan paused', 'success');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function jumpToLive() {
+            addLog('🔴 Jumping to live position...', 'info');
+            if (window.AnhadAudio) {
+                window.AnhadAudio.jumpToLive('amritvela');
+                addLog('✅ Jumped to live', 'success');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function pauseAll() {
+            addLog('⏸️ Pausing all players...', 'info');
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.pauseAll();
+                addLog('✅ All players paused', 'success');
+            }
+            setTimeout(refreshStatus, 500);
+        }
+
+        function refreshStatus() {
+            // Update Darbar status
+            if (window.GlobalMiniPlayer) {
+                const isPlaying = window.GlobalMiniPlayer.isPlaying();
+                document.getElementById('darbar-state').textContent = isPlaying ? '▶️ Playing' : '⏸️ Paused';
+                document.getElementById('darbar-state').className = isPlaying ? 'success' : '';
+            }
+
+            // Update Amritvela status
+            if (window.AnhadAudio) {
+                const isPlaying = window.AnhadAudio.isPlaying();
+                document.getElementById('amritvela-state').textContent = isPlaying ? '▶️ Playing' : '⏸️ Paused';
+                document.getElementById('amritvela-state').className = isPlaying ? 'success' : '';
+            }
+
+            // Update Coordinator status
+            if (window.AudioCoordinator) {
+                const currentPlayer = window.AudioCoordinator.getCurrentlyPlaying();
+                const registeredPlayers = window.AudioCoordinator.getRegisteredPlayers();
+                
+                document.getElementById('current-player').textContent = currentPlayer || 'None';
+                document.getElementById('current-player').className = currentPlayer ? 'success' : '';
+                
+                document.getElementById('registered-players').textContent = registeredPlayers.join(', ') || 'None';
+            }
+        }
+
+        // Listen for audio state changes
+        window.addEventListener('anhadAudioStateChange', (e) => {
+            const { isPlaying, stream, streamName } = e.detail;
+            addLog(`🎵 AnhadAudio state changed: ${streamName} - ${isPlaying ? 'Playing' : 'Paused'}`, isPlaying ? 'success' : 'info');
+            setTimeout(refreshStatus, 100);
+        });
+
+        // Initial status update
+        setTimeout(() => {
+            addLog('🎵 Audio systems loaded', 'success');
+            refreshStatus();
+        }, 1000);
+
+        // Periodic status refresh
+        setInterval(refreshStatus, 2000);
+    </script>
+</body>
+</html>

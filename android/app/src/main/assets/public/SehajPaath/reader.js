@@ -5,6 +5,12 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+// Initialize global cache instance before BaniDBAPI tries to use it
+if (typeof window !== 'undefined' && !window.sehajPaathCache) {
+    window.sehajPaathCache = new OfflineManager();
+    console.log('[SehajPaath] Global cache initialized');
+}
+
 class SehajPaathReader {
     constructor() {
         this.currentAng = 1;
@@ -66,6 +72,11 @@ class SehajPaathReader {
         // Load the Ang
         await this.loadAng(this.currentAng);
 
+        // Auto-download next 5 Angs in background after page load
+        setTimeout(() => {
+            this.autoDownloadNextFiveAngs();
+        }, 2000);
+
         // Start reading timer
         this.startReadingTimer();
 
@@ -81,15 +92,24 @@ class SehajPaathReader {
     loadSettings() {
         try {
             const saved = localStorage.getItem('sehajPaathReaderSettings');
-            return saved ? JSON.parse(saved) : this.getDefaultSettings();
+            const settings = saved ? JSON.parse(saved) : this.getDefaultSettings();
+            
+            // Always sync with global theme on load
+            const globalTheme = localStorage.getItem('anhad_theme') || 'light';
+            settings.theme = globalTheme;
+            
+            return settings;
         } catch {
             return this.getDefaultSettings();
         }
     }
 
     getDefaultSettings() {
+        // Sync with global theme
+        const globalTheme = localStorage.getItem('anhad_theme') || 'light';
+        
         return {
-            theme: 'dark',
+            theme: globalTheme, // Use global theme instead of always 'dark'
             fontSize: 22,
             lineSpacing: 2.2,
             displayMode: 'padchhed',
@@ -209,6 +229,26 @@ class SehajPaathReader {
             });
         }
 
+        // ═══════════════════════════════════════════════════════════════════════════
+        // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
+        // ═══════════════════════════════════════════════════════════════════════════
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                this.settings.theme = e.newValue;
+                this.applyTheme();
+                console.log('🎨 Synced with global theme:', e.newValue);
+            }
+        });
+
+        // Listen for custom theme change events
+        window.addEventListener('themechange', (e) => {
+            if (e.detail?.theme) {
+                this.settings.theme = e.detail.theme;
+                this.applyTheme();
+                console.log('🎨 Theme changed via event:', e.detail.theme);
+            }
+        });
+
         // Scroll handling for auto-hide — THROTTLED with rAF
         this._scrollTicking = false;
         this._scrollHideTimer = null;
@@ -254,6 +294,9 @@ class SehajPaathReader {
 
         // Keyboard navigation
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+
+        // Download/Offline caching
+        this.setupDownloadListeners();
     }
 
     setupSettingsControls() {
@@ -451,42 +494,50 @@ class SehajPaathReader {
         }
 
         // ═══════════════════════════════════════════════════════════════════
-        // AUTO-HIDE HEADER/FOOTER
+        // AUTO-HIDE HEADER/FOOTER — Always enabled for immersive reading
         // ═══════════════════════════════════════════════════════════════════
-        if (!this.settings.autoHideHeader) {
+        const header = document.getElementById('readerHeader');
+        const footer = document.getElementById('readerFooter');
+        const container = document.getElementById('readerContainer');
+
+        // Only toggle after significant scroll delta to prevent rapid flickering
+        if (Math.abs(delta) < 5) {
             this.lastScrollPosition = currentPosition;
             return;
         }
 
-        // Only toggle after significant scroll delta to prevent rapid flickering
-        if (Math.abs(delta) < 8) return;
+        // Clear any existing timer
+        if (this._scrollHideTimer) {
+            clearTimeout(this._scrollHideTimer);
+        }
 
-        const header = document.getElementById('readerHeader');
-        const footer = document.getElementById('readerFooter');
-        const container = document.getElementById('readerContainer');
-        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
-
-        if (delta > 0 && currentPosition > 80) {
-            // Scrolling down - hide
+        if (delta > 0 && currentPosition > 50) {
+            // Scrolling down - hide UI for full screen
             if (this.headerVisible) {
                 header?.classList.add('hidden');
                 footer?.classList.add('hidden');
+                container?.classList.add('fullscreen-reading');
                 this.headerVisible = false;
-                if (isContinuousOrParagraph) {
-                    container?.classList.add('fullscreen-reading');
-                }
             }
         } else if (delta < -5) {
-            // Scrolling up - show
+            // Scrolling up - show UI
             if (!this.headerVisible) {
                 header?.classList.remove('hidden');
                 footer?.classList.remove('hidden');
+                container?.classList.remove('fullscreen-reading');
                 this.headerVisible = true;
-                if (isContinuousOrParagraph) {
-                    container?.classList.remove('fullscreen-reading');
-                }
             }
         }
+
+        // Auto-hide again after 3 seconds of no scrolling
+        this._scrollHideTimer = setTimeout(() => {
+            if (currentPosition > 50 && this.headerVisible) {
+                header?.classList.add('hidden');
+                footer?.classList.add('hidden');
+                container?.classList.add('fullscreen-reading');
+                this.headerVisible = false;
+            }
+        }, 3000);
 
         this.lastScrollPosition = currentPosition;
     }
@@ -863,12 +914,14 @@ class SehajPaathReader {
     prevAng() {
         if (this.currentAng > 1) {
             this.loadAng(this.currentAng - 1);
+            // Stats are already updated in loadAng() -> updateStats()
         }
     }
 
     nextAng() {
         if (this.currentAng < 1430) {
             this.loadAng(this.currentAng + 1);
+            // Stats are already updated in loadAng() -> updateStats()
         }
     }
 
@@ -1196,11 +1249,26 @@ class SehajPaathReader {
             localStorage.setItem('sehajPaathStats', JSON.stringify(stats));
 
             // ═══════════════════════════════════════════════════════════════════
-            // DASHBOARD INTEGRATION — Push stats to unified storage
+            // DASHBOARD INTEGRATION — Push stats to unified AnhadStats system
             // This makes Sehaj Paath progress visible on the Dashboard
             // ═══════════════════════════════════════════════════════════════════
             try {
-                // Update unified stats for Dashboard insights
+                // Update unified stats for Dashboard
+                if (window.AnhadStats) {
+                    window.AnhadStats.addPagesRead(1);
+                    console.log('📊 Sent Ang read to Dashboard stats');
+                } else {
+                    // Fallback: dispatch event for stats-integration.js
+                    window.dispatchEvent(new CustomEvent('sehajPaathAngRead', {
+                        detail: { ang: this.currentAng, timestamp: Date.now() }
+                    }));
+                }
+            } catch (e) {
+                console.warn('Dashboard stats sync error:', e);
+            }
+
+            // Also update legacy unified storage for backward compatibility
+            try {
                 let unifiedStats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
                 unifiedStats.sehajPaath = {
                     currentAng: this.currentAng,
@@ -1476,6 +1544,269 @@ class SehajPaathReader {
         navigator.clipboard.writeText(textToCopy)
             .then(() => this.showToast('Gurbani copied! 📋'))
             .catch(() => this.showToast('Could not copy text'));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DOWNLOAD / OFFLINE CACHING - Download 5 Angs at a time
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupDownloadListeners() {
+        // Download button in header
+        document.getElementById('downloadBtn')?.addEventListener('click', () => this.openDownloadModal());
+
+        // Download modal controls
+        document.getElementById('closeDownloadBtn')?.addEventListener('click', () => this.closeDownloadModal());
+        document.querySelector('.download-modal-backdrop')?.addEventListener('click', () => this.closeDownloadModal());
+        document.getElementById('downloadStartBtn')?.addEventListener('click', () => this.downloadFiveAngs());
+    }
+
+    openDownloadModal() {
+        const modal = document.getElementById('downloadModal');
+        if (modal) {
+            modal.classList.add('active');
+            this.updateCachedCount();
+        }
+    }
+
+    closeDownloadModal() {
+        document.getElementById('downloadModal')?.classList.remove('active');
+    }
+
+    updateCachedCount() {
+        const cachedCountEl = document.getElementById('cachedCount');
+        if (cachedCountEl && window.sehajPaathCache) {
+            const count = window.sehajPaathCache.getCacheCount();
+            cachedCountEl.textContent = `Cached: ${count} Angs`;
+        }
+    }
+
+    async downloadFiveAngs() {
+        const startBtn = document.getElementById('downloadStartBtn');
+        const progressContainer = document.getElementById('downloadProgressContainer');
+        const progressFill = document.getElementById('downloadProgressFill');
+        const progressText = document.getElementById('downloadProgressText');
+        const statusEl = document.getElementById('downloadStatus');
+
+        if (!window.sehajPaathCache) {
+            this.showToast('Cache not available');
+            return;
+        }
+
+        // Calculate range: current ang + next 4 (5 total)
+        const startAng = this.currentAng;
+        const endAng = Math.min(1430, startAng + 4);
+        const total = endAng - startAng + 1;
+
+        // Disable start button and show progress
+        if (startBtn) startBtn.disabled = true;
+        if (progressContainer) progressContainer.style.display = 'block';
+        if (statusEl) statusEl.textContent = 'Starting download...';
+
+        let completed = 0;
+        let failed = 0;
+
+        for (let ang = startAng; ang <= endAng; ang++) {
+            try {
+                if (statusEl) statusEl.textContent = `Downloading Ang ${ang}...`;
+
+                // Check if already cached
+                if (window.sehajPaathCache.isCached(ang)) {
+                    completed++;
+                    this.updateDownloadProgress(completed, total);
+                    continue;
+                }
+
+                // Fetch from API using proxy
+                const response = await fetch(`/api/banidb/angs/${ang}/G`);
+                if (!response.ok) throw new Error(`Failed to fetch Ang ${ang}`);
+
+                const data = await response.json();
+
+                // Format data similar to BaniDBAPI
+                const formatted = this.formatAngDataForCache(data, ang);
+
+                // Cache it
+                await window.sehajPaathCache.cacheAng(ang, formatted);
+
+                completed++;
+                this.updateDownloadProgress(completed, total);
+
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+            } catch (error) {
+                console.error(`Failed to download Ang ${ang}:`, error);
+                failed++;
+            }
+        }
+
+        // Update status
+        if (failed === 0) {
+            if (statusEl) statusEl.textContent = `✅ Downloaded ${completed} Angs successfully!`;
+            this.showToast(`Downloaded ${completed} Angs for offline reading`);
+        } else {
+            if (statusEl) statusEl.textContent = `⚠️ Downloaded ${completed}, Failed: ${failed}`;
+            this.showToast(`Downloaded ${completed} Angs, ${failed} failed`);
+        }
+
+        // Update cached count and re-enable button
+        this.updateCachedCount();
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = 'Download Again';
+        }
+
+        // Hide progress after a delay
+        setTimeout(() => {
+            if (progressContainer) progressContainer.style.display = 'none';
+        }, 3000);
+    }
+
+    updateDownloadProgress(completed, total) {
+        const progressFill = document.getElementById('downloadProgressFill');
+        const progressText = document.getElementById('downloadProgressText');
+        const percent = (completed / total) * 100;
+
+        if (progressFill) progressFill.style.width = `${percent}%`;
+        if (progressText) progressText.textContent = `${completed}/${total}`;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AUTO DOWNLOAD - Download next 5 Angs in background on page load
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async autoDownloadNextFiveAngs() {
+        console.log('📥 Auto-downloading next 5 Angs in background...');
+        
+        if (!window.sehajPaathCache) {
+            console.warn('[AutoDownload] Cache not available');
+            return;
+        }
+
+        // Calculate range: current ang + next 4 (5 total)
+        const startAng = this.currentAng;
+        const endAng = Math.min(1430, startAng + 4);
+        const total = endAng - startAng + 1;
+
+        let completed = 0;
+        let failed = 0;
+        let skipped = 0;
+
+        // Show subtle toast notification
+        this.showToast('📥 Downloading next 5 Angs for offline reading...');
+
+        for (let ang = startAng; ang <= endAng; ang++) {
+            // Check if already cached
+            if (window.sehajPaathCache.isCached(ang)) {
+                skipped++;
+                completed++;
+                continue;
+            }
+
+            try {
+                console.log(`[AutoDownload] Downloading Ang ${ang}...`);
+
+                // Fetch from API using the proxy
+                const response = await fetch(`/api/banidb/angs/${ang}/G`);
+                if (!response.ok) throw new Error(`Failed to fetch Ang ${ang}`);
+
+                const data = await response.json();
+
+                // Format data
+                const formatted = this.formatAngDataForCache(data, ang);
+
+                // Cache it
+                await window.sehajPaathCache.cacheAng(ang, formatted);
+
+                completed++;
+                console.log(`[AutoDownload] ✓ Cached Ang ${ang}`);
+
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 300));
+
+            } catch (error) {
+                console.error(`[AutoDownload] Failed to download Ang ${ang}:`, error);
+                failed++;
+            }
+        }
+
+        // Show completion toast
+        if (failed === 0) {
+            this.showToast(`✅ Downloaded ${completed} Angs for offline reading`);
+        } else {
+            this.showToast(`⚠️ Downloaded ${completed}, Failed: ${failed}, Skipped: ${skipped}`);
+        }
+
+        // Update cached count in download modal if open
+        this.updateCachedCount();
+        
+        console.log(`[AutoDownload] Complete: ${completed} success, ${failed} failed, ${skipped} skipped`);
+    }
+
+    formatAngDataForCache(data, angNumber) {
+        // Handle different response structures
+        let pageData = [];
+        let raagInfo = '';
+
+        if (data?.page && Array.isArray(data.page)) {
+            pageData = data.page;
+            raagInfo = data.page[0]?.line?.raag?.gurmukhi || '';
+        } else if (Array.isArray(data)) {
+            pageData = data;
+        }
+
+        const verses = pageData.map(item => {
+            return {
+                id: item.verseId || item.id || item.lineId,
+                shabadId: item.shabadId,
+                ang: item.pageNo || item.ang || angNumber,
+                gurmukhi: item.verse?.unicode || item.verse?.gurmukhi || item.gurmukhi?.unicode || item.gurmukhi || '',
+                larivaar: item.larivaar?.unicode || item.larivaar?.gurmukhi || item.larivaar || '',
+                translation: {
+                    en: this.extractTranslation(item, 'en'),
+                    pu: this.extractTranslation(item, 'pu'),
+                    hi: this.extractTranslation(item, 'hi')
+                },
+                transliteration: {
+                    en: item.transliteration?.english || item.transliteration?.en || '',
+                    hi: item.transliteration?.hindi || item.transliteration?.hi || ''
+                },
+                writer: item.writer?.english || item.writer?.gurmukhi || '',
+                raag: item.raag?.english || item.raag?.gurmukhi || ''
+            };
+        });
+
+        return {
+            ang: angNumber,
+            source: 'G',
+            raag: raagInfo || verses[0]?.raag || '',
+            verses: verses.filter(v => v.gurmukhi)
+        };
+    }
+
+    extractTranslation(item, lang) {
+        const trans = item.translation;
+        if (!trans) return '';
+
+        if (typeof trans === 'string') return trans;
+
+        if (trans[lang]) {
+            const langTrans = trans[lang];
+            if (lang === 'en') {
+                return langTrans.bdb || langTrans.ms || langTrans.ssk ||
+                    (typeof langTrans === 'string' ? langTrans : '');
+            }
+            if (lang === 'pu') {
+                return langTrans.ss?.unicode || langTrans.bdb?.unicode || langTrans.ms?.unicode ||
+                    (typeof langTrans === 'string' ? langTrans : '');
+            }
+            if (lang === 'hi') {
+                return langTrans.ss || langTrans.sts ||
+                    (typeof langTrans === 'string' ? langTrans : '');
+            }
+        }
+
+        return '';
     }
 }
 

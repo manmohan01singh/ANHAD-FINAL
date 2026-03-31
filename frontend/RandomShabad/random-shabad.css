@@ -1,52 +1,43 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   RANDOM SHABAD — ULTRA-PREMIUM iOS 26+ LIQUID GLASS EXPERIENCE
-   Featuring: Advanced Blur Orbs • Liquid Morphism • Depth Layers • Sacred Design
+   RANDOM SHABAD — PURE CLAYMORPHISM DESIGN
+   Featuring: Soft 3D Tactile Surfaces • Inner Highlights • Gentle Shadows
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════
-   DESIGN TOKENS — iOS 26+ Premium
+   DESIGN TOKENS — Claymorphism Premium
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-    /* Atmospheric Foundation */
-    --bg-abyss: #000000;
-    --bg-void: #05050a;
-    --bg-deep: #0a0a15;
-    --bg-surface: #0f0f1e;
+    /* Dark Theme Backgrounds */
+    --bg-abyss: #0a0a12;
+    --bg-void: #12121f;
+    --bg-deep: #1a1a2e;
+    --bg-surface: #252540;
 
-    /* Sacred Palette - Enhanced */
-    --gold-divine: #F7D794;
-    --gold-primary: #D4A03A;
-    --gold-deep: #B8860B;
-    --gold-glow: rgba(247, 215, 148, 0.6);
-    --saffron-bright: #FFB84D;
-    --saffron: #FF9500;
-    --saffron-deep: #FF8800;
+    /* Sacred Gold Palette */
+    --gold-divine: #FFD700;
+    --gold-primary: #E8C547;
+    --gold-deep: #D4A03A;
+    --gold-glow: rgba(255, 215, 0, 0.5);
+    --saffron-bright: #FF9933;
+    --saffron: #FF9F43;
+    --saffron-deep: #FF8C42;
 
-    /* Liquid Glass Colors */
-    --celestial-primary: #5E5CE6;
-    --celestial-glow: rgba(94, 92, 230, 0.5);
-    --ethereal-primary: #30D5C8;
-    --ethereal-glow: rgba(48, 213, 200, 0.4);
-    --mystic-purple: #BF5AF2;
-    --mystic-glow: rgba(191, 90, 242, 0.4);
-    --sacred-pink: #FF2D55;
-    --sacred-glow: rgba(255, 45, 85, 0.35);
-
-    /* Advanced Glass System */
-    --glass-ultra: rgba(255, 255, 255, 0.03);
-    --glass-surface: rgba(255, 255, 255, 0.07);
+    /* Glass Surfaces */
+    --glass-surface: rgba(255, 255, 255, 0.08);
     --glass-elevated: rgba(255, 255, 255, 0.12);
-    --glass-premium: rgba(255, 255, 255, 0.18);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-strong: rgba(255, 255, 255, 0.15);
-    --glass-glow: rgba(255, 255, 255, 0.02);
+    --glass-premium: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-strong: rgba(255, 255, 255, 0.2);
+    --glass-shine: rgba(255, 255, 255, 0.05);
 
-    /* Blur Levels */
-    --blur-soft: 20px;
-    --blur: 40px;
-    --blur-heavy: 80px;
-    --blur-extreme: 120px;
+    /* Celestial Accents */
+    --celestial: #5E5CE6;
+    --celestial-glow: rgba(94, 92, 230, 0.5);
+    --ethereal: #30D5C8;
+    --ethereal-glow: rgba(48, 213, 200, 0.4);
+    --mystic: #BF5AF2;
+    --mystic-glow: rgba(191, 90, 242, 0.4);
 
     /* Text Hierarchy */
     --text-divine: #FFFFFF;
@@ -73,36 +64,62 @@
     --ease-smooth: cubic-bezier(0.33, 1, 0.68, 1);
     --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    /* Blur Values */
+    --blur: 20px;
+    --blur-heavy: 40px;
+    --blur-extreme: 60px;
+
+    /* Claymorphism Surfaces */
+    --clay-bg-primary: rgba(255, 255, 255, 0.08);
+    --clay-bg-secondary: rgba(255, 255, 255, 0.12);
+    --clay-bg-tertiary: rgba(255, 255, 255, 0.05);
+    
+    /* Clay Shadows - Soft & Lifted */
+    --clay-shadow-1: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
+    --clay-shadow-2: 0 8px 24px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.12);
+    --clay-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.25), 0 6px 12px rgba(0, 0, 0, 0.15);
+    
+    /* Inner Shadows for pressed effect */
+    --clay-inner-highlight: inset 0 2px 4px rgba(255, 255, 255, 0.15);
+    --clay-inner-deep: inset 0 3px 8px rgba(0, 0, 0, 0.2);
+    
+    /* Gradients for depth */
+    --clay-gradient-light: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 100%);
+    --clay-gradient-warm: linear-gradient(180deg, rgba(255,200,100,0.15) 0%, rgba(255,150,50,0.08) 100%);
+    
+    /* Clay Radius */
+    --clay-radius-sm: 16px;
+    --clay-radius-md: 22px;
+    --clay-radius-lg: 28px;
+    --clay-radius-xl: 36px;
+    --clay-radius-full: 9999px;
 }
 
-/* Light Theme - Premium iOS Mode */
+/* Light Theme - Glass Mode */
 [data-theme="light"] {
-    --bg-abyss: #FFFFFF;
-    --bg-void: #F5F5F7;
-    --bg-deep: #FBFBFD;
+    --bg-abyss: #F5F5F7;
+    --bg-void: #FFFFFF;
+    --bg-deep: #E8E8ED;
     --bg-surface: #FFFFFF;
 
-    --glass-ultra: rgba(255, 255, 255, 0.4);
-    --glass-surface: rgba(255, 255, 255, 0.75);
-    --glass-elevated: rgba(255, 255, 255, 0.9);
-    --glass-premium: rgba(255, 255, 255, 0.95);
-    --glass-border: rgba(0, 0, 0, 0.06);
-    --glass-border-strong: rgba(0, 0, 0, 0.1);
+    /* Glass surfaces for light mode */
+    --glass-surface: rgba(255, 255, 255, 0.7);
+    --glass-elevated: rgba(255, 255, 255, 0.85);
+    --glass-premium: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-strong: rgba(0, 0, 0, 0.15);
 
-    --text-divine: #000000;
-    --text-pure: rgba(0, 0, 0, 0.95);
-    --text-primary: rgba(0, 0, 0, 0.88);
-    --text-secondary: rgba(0, 0, 0, 0.6);
-    --text-tertiary: rgba(0, 0, 0, 0.4);
-    --text-muted: rgba(0, 0, 0, 0.2);
+    --text-divine: #1a1a2e;
+    --text-pure: rgba(26, 26, 46, 0.95);
+    --text-primary: rgba(26, 26, 46, 0.88);
+    --text-secondary: rgba(26, 26, 46, 0.6);
+    --text-tertiary: rgba(26, 26, 46, 0.4);
+    --text-muted: rgba(26, 26, 46, 0.25);
 
-    --gold-primary: #B8860B;
-    --gold-glow: rgba(184, 134, 11, 0.25);
-    --saffron: #FF8800;
-
-    --celestial-glow: rgba(94, 92, 230, 0.25);
-    --ethereal-glow: rgba(48, 213, 200, 0.2);
-    --mystic-glow: rgba(191, 90, 242, 0.2);
+    --gold-primary: #C9A227;
+    --gold-glow: rgba(201, 162, 39, 0.35);
+    --saffron: #FF9F43;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -435,42 +452,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     text-decoration: none;
-    border-radius: 12px;
-    transition: all 0.3s var(--ease-out);
-    position: relative;
-}
-
-.nav-back::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    background: var(--glass-surface);
-    opacity: 0;
-    transition: opacity 0.3s var(--ease-out);
-}
-
-.nav-back:active::before {
-    opacity: 1;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
 }
 
 .nav-back:active {
-    color: var(--text-pure);
-    transform: scale(0.93);
-}
-
-.nav-back svg {
-    position: relative;
-    z-index: 1;
-}
-
-.nav-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.92);
 }
 
 .nav-title {
@@ -479,6 +471,12 @@ body {
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: 0.3px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .nav-action {
@@ -491,28 +489,13 @@ body {
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    border-radius: 12px;
-    transition: all 0.3s var(--ease-out);
-    position: relative;
-}
-
-.nav-action::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 12px;
-    background: var(--glass-surface);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.nav-action:active::before {
-    opacity: 1;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
 .nav-action:active {
-    transform: scale(0.88);
-    color: var(--text-pure);
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(0.92);
 }
 
 .nav-action svg {
@@ -636,42 +619,16 @@ body {
     }
 }
 
-/* Premium Ang Display - Glass Pill */
+/* Premium Ang Display - Clay Pill Badge */
 .ang-display {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 36px;
-    background: var(--glass-elevated);
-    backdrop-filter: blur(var(--blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
-    border: 1.5px solid var(--glass-border-strong);
+    padding: 12px 40px;
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 100px;
     margin-bottom: 12px;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.15),
-        0 8px 32px rgba(0, 0, 0, 0.15),
-        0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: all 0.4s var(--ease-spring);
-    position: relative;
-    overflow: hidden;
-}
-
-.ang-display::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.2) 50%,
-            transparent 100%);
-}
-
-.ang-display:active {
-    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .ang-label {
@@ -704,7 +661,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   SHABAD CONTAINER - Ultra-Premium Glass Card
+   SHABAD CONTAINER - Glass Card
 ═══════════════════════════════════════════════════════════════ */
 
 .shabad-container {
@@ -715,60 +672,17 @@ body {
     margin-bottom: 20px;
 }
 
-/* Main Glass Card */
+/* Main Clay Card - Soft Tactile with Depth */
 .shabad-glass-card {
     flex: 1;
-    background: var(--glass-surface);
-    backdrop-filter: blur(var(--blur-heavy)) saturate(200%);
-    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(200%);
-    border: 1.5px solid var(--glass-border);
-    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
     overflow: hidden;
     position: relative;
-
-    /* Premium Shadow Layers */
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.12),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-        0 20px 60px rgba(0, 0, 0, 0.25),
-        0 8px 20px rgba(0, 0, 0, 0.15),
-        0 2px 4px rgba(0, 0, 0, 0.1);
-
-    transition: all 0.5s var(--ease-out);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
-/* Fresnel Gradient Top */
-.shabad-glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.08) 0%,
-            rgba(255, 255, 255, 0.03) 50%,
-            transparent 100%);
-    pointer-events: none;
-    z-index: 5;
-}
-
-/* Bottom Gradient Fade */
-.shabad-glass-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: linear-gradient(0deg,
-            var(--glass-surface) 0%,
-            rgba(255, 255, 255, 0.01) 100%);
-    pointer-events: none;
-    z-index: 5;
-}
-
-/* Inner Glow Effect */
+/* Inner Glow Effect - Glass Shine */
 .shabad-glass-card .state--content {
     position: relative;
 }
@@ -777,11 +691,10 @@ body {
     content: '';
     position: absolute;
     inset: 1px;
-    border-radius: 31px;
+    border-radius: 24px;
     background: radial-gradient(ellipse 80% 60% at 50% 0%,
-            var(--gold-glow) 0%,
+            rgba(244, 208, 63, 0.05) 0%,
             transparent 50%);
-    opacity: 0.03;
     pointer-events: none;
     z-index: 0;
 }
@@ -911,27 +824,35 @@ body {
 
 .btn-retry {
     font-family: var(--font-gurmukhi);
-    padding: 14px 40px;
-    background: var(--glass-elevated);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    border: 1.5px solid var(--glass-border-strong);
+    padding: 16px 44px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
     border-radius: 100px;
     color: var(--gold-primary);
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s var(--ease-spring);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s var(--ease-out);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-retry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%);
+    border-radius: 100px 100px 0 0;
+    pointer-events: none;
 }
 
 .btn-retry:active {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
     transform: scale(0.95);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -951,7 +872,7 @@ body {
 
 /* Custom Scrollbar */
 .verses-scroll::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
 }
 
 .verses-scroll::-webkit-scrollbar-track {
@@ -959,12 +880,16 @@ body {
 }
 
 .verses-scroll::-webkit-scrollbar-thumb {
-    background: var(--glass-border);
+    background: rgba(100, 80, 60, 0.3);
     border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .verses-scroll::-webkit-scrollbar-thumb:hover {
-    background: var(--glass-border-strong);
+    background: rgba(100, 80, 60, 0.5);
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 /* Individual Verse */
@@ -1054,21 +979,18 @@ body {
     gap: 20px;
 }
 
-/* Primary Divine Button - Golden Gradient */
+/* Primary Divine Button - Ultimate Claymorphism */
 .btn-divine {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
-    padding: 18px 52px;
-    background: linear-gradient(135deg,
-            var(--gold-divine) 0%,
-            var(--gold-primary) 50%,
-            var(--saffron-bright) 100%);
-    border: none;
-    border-radius: 100px;
-    color: #000;
+    padding: 20px 56px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFC94C 50%, #FFB347 100%);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--clay-radius-full);
+    color: #3D3028;
     font-family: var(--font-gurmukhi);
     font-size: 17px;
     font-weight: 800;
@@ -1076,46 +998,41 @@ body {
     cursor: pointer;
     overflow: hidden;
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 8px 32px var(--gold-glow),
-        0 4px 16px rgba(212, 160, 58, 0.4),
-        0 1px 3px rgba(0, 0, 0, 0.2);
-    transition: all 0.4s var(--ease-spring);
+        inset 0 2px 4px rgba(255, 255, 255, 0.9),
+        inset 0 -4px 8px rgba(180, 140, 60, 0.3),
+        0 16px 32px rgba(255, 165, 0, 0.35),
+        0 8px 16px rgba(139, 115, 85, 0.2);
+    transition: all 0.4s var(--ease-out);
     transform-style: preserve-3d;
 }
 
 .btn-divine::before {
     content: '';
     position: absolute;
-    inset: 0;
-    border-radius: 100px;
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.4) 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 100%);
-    opacity: 0;
-    transition: opacity 0.3s;
-}
-
-.btn-divine:hover::before {
-    opacity: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, transparent 100%);
+    border-radius: var(--clay-radius-full) var(--clay-radius-full) 0 0;
+    pointer-events: none;
 }
 
 .btn-divine:hover {
-    transform: translateY(-2px) scale(1.02);
+    transform: translateY(-3px) scale(1.02);
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.15),
-        0 12px 48px var(--gold-glow),
-        0 6px 24px rgba(212, 160, 58, 0.5),
-        0 2px 4px rgba(0, 0, 0, 0.2);
+        inset 0 2px 4px rgba(255, 255, 255, 0.9),
+        inset 0 -4px 8px rgba(180, 140, 60, 0.3),
+        0 20px 40px rgba(255, 165, 0, 0.45),
+        0 12px 24px rgba(139, 115, 85, 0.25);
 }
 
 .btn-divine:active {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(2px) scale(0.98);
     box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 4px 20px var(--gold-glow),
-        0 2px 10px rgba(212, 160, 58, 0.3);
+        inset 0 4px 8px rgba(0, 0, 0, 0.15),
+        inset 0 -2px 4px rgba(180, 140, 60, 0.4),
+        0 4px 8px rgba(255, 165, 0, 0.2);
 }
 
 .btn-divine-glow {
@@ -1146,7 +1063,7 @@ body {
     stroke-width: 2.5;
 }
 
-/* Quick Actions - Glass Pills */
+/* Quick Actions - Clay Circles */
 .quick-actions {
     display: flex;
     gap: 14px;
@@ -1155,59 +1072,32 @@ body {
 }
 
 .action-pill {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--glass-surface);
-    backdrop-filter: blur(var(--blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
-    border: 1.5px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
     border-radius: 50%;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.35s var(--ease-spring);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 4px 16px rgba(0, 0, 0, 0.08);
-    position: relative;
-    overflow: hidden;
-}
-
-.action-pill::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle,
-            rgba(255, 255, 255, 0.1) 0%,
-            transparent 70%);
-    opacity: 0;
-    transform: scale(0);
-    transition: all 0.4s var(--ease-spring);
-}
-
-.action-pill:active::before {
-    opacity: 1;
-    transform: scale(1);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .action-pill:active {
-    transform: scale(0.90);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 2px 8px rgba(0, 0, 0, 0.12);
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .action-pill.active {
     color: var(--gold-primary);
-    border-color: rgba(212, 160, 58, 0.4);
-    background: var(--glass-elevated);
+    background: linear-gradient(145deg, #FFF9F0 0%, #FFE4B5 100%);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 2px 4px rgba(255, 255, 255, 0.7),
         0 0 24px var(--gold-glow),
-        0 4px 16px rgba(212, 160, 58, 0.2);
+        0 4px 12px rgba(212, 160, 58, 0.25);
 }
 
 .action-pill.active svg {
@@ -1285,21 +1175,19 @@ body {
     left: 0;
     right: 0;
     z-index: 501;
-    background: var(--glass-premium);
-    backdrop-filter: blur(var(--blur-heavy)) saturate(200%);
-    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(200%);
-    border-radius: 32px 32px 0 0;
-    border-top: 1.5px solid var(--glass-border-strong);
+    background: var(--glass-surface);
+    backdrop-filter: blur(var(--blur-heavy));
+    -webkit-backdrop-filter: blur(var(--blur-heavy));
+    border-radius: 36px 36px 0 0;
+    border-top: 1px solid var(--glass-border);
     padding: 0 24px calc(var(--safe-bottom) + 24px);
     transform: translateY(100%);
-    transition: transform 0.5s var(--ease-spring);
-    box-shadow:
-        0 -20px 60px rgba(0, 0, 0, 0.3),
-        0 -4px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.5s var(--ease-out);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="light"] .settings-sheet {
-    background: var(--glass-premium);
+    background: var(--glass-surface);
 }
 
 .settings-sheet.visible {
@@ -1308,18 +1196,18 @@ body {
 
 /* Sheet Pill Handle */
 .sheet-pill {
-    width: 40px;
-    height: 5px;
-    background: var(--glass-border-strong);
+    width: 44px;
+    height: 6px;
+    background: rgba(100, 80, 60, 0.3);
     border-radius: 100px;
-    margin: 12px auto 20px;
-    opacity: 0.5;
+    margin: 14px auto 20px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* Sheet Header */
 .sheet-header {
     padding: 8px 0 20px;
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 2px solid rgba(100, 80, 60, 0.1);
 }
 
 .sheet-header h2 {
@@ -1344,21 +1232,31 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    background: var(--glass-surface);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
+    padding: 18px 22px;
+    background: var(--glass-elevated);
     border: 1px solid var(--glass-border);
-    border-radius: 16px;
+    border-radius: 20px;
     transition: all 0.3s var(--ease-out);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.05),
-        0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.setting-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, transparent 100%);
+    border-radius: 18px 18px 0 0;
+    pointer-events: none;
 }
 
 .setting-item:active {
-    transform: scale(0.99);
-    background: var(--glass-elevated);
+    transform: scale(0.98);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .setting-item--slider {
@@ -1376,15 +1274,16 @@ body {
 
 /* Toggle Switch */
 .toggle {
-    width: 52px;
-    height: 32px;
+    width: 54px;
+    height: 34px;
     background: var(--glass-surface);
-    border: 1.5px solid var(--glass-border);
+    border: 1px solid var(--glass-border);
     border-radius: 100px;
     position: relative;
     cursor: pointer;
-    transition: all 0.3s var(--ease-spring);
+    transition: all 0.3s var(--ease-out);
     flex-shrink: 0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .toggle:active {
@@ -1392,26 +1291,31 @@ body {
 }
 
 .toggle.active {
-    background: var(--gold-primary);
-    border-color: var(--gold-primary);
-    box-shadow: 0 0 16px var(--gold-glow);
+    background: linear-gradient(180deg, #FFD700 0%, #FFC94C 50%, #FFB347 100%);
+    border-color: rgba(212, 160, 58, 0.5);
+    box-shadow: 
+        inset 0 2px 4px rgba(255,255,255,0.5),
+        0 0 16px var(--gold-glow);
 }
 
 .toggle-knob {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 24px;
-    height: 24px;
-    background: white;
+    top: 3px;
+    left: 3px;
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
     border-radius: 50%;
-    transition: all 0.35s var(--ease-spring);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.35s var(--ease-out);
+    box-shadow: 
+        inset 0 1px 2px rgba(255,255,255,0.8),
+        0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .toggle.active .toggle-knob {
     transform: translateX(20px);
-    background: #000;
+    background: linear-gradient(180deg, #3D3028 0%, #2D2424 100%);
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
 }
 
 /* Font Slider */
@@ -1439,44 +1343,46 @@ body {
     flex: 1;
     -webkit-appearance: none;
     appearance: none;
-    height: 6px;
-    background: var(--glass-surface);
+    height: 8px;
+    background: rgba(100, 80, 60, 0.15);
     border-radius: 100px;
     outline: none;
-    border: 1px solid var(--glass-border);
+    border: none;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .font-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 24px;
-    height: 24px;
-    background: linear-gradient(135deg, var(--gold-divine), var(--gold-primary));
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFC94C 50%, #FFB347 100%);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
     cursor: pointer;
     box-shadow:
-        0 0 0 4px rgba(212, 160, 58, 0.2),
-        0 2px 8px rgba(0, 0, 0, 0.2);
+        inset 0 2px 4px rgba(255,255,255,0.8),
+        0 2px 8px rgba(100, 80, 60, 0.3);
     transition: all 0.2s;
 }
 
 .font-slider::-webkit-slider-thumb:active {
     transform: scale(1.1);
     box-shadow:
-        0 0 0 6px rgba(212, 160, 58, 0.3),
-        0 4px 12px rgba(0, 0, 0, 0.3);
+        inset 0 2px 4px rgba(255,255,255,0.6),
+        0 4px 12px rgba(100, 80, 60, 0.4);
 }
 
 .font-slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    background: linear-gradient(135deg, var(--gold-divine), var(--gold-primary));
-    border: none;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(180deg, #FFD700 0%, #FFC94C 50%, #FFB347 100%);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     border-radius: 50%;
     cursor: pointer;
     box-shadow:
-        0 0 0 4px rgba(212, 160, 58, 0.2),
-        0 2px 8px rgba(0, 0, 0, 0.2);
+        inset 0 2px 4px rgba(255,255,255,0.8),
+        0 2px 8px rgba(100, 80, 60, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1489,21 +1395,17 @@ body {
     left: 50%;
     transform: translateX(-50%) translateY(120px);
     z-index: 1000;
-    padding: 14px 28px;
-    background: var(--glass-premium);
-    backdrop-filter: blur(var(--blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--blur)) saturate(180%);
-    border: 1px solid var(--glass-border-strong);
+    padding: 16px 32px;
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
     border-radius: 100px;
     color: var(--text-pure);
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.3px;
-    box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     opacity: 0;
-    transition: all 0.4s var(--ease-spring);
+    transition: all 0.4s var(--ease-out);
     pointer-events: none;
 }
 
@@ -1575,6 +1477,214 @@ body {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible {
-    outline: 2px solid var(--gold-primary);
-    outline-offset: 2px;
+outline: 2px solid var(--gold-primary);
+outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASSMORPHISM DARK MODE - Translucent Dark Surfaces
+═══════════════════════════════════════════════════════════════ */
+
+/* Dark mode: translucent dark backgrounds, light text */
+[data-theme="dark"] {
+/* Override text colors to be light for dark backgrounds */
+--text-divine: #FFFEF0 !important;
+--text-pure: #FFFFFF !important;
+--text-primary: rgba(255, 255, 255, 0.9) !important;
+--text-secondary: rgba(255, 255, 255, 0.7) !important;
+--text-tertiary: rgba(255, 255, 255, 0.5) !important;
+--text-muted: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Shabad Card - Dark Glass in dark mode */
+[data-theme="dark"] .shabad-glass-card {
+background: rgba(30, 30, 50, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.1) !important;
+box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Subtle glass shine in dark mode */
+[data-theme="dark"] .shabad-glass-card::before {
+background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        transparent 60%) !important;
+}
+
+[data-theme="dark"] .shabad-glass-card::after {
+background: linear-gradient(0deg,
+        rgba(0, 0, 0, 0.2) 0%,
+        transparent 100%) !important;
+}
+
+/* All text inside the card - LIGHT */
+[data-theme="dark"] .shabad-glass-card * {
+color: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="dark"] .verse-gurmukhi {
+color: #FFFEF0 !important;
+text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .verse-transliteration {
+color: rgba(255, 255, 255, 0.75) !important;
+}
+
+[data-theme="dark"] .verse-translation {
+color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="dark"] .loading-message,
+[data-theme="dark"] .error-message {
+color: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="dark"] .error-symbol {
+color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Navigation buttons - dark glass style */
+[data-theme="dark"] .nav-back,
+[data-theme="dark"] .nav-action {
+background: rgba(40, 40, 60, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.15) !important;
+color: rgba(255, 255, 255, 0.9) !important;
+box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .nav-back svg,
+[data-theme="dark"] .nav-action svg {
+color: rgba(255, 255, 255, 0.9) !important;
+stroke: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Ang display - dark glass style */
+[data-theme="dark"] .ang-display {
+background: rgba(40, 40, 60, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.15) !important;
+box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .ang-label {
+color: rgba(255, 255, 255, 0.6) !important;
+}
+
+[data-theme="dark"] .ang-number {
+background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+-webkit-background-clip: text !important;
+-webkit-text-fill-color: transparent !important;
+background-clip: text !important;
+}
+
+/* Settings Sheet - Dark Glass in dark mode */
+[data-theme="dark"] .settings-sheet {
+background: rgba(25, 25, 40, 0.85) !important;
+border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .sheet-header h2 {
+color: #FFFEF0 !important;
+}
+
+[data-theme="dark"] .sheet-pill {
+background: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Setting items - dark glass */
+[data-theme="dark"] .setting-item {
+background: rgba(40, 40, 60, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.1) !important;
+box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="dark"] .setting-item::before {
+background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%) !important;
+}
+
+[data-theme="dark"] .setting-label {
+color: #FFFEF0 !important;
+}
+
+/* Font labels */
+[data-theme="dark"] .font-label {
+color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Toggles in dark mode */
+[data-theme="dark"] .toggle {
+background: rgba(20, 20, 35, 0.8) !important;
+border-color: rgba(255, 255, 255, 0.2) !important;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .toggle.active {
+background: linear-gradient(180deg, #FFD700 0%, #FFC94C 50%, #FFB347 100%) !important;
+border-color: rgba(212, 160, 58, 0.5) !important;
+}
+
+[data-theme="dark"] .toggle-knob {
+background: linear-gradient(180deg, #FFFFFF 0%, #E0E0E0 100%) !important;
+}
+
+/* Action pills in footer - dark glass */
+[data-theme="dark"] .action-pill {
+background: rgba(40, 40, 60, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.15) !important;
+color: rgba(255, 255, 255, 0.9) !important;
+box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .action-pill svg {
+stroke: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="dark"] .action-pill.active {
+background: rgba(60, 50, 40, 0.7) !important;
+border-color: rgba(212, 160, 58, 0.4) !important;
+color: #FFD700 !important;
+}
+
+/* Divine button - enhanced for dark */
+[data-theme="dark"] .btn-divine {
+color: #3D3028 !important;
+box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    inset 0 -4px 8px rgba(180, 140, 60, 0.3),
+    0 16px 32px rgba(255, 165, 0, 0.45),
+    0 8px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Retry button - dark glass style */
+[data-theme="dark"] .btn-retry {
+background: rgba(40, 40, 60, 0.6) !important;
+border-color: rgba(255, 255, 255, 0.15) !important;
+color: #FFD700 !important;
+}
+
+/* Sacred blessing footer */
+[data-theme="dark"] .blessing-text {
+color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Source info */
+[data-theme="dark"] .source-info {
+color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Toast - dark glass style */
+[data-theme="dark"] .toast {
+background: rgba(40, 40, 60, 0.8) !important;
+border-color: rgba(255, 255, 255, 0.1) !important;
+color: #FFFEF0 !important;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }

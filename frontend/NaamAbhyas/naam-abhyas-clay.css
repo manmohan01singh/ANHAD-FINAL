@@ -1,0 +1,626 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAAM ABHYAS — SCROLL FIX + POPPING PREMIUM CLAYMORPHISM
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── SECTION 0: CRITICAL SCROLL FIX ─── */
+html, body {
+    height: auto !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto !important;
+    position: static !important;
+}
+
+body {
+    background: var(--clay-bg-primary, #F0F0F5) !important;
+    background-attachment: scroll !important;
+}
+
+html.dark-mode body,
+[data-theme="dark"] body,
+[data-theme="saffron"] body,
+[data-theme="gradient"] body,
+[data-theme="gold"] body {
+    background: var(--clay-bg-primary, #1C1C1E) !important;
+}
+
+.app-container {
+    position: relative !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    z-index: 10 !important;
+}
+
+.main-content {
+    flex: 1 !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: auto !important;
+    z-index: 10 !important;
+}
+
+/* Hide distracting background effects */
+.cosmos,
+.sky-container,
+.stars-field,
+.golden-rays,
+.nebula {
+    display: none !important;
+}
+
+/* ─── SECTION 1: CLAYMORPHISM DESIGN TOKENS ─── */
+:root {
+    --clay-bg-primary: #EDEDED;
+    --clay-bg-secondary: #E0E0E4;
+    --clay-page-bg: #E8E8EC;
+
+    --clay-shadow-deep: 0.10;
+    --clay-shadow-mid: 0.08;
+    --clay-shadow-soft: 0.06;
+    --clay-highlight: 0.95;
+    --clay-border-glow: 0.70;
+    --clay-inset-shadow: 0.07;
+
+    --clay-gold-rgb: 212, 148, 58;
+    --clay-teal-rgb: 48, 176, 199;
+    --clay-orange-rgb: 255, 160, 50;
+    --clay-blue-rgb: 0, 122, 255;
+    --clay-purple-rgb: 120, 86, 214;
+
+    --clay-radius-card: 32px;
+    --clay-radius-btn: 9999px;
+    --clay-radius-icon: 22px;
+    --clay-radius-inner: 20px;
+
+    --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode,
+[data-theme="dark"],
+[data-theme="saffron"],
+[data-theme="gradient"],
+[data-theme="gold"] {
+    --clay-bg-primary: #1C1C1E;
+    --clay-bg-secondary: #2C2C2E;
+    --clay-page-bg: #1A1A1C;
+    --clay-shadow-deep: 0.25;
+    --clay-shadow-mid: 0.18;
+    --clay-shadow-soft: 0.15;
+    --clay-highlight: 0.08;
+    --clay-border-glow: 0.15;
+    --clay-inset-shadow: 0.25;
+}
+
+/* ─── SECTION 2: PAGE BACKGROUND ─── */
+body {
+    background: var(--clay-page-bg) !important;
+}
+
+/* ─── SECTION 3: HEADER — CLAY BUTTONS ─── */
+.app-header {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: none !important;
+}
+
+.hdr-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.06),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 5px rgba(255,255,255,0.8) !important;
+    border-radius: 9999px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+html.dark-mode .hdr-btn, [data-theme="dark"] .hdr-btn, [data-theme="saffron"] .hdr-btn, [data-theme="gold"] .hdr-btn,
+[data-theme="dark"] .hdr-btn {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.05),
+        inset 2px 2px 5px rgba(255,255,255,0.05) !important;
+}
+
+.hdr-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.15),
+        inset -4px -4px 10px rgba(255,255,255,0.5),
+        0 0 0 1px rgba(255,255,255,0.3) !important;
+}
+
+/* ─── SECTION 4: HERO SECTION (CLAY TEXT) ─── */
+.hero-section {
+    position: relative !important;
+    z-index: 10 !important;
+    padding-top: 10px !important;
+}
+.hero-title {
+    text-shadow: 0 4px 12px rgba(var(--clay-gold-rgb),0.30) !important;
+}
+.hero-mandala {
+    display: none !important; /* cleaner without it */
+}
+
+/* ─── SECTION 5: CARDS — EXTREME CLAY 3D ─── */
+.glass-card,
+.quick-actions,
+.stats-card,
+.achievements-card {
+    position: relative !important;
+    background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
+    border-radius: var(--clay-radius-card) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,1),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+    transition: all 0.4s var(--clay-spring) !important;
+    overflow: visible !important;
+    margin-bottom: 24px !important;
+}
+
+html.dark-mode .glass-card, [data-theme="dark"] .glass-card, [data-theme="saffron"] .glass-card, [data-theme="gold"] .glass-card,
+html.dark-mode .quick-actions, [data-theme="dark"] .quick-actions, [data-theme="saffron"] .quick-actions, [data-theme="gold"] .quick-actions,
+html.dark-mode .stats-card, [data-theme="dark"] .stats-card, [data-theme="saffron"] .stats-card, [data-theme="gold"] .stats-card,
+html.dark-mode .achievements-card, [data-theme="dark"] .achievements-card, [data-theme="saffron"] .achievements-card, [data-theme="gold"] .achievements-card {
+    background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,0.08),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+}
+
+.glass-card::before,
+.glass-card::after {
+    display: none !important;
+}
+
+.glass-card:hover {
+    transform: translateY(-4px) scale(1.01) !important;
+    box-shadow:
+        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255,255,255,1),
+        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+}
+
+html.dark-mode .glass-card, [data-theme="dark"] .glass-card, [data-theme="saffron"] .glass-card, [data-theme="gold"] .glass-card:hover {
+    box-shadow:
+        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255,255,255,0.08),
+        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+}
+
+/* ─── SECTION 6: ICONS IN CARDS ─── */
+.toggle-icon-wrap,
+.next-icon-wrap,
+.timeline-icon-wrap,
+.ach-icon-wrap,
+.stats-icon-wrap {
+    background: linear-gradient(145deg, #FFF0D8, #FFE0B0) !important;
+    border-radius: var(--clay-radius-icon) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        6px 6px 12px rgba(var(--clay-gold-rgb),0.15),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 6px rgba(255,255,255,1) !important;
+    color: #AF7D14 !important;
+}
+
+html.dark-mode .toggle-icon-wrap, [data-theme="dark"] .toggle-icon-wrap, [data-theme="saffron"] .toggle-icon-wrap, [data-theme="gold"] .toggle-icon-wrap,
+html.dark-mode .next-icon-wrap, [data-theme="dark"] .next-icon-wrap, [data-theme="saffron"] .next-icon-wrap, [data-theme="gold"] .next-icon-wrap,
+html.dark-mode .timeline-icon-wrap, [data-theme="dark"] .timeline-icon-wrap, [data-theme="saffron"] .timeline-icon-wrap, [data-theme="gold"] .timeline-icon-wrap,
+html.dark-mode .ach-icon-wrap, [data-theme="dark"] .ach-icon-wrap, [data-theme="saffron"] .ach-icon-wrap, [data-theme="gold"] .ach-icon-wrap,
+html.dark-mode .stats-icon-wrap, [data-theme="dark"] .stats-icon-wrap, [data-theme="saffron"] .stats-icon-wrap, [data-theme="gold"] .stats-icon-wrap {
+    background: linear-gradient(145deg, #3A2E18, #2A2010) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.35),
+        -6px -6px 12px rgba(255,255,255,0.04),
+        inset 2px 2px 6px rgba(255,255,255,0.06) !important;
+    color: #D4943A !important;
+}
+
+/* ─── SECTION 7: TOGGLE SWITCH ─── */
+.toggle-switch {
+    border-radius: 9999px !important;
+    background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        inset 4px 4px 8px rgba(0,0,0,0.1),
+        inset -4px -4px 8px rgba(255,255,255,0.8) !important;
+}
+html.dark-mode .toggle-switch, [data-theme="dark"] .toggle-switch, [data-theme="saffron"] .toggle-switch, [data-theme="gold"] .toggle-switch {
+    background: linear-gradient(145deg, #1C1C1E, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        inset 4px 4px 8px rgba(0,0,0,0.3),
+        inset -4px -4px 8px rgba(255,255,255,0.03) !important;
+}
+.toggle-slider {
+    border-radius: 9999px !important;
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    box-shadow:
+        2px 2px 6px rgba(0,0,0,0.15),
+        -2px -2px 6px rgba(255,255,255,0.8),
+        inset 1px 1px 3px rgba(255,255,255,1) !important;
+}
+html.dark-mode .toggle-slider, [data-theme="dark"] .toggle-slider, [data-theme="saffron"] .toggle-slider, [data-theme="gold"] .toggle-slider {
+    background: linear-gradient(145deg, #3A3A3C, #4C4C4E) !important;
+    box-shadow:
+        2px 2px 6px rgba(0,0,0,0.4),
+        -2px -2px 6px rgba(255,255,255,0.05),
+        inset 1px 1px 3px rgba(255,255,255,0.1) !important;
+}
+input:checked + .toggle-slider {
+    background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
+    transform: translateX(24px) !important;
+}
+
+/* ─── SECTION 8: INNER ELEMENTS / PROGRESS ─── */
+.session-progress,
+.today-bar,
+.weekly-banner {
+    background: linear-gradient(145deg, #E5E5EA, #F0F0F5) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    padding: 16px !important;
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.06),
+        inset -3px -3px 8px rgba(255,255,255,0.8),
+        0 2px 4px rgba(255,255,255,0.7) !important;
+}
+
+html.dark-mode .session-progress, [data-theme="dark"] .session-progress, [data-theme="saffron"] .session-progress, [data-theme="gold"] .session-progress,
+html.dark-mode .today-bar, [data-theme="dark"] .today-bar, [data-theme="saffron"] .today-bar, [data-theme="gold"] .today-bar,
+html.dark-mode .weekly-banner, [data-theme="dark"] .weekly-banner, [data-theme="saffron"] .weekly-banner, [data-theme="gold"] .weekly-banner {
+    background: linear-gradient(145deg, #1A1A1C, #222224) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        inset 4px 4px 12px rgba(0,0,0,0.20),
+        inset -3px -3px 8px rgba(255,255,255,0.02) !important;
+}
+
+/* ─── SECTION 9: QUICK ACTIONS BUTTONS ─── */
+.qa-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.06),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,1),
+        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s var(--clay-spring) !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.qa-btn.qa-primary {
+    background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
+    color: #3A2000 !important;
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-gold-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,0.8),
+        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
+}
+
+.qa-btn:active {
+    transform: scale(0.94) !important;
+    box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,0.12),
+        inset -6px -6px 12px rgba(255,255,255,0.5) !important;
+}
+
+html.dark-mode .qa-btn, [data-theme="dark"] .qa-btn, [data-theme="saffron"] .qa-btn, [data-theme="gold"] .qa-btn:not(.qa-primary) {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.30),
+        -8px -8px 16px rgba(255,255,255,0.04),
+        inset 4px 4px 8px rgba(255,255,255,0.06),
+        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
+}
+
+html.dark-mode .qa-btn.qa-primary, [data-theme="dark"] .qa-btn.qa-primary, [data-theme="saffron"] .qa-btn.qa-primary, [data-theme="gold"] .qa-btn.qa-primary {
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.40),
+        -8px -8px 16px rgba(255,255,255,0.05),
+        inset 4px 4px 8px rgba(255,255,255,0.05),
+        inset -4px -4px 8px rgba(0,0,0,0.2) !important;
+}
+
+html.dark-mode .qa-btn:not(.qa-primary):active, [data-theme="dark"] .qa-btn:not(.qa-primary):active, [data-theme="saffron"] .qa-btn:not(.qa-primary):active, [data-theme="gold"] .qa-btn:not(.qa-primary):active,
+html.dark-mode .qa-btn.qa-primary:active, [data-theme="dark"] .qa-btn.qa-primary:active, [data-theme="saffron"] .qa-btn.qa-primary:active, [data-theme="gold"] .qa-btn.qa-primary:active {
+    box-shadow:
+        inset 6px 6px 12px rgba(0,0,0,0.40),
+        inset -6px -6px 12px rgba(255,255,255,0.05) !important;
+}
+
+/* ─── SECTION 10: RING / CIRCLE STATS ─── */
+.ring-container {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border-radius: 50% !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.08),
+        -12px -12px 24px rgba(255,255,255,0.90),
+        inset 6px 6px 12px rgba(255,255,255,1),
+        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+}
+
+html.dark-mode .ring-container, [data-theme="dark"] .ring-container, [data-theme="saffron"] .ring-container, [data-theme="gold"] .ring-container {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.30),
+        -12px -12px 24px rgba(255,255,255,0.05),
+        inset 6px 6px 12px rgba(255,255,255,0.08),
+        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* STAT CELLS IN DASHBOARD */
+.stat-cell {
+    background: linear-gradient(145deg, rgba(255,255,255,0.6), rgba(240,240,245,0.6)) !important;
+    border: 1px solid rgba(255,255,255,0.50) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.05),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+}
+
+html.dark-mode .stat-cell, [data-theme="dark"] .stat-cell, [data-theme="saffron"] .stat-cell, [data-theme="gold"] .stat-cell {
+    background: linear-gradient(145deg, rgba(50,50,52,0.6), rgba(38,38,40,0.6)) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.03),
+        inset 2px 2px 4px rgba(255,255,255,0.04) !important;
+}
+
+/* ─── SECTION 11: ACHIEVEMENTS / BADGES ─── */
+.achievement-badge {
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: var(--clay-radius-inner) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.06),
+        -8px -8px 16px rgba(255,255,255,0.85),
+        inset 4px 4px 8px rgba(255,255,255,1),
+        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s var(--clay-spring) !important;
+}
+
+.achievement-badge:not(.locked) {
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-gold-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.85),
+        inset 4px 4px 8px rgba(255,255,255,1) !important;
+}
+
+html.dark-mode .achievement-badge, [data-theme="dark"] .achievement-badge, [data-theme="saffron"] .achievement-badge, [data-theme="gold"] .achievement-badge {
+    background: linear-gradient(145deg, #3A3A3C, #2A2A2C) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    box-shadow:
+        8px 8px 16px rgba(0,0,0,0.30),
+        -8px -8px 16px rgba(255,255,255,0.04),
+        inset 4px 4px 8px rgba(255,255,255,0.05) !important;
+}
+
+/* ─── SECTION 12: BUTTONS GENERAL ─── */
+.refresh-btn, .wisdom-refresh, .view-stats-btn {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.06),
+        -6px -6px 12px rgba(255,255,255,0.85),
+        inset 2px 2px 4px rgba(255,255,255,1),
+        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+    border-radius: var(--clay-radius-btn) !important;
+}
+
+html.dark-mode .refresh-btn, [data-theme="dark"] .refresh-btn, [data-theme="saffron"] .refresh-btn, [data-theme="gold"] .refresh-btn,
+html.dark-mode .wisdom-refresh, [data-theme="dark"] .wisdom-refresh, [data-theme="saffron"] .wisdom-refresh, [data-theme="gold"] .wisdom-refresh,
+html.dark-mode .view-stats-btn, [data-theme="dark"] .view-stats-btn, [data-theme="saffron"] .view-stats-btn, [data-theme="gold"] .view-stats-btn {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        6px 6px 12px rgba(0,0,0,0.30),
+        -6px -6px 12px rgba(255,255,255,0.04),
+        inset 2px 2px 4px rgba(255,255,255,0.06),
+        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
+}
+
+.refresh-btn:active, .wisdom-refresh:active, .view-stats-btn:active {
+    transform: scale(0.92) !important;
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.15),
+        inset -4px -4px 10px rgba(255,255,255,0.5) !important;
+}
+
+html.dark-mode .refresh-btn, [data-theme="dark"] .refresh-btn, [data-theme="saffron"] .refresh-btn, [data-theme="gold"] .refresh-btn:active,
+html.dark-mode .wisdom-refresh, [data-theme="dark"] .wisdom-refresh, [data-theme="saffron"] .wisdom-refresh, [data-theme="gold"] .wisdom-refresh:active,
+html.dark-mode .view-stats-btn, [data-theme="dark"] .view-stats-btn, [data-theme="saffron"] .view-stats-btn, [data-theme="gold"] .view-stats-btn:active {
+    box-shadow:
+        inset 4px 4px 10px rgba(0,0,0,0.30),
+        inset -4px -4px 10px rgba(255,255,255,0.05) !important;
+}
+
+/* ─── SECTION 13: SCHEDULE TIMELINE NODES ─── */
+.timeline-node {
+    background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow:
+        4px 4px 8px rgba(0,0,0,0.05),
+        -4px -4px 8px rgba(255,255,255,0.8),
+        inset 2px 2px 4px rgba(255,255,255,1) !important;
+}
+
+html.dark-mode .timeline-node, [data-theme="dark"] .timeline-node, [data-theme="saffron"] .timeline-node, [data-theme="gold"] .timeline-node {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    box-shadow:
+        4px 4px 8px rgba(0,0,0,0.25),
+        -4px -4px 8px rgba(255,255,255,0.05),
+        inset 2px 2px 4px rgba(255,255,255,0.05) !important;
+}
+
+.timeline-item.completed .timeline-node {
+    background: linear-gradient(145deg, #60D880, #34C759) !important;
+    box-shadow:
+        4px 4px 8px rgba(var(--clay-green-rgb),0.20),
+        -4px -4px 8px rgba(255,255,255,0.80),
+        inset 2px 2px 4px rgba(255,255,255,0.8) !important;
+}
+
+html.dark-mode .timeline-item, [data-theme="dark"] .timeline-item, [data-theme="saffron"] .timeline-item, [data-theme="gold"] .timeline-item.completed .timeline-node {
+    background: linear-gradient(145deg, rgba(var(--clay-green-rgb),0.8), rgba(var(--clay-green-rgb),0.5)) !important;
+    box-shadow:
+        4px 4px 8px rgba(0,0,0,0.3),
+        -4px -4px 8px rgba(255,255,255,0.05),
+        inset 2px 2px 4px rgba(255,255,255,0.1) !important;
+}
+
+/* TOAST CLAY */
+.toast {
+    background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    border-radius: 20px !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.08),
+        -12px -12px 24px rgba(255,255,255,0.9),
+        inset 6px 6px 12px rgba(255,255,255,1),
+        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+}
+
+html.dark-mode .toast, [data-theme="dark"] .toast, [data-theme="saffron"] .toast, [data-theme="gold"] .toast {
+    background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        12px 12px 24px rgba(0,0,0,0.40),
+        -12px -12px 24px rgba(255,255,255,0.03),
+        inset 6px 6px 12px rgba(255,255,255,0.06),
+        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
+}
+
+/* ─── SECTION 14: SETTINGS MODAL & OVERLAYS ─── */
+.settings-modal-sheet, .alert-content, .completion-content, .welcome-content {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%) !important;
+    border-top-left-radius: 32px !important;
+    border-top-right-radius: 32px !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow:
+        0 -16px 32px rgba(0,0,0,0.06),
+        0 8px 24px rgba(255,255,255,1),
+        inset 4px 4px 16px rgba(255,255,255,1),
+        inset -4px -4px 16px rgba(0,0,0,0.03) !important;
+}
+
+html.dark-mode .settings-modal-sheet, [data-theme="dark"] .settings-modal-sheet, [data-theme="saffron"] .settings-modal-sheet, [data-theme="gold"] .settings-modal-sheet,
+html.dark-mode .alert-content, [data-theme="dark"] .alert-content, [data-theme="saffron"] .alert-content, [data-theme="gold"] .alert-content,
+html.dark-mode .completion-content, [data-theme="dark"] .completion-content, [data-theme="saffron"] .completion-content, [data-theme="gold"] .completion-content,
+html.dark-mode .welcome-content, [data-theme="dark"] .welcome-content, [data-theme="saffron"] .welcome-content, [data-theme="gold"] .welcome-content {
+    background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    box-shadow:
+        0 -16px 32px rgba(0,0,0,0.35),
+        0 8px 24px rgba(255,255,255,0.03),
+        inset 4px 4px 16px rgba(255,255,255,0.08),
+        inset -4px -4px 16px rgba(0,0,0,0.15) !important;
+}
+
+.setting-group {
+    background: linear-gradient(145deg, rgba(255,255,255,0.6), rgba(240,240,245,0.6)) !important;
+    border: 1px solid rgba(255,255,255,0.50) !important;
+    border-radius: 16px !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.05),
+        -4px -4px 10px rgba(255,255,255,0.8),
+        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+}
+
+html.dark-mode .setting-group, [data-theme="dark"] .setting-group, [data-theme="saffron"] .setting-group, [data-theme="gold"] .setting-group {
+    background: linear-gradient(145deg, rgba(50,50,52,0.6), rgba(38,38,40,0.6)) !important;
+    border-color: rgba(255,255,255,0.05) !important;
+    box-shadow:
+        4px 4px 10px rgba(0,0,0,0.25),
+        -4px -4px 10px rgba(255,255,255,0.03),
+        inset 2px 2px 4px rgba(255,255,255,0.04) !important;
+}
+
+.welcome-start-btn, .alert-btn, .continue-btn {
+    background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
+    border: 1px solid rgba(255,255,255,0.6) !important;
+    border-radius: var(--clay-radius-btn) !important;
+    color: #3A2000 !important;
+    box-shadow:
+        8px 8px 16px rgba(var(--clay-orange-rgb),0.20),
+        -8px -8px 16px rgba(255,255,255,0.80),
+        inset 4px 4px 8px rgba(255,255,255,0.8),
+        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
+    transition: all 0.3s var(--clay-spring) !important;
+}
+
+.welcome-start-btn:active, .alert-btn:active, .continue-btn:active {
+    transform: scale(0.94) !important;
+    box-shadow:
+        inset 8px 8px 16px rgba(0,0,0,0.15),
+        inset -8px -8px 16px rgba(255,255,255,0.5) !important;
+}
+
+/* ─── SECTION 15: TEXT VISIBILITY IN LIGHT MODE ─── */
+.hero-title, .hero-tagline, .toggle-label, .next-title, .session-time-display, 
+.countdown-value, .timeline-title, .wisdom-quote, .stats-title, 
+.ach-title, .qa-title, .ring-value, .ring-pct, .today-bar-header, .stat-number, .weekly-val, .sheet-title {
+    color: var(--text-primary) !important;
+}
+
+.next-subtitle, .toggle-desc, .countdown-label, .progress-info, .timeline-subtitle, 
+.wisdom-translation, .wisdom-source, .stats-subtitle, .qa-sub, .ring-label, .stat-name, 
+.weekly-lbl, .setting-desc, .sheet-desc, .schedule-empty {
+    color: var(--text-secondary) !important;
+}
+
+/* Dark mode text color overrides for claymorphism visibility */
+html.dark-mode, [data-theme="dark"], [data-theme="saffron"], [data-theme="gold"] {
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255,255,255,0.7);
+}
+
+html.dark-mode .qa-title, [data-theme="dark"] .qa-title, [data-theme="saffron"] .qa-title, [data-theme="gold"] .qa-title {
+    color: #FFFFFF !important;
+}
+
+html.dark-mode .qa-sub, [data-theme="dark"] .qa-sub, [data-theme="saffron"] .qa-sub, [data-theme="gold"] .qa-sub {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+.card-glow, .icon-glow, .pulse-ring, .toggle-bg-glow { 
+    display: none !important; 
+}

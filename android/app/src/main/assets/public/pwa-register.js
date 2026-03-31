@@ -35,11 +35,49 @@ class PWAManager {
     return false;
   }
 
+  /**
+   * Lock screen orientation to portrait for mobile devices
+   */
+  async lockOrientation() {
+    // Only attempt on mobile/tablet sized screens
+    if (window.innerWidth > 1024) {
+      return; // Desktop — don't lock
+    }
+
+    // Method 1: Screen Orientation API (Chrome/Android)
+    if ('screen' in window && 'orientation' in window.screen && 'lock' in window.screen.orientation) {
+      try {
+        await window.screen.orientation.lock('portrait-primary');
+        console.log('🔒 Screen orientation locked to portrait');
+        return;
+      } catch (err) {
+        console.warn('Screen orientation lock failed:', err.message);
+      }
+    }
+
+    // Method 2: Capacitor ScreenOrientation plugin (if in native app)
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
+      try {
+        await window.Capacitor.Plugins.ScreenOrientation.lock({
+          orientation: 'portrait'
+        });
+        console.log('🔒 Capacitor orientation locked to portrait');
+      } catch (err) {
+        console.warn('Capacitor orientation lock failed:', err.message);
+      }
+    }
+  }
+
   async init() {
     if (!('serviceWorker' in navigator)) {
       console.log('Service Worker not supported');
       return;
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // SCREEN ORIENTATION LOCK (Portrait Only)
+    // ═══════════════════════════════════════════════════════════════════════
+    this.lockOrientation();
 
     try {
       this.registration = await navigator.serviceWorker.register('./sw.js', {

@@ -515,7 +515,7 @@
     };
 
     // ══════════════════════════════════════════════════════════════════════════
-    // CSS STYLES FOR iOS INSTALL PROMPT
+    // CSS STYLES FOR iOS INSTALL PROMPT - EXTREME CLAYMORPHISM EDITION
     // ══════════════════════════════════════════════════════════════════════════
     const injectStyles = function () {
         if (document.getElementById('ios-android-notification-styles')) return;
@@ -523,13 +523,18 @@
         const style = document.createElement('style');
         style.id = 'ios-android-notification-styles';
         style.textContent = `
+            /* ============================================
+               EXTREME CLAYMORPHISM - iOS INSTALL PROMPT
+               Soft 3D, tactile, glossy clay aesthetic
+               ============================================ */
+
             .ios-install-prompt {
                 position: fixed;
                 inset: 0;
                 z-index: 999999;
                 opacity: 0;
                 visibility: hidden;
-                transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+                transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
 
             .ios-install-prompt.visible {
@@ -540,52 +545,85 @@
             .ios-prompt-backdrop {
                 position: absolute;
                 inset: 0;
-                background: rgba(0, 0, 0, 0.6);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
+                background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
             }
 
+            /* ============================================
+               MAIN CLAY SHEET - The centerpiece
+               ============================================ */
             .ios-prompt-sheet {
                 position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(30, 30, 30, 0.75);
-                backdrop-filter: blur(30px) saturate(1.5);
-                -webkit-backdrop-filter: blur(30px) saturate(1.5);
-                border-radius: 28px 28px 0 0;
-                border-top: 1px solid rgba(255, 255, 255, 0.15);
-                padding: 24px;
-                padding-bottom: max(24px, env(safe-area-inset-bottom));
-                transform: translateY(100%);
-                transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1.15);
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+                bottom: 20px;
+                left: 16px;
+                right: 16px;
+                background: linear-gradient(145deg, 
+                    rgba(255,255,255,0.15) 0%, 
+                    rgba(255,255,255,0.08) 50%,
+                    rgba(0,0,0,0.1) 100%);
+                backdrop-filter: blur(40px) saturate(2);
+                -webkit-backdrop-filter: blur(40px) saturate(2);
+                border-radius: 32px;
+                border: 1px solid rgba(255,255,255,0.25);
+                padding: 28px 24px 32px;
+                padding-bottom: max(32px, env(safe-area-inset-bottom));
+                transform: translateY(calc(100% + 40px));
+                transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                box-shadow: 
+                    /* Outer soft glow */
+                    0 20px 60px rgba(0,0,0,0.4),
+                    0 8px 24px rgba(0,0,0,0.3),
+                    /* Top highlight rim */
+                    inset 0 2px 1px rgba(255,255,255,0.4),
+                    /* Left highlight */
+                    inset 2px 0 2px rgba(255,255,255,0.15),
+                    /* Inner depth shadow */
+                    inset 0 -2px 2px rgba(0,0,0,0.1),
+                    /* Subtle ambient */
+                    0 0 0 1px rgba(255,255,255,0.1);
             }
 
             .ios-install-prompt.visible .ios-prompt-sheet {
                 transform: translateY(0);
             }
 
+            /* ============================================
+               HEADER SECTION - App Icon Clay Style
+               ============================================ */
             .ios-prompt-header {
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                margin-bottom: 20px;
+                gap: 14px;
+                margin-bottom: 24px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
             }
 
             .ios-prompt-icon {
-                width: 60px;
-                height: 60px;
-                border-radius: 14px;
+                width: 64px;
+                height: 64px;
+                border-radius: 18px;
                 overflow: hidden;
-                background: transparent;
+                background: linear-gradient(145deg, #f0f0f0, #d0d0d0);
                 flex-shrink: 0;
+                /* Extreme claymorphism on icon container */
+                box-shadow:
+                    /* Outer soft lift */
+                    0 8px 20px rgba(0,0,0,0.25),
+                    0 4px 8px rgba(0,0,0,0.15),
+                    /* Top-left highlight */
+                    inset 2px 2px 4px rgba(255,255,255,0.9),
+                    /* Bottom-right shadow */
+                    inset -2px -2px 4px rgba(0,0,0,0.1);
+                padding: 2px;
             }
 
             .ios-prompt-icon img {
                 width: 100%;
                 height: 100%;
                 object-fit: contain;
+                border-radius: 16px;
             }
 
             .ios-prompt-title {
@@ -593,54 +631,93 @@
             }
 
             .ios-prompt-title h3 {
-                font-size: 20px;
-                font-weight: 700;
+                font-size: 22px;
+                font-weight: 800;
                 color: #fff;
-                margin: 0 0 4px;
+                margin: 0 0 6px;
                 letter-spacing: -0.5px;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.3);
             }
 
             .ios-prompt-title p {
                 font-size: 13px;
-                color: rgba(255,255,255,0.6);
+                color: rgba(255,255,255,0.7);
                 margin: 0;
+                font-weight: 500;
             }
 
+            /* Close button - clay bubble style */
             .ios-prompt-close {
-                width: 30px;
-                height: 30px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
-                background: rgba(255,255,255,0.1);
-                border: none;
-                color: rgba(255,255,255,0.6);
+                background: linear-gradient(145deg, 
+                    rgba(255,255,255,0.2) 0%, 
+                    rgba(255,255,255,0.1) 50%,
+                    rgba(0,0,0,0.05) 100%);
+                border: 1px solid rgba(255,255,255,0.2);
+                color: rgba(255,255,255,0.8);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                box-shadow:
+                    0 4px 12px rgba(0,0,0,0.2),
+                    inset 0 1px 1px rgba(255,255,255,0.4),
+                    inset 0 -1px 1px rgba(0,0,0,0.1);
             }
 
+            .ios-prompt-close:hover {
+                background: linear-gradient(145deg, 
+                    rgba(255,255,255,0.3) 0%, 
+                    rgba(255,255,255,0.15) 50%);
+                transform: scale(1.1);
+            }
+
+            .ios-prompt-close:active {
+                transform: scale(0.95);
+                box-shadow:
+                    0 2px 6px rgba(0,0,0,0.2),
+                    inset 0 2px 4px rgba(0,0,0,0.15),
+                    inset 0 -1px 1px rgba(255,255,255,0.1);
+            }
+
+            /* ============================================
+               STEPS CONTAINER - Clay Card
+               ============================================ */
             .ios-prompt-steps {
-                background: rgba(255,255,255,0.06);
-                border-radius: 20px;
-                padding: 16px 20px;
-                margin-bottom: 20px;
-                border: 1px solid rgba(255,255,255,0.08);
-                box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+                background: linear-gradient(145deg,
+                    rgba(255,255,255,0.12) 0%,
+                    rgba(255,255,255,0.06) 50%,
+                    rgba(0,0,0,0.05) 100%);
+                border-radius: 24px;
+                padding: 20px;
+                margin-bottom: 24px;
+                border: 1px solid rgba(255,255,255,0.15);
+                box-shadow:
+                    /* Outer depth */
+                    0 12px 32px rgba(0,0,0,0.2),
+                    0 4px 12px rgba(0,0,0,0.15),
+                    /* Inner highlight top */
+                    inset 0 2px 2px rgba(255,255,255,0.2),
+                    /* Inner shadow bottom */
+                    inset 0 -2px 2px rgba(0,0,0,0.1);
             }
 
             @keyframes slideInStep {
-                from { opacity: 0; transform: translateX(-10px); }
-                to { opacity: 1; transform: translateX(0); }
+                from { opacity: 0; transform: translateX(-20px) scale(0.95); }
+                to { opacity: 1; transform: translateX(0) scale(1); }
             }
 
             .ios-step {
                 display: flex;
                 align-items: center;
                 gap: 16px;
-                padding: 14px 0;
+                padding: 16px 0;
                 border-bottom: 1px solid rgba(255,255,255,0.08);
                 opacity: 0;
-                animation: slideInStep 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+                animation: slideInStep 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             }
 
             .ios-step:last-child {
@@ -652,19 +729,31 @@
                 padding-top: 0;
             }
 
+            /* Step numbers - clay bubbles */
             .ios-step-num {
-                width: 32px;
-                height: 32px;
+                width: 38px;
+                height: 38px;
                 border-radius: 50%;
-                background: linear-gradient(135deg, #FFD700, #D4AF37);
-                color: #000;
-                font-size: 15px;
-                font-weight: 800;
+                background: linear-gradient(145deg, #FFD93D, #FFC93D, #E6B800);
+                color: #2a2a2a;
+                font-size: 16px;
+                font-weight: 900;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+                /* Extreme clay effect */
+                box-shadow:
+                    /* Outer lift */
+                    0 6px 16px rgba(255, 193, 7, 0.4),
+                    0 3px 8px rgba(0,0,0,0.2),
+                    /* Top highlight */
+                    inset 0 2px 3px rgba(255,255,255,0.8),
+                    /* Left highlight */
+                    inset 2px 0 2px rgba(255,255,255,0.4),
+                    /* Bottom shadow */
+                    inset 0 -2px 2px rgba(0,0,0,0.15);
+                text-shadow: 0 1px 0 rgba(255,255,255,0.5);
             }
 
             .ios-step-content {
@@ -679,75 +768,144 @@
                 font-size: 15px;
                 font-weight: 500;
                 color: rgba(255,255,255,0.95);
+                line-height: 1.4;
             }
 
             .ios-step-content strong {
-                color: #FFD700;
+                color: #FFD93D;
                 font-weight: 700;
+                text-shadow: 0 2px 4px rgba(255,193,7,0.3);
             }
 
+            /* Icon containers - clay style */
             .ios-share-icon, .ios-add-icon {
-                width: 32px;
-                height: 32px;
+                width: 40px;
+                height: 40px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #007AFF;
+                color: #4FC3F7;
+                background: linear-gradient(145deg,
+                    rgba(79,195,247,0.15) 0%,
+                    rgba(79,195,247,0.08) 100%);
+                border-radius: 12px;
+                box-shadow:
+                    0 4px 12px rgba(0,0,0,0.15),
+                    inset 0 1px 1px rgba(255,255,255,0.3),
+                    inset 0 -1px 1px rgba(0,0,0,0.1);
             }
 
+            /* ============================================
+               BENEFITS - Clay Pills
+               ============================================ */
             .ios-prompt-benefits {
                 display: flex;
-                gap: 8px;
+                gap: 10px;
                 flex-wrap: wrap;
-                margin-bottom: 16px;
+                margin-bottom: 24px;
+                justify-content: center;
             }
 
             .ios-benefit {
                 display: flex;
                 align-items: center;
-                gap: 6px;
-                padding: 8px 12px;
-                background: rgba(247, 198, 52, 0.1);
-                border-radius: 20px;
-                font-size: 12px;
-                color: rgba(255,255,255,0.8);
+                gap: 8px;
+                padding: 10px 16px;
+                background: linear-gradient(145deg,
+                    rgba(255,217,61,0.15) 0%,
+                    rgba(255,193,7,0.08) 100%);
+                border-radius: 24px;
+                font-size: 13px;
+                font-weight: 600;
+                color: rgba(255,255,255,0.9);
+                border: 1px solid rgba(255,217,61,0.2);
+                box-shadow:
+                    0 4px 12px rgba(0,0,0,0.15),
+                    inset 0 1px 1px rgba(255,255,255,0.25),
+                    inset 0 -1px 1px rgba(0,0,0,0.05);
             }
 
             .ios-benefit-icon {
-                font-size: 14px;
+                font-size: 16px;
+                filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
             }
 
+            /* ============================================
+               DISMISS BUTTON - Clay Button
+               ============================================ */
             .ios-prompt-dismiss {
                 width: 100%;
-                padding: 18px;
-                background: rgba(255,255,255,0.08);
-                border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 16px;
-                color: rgba(255,255,255,0.9);
+                padding: 18px 24px;
+                background: linear-gradient(145deg,
+                    rgba(255,255,255,0.15) 0%,
+                    rgba(255,255,255,0.08) 50%,
+                    rgba(0,0,0,0.05) 100%);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 20px;
+                color: rgba(255,255,255,0.95);
                 font-size: 17px;
                 font-weight: 600;
                 cursor: pointer;
-                transition: all 0.2s ease;
-            }
-            .ios-prompt-dismiss:active {
-                background: rgba(255,255,255,0.15);
-                transform: scale(0.98);
+                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                box-shadow:
+                    /* Outer soft lift */
+                    0 8px 24px rgba(0,0,0,0.2),
+                    0 4px 8px rgba(0,0,0,0.15),
+                    /* Inner top highlight */
+                    inset 0 2px 2px rgba(255,255,255,0.25),
+                    /* Inner bottom shadow */
+                    inset 0 -2px 2px rgba(0,0,0,0.1);
             }
 
-            /* Notification Permission Banner */
+            .ios-prompt-dismiss:hover {
+                background: linear-gradient(145deg,
+                    rgba(255,255,255,0.2) 0%,
+                    rgba(255,255,255,0.12) 50%);
+                transform: translateY(-2px);
+                box-shadow:
+                    0 12px 28px rgba(0,0,0,0.25),
+                    0 6px 12px rgba(0,0,0,0.2),
+                    inset 0 2px 2px rgba(255,255,255,0.3),
+                    inset 0 -2px 2px rgba(0,0,0,0.1);
+            }
+
+            .ios-prompt-dismiss:active {
+                transform: translateY(1px) scale(0.98);
+                background: linear-gradient(145deg,
+                    rgba(255,255,255,0.1) 0%,
+                    rgba(255,255,255,0.05) 50%);
+                box-shadow:
+                    /* Pressed in shadow */
+                    0 4px 12px rgba(0,0,0,0.15),
+                    inset 0 3px 6px rgba(0,0,0,0.2),
+                    inset 0 -1px 1px rgba(255,255,255,0.1);
+            }
+
+            /* ============================================
+               NOTIFICATION BANNER - Clay Style
+               ============================================ */
             .notification-permission-banner {
                 position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 16px;
-                padding-bottom: max(16px, env(safe-area-inset-bottom));
-                background: linear-gradient(180deg, rgba(247, 198, 52, 0.95), rgba(219, 165, 32, 0.95));
+                bottom: 20px;
+                left: 16px;
+                right: 16px;
+                padding: 20px;
+                padding-bottom: max(20px, env(safe-area-inset-bottom));
+                background: linear-gradient(145deg,
+                    rgba(255,217,61,0.95) 0%,
+                    rgba(255,193,7,0.95) 100%);
                 backdrop-filter: blur(20px);
                 -webkit-backdrop-filter: blur(20px);
                 z-index: 99999;
-                transform: translateY(100%);
-                transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+                border-radius: 24px;
+                transform: translateY(calc(100% + 40px));
+                transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                box-shadow:
+                    0 20px 50px rgba(255,193,7,0.4),
+                    0 8px 20px rgba(0,0,0,0.2),
+                    inset 0 2px 2px rgba(255,255,255,0.5),
+                    inset 0 -2px 2px rgba(0,0,0,0.1);
+                border: 1px solid rgba(255,255,255,0.3);
             }
 
             .notification-permission-banner.visible {
@@ -757,13 +915,14 @@
             .notification-banner-content {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 14px;
                 max-width: 600px;
                 margin: 0 auto;
             }
 
             .notification-banner-icon {
-                font-size: 28px;
+                font-size: 32px;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             }
 
             .notification-banner-text {
@@ -771,41 +930,64 @@
             }
 
             .notification-banner-text h4 {
-                margin: 0 0 2px;
-                font-size: 16px;
-                font-weight: 600;
-                color: #000;
+                margin: 0 0 4px;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2a2a2a;
             }
 
             .notification-banner-text p {
                 margin: 0;
-                font-size: 13px;
+                font-size: 14px;
                 color: rgba(0,0,0,0.7);
+                font-weight: 500;
             }
 
             .notification-banner-btn {
-                padding: 10px 20px;
-                background: #000;
+                padding: 12px 22px;
+                background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
                 border: none;
                 border-radius: 20px;
-                color: #fff;
+                color: #FFD93D;
                 font-size: 14px;
-                font-weight: 600;
+                font-weight: 700;
                 cursor: pointer;
+                box-shadow:
+                    0 6px 16px rgba(0,0,0,0.3),
+                    inset 0 1px 1px rgba(255,255,255,0.1);
+                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .notification-banner-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            }
+
+            .notification-banner-btn:active {
+                transform: translateY(1px) scale(0.98);
             }
 
             .notification-banner-close {
-                width: 28px;
-                height: 28px;
+                width: 32px;
+                height: 32px;
                 background: rgba(0,0,0,0.1);
                 border: none;
                 border-radius: 50%;
-                color: rgba(0,0,0,0.5);
-                font-size: 18px;
+                color: rgba(0,0,0,0.6);
+                font-size: 20px;
+                font-weight: 300;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                box-shadow:
+                    inset 0 1px 2px rgba(0,0,0,0.1),
+                    0 2px 4px rgba(255,255,255,0.5);
+                transition: all 0.2s ease;
+            }
+
+            .notification-banner-close:hover {
+                background: rgba(0,0,0,0.15);
             }
         `;
         document.head.appendChild(style);

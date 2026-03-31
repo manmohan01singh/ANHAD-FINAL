@@ -67,7 +67,7 @@
     const defaultGoals = {
         readPages: { target: 5, current: 0, enabled: true },
         listenMinutes: { target: 30, current: 0, enabled: true },
-        completeNitnem: { target: 1, current: 0, enabled: true },
+        completeNitnem: { target: 1, current: 0, enabled: true }, // 1 = full day complete (all 11 banis)
         naamAbhyas: { target: 1, current: 0, enabled: false }
     };
 

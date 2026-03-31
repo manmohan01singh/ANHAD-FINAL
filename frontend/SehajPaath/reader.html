@@ -57,6 +57,13 @@
                 </div>
                 
                 <div class="header-actions">
+                    <button class="header-btn" id="downloadBtn" aria-label="Download Angs">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </button>
                     <button class="header-btn" id="searchBtn" aria-label="Search">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"/>
@@ -385,8 +392,35 @@
     <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Download Progress Modal -->
+    <div class="download-modal" id="downloadModal">
+        <div class="download-modal-backdrop"></div>
+        <div class="download-modal-content">
+            <div class="download-modal-header">
+                <h3>📥 Download Angs</h3>
+                <button class="close-download-btn" id="closeDownloadBtn">✕</button>
+            </div>
+            <div class="download-modal-body">
+                <p class="download-info">Download 5 Angs for offline reading (current + next 4)</p>
+                <div class="download-progress-container" id="downloadProgressContainer" style="display: none;">
+                    <div class="download-progress-bar">
+                        <div class="download-progress-fill" id="downloadProgressFill"></div>
+                    </div>
+                    <span class="download-progress-text" id="downloadProgressText">0/5</span>
+                </div>
+                <div class="download-status" id="downloadStatus"></div>
+                <button class="download-start-btn" id="downloadStartBtn">Download 5 Angs</button>
+            </div>
+            <div class="download-modal-footer">
+                <span class="cached-count" id="cachedCount">Cached: 0 Angs</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="../lib/user-stats.js"></script>
     <script src="services/storage-service.js"></script>
+    <script src="components/offline-manager.js"></script>
     <script src="services/banidb-api.js"></script>
     <script src="services/cache-service.js"></script>
     <script src="utils/text-formatter.js"></script>

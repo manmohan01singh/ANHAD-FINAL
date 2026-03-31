@@ -308,11 +308,14 @@ class NitnemTrackerThemeEngine {
     constructor() {
         // ONLY light and dark themes as requested
         this.themes = ['light', 'dark'];
-        this.currentTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || 'light';
-        // If stored theme is no longer valid, default to light
-        if (!this.themes.includes(this.currentTheme)) {
-            this.currentTheme = 'light';
-        }
+        
+        // Sync with global theme first
+        const globalTheme = localStorage.getItem('anhad_theme') || 'light';
+        this.currentTheme = this.themes.includes(globalTheme) ? globalTheme : 'light';
+        
+        // Save synced theme to Nitnem storage
+        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, this.currentTheme);
+        
         this.init();
     }
 
@@ -320,12 +323,35 @@ class NitnemTrackerThemeEngine {
         // Apply initial theme
         this.applyTheme(this.currentTheme);
 
+        // Listen for global theme changes
+        this.setupGlobalThemeSync();
+
         // Listen for DOM content loaded to setup UI
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.renderThemeSelector());
         } else {
             this.renderThemeSelector();
         }
+    }
+
+    setupGlobalThemeSync() {
+        // Listen for storage changes (theme changes from other tabs/pages)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                const newTheme = this.themes.includes(e.newValue) ? e.newValue : 'light';
+                this.applyTheme(newTheme);
+                console.log('🎨 Nitnem synced with global theme:', newTheme);
+            }
+        });
+
+        // Listen for custom theme change events
+        window.addEventListener('themechange', (e) => {
+            if (e.detail?.theme) {
+                const newTheme = this.themes.includes(e.detail.theme) ? e.detail.theme : 'light';
+                this.applyTheme(newTheme);
+                console.log('🎨 Nitnem theme changed via event:', newTheme);
+            }
+        });
     }
 
     applyTheme(themeName) {
@@ -344,7 +370,9 @@ class NitnemTrackerThemeEngine {
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(`theme-${themeName}`);
 
+        // Save to both local and global storage
         localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, themeName);
+        localStorage.setItem('anhad_theme', themeName);
 
         // Update UI if it exists
         this.updateActiveThemeButton();
@@ -975,6 +1003,10 @@ const ModalManager = {
      * Initialize modal system
      */
     init() {
+        // Safety: Clear any stuck overflow from previous errors
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+
         // Close modal on backdrop click
         document.querySelectorAll('[data-close-modal]').forEach(el => {
             el.addEventListener('click', (e) => {
@@ -1055,14 +1087,23 @@ const ModalManager = {
 
         if (this.activeModals.includes(modalId)) return; // Prevent duplicates
 
-        HapticManager.light();
+        try {
+            HapticManager.light();
+        } catch (e) {
+            // Haptic not available, continue
+        }
+
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
         this.activeModals.push(modalId);
 
         // Focus first focusable element
-        const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-        focusable?.focus();
+        try {
+            const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            focusable?.focus();
+        } catch (e) {
+            // Focus error, continue
+        }
 
         // Dispatch event
         modal.dispatchEvent(new CustomEvent('modalOpened', { detail: { modalId } }));
@@ -2376,6 +2417,16 @@ const NitnemManager = {
         this.renderBaniList(period);
         this.updateProgress();
         this.updateCounts();
+        
+        // Dispatch event for dashboard updates
+        window.dispatchEvent(new CustomEvent('nitnemUpdated', {
+            detail: {
+                period,
+                baniId,
+                completed: this.completedToday,
+                selected: this.selectedBanis
+            }
+        }));
 
         // Check if all complete
         this.checkAllComplete();
@@ -2461,6 +2512,15 @@ const NitnemManager = {
         this.updateProgress();
         this.updateCounts();
         this.checkAllComplete();
+        
+        // Dispatch event for dashboard updates
+        window.dispatchEvent(new CustomEvent('nitnemUpdated', {
+            detail: {
+                period: this.activePeriod,
+                completed: this.completedToday,
+                selected: this.selectedBanis
+            }
+        }));
 
         if (btn) btn.disabled = false;
     },
@@ -2635,6 +2695,12 @@ const NitnemManager = {
             StreakManager.checkAndUpdate();
             AchievementManager.checkNitnemComplete();
             CelebrationManager.show('nitnemComplete');
+            
+            // Sync to AnhadStats - mark full Nitnem day as complete
+            if (window.AnhadStats) {
+                window.AnhadStats.addNitnemCompleted(1);
+                console.log('✅ Full Nitnem completed - synced to dashboard');
+            }
         }
     },
 
@@ -7259,12 +7325,12 @@ const AINotificationSystem = {
         }
 
         // Evening Rehras reminder (5-6 PM)
-        if (hour >= 17 && hour < 18 && todayData.rehras.length === 0) {
+        if (hour >= 17 && hour < 18 && (todayData.rehras?.length || 0) === 0) {
             this.sendReminder('rehras', 'Time for Rehras Sahib. Complete your evening prayers 🙏');
         }
 
         // Night Sohila reminder (9-10 PM)
-        if (hour >= 21 && hour < 22 && todayData.sohila.length === 0) {
+        if (hour >= 21 && hour < 22 && (todayData.sohila?.length || 0) === 0) {
             this.sendReminder('sohila', 'Don\'t forget Sohila before sleep. Sweet dreams await 🌙');
         }
 

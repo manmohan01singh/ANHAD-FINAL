@@ -16,15 +16,55 @@
   const HAPTIC_LONG  = [8, 30, 8]; /* on-the-hour tick                */
   const STORAGE_KEY  = 'anhad_cine_v5';
 
-  /* ─── AUDIO LIBRARY ──────────────────────────────────────────────── */
+  /* ─── AUDIO LIBRARY ─────────────────────────────── */
+  // Detect correct audio path based on current location
+  const AUDIO_BASE = (() => {
+    const loc = window.location;
+    
+    // For Capacitor/Android webview - use relative path
+    if (loc.protocol === 'file:' || (window.Capacitor && window.Capacitor.isNative)) {
+      return '../Audio/';
+    }
+    
+    // For localhost servers - use root-relative
+    if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
+      return '/Audio/';
+    }
+    
+    // For production web - check if we're in reminders subdir
+    if (loc.pathname.includes('/reminders/')) {
+      return '../Audio/';
+    }
+    
+    return '/Audio/';
+  })();
+  
+  // Also try alternate base for Android webview
+  const AUDIO_BASE_ALT = './Audio/';
+  
   const SOUNDS = [
-    { id:'a1', file:'../Audio/audio1.mp3',  name:'Waheguru Simran', desc:'Soft melodic simran',    icon:'🕉️' },
-    { id:'a2', file:'../Audio/audio2.mp3',  name:'Amritvela Dhun',  desc:'Peaceful morning raga', icon:'🌅' },
-    { id:'a3', file:'../Audio/audio3.mpeg', name:'Rehras Sahib',    desc:'Evening prayer melody', icon:'🙏' },
-    { id:'a4', file:'../Audio/audio4.mpeg', name:'Kirtan Sohila',   desc:'Night prayer harmony',  icon:'🌙' },
-    { id:'a5', file:'../Audio/audio5.mpeg', name:'Asa Di Var',      desc:'Morning congregation',  icon:'☀️' },
-    { id:'a6', file:'../Audio/audio6.mpeg', name:'Anand Sahib',     desc:'Blissful melody',       icon:'✨' },
+    // Live Streams
+    { id:'live-darbar',     file:null, name:'Live Darbar Sahib',    desc:'Sri Harmandir Sahib Ji • 24/7', icon:'🕌', type:'live', badge:'LIVE' },
+    { id:'live-amritvela',  file:null, name:'Live Amritvela Kirtan', desc:'Curated Smagam Tracks',         icon:'🌅', type:'live', badge:'LIVE' },
+    // Regular Audio Files
+    { id:'a1', file: AUDIO_BASE + 'audio1.mp3',  fileAlt: AUDIO_BASE_ALT + 'audio1.mp3',  name:'Waheguru Simran', desc:'Soft melodic simran',    icon:'🕉️', type:'audio' },
+    { id:'a2', file: AUDIO_BASE + 'audio2.mp3',  fileAlt: AUDIO_BASE_ALT + 'audio2.mp3',  name:'Amritvela Dhun',  desc:'Peaceful morning raga', icon:'🌅', type:'audio' },
+    { id:'a3', file: AUDIO_BASE + 'audio3.mpeg', fileAlt: AUDIO_BASE_ALT + 'audio3.mpeg', name:'Rehras Sahib',    desc:'Evening prayer melody', icon:'🙏', type:'audio' },
+    { id:'a4', file: AUDIO_BASE + 'audio4.mpeg', fileAlt: AUDIO_BASE_ALT + 'audio4.mpeg', name:'Kirtan Sohila',   desc:'Night prayer harmony',  icon:'🌙', type:'audio' },
+    { id:'a5', file: AUDIO_BASE + 'audio5.mpeg', fileAlt: AUDIO_BASE_ALT + 'audio5.mpeg', name:'Asa Di Var',      desc:'Morning congregation',  icon:'☀️', type:'audio' },
+    { id:'a6', file: AUDIO_BASE + 'audio6.mpeg', fileAlt: AUDIO_BASE_ALT + 'audio6.mpeg', name:'Anand Sahib',     desc:'Blissful melody',       icon:'✨', type:'audio' },
   ];
+  
+  // Helper to get working audio path with fallback
+  function getAudioPath(sound) {
+    if (!sound.file) return null;
+    // In Android webview, try alternate path if primary fails
+    if (window.Capacitor || window.location.protocol === 'file:') {
+      // Return the path - actual fallback happens in play
+      return sound.file;
+    }
+    return sound.file;
+  }
 
   /* ─── SKY PALETTE TABLE ──────────────────────────────────────────────
      t = minutes (0–1440)
@@ -35,19 +75,19 @@
   ─────────────────────────────────────────────────────────────────────── */
   const SKY_TBL = [
     /* 00:00 deep night */
-    { t:   0, sk0:[2,0,10],   sk1:[8,5,24],    sk2:[10,7,30],   sk3:[7,4,20],   sk4:[4,2,12],
+    { t:   0, sk0:[0,0,0],   sk1:[2,2,4],    sk2:[4,4,6],   sk3:[2,2,4],   sk4:[0,0,2],
       s:1.00, mo:0.92, sun:0.00, fi:0.92, bi:0.00, vh:0.40,
-      mx:['#100825','#0e0620','#0a0418','#060210'] },
+      mx:['#0a0a0c','#08080a','#040406','#020202'] },
 
     /* 02:30 – still night */
-    { t: 150, sk0:[2,0,10],   sk1:[8,5,24],    sk2:[10,7,30],   sk3:[7,4,20],   sk4:[4,2,12],
+    { t: 150, sk0:[0,0,0],   sk1:[2,2,4],    sk2:[4,4,6],   sk3:[2,2,4],   sk4:[0,0,2],
       s:1.00, mo:0.90, sun:0.00, fi:0.90, bi:0.00, vh:0.40,
-      mx:['#100825','#0e0620','#0a0418','#060210'] },
+      mx:['#0a0a0c','#08080a','#040406','#020202'] },
 
     /* 04:30 – pre-dawn dark */
-    { t: 270, sk0:[4,2,14],   sk1:[12,7,32],   sk2:[15,9,38],   sk3:[10,6,24],  sk4:[6,3,16],
+    { t: 270, sk0:[2,2,4],   sk1:[6,6,12],   sk2:[8,8,16],   sk3:[6,4,10],  sk4:[4,2,8],
       s:0.85, mo:0.80, sun:0.00, fi:0.80, bi:0.00, vh:0.32,
-      mx:['#120a28','#10071e','#0c0516','#08030e'] },
+      mx:['#0c0b12','#0a090e','#06050a','#040306'] },
 
     /* 05:15 – first light (deep orange-purple) */
     { t: 315, sk0:[18,8,46],  sk1:[42,15,92],  sk2:[100,28,56], sk3:[198,72,30],sk4:[238,118,42],
@@ -95,19 +135,19 @@
       mx:['#150a28','#100820','#0c0618','#06020e'] },
 
     /* 19:30 – dusk into night */
-    { t:1170, sk0:[10,1,28],  sk1:[22,5,56],   sk2:[28,8,34],   sk3:[50,14,16], sk4:[88,22,12],
+    { t:1170, sk0:[4,2,10],  sk1:[10,4,22],   sk2:[14,6,28],   sk3:[24,8,20], sk4:[32,10,16],
       s:0.68, mo:0.74, sun:0.00, fi:0.76, bi:0.00, vh:0.28,
-      mx:['#100822','#0e061a','#0a0414','#06020c'] },
+      mx:['#0e0a14','#0a0810','#060408','#040204'] },
 
     /* 20:30 – full night */
-    { t:1230, sk0:[4,1,14],   sk1:[10,5,26],   sk2:[13,7,32],   sk3:[9,4,20],   sk4:[5,2,13],
+    { t:1230, sk0:[2,1,6],   sk1:[4,2,10],   sk2:[6,4,12],   sk3:[4,2,8],   sk4:[2,1,4],
       s:0.92, mo:0.88, sun:0.00, fi:0.88, bi:0.00, vh:0.38,
-      mx:['#100824','#0e0620','#0a0418','#06020e'] },
+      mx:['#0c0a10','#08060a','#060406','#020202'] },
 
     /* 24:00 – back to deep night */
-    { t:1440, sk0:[2,0,10],   sk1:[8,5,24],    sk2:[10,7,30],   sk3:[7,4,20],   sk4:[4,2,12],
+    { t:1440, sk0:[0,0,0],   sk1:[2,2,4],    sk2:[4,4,6],   sk3:[2,2,4],   sk4:[0,0,2],
       s:1.00, mo:0.92, sun:0.00, fi:0.92, bi:0.00, vh:0.40,
-      mx:['#100825','#0e0620','#0a0418','#060210'] },
+      mx:['#0a0a0c','#08080a','#040406','#020202'] },
   ];
 
   /* ─── SUN ARC ────────────────────────────────────────────────────── */
@@ -148,7 +188,32 @@
       { id: uid(), label: 'Sohila Sahib',     min: 1290, on: true, days: [0,1,2,3,4,5,6], sound: 'a4' },
     ];
   }
-  function saveAlarms() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(alarms)); } catch {} }
+  function saveAlarms() {
+    try {
+      // Save in cinematic format (primary)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(alarms));
+
+      // Also save in alarm-system compatible format (cine_alarms_v4)
+      const compatibleAlarms = alarms.map(a => ({
+        id: a.id,
+        title: a.label,
+        label: a.label,
+        time: minutesToTimeString(a.min),
+        enabled: a.on,
+        on: a.on,
+        tone: a.sound,
+        days: a.days || [0, 1, 2, 3, 4, 5, 6]
+      }));
+      localStorage.setItem('cine_alarms_v4', JSON.stringify(compatibleAlarms));
+    } catch {}
+  }
+
+  // Helper: Convert minutes (0-1439) to HH:MM time string
+  function minutesToTimeString(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
   /* ─── STATE ──────────────────────────────────────────────────────── */
@@ -400,6 +465,7 @@
          </div>`
       : alarms.map(a => {
           const { digits, period } = fmtTime(a.min);
+          const currentSound = SOUNDS.find(s => s.id === a.sound) || SOUNDS[0];
           return `
             <div class="alarm-item" data-id="${a.id}">
               <div class="alarm-item-left">
@@ -414,7 +480,25 @@
                   <div class="toggle-track"></div>
                   <div class="toggle-thumb"></div>
                 </label>
+                <div class="alarm-sound-selector" data-alarm-id="${a.id}">
+                  <span class="alarm-sound-icon">${currentSound.icon}</span>
+                  <span class="alarm-sound-name">${currentSound.name}</span>
+                  <span class="alarm-sound-arrow">▼</span>
+                </div>
                 <button class="alarm-del-btn" data-del="${a.id}">Delete</button>
+              </div>
+              <div class="alarm-sound-dropdown" data-dropdown="${a.id}">
+                ${SOUNDS.map(s => `
+                  <div class="alarm-sound-option ${s.id === a.sound ? 'active' : ''}" data-sound="${s.id}" data-alarm="${a.id}">
+                    <span class="sound-option-icon">${s.icon}</span>
+                    <div class="sound-option-info">
+                      <div class="sound-option-name">${s.name}</div>
+                      <div class="sound-option-desc">${s.desc}</div>
+                    </div>
+                    <button class="alarm-sound-preview-btn ${currentlyPreviewingId === s.id ? 'playing' : ''}" data-preview="${s.id}" title="Preview">▶</button>
+                    <div class="sound-option-check"></div>
+                  </div>
+                `).join('')}
               </div>
             </div>`;
         }).join('');
@@ -426,6 +510,7 @@
         if (a) { a.on = el.checked; saveAlarms(); renderAlarmSheet(); haptic(HAPTIC_SHORT); }
       });
     });
+    
     /* wire up delete */
     E.sheetBody.querySelectorAll('[data-del]').forEach(el => {
       el.addEventListener('click', ev => {
@@ -436,10 +521,121 @@
         haptic(HAPTIC_SHORT);
       });
     });
+    
+    /* wire up sound selector dropdowns */
+    E.sheetBody.querySelectorAll('.alarm-sound-selector').forEach(selector => {
+      selector.addEventListener('click', ev => {
+        ev.stopPropagation();
+        const alarmId = selector.dataset.alarmId;
+        const dropdown = E.sheetBody.querySelector(`[data-dropdown="${alarmId}"]`);
+        const isOpen = dropdown.classList.contains('open');
+        
+        // Close all other dropdowns
+        E.sheetBody.querySelectorAll('.alarm-sound-dropdown').forEach(d => d.classList.remove('open'));
+        E.sheetBody.querySelectorAll('.alarm-sound-selector').forEach(s => s.classList.remove('open'));
+        E.sheetBody.querySelectorAll('.alarm-item').forEach(item => item.classList.remove('dropdown-open'));
+        
+        if (!isOpen) {
+          dropdown.classList.add('open');
+          selector.classList.add('open');
+          selector.closest('.alarm-item').classList.add('dropdown-open');
+          haptic(HAPTIC_SHORT);
+        }
+      });
+    });
+    
+    /* wire up sound selection */
+    E.sheetBody.querySelectorAll('.alarm-sound-option').forEach(option => {
+      option.addEventListener('click', ev => {
+        // Don't trigger if clicking preview button
+        if (ev.target.closest('.alarm-sound-preview-btn')) return;
+        
+        const alarmId = option.dataset.alarm;
+        const soundId = option.dataset.sound;
+        const alarm = alarms.find(a => a.id === alarmId);
+        
+        if (alarm) {
+          alarm.sound = soundId;
+          saveAlarms();
+          renderAlarmSheet();
+          const sound = SOUNDS.find(s => s.id === soundId);
+          showToast(`🔔 Sound: ${sound.name}`);
+          haptic(HAPTIC_SHORT);
+        }
+      });
+    });
+    
+    /* wire up sound preview buttons */
+    E.sheetBody.querySelectorAll('.alarm-sound-preview-btn').forEach(btn => {
+      btn.addEventListener('click', ev => {
+        ev.stopPropagation();
+        const soundId = btn.dataset.preview;
+        
+        // If already playing, stop it
+        if (currentlyPreviewingId === soundId) {
+          stopPreview();
+          return;
+        }
+        
+        stopPreview();
+        const snd = SOUNDS.find(s => s.id === soundId);
+        if (!snd) return;
+        
+        // Handle live streams differently
+        if (snd.type === 'live') {
+          showToast(`${snd.icon} ${snd.name} - Will start when alarm fires`);
+          haptic(HAPTIC_SHORT);
+          return;
+        }
+        
+        currentlyPreviewingId = soundId;
+        previewAudio = new Audio(snd.file);
+        previewAudio.volume = 0.5;
+        
+        // Update UI
+        renderAlarmSheet();
+        
+        previewAudio.play().then(() => {
+          // Auto-stop after 8 seconds
+          previewTimeout = setTimeout(() => { stopPreview(); }, 8000);
+        }).catch(async (err) => {
+          console.error('[CinematicAlarm] Audio preview error (primary):', err);
+          
+          // Try alternate path
+          if (snd.fileAlt && snd.fileAlt !== snd.file) {
+            try {
+              previewAudio = new Audio(snd.fileAlt);
+              previewAudio.volume = 0.5;
+              await previewAudio.play();
+              previewTimeout = setTimeout(() => { stopPreview(); }, 8000);
+              console.log('[CinematicAlarm] ✅ Loaded from alternate path');
+            } catch (err2) {
+              console.error('[CinematicAlarm] Alternate path also failed:', err2);
+              showToast('Audio preview unavailable - check audio files');
+              stopPreview();
+            }
+          } else {
+            showToast('Audio preview unavailable - check audio files');
+            stopPreview();
+          }
+        });
+        
+        previewAudio.addEventListener('ended', () => { stopPreview(); });
+        haptic(HAPTIC_SHORT);
+      });
+    });
+    
+    /* close dropdowns when clicking outside */
+    document.addEventListener('click', () => {
+      E.sheetBody.querySelectorAll('.alarm-sound-dropdown').forEach(d => d.classList.remove('open'));
+      E.sheetBody.querySelectorAll('.alarm-sound-selector').forEach(s => s.classList.remove('open'));
+      E.sheetBody.querySelectorAll('.alarm-item').forEach(item => item.classList.remove('dropdown-open'));
+    });
+    
     /* tap item → jump to that time */
     E.sheetBody.querySelectorAll('.alarm-item').forEach(el => {
       el.addEventListener('click', ev => {
-        if (ev.target.closest('[data-del],[data-toggle],label')) return;
+        if (ev.target.closest('[data-del],[data-toggle],label,.alarm-sound-selector,.alarm-sound-dropdown,.alarm-sound-option,.alarm-sound-preview-btn')) return;
         const a = alarms.find(x => x.id === el.dataset.id);
         if (!a) return;
         currentMin = a.min;
@@ -452,29 +648,126 @@
   }
 
   /* ─── SOUND SHEET ────────────────────────────────────────────────── */
+  let previewTimeout = null;
+  let currentlyPreviewingId = null;
+  
+  function stopPreview() {
+    if (previewTimeout) { clearTimeout(previewTimeout); previewTimeout = null; }
+    if (previewAudio) { previewAudio.pause(); previewAudio.currentTime = 0; previewAudio = null; }
+    currentlyPreviewingId = null;
+    renderSoundSheet();
+  }
+  
   function renderSoundSheet() {
     E.soundSheetBody.innerHTML = SOUNDS.map(s => `
-      <div class="sound-item ${s.id === selectedSound ? 'active' : ''}" data-sound="${s.id}">
+      <div class="sound-item ${s.id === selectedSound ? 'active' : ''} ${s.id === currentlyPreviewingId ? 'playing' : ''} ${s.type === 'live' ? 'live-stream' : ''}" data-sound="${s.id}" data-type="${s.type || 'audio'}">
         <span class="sound-icon-em">${s.icon}</span>
         <div class="sound-info">
-          <div class="sound-name">${s.name}</div>
+          <div class="sound-name">
+            ${s.name}
+            ${s.badge ? `<span class="sound-badge-live">${s.badge}</span>` : ''}
+          </div>
           <div class="sound-desc-txt">${s.desc}</div>
         </div>
-        <div class="sound-check"><div class="sound-check-icon"></div></div>
+        <div class="sound-check">
+          ${s.id === currentlyPreviewingId ? '<div class="sound-playing-indicator">▶</div>' : '<div class="sound-check-icon"></div>'}
+        </div>
       </div>`).join('');
 
     E.soundSheetBody.querySelectorAll('[data-sound]').forEach(el => {
       el.addEventListener('click', () => {
-        selectedSound = el.dataset.sound;
-        const snd = SOUNDS.find(s => s.id === selectedSound);
-        /* preview clip */
-        if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+        const clickedId = el.dataset.sound;
+        const soundType = el.dataset.type;
+        const snd = SOUNDS.find(s => s.id === clickedId);
+        
+        // If clicking the currently playing sound, stop it
+        if (currentlyPreviewingId === clickedId) {
+          stopPreview();
+          return;
+        }
+        
+        // Stop any existing preview
+        stopPreview();
+        
+        // Update selection
+        selectedSound = clickedId;
+        
+        // Handle live streams
+        if (soundType === 'live') {
+          renderSoundSheet();
+          showToast(`${snd.icon} ${snd.name} selected - Will start when alarm fires`);
+          haptic(HAPTIC_SHORT);
+          return;
+        }
+        
+        // Preview regular audio with fallback - async approach
+        currentlyPreviewingId = clickedId;
+        
+        // Update UI immediately to show loading state
+        renderSoundSheet();
+        
+        // Try primary path first
         previewAudio = new Audio(snd.file);
         previewAudio.volume = 0.38;
-        previewAudio.play().catch(() => {});
-        setTimeout(() => { if (previewAudio) { previewAudio.pause(); previewAudio = null; } }, 3500);
-        renderSoundSheet();
-        showToast(`🔔 ${snd.name}`);
+        
+        previewAudio.play().then(() => {
+          showToast(`🔔 ${snd.name} (tap again to stop)`);
+        }).catch(async (err) => {
+          console.error('[CinematicAlarm] Audio preview error (primary path):', snd.file, err);
+          
+          // Try alternate path if available
+          if (snd.fileAlt && snd.fileAlt !== snd.file) {
+            console.log('[CinematicAlarm] Trying alternate audio path:', snd.fileAlt);
+            previewAudio = new Audio(snd.fileAlt);
+            previewAudio.volume = 0.38;
+            
+            try {
+              await previewAudio.play();
+              showToast(`🔔 ${snd.name} (tap again to stop)`);
+              console.log('[CinematicAlarm] ✅ Audio loaded from alternate path');
+            } catch (err2) {
+              console.error('[CinematicAlarm] Audio preview error (alternate path):', snd.fileAlt, err2);
+              
+              // Try additional Android-specific paths
+              const androidPaths = [
+                '/android_asset/public/Audio/' + snd.file.split('/').pop(),
+                'Audio/' + snd.file.split('/').pop(),
+                './Audio/' + snd.file.split('/').pop()
+              ];
+              
+              let loaded = false;
+              for (const path of androidPaths) {
+                try {
+                  console.log('[CinematicAlarm] Trying Android path:', path);
+                  previewAudio = new Audio(path);
+                  previewAudio.volume = 0.38;
+                  await previewAudio.play();
+                  showToast(`🔔 ${snd.name} (tap again to stop)`);
+                  console.log('[CinematicAlarm] ✅ Audio loaded from:', path);
+                  loaded = true;
+                  break;
+                } catch (e) {
+                  console.warn('[CinematicAlarm] Failed path:', path);
+                }
+              }
+              
+              if (!loaded) {
+                showToast(`🔔 ${snd.name} (audio file not found)`);
+                stopPreview();
+              }
+            }
+          } else {
+            showToast(`🔔 ${snd.name} (audio file not found)`);
+            stopPreview();
+          }
+        });
+        
+        // Auto-stop after 15 seconds
+        previewTimeout = setTimeout(() => { stopPreview(); }, 15000);
+        
+        // When audio ends naturally, stop preview
+        previewAudio.addEventListener('ended', () => { stopPreview(); });
+        
         haptic(HAPTIC_SHORT);
       });
     });
@@ -483,6 +776,7 @@
   /* ─── ADD ALARM ──────────────────────────────────────────────────── */
   const LABELS = ['Amritvela','Nitnem','Hukamnama','Simran','Meditation','Rehras Sahib','Sohila Sahib','Asa Di Var','Kirtan'];
   function addAlarm() {
+    stopPreview(); // Stop any playing preview before adding alarm
     const m = wrapMin(Math.round(currentMin));
     const { digits, period } = fmtTime(m);
     const newAlarm = {
@@ -535,7 +829,7 @@
 
     /* ── Back button ── */
     E.backBtn.addEventListener('click', () => {
-      if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+      stopPreview();
       if (typeof handleBack === 'function') handleBack();
       else if (window.history.length > 1) window.history.back();
       else window.location.href = '../index.html';
@@ -556,8 +850,8 @@
       openSheet(E.soundSheet, E.soundBackdrop);
       haptic(HAPTIC_SHORT);
     });
-    E.soundBackdrop.addEventListener('click',    () => closeSheet(E.soundSheet, E.soundBackdrop));
-    E.closeSoundSheet.addEventListener('click',  () => closeSheet(E.soundSheet, E.soundBackdrop));
+    E.soundBackdrop.addEventListener('click',    () => { stopPreview(); closeSheet(E.soundSheet, E.soundBackdrop); });
+    E.closeSoundSheet.addEventListener('click',  () => { stopPreview(); closeSheet(E.soundSheet, E.soundBackdrop); });
 
     /* ── Repeat (placeholder) ── */
     E.repeatBtn.addEventListener('click', () => {

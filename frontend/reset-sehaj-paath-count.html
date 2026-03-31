@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Sehaj Paath Counter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        button.danger {
+            background: #f44336;
+        }
+        button.danger:hover {
+            background: #d32f2f;
+        }
+        .stats {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: 600;
+            color: #666;
+        }
+        .value {
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Reset Sehaj Paath Counter</h1>
+        
+        <div class="info">
+            <strong>Current Stats:</strong>
+            <div class="stats" id="currentStats">Loading...</div>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Note:</strong> This will reset today's Ang count to match your actual reading progress. Your total Angs read and streak will be preserved.
+        </div>
+
+        <div>
+            <label for="actualAngs" style="display: block; margin-bottom: 8px; font-weight: 600;">
+                How many Angs did you actually read today?
+            </label>
+            <input type="number" id="actualAngs" min="0" max="50" value="4" 
+                   style="padding: 8px; font-size: 16px; border: 2px solid #ddd; border-radius: 6px; width: 100px;">
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button onclick="resetTodayCount()">Reset Today's Count</button>
+            <button class="danger" onclick="resetAllStats()">Reset All Stats (Careful!)</button>
+        </div>
+
+        <div id="result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script src="lib/user-stats.js"></script>
+    <script>
+        function displayCurrentStats() {
+            try {
+                // Get user stats
+                const statsKey = 'anhad_user_stats';
+                const goalsKey = 'anhad_user_goals';
+                
+                const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+                const goals = JSON.parse(localStorage.getItem(goalsKey) || '{}');
+                
+                const todayPagesRead = stats.todayPagesRead || 0;
+                const totalPagesRead = stats.totalPagesRead || 0;
+                const goalCurrent = goals.readPages?.current || 0;
+                const goalTarget = goals.readPages?.target || 5;
+
+                document.getElementById('currentStats').innerHTML = `
+                    <div class="stats-row">
+                        <span class="label">Today's Pages Read (Stats):</span>
+                        <span class="value">${todayPagesRead}</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="label">Goal Progress:</span>
+                        <span class="value">${goalCurrent}/${goalTarget} Ang</span>
+                    </div>
+                    <div class="stats-row">
+                        <span class="label">Total Pages Read:</span>
+                        <span class="value">${totalPagesRead}</span>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('currentStats').innerHTML = 
+                    '<div style="color: red;">Error loading stats: ' + e.message + '</div>';
+            }
+        }
+
+        function resetTodayCount() {
+            const actualAngs = parseInt(document.getElementById('actualAngs').value) || 0;
+            
+            if (actualAngs < 0 || actualAngs > 50) {
+                alert('Please enter a valid number between 0 and 50');
+                return;
+            }
+
+            try {
+                const statsKey = 'anhad_user_stats';
+                const goalsKey = 'anhad_user_goals';
+                
+                // Update stats
+                const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+                const oldTodayCount = stats.todayPagesRead || 0;
+                const difference = oldTodayCount - actualAngs;
+                
+                stats.todayPagesRead = actualAngs;
+                stats.totalPagesRead = Math.max(0, (stats.totalPagesRead || 0) - difference);
+                localStorage.setItem(statsKey, JSON.stringify(stats));
+
+                // Update goals
+                const goals = JSON.parse(localStorage.getItem(goalsKey) || '{}');
+                if (goals.readPages) {
+                    goals.readPages.current = actualAngs;
+                    goals.readPages.complete = actualAngs >= (goals.readPages.target || 5);
+                    goals.readPages.percent = Math.min(100, Math.round((actualAngs / (goals.readPages.target || 5)) * 100));
+                    localStorage.setItem(goalsKey, JSON.stringify(goals));
+                }
+
+                document.getElementById('result').innerHTML = `
+                    <div class="info">
+                        ✅ <strong>Success!</strong><br>
+                        Reset today's count from ${oldTodayCount} to ${actualAngs} Angs.<br>
+                        Adjusted total by -${difference} Angs.<br><br>
+                        <strong>Please refresh your dashboard to see the changes.</strong>
+                    </div>
+                `;
+
+                // Refresh display
+                setTimeout(displayCurrentStats, 500);
+
+            } catch (e) {
+                document.getElementById('result').innerHTML = `
+                    <div style="background: #ffebee; padding: 15px; border-radius: 8px; color: #c62828;">
+                        ❌ Error: ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        function resetAllStats() {
+            if (!confirm('⚠️ This will reset ALL your Sehaj Paath statistics including streak and total Angs read. Are you sure?')) {
+                return;
+            }
+
+            try {
+                // Clear Sehaj Paath specific stats
+                localStorage.removeItem('sehajPaathStats');
+                localStorage.removeItem('anhad_reading_log');
+                
+                // Reset user stats
+                const statsKey = 'anhad_user_stats';
+                const stats = JSON.parse(localStorage.getItem(statsKey) || '{}');
+                stats.todayPagesRead = 0;
+                stats.totalPagesRead = 0;
+                if (stats.sehajPaath) {
+                    stats.sehajPaath = {};
+                }
+                localStorage.setItem(statsKey, JSON.stringify(stats));
+
+                // Reset goals
+                const goalsKey = 'anhad_user_goals';
+                const goals = JSON.parse(localStorage.getItem(goalsKey) || '{}');
+                if (goals.readPages) {
+                    goals.readPages.current = 0;
+                    goals.readPages.complete = false;
+                    goals.readPages.percent = 0;
+                    localStorage.setItem(goalsKey, JSON.stringify(goals));
+                }
+
+                document.getElementById('result').innerHTML = `
+                    <div class="warning">
+                        ✅ All Sehaj Paath stats have been reset.<br>
+                        <strong>Please refresh your dashboard.</strong>
+                    </div>
+                `;
+
+                setTimeout(displayCurrentStats, 500);
+
+            } catch (e) {
+                document.getElementById('result').innerHTML = `
+                    <div style="background: #ffebee; padding: 15px; border-radius: 8px; color: #c62828;">
+                        ❌ Error: ${e.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Load stats on page load
+        displayCurrentStats();
+    </script>
+</body>
+</html>

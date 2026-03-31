@@ -1,7 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html lang="en" data-global-theme="force">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#FAF8F5">
@@ -12,12 +13,16 @@
   <!-- Global Theme -->
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
   <script src="../lib/global-mini-player.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
   
   <style>
     :root {
@@ -79,14 +84,31 @@
       height: 44px;
       border-radius: 50%;
       border: none;
-      background: var(--glass-white);
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 50%, #E0F0FF 100%);
       color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       text-decoration: none;
-      box-shadow: var(--shadow-md);
+      box-shadow:
+        15px 15px 40px rgba(0, 0, 0, 0.35),
+        8px 8px 20px rgba(0, 0, 0, 0.2),
+        -10px -10px 30px rgba(255, 255, 255, 0.95),
+        0 0 0 3px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .header__back:active {
+      transform: scale(0.94);
+      box-shadow:
+        inset 10px 10px 30px rgba(0, 0, 0, 0.3),
+        inset -6px -6px 20px rgba(255, 255, 255, 0.6),
+        0 0 0 2px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.2);
     }
     
     .header__title {
@@ -99,71 +121,149 @@
       height: 44px;
       border-radius: 50%;
       border: none;
-      background: var(--glass-white);
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 50%, #E0F0FF 100%);
       color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: var(--shadow-md);
+      box-shadow:
+        15px 15px 40px rgba(0, 0, 0, 0.35),
+        8px 8px 20px rgba(0, 0, 0, 0.2),
+        -10px -10px 30px rgba(255, 255, 255, 0.95),
+        0 0 0 3px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .header__btn:active {
+      transform: scale(0.94);
+      box-shadow:
+        inset 10px 10px 30px rgba(0, 0, 0, 0.3),
+        inset -6px -6px 20px rgba(255, 255, 255, 0.6),
+        0 0 0 2px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.2);
     }
     
     /* Tabs */
     .tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 20px;
-      background: var(--bg-soft);
-      padding: 6px;
-      border-radius: 16px;
+      background: linear-gradient(145deg, #F5F5F7 0%, #E8E8EC 100%);
+      padding: 5px;
+      border-radius: 20px;
+      box-shadow:
+        15px 15px 40px rgba(0, 0, 0, 0.15),
+        8px 8px 20px rgba(0, 0, 0, 0.08),
+        -8px -8px 25px rgba(255, 255, 255, 0.9),
+        0 0 0 2px rgba(255, 255, 255, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
     
     .tab {
       flex: 1;
-      padding: 12px 16px;
+      min-width: 0;
+      padding: 8px 10px;
       border: none;
-      border-radius: 12px;
+      border-radius: 16px;
       background: transparent;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    
+    .tab i {
+      font-size: 12px;
+      flex-shrink: 0;
     }
     
     .tab--active {
-      background: var(--bg-white);
-      color: var(--gold-500);
-      box-shadow: var(--shadow-md);
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 50%, #E0F0FF 100%);
+      color: #007AFF;
+      box-shadow:
+        8px 8px 25px rgba(0, 122, 255, 0.25),
+        4px 4px 12px rgba(0, 0, 0, 0.15),
+        -4px -4px 15px rgba(255, 255, 255, 0.9),
+        0 0 0 2px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
     
     .tab__count {
-      background: var(--bg-soft);
-      padding: 2px 8px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.9));
+      padding: 2px 6px;
       border-radius: 100px;
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--text-tertiary);
+      flex-shrink: 0;
+      box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.1),
+        -1px -1px 4px rgba(255, 255, 255, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9);
     }
     
     .tab--active .tab__count {
-      background: rgba(212, 160, 58, 0.15);
-      color: var(--gold-500);
+      background: linear-gradient(145deg, rgba(0, 122, 255, 0.12), rgba(0, 122, 255, 0.08));
+      color: #007AFF;
+      box-shadow:
+        2px 2px 6px rgba(0, 122, 255, 0.15),
+        -1px -1px 4px rgba(255, 255, 255, 0.8),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    }
+    
+    /* Hide count badge on very narrow screens */
+    @media (max-width: 360px) {
+      .tab {
+        padding: 8px 6px;
+        font-size: 12px;
+        gap: 4px;
+      }
+      .tab__count {
+        display: none;
+      }
     }
     
     /* Empty State */
     .empty-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 60px 24px;
+      background: var(--bg-primary);
+      border-radius: 28px;
     }
     
     .empty-state__icon {
       font-size: 64px;
       margin-bottom: 20px;
-      opacity: 0.3;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 100%);
+      box-shadow:
+        15px 15px 40px rgba(0, 122, 255, 0.15),
+        8px 8px 20px rgba(0, 0, 0, 0.08),
+        -8px -8px 25px rgba(255, 255, 255, 0.9),
+        0 0 0 2px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.5);
     }
     
     .empty-state__title {
@@ -182,26 +282,32 @@
     .favorites-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
     
     .fav-card {
-      background: var(--bg-white);
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--glass-border);
+      background: linear-gradient(145deg, #FFFFFF 0%, #F8F8FA 100%);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.06);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
     
     .fav-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
+      border-color: rgba(0, 122, 255, 0.2);
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 6px rgba(0, 122, 255, 0.06);
     }
     
     .fav-card:active {
       transform: scale(0.98);
+      box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.08);
     }
     
     .fav-card__header {
@@ -213,13 +319,19 @@
     
     .fav-card__type {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 100px;
-      background: rgba(212, 160, 58, 0.12);
-      color: var(--gold-500);
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 100%);
+      color: #007AFF;
+      box-shadow:
+        4px 4px 12px rgba(0, 122, 255, 0.15),
+        -2px -2px 8px rgba(255, 255, 255, 0.8),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
     
     .fav-card__actions {
@@ -228,27 +340,49 @@
     }
     
     .fav-card__action {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: none;
-      background: var(--bg-soft);
+      background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F7 100%);
       color: var(--text-tertiary);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       font-size: 13px;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.15),
+        -2px -2px 8px rgba(255, 255, 255, 0.8),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        0 0 0 1px rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
     
     .fav-card__action:hover {
-      background: var(--gold-gradient);
-      color: white;
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 100%);
+      color: #007AFF;
+      box-shadow:
+        4px 4px 12px rgba(0, 122, 255, 0.2),
+        -2px -2px 8px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    }
+    
+    .fav-card__action:active {
+      transform: scale(0.92);
+      box-shadow:
+        inset 3px 3px 8px rgba(0, 0, 0, 0.15),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.8);
     }
     
     .fav-card__action--delete:hover {
-      background: #EF4444;
+      background: linear-gradient(145deg, #FFF0F0 0%, #FFE8E8 100%);
+      color: #FF3B30;
+      box-shadow:
+        4px 4px 12px rgba(255, 59, 48, 0.2),
+        -2px -2px 8px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
     }
     
     .fav-card__gurmukhi {
@@ -277,28 +411,45 @@
     
     .fav-card__read-btn {
       width: 100%;
-      padding: 12px 16px;
+      padding: 14px 18px;
       border: none;
-      border-radius: 12px;
-      background: var(--gold-gradient);
-      color: white;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 50%, #E0F0FF 100%);
+      color: #007AFF;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow:
+        8px 8px 25px rgba(0, 122, 255, 0.2),
+        4px 4px 12px rgba(0, 0, 0, 0.1),
+        -4px -4px 15px rgba(255, 255, 255, 0.9),
+        0 0 0 2px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
     
     .fav-card__read-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+      transform: translateY(-2px);
+      box-shadow:
+        12px 12px 35px rgba(0, 122, 255, 0.25),
+        6px 6px 18px rgba(0, 0, 0, 0.12),
+        -6px -6px 20px rgba(255, 255, 255, 0.95),
+        0 0 0 2px rgba(255, 255, 255, 0.7),
+        inset 0 2px 4px rgba(255, 255, 255, 1);
     }
     
     .fav-card__read-btn:active {
-      transform: scale(0.98);
+      transform: scale(0.98) translateY(1px);
+      box-shadow:
+        inset 6px 6px 18px rgba(0, 0, 0, 0.15),
+        inset -4px -4px 12px rgba(255, 255, 255, 0.8),
+        0 0 0 2px rgba(255, 255, 255, 0.5);
     }
     
     /* Add Note Button */
@@ -310,24 +461,40 @@
       height: 56px;
       border-radius: 50%;
       border: none;
-      background: var(--gold-gradient);
-      color: white;
+      background: linear-gradient(145deg, #F0F8FF 0%, #E8F4FF 50%, #E0F0FF 100%);
+      color: #007AFF;
       font-size: 24px;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(184, 134, 11, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 100;
+      box-shadow:
+        12px 12px 40px rgba(0, 122, 255, 0.3),
+        6px 6px 20px rgba(0, 0, 0, 0.15),
+        -6px -6px 20px rgba(255, 255, 255, 0.9),
+        0 0 0 3px rgba(255, 255, 255, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 1),
+        inset 0 -2px 4px rgba(0, 122, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.6);
     }
     
     .add-note-btn:hover {
       transform: scale(1.05);
+      box-shadow:
+        16px 16px 50px rgba(0, 122, 255, 0.35),
+        8px 8px 25px rgba(0, 0, 0, 0.18),
+        -8px -8px 25px rgba(255, 255, 255, 0.95),
+        0 0 0 3px rgba(255, 255, 255, 0.7);
     }
     
     .add-note-btn:active {
       transform: scale(0.95);
+      box-shadow:
+        inset 8px 8px 25px rgba(0, 0, 0, 0.2),
+        inset -4px -4px 15px rgba(255, 255, 255, 0.8),
+        0 0 0 3px rgba(255, 255, 255, 0.5);
     }
     
     .add-note-btn.hidden {
@@ -390,25 +557,199 @@
     }
     /* ═══ Favorites Dark Mode ═══ */
     html.dark-mode body { background: #0D0D0F !important; color: #F5F5F7; }
+    
+    /* Header buttons dark mode - subtle charcoal */
     html.dark-mode .header__back, html.dark-mode .header__btn {
-      background: rgba(255, 255, 255, 0.06) !important; color: #F5F5F7;
-      box-shadow: none !important;
+      background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+      color: #F5F5F7;
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.4),
+        2px 2px 6px rgba(0, 0, 0, 0.25),
+        -2px -2px 8px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 1px 1px rgba(255, 255, 255, 0.04),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
+    
+    html.dark-mode .header__back:active, html.dark-mode .header__btn:active {
+      box-shadow:
+        inset 3px 3px 10px rgba(0, 0, 0, 0.4),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    }
+    
     html.dark-mode .header__title { color: #F5F5F7 !important; }
-    html.dark-mode .tabs { background: #1A1A1E !important; }
-    html.dark-mode .tab { color: rgba(255, 255, 255, 0.5); }
-    html.dark-mode .tab--active { background: #252528 !important; color: #E8B84A !important; box-shadow: none !important; }
-    html.dark-mode .tab__count { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.5); }
-    html.dark-mode .tab--active .tab__count { background: rgba(232, 184, 74, 0.15); color: #E8B84A; }
-    html.dark-mode .fav-card {
-      background: #1E1E22 !important; border-color: rgba(255,255,255,0.06) !important;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+    
+    /* Tabs dark mode - darker subtle */
+    html.dark-mode .tabs { 
+      background: linear-gradient(145deg, #1C1C1E 0%, #252528 100%) !important;
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.4),
+        2px 2px 6px rgba(0, 0, 0, 0.25),
+        -2px -2px 8px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 1px rgba(255, 255, 255, 0.03),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
+    
+    html.dark-mode .tab { color: rgba(255, 255, 255, 0.4); }
+    
+    html.dark-mode .tab--active { 
+      background: linear-gradient(145deg, #2C2C2E 0%, #36363A 100%) !important;
+      color: #F5F5F7 !important;
+      box-shadow:
+        2px 2px 8px rgba(0, 0, 0, 0.3),
+        1px 1px 4px rgba(0, 0, 0, 0.2),
+        -1px -1px 6px rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(255, 255, 255, 0.04),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    html.dark-mode .tab__count { 
+      background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      color: rgba(255, 255, 255, 0.35);
+      box-shadow:
+        1px 1px 3px rgba(0, 0, 0, 0.3),
+        -1px -1px 2px rgba(255, 255, 255, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    }
+    
+    html.dark-mode .tab--active .tab__count { 
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      color: rgba(255, 255, 255, 0.6);
+      box-shadow:
+        1px 1px 3px rgba(0, 0, 0, 0.25),
+        -1px -1px 2px rgba(255, 255, 255, 0.03),
+        inset 0 1px 1px rgba(255, 255, 255, 0.04);
+    }
+    
+    /* Cards dark mode - clean inset only */
+    html.dark-mode .fav-card {
+      background: linear-gradient(145deg, #1C1C1E 0%, #252528 100%) !important;
+      box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.03),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    html.dark-mode .fav-card:hover {
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.04),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.35);
+    }
+    
     html.dark-mode .fav-card__gurmukhi { color: #F5F5F7 !important; }
     html.dark-mode .fav-card__translation { color: #999 !important; }
     html.dark-mode .fav-card__meta { color: #666 !important; }
-    html.dark-mode .fav-card__type { background: rgba(232, 184, 74, 0.12); color: #E8B84A; }
-    html.dark-mode .fav-card__action { background: rgba(255,255,255,0.06) !important; color: #999; }
+    
+    html.dark-mode .fav-card__type { 
+      background: linear-gradient(145deg, #2C2C2E 0%, #36363A 100%);
+      color: rgba(255, 255, 255, 0.7);
+      box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.25),
+        -1px -1px 4px rgba(255, 255, 255, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    /* Action buttons dark mode */
+    html.dark-mode .fav-card__action { 
+      background: linear-gradient(145deg, #2C2C2E 0%, #252528 100%) !important;
+      color: rgba(255, 255, 255, 0.5);
+      box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.25),
+        -1px -1px 4px rgba(255, 255, 255, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    
+    html.dark-mode .fav-card__action:hover {
+      background: linear-gradient(145deg, #36363A 0%, #2C2C2E 100%) !important;
+      color: rgba(255, 255, 255, 0.8);
+      box-shadow:
+        2px 2px 6px rgba(0, 0, 0, 0.3),
+        -1px -1px 4px rgba(255, 255, 255, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    }
+    
+    html.dark-mode .fav-card__action--delete:hover {
+      background: linear-gradient(145deg, #3A1F1F 0%, #2A1515 100%) !important;
+      color: #FF6B6B;
+      box-shadow:
+        2px 2px 6px rgba(255, 107, 107, 0.15),
+        -1px -1px 4px rgba(255, 255, 255, 0.02),
+        inset 0 1px 1px rgba(255, 255, 255, 0.02);
+    }
+    
+    /* Read button dark mode */
+    html.dark-mode .fav-card__read-btn {
+      background: linear-gradient(145deg, #2C2C2E 0%, #36363A 100%);
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow:
+        3px 3px 10px rgba(0, 0, 0, 0.25),
+        1px 1px 5px rgba(0, 0, 0, 0.15),
+        -2px -2px 8px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 0.03),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    html.dark-mode .fav-card__read-btn:hover {
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        2px 2px 6px rgba(0, 0, 0, 0.2),
+        -2px -2px 8px rgba(255, 255, 255, 0.03),
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(255, 255, 255, 0.04);
+    }
+    
+    /* Add note button dark mode */
+    html.dark-mode .add-note-btn {
+      background: linear-gradient(145deg, #2C2C2E 0%, #36363A 100%);
+      color: rgba(255, 255, 255, 0.9);
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        2px 2px 6px rgba(0, 0, 0, 0.2),
+        -2px -2px 8px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.06),
+        inset 0 1px 2px rgba(255, 255, 255, 0.03),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    html.dark-mode .add-note-btn:hover {
+      box-shadow:
+        6px 6px 18px rgba(0, 0, 0, 0.35),
+        3px 3px 9px rgba(0, 0, 0, 0.25),
+        -3px -3px 10px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    
+    /* Empty state dark mode */
+    html.dark-mode .empty-state {
+      background: #0D0D0F;
+    }
+    
+    html.dark-mode .empty-state__icon {
+      background: linear-gradient(145deg, #252528 0%, #1C1C1E 100%);
+      box-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.3),
+        2px 2px 6px rgba(0, 0, 0, 0.2),
+        -2px -2px 6px rgba(255, 255, 255, 0.02),
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        inset 0 1px 2px rgba(255, 255, 255, 0.02),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    
     html.dark-mode .empty-state__title { color: #999 !important; }
     html.dark-mode .empty-state__desc { color: #666 !important; }
     html.dark-mode .section-divider__line { background: rgba(255,255,255,0.06); }
@@ -504,7 +845,7 @@
   <div class="app">
     <!-- Header -->
     <header class="header">
-      <a href="../index.html" class="header__back">
+      <a href="../index.html" class="header__back glass-nav__back" aria-label="Back">
         <i class="fas fa-chevron-left"></i>
       </a>
       <h1 class="header__title">Favorites</h1>
@@ -583,6 +924,8 @@
   
   <!-- Scripts -->
   <script src="../lib/share-card.js"></script>
+  <script src="../lib/smart-back.js"></script>
+  <script src="../pwa-register.js"></script>
   <script>
     (function() {
       'use strict';
@@ -847,6 +1190,29 @@
       
       // Initialize
       loadFavorites();
+    })();
+  </script>
+  
+  <!-- Theme Icon Update Script -->
+  <script>
+    (function() {
+      const themeIcon = document.getElementById('themeIcon');
+      
+      function updateThemeIcon() {
+        if (!themeIcon || !window.AnhadTheme) return;
+        const isDark = window.AnhadTheme.isDark();
+        themeIcon.className = isDark ? 'fas fa-moon' : 'fas fa-sun';
+      }
+      
+      // Update icon on page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+      } else {
+        updateThemeIcon();
+      }
+      
+      // Listen for theme changes
+      window.addEventListener('themechange', updateThemeIcon);
     })();
   </script>
 </body>
