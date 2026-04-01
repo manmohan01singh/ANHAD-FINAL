@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Gurbani Radio | ANHAD</title>
@@ -1837,5 +1853,10 @@
         init();
     }
     </script>
+    
+    <!-- Progress Tracking -->
+    <script src="../lib/user-stats.js?v=1.0"></script>
+    <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
+    <script src="../lib/kirtan-listening-tracker.js?v=1.0"></script>
 </body>
 </html>

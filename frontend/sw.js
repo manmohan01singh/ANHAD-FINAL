@@ -293,6 +293,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // CRITICAL FIX: Never cache r2.dev audio files (Amritvela streams) - always fetch fresh
+  if (event.request.url.includes('r2.dev') && event.request.url.includes('.webm')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   // Static assets - Cache first
   event.respondWith(cacheFirst(event.request));
 });
