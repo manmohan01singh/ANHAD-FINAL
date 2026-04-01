@@ -800,7 +800,7 @@
         // Set theme
         setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
+            localStorage.setItem('anhad_theme', theme);
 
             $$('.theme-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.theme === theme);
@@ -940,7 +940,7 @@
         State.stats = Storage.loadStats();
 
         // Apply saved theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
+        const savedTheme = localStorage.getItem('anhad_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         // Initialize UI

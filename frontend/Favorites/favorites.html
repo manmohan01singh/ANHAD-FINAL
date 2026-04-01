@@ -1,6 +1,25 @@
 ﻿<!DOCTYPE html>
 <html lang="en" data-global-theme="force">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
   <link rel="stylesheet" href="../css/anhad-core.css">
   <meta charset="UTF-8">

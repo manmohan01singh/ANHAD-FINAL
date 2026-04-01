@@ -70,7 +70,18 @@ const NAAM_CONFIG = {
 
 class NaamAbhyasThemeEngine {
     constructor() {
-        this.currentTheme = localStorage.getItem('naamAbhyas_theme') || 'system';
+        // SYNC WITH GLOBAL THEME: Check global anhad_theme first
+        const globalTheme = localStorage.getItem('anhad_theme');
+        const ownTheme = localStorage.getItem('anhad_theme');
+        
+        // If no own theme is set, use global theme
+        if (!ownTheme && globalTheme) {
+            this.currentTheme = globalTheme === 'dark' ? 'dark' : 'light';
+            localStorage.setItem('anhad_theme', this.currentTheme);
+        } else {
+            this.currentTheme = ownTheme || 'light'; // Default to light mode
+        }
+        
         this.init();
     }
 
@@ -78,6 +89,14 @@ class NaamAbhyasThemeEngine {
         this.applyTheme(this.currentTheme);
         this.setupSystemThemeListener();
         this.bindThemeButtons();
+        
+        // Listen for global theme changes
+        window.addEventListener('themechange', (e) => {
+            if (e.detail && e.detail.theme) {
+                this.currentTheme = e.detail.theme;
+                this.applyTheme(e.detail.theme);
+            }
+        });
     }
 
     applyTheme(theme) {
@@ -94,7 +113,7 @@ class NaamAbhyasThemeEngine {
         htmlEl.setAttribute('data-theme', actualTheme);
 
         this.updateActiveButton(theme);
-        localStorage.setItem('naamAbhyas_theme', theme);
+        localStorage.setItem('anhad_theme', theme);
         this.currentTheme = theme;
 
         // Update meta theme-color

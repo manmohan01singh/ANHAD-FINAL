@@ -88,6 +88,104 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════
+    // FIREWORKS PARTICLE SYSTEM
+    // Golden particles explode on click/touch anywhere
+    // ═══════════════════════════════════════════════════════════════════
+    function initFireworks() {
+        const canvas = document.getElementById('fireworks-canvas');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        const goldenColors = [
+            '#FFD700', '#FFA500', '#F5D47A', '#E8C547', '#D4B03A',
+            '#C9A227', '#B89120', '#FFE885', '#F0D050', '#FFEC8B'
+        ];
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.color = goldenColors[Math.floor(Math.random() * goldenColors.length)];
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.gravity = 0.2;
+                this.friction = 0.96;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.01;
+                this.size = Math.random() * 4 + 2;
+            }
+
+            update() {
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(x, y) {
+            const particleCount = 25;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(x, y));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles = particles.filter(p => {
+                p.update();
+                p.draw();
+                return p.alpha > 0;
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // Handle click/touch anywhere on page
+        document.addEventListener('click', (e) => {
+            // Don't trigger on links/buttons to avoid interfering with navigation
+            if (e.target.closest('a, button, #enter-btn')) return;
+            createExplosion(e.clientX, e.clientY);
+        });
+
+        // Touch support for mobile
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('a, button, #enter-btn')) return;
+            const touch = e.touches[0];
+            createExplosion(touch.clientX, touch.clientY);
+        }, { passive: true });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
     // STARS CANVAS (Night/Amritvela only)
     // ═══════════════════════════════════════════════════════════════════
     function initStars() {
@@ -242,6 +340,7 @@
         initAudio();
         initShabadRotation();
         initEnterButton();
+        initFireworks();
 
         console.log('%c☬ ANHAD Cinematic Homepage Ready', 'color: #C9A227; font-size: 14px; font-weight: bold;');
     }

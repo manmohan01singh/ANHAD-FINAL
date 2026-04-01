@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔴 Virtual Live Test - Complete</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+      color: #FDF6EC;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #D4860A;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .test-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 134, 10, 0.3);
+      border-radius: 16px;
+      padding: 24px;
+      margin: 20px 0;
+      backdrop-filter: blur(10px);
+    }
+    h2 {
+      color: #D4860A;
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .test-scenario {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 12px 0;
+      border-left: 4px solid #D4860A;
+    }
+    .test-scenario h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #F4C76B;
+    }
+    .step {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .step::before {
+      content: '→';
+      position: absolute;
+      left: 8px;
+      color: #D4860A;
+    }
+    .expected {
+      background: rgba(52, 199, 89, 0.1);
+      border-left-color: #34C759;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .expected strong {
+      color: #34C759;
+    }
+    button {
+      background: linear-gradient(135deg, #D4860A 0%, #B87008 100%);
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 8px 8px 8px 0;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(212, 134, 10, 0.3);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 134, 10, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+    .console-log {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .console-log div {
+      margin: 4px 0;
+      padding: 6px;
+      border-radius: 4px;
+    }
+    .log-success { background: rgba(52, 199, 89, 0.1); color: #4ade80; }
+    .log-error { background: rgba(255, 59, 48, 0.1); color: #f87171; }
+    .log-warning { background: rgba(255, 159, 10, 0.1); color: #fbbf24; }
+    .log-info { background: rgba(10, 132, 255, 0.1); color: #60a5fa; }
+    .status-box {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 16px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .timer {
+      display: inline-block;
+      background: rgba(212, 134, 10, 0.2);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #F4C76B;
+      margin-left: 8px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .badge-live { background: #FF3B30; color: white; }
+    .badge-cached { background: #FF9F0A; color: white; }
+    .badge-ok { background: #34C759; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔴 Virtual Live Test - Complete</h1>
+    <p class="subtitle">Testing that audio ALWAYS jumps to live position when resuming</p>
+
+    <div class="test-card">
+      <h2>What is "Virtual Live"?</h2>
+      <p style="line-height: 1.6; margin-bottom: 12px;">
+        Virtual Live means the audio behaves like a real live radio stream. When you pause for 10 minutes and resume, 
+        it should jump forward 10 minutes to stay synchronized with the "live" timeline.
+      </p>
+      <p style="line-height: 1.6; color: rgba(255, 255, 255, 0.7);">
+        <strong style="color: #34C759;">✅ CORRECT:</strong> Pause at 4:20, wait 10 min, resume at 4:30<br>
+        <strong style="color: #FF3B30;">❌ WRONG:</strong> Pause at 4:20, wait 10 min, resume at 4:20 (cached)
+      </p>
+    </div>
+
+    <div class="test-card">
+      <h2>Test Scenarios</h2>
+      
+      <div class="test-scenario">
+        <h3>Scenario 1: Basic Pause/Resume</h3>
+        <div class="step">Click "Start Amritvela" below</div>
+        <div class="step">Note the current time in console (e.g., "Track 5 at 1234s")</div>
+        <div class="step">Click "Pause" and wait 30 seconds</div>
+        <div class="step">Click "Resume"</div>
+        <div class="expected">
+          <strong>✅ Expected:</strong> Audio should jump forward ~30 seconds. Console should show 
+          "🔴 JUMPING TO LIVE: 1234s → 1264s (+30s)"
+        </div>
+      </div>
+
+      <div class="test-scenario">
+        <h3>Scenario 2: Long Pause</h3>
+        <div class="step">Start playing</div>
+        <div class="step">Pause for 2-3 minutes</div>
+        <div class="step">Resume</div>
+        <div class="expected">
+          <strong>✅ Expected:</strong> Audio should jump forward 2-3 minutes. You should hear different content, 
+          not where you left off.
+        </div>
+      </div>
+
+      <div class="test-scenario">
+        <h3>Scenario 3: Page Navigation</h3>
+        <div class="step">Start playing</div>
+        <div class="step">Click "Go to Dashboard"</div>
+        <div class="step">Wait 20 seconds</div>
+        <div class="step">Click browser back button</div>
+        <div class="expected">
+          <strong>✅ Expected:</strong> Mini player should auto-resume at live position (20 seconds ahead)
+        </div>
+      </div>
+
+      <div class="test-scenario">
+        <h3>Scenario 4: Darbar Live Stream</h3>
+        <div class="step">Click "Test Gurbani Radio Page"</div>
+        <div class="step">Switch to Darbar Sahib</div>
+        <div class="step">Play, pause, wait 10 seconds, resume</div>
+        <div class="expected">
+          <strong>✅ Expected:</strong> Fresh connection to live stream. Console shows 
+          "🔴 DARBAR LIVE: Reconnecting with fresh URL"
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card">
+      <h2>Quick Test Controls</h2>
+      <button onclick="startAmritvela()">🎵 Start Amritvela</button>
+      <button onclick="pauseAudio()">⏸️ Pause</button>
+      <button onclick="resumeAudio()">▶️ Resume (Should Jump to Live)</button>
+      <button onclick="goToDashboard()" class="secondary">🏠 Go to Dashboard</button>
+      <button onclick="openGurbaniRadio()" class="secondary">📻 Test Gurbani Radio Page</button>
+      <button onclick="clearCache()" class="secondary">🗑️ Clear Cache</button>
+    </div>
+
+    <div class="test-card">
+      <h2>Live Status</h2>
+      <div class="status-box" id="status">
+        <div>Status: <span id="statusText">Ready to test</span></div>
+        <div>Current Time: <span id="currentTime" class="timer">--:--</span></div>
+        <div>Paused At: <span id="pausedAt" class="timer">--:--</span></div>
+        <div>Time Elapsed: <span id="elapsed" class="timer">0s</span></div>
+        <div>Expected Jump: <span id="expectedJump" class="timer">0s</span></div>
+      </div>
+    </div>
+
+    <div class="test-card">
+      <h2>Console Logs <span class="badge badge-live">LIVE</span></h2>
+      <div class="console-log" id="consoleLogs">
+        <div class="log-info">Waiting for logs... Start playing to see activity.</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="lib/global-mini-player.js"></script>
+  <script>
+    let pausedTime = 0;
+    let pausedAt = 0;
+    let statusInterval = null;
+
+    // Intercept console.log
+    const originalLog = console.log;
+    const logsEl = document.getElementById('consoleLogs');
+    let logCount = 0;
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.join(' ');
+      
+      if (message.includes('[GMP]') || message.includes('[GR]')) {
+        logCount++;
+        const div = document.createElement('div');
+        
+        if (message.includes('✅')) div.className = 'log-success';
+        else if (message.includes('❌')) div.className = 'log-error';
+        else if (message.includes('🔴') || message.includes('⚠️')) div.className = 'log-warning';
+        else div.className = 'log-info';
+        
+        const time = new Date().toLocaleTimeString();
+        div.textContent = `[${time}] ${message}`;
+        logsEl.appendChild(div);
+        logsEl.scrollTop = logsEl.scrollHeight;
+        
+        if (logCount > 100) {
+          logsEl.removeChild(logsEl.firstChild);
+          logCount--;
+        }
+      }
+    };
+
+    function updateStatus(text, badge = '') {
+      document.getElementById('statusText').innerHTML = text + (badge ? ` <span class="badge ${badge}">${badge.replace('badge-', '')}</span>` : '');
+    }
+
+    function startAmritvela() {
+      if (window.GlobalMiniPlayer) {
+        window.GlobalMiniPlayer.play('amritvela');
+        updateStatus('Playing Amritvela', 'badge-live');
+        pausedAt = 0;
+        pausedTime = 0;
+        startStatusUpdates();
+      } else {
+        updateStatus('GlobalMiniPlayer not loaded', 'badge-error');
+      }
+    }
+
+    function pauseAudio() {
+      if (window.GlobalMiniPlayer) {
+        const audio = window.GlobalMiniPlayer.getAudio();
+        pausedTime = audio ? audio.currentTime : 0;
+        pausedAt = Date.now();
+        window.GlobalMiniPlayer.pause();
+        updateStatus('Paused - Timer running', 'badge-cached');
+        document.getElementById('pausedAt').textContent = formatTime(pausedTime);
+      }
+    }
+
+    function resumeAudio() {
+      if (window.GlobalMiniPlayer) {
+        const elapsed = pausedAt ? (Date.now() - pausedAt) / 1000 : 0;
+        updateStatus(`Resuming... (should jump +${Math.floor(elapsed)}s)`, 'badge-warning');
+        window.GlobalMiniPlayer.toggle();
+        
+        setTimeout(() => {
+          const audio = window.GlobalMiniPlayer.getAudio();
+          const newTime = audio ? audio.currentTime : 0;
+          const actualJump = newTime - pausedTime;
+          
+          if (actualJump > 5) {
+            updateStatus(`✅ SUCCESS! Jumped ${Math.floor(actualJump)}s forward`, 'badge-ok');
+          } else {
+            updateStatus(`⚠️ WARNING: Only jumped ${Math.floor(actualJump)}s`, 'badge-cached');
+          }
+        }, 2000);
+      }
+    }
+
+    function goToDashboard() {
+      window.location.href = 'Dashboard/dashboard.html';
+    }
+
+    function openGurbaniRadio() {
+      window.open('GurbaniRadio/gurbani-radio.html', '_blank');
+    }
+
+    function clearCache() {
+      localStorage.removeItem('anhad_global_audio');
+      updateStatus('Cache cleared', 'badge-ok');
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startStatusUpdates() {
+      if (statusInterval) clearInterval(statusInterval);
+      
+      statusInterval = setInterval(() => {
+        const audio = window.GlobalMiniPlayer?.getAudio();
+        if (audio && !audio.paused) {
+          document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+          document.getElementById('elapsed').textContent = '0s';
+          document.getElementById('expectedJump').textContent = '0s';
+        } else if (pausedAt) {
+          const elapsed = (Date.now() - pausedAt) / 1000;
+          document.getElementById('elapsed').textContent = Math.floor(elapsed) + 's';
+          document.getElementById('expectedJump').textContent = '+' + Math.floor(elapsed) + 's';
+        }
+      }, 100);
+    }
+
+    // Initial status
+    setTimeout(() => {
+      if (window.GlobalMiniPlayer) {
+        updateStatus('Ready to test', 'badge-ok');
+      } else {
+        updateStatus('GlobalMiniPlayer failed to load', 'badge-error');
+      }
+    }, 500);
+  </script>
+</body>
+</html>

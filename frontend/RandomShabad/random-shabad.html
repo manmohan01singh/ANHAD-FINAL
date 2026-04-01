@@ -1,16 +1,38 @@
 ﻿<!DOCTYPE html>
-<html lang="pa" dir="ltr" data-theme="dark">
+<html lang="pa" dir="ltr">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#0a0a12">
+    <meta name="theme-color" content="#FAF8F5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>ਰੈਂਡਮ ਸ਼ਬਦ | Random Shabad — ANHAD</title>
     
     <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    
+    <!-- Global Theme System -->
+    <script>
+        document.documentElement.setAttribute('data-global-theme', 'force');
+    </script>
+    <script src="../lib/global-theme.js"></script>
     
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

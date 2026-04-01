@@ -431,10 +431,21 @@ const StorageManager = {
      * Initialize storage and sync with IndexedDB
      */
     async init() {
-        // Wait for GurbaniStorage to be ready
-        if (window.GurbaniStorage) {
-            await window.GurbaniStorage.init();
-            await this.syncFromIndexedDB();
+        try {
+            // Wait for GurbaniStorage to be ready (optional dependency)
+            if (window.GurbaniStorage) {
+                try {
+                    await window.GurbaniStorage.init();
+                    await this.syncFromIndexedDB();
+                } catch (error) {
+                    console.warn('GurbaniStorage init failed, continuing without IndexedDB sync:', error);
+                }
+            } else {
+                console.log('GurbaniStorage not available, using localStorage only');
+            }
+        } catch (error) {
+            console.warn('StorageManager init error:', error);
+            // Don't throw - allow app to continue with localStorage only
         }
     },
 
@@ -468,6 +479,7 @@ const StorageManager = {
             }
         } catch (error) {
             console.warn('IndexedDB sync error:', error);
+            // Don't throw - allow app to continue
         }
     },
 

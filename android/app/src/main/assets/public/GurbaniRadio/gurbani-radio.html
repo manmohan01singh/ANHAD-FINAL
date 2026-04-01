@@ -8,9 +8,13 @@
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- Global Theme System -->
     <script src="../lib/global-theme.js"></script>
+    <link rel="stylesheet" href="../css/responsive-fix.css">
     <link rel="icon" type="image/png" href="../favicon.ico">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +22,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/anhad-clay.css?v=1">
+    <link rel="stylesheet" href="gurbani-radio-fix.css?v=2.0.1">
     <script src="../js/anhad-popup.js" defer></script>
+    <script src="gurbani-radio-fix.js?v=2.0.1"></script>
     
     <style>
     /* ═══════════════════════════════════════════════════════════════════════════════
@@ -1143,12 +1149,15 @@
             baseUrl: 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
             // Smart URL resolution to fix mobile app CORS and localhost issues
             syncUrl: (() => {
+                // For Capacitor apps, always use production URL
+                if (window.Capacitor) return 'https://anhad-final.onrender.com/api/radio/live';
+                
                 const host = window.location.hostname;
                 const port = window.location.port;
                 if (port === '3000' || port === '3001') return '/api/radio/live';
                 if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000/api/radio/live';
                 if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000/api/radio/live`;
-                return 'http://localhost:3000/api/radio/live';
+                return 'https://anhad-final.onrender.com/api/radio/live';
             })(),
             type: 'playlist',
             image: '../assets/Darbar-sahib-AMRITVELA.webp',

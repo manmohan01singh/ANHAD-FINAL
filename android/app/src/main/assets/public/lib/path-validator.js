@@ -24,7 +24,7 @@ const PathValidator = {
             'calendar': './Calendar/Gurupurab-Calendar.html',
             'reminders': './reminders/smart-reminders.html',
             'naam-abhyas': './NaamAbhyas/naam-abhyas.html',
-            'gurbani-khoj': './SehajPaath/gurbani-search.html'
+            'gurbani-khoj': './GurbaniKhoj/gurbani-khoj.html'
         },
         // From any subfolder (relative to parent)
         'subfolder': {
@@ -38,7 +38,7 @@ const PathValidator = {
             'calendar': '../Calendar/Gurupurab-Calendar.html',
             'reminders': '../reminders/smart-reminders.html',
             'naam-abhyas': '../NaamAbhyas/naam-abhyas.html',
-            'gurbani-khoj': '../SehajPaath/gurbani-search.html'
+            'gurbani-khoj': '../GurbaniKhoj/gurbani-khoj.html'
         }
     },
 
@@ -293,7 +293,7 @@ class AppIntegrityChecker {
             { path: './NitnemTracker/nitnem-tracker.html', name: 'Tracker' },
             { path: './NaamAbhyas/naam-abhyas.html', name: 'Naam Abhyas' },
             { path: './SehajPaath/sehaj-paath.html', name: 'Sehaj Paath' },
-            { path: './SehajPaath/gurbani-search.html', name: 'Gurbani Search' },
+            { path: './GurbaniKhoj/gurbani-khoj.html', name: 'Gurbani Search' },
             { path: './Calendar/Gurupurab-Calendar.html', name: 'Calendar' },
             { path: './Hukamnama/daily-hukamnama.html', name: 'Hukamnama' },
             { path: './reminders/smart-reminders.html', name: 'Reminders' },

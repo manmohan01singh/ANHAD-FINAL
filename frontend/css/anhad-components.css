@@ -338,19 +338,6 @@
     box-shadow: var(--shadow-xl), 0 0 40px rgba(232, 163, 23, 0.08);
 }
 
-.hero-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--r-2xl);
-    padding: 1.5px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), transparent 60%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 20;
-}
-
 .hero-card:hover {
     transform: translateY(-8px) scale(1.01);
     box-shadow: var(--shadow-2xl), 0 0 60px rgba(232, 163, 23, 0.15);

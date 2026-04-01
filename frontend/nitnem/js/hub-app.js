@@ -463,6 +463,13 @@
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
+        
+        // Also set/remove dark class for compatibility with other pages
+        if (theme === 'dark' || theme === 'amoled') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
 
         // Update meta theme-color
         const metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -488,6 +495,8 @@
                 favorites: state.favorites,
                 settings: state.settings
             }));
+            // Sync theme to global key so other pages can read it
+            localStorage.setItem('anhad_theme', state.settings.theme);
         } catch (e) {
             console.warn('Could not save state:', e);
         }
@@ -495,12 +504,22 @@
 
     function loadState() {
         try {
+            // First check the global anhad_theme (used by other pages)
+            const globalTheme = localStorage.getItem('anhad_theme');
+            if (globalTheme) {
+                state.settings.theme = globalTheme;
+            }
+            
+            // Then load from hub-specific state (may override)
             const saved = localStorage.getItem('nitnemHub_state');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.recentlyRead = data.recentlyRead || [];
                 state.favorites = data.favorites || [];
-                state.settings = { ...state.settings, ...data.settings };
+                // Only override theme if global wasn't set
+                if (!globalTheme && data.settings) {
+                    state.settings = { ...state.settings, ...data.settings };
+                }
             }
         } catch (e) {
             console.warn('Could not load state:', e);

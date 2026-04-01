@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="preconnect" href="http://localhost:3000">
+  <link rel="preconnect" href="https://anhad-final.onrender.com">
   <link rel="preconnect" href="https://api.banidb.com">
   <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
   <link rel="stylesheet" href="./css/mobile-lock.css">
@@ -565,6 +565,12 @@
   <script src="lib/fetch-utils.js"></script>
   <!-- Critical: bfcache recovery — must load first to clean stuck states on back-button -->
   <script src="lib/page-lifecycle.js"></script>
+  
+  <!-- Cache Optimization for instant loading -->
+  <script src="lib/gurbani-db.js"></script>
+  <script src="lib/bani-cache-optimizer.js"></script>
+  <script src="lib/optimized-image-loader.js"></script>
+  
   <script src="lib/audio-preload.js"></script>
   <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
   <script src="lib/audio-coordinator.js"></script>

@@ -1,12 +1,34 @@
 <!DOCTYPE html>
-<html lang="pa" dir="ltr" data-theme="dark">
+<html lang="pa" dir="ltr">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0A0A0F">
+  <meta name="theme-color" content="#FAF8F5">
   
   <title>Favorites | Gurbani Live</title>
+  
+  <!-- Global Theme System -->
+  <script>
+    document.documentElement.setAttribute('data-global-theme', 'force');
+  </script>
+  <script src="../../lib/global-theme.js"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -97,16 +97,33 @@
         }
       };
 
-      this.currentTheme = localStorage.getItem('calendar_theme') || 'light';
+      this.currentTheme = localStorage.getItem('anhad_theme') || this.getInitialThemeFromGlobal();
       this.init();
     }
 
     init() {
-      this.applyTheme(this.currentTheme);
+      this.applyTheme(this.currentTheme, false);
       this.bindSettingsModal();
     }
 
-    applyTheme(themeName) {
+    getInitialThemeFromGlobal() {
+      // Sync with global theme on first visit for consistent UX
+      const globalTheme = localStorage.getItem('anhad_theme');
+      if (globalTheme === 'dark') return 'dark';
+      return 'light';
+    }
+
+    getThemeColor(themeName) {
+      const colors = {
+        light: '#F2F2F7',
+        dark: '#0d0d12',
+        divineGold: '#1a1510',
+        sepia: '#f4ecd8'
+      };
+      return colors[themeName] || '#F2F2F7';
+    }
+
+    applyTheme(themeName, save = true) {
       const theme = this.themes[themeName];
       if (!theme) return;
 
@@ -114,7 +131,18 @@
         document.documentElement.style.setProperty(prop, value);
       });
 
-      localStorage.setItem('calendar_theme', themeName);
+      // Update html data-theme attribute for CSS targeting
+      document.documentElement.setAttribute('data-theme', themeName);
+
+      // Update meta theme-color for mobile status bar
+      const metaTheme = document.getElementById('themeColorMeta');
+      if (metaTheme) {
+        metaTheme.content = this.getThemeColor(themeName);
+      }
+
+      if (save) {
+        localStorage.setItem('anhad_theme', themeName);
+      }
       this.currentTheme = themeName;
       this.updateActiveThemeButton();
     }
@@ -260,21 +288,33 @@
   }
 
   // FIX: Helper function to categorize events as memorial or celebration
-  function getEventCategory(type) {
-    const memorialTypes = ['shaheedi', 'historical'];
-    const celebrationTypes = ['prakash', 'gurgaddi'];
+  function getEventCategory(type, eventName = '') {
+    const name = String(eventName || '').toLowerCase();
     
-    // Check if event name contains "Jyoti Jyot" or "Shaheedi"
-    if (memorialTypes.includes(type)) {
-      return 'memorial';
+    // PRIORITY 1: Check event name for explicit memorial indicators
+    if (name.includes('jyoti jot') || name.includes('joti jot') || 
+        name.includes('ਜੋਤੀ ਜੋਤ') || name.includes('shaheedi') || 
+        name.includes('ਸ਼ਹੀਦੀ') || name.includes('barsi')) {
+      return 'remembrance';
     }
     
-    if (celebrationTypes.includes(type)) {
+    // PRIORITY 2: Check type for memorial events
+    const memorialTypes = ['shaheedi', 'historical', 'joti-jot', 'jyoti-jot', 'barsi'];
+    if (memorialTypes.includes(String(type).toLowerCase())) {
+      return 'remembrance';
+    }
+    
+    // PRIORITY 3: Check for celebration events
+    const celebrationTypes = ['prakash', 'gurgaddi', 'janam', 'vaisakhi', 'dastar'];
+    if (celebrationTypes.includes(String(type).toLowerCase()) || 
+        name.includes('prakash') || name.includes('gurgaddi') || 
+        name.includes('ਪ੍ਰਕਾਸ਼') || name.includes('ਗੁਰਗੱਦੀ') ||
+        name.includes('vaisakhi') || name.includes('ਵੈਸਾਖੀ')) {
       return 'celebration';
     }
     
     // Default to neutral
-    return '';
+    return 'neutral';
   }
 
   function nowLocalTimeHHMM() {
@@ -346,13 +386,30 @@
   async function boot() {
     updateTodayCard();
 
-    // Clear caches to ensure fresh data for 2026
-    loadLocalDataset._cache = null;
-    loadLocalDataset._cache2026 = null;
-    state.eventsByYear.clear();
-    localStorage.removeItem(STORAGE.CACHE);
+    // FIX: Cache-first loading - show cached data immediately, refresh in background
+    const cached = localStorage.getItem(STORAGE.CACHE);
+    const cacheTime = localStorage.getItem(STORAGE.CACHE + '_time');
+    const now = Date.now();
+    const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-    // FIX: Add loading state to prevent calendar from disappearing
+    // Show cached data immediately if valid
+    if (cached && cacheTime && (now - parseInt(cacheTime)) < CACHE_TTL) {
+      try {
+        const parsed = JSON.parse(cached);
+        state.eventsByYear = new Map(parsed);
+        state.events = combineLoadedEvents();
+        render();
+        console.log('[Calendar] Loaded from cache');
+        
+        // Hide loader immediately if we have cached data
+        const loader = qs('calendarLoader');
+        if (loader) loader.classList.add('hidden');
+      } catch (e) {
+        console.warn('[Calendar] Cache parse error, will fetch fresh');
+      }
+    }
+
+    // Add loading state
     const calendarSection = qs('calendarSection');
     if (calendarSection) {
       calendarSection.classList.add('loading');
@@ -364,22 +421,30 @@
       await ensureYearLoaded(year + 1);
       state.events = combineLoadedEvents();
 
-      // FIX: Ensure events array is valid
+      // Ensure events array is valid
       if (!Array.isArray(state.events)) {
         console.warn('⚠️ Events not loaded properly, using empty array');
         state.events = [];
       }
 
+      // Save to cache
+      localStorage.setItem(STORAGE.CACHE, JSON.stringify(Array.from(state.eventsByYear.entries())));
+      localStorage.setItem(STORAGE.CACHE + '_time', String(now));
+      console.log('[Calendar] Fresh data cached');
+
       scheduleLocalNotifications();
     } catch (error) {
       console.error('Calendar boot error:', error);
-      // FIX: Use empty events array on error to prevent crashes
       state.events = state.events || [];
     } finally {
-      // FIX: Always render and remove loading state
       if (calendarSection) {
         calendarSection.classList.remove('loading');
       }
+      
+      // Always hide global loader when done
+      const loader = qs('calendarLoader');
+      if (loader) loader.classList.add('hidden');
+      
       render();
     }
 
@@ -584,17 +649,24 @@
       const row = document.createElement('div');
       
       // FIX: Add event type classes for styling (memorial vs celebration)
-      const eventCategory = getEventCategory(e.type);
-      row.className = `event-row ${eventCategory}`;
+      const eventCategory = getEventCategory(e.type, e.name_en || e.name_pa);
+      const isToday = days === 0;
+      row.className = `event-row event-${eventCategory}${isToday ? ' event-today' : ''}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
+      row.setAttribute('data-event-category', eventCategory);
 
       const dotColor = e.color || TYPE_COLORS[e.type] || '#999';
       
       // FIX: Different badge text for memorial vs celebration events
-      const badgeText = eventCategory === 'memorial' 
-        ? (days === 0 ? 'Remembrance Today' : `${days} days`) 
-        : (days === 0 ? 'Celebrate Today' : `${days} days`);
+      let badgeText = '';
+      if (eventCategory === 'memorial') {
+        badgeText = days === 0 ? 'In Remembrance' : `${days} days`;
+      } else if (eventCategory === 'celebration') {
+        badgeText = days === 0 ? 'Today' : `${days} days`;
+      } else {
+        badgeText = days === 0 ? 'Today' : `${days} days`;
+      }
       
       row.innerHTML = `
         <div class="event-left">
@@ -754,10 +826,12 @@
       const row = document.createElement('div');
       
       // FIX: Add event type classes for styling (memorial vs celebration)
-      const eventCategory = getEventCategory(e.type);
-      row.className = `event-row ${eventCategory}`;
+      const eventCategory = getEventCategory(e.type, e.name_en || e.name_pa);
+      const isToday = days === 0;
+      row.className = `event-row event-${eventCategory}${isToday ? ' event-today' : ''}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
+      row.setAttribute('data-event-category', eventCategory);
 
       const dotColor = e.color || TYPE_COLORS[e.type] || '#999';
       const when = days === 0 ? 'Today' : days > 0 ? `${days} days` : `${Math.abs(days)} days ago`;

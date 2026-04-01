@@ -75,6 +75,7 @@
         }
 
         saveAnalyticsData(data);
+        console.log(`[Analytics] updateDailyData: ${type} +${value}, today=${today}, data=`, data[today]);
         renderChart();
     }
 
@@ -101,21 +102,60 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // CHART RENDERING
+    // CHART RENDERING - VERBOSE LOGGING FOR DEBUGGING
     // ═══════════════════════════════════════════════════════════════════════════
 
     function renderChart() {
         const container = document.getElementById('analyticsChart');
-        if (!container) return;
+        if (!container) {
+            console.log('[Analytics] Chart container not found');
+            return;
+        }
 
         const data = getLast7DaysData();
         
-        // Calculate max values for scaling
-        const maxRead = Math.max(...data.map(d => d.readPages), 10);
-        const maxListen = Math.max(...data.map(d => d.listenMinutes), 30);
-        const maxNitnem = Math.max(...data.map(d => d.nitnemCount), 5);
+        // Log all 7 days data for debugging
+        console.log('[Analytics] Rendering chart with data:', data.map(d => ({
+            day: d.label,
+            read: d.readPages,
+            listen: d.listenMinutes,
+            nitnem: d.nitnemCount
+        })));
+        
+        // Fixed target values for consistent scaling
+        const TARGET_PAGES = 5;      // Daily goal for reading
+        const TARGET_MINUTES = 30;   // Daily goal for listening
+        const TARGET_NITNEM = 1;     // Daily goal (1 = full day complete)
+        
+        // GOAL LINE at 50% height = 100% achievement
+        // Bars at 50% = goal achieved, bars above 50% = exceeded goal
+        const GOAL_LINE_PERCENT = 50;
+        
+        // Calculate bar height: ratio * 50% 
+        // - Read Gurbani (Sehaj Paath): Can exceed goal line (uncapped for over-achievement)
+        // - Listen Kirtan: Cap at goal line (50%)
+        // - Nitnem: Touch goal line when complete (50%)
+        const getBarHeight = (value, target, type) => {
+            if (!value || value <= 0) return 2;
+            const ratio = value / target;
+            // 100% target = 50% height
+            let heightPercent = ratio * 50;
+            // For reading: allow overflow above goal line (can go beyond 50%)
+            // For listening: cap at goal line (50%)
+            // For nitnem: if complete (1), set to exactly 50% to touch goal line
+            if (type === 'listen') {
+                heightPercent = Math.min(heightPercent, 50);
+            } else if (type === 'nitnem') {
+                // If nitnem is complete (value === 1), set to exactly 50% to touch goal line
+                heightPercent = value === 1 ? 50 : Math.min(heightPercent, 50);
+            }
+            // For read: allow any height (can exceed 50%)
+            const finalHeight = Math.max(heightPercent, 2);
+            console.log(`[Chart] ${type}=${value}, target=${target}, ratio=${ratio.toFixed(2)}, height=${finalHeight.toFixed(1)}%`);
+            return finalHeight;
+        };
 
-        // Generate HTML
+        // Generate HTML with target line
         container.innerHTML = `
             <div class="analytics-chart">
                 <div class="chart-header">
@@ -126,15 +166,15 @@
                     <div class="chart-legend">
                         <div class="legend-item">
                             <span class="legend-dot legend-dot--blue"></span>
-                            <span class="legend-label">Read Gurbani</span>
+                            <span class="legend-label">Read Gurbani (${TARGET_PAGES} pages)</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-dot legend-dot--yellow"></span>
-                            <span class="legend-label">Listen Kirtan</span>
+                            <span class="legend-label">Listen Kirtan (${TARGET_MINUTES} min)</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-dot legend-dot--green"></span>
-                            <span class="legend-label">Complete Nitnem</span>
+                            <span class="legend-label">Complete Nitnem (daily)</span>
                         </div>
                     </div>
                 </div>
@@ -142,26 +182,30 @@
                     ${data.map(day => `
                         <div class="chart-day">
                             <div class="chart-bars">
+                                <!-- Target Line - positioned inside each chart-bars for correct coordinate alignment -->
+                                <div class="chart-target-line" style="bottom: ${GOAL_LINE_PERCENT}%; top: auto;"></div>
+                                
                                 <div class="chart-bar chart-bar--blue" 
-                                     style="height: ${(day.readPages / maxRead) * 100}%"
+                                     style="height: ${getBarHeight(day.readPages, TARGET_PAGES, 'read')}%"
                                      data-value="${day.readPages}"
                                      title="${day.readPages} pages read">
                                     <span class="bar-value">${day.readPages}</span>
                                 </div>
                                 <div class="chart-bar chart-bar--yellow" 
-                                     style="height: ${(day.listenMinutes / maxListen) * 100}%"
+                                     style="height: ${getBarHeight(day.listenMinutes, TARGET_MINUTES, 'listen')}%"
                                      data-value="${day.listenMinutes}"
                                      title="${day.listenMinutes} min listened">
                                     <span class="bar-value">${day.listenMinutes}</span>
                                 </div>
                                 <div class="chart-bar chart-bar--green" 
-                                     style="height: ${(day.nitnemCount / maxNitnem) * 100}%"
+                                     style="height: ${getBarHeight(day.nitnemCount, TARGET_NITNEM, 'nitnem')}%"
                                      data-value="${day.nitnemCount}"
-                                     title="${day.nitnemCount} nitnem completed">
-                                    <span class="bar-value">${day.nitnemCount}</span>
+                                     title="${day.nitnemCount === 1 ? 'Nitnem Complete ✓' : 'Nitnem Incomplete'}">
+                                    <span class="bar-value">${day.nitnemCount === 1 ? '✓' : '✗'}</span>
                                 </div>
                             </div>
                             <div class="chart-label">${day.label}</div>
+                            <div class="chart-goal-label">GOAL</div>
                         </div>
                     `).join('')}
                 </div>
@@ -223,58 +267,167 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function syncWithUserStats() {
-        if (!window.AnhadStats) return;
-
-        const stats = window.AnhadStats.getStats();
+        // FIXED: Conservative sync - preserve existing data, only supplement from other sources
         const today = getTodayString();
         const data = getAnalyticsData();
 
-        // Sync today's data from AnhadStats
+        // IMPORTANT: Don't overwrite existing today's data with zeros
+        // Only create new entry if no data exists at all
         if (!data[today]) {
-            data[today] = {
-                readPages: stats.todayPagesRead || 0,
-                listenMinutes: stats.todayListeningMinutes || 0,
-                nitnemCount: stats.todayNitnemCount || 0
-            };
-            saveAnalyticsData(data);
+            data[today] = { readPages: 0, listenMinutes: 0, nitnemCount: 0 };
         }
+        
+        // Store current values to prevent overwriting
+        const currentRead = data[today].readPages || 0;
+        const currentListen = data[today].listenMinutes || 0;
+        const currentNitnem = data[today].nitnemCount || 0;
+        
+        // CRITICAL: Skip syncing listening minutes - Kirtan tracker updates directly
+        // Only sync if we have NO listening data at all (fresh start)
+        const skipListeningSync = currentListen > 0;
+        
+        // Helper to safely get values with max cap to prevent runaway inflation
+        // Only update if incoming > current (never decrease values)
+        const safeUpdate = (current, incoming, maxReasonable) => {
+            if (!incoming || incoming <= 0) return current; // Don't use zero/empty values
+            if (incoming <= current) return current; // Keep higher existing value
+            if (incoming > maxReasonable) {
+                console.warn(`[Analytics] Ignoring inflated value: ${incoming} (max reasonable: ${maxReasonable})`);
+                return current;
+            }
+            return incoming;
+        };
+        
+        // Max reasonable values for a single day
+        const MAX_REASONABLE = {
+            pages: 50,        // 50 pages is a lot for one day
+            minutes: 180,     // 3 hours of listening
+            nitnem: 11        // All banis
+        };
+        
+        // Source 1: AnhadStats global object (only use if has actual data)
+        if (window.AnhadStats) {
+            try {
+                const stats = window.AnhadStats.getStats();
+                if (stats) {
+                    // Only update if stats has actual non-zero values greater than current
+                    if (stats.todayPagesRead > currentRead) {
+                        data[today].readPages = safeUpdate(currentRead, stats.todayPagesRead, MAX_REASONABLE.pages);
+                    }
+                    // CRITICAL: Only sync listening if we have no current data
+                    if (!skipListeningSync && stats.todayListeningMinutes > currentListen) {
+                        data[today].listenMinutes = safeUpdate(currentListen, stats.todayListeningMinutes, MAX_REASONABLE.minutes);
+                    }
+                    if (stats.todayNitnemCount > currentNitnem) {
+                        // Ensure nitnem is capped at 1
+                        const safeNitnem = Math.min(stats.todayNitnemCount, 1);
+                        data[today].nitnemCount = safeUpdate(currentNitnem, safeNitnem, MAX_REASONABLE.nitnem);
+                    }
+                }
+            } catch (e) {
+                console.warn('[Analytics] Error syncing AnhadStats:', e);
+            }
+        }
+        
+        // Source 2: anhad_user_stats localStorage (only use if has actual data)
+        try {
+            const userStats = JSON.parse(localStorage.getItem('anhad_user_stats') || '{}');
+            if (userStats && userStats.daily) {
+                const todayStats = userStats.daily[today];
+                if (todayStats) {
+                    // Only update if incoming values are greater than current
+                    // CRITICAL: Skip listening sync if we already have data (Kirtan tracker is source of truth)
+                    if (!skipListeningSync && todayStats.listeningMinutes > data[today].listenMinutes) {
+                        data[today].listenMinutes = safeUpdate(data[today].listenMinutes, todayStats.listeningMinutes, MAX_REASONABLE.minutes);
+                    }
+                    if (todayStats.pagesRead > data[today].readPages) {
+                        data[today].readPages = safeUpdate(data[today].readPages, todayStats.pagesRead, MAX_REASONABLE.pages);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('[Analytics] Error reading user_stats:', e);
+        }
+        
+        // Source 3: Radio/Gurbani listening data (only if we have no current data)
+        if (!skipListeningSync) {
+            try {
+                const radioStats = JSON.parse(localStorage.getItem('anhad_radio_stats') || '{}');
+                if (radioStats && radioStats.dailyListening) {
+                    const todayListening = radioStats.dailyListening[today];
+                    if (todayListening) {
+                        const minutes = Math.round(todayListening / 60);
+                        if (minutes > data[today].listenMinutes) {
+                            data[today].listenMinutes = safeUpdate(data[today].listenMinutes, minutes, MAX_REASONABLE.minutes);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('[Analytics] Error reading radio_stats:', e);
+            }
+        }
+        
+        saveAnalyticsData(data);
+        console.log('[Analytics] Synced with UserStats (listening preserved):', data[today]);
     }
 
     function syncWithNitnemTracker() {
         try {
             const nitnemLog = localStorage.getItem('nitnemTracker_nitnemLog');
-            if (!nitnemLog) return;
-
-            const log = JSON.parse(nitnemLog);
+            const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || 
+                '{"amritvela":[],"rehras":[],"sohila":[]}');
             const data = getAnalyticsData();
+            let hasUpdates = false;
 
-            // Sync last 7 days from Nitnem Tracker
-            for (let i = 0; i < 7; i++) {
-                const dateString = getDateString(i);
-                if (log[dateString]) {
+            // Calculate total banis expected per day
+            const totalBanisPerDay = (selectedBanis.amritvela?.length || 0) + 
+                                     (selectedBanis.rehras?.length || 0) + 
+                                     (selectedBanis.sohila?.length || 0);
+
+            // Sync from Nitnem Tracker log
+            if (nitnemLog && totalBanisPerDay > 0) {
+                const log = JSON.parse(nitnemLog);
+                // Sync last 7 days from Nitnem Tracker
+                for (let i = 0; i < 7; i++) {
+                    const dateString = getDateString(i);
                     if (!data[dateString]) {
-                        data[dateString] = {
-                            readPages: 0,
-                            listenMinutes: 0,
-                            nitnemCount: 0
-                        };
+                        data[dateString] = { readPages: 0, listenMinutes: 0, nitnemCount: 0 };
                     }
                     
-                    // Count completed banis for the day
-                    const dayLog = log[dateString];
-                    let completedCount = 0;
-                    
-                    ['amritvela', 'rehras', 'sohila'].forEach(period => {
-                        if (dayLog[period]) {
-                            completedCount += Object.values(dayLog[period]).filter(v => v === true).length;
-                        }
-                    });
-                    
-                    data[dateString].nitnemCount = completedCount;
+                    if (log[dateString]) {
+                        // Count completed banis for the day
+                        const dayLog = log[dateString];
+                        let completedCount = 0;
+                        
+                        ['amritvela', 'rehras', 'sohila'].forEach(period => {
+                            if (dayLog[period]) {
+                                if (Array.isArray(dayLog[period])) {
+                                    completedCount += dayLog[period].length;
+                                } else if (typeof dayLog[period] === 'object') {
+                                    completedCount += Object.values(dayLog[period]).filter(v => v === true).length;
+                                }
+                            }
+                        });
+                        
+        // CRITICAL FIX: Store 0 or 1 (incomplete/complete) instead of bani count
+        // This prevents bar from exceeding goal line
+        const isComplete = completedCount >= totalBanisPerDay && totalBanisPerDay > 0;
+        const newNitnemCount = isComplete ? 1 : 0;
+        
+        // Only update if value changed
+        if (data[dateString].nitnemCount !== newNitnemCount) {
+            data[dateString].nitnemCount = newNitnemCount;
+            console.log(`[Analytics] ${dateString}: ${completedCount}/${totalBanisPerDay} banis → ${isComplete ? 'COMPLETE (1)' : 'INCOMPLETE (0)'}`);
+            hasUpdates = true;
+        }
+                    }
                 }
             }
 
-            saveAnalyticsData(data);
+            if (hasUpdates) {
+                saveAnalyticsData(data);
+                console.log('[Analytics] Synced with Nitnem Tracker');
+            }
         } catch (e) {
             console.warn('[Analytics] Error syncing with Nitnem Tracker:', e);
         }
@@ -305,9 +458,12 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function init() {
-        syncWithUserStats();
-        syncWithNitnemTracker();
+        // FIXED: Don't sync on init - this overwrites tracked data with 0 from other sources
+        // Only render existing data from localStorage
         renderChart();
+        
+        // Sync only happens when events are received (statsUpdated, nitnemUpdated)
+        console.log('[Analytics] Initialized with stored data');
     }
 
     // Initialize when DOM is ready

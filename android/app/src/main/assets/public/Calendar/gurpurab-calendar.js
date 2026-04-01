@@ -202,8 +202,43 @@
     window.scrollTo(0, _savedScrollY);
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SCROLL STATE MANAGER - Fix flickering/reload on scroll
+  // ═══════════════════════════════════════════════════════════════════════════
+  const ScrollStateManager = {
+    init() {
+      // Restore scroll position on load
+      const savedScroll = sessionStorage.getItem('calendar_scroll_y');
+      if (savedScroll) {
+        requestAnimationFrame(() => {
+          window.scrollTo(0, parseInt(savedScroll));
+        });
+      }
+      
+      // Save scroll position (debounced)
+      let scrollTimeout;
+      window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          sessionStorage.setItem('calendar_scroll_y', window.scrollY);
+        }, 100);
+      }, { passive: true });
+      
+      console.log('✅ ScrollStateManager initialized');
+    }
+  };
+    document.body.style.top = '';
+    window.scrollTo(0, _savedScrollY);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    // Initialize scroll state manager FIRST
+    ScrollStateManager.init();
+    
+    // Initialize theme
     window.calendarTheme = new CalendarThemeEngine();
+    
+    // Continue with rest of initialization
     bindUI();
     boot().catch(() => {
       render();
@@ -257,6 +292,36 @@
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#039;');
+  }
+
+  // FIX: Helper function to categorize events as memorial or celebration
+  function getEventCategory(type, eventName = '') {
+    const name = String(eventName || '').toLowerCase();
+    
+    // PRIORITY 1: Check event name for explicit memorial indicators
+    if (name.includes('jyoti jot') || name.includes('joti jot') || 
+        name.includes('ਜੋਤੀ ਜੋਤ') || name.includes('shaheedi') || 
+        name.includes('ਸ਼ਹੀਦੀ') || name.includes('barsi')) {
+      return 'memorial';
+    }
+    
+    // PRIORITY 2: Check type for memorial events
+    const memorialTypes = ['shaheedi', 'historical', 'joti-jot', 'jyoti-jot', 'barsi'];
+    if (memorialTypes.includes(String(type).toLowerCase())) {
+      return 'memorial';
+    }
+    
+    // PRIORITY 3: Check for celebration events
+    const celebrationTypes = ['prakash', 'gurgaddi', 'janam', 'vaisakhi', 'dastar'];
+    if (celebrationTypes.includes(String(type).toLowerCase()) || 
+        name.includes('prakash') || name.includes('gurgaddi') || 
+        name.includes('ਪ੍ਰਕਾਸ਼') || name.includes('ਗੁਰਗੱਦੀ') ||
+        name.includes('vaisakhi') || name.includes('ਵੈਸਾਖੀ')) {
+      return 'celebration';
+    }
+    
+    // Default to neutral
+    return 'neutral';
   }
 
   function nowLocalTimeHHMM() {
@@ -564,11 +629,27 @@
       const d = e._date;
       const days = daysBetween(state.today, d);
       const row = document.createElement('div');
-      row.className = 'event-row';
+      
+      // FIX: Add event type classes for styling (memorial vs celebration)
+      const eventCategory = getEventCategory(e.type, e.name_en || e.name_pa);
+      const isToday = days === 0;
+      row.className = `event-row event-${eventCategory}${isToday ? ' event-today' : ''}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
+      row.setAttribute('data-event-category', eventCategory);
 
       const dotColor = e.color || TYPE_COLORS[e.type] || '#999';
+      
+      // FIX: Different badge text for memorial vs celebration events
+      let badgeText = '';
+      if (eventCategory === 'memorial') {
+        badgeText = days === 0 ? 'In Remembrance' : `${days} days`;
+      } else if (eventCategory === 'celebration') {
+        badgeText = days === 0 ? 'Today' : `${days} days`;
+      } else {
+        badgeText = days === 0 ? 'Today' : `${days} days`;
+      }
+      
       row.innerHTML = `
         <div class="event-left">
           <div class="event-title">${escapeHtml(e.name_en || '—')}</div>
@@ -576,7 +657,7 @@
         </div>
         <div class="event-right">
           <div class="dot" style="background:${escapeHtml(dotColor)}"></div>
-          <div class="days-left">${days === 0 ? 'Today' : `${days} days`}</div>
+          <div class="days-left">${badgeText}</div>
         </div>
       `;
 
@@ -725,9 +806,14 @@
       const d = e._date;
       const days = daysBetween(state.today, d);
       const row = document.createElement('div');
-      row.className = 'event-row';
+      
+      // FIX: Add event type classes for styling (memorial vs celebration)
+      const eventCategory = getEventCategory(e.type, e.name_en || e.name_pa);
+      const isToday = days === 0;
+      row.className = `event-row event-${eventCategory}${isToday ? ' event-today' : ''}`;
       row.tabIndex = 0;
       row.setAttribute('role', 'button');
+      row.setAttribute('data-event-category', eventCategory);
 
       const dotColor = e.color || TYPE_COLORS[e.type] || '#999';
       const when = days === 0 ? 'Today' : days > 0 ? `${days} days` : `${Math.abs(days)} days ago`;

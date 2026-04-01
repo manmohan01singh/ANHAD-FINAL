@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ━━━ NAVIGATION PATHS ━━━
   const NAV_PATHS = {
-    gurbaniRadioCard: 'GurbaniRadio/ios17-gurbani-radio.html',
+    gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
     randomShabadCard: 'RandomShabad/random-shabad.html',
     nitnemCard: 'nitnem/indexbani.html',
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
     island?.addEventListener('click', () => {
        if (island.classList.contains('playing')) {
          const stream = window.AnhadAudio?.getCurrentStream() || 'darbar';
-         window.location.href = stream === 'amritvela' ? 'GurbaniRadio/gurbani-radio.html?stream=amritvela' : 'GurbaniRadio/ios17-gurbani-radio.html';
+         window.location.href = stream === 'amritvela' ? 'GurbaniRadio/gurbani-radio.html?stream=amritvela' : 'GurbaniRadio/gurbani-radio.html';
        }
     });
 

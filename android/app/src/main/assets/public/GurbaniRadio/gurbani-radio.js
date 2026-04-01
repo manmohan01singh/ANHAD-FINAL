@@ -17,7 +17,10 @@
     // Smart localhost-aware API base — works on localhost:3000 AND Render
     const RENDER_BASE = (() => {
         try {
-            const port = window.location.port;
+// For Capacitor apps, always use production URL
+                if (window.Capacitor) return 'https://anhad-final.onrender.com';
+                
+                            const port = window.location.port;
             const host = window.location.hostname;
             if (port === '3000' || port === '3001') return 'http://localhost:3000';
             if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
@@ -264,15 +267,31 @@
         initThemeToggle() {
             const toggle = document.getElementById('themeToggle');
             const icon = document.getElementById('themeIcon');
-            const saved = localStorage.getItem('kirtan_player_theme') || 'dark';
-            if (saved === 'light') {
+            
+            // Sync with global theme instead of local storage
+            const globalTheme = localStorage.getItem('anhad_theme') || 'dark';
+            const isLight = globalTheme === 'light';
+            
+            if (isLight) {
                 document.body.classList.add('light-player');
                 if (icon) icon.className = 'fas fa-moon';
+            } else {
+                document.body.classList.remove('light-player');
+                if (icon) icon.className = 'fas fa-sun';
             }
+            
             toggle?.addEventListener('click', () => {
                 const isLight = document.body.classList.toggle('light-player');
-                localStorage.setItem('kirtan_player_theme', isLight ? 'light' : 'dark');
+                const newTheme = isLight ? 'light' : 'dark';
+                
+                // Save to both local and global theme
+                localStorage.setItem('kirtan_player_theme', newTheme);
+                localStorage.setItem('anhad_theme', newTheme);
+                
                 if (icon) icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+                
+                // Dispatch event for other components
+                window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
             });
         }
 

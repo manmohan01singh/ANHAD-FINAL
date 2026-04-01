@@ -1335,7 +1335,8 @@
         try {
             showStatus('Syncing with server...');
             const resp = await fetch(STREAMS.amritvela.syncUrl, { 
-                cache: 'no-store'
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
             });
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             
@@ -1343,23 +1344,36 @@
             // Use server position if available, otherwise random shuffle
             STATE.currentTrackIndex = data.trackIndex ?? getRandomTrackIndex();
             
-            // Set audio source from Cloudflare R2
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm`;
-            const isSameTrack = dom.audioAmritvela.src === trackUrl || dom.audioAmritvela.src.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
+            // Set audio source from Cloudflare R2 with cache buster
+            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
+            const currentSrc = dom.audioAmritvela.src.split('?')[0]; // Remove query params
+            const isSameTrack = currentSrc.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
             
             if (isSameTrack && dom.audioAmritvela.readyState >= 1) {
-                // If same track, just adjust the current time to match live position perfectly
+                // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
+                // If audio is ahead of server position, let it keep playing
+                // Only jump forward when resuming after pause (catch up to live)
                 const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
                 const position = Math.min(data.trackPosition || 0, safeDur - 5);
+                const oldTime = dom.audioAmritvela.currentTime;
+                const drift = position - oldTime;
                 
-                // If drift is more than 3 seconds, snap to live
-                if (Math.abs(dom.audioAmritvela.currentTime - position) > 3) {
-                    console.log(`[GR] Correcting drift: ${dom.audioAmritvela.currentTime.toFixed(1)} -> ${position.toFixed(1)}`);
+                // ONLY jump if server is AHEAD of current position (need to catch up)
+                // NEVER jump backward - that causes stuttering
+                if (position > oldTime + 2) { // 2 second threshold to avoid micro-jumps
+                    console.log(`[GR] 🔴 FORWARD JUMP TO LIVE: ${oldTime.toFixed(1)}s → ${position.toFixed(1)}s (+${drift.toFixed(1)}s)`);
                     dom.audioAmritvela.currentTime = position;
+                } else if (position < oldTime - 5) {
+                    // We're ahead of server - this is fine, just log it
+                    console.log(`[GR] ✓ AHEAD OF LIVE: ${oldTime.toFixed(1)}s vs ${position.toFixed(1)}s (${(-drift).toFixed(1)}s ahead) - continuing playback`);
+                } else {
+                    // Within acceptable range - in sync
+                    console.log(`[GR] ✓ IN SYNC: ${oldTime.toFixed(1)}s ≈ ${position.toFixed(1)}s`);
                 }
             } else {
-                console.log('[GR] Loading new track:', trackUrl, 'at position:', data.trackPosition);
+                console.log('[GR] 🔴 Loading new track:', trackUrl, 'at position:', data.trackPosition);
                 dom.audioAmritvela.src = trackUrl;
+                dom.audioAmritvela.load(); // Force reload to avoid cache
                 
                 // Seek to position if metadata loaded
                 dom.audioAmritvela.addEventListener('loadedmetadata', function seek() {
@@ -1367,6 +1381,7 @@
                     const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
                     const position = Math.min(data.trackPosition || 0, safeDur - 10);
                     if (position > 0) dom.audioAmritvela.currentTime = position;
+                    console.log(`[GR] ✅ Seeked to ${position.toFixed(1)}s`);
                 }, { once: true });
             }
             
@@ -1387,24 +1402,34 @@
             const fallback = getLocalLivePosition();
             STATE.currentTrackIndex = fallback.trackIndex;
             
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm`;
-            const isSameTrack = dom.audioAmritvela.src === trackUrl || dom.audioAmritvela.src.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
+            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
+            const currentSrc = dom.audioAmritvela.src.split('?')[0]; // Remove query params
+            const isSameTrack = currentSrc.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
             
             if (isSameTrack && dom.audioAmritvela.readyState >= 1) {
+                // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
                 const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
                 const position = Math.min(fallback.position || 0, safeDur - 5);
-                if (Math.abs(dom.audioAmritvela.currentTime - position) > 3) {
-                     console.log(`[GR] Offline drift correct: ${dom.audioAmritvela.currentTime.toFixed(1)} -> ${position.toFixed(1)}`);
-                     dom.audioAmritvela.currentTime = position;
+                const oldTime = dom.audioAmritvela.currentTime;
+                const drift = position - oldTime;
+                
+                // ONLY jump if we need to catch up (server ahead of us)
+                if (position > oldTime + 2) {
+                    console.log(`[GR] 🔴 OFFLINE FORWARD JUMP: ${oldTime.toFixed(1)}s → ${position.toFixed(1)}s (+${drift.toFixed(1)}s)`);
+                    dom.audioAmritvela.currentTime = position;
+                } else {
+                    console.log(`[GR] ✓ OFFLINE: ${oldTime.toFixed(1)}s vs ${position.toFixed(1)}s - continuing playback`);
                 }
             } else {
-                console.log('[GR] Offline Sync mode, loading:', trackUrl);
+                console.log('[GR] 🔴 Offline Sync mode, loading:', trackUrl);
                 dom.audioAmritvela.src = trackUrl;
+                dom.audioAmritvela.load(); // Force reload
                 dom.audioAmritvela.addEventListener('loadedmetadata', function seek() {
                     dom.audioAmritvela.removeEventListener('loadedmetadata', seek);
                     const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
                     const position = Math.min(fallback.position || 0, safeDur - 5);
                     if (position > 0) dom.audioAmritvela.currentTime = position;
+                    console.log(`[GR] ✅ Offline seeked to ${position.toFixed(1)}s`);
                 }, { once: true });
             }
             
@@ -1430,10 +1455,18 @@
         dom.playBtn.classList.add('loading');
         
         try {
-            // Virtual Live effect: Always sync when playing Amritvela
-            // So if you paused for 1 minute, it skips ahead 1 minute!
+            // CRITICAL FIX: Always sync to live position
             if (STATE.currentStream === 'amritvela') {
+                // Virtual Live effect: Always sync when playing Amritvela
+                // So if you paused for 1 minute, it skips ahead 1 minute!
                 await syncAmritvelaPosition();
+            } else if (STATE.currentStream === 'darbar') {
+                // CRITICAL FIX: For live stream, always reconnect with fresh URL
+                const baseUrl = STREAMS.darbar.url;
+                const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
+                console.log('[GR] 🔴 DARBAR LIVE: Reconnecting with fresh URL');
+                dom.audioDarbar.src = freshUrl;
+                dom.audioDarbar.load(); // Force reload
             }
             
             await audio.play();
@@ -1810,6 +1843,42 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
+    // LIGHTWEIGHT TRACK-ONLY SYNC (for polling - no position jumps during playback)
+    // ═══════════════════════════════════════════════════════════════════════════════
+    
+    async function checkTrackSync() {
+        // Only check if we need to switch tracks, don't adjust position
+        // This keeps multiple phones in sync without stuttering
+        try {
+            const resp = await fetch(STREAMS.amritvela.syncUrl, { 
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            
+            const data = await resp.json();
+            const serverTrackIndex = data.trackIndex ?? getRandomTrackIndex();
+            
+            // Only switch tracks if server is on a different track
+            if (serverTrackIndex !== STATE.currentTrackIndex) {
+                console.log(`[GR] 🔄 Track change: ${STATE.currentTrackIndex + 1} → ${serverTrackIndex + 1}`);
+                STATE.currentTrackIndex = serverTrackIndex;
+                const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
+                dom.audioAmritvela.src = trackUrl;
+                dom.audioAmritvela.load();
+                
+                // Update track info
+                dom.trackTitle.textContent = data.trackTitle || `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
+                dom.trackArtist.textContent = data.trackArtist || 'ANHAD Gurbani Radio';
+                
+                // If was playing, the track change handler will auto-play after load
+            }
+        } catch (err) {
+            // Silently fail - offline mode will handle it
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════════════════════════════════════
     
@@ -1818,10 +1887,11 @@
         initTheme();
         initEventListeners();
         
-        // Continuous polling wrapper to ensure 5 phones stay perfectly in sync
+        // Continuous polling - only check for track changes, not position
+        // Position only jumps when user explicitly plays (pure virtual live)
         setInterval(() => {
             if (STATE.isPlaying && STATE.currentStream === 'amritvela' && !document.hidden) {
-                syncAmritvelaPosition();
+                checkTrackSync(); // Lightweight track-only check
             }
         }, 30000); // Check every 30 seconds
         

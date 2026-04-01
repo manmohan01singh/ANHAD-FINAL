@@ -358,7 +358,12 @@ class VirtualLiveManager extends EventEmitter {
     async syncWithServer() {
         try {
             const startTime = Date.now();
-            const response = await fetch(`${API_BASE}/api/radio/live`);
+            // CRITICAL: Add cache buster to bypass ALL caching layers
+            const freshUrl = `${API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+            const response = await fetch(freshUrl, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
             const endTime = Date.now();
 
             if (!response.ok) throw new Error(`HTTP ${response.status}`);

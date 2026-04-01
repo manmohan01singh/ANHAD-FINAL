@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'light';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Sync Test | ANHAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .test-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .success {
+            color: #34C759;
+        }
+
+        .error {
+            color: #FF3B30;
+        }
+
+        .info {
+            color: #5AC8FA;
+        }
+
+        .stats-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Progress Sync Test</h1>
+
+        <!-- Nitnem Test -->
+        <div class="test-section">
+            <h2>📿 Nitnem Tracking</h2>
+            <button class="btn" onclick="testNitnem()">Complete 1 Bani</button>
+            <button class="btn" onclick="testNitnemBulk()">Complete 5 Banis</button>
+            <div class="status" id="nitnemStatus">Ready to test...</div>
+        </div>
+
+        <!-- Sehaj Paath Test -->
+        <div class="test-section">
+            <h2>📖 Sehaj Paath Tracking</h2>
+            <button class="btn" onclick="testSehajPaath()">Read 1 Page</button>
+            <button class="btn" onclick="testSehajPaathBulk()">Read 10 Pages</button>
+            <div class="status" id="sehajStatus">Ready to test...</div>
+        </div>
+
+        <!-- Kirtan Listening Test -->
+        <div class="test-section">
+            <h2>🎧 Kirtan Listening Tracking</h2>
+            <button class="btn" onclick="testKirtanStart()">Start Listening</button>
+            <button class="btn" onclick="testKirtanStop()">Stop Listening</button>
+            <button class="btn" onclick="testKirtanBulk()">Add 30 Minutes</button>
+            <div class="status" id="kirtanStatus">Ready to test...</div>
+        </div>
+
+        <!-- Dashboard Sync Test -->
+        <div class="test-section">
+            <h2>📊 Dashboard Sync</h2>
+            <button class="btn" onclick="syncDashboard()">Force Sync</button>
+            <button class="btn" onclick="viewStats()">View Stats</button>
+            <button class="btn" onclick="clearStats()">Clear All Stats</button>
+            <div class="status" id="dashboardStatus">Ready to test...</div>
+        </div>
+
+        <!-- Current Stats Display -->
+        <div class="test-section">
+            <h2>📈 Current Stats</h2>
+            <div class="stats-display" id="statsDisplay">
+                <div class="stat-card">
+                    <div class="stat-label">Nitnem Completed</div>
+                    <div class="stat-value" id="statNitnem">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pages Read</div>
+                    <div class="stat-value" id="statPages">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Minutes Listened</div>
+                    <div class="stat-value" id="statMinutes">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Required Scripts -->
+    <script src="lib/user-stats.js"></script>
+    <script src="lib/unified-progress-tracker.js"></script>
+    <script src="lib/kirtan-listening-tracker.js"></script>
+    <script src="Dashboard/dashboard-analytics.js"></script>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════
+        // TEST FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        function log(elementId, message, type = 'info') {
+            const el = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            el.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function testNitnem() {
+            log('nitnemStatus', '📿 Tracking 1 Nitnem completion...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackNitnemCompletion(1);
+                log('nitnemStatus', '✅ Tracked via UnifiedProgressTracker', 'success');
+            } else if (window.AnhadStats) {
+                window.AnhadStats.addNitnemCompleted(1);
+                log('nitnemStatus', '✅ Tracked via AnhadStats', 'success');
+            } else {
+                log('nitnemStatus', '❌ No tracking system available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function testNitnemBulk() {
+            log('nitnemStatus', '📿 Tracking 5 Nitnem completions...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackNitnemCompletion(5);
+                log('nitnemStatus', '✅ Tracked 5 banis', 'success');
+            } else {
+                log('nitnemStatus', '❌ UnifiedProgressTracker not available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function testSehajPaath() {
+            log('sehajStatus', '📖 Tracking 1 page read...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackPagesRead(1);
+                log('sehajStatus', '✅ Tracked via UnifiedProgressTracker', 'success');
+            } else if (window.AnhadStats) {
+                window.AnhadStats.addPagesRead(1);
+                log('sehajStatus', '✅ Tracked via AnhadStats', 'success');
+            } else {
+                log('sehajStatus', '❌ No tracking system available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function testSehajPaathBulk() {
+            log('sehajStatus', '📖 Tracking 10 pages read...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackPagesRead(10);
+                log('sehajStatus', '✅ Tracked 10 pages', 'success');
+            } else {
+                log('sehajStatus', '❌ UnifiedProgressTracker not available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function testKirtanStart() {
+            log('kirtanStatus', '🎧 Starting listening session...');
+            
+            if (window.KirtanListeningTracker) {
+                window.KirtanListeningTracker.startListening();
+                log('kirtanStatus', '✅ Listening session started', 'success');
+            } else {
+                log('kirtanStatus', '❌ KirtanListeningTracker not available', 'error');
+            }
+        }
+
+        function testKirtanStop() {
+            log('kirtanStatus', '🎧 Stopping listening session...');
+            
+            if (window.KirtanListeningTracker) {
+                window.KirtanListeningTracker.stopListening();
+                log('kirtanStatus', '✅ Listening session stopped', 'success');
+            } else {
+                log('kirtanStatus', '❌ KirtanListeningTracker not available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function testKirtanBulk() {
+            log('kirtanStatus', '🎧 Adding 30 minutes of listening...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackListeningTime(30);
+                log('kirtanStatus', '✅ Tracked 30 minutes', 'success');
+            } else {
+                log('kirtanStatus', '❌ UnifiedProgressTracker not available', 'error');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function syncDashboard() {
+            log('dashboardStatus', '🔄 Forcing dashboard sync...');
+            
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.syncNow();
+                log('dashboardStatus', '✅ Sync completed', 'success');
+            }
+            
+            if (window.DashboardAnalytics) {
+                window.DashboardAnalytics.syncWithUserStats();
+                window.DashboardAnalytics.syncWithNitnemTracker();
+                window.DashboardAnalytics.renderChart();
+                log('dashboardStatus', '✅ Dashboard refreshed', 'success');
+            }
+            
+            updateStatsDisplay();
+        }
+
+        function viewStats() {
+            log('dashboardStatus', '📊 Current statistics:');
+            
+            if (window.AnhadStats) {
+                const stats = window.AnhadStats.getStats();
+                log('dashboardStatus', `Today: ${stats.todayNitnemCount} Nitnem, ${stats.todayPagesRead} pages, ${stats.todayListeningMinutes} min`);
+                log('dashboardStatus', `Total: ${stats.totalNitnemCompleted} Nitnem, ${stats.totalPagesRead} pages, ${stats.totalListeningMinutes} min`);
+            }
+            
+            if (window.DashboardAnalytics) {
+                const data = window.DashboardAnalytics.getLast7DaysData();
+                const today = data[data.length - 1];
+                log('dashboardStatus', `Dashboard Today: ${today.nitnemCount} Nitnem, ${today.readPages} pages, ${today.listenMinutes} min`);
+            }
+        }
+
+        function clearStats() {
+            if (confirm('Clear all stats? This cannot be undone!')) {
+                log('dashboardStatus', '🗑️ Clearing all stats...');
+                
+                if (window.AnhadStats && window.AnhadStats.resetStats) {
+                    window.AnhadStats.resetStats();
+                }
+                
+                localStorage.removeItem('anhad_daily_analytics');
+                localStorage.removeItem('anhad_user_stats');
+                
+                log('dashboardStatus', '✅ Stats cleared', 'success');
+                updateStatsDisplay();
+            }
+        }
+
+        function updateStatsDisplay() {
+            if (window.AnhadStats) {
+                const stats = window.AnhadStats.getStats();
+                document.getElementById('statNitnem').textContent = stats.todayNitnemCount || 0;
+                document.getElementById('statPages').textContent = stats.todayPagesRead || 0;
+                document.getElementById('statMinutes').textContent = stats.todayListeningMinutes || 0;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════════════════
+
+        window.addEventListener('load', () => {
+            console.log('✅ Test page loaded');
+            
+            // Check what's available
+            console.log('UnifiedProgressTracker:', !!window.UnifiedProgressTracker);
+            console.log('AnhadStats:', !!window.AnhadStats);
+            console.log('KirtanListeningTracker:', !!window.KirtanListeningTracker);
+            console.log('DashboardAnalytics:', !!window.DashboardAnalytics);
+            
+            updateStatsDisplay();
+            
+            // Auto-refresh stats every 5 seconds
+            setInterval(updateStatsDisplay, 5000);
+        });
+    </script>
+</body>
+</html>

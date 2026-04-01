@@ -18,8 +18,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="reader.css">
-    <link rel="stylesheet" href="divine-design.css">
+    <link rel="stylesheet" href="reader.css?v=1.0">
+    <link rel="stylesheet" href="divine-design.css?v=1.0">
+    <link rel="stylesheet" href="reader-error-fix.css?v=1.0">
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
@@ -384,7 +385,7 @@
                 <button class="go-btn" id="goToAngBtn">Go</button>
             </div>
             <div class="search-modal-footer">
-                <a href="gurbani-search.html" class="advanced-search-link">🔎 Advanced Gurbani Search</a>
+                <a href="../GurbaniKhoj/gurbani-khoj.html" class="advanced-search-link">🔎 Advanced Gurbani Search</a>
             </div>
         </div>
     </div>
@@ -418,14 +419,19 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../lib/user-stats.js"></script>
-    <script src="services/storage-service.js"></script>
-    <script src="components/offline-manager.js"></script>
-    <script src="services/banidb-api.js"></script>
-    <script src="services/cache-service.js"></script>
-    <script src="utils/text-formatter.js"></script>
-    <script src="utils/haptic-feedback.js"></script>
-    <script src="components/detached-mode.js"></script>
-    <script src="reader.js"></script>
+    <!-- Cache Optimization -->
+    <script src="../lib/gurbani-db.js"></script>
+    <script src="../lib/bani-cache-optimizer.js"></script>
+    <script src="../lib/optimized-image-loader.js"></script>
+    
+    <script src="../lib/user-stats.js?v=1.0"></script>
+    <script src="services/storage-service.js?v=1.0"></script>
+    <script src="components/offline-manager.js?v=1.0"></script>
+    <script src="services/banidb-api.js?v=2.0"></script>
+    <script src="services/cache-service.js?v=1.0"></script>
+    <script src="utils/text-formatter.js?v=1.0"></script>
+    <script src="utils/haptic-feedback.js?v=1.0"></script>
+    <script src="components/detached-mode.js?v=1.0"></script>
+    <script src="reader.js?v=2.0"></script>
 </body>
 </html>

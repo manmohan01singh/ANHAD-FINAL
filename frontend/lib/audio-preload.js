@@ -34,8 +34,7 @@
 
   // Don't preload on player pages
   const currentPath = window.location.pathname.toLowerCase();
-  const isPlayerPage = currentPath.includes('gurbani-radio') ||
-                       currentPath.includes('ios17-gurbani-radio');
+  const isPlayerPage = currentPath.includes('gurbani-radio');
   if (isPlayerPage) return;
 
   // Create hidden audio element for preloading

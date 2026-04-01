@@ -31,14 +31,14 @@ class BaniCacheOptimizer {
         
         // Guru images to preload
         this.guruImages = [
-            '/assets/darbar-sahib-day.webp',
-            '/assets/darbar-sahib-day.png',
-            '/assets/Darbar-sahib-AMRITVELA.webp',
-            '/assets/Darbar-sahib-AMRITVELA.png',
-            '/assets/darbar-sahib-evening.webp',
-            '/assets/darbar-sahib-evening.jpg',
-            '/assets/HUKAMNAMA-SAHIB.webp',
-            '/assets/HUKAMNAMA-SAHIB.png'
+            './assets/darbar-sahib-day.webp',
+            './assets/darbar-sahib-day.png',
+            './assets/Darbar-sahib-AMRITVELA.webp',
+            './assets/Darbar-sahib-AMRITVELA.png',
+            './assets/darbar-sahib-evening.webp',
+            './assets/darbar-sahib-evening.jpg',
+            './assets/HUKAMNAMA-SAHIB.webp',
+            './assets/HUKAMNAMA-SAHIB.png'
         ];
         
         // Background download queue

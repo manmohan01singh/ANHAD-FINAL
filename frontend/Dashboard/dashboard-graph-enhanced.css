@@ -1,0 +1,343 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ENHANCED DASHBOARD GRAPH STYLING
+ * Beautiful 3D bars with gradients, shadows, and animations
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* Enhanced Chart Container */
+.analytics-chart {
+    background: linear-gradient(145deg, #ffffff, #f5f5f7);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 
+        20px 20px 40px rgba(0,0,0,0.08), 
+        -20px -20px 40px rgba(255,255,255,0.95),
+        inset 0 0 0 1px rgba(255,255,255,0.5);
+    margin-bottom: 24px;
+}
+
+html.dark-mode .analytics-chart {
+    background: linear-gradient(145deg, #1c1c1f, #2c2c2e);
+    box-shadow: 
+        20px 20px 40px rgba(0,0,0,0.6), 
+        -20px -20px 40px rgba(255,255,255,0.03),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Chart Header */
+.chart-header {
+    margin-bottom: 24px;
+}
+
+.chart-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+html.dark-mode .chart-title {
+    color: #fff;
+}
+
+.chart-title i {
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+/* Legend */
+.chart-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.7);
+}
+
+html.dark-mode .legend-item {
+    color: rgba(255,255,255,0.7);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.legend-dot--blue {
+    background: linear-gradient(135deg, #5AC8FA, #007AFF);
+}
+
+.legend-dot--yellow {
+    background: linear-gradient(135deg, #FFCC00, #FF9500);
+}
+
+.legend-dot--green {
+    background: linear-gradient(135deg, #34C759, #28A745);
+}
+
+/* Chart Body - FIXED: Height matches chart-bars, hides overflow */
+.chart-body {
+    position: relative;
+    background: linear-gradient(145deg, rgba(0,0,0,0.02), rgba(0,0,0,0.04));
+    border-radius: 20px;
+    padding: 20px 12px 12px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    height: 200px;
+    overflow: hidden;
+    box-shadow: 
+        inset 8px 8px 16px rgba(0,0,0,0.06),
+        inset -8px -8px 16px rgba(255,255,255,0.8);
+}
+
+html.dark-mode .chart-body {
+    background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.05));
+    box-shadow: 
+        inset 8px 8px 16px rgba(0,0,0,0.4),
+        inset -8px -8px 16px rgba(255,255,255,0.03);
+}
+
+/* Target Line - FIXED: Now inside each chart-bars with bottom positioning */
+.chart-target-line {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%,
+        rgba(255, 149, 0, 0.6) 10%,
+        rgba(255, 149, 0, 0.8) 50%,
+        rgba(255, 149, 0, 0.6) 90%,
+        transparent 100%
+    );
+    z-index: 5;
+    pointer-events: none;
+}
+
+.chart-target-line::before,
+.chart-target-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    background: #FF9500;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 8px rgba(255, 149, 0, 0.6);
+}
+
+.chart-target-line::before {
+    left: 10%;
+}
+
+.chart-target-line::after {
+    right: 10%;
+}
+
+/* Goal label below each day */
+.chart-goal-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #FF9500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.8;
+    margin-top: 4px;
+}
+
+html.dark-mode .chart-goal-label {
+    color: #FFD60A;
+}
+
+/* Chart Day Container */
+.chart-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Chart Bars Container - Height allows overflow above goal line */
+.chart-bars {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    justify-content: center;
+    height: 200px;
+    width: 100%;
+    padding-top: 40px; /* Extra space for overflow bars */
+    overflow: visible; /* Allow bars to overflow above */
+}
+
+/* Individual Bar */
+.chart-bar {
+    position: relative;
+    width: 100%;
+    max-width: 24px;
+    min-height: 8px;
+    border-radius: 8px 8px 4px 4px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    box-shadow: 
+        0 4px 12px rgba(0,0,0,0.15),
+        0 2px 4px rgba(0,0,0,0.1),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.chart-bar.animated {
+    transform: scaleY(1);
+}
+
+.chart-bar:hover {
+    transform: scaleY(1.08) translateY(-4px);
+    filter: brightness(1.15);
+    box-shadow: 
+        0 8px 20px rgba(0,0,0,0.25),
+        0 4px 8px rgba(0,0,0,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* Bar Colors with Enhanced Gradients */
+.chart-bar--blue {
+    background: linear-gradient(180deg, 
+        #5AC8FA 0%, 
+        #007AFF 70%,
+        #0051D5 100%
+    );
+}
+
+.chart-bar--yellow {
+    background: linear-gradient(180deg, 
+        #FFD60A 0%, 
+        #FFCC00 50%,
+        #FF9500 100%
+    );
+}
+
+.chart-bar--green {
+    background: linear-gradient(180deg, 
+        #30D158 0%, 
+        #34C759 50%,
+        #28A745 100%
+    );
+}
+
+/* Bar Value Label */
+.bar-value {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 700;
+    color: #000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    background: rgba(255,255,255,0.95);
+    padding: 4px 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+html.dark-mode .bar-value {
+    color: #fff;
+    background: rgba(0,0,0,0.8);
+}
+
+.chart-bar:hover .bar-value {
+    opacity: 1;
+}
+
+/* Chart Label (Day Name) */
+.chart-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(0,0,0,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+html.dark-mode .chart-label {
+    color: rgba(255,255,255,0.6);
+}
+
+/* Chart Footer */
+.chart-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+}
+
+html.dark-mode .chart-footer {
+    border-top-color: rgba(255,255,255,0.08);
+}
+
+.chart-insight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,204,0,0.1), rgba(255,149,0,0.1));
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.8);
+    box-shadow: 
+        inset 0 2px 8px rgba(255,149,0,0.1),
+        0 2px 8px rgba(255,149,0,0.05);
+}
+
+html.dark-mode .chart-insight {
+    background: linear-gradient(135deg, rgba(255,204,0,0.15), rgba(255,149,0,0.15));
+    color: rgba(255,255,255,0.9);
+}
+
+.chart-insight i {
+    font-size: 20px;
+    color: #FF9500;
+}
+
+/* Staggered Animation */
+.chart-day:nth-child(1) .chart-bar { animation-delay: 0.1s; }
+.chart-day:nth-child(2) .chart-bar { animation-delay: 0.15s; }
+.chart-day:nth-child(3) .chart-bar { animation-delay: 0.2s; }
+.chart-day:nth-child(4) .chart-bar { animation-delay: 0.25s; }
+.chart-day:nth-child(5) .chart-bar { animation-delay: 0.3s; }
+.chart-day:nth-child(6) .chart-bar { animation-delay: 0.35s; }
+.chart-day:nth-child(7) .chart-bar { animation-delay: 0.4s; }
+
+/* Responsive */
+@media (max-width: 400px) {
+    .chart-bars {
+        gap: 6px;
+    }
+    
+    .chart-bar {
+        max-width: 20px;
+    }
+    
+    .chart-label {
+        font-size: 10px;
+    }
+}

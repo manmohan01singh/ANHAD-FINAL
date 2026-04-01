@@ -124,16 +124,18 @@ body.modal-open .page {
   max-width: 680px;
   margin: 0 auto;
   -webkit-overflow-scrolling: touch;
-  contain: layout style paint;
+  /* FIX: Remove contain and will-change to prevent scroll disappearing */
   transform: translateZ(0);
-  will-change: scroll-position;
+  backface-visibility: hidden;
 }
 
+/* FIX: Ensure stable rendering during scroll */
 .calendar-cell,
 .date-item,
-.event-card {
-  contain: layout style;
-  will-change: auto;
+.event-card,
+.event-row {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -415,8 +417,8 @@ body.modal-open .page {
   cursor: pointer;
   transition: background var(--duration-fast);
   -webkit-tap-highlight-color: transparent;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 52px;
+  /* FIX: Remove content-visibility to prevent scroll disappearing */
+  position: relative;
 }
 
 .event-row:last-child {
@@ -1387,6 +1389,221 @@ body.modal-open .page {
   font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EVENT TYPE SPECIFIC STYLING — Jyoti Jyot vs Celebrations
+   Version: 3.0 — Production-ready memorial vs celebration differentiation
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── MEMORIAL EVENTS (Jyoti Jyot, Shaheedi) — Respectful, somber styling ─── */
+.event-row.event-memorial,
+.event-card.event-memorial {
+  position: relative;
+  background: rgba(60, 60, 67, 0.02);
+}
+
+.event-row.event-memorial .event-title {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.event-row.event-memorial .days-left {
+  color: rgba(60, 60, 67, 0.6);
+  font-weight: 400;
+}
+
+/* Memorial badge — subtle gray tone */
+.event-row.event-memorial .badge,
+.event-card.event-memorial .badge {
+  background: linear-gradient(135deg, rgba(60, 60, 67, 0.65) 0%, rgba(60, 60, 67, 0.85) 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Soft glow for memorial events on today */
+.event-row.event-memorial.event-today {
+  background: rgba(60, 60, 67, 0.04);
+  border-left: 3px solid rgba(60, 60, 67, 0.3);
+  padding-left: calc(var(--space-md) - 3px);
+}
+
+/* ─── CELEBRATION EVENTS (Prakash, Gurgaddi, Vaisakhi) — Ring lights effect ─── */
+.event-row.event-celebration,
+.event-card.event-celebration {
+  position: relative;
+}
+
+/* Animated ring light border for celebration events */
+.event-row.event-celebration.event-today::before,
+.event-card.event-celebration.event-today::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, 
+    var(--kesri) 0%, 
+    #FFD700 25%, 
+    #FFA500 50%, 
+    #FFD700 75%, 
+    var(--kesri) 100%);
+  background-size: 300% 100%;
+  animation: ringLightFlow 3s linear infinite;
+  opacity: 0.6;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes ringLightFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+/* Celebration glow effect */
+.event-row.event-celebration.event-today {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 0, 0.05) 0%, 
+    rgba(255, 215, 0, 0.08) 50%, 
+    rgba(255, 107, 0, 0.05) 100%);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 0, 0.15),
+    0 0 40px rgba(255, 215, 0, 0.1);
+  border-left: 3px solid var(--kesri);
+  padding-left: calc(var(--space-md) - 3px);
+}
+
+/* Celebration badge with animated gradient */
+.event-row.event-celebration .badge,
+.event-card.event-celebration .badge {
+  background: linear-gradient(135deg, 
+    var(--kesri) 0%, 
+    #FFD700 50%, 
+    var(--kesri) 100%);
+  background-size: 200% 200%;
+  animation: celebrationGradient 2.5s ease infinite;
+  box-shadow: 
+    0 4px 12px rgba(255, 107, 0, 0.4),
+    0 0 20px rgba(255, 215, 0, 0.2);
+  font-weight: 700;
+}
+
+@keyframes celebrationGradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Celebration dot with pulse effect */
+.event-row.event-celebration.event-today .dot {
+  animation: dotPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px currentColor;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* ─── NEUTRAL EVENTS — Standard styling ─── */
+.event-row.event-neutral {
+  /* Default styling, no special effects */
+}
+
+/* ─── HOMEPAGE GURPURAB CARD — Ring lights for celebrations ─── */
+.glass-card.celebration-today {
+  position: relative;
+  overflow: visible;
+}
+
+.glass-card.celebration-today::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 24px;
+  background: linear-gradient(90deg, 
+    var(--kesri) 0%, 
+    #FFD700 25%, 
+    #FFA500 50%, 
+    #FFD700 75%, 
+    var(--kesri) 100%);
+  background-size: 300% 100%;
+  animation: ringLightFlow 3s linear infinite;
+  opacity: 0.7;
+  z-index: -1;
+  filter: blur(10px);
+}
+
+.glass-card.celebration-today::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, 
+    var(--kesri) 0%, 
+    #FFD700 50%, 
+    var(--kesri) 100%);
+  background-size: 200% 200%;
+  animation: celebrationGradient 2.5s ease infinite;
+  opacity: 0.5;
+  z-index: -1;
+}
+
+/* Memorial card on homepage — subtle, respectful */
+.glass-card.memorial-today {
+  border: 2px solid rgba(60, 60, 67, 0.25);
+  box-shadow:
+    0 0 0 0.5px var(--glass-border),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 0 20px rgba(60, 60, 67, 0.05);
+}
+
+/* ─── CALENDAR GRID CELLS — Event type indicators ─── */
+.day.has-celebration {
+  position: relative;
+}
+
+.day.has-celebration::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--kesri) 50%, 
+    transparent 100%);
+  opacity: 0.6;
+}
+
+.day.has-memorial {
+  position: relative;
+}
+
+.day.has-memorial::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: rgba(60, 60, 67, 0.3);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -1,12 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#FAF8F5">
   <title>Offline — ANHAD</title>
+  
+  <!-- Global Theme System -->
+  <script>
+    document.documentElement.setAttribute('data-global-theme', 'force');
+  </script>
+  <script src="./lib/global-theme.js"></script>
+  
   <style>
     *, *::before, *::after {
       margin: 0; padding: 0;

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -22,36 +22,25 @@
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
   <meta name="description" content="ANHAD — 24/7 Gurbani Kirtan, Nitnem, Hukamnama, Sehaj Paath. Your sacred companion.">
 
-  <script src="./js/anhad-core.js" defer></script>
-  <!-- Theme: inline critical snippet (no external JS blocking) -->
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
-    (function(){
-      var k='anhad_theme',t=localStorage.getItem(k);
-      if(!t){var l=localStorage.getItem('anhad_dark_mode');
-        if(l==='true')t='dark';else if(l==='false')t='light';
-        else t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
-        localStorage.setItem(k,t);
-      }
-      if(t==='dark'){
-        document.documentElement.classList.add('dark-mode');
-        document.documentElement.style.colorScheme='dark';
-      } else {
-        document.documentElement.classList.remove('dark-mode');
-        document.documentElement.style.colorScheme='light';
-      }
-      document.documentElement.setAttribute('data-theme',t);
-      // Sync body class as soon as body is available
-      if(document.body){
-        if(t==='dark') document.body.classList.add('dark-mode');
-        else document.body.classList.remove('dark-mode');
-      } else {
-        document.addEventListener('DOMContentLoaded',function(){
-          if(t==='dark') document.body.classList.add('dark-mode');
-          else document.body.classList.remove('dark-mode');
-        });
-      }
-    })();
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+    }
+  } catch (e) {}
+})();
   </script>
+  <script src="./js/anhad-core.js" defer></script>
   <!-- Dark mode variables — always loaded, only activates via html.dark-mode selectors -->
   <link rel="stylesheet" href="css/dark-mode.css">
 
@@ -76,9 +65,11 @@
   <link rel="stylesheet" href="css/trendora-premium.css?v=6">
   <link rel="stylesheet" href="css/anhad-clay.css?v=1">
   <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1">
+  <link rel="stylesheet" href="css/gurpurab-special-mode.css">
   <link rel="stylesheet" href="css/install-button.css">
   <!-- Non-critical CSS loaded async -->
-  <link rel="stylesheet" href="css/ios-override.css?v=6" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/ios-override.css?v=7" media="print" onload="this.media='all'">
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -142,9 +133,6 @@
 </head>
 
 <body>
-  <!-- Ambient Golden Orb — Lightweight centered glow -->
-  <div class="golden-orb-bg" aria-hidden="true"></div>
-
   <!-- PERF: Mobile/reduce-motion detection — add classes before first paint -->
   <script>
     (function(){
@@ -220,7 +208,33 @@
           <div class="greeting__nanakshahi" id="nanakshahiDate" aria-label="Nanakshahi Date"></div>
         </div>
         <div class="greeting__guru-portrait" id="guruPortraitWrapper">
-          <img class="greeting__guru-img" id="guruPortraitImg" src="assets/icons/guru-har-krishan-ji.png" alt="Sri Guru Har Krishan Ji" width="117" height="117" loading="eager">
+          <img class="greeting__guru-img" id="guruPortraitImg" src="assets/icons/guru-har-krishan-portrait.png" alt="Sri Guru Har Krishan Ji" width="117" height="117" loading="eager">
+          <!-- Concentrated petals at bottom of portrait -->
+          <div class="greeting__rose-decoration" aria-hidden="true">
+            <div class="petal-1"></div>
+            <div class="petal-2"></div>
+            <div class="petal-3"></div>
+            <div class="petal-4"></div>
+            <div class="petal-5"></div>
+            <div class="petal-6"></div>
+            <div class="petal-7"></div>
+            <div class="petal-8"></div>
+            <div class="petal-9"></div>
+            <div class="petal-10"></div>
+            <div class="petal-11"></div>
+            <div class="petal-12"></div>
+            <div class="petal-13"></div>
+            <div class="petal-14"></div>
+            <div class="petal-15"></div>
+            <div class="petal-16"></div>
+            <div class="petal-17"></div>
+            <div class="petal-18"></div>
+            <div class="petal-19"></div>
+            <div class="petal-20"></div>
+            <div class="petal-21"></div>
+            <div class="petal-22"></div>
+            <div class="petal-23"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -245,7 +259,7 @@
 
       <div class="hero-carousel__track" id="heroTrack" role="region" aria-roledescription="carousel">
         <!-- Card 1: Darbar Sahib Live -->
-        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html?stream=darbar'">
+        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/darbar-sahib-day.webp" type="image/webp">
@@ -268,7 +282,7 @@
         </article>
 
         <!-- Card 2: Amritvela Kirtan -->
-        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html?stream=amritvela'">
+        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
@@ -315,9 +329,44 @@
     </section>
 
     <!-- ════════════════════════════════════════════════════════════════════
+         GURPURAB SPECIAL MODE — Divine Visual Effects Container
+    ════════════════════════════════════════════════════════════════════ -->
+    <div class="gurpurab-container" id="gurpurabContainer" aria-hidden="true">
+      <!-- Ambient Glow Layer -->
+      <div class="gurpurab-ambient-glow"></div>
+      
+      <!-- Ring Halo Layer -->
+      <div class="gurpurab-ring-halo"></div>
+      
+      <!-- Petals Container (Celebration Mode Only) -->
+      <div class="gurpurab-petals-container">
+        <div class="gurpurab-petal gurpurab-petal--1"></div>
+        <div class="gurpurab-petal gurpurab-petal--2"></div>
+        <div class="gurpurab-petal gurpurab-petal--3"></div>
+        <div class="gurpurab-petal gurpurab-petal--4"></div>
+        <div class="gurpurab-petal gurpurab-petal--5"></div>
+        <div class="gurpurab-petal gurpurab-petal--6"></div>
+      </div>
+      
+      <!-- Sparkles Container (Celebration Mode Only) -->
+      <div class="gurpurab-sparkles-container">
+        <div class="gurpurab-sparkle gurpurab-sparkle--1"></div>
+        <div class="gurpurab-sparkle gurpurab-sparkle--2"></div>
+        <div class="gurpurab-sparkle gurpurab-sparkle--3"></div>
+        <div class="gurpurab-sparkle gurpurab-sparkle--4"></div>
+        <div class="gurpurab-sparkle gurpurab-sparkle--5"></div>
+        <div class="gurpurab-sparkle gurpurab-sparkle--6"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
     <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab">
+      <!-- Celebration/Remembrance Badges -->
+      <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
+      <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
+      
       <div class="event-card__main">
         <div class="event-card__info">
           <div class="event-card__eyebrow">Upcoming Gurpurab</div>
@@ -329,7 +378,7 @@
           </div>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
-          <img class="event-card__guru-img" id="eventGuruImg" src="assets/icons/guru-har-krishan-ji.png" alt="" width="72" height="72" loading="lazy">
+          <img class="event-card__guru-img" id="eventGuruImg" src="assets/icons/guru-har-krishan-portrait.png" alt="" width="72" height="72" loading="eager" style="object-position: center 5%;">
         </div>
       </div>
     </article>

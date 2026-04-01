@@ -1043,8 +1043,27 @@
     function loadSettings() {
         try {
             const saved = localStorage.getItem('anhad_reader_v5');
-            if (saved) state.settings = { ...DEFAULTS, ...JSON.parse(saved) };
-        } catch (e) { }
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Sync with global theme on load - prefer global theme
+                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
+                if (globalTheme) {
+                    parsed.theme = globalTheme;
+                } else if (!parsed.theme) {
+                    parsed.theme = 'light'; // Default to light
+                }
+                state.settings = { ...DEFAULTS, ...parsed };
+            } else {
+                // No saved settings - use defaults but sync with global theme
+                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
+                state.settings = { ...DEFAULTS };
+                if (globalTheme) {
+                    state.settings.theme = globalTheme;
+                }
+            }
+        } catch (e) { 
+            state.settings = { ...DEFAULTS };
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1223,6 +1242,28 @@
         // Theme bubbles
         document.querySelectorAll('.theme-bubble').forEach(btn => {
             btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                state.settings.theme = e.newValue;
+                applyAllSettings();
+                saveSettings();
+                console.log('🎨 Nitnem Reader: Synced with global theme:', e.newValue);
+            }
+        });
+
+        // Listen for custom theme change events
+        window.addEventListener('themechange', (e) => {
+            if (e.detail?.theme) {
+                state.settings.theme = e.detail.theme;
+                applyAllSettings();
+                saveSettings();
+                console.log('🎨 Nitnem Reader: Theme changed via event:', e.detail.theme);
+            }
         });
 
         // Font select - DIRECT FONT APPLICATION

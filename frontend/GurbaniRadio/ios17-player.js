@@ -92,6 +92,18 @@ class iOS17Player {
         if (this.isPlaying) {
             this.audio?.pause();
         } else {
+            // CRITICAL FIX: For live streams, reset source to force reconnection to current position
+            // Otherwise resuming after pause continues from old buffer position
+            if (this.audio && this.streams[this.currentIndex]?.url?.includes('live.sgpc.net')) {
+                const cacheBuster = Date.now();
+                const currentSrc = this.audio.src;
+                const freshUrl = this.streams[this.currentIndex].url + (this.streams[this.currentIndex].url.includes('?') ? '&' : '?') + 't=' + cacheBuster;
+                if (currentSrc !== freshUrl) {
+                    this.audio.src = freshUrl;
+                    this.audio.load();
+                    console.log('[iOS17Player] 🔴 Live stream reconnected to current position');
+                }
+            }
             this.audio?.play().catch(() => { });
         }
     }

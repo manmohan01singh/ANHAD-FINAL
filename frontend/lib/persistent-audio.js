@@ -73,27 +73,22 @@
         return 'https://anhad-final.onrender.com';
     })();
 
-    // Cached server sync data - MUST be fetched from server
+    // BRUTAL VIRTUAL LIVE: NO CACHE - always fetch fresh position
+    // Even 1 second matters - once gone, gone forever
     let serverSyncData = null;
     let lastSyncTime = 0;
-    const SYNC_CACHE_TTL = 5000; // Cache server response for 5 seconds max
+    const SYNC_CACHE_TTL = 0; // ZERO cache for pure live
 
     // Get current position from SERVER (async) - THE ONLY SOURCE OF TRUTH
     async function getServerLivePosition() {
-        // Use cached data if fresh (< 5 seconds old)
-        if (serverSyncData && (Date.now() - lastSyncTime) < SYNC_CACHE_TTL) {
-            // Extrapolate position based on time elapsed since last sync
-            const elapsedSinceSync = (Date.now() - lastSyncTime) / 1000;
-            return {
-                trackIndex: serverSyncData.trackIndex,
-                trackPosition: serverSyncData.trackPosition + elapsedSinceSync,
-                fromCache: true
-            };
-        }
+        // BRUTAL VIRTUAL LIVE: NEVER use cache, always fetch fresh
+        // 1 second matters - once gone, gone forever
 
         try {
             const startTime = Date.now();
-            const resp = await fetch(`${PA_API_BASE}/api/radio/live`, {
+            // CRITICAL: Add cache buster to bypass ALL caching layers
+            const freshUrl = `${PA_API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+            const resp = await fetch(freshUrl, {
                 cache: 'no-store',
                 headers: { 'Cache-Control': 'no-cache' }
             });
@@ -167,6 +162,9 @@
             if (STREAMS[currentStream].type === 'playlist') {
                 startDriftCorrection();
             }
+            
+            // FIX: Track listening time for dashboard
+            window._audioPlayStartTime = Date.now();
         });
 
         audio.addEventListener('pause', () => {
@@ -180,6 +178,16 @@
 
             // Stop drift correction
             stopDriftCorrection();
+            
+            // FIX: Report listening time to dashboard
+            if (window._audioPlayStartTime && window.AnhadStats) {
+                const minutes = Math.floor((Date.now() - window._audioPlayStartTime) / 60000);
+                if (minutes > 0) {
+                    window.AnhadStats.addListeningTime(minutes);
+                    console.log(`[Audio] Tracked ${minutes} minutes of listening`);
+                }
+                window._audioPlayStartTime = null;
+            }
         });
 
         audio.addEventListener('ended', () => {
@@ -223,10 +231,11 @@
         return audio;
     }
 
-    // Drift correction - periodically check if we're in sync with server
+    // Drift correction - BRUTAL VIRTUAL LIVE: Disabled during playback
+    // Only check on resume/play, not during continuous playback (causes stuttering)
     let driftCorrectionInterval = null;
     const DRIFT_CHECK_INTERVAL = 30000; // Check every 30 seconds
-    const DRIFT_THRESHOLD = 5; // Correct if off by more than 5 seconds
+    const DRIFT_THRESHOLD = 0.5; // BRUTAL: Jump if off by even 0.5 seconds
 
     function startDriftCorrection() {
         stopDriftCorrection(); // Clear any existing interval
@@ -366,10 +375,14 @@
 
         const stream = STREAMS[currentStream];
 
-        // Set source if not set
-        if (!audio.src || audio.src === window.location.href) {
+        // Set source if not set - OR force reconnection for live streams to maintain "live" feel
+        if (!audio.src || audio.src === window.location.href || stream.type === 'live') {
             if (stream.type === 'live') {
-                audio.src = stream.url;
+                // CRITICAL FIX: Add cache buster to force fresh connection to live position
+                // Otherwise resuming after pause will continue from old buffer position
+                const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now();
+                audio.src = freshUrl;
+                console.log('[PersistentAudio] 🔴 Live stream reconnected to current position');
             } else if (stream.type === 'playlist') {
                 try {
                     const pos = await getServerLivePosition();

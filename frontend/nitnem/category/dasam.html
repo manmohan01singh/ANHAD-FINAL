@@ -1,6 +1,22 @@
 <!DOCTYPE html>
-<html lang="pa" dir="ltr" data-theme="light">
+<html lang="pa" dir="ltr">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
@@ -584,9 +600,14 @@
         const themeIcon = document.getElementById('themeIcon');
         const html = document.documentElement;
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('nitnem_theme') || 'dark';
+        // Load saved theme from global key
+        const savedTheme = localStorage.getItem('anhad_theme') || 'light';
         html.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
         updateThemeIcon(savedTheme);
 
         // Toggle theme
@@ -594,7 +615,7 @@
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('nitnem_theme', newTheme);
+            localStorage.setItem('anhad_theme', newTheme);
             updateThemeIcon(newTheme);
         });
 

@@ -255,37 +255,61 @@
 
         try {
             let data = null;
-
-            // 1. Try IndexedDB first (offline-first approach)
             let loadedFromCache = false;
-            if (window.gurbaniLocalDB) {
+
+            // 1. Try BaniCacheOptimizer first (fastest - memory + IndexedDB)
+            if (window.baniCacheOptimizer) {
+                try {
+                    data = await window.baniCacheOptimizer.getBani(state.baniId);
+                    if (data && data.verses && data.verses.length > 0) {
+                        console.log('[ReaderEngine] ⚡ Loaded from cache:', state.baniId);
+                        loadedFromCache = true;
+                        showOfflineBadge(true);
+                    }
+                } catch (e) {
+                    console.warn('[ReaderEngine] Cache failed, trying fallback:', e);
+                }
+            }
+
+            // 2. Fallback to gurbaniLocalDB
+            if (!data && window.gurbaniLocalDB) {
                 const cached = await window.gurbaniLocalDB.getBani(state.baniId);
                 if (cached && cached.verses && cached.verses.length > 0) {
-                    console.log('[ReaderEngine] ✓ Loaded from IndexedDB:', state.baniId);
+                    console.log('[ReaderEngine] ✓ Loaded from gurbaniLocalDB:', state.baniId);
                     data = {
                         verses: cached.verses,
                         baniInfo: { unicode: cached.name, transliteration: cached.name }
                     };
                     loadedFromCache = true;
-                    showOfflineBadge(true); // Show immediately since cached
+                    showOfflineBadge(true);
                 }
             }
 
-            // 2. Fallback to API if not in IndexedDB
+            // 3. Final fallback to API
             if (!data) {
-                console.log('[ReaderEngine] Fetching from API:', state.baniId);
+                console.log('[ReaderEngine] 🌐 Fetching from API:', state.baniId);
                 data = await BaniDB.getBani(state.baniId);
                 
-                // Save to IndexedDB for future offline use
-                if (window.gurbaniLocalDB && data && data.verses) {
+                // Save to both cache systems for future use
+                if (data && data.verses) {
                     const meta = state.baniMeta || {};
-                    await window.gurbaniLocalDB.saveBani(
-                        state.baniId, 
-                        meta.name || meta.nameEnglish || 'Bani', 
-                        data.verses
-                    );
-                    console.log('[ReaderEngine] ✓ Saved to IndexedDB for offline');
-                    showOfflineBadge(true); // Show badge after saving
+                    
+                    // Save to BaniCacheOptimizer
+                    if (window.baniCacheOptimizer) {
+                        await window.baniCacheOptimizer.cacheBani(state.baniId, data);
+                    }
+                    
+                    // Save to gurbaniLocalDB
+                    if (window.gurbaniLocalDB) {
+                        await window.gurbaniLocalDB.saveBani(
+                            state.baniId, 
+                            meta.name || meta.nameEnglish || 'Bani', 
+                            data.verses
+                        );
+                    }
+                    
+                    console.log('[ReaderEngine] ✓ Cached for future use');
+                    showOfflineBadge(true);
                 }
             }
 

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'light';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Fixes Test - ANHAD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .test-section.warning {
+            border-left-color: #FF9800;
+        }
+
+        .test-section h2 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .test-links {
+            display: grid;
+            gap: 10px;
+        }
+
+        .test-link {
+            display: block;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .test-link:hover {
+            background: #f0f0f0;
+            border-color: #4CAF50;
+            transform: translateX(4px);
+        }
+
+        .test-link::before {
+            content: '→ ';
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status.fixed {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status.pending {
+            background: #FF9800;
+            color: white;
+        }
+
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box h3 {
+            color: #1976D2;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background: #45a049;
+        }
+
+        .button.secondary {
+            background: #2196F3;
+        }
+
+        .button.secondary:hover {
+            background: #1976D2;
+        }
+
+        .theme-status {
+            padding: 15px;
+            background: #FFF3E0;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .theme-status strong {
+            color: #E65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Theme Fixes Test Suite</h1>
+        <p class="subtitle">Test all theme-related fixes for ANHAD app</p>
+
+        <div class="info-box">
+            <h3>✅ What Was Fixed</h3>
+            <p>
+                All pages now open in <strong>LIGHT MODE</strong> by default (synced with index.html).
+                Removed hardcoded dark themes from 5 HTML files and updated Naam Abhyas theme engine
+                to sync with global theme system.
+            </p>
+        </div>
+
+        <div class="test-section">
+            <h2>1. Fixed Pages - Should Open in Light Mode <span class="status fixed">FIXED</span></h2>
+            <div class="test-links">
+                <a href="./GurbaniRadio/gurbani-radio-new.html" class="test-link" target="_blank">
+                    Gurbani Radio (Amritvela Kirtan)
+                </a>
+                <a href="./RandomShabad/random-shabad.html" class="test-link" target="_blank">
+                    Random Shabad
+                </a>
+                <a href="./Hukamnama/daily-hukamnama.html" class="test-link" target="_blank">
+                    Daily Hukamnama
+                </a>
+                <a href="./nitnem/category/favorites.html" class="test-link" target="_blank">
+                    Favorites
+                </a>
+                <a href="./NaamAbhyas/naam-abhyas.html" class="test-link" target="_blank">
+                    Naam Abhyas (Theme Engine Updated)
+                </a>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Pages That Were Already Correct <span class="status fixed">OK</span></h2>
+            <div class="test-links">
+                <a href="./nitnem/index.html" class="test-link" target="_blank">
+                    Nitnem Index
+                </a>
+                <a href="./nitnem/category/sggs.html" class="test-link" target="_blank">
+                    Sri Guru Granth Sahib
+                </a>
+                <a href="./nitnem/category/dasam.html" class="test-link" target="_blank">
+                    Dasam Granth
+                </a>
+                <a href="./nitnem/category/sarbloh.html" class="test-link" target="_blank">
+                    Sarbloh Granth
+                </a>
+                <a href="./GurbaniKhoj/gurbani-khoj.html" class="test-link" target="_blank">
+                    Gurbani Khoj
+                </a>
+            </div>
+        </div>
+
+        <div class="test-section warning">
+            <h2>3. Pages Needing Investigation <span class="status pending">PENDING</span></h2>
+            <div class="test-links">
+                <a href="./NitnemTracker/nitnem-tracker.html" class="test-link" target="_blank">
+                    Nitnem Tracker (Check for initialization errors)
+                </a>
+                <a href="./Calendar/Gurupurab-Calendar.html" class="test-link" target="_blank">
+                    Gurpurab Calendar (Check scroll buffering)
+                </a>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🧪 Testing Instructions</h3>
+            <p>
+                <strong>Step 1:</strong> Clear localStorage to simulate fresh install<br>
+                <strong>Step 2:</strong> Open index.html - should be LIGHT mode<br>
+                <strong>Step 3:</strong> Click each link above - all should open in LIGHT mode<br>
+                <strong>Step 4:</strong> Toggle theme on any page - should affect ALL pages<br>
+                <strong>Step 5:</strong> Refresh - theme should persist
+            </p>
+        </div>
+
+        <div class="theme-status">
+            <strong>Current Theme:</strong> <span id="currentTheme">Loading...</span><br>
+            <strong>Storage Key:</strong> anhad_theme<br>
+            <strong>Default:</strong> light
+        </div>
+
+        <button class="button" onclick="clearTheme()">Clear Theme (Reset to Default)</button>
+        <button class="button secondary" onclick="setDark()">Set Dark Mode</button>
+        <button class="button secondary" onclick="setLight()">Set Light Mode</button>
+        <button class="button" onclick="checkTheme()">Check Current Theme</button>
+    </div>
+
+    <script>
+        function checkTheme() {
+            const theme = localStorage.getItem('anhad_theme') || 'light (default)';
+            document.getElementById('currentTheme').textContent = theme;
+            alert('Current theme: ' + theme);
+        }
+
+        function clearTheme() {
+            localStorage.removeItem('anhad_theme');
+            localStorage.removeItem('naamAbhyas_theme');
+            localStorage.removeItem('gurbani_radio_theme');
+            localStorage.removeItem('hukamnama_theme');
+            localStorage.removeItem('nitnem_theme');
+            alert('Theme cleared! Refresh the page to see default light mode.');
+            checkTheme();
+        }
+
+        function setDark() {
+            localStorage.setItem('anhad_theme', 'dark');
+            alert('Theme set to DARK. Open any page to see the change.');
+            checkTheme();
+        }
+
+        function setLight() {
+            localStorage.setItem('anhad_theme', 'light');
+            alert('Theme set to LIGHT. Open any page to see the change.');
+            checkTheme();
+        }
+
+        // Check theme on load
+        window.addEventListener('load', checkTheme);
+    </script>
+</body>
+</html>

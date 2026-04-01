@@ -38,27 +38,23 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
 
-    <!-- Theme: Sync with global ANHAD theme -->
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
     <script>
-        (function() {
-            // Check Nitnem Tracker's own theme first
-            var ownTheme = localStorage.getItem('nitnemTracker_theme');
-            if (ownTheme) {
-                // Use own theme if set
-                document.documentElement.setAttribute('data-theme', ownTheme);
-                document.body && document.body.setAttribute('data-theme', ownTheme);
-                return;
-            }
-            
-            // Otherwise sync with global ANHAD theme
-            var globalTheme = localStorage.getItem('anhad_theme');
-            if (globalTheme === 'dark' || globalTheme === 'light') {
-                document.documentElement.setAttribute('data-theme', globalTheme);
-                document.body && document.body.setAttribute('data-theme', globalTheme);
-                // Save to own theme storage for consistency
-                localStorage.setItem('nitnemTracker_theme', globalTheme);
-            }
-        })();
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+    }
+  } catch (e) {}
+})();
     </script>
 
     <!-- Scroll Fix + Extreme Claymorphism Override -->
@@ -1329,6 +1325,8 @@
 
     <!-- Core Logic -->
     <script src="../lib/unified-storage.js?v=2.1"></script>
+    <script src="../lib/user-stats.js?v=2.1"></script>
+    <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
     
     <!-- Data Persistence & Sync Systems -->
     <script src="data-persistence-guard.js?v=1.0"></script>

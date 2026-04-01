@@ -739,63 +739,147 @@ body.dark-mode .deco-logo-home img {
 .greeting__guru-portrait {
   grid-column: 2 / 3;
   grid-row: 1;
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   position: relative;
   justify-self: end;
+  /* Ambient glow behind the portrait */
+  filter: drop-shadow(0 20px 40px rgba(212, 148, 58, 0.3))
+          drop-shadow(0 0 60px rgba(255, 200, 100, 0.15));
 }
 
 .greeting__guru-img {
-  width: 140px;
-  height: 140px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center 15%;
+  image-orientation: from-image;
+  /* Premium multi-layer shadow for depth */
   box-shadow:
-    0 4px 20px rgba(212, 148, 58, 0.25),
-    0 0 40px rgba(212, 148, 58, 0.1);
-  border: 2.5px solid rgba(212, 148, 58, 0.35);
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    0 8px 32px rgba(212, 148, 58, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 0 0 4px rgba(255, 255, 255, 0.5),
+    inset 0 2px 8px rgba(255, 255, 255, 0.5);
+  /* Subtle glassmorphism border */
+  border: 3px solid rgba(212, 148, 58, 0.4);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              box-shadow 0.4s ease;
+  /* Gentle floating animation */
+  animation: guruFloat 6s ease-in-out infinite;
+}
+
+/* Animated rotating gradient ring behind the image */
+.greeting__guru-portrait::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #D4943A 0%,
+    #FFD700 25%,
+    #FF9500 50%,
+    #FFD700 75%,
+    #D4943A 100%
+  );
+  animation: rotateRing 8s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+  filter: blur(2px);
+}
+
+/* Secondary subtle glow ring */
+.greeting__guru-portrait::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 200, 100, 0.4) 0%,
+    transparent 60%
+  );
+  z-index: -2;
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes guruFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes rotateRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
 }
 
 .greeting__guru-img:hover {
   transform: scale(1.05);
+  box-shadow:
+    0 12px 40px rgba(212, 148, 58, 0.45),
+    0 6px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 4px rgba(255, 255, 255, 0.6),
+    inset 0 2px 8px rgba(255, 255, 255, 0.6);
 }
 .greeting__salutation {
   grid-column: 1 / 2;
   grid-row: 1;
-  font-size: 1.9rem;
+  font-size: 1.6rem;
   font-weight: 700;
   line-height: 1.25;
-  letter-spacing: 1px; 
+  letter-spacing: 0.5px; 
   margin-bottom: 0;
-  font-family: 'Trajan Pro', 'Cinzel', serif; /* Ultimate high-end Roman classical font */
+  font-family: 'Trajan Pro', 'Cinzel', serif;
 
-  /* Embossed Clay Gold Color */
-  color: #AF7D14; 
+  /* Premium gradient text effect */
+  background: linear-gradient(
+    135deg,
+    #AF7D14 0%,
+    #D4943A 30%,
+    #FFD700 50%,
+    #D4943A 70%,
+    #AF7D14 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* Shimmer animation */
+  animation: textShimmer 4s ease-in-out infinite;
+
+  /* Soft shadow for depth */
+  filter: drop-shadow(0 2px 4px rgba(212, 148, 58, 0.3));
   
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  -webkit-text-fill-color: unset;
-
-  /* 3D clay text shadow */
-  text-shadow: 3px 3px 6px rgba(0,0,0,0.15),
-               -3px -3px 6px rgba(255,255,255,0.9);
-
   /* Remove 3D tilt */
   transform: none;
-  filter: none;
 }
 
-/* Dark mode: Simple rich gold */
+@keyframes textShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Dark mode: Rich gold with glow */
 body.dark-mode .greeting__salutation {
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  -webkit-text-fill-color: unset;
-  
-  color: #E6B545;
-  text-shadow: 0 0 15px rgba(230, 181, 69, 0.4);
+  background: linear-gradient(
+    135deg,
+    #E6B545 0%,
+    #FFD700 30%,
+    #FFEC8B 50%,
+    #FFD700 70%,
+    #E6B545 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(230, 181, 69, 0.5));
 }
 
 .greeting__gurbani {
@@ -844,6 +928,121 @@ body.dark-mode .greeting__salutation {
   border-radius: 50%;
   background: var(--text-quaternary);
   flex-shrink: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 5.4.1. SCATTERED PETALS — Floating around portrait (No Rose)
+═══════════════════════════════════════════════════════════════════════════════ */
+/* Petals decoration - concentrated cluster at center-bottom of portrait */
+.greeting__rose-decoration {
+  position: absolute;
+  bottom: -15px;
+  left: 60%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 50px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Pink light orb glow behind the petals */
+.greeting__rose-decoration::before {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 30px;
+  background: radial-gradient(ellipse at center, rgba(255, 105, 180, 0.4) 0%, rgba(255, 182, 193, 0.2) 50%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(8px);
+  z-index: -1;
+  animation: pinkGlowPulse 3s ease-in-out infinite;
+}
+
+@keyframes pinkGlowPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
+}
+
+/* Scattered petals floating */
+.greeting__rose-decoration .petal-1,
+.greeting__rose-decoration .petal-2,
+.greeting__rose-decoration .petal-3,
+.greeting__rose-decoration .petal-4,
+.greeting__rose-decoration .petal-5,
+.greeting__rose-decoration .petal-6,
+.greeting__rose-decoration .petal-7,
+.greeting__rose-decoration .petal-8,
+.greeting__rose-decoration .petal-9,
+.greeting__rose-decoration .petal-10,
+.greeting__rose-decoration .petal-11,
+.greeting__rose-decoration .petal-12,
+.greeting__rose-decoration .petal-13,
+.greeting__rose-decoration .petal-14,
+.greeting__rose-decoration .petal-15,
+.greeting__rose-decoration .petal-16,
+.greeting__rose-decoration .petal-17,
+.greeting__rose-decoration .petal-18,
+.greeting__rose-decoration .petal-19,
+.greeting__rose-decoration .petal-20,
+.greeting__rose-decoration .petal-21,
+.greeting__rose-decoration .petal-22,
+.greeting__rose-decoration .petal-23 {
+  position: absolute;
+  background: radial-gradient(ellipse at 30% 30%, #FFB6C1 0%, #FF69B4 50%, #DC143C 100%);
+  border-radius: 50% 0 50% 50%;
+  opacity: 0.7;
+  filter: drop-shadow(0 2px 4px rgba(220, 20, 60, 0.2));
+  animation: petalFloat 4s ease-in-out infinite;
+}
+
+/* Concentrated cluster - all within small area at bottom of portrait */
+.greeting__rose-decoration .petal-1 { width: 14px; height: 14px; top: 20px; right: 80px; transform: rotate(45deg); animation-delay: 0s; }
+.greeting__rose-decoration .petal-2 { width: 12px; height: 12px; top: 15px; right: 60px; transform: rotate(120deg); animation-delay: 0.5s; }
+.greeting__rose-decoration .petal-3 { width: 16px; height: 16px; top: 25px; right: 95px; transform: rotate(200deg); animation-delay: 1s; }
+
+/* 20 more concentrated petals - clustered tightly */
+.greeting__rose-decoration .petal-4 { width: 10px; height: 10px; top: 10px; right: 45px; transform: rotate(30deg); animation-delay: 1.5s; }
+.greeting__rose-decoration .petal-5 { width: 13px; height: 13px; top: 30px; right: 70px; transform: rotate(90deg); animation-delay: 2s; }
+.greeting__rose-decoration .petal-6 { width: 11px; height: 11px; top: 18px; right: 30px; transform: rotate(150deg); animation-delay: 2.5s; }
+.greeting__rose-decoration .petal-7 { width: 15px; height: 15px; top: 8px; right: 75px; transform: rotate(210deg); animation-delay: 3s; }
+.greeting__rose-decoration .petal-8 { width: 9px; height: 9px; top: 28px; right: 50px; transform: rotate(270deg); animation-delay: 3.5s; }
+.greeting__rose-decoration .petal-9 { width: 12px; height: 12px; top: 12px; right: 100px; transform: rotate(330deg); animation-delay: 4s; }
+.greeting__rose-decoration .petal-10 { width: 14px; height: 14px; top: 32px; right: 85px; transform: rotate(15deg); animation-delay: 4.5s; }
+.greeting__rose-decoration .petal-11 { width: 10px; height: 10px; top: 5px; right: 55px; transform: rotate(75deg); animation-delay: 0.3s; }
+.greeting__rose-decoration .petal-12 { width: 13px; height: 13px; top: 22px; right: 20px; transform: rotate(135deg); animation-delay: 0.8s; }
+.greeting__rose-decoration .petal-13 { width: 11px; height: 11px; top: 35px; right: 40px; transform: rotate(195deg); animation-delay: 1.3s; }
+.greeting__rose-decoration .petal-14 { width: 14px; height: 14px; top: 15px; right: 110px; transform: rotate(255deg); animation-delay: 1.8s; }
+.greeting__rose-decoration .petal-15 { width: 9px; height: 9px; top: 28px; right: 65px; transform: rotate(315deg); animation-delay: 2.3s; }
+.greeting__rose-decoration .petal-16 { width: 12px; height: 12px; top: 5px; right: 90px; transform: rotate(25deg); animation-delay: 2.8s; }
+.greeting__rose-decoration .petal-17 { width: 10px; height: 10px; top: 38px; right: 75px; transform: rotate(85deg); animation-delay: 3.3s; }
+.greeting__rose-decoration .petal-18 { width: 13px; height: 13px; top: 8px; right: 35px; transform: rotate(145deg); animation-delay: 3.8s; }
+.greeting__rose-decoration .petal-19 { width: 11px; height: 11px; top: 25px; right: 105px; transform: rotate(205deg); animation-delay: 4.3s; }
+.greeting__rose-decoration .petal-20 { width: 14px; height: 14px; top: 35px; right: 55px; transform: rotate(265deg); animation-delay: 4.8s; }
+.greeting__rose-decoration .petal-21 { width: 10px; height: 10px; top: 12px; right: 45px; transform: rotate(325deg); animation-delay: 0.6s; }
+.greeting__rose-decoration .petal-22 { width: 12px; height: 12px; top: 30px; right: 25px; transform: rotate(35deg); animation-delay: 1.1s; }
+.greeting__rose-decoration .petal-23 { width: 9px; height: 9px; top: 20px; right: 120px; transform: rotate(155deg); animation-delay: 1.6s; }
+
+@keyframes petalFloat {
+  0%, 100% { 
+    transform: rotate(var(--rotation, 45deg)) translateY(0) scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: rotate(var(--rotation, 45deg)) translateY(-6px) scale(0.95);
+    opacity: 0.9;
+  }
+}
+
+/* Dark mode adjustments */
+body.dark-mode .greeting__rose-decoration .petal-1,
+body.dark-mode .greeting__rose-decoration .petal-2,
+body.dark-mode .greeting__rose-decoration .petal-3 {
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 6px rgba(255, 105, 180, 0.3));
 }
 
 
@@ -933,38 +1132,9 @@ body.dark-mode .greeting__salutation {
   margin-bottom: var(--space-6);
 }
 
-/* Golden Orb — Lightweight ambient glow (no images, no JS, pure CSS) */
+/* Golden Orb — REMOVED per user request, replaced with rose decoration */
 .golden-orb-bg {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 420px;
-  height: 420px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 45% 42%,
-    rgba(245, 200, 66, 0.45) 0%,
-    rgba(212, 148, 58, 0.35) 25%,
-    rgba(196, 132, 42, 0.2) 45%,
-    rgba(180, 120, 40, 0.08) 65%,
-    transparent 80%
-  );
-  z-index: 0;
-  pointer-events: none;
-  filter: blur(30px);
-  opacity: 0.8;
-}
-
-body.dark-mode .golden-orb-bg {
-  background: radial-gradient(
-    circle at 45% 42%,
-    rgba(212, 148, 58, 0.25) 0%,
-    rgba(180, 120, 40, 0.15) 30%,
-    rgba(140, 90, 30, 0.08) 55%,
-    transparent 75%
-  );
-  opacity: 0.6;
+  display: none;
 }
 
 /* Legacy glow fallback — hidden */

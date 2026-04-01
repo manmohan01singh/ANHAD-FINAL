@@ -20,7 +20,10 @@
 
     const RENDER_BASE = (() => {
         try {
-            const port = window.location.port;
+// For Capacitor apps, always use production URL
+                if (window.Capacitor) return 'https://anhad-final.onrender.com';
+                
+                            const port = window.location.port;
             const host = window.location.hostname;
             if (port === '3000' || port === '3001') return 'http://localhost:3000';
             if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';

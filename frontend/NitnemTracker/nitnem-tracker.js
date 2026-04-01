@@ -2061,7 +2061,7 @@ const NitnemManager = {
         sohila: []
     },
     activePeriod: 'amritvela',
-    allBanis: [],
+    allBanis: {}, // Initialize as object to match data structure
 
     /**
      * Initialize Nitnem system
@@ -2130,13 +2130,13 @@ const NitnemManager = {
     getDefaultBanis() {
         return {
             nitnem: [
-                { id: 'japji', nameGurmukhi: 'ਜਪੁਜੀ ਸਾਹਿਬ', nameEnglish: 'Japji Sahib', duration: '25 min', defaultPeriod: 'amritvela' },
-                { id: 'jaap', nameGurmukhi: 'ਜਾਪ ਸਾਹਿਬ', nameEnglish: 'Jaap Sahib', duration: '15 min', defaultPeriod: 'amritvela' },
+                { id: 'japji-sahib', nameGurmukhi: 'ਜਪੁਜੀ ਸਾਹਿਬ', nameEnglish: 'Japji Sahib', duration: '25 min', defaultPeriod: 'amritvela' },
+                { id: 'jaap-sahib', nameGurmukhi: 'ਜਾਪ ਸਾਹਿਬ', nameEnglish: 'Jaap Sahib', duration: '15 min', defaultPeriod: 'amritvela' },
                 { id: 'tav-prasad-savaiye', nameGurmukhi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', nameEnglish: 'Tav Prasad Savaiye', duration: '5 min', defaultPeriod: 'amritvela' },
-                { id: 'chaupai', nameGurmukhi: 'ਚੌਪਈ ਸਾਹਿਬ', nameEnglish: 'Chaupai Sahib', duration: '7 min', defaultPeriod: 'amritvela' },
-                { id: 'anand', nameGurmukhi: 'ਅਨੰਦ ਸਾਹਿਬ', nameEnglish: 'Anand Sahib', duration: '10 min', defaultPeriod: 'amritvela' },
-                { id: 'rehras', nameGurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ', nameEnglish: 'Rehras Sahib', duration: '25 min', defaultPeriod: 'rehras' },
-                { id: 'sohila', nameGurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', nameEnglish: 'Sohila Sahib', duration: '7 min', defaultPeriod: 'sohila' }
+                { id: 'chaupai-sahib', nameGurmukhi: 'ਚੌਪਈ ਸਾਹਿਬ', nameEnglish: 'Chaupai Sahib', duration: '7 min', defaultPeriod: 'amritvela' },
+                { id: 'anand-sahib', nameGurmukhi: 'ਅਨੰਦ ਸਾਹਿਬ', nameEnglish: 'Anand Sahib', duration: '10 min', defaultPeriod: 'amritvela' },
+                { id: 'rehras-sahib', nameGurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ', nameEnglish: 'Rehras Sahib', duration: '25 min', defaultPeriod: 'rehras' },
+                { id: 'sohila-sahib', nameGurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', nameEnglish: 'Sohila Sahib', duration: '7 min', defaultPeriod: 'sohila' }
             ],
             guruGranthSahib: [
                 { id: 'sukhmani', nameGurmukhi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', nameEnglish: 'Sukhmani Sahib', duration: '90 min' },
@@ -2182,15 +2182,27 @@ const NitnemManager = {
      * Set default bani selections
      */
     setDefaultBanis() {
-        if (this.allBanis.nitnem) {
-            this.allBanis.nitnem.forEach(bani => {
-                if (bani.defaultPeriod) {
-                    const entry = { ...bani, uid: Utils.generateId() };
-                    this.selectedBanis[bani.defaultPeriod].push(entry);
-                }
-            });
-            this.saveSelectedBanis();
-        }
+        // FIX: Force default banis from embedded fallback data
+        const defaults = [
+            { id: 'japji-sahib', nameGurmukhi: 'ਜਪੁਜੀ ਸਾਹਿਬ', nameEnglish: 'Japji Sahib', duration: '25 min', defaultPeriod: 'amritvela', author: 'Guru Nanak Dev Ji', source: 'Sri Guru Granth Sahib Ji' },
+            { id: 'jaap-sahib', nameGurmukhi: 'ਜਾਪ ਸਾਹਿਬ', nameEnglish: 'Jaap Sahib', duration: '15 min', defaultPeriod: 'amritvela', author: 'Guru Gobind Singh Ji', source: 'Sri Dasam Granth Sahib' },
+            { id: 'tav-prasad-savaiye', nameGurmukhi: 'ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ', nameEnglish: 'Tav Prasad Savaiye', duration: '5 min', defaultPeriod: 'amritvela', author: 'Guru Gobind Singh Ji', source: 'Sri Dasam Granth Sahib' },
+            { id: 'chaupai-sahib', nameGurmukhi: 'ਚੌਪਈ ਸਾਹਿਬ', nameEnglish: 'Chaupai Sahib', duration: '7 min', defaultPeriod: 'amritvela', author: 'Guru Gobind Singh Ji', source: 'Sri Dasam Granth Sahib' },
+            { id: 'anand-sahib', nameGurmukhi: 'ਅਨੰਦ ਸਾਹਿਬ', nameEnglish: 'Anand Sahib', duration: '10 min', defaultPeriod: 'amritvela', author: 'Guru Amar Das Ji', source: 'Sri Guru Granth Sahib Ji' },
+            { id: 'rehras-sahib', nameGurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ', nameEnglish: 'Rehras Sahib', duration: '25 min', defaultPeriod: 'rehras', author: 'Multiple Gurus', source: 'Sri Guru Granth Sahib Ji' },
+            { id: 'sohila-sahib', nameGurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', nameEnglish: 'Sohila Sahib', duration: '7 min', defaultPeriod: 'sohila', author: 'Guru Nanak Dev Ji', source: 'Sri Guru Granth Sahib Ji' },
+            { id: 'ardas', nameGurmukhi: 'ਅਰਦਾਸ', nameEnglish: 'Ardas', duration: '5 min', defaultPeriod: 'sohila', author: 'Sikh Tradition', source: 'Sikh Prayer' }
+        ];
+
+        defaults.forEach(bani => {
+            if (bani.defaultPeriod && this.selectedBanis[bani.defaultPeriod]) {
+                const entry = { ...bani, uid: Utils.generateId() };
+                this.selectedBanis[bani.defaultPeriod].push(entry);
+            }
+        });
+
+        this.saveSelectedBanis();
+        console.log('[Nitnem] Default banis loaded');
     },
 
     /**
@@ -2395,9 +2407,6 @@ const NitnemManager = {
     },
 
     /**
-     * Toggle bani completion
-     */
-    /**
      * Toggle group completion (Sequential)
      */
     toggleGroupCompletion(baniId, period) {
@@ -2413,6 +2422,17 @@ const NitnemManager = {
             this.completedToday[period].push(target.uid);
             HapticManager.success();
             SoundManager.success();
+            
+            // ═══ SYNC WITH DASHBOARD ═══
+            // ONLY use UnifiedProgressTracker to avoid double counting
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackNitnemCompletion(1);
+            } else if (window.AnhadStats) {
+                // Fallback: only if UnifiedProgressTracker not available
+                window.AnhadStats.addNitnemCompleted(1);
+            }
+            
+            console.log('[Nitnem] ✅ Tracked 1 bani completion');
         } else {
             // All are completed -> Reset ALL for this group
             // Remove all UIDs belonging to this baniId from completed list
@@ -2586,6 +2606,11 @@ const NitnemManager = {
      * Add bani to period
      */
     addBani(bani, period) {
+        // FIX: Ensure period array exists
+        if (!this.selectedBanis[period]) {
+            this.selectedBanis[period] = [];
+        }
+        
         // Allow duplicates - Generate Unique Instance ID (UID)
         const entry = { ...bani, uid: Utils.generateId() };
 
@@ -2655,20 +2680,15 @@ const NitnemManager = {
             this.elements.progressPercent.textContent = `${percentage}%`;
         }
 
-        // --- BUG FIX: Update Global Reports ---
-        if (typeof EnhancedReports !== 'undefined') {
-            EnhancedReports.updateReportsDisplay();
-        }
-        // ------------------------------------
-
         // Update complete all button
         if (this.elements.completeAllBtn) {
-            this.elements.completeAllBtn.disabled = this.selectedBanis[this.activePeriod].length === 0;
+            const currentBanis = this.selectedBanis[this.activePeriod] || [];
+            this.elements.completeAllBtn.disabled = currentBanis.length === 0;
         }
     },
 
     /**
-     * Update bani counts in tabs
+     * Update counts display
      */
     updateCounts() {
         Object.keys(this.selectedBanis).forEach(period => {
@@ -2708,11 +2728,23 @@ const NitnemManager = {
             AchievementManager.checkNitnemComplete();
             CelebrationManager.show('nitnemComplete');
             
-            // Sync to AnhadStats - mark full Nitnem day as complete
+            // ═══ SYNC FULL DAY COMPLETION ═══
+            // Mark "Complete Nitnem" goal as done (1 full day = 1 goal)
             if (window.AnhadStats) {
-                window.AnhadStats.addNitnemCompleted(1);
-                console.log('✅ Full Nitnem completed - synced to dashboard');
+                const goals = window.AnhadStats.getGoals();
+                // Set completeNitnem goal to 1 (full day done)
+                goals.completeNitnem.current = 1;
+                localStorage.setItem('anhad_daily_goals', JSON.stringify(goals));
+                window.dispatchEvent(new CustomEvent('goalsUpdated', { detail: goals }));
             }
+            
+            // Trigger dashboard refresh
+            if (window.DashboardAnalytics) {
+                window.DashboardAnalytics.syncWithNitnemTracker();
+                window.DashboardAnalytics.renderChart();
+            }
+            
+            console.log('✅ Full Nitnem completed - synced to dashboard');
         }
     },
 
@@ -2993,7 +3025,13 @@ const BaniModal = {
             return;
         }
 
-        const allBanis = NitnemManager.allBanis;
+        // FIX: Ensure allBanis is loaded, use fallback if needed
+        let allBanis = NitnemManager.allBanis;
+        if (!allBanis || Object.keys(allBanis).length === 0) {
+            console.warn('[BaniModal] allBanis not loaded, using fallback');
+            allBanis = NitnemManager.getDefaultBanis();
+        }
+
         const allBanisList = [
             ...(allBanis.nitnem || []),
             ...(allBanis.guruGranthSahib || []),
@@ -3001,12 +3039,17 @@ const BaniModal = {
             ...(allBanis.other || [])
         ];
 
+        // FIX: Log for debugging
+        console.log('[BaniModal] Adding banis:', this.selectedBanis.length, 'Available:', allBanisList.length);
+
         let added = 0;
         this.selectedBanis.forEach(baniId => {
             const bani = allBanisList.find(b => b.id === baniId);
             if (bani) {
                 const success = NitnemManager.addBani(bani, this.targetPeriod);
                 if (success) added++;
+            } else {
+                console.warn('[BaniModal] Bani not found:', baniId);
             }
         });
 
@@ -3014,6 +3057,8 @@ const BaniModal = {
 
         if (added > 0) {
             Toast.success('Banis Added', `${added} bani(s) added to ${this.targetPeriod}`);
+        } else {
+            Toast.error('Error', 'Could not add banis. Please try again.');
         }
     }
 };
@@ -5496,7 +5541,9 @@ const AchievementManager = {
      * Load unlocked achievements
      */
     loadUnlockedAchievements() {
-        this.unlockedAchievements = StorageManager.load(CONFIG.STORAGE_KEYS.ACHIEVEMENTS, []);
+        const loaded = StorageManager.load(CONFIG.STORAGE_KEYS.ACHIEVEMENTS, []);
+        // FIX: Ensure it's an array - localStorage might have corrupted data
+        this.unlockedAchievements = Array.isArray(loaded) ? loaded : [];
     },
 
     /**

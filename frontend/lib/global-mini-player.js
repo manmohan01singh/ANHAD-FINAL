@@ -128,7 +128,9 @@
 
     try {
       const t0 = Date.now();
-      const resp = await fetch(`${API_BASE}/api/radio/live`, {
+      // CRITICAL FIX: Add cache buster to URL to bypass server-side caching
+      const freshUrl = `${API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+      const resp = await fetch(freshUrl, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
       });
@@ -181,10 +183,18 @@
   let currentTrackIndex = 0;
   let isPlaying = false;
   let miniPlayerEl = null;
+  let isInitialPageLoad = true; // Track if this is the first page load
 
   function createAudio() {
-    // CRITICAL FIX: Always create NEW audio element to avoid cached position
+    // CRITICAL FIX: Always create NEW audio element to avoid cache
     if (audio) {
+      // Save current position before destroying
+      const wasPlaying = !audio.paused;
+      const savedPosition = audio.currentTime;
+      const savedSrc = audio.src;
+      
+      console.log(`[GMP] 🔄 Recreating audio - was at ${Math.floor(savedPosition)}s, playing: ${wasPlaying}`);
+      
       // Kill old audio completely - remove ALL event listeners
       const oldAudio = audio;
       oldAudio.pause();
@@ -193,9 +203,12 @@
       oldAudio.load();
       // Remove from DOM if attached
       if (oldAudio.parentNode) oldAudio.parentNode.removeChild(oldAudio);
-      audio = null;
+      // Don't set audio = null here - create new one immediately below
+      // Store saved state temporarily to return later
+      audio._savedState = { wasPlaying, savedPosition, savedSrc };
     }
     
+    // CRITICAL FIX: Create new audio element IMMEDIATELY (never leave audio as null)
     audio = new Audio();
     audio.preload = 'none'; // CRITICAL: Don't preload to avoid caching
     audio.volume = 0.8;
@@ -247,17 +260,20 @@
       setTimeout(() => resumePlayback(), 3000);
     });
 
-    return audio;
+    // Return saved state if we destroyed an old audio
+    return audio._savedState || null;
   }
 
   function persistState() {
-    // CRITICAL: Don't save position for playlist streams - always jump to live
-    // Only save the stream type and playing state
+    // BRUTAL VIRTUAL LIVE: Save current position for comparison on next page
+    // This lets us know if we're ahead of server position
     saveState({
       isPlaying,
       stream: currentStream,
-      volume: audio ? audio.volume : 0.8
-      // Removed: trackIndex, currentTime, duration - these cause stale position issues
+      volume: audio ? audio.volume : 0.8,
+      trackIndex: currentTrackIndex,
+      currentTime: audio ? audio.currentTime : 0,
+      lastUpdateTime: Date.now() // When this position was saved
     });
   }
 
@@ -290,12 +306,22 @@
         audio.load(); // Force reload to avoid cache
         console.log(`[GMP] 🔴 LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
 
-        // CRITICAL FIX: Wait for canplay before seeking and playing
+        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
           const dur = audio.duration || 3600;
-          const seekPos = Math.min(pos.position, dur - 5);
-          console.log(`[GMP] 🎯 Seeking to ${Math.floor(seekPos)}s (duration: ${Math.floor(dur)}s)`);
-          audio.currentTime = seekPos;
+          const serverPos = Math.min(pos.position, dur - 5);
+          const currentPos = audio.currentTime;
+          
+          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
+          if (serverPos > currentPos + 2) {
+            console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
+            audio.currentTime = serverPos;
+          } else if (serverPos < currentPos - 5) {
+            console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
+          } else {
+            console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
+          }
+          
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Playing from ${Math.floor(audio.currentTime)}s`);
@@ -319,12 +345,22 @@
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
-        // CRITICAL FIX: Wait for canplay before seeking and playing
+        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
           const dur = audio.duration || 3600;
-          const seekPos = Math.min(localPos.position, dur - 5);
-          console.log(`[GMP] 🎯 Fallback seeking to ${Math.floor(seekPos)}s (duration: ${Math.floor(dur)}s)`);
-          audio.currentTime = seekPos;
+          const serverPos = Math.min(localPos.position, dur - 5);
+          const currentPos = audio.currentTime;
+          
+          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
+          if (serverPos > currentPos + 2) {
+            console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
+            audio.currentTime = serverPos;
+          } else if (serverPos < currentPos - 5) {
+            console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
+          } else {
+            console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
+          }
+          
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Fallback playing from ${Math.floor(audio.currentTime)}s`);
@@ -365,12 +401,34 @@
     audio.addEventListener('loadedmetadata', function seek() {
       audio.removeEventListener('loadedmetadata', seek);
       const dur = audio.duration || 3600;
-      audio.currentTime = Math.min(pos.position, dur - 5);
+      const serverPos = Math.min(pos.position, dur - 5);
+      const currentPos = audio.currentTime;
+      
+      // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
+      if (serverPos > currentPos + 2) {
+        console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
+        audio.currentTime = serverPos;
+      } else if (serverPos < currentPos - 5) {
+        console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
+      } else {
+        console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
+      }
     }, { once: true });
     // FIX: If already loaded, seek immediately
     if (audio.readyState >= 1) {
       const dur = audio.duration || 3600;
-      audio.currentTime = Math.min(pos.position, dur - 5);
+      const serverPos = Math.min(pos.position, dur - 5);
+      const currentPos = audio.currentTime;
+      
+      // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
+      if (serverPos > currentPos + 2) {
+        console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
+        audio.currentTime = serverPos;
+      } else if (serverPos < currentPos - 5) {
+        console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
+      } else {
+        console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
+      }
     }
     
     try { await audio.play(); } catch (e) { }
@@ -423,7 +481,13 @@
     if (isPlayerPage) return;
 
     currentStream = state.stream;
-    // CRITICAL: Don't use saved trackIndex - always fetch live position
+    
+    // BRUTAL VIRTUAL LIVE: Calculate where audio SHOULD be now based on saved position
+    const timeSinceLastUpdate = (Date.now() - (state.lastUpdateTime || state.timestamp)) / 1000;
+    const estimatedCurrentPosition = (state.currentTime || 0) + timeSinceLastUpdate;
+    
+    console.log(`[GMP] 📍 Last saved position: ${Math.floor(state.currentTime || 0)}s (${Math.floor(timeSinceLastUpdate)}s ago)`);
+    console.log(`[GMP] 📍 Estimated current position: ${Math.floor(estimatedCurrentPosition)}s`);
 
     createAudio();
     audio.volume = state.volume || 0.8;
@@ -446,13 +510,32 @@
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] 🔴 RESUMING AT LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
-        
-        // CRITICAL FIX: Wait for canplay before seeking and playing
+        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
           const dur = audio.duration || 3600;
-          const seekPos = Math.min(pos.position, dur - 5);
-          console.log(`[GMP] 🎯 Resume seeking to ${Math.floor(seekPos)}s (duration: ${Math.floor(dur)}s)`);
-          audio.currentTime = seekPos;
+          const serverPos = Math.min(pos.position, dur - 5);
+          const currentPos = audio.currentTime; // This will be 0 for new audio element
+          
+          // SMART: Use estimated position from saved state, not currentPos (which is 0)
+          const actualPosition = estimatedCurrentPosition;
+          
+          console.log(`[GMP] 🎯 Server position: ${serverPos.toFixed(1)}s`);
+          console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
+          
+          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
+          if (serverPos > actualPosition + 2) {
+            console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
+            audio.currentTime = serverPos;
+          } else if (serverPos < actualPosition - 5) {
+            console.log(`[GMP] ✓ AHEAD OF LIVE: ${actualPosition.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(actualPosition - serverPos).toFixed(1)}s ahead) - continuing`);
+            // Continue from where we were (estimated position)
+            audio.currentTime = Math.min(actualPosition, dur - 5);
+          } else {
+            console.log(`[GMP] ✓ IN SYNC: ${actualPosition.toFixed(1)}s ≈ ${serverPos.toFixed(1)}s`);
+            // Use server position since we're in sync
+            audio.currentTime = serverPos;
+          }
+          
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Resume playing from ${Math.floor(audio.currentTime)}s`);
@@ -476,12 +559,27 @@
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
-        // CRITICAL FIX: Wait for canplay before seeking and playing
+        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
           const dur = audio.duration || 3600;
-          const seekPos = Math.min(localPos.position, dur - 5);
-          console.log(`[GMP] 🎯 Resume fallback seeking to ${Math.floor(seekPos)}s (duration: ${Math.floor(dur)}s)`);
-          audio.currentTime = seekPos;
+          const serverPos = Math.min(localPos.position, dur - 5);
+          const actualPosition = estimatedCurrentPosition;
+          
+          console.log(`[GMP] 🎯 Fallback server position: ${serverPos.toFixed(1)}s`);
+          console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
+          
+          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
+          if (serverPos > actualPosition + 2) {
+            console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
+            audio.currentTime = serverPos;
+          } else if (serverPos < actualPosition - 5) {
+            console.log(`[GMP] ✓ AHEAD OF LIVE: ${actualPosition.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(actualPosition - serverPos).toFixed(1)}s ahead) - continuing`);
+            audio.currentTime = Math.min(actualPosition, dur - 5);
+          } else {
+            console.log(`[GMP] ✓ IN SYNC: ${actualPosition.toFixed(1)}s ≈ ${serverPos.toFixed(1)}s`);
+            audio.currentTime = serverPos;
+          }
+          
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Resume fallback playing from ${Math.floor(audio.currentTime)}s`);
@@ -761,24 +859,93 @@
   }
 
   // ─── Listening time tracker (feeds Dashboard stats) ──────────────────────
-  // Every 60s while audio is playing, credit 1 minute to AnhadStats AND Dashboard.
+  // Every 10s while audio is playing, credit 1 minute to AnhadStats AND Dashboard.
+  const PENDING_KIRTAN_TIME_KEY = 'anhad_pending_kirtan_minutes';
+  let accumulatedSeconds = 0;
+  
+  // Load any pending time from previous sessions
+  function getPendingKirtanMinutes() {
+    try {
+      const stored = localStorage.getItem(PENDING_KIRTAN_TIME_KEY);
+      return stored ? parseInt(stored, 10) : 0;
+    } catch (e) { return 0; }
+  }
+  
+  function addPendingKirtanMinutes(minutes) {
+    try {
+      const current = getPendingKirtanMinutes();
+      localStorage.setItem(PENDING_KIRTAN_TIME_KEY, (current + minutes).toString());
+    } catch (e) {}
+  }
+  
+  function clearPendingKirtanMinutes() {
+    try {
+      localStorage.removeItem(PENDING_KIRTAN_TIME_KEY);
+    } catch (e) {}
+  }
+  
+  // Sync pending time to Dashboard when available
+  function syncPendingKirtanTime() {
+    const pending = getPendingKirtanMinutes();
+    if (pending > 0 && window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
+      window.DashboardAnalytics.updateDailyData('listen', pending);
+      console.log(`[GMP] ✅ Synced ${pending} pending min to DashboardAnalytics (from other pages)`);
+      clearPendingKirtanMinutes();
+      return true;
+    }
+    return false;
+  }
+  
+  // Try to sync any pending time when page loads
+  setTimeout(syncPendingKirtanTime, 2000); // Delay to let Dashboard init
+  
+  // Also try to sync periodically in case Dashboard loads later
+  setInterval(syncPendingKirtanTime, 5000);
+  
   setInterval(function () {
-    console.log('[GMP] ⏱️ Timer tick - isPlaying:', isPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics);
-    if (isPlaying) {
-      // Sync to AnhadStats
-      if (window.AnhadStats && typeof window.AnhadStats.addListeningTime === 'function') {
-        window.AnhadStats.addListeningTime(1);
-        console.log('[GMP] ✅ Synced 1 min to AnhadStats');
-      }
-      // DIRECT: Sync to DashboardAnalytics for immediate chart update
-      if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
-        window.DashboardAnalytics.updateDailyData('listen', 1);
-        console.log('[GMP] ✅ Synced 1 min to DashboardAnalytics');
-      } else {
-        console.log('[GMP] ❌ DashboardAnalytics not available');
+    // PRIMARY: Check isPlaying flag
+    // BACKUP: Also check audio.paused directly in case event listeners missed
+    const actuallyPlaying = isPlaying || (audio && !audio.paused && audio.currentTime > 0);
+    
+    console.log('[GMP] ⏱️ Timer tick - isPlaying:', isPlaying, 'audio?.paused:', audio?.paused, 'actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
+    
+    if (actuallyPlaying) {
+      // BRUTAL VIRTUAL LIVE: Save position every 10s for accurate resume
+      persistState();
+      
+      accumulatedSeconds += 10; // Add 10 seconds
+      
+      // Sync every 60 seconds accumulated
+      if (accumulatedSeconds >= 60) {
+        const minutes = Math.floor(accumulatedSeconds / 60);
+        accumulatedSeconds = accumulatedSeconds % 60; // Keep remainder
+        
+        // Sync to AnhadStats
+        if (window.AnhadStats && typeof window.AnhadStats.addListeningTime === 'function') {
+          window.AnhadStats.addListeningTime(minutes);
+          console.log('[GMP] ✅ Synced', minutes, 'min to AnhadStats');
+        }
+        
+        // DIRECT: Sync to DashboardAnalytics for immediate chart update
+        if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
+          // First sync any pending time from other pages
+          const pending = getPendingKirtanMinutes();
+          if (pending > 0) {
+            window.DashboardAnalytics.updateDailyData('listen', pending);
+            console.log(`[GMP] ✅ Synced ${pending} pending min from other pages`);
+            clearPendingKirtanMinutes();
+          }
+          // Then sync current minute
+          window.DashboardAnalytics.updateDailyData('listen', minutes);
+          console.log('[GMP] ✅ Synced', minutes, 'min to DashboardAnalytics');
+        } else {
+          // Dashboard not available - store in localStorage for later
+          addPendingKirtanMinutes(minutes);
+          console.log(`[GMP] ⏳ Stored ${minutes} min in localStorage (Dashboard not available). Total pending: ${getPendingKirtanMinutes()} min`);
+        }
       }
     }
-  }, 10000); // DEBUG: 10 seconds for testing
+  }, 10000); // Check every 10 seconds
 
   // Start as early as possible
   if (document.readyState === 'loading') {
@@ -800,5 +967,14 @@
     }
   };
 
-  console.log('[GMP] Global Mini-Player loaded');
+  // Keyboard shortcut: Press K to add 1 minute manually
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'k' || e.key === 'K') {
+      console.log('[GMP] ⌨️ K key pressed - triggering manual test');
+      const result = window.testKirtanTracking();
+      console.log('[GMP] Test result:', result);
+    }
+  });
+
+  console.log('[GMP] Global Mini-Player loaded (press K to test tracking)');
 })();

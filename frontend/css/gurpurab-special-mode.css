@@ -1,0 +1,477 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   GURPURAB SPECIAL MODE — Divine Celebratory UI
+   Premium spiritual experience for Gurpurab days
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CSS Custom Properties — Gurpurab Color Palette
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --gurpurab-gold: #D4AF37;
+  --gurpurab-gold-light: #FFD700;
+  --gurpurab-amber: #D4943A;
+  --gurpurab-cream: #FFF8DC;
+  --gurpurab-rose: #FFB6C1;
+  --gurpurab-rose-deep: #DC143C;
+  --gurpurab-lavender: #E6E6FA;
+  
+  /* Opacity levels for premium feel */
+  --glow-subtle: 0.15;
+  --glow-medium: 0.25;
+  --glow-strong: 0.4;
+  
+  /* Animation timing */
+  --duration-slow: 4s;
+  --duration-medium: 3s;
+  --duration-fast: 2s;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LAYER 1: Divine Ambient Glow (Background) - SUBTLE & POSITIONED BEHIND CARD ONLY
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-ambient-glow {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LAYER 2: Ring Light Halo (Primary Highlight) - DISABLED
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-ring-halo {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LAYER 3: Flower Petal Animation (Celebration Mode Only)
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-petals-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.gurpurab-mode--celebration .gurpurab-petals-container {
+  opacity: 1;
+}
+
+/* Individual petals - CSS generated */
+.gurpurab-petal {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(
+    ellipse at 30% 30%,
+    #FFB6C1 0%,
+    #FF69B4 40%,
+    #DC143C 100%
+  );
+  border-radius: 50% 0 50% 50%;
+  opacity: 0.7;
+  filter: blur(0.3px);
+  will-change: transform, opacity;
+}
+
+/* Petal positions and animations */
+.gurpurab-petal--1 {
+  top: -20px;
+  right: 20%;
+  animation: petalFall1 10s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.gurpurab-petal--2 {
+  top: -20px;
+  right: 35%;
+  width: 12px;
+  height: 12px;
+  animation: petalFall2 12s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.gurpurab-petal--3 {
+  top: -20px;
+  right: 50%;
+  width: 16px;
+  height: 16px;
+  animation: petalFall3 9s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+.gurpurab-petal--4 {
+  top: -20px;
+  right: 65%;
+  width: 13px;
+  height: 13px;
+  animation: petalFall4 11s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.gurpurab-petal--5 {
+  top: -20px;
+  right: 80%;
+  width: 15px;
+  height: 15px;
+  animation: petalFall5 13s ease-in-out infinite;
+  animation-delay: 3.5s;
+}
+
+.gurpurab-petal--6 {
+  top: -20px;
+  right: 10%;
+  width: 11px;
+  height: 11px;
+  animation: petalFall6 10s ease-in-out infinite;
+  animation-delay: 5s;
+}
+
+/* Petal fall animations with drift and rotation */
+@keyframes petalFall1 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.7; }
+  100% {
+    transform: translateY(350px) translateX(20px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFall2 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(45deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(380px) translateX(-15px) rotate(400deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFall3 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(90deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.7; }
+  100% {
+    transform: translateY(320px) translateX(25px) rotate(450deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFall4 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(135deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.6; }
+  100% {
+    transform: translateY(360px) translateX(-20px) rotate(480deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFall5 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(180deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.7; }
+  100% {
+    transform: translateY(340px) translateX(15px) rotate(520deg);
+    opacity: 0;
+  }
+}
+
+@keyframes petalFall6 {
+  0% {
+    transform: translateY(0) translateX(0) rotate(225deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.5; }
+  100% {
+    transform: translateY(370px) translateX(-10px) rotate(550deg);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LAYER 4: Particle Sparkle Layer (Celebration Mode Only)
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-sparkles-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.gurpurab-mode--celebration .gurpurab-sparkles-container {
+  opacity: 1;
+}
+
+/* Individual sparkles */
+.gurpurab-sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    #FFF8DC 0%,
+    #FFD700 50%,
+    transparent 100%
+  );
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  will-change: opacity, transform;
+}
+
+.gurpurab-sparkle--1 {
+  top: 20%;
+  left: 20%;
+  animation: sparkleTwinkle 3s ease-in-out infinite;
+}
+
+.gurpurab-sparkle--2 {
+  top: 70%;
+  left: 25%;
+  width: 2px;
+  height: 2px;
+  animation: sparkleTwinkle 4s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.gurpurab-sparkle--3 {
+  top: 30%;
+  left: 75%;
+  animation: sparkleTwinkle 3.5s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.gurpurab-sparkle--4 {
+  top: 75%;
+  left: 70%;
+  width: 2px;
+  height: 2px;
+  animation: sparkleTwinkle 2.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.gurpurab-sparkle--5 {
+  top: 50%;
+  left: 15%;
+  animation: sparkleTwinkle 3.2s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+.gurpurab-sparkle--6 {
+  top: 50%;
+  left: 85%;
+  width: 2px;
+  height: 2px;
+  animation: sparkleTwinkle 3.8s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LAYER 5: Enhanced Gurpurab Card Styling
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Base enhancements for all Gurpurab modes */
+.gurpurab-mode--celebration .event-card,
+.gurpurab-mode--remembrance .event-card {
+  position: relative;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(212, 148, 58, 0.15),
+    0 0 0 1px rgba(212, 175, 55, 0.1);
+  transform: scale(1.01);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Celebration mode extras */
+.gurpurab-mode--celebration .event-card {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 248, 220, 0.6) 0%,
+    rgba(255, 248, 240, 0.4) 50%,
+    rgba(255, 240, 245, 0.3) 100%
+  );
+}
+
+.gurpurab-mode--celebration .event-card__title {
+  background: linear-gradient(
+    135deg,
+    #AF7D14 0%,
+    #D4943A 30%,
+    #FFD700 50%,
+    #D4943A 70%,
+    #AF7D14 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleShimmer 4s ease-in-out infinite;
+}
+
+@keyframes titleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Remembrance mode - calm and respectful */
+.gurpurab-mode--remembrance .event-card {
+  background: linear-gradient(
+    145deg,
+    rgba(230, 230, 250, 0.5) 0%,
+    rgba(240, 240, 245, 0.4) 50%,
+    rgba(245, 245, 250, 0.3) 100%
+  );
+  border-color: rgba(180, 180, 200, 0.4);
+  box-shadow: 
+    0 4px 20px rgba(150, 150, 170, 0.1),
+    0 0 0 1px rgba(180, 180, 200, 0.1);
+}
+
+.gurpurab-mode--remembrance .event-card__title {
+  color: #8B7B8B;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Special Badges
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-celebration-badge,
+.gurpurab-remembrance-badge {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Dark Mode Adjustments
+═══════════════════════════════════════════════════════════════════════════════ */
+body.dark-mode .gurpurab-ambient-glow {
+  background: radial-gradient(
+    circle at 45% 42%,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(212, 148, 58, 0.1) 30%,
+    rgba(180, 120, 40, 0.05) 55%,
+    transparent 75%
+  );
+}
+
+body.dark-mode .gurpurab-ring-halo::before {
+  background: conic-gradient(
+    from 0deg,
+    rgba(212, 175, 55, 0.5) 0%,
+    rgba(255, 215, 0, 0.6) 25%,
+    rgba(212, 175, 55, 0.5) 50%,
+    rgba(255, 215, 0, 0.6) 75%,
+    rgba(212, 175, 55, 0.5) 100%
+  );
+}
+
+body.dark-mode .gurpurab-mode--celebration .event-card {
+  background: linear-gradient(
+    145deg,
+    rgba(60, 50, 30, 0.5) 0%,
+    rgba(50, 45, 35, 0.4) 50%,
+    rgba(45, 40, 35, 0.3) 100%
+  );
+}
+
+body.dark-mode .gurpurab-mode--remembrance .event-card {
+  background: linear-gradient(
+    145deg,
+    rgba(50, 50, 60, 0.4) 0%,
+    rgba(45, 45, 55, 0.3) 50%,
+    rgba(40, 40, 50, 0.2) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Performance Optimizations
+═══════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .gurpurab-ambient-glow,
+  .gurpurab-ring-halo::before,
+  .gurpurab-ring-halo::after,
+  .gurpurab-petal,
+  .gurpurab-sparkle,
+  .gurpurab-mode--celebration .event-card__title {
+    animation: none !important;
+  }
+  
+  .gurpurab-petals-container,
+  .gurpurab-sparkles-container {
+    display: none;
+  }
+}
+
+/* Pause animations when tab is hidden */
+@media (prefers-reduced-motion: no-preference) {
+  .gurpurab-petals-container,
+  .gurpurab-sparkles-container {
+    animation-play-state: running;
+  }
+  
+  /* This will be toggled via JS when visibility changes */
+  .gurpurab-paused .gurpurab-petals-container,
+  .gurpurab-paused .gurpurab-sparkles-container {
+    animation-play-state: paused;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Positioning Context
+═══════════════════════════════════════════════════════════════════════════════ */
+.gurpurab-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure the greeting section has positioning context */
+.greeting {
+  position: relative;
+  overflow: visible;
+}
+
+/* Event card positioning for halo */
+.event-card {
+  position: relative;
+  overflow: visible;
+}
+
+.event-card__guru-img-wrapper {
+  position: relative;
+  z-index: 2;
+}

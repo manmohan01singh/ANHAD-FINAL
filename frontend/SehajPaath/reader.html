@@ -1,6 +1,22 @@
 <!DOCTYPE html>
-<html lang="pa" data-theme="gradient">
+<html lang="pa">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -21,6 +37,9 @@
     <link rel="stylesheet" href="reader.css?v=1.0">
     <link rel="stylesheet" href="divine-design.css?v=1.0">
     <link rel="stylesheet" href="reader-error-fix.css?v=1.0">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
@@ -424,7 +443,10 @@
     <script src="../lib/bani-cache-optimizer.js"></script>
     <script src="../lib/optimized-image-loader.js"></script>
     
+    <!-- Stats & Progress Tracking -->
     <script src="../lib/user-stats.js?v=1.0"></script>
+    <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
+    
     <script src="services/storage-service.js?v=1.0"></script>
     <script src="components/offline-manager.js?v=1.0"></script>
     <script src="services/banidb-api.js?v=2.0"></script>

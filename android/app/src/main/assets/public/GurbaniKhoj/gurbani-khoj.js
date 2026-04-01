@@ -351,23 +351,70 @@ const GurbaniAPI = {
         const searchType = SEARCH_TYPES[type] ?? 0;
         const url = `${API.base}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=G&page=${page}`;
 
-        const response = await fetch(url, {
-            headers: { 'Accept': 'application/json' }
-        });
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), API.timeout);
 
-        if (!response.ok) throw new Error('Search failed');
-        return response.json();
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`Search failed with status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Validate response structure
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response format');
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Search API Error:', error);
+            if (error.name === 'AbortError') {
+                throw new Error('Request timeout. Please check your connection.');
+            }
+            throw new Error('Failed to load Gurbani. Please check your connection and try again.');
+        }
     },
 
     async getShabad(shabadId) {
         const url = `${API.base}/shabads/${shabadId}`;
 
-        const response = await fetch(url, {
-            headers: { 'Accept': 'application/json' }
-        });
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), API.timeout);
 
-        if (!response.ok) throw new Error('Could not load Shabad');
-        return response.json();
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' },
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`Failed to load Shabad with status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid shabad data');
+            }
+            
+            return data;
+        } catch (error) {
+            console.error('Shabad API Error:', error);
+            if (error.name === 'AbortError') {
+                throw new Error('Request timeout. Please check your connection.');
+            }
+            throw new Error('Could not load Shabad. Please check your connection and try again.');
+        }
     }
 };
 
@@ -448,7 +495,9 @@ async function performSearch(append = false) {
 
     } catch (error) {
         console.error('Search error:', error);
-        showEmpty('Search failed. Please try again.');
+        const errorMessage = error.message || 'Failed to load Gurbani. Please check your connection and try again.';
+        showEmpty(errorMessage);
+        showToast(errorMessage);
     } finally {
         State.isLoading = false;
     }
