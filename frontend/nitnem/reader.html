@@ -44,6 +44,12 @@
         <div class="orb orb-3"></div>
     </div>
 
+    <!-- Ik Onkar Background Image -->
+    <div class="ikonkar-background" id="ikonkarBackground">
+        <img src="../assets/icons/bg-nitnem.jpg" 
+             alt="ੴ" />
+    </div>
+
     <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
@@ -344,6 +350,19 @@
                             </button>
                         </div>
                     </div>
+                    <div class="setting-divider"></div>
+                    <!-- Ik Onkar Background Transparency -->
+                    <div class="setting-row slider-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Ik Onkar Background</span>
+                            <span class="setting-desc">Adjust transparency</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="transparency-slider" id="ikonkarTransparency" 
+                                   min="0" max="100" value="50" step="5">
+                            <span class="slider-value" id="transparencyValue">50%</span>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -373,9 +392,14 @@
                         </div>
                         <select class="setting-select font-select" id="fontFamilySelect">
                             <option value="noto" selected>Noto Sans</option>
-                            <option value="puratan">Puratan Hastlikhat</option>
-                            <option value="riyasti-hast">Riyasti Hastlikhat</option>
                             <option value="riyasti-naveen">Riyasti Naveen</option>
+                            <option value="khicho">Khicho</option>
+                            <option value="pg-serif">PG Serif</option>
+                            <option value="pg-thikriwala">PG Thikriwala</option>
+                            <option value="mfjashan">MFJashan</option>
+                            <option value="pg-bhojanshala">PG Bhojanshala</option>
+                            <option value="pg-khanna">PG Khanna</option>
+                            <option value="pixel-r">Pixel R</option>
                         </select>
                     </div>
                     <div class="setting-divider"></div>

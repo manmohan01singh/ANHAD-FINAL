@@ -451,6 +451,27 @@ body.dark-mode .header--compact {
   margin-bottom: 36px;
 }
 
+/* Light mode colored card backgrounds */
+.quick-card--green {
+  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.quick-card--gold {
+  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%);
+}
+
+.quick-card--purple {
+  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%);
+}
+
+.quick-card--blue {
+  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.quick-card--rose {
+  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%);
+}
+
 /* Quick card emoji */
 .quick-card__icon .ios-emoji {
   font-size: 1.4rem;

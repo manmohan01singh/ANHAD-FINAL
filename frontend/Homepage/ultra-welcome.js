@@ -56,16 +56,16 @@ const UltraWelcome = {
     const container = document.createElement('div');
     container.className = 'ultra-floating-particles';
     
-    // Create 30 floating particles
-    for (let i = 0; i < 30; i++) {
+    // REDUCED: Create 15 floating particles instead of 30
+    for (let i = 0; i < 15; i++) {
       const particle = document.createElement('div');
       particle.className = 'ultra-floating-particle';
       
       // Random positioning and timing
       particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDelay = Math.random() * 20 + 's';
-      particle.style.animationDuration = (15 + Math.random() * 15) + 's';
-      particle.style.width = (3 + Math.random() * 4) + 'px';
+      particle.style.animationDelay = Math.random() * 30 + 's';
+      particle.style.animationDuration = (20 + Math.random() * 20) + 's';
+      particle.style.width = (3 + Math.random() * 3) + 'px';
       particle.style.height = particle.style.width;
       
       container.appendChild(particle);
@@ -75,6 +75,11 @@ const UltraWelcome = {
   },
 
   createParticleCanvas() {
+    // REDUCED: Skip heavy canvas particles on mobile
+    if (this.isTouch) {
+      return;
+    }
+    
     this.particleCanvas = document.createElement('canvas');
     this.particleCanvas.className = 'ultra-particle-canvas';
     document.body.appendChild(this.particleCanvas);
@@ -100,20 +105,20 @@ const UltraWelcome = {
   },
 
   initInteractiveParticles() {
-    // Click/touch burst effect
+    // Click/touch burst effect - REDUCED particle count
     const createBurst = (x, y) => {
-      const count = this.isTouch ? 15 : 25;
+      const count = this.isTouch ? 8 : 12;
       for (let i = 0; i < count; i++) {
         const angle = (Math.PI * 2 * i) / count;
-        const speed = 2 + Math.random() * 4;
+        const speed = 2 + Math.random() * 3;
         this.particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          size: 2 + Math.random() * 3,
-          life: 60,
-          maxLife: 60,
+          size: 2 + Math.random() * 2,
+          life: 50,
+          maxLife: 50,
           hue: 35 + Math.random() * 20,
           alpha: 1
         });
@@ -131,7 +136,7 @@ const UltraWelcome = {
       }
     }, { passive: true });
 
-    // Mouse move trail (desktop only)
+    // Mouse move trail (desktop only) - REDUCED frequency
     if (!this.isTouch) {
       let lastX = 0, lastY = 0;
       document.addEventListener('mousemove', (e) => {
@@ -139,15 +144,15 @@ const UltraWelcome = {
         const dy = e.clientY - lastY;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        if (distance > 10 && Math.random() > 0.6) {
+        if (distance > 15 && Math.random() > 0.8) {
           this.particles.push({
             x: e.clientX,
             y: e.clientY,
-            vx: (Math.random() - 0.5) * 2,
-            vy: (Math.random() - 0.5) * 2,
-            size: 1 + Math.random() * 2,
-            life: 30,
-            maxLife: 30,
+            vx: (Math.random() - 0.5) * 1.5,
+            vy: (Math.random() - 0.5) * 1.5,
+            size: 1 + Math.random() * 1.5,
+            life: 25,
+            maxLife: 25,
             hue: 35 + Math.random() * 20,
             alpha: 1
           });

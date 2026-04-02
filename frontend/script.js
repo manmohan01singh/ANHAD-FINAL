@@ -336,15 +336,13 @@ class VirtualLiveManager extends EventEmitter {
         this.heartbeatInterval = null;
         this.driftCheckInterval = null;
         this.serverSynced = false;
+        this._syncPromise = null; // For request deduping
 
         // Load cached epoch as fallback
         this.broadcastStartTime = this.loadBroadcastStart();
 
         // Try to sync with server immediately
         this.syncWithServer();
-
-        // Start heartbeat
-        this.startHeartbeat();
     }
 
     // Universal fallback epoch to guarantee all devices are perfectly synced even offline
@@ -354,8 +352,27 @@ class VirtualLiveManager extends EventEmitter {
 
     /**
      * Sync with server to get the authoritative epoch and live position.
+     * Uses request deduping to prevent multiple parallel requests.
      */
     async syncWithServer() {
+        // If a sync is already in progress, return the existing promise
+        if (this._syncPromise) {
+            return this._syncPromise;
+        }
+
+        // Create the sync promise
+        this._syncPromise = this._doSync();
+
+        try {
+            const result = await this._syncPromise;
+            return result;
+        } finally {
+            // Clear the promise after completion (success or failure)
+            this._syncPromise = null;
+        }
+    }
+
+    async _doSync() {
         try {
             const startTime = Date.now();
             // CRITICAL: Add cache buster to bypass ALL caching layers
@@ -423,6 +440,11 @@ class VirtualLiveManager extends EventEmitter {
         if (this.heartbeatInterval) return;
         this.sendHeartbeat();
         this.heartbeatInterval = setInterval(() => this.sendHeartbeat(), 30000);
+        
+        // Cleanup on pagehide
+        window.addEventListener('pagehide', () => {
+            this.stopHeartbeat();
+        }, { once: true });
     }
 
     stopHeartbeat() {
@@ -645,6 +667,26 @@ class AudioEngine extends EventEmitter {
         }
     }
 
+    async ensureAudioContext() {
+        // In Capacitor/WebView, AudioContext requires user gesture
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            try {
+                await this.audioContext.resume();
+            } catch (e) {
+                console.warn('[AudioEngine] Could not resume AudioContext:', e.message);
+            }
+        }
+    }
+
+    async initializeOnUserGesture() {
+        // Defer initialization to first user interaction (required for WebView)
+        if (this._userGestureInitialized) return;
+        this._userGestureInitialized = true;
+        
+        await this.initialize();
+        await this.ensureAudioContext();
+    }
+
     _onTimeUpdate() {
         if (!this.audio) return;
         this.currentTime = this.audio.currentTime;
@@ -817,6 +859,9 @@ class AudioEngine extends EventEmitter {
     }
 
     async play() {
+        // Defer AudioContext initialization to first user gesture (required for WebView)
+        await this.initializeOnUserGesture();
+
         if (this.config.virtualLive && this.virtualLive.pausedAt) {
             // Always resume at LIVE position from server
             const resumePos = await this.virtualLive.getResumePosition();

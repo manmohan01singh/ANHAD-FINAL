@@ -393,12 +393,20 @@ app.use((req, res, next) => {
 });
 
 // Rate limiting — 60 requests/minute per IP on all API routes
+// NOTE: When using Cloudflare, this limits per Cloudflare edge IP
+// Consider using CF-Connecting-IP header for client IP instead
 const apiLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 60,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { error: 'Too many requests. Please slow down.' }
+    message: { error: 'Too many requests. Please slow down.' },
+    // Use Cloudflare's client IP if available, fall back to default
+    keyGenerator: (req) => {
+        return req.headers['cf-connecting-ip'] || 
+               req.headers['x-forwarded-for']?.split(',')[0].trim() || 
+               req.ip;
+    }
 });
 app.use('/api/', apiLimiter);
 

@@ -369,7 +369,7 @@ input, textarea {
 
 /* Focus visible for accessibility */
 :focus-visible {
-  outline: 2.5px solid var(--accent);
+  outline: 2.5px solid var(--accent) !important;
   outline-offset: 3px;
   border-radius: var(--radius-xs);
 }
@@ -766,10 +766,15 @@ body.dark-mode .deco-logo-home img {
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
               box-shadow 0.4s ease;
   /* Gentle floating animation */
-  animation: guruFloat 6s ease-in-out infinite;
+  animation: guruFloat 8s ease-in-out infinite;
 }
 
-/* Animated rotating gradient ring behind the image */
+@keyframes guruFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Animated rotating gradient ring behind the image - REDUCED speed */
 .greeting__guru-portrait::before {
   content: '';
   position: absolute;
@@ -783,13 +788,13 @@ body.dark-mode .deco-logo-home img {
     #FFD700 75%,
     #D4943A 100%
   );
-  animation: rotateRing 8s linear infinite;
+  animation: rotateRing 15s linear infinite;
   z-index: -1;
   opacity: 0.6;
   filter: blur(2px);
 }
 
-/* Secondary subtle glow ring */
+/* Secondary subtle glow ring - REDUCED animation */
 .greeting__guru-portrait::after {
   content: '';
   position: absolute;
@@ -801,12 +806,12 @@ body.dark-mode .deco-logo-home img {
     transparent 60%
   );
   z-index: -2;
-  animation: pulseGlow 4s ease-in-out infinite;
+  animation: pulseGlow 6s ease-in-out infinite;
 }
 
 @keyframes guruFloat {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-3px); }
 }
 
 @keyframes rotateRing {
@@ -816,11 +821,11 @@ body.dark-mode .deco-logo-home img {
 
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  50% { opacity: 0.6; transform: scale(1.02); }
 }
 
 .greeting__guru-img:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow:
     0 12px 40px rgba(212, 148, 58, 0.45),
     0 6px 20px rgba(0, 0, 0, 0.15),
@@ -946,7 +951,7 @@ body.dark-mode .greeting__salutation {
   pointer-events: none;
 }
 
-/* Pink light orb glow behind the petals */
+/* Pink light orb glow behind the petals - REDUCED animation */
 .greeting__rose-decoration::before {
   content: '';
   position: absolute;
@@ -959,15 +964,15 @@ body.dark-mode .greeting__salutation {
   border-radius: 50%;
   filter: blur(8px);
   z-index: -1;
-  animation: pinkGlowPulse 3s ease-in-out infinite;
+  animation: pinkGlowPulse 4s ease-in-out infinite;
 }
 
 @keyframes pinkGlowPulse {
-  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-  50% { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
 }
 
-/* Scattered petals floating */
+/* Scattered petals - STATIC (no animation), 35 petals placed */
 .greeting__rose-decoration .petal-1,
 .greeting__rose-decoration .petal-2,
 .greeting__rose-decoration .petal-3,
@@ -990,52 +995,67 @@ body.dark-mode .greeting__salutation {
 .greeting__rose-decoration .petal-20,
 .greeting__rose-decoration .petal-21,
 .greeting__rose-decoration .petal-22,
-.greeting__rose-decoration .petal-23 {
+.greeting__rose-decoration .petal-23,
+.greeting__rose-decoration .petal-24,
+.greeting__rose-decoration .petal-25,
+.greeting__rose-decoration .petal-26,
+.greeting__rose-decoration .petal-27,
+.greeting__rose-decoration .petal-28,
+.greeting__rose-decoration .petal-29,
+.greeting__rose-decoration .petal-30,
+.greeting__rose-decoration .petal-31,
+.greeting__rose-decoration .petal-32,
+.greeting__rose-decoration .petal-33,
+.greeting__rose-decoration .petal-34,
+.greeting__rose-decoration .petal-35 {
   position: absolute;
   background: radial-gradient(ellipse at 30% 30%, #FFB6C1 0%, #FF69B4 50%, #DC143C 100%);
   border-radius: 50% 0 50% 50%;
-  opacity: 0.7;
+  opacity: 0.75;
   filter: drop-shadow(0 2px 4px rgba(220, 20, 60, 0.2));
-  animation: petalFloat 4s ease-in-out infinite;
+  /* NO ANIMATION - static placement only */
 }
 
-/* Concentrated cluster - all within small area at bottom of portrait */
-.greeting__rose-decoration .petal-1 { width: 14px; height: 14px; top: 20px; right: 80px; transform: rotate(45deg); animation-delay: 0s; }
-.greeting__rose-decoration .petal-2 { width: 12px; height: 12px; top: 15px; right: 60px; transform: rotate(120deg); animation-delay: 0.5s; }
-.greeting__rose-decoration .petal-3 { width: 16px; height: 16px; top: 25px; right: 95px; transform: rotate(200deg); animation-delay: 1s; }
+/* 35 concentrated petals - clustered statically */
+.greeting__rose-decoration .petal-1 { width: 14px; height: 14px; top: 20px; right: 80px; transform: rotate(45deg); }
+.greeting__rose-decoration .petal-2 { width: 12px; height: 12px; top: 15px; right: 60px; transform: rotate(120deg); }
+.greeting__rose-decoration .petal-3 { width: 16px; height: 16px; top: 25px; right: 95px; transform: rotate(200deg); }
+.greeting__rose-decoration .petal-4 { width: 10px; height: 10px; top: 10px; right: 45px; transform: rotate(30deg); }
+.greeting__rose-decoration .petal-5 { width: 13px; height: 13px; top: 30px; right: 70px; transform: rotate(90deg); }
+.greeting__rose-decoration .petal-6 { width: 11px; height: 11px; top: 18px; right: 30px; transform: rotate(150deg); }
+.greeting__rose-decoration .petal-7 { width: 15px; height: 15px; top: 8px; right: 75px; transform: rotate(210deg); }
+.greeting__rose-decoration .petal-8 { width: 9px; height: 9px; top: 28px; right: 50px; transform: rotate(270deg); }
+.greeting__rose-decoration .petal-9 { width: 12px; height: 12px; top: 12px; right: 100px; transform: rotate(330deg); }
+.greeting__rose-decoration .petal-10 { width: 14px; height: 14px; top: 32px; right: 85px; transform: rotate(15deg); }
+.greeting__rose-decoration .petal-11 { width: 10px; height: 10px; top: 5px; right: 55px; transform: rotate(75deg); }
+.greeting__rose-decoration .petal-12 { width: 13px; height: 13px; top: 22px; right: 20px; transform: rotate(135deg); }
+.greeting__rose-decoration .petal-13 { width: 11px; height: 11px; top: 35px; right: 40px; transform: rotate(195deg); }
+.greeting__rose-decoration .petal-14 { width: 14px; height: 14px; top: 15px; right: 110px; transform: rotate(255deg); }
+.greeting__rose-decoration .petal-15 { width: 9px; height: 9px; top: 28px; right: 65px; transform: rotate(315deg); }
+.greeting__rose-decoration .petal-16 { width: 12px; height: 12px; top: 5px; right: 90px; transform: rotate(25deg); }
+.greeting__rose-decoration .petal-17 { width: 10px; height: 10px; top: 38px; right: 75px; transform: rotate(85deg); }
+.greeting__rose-decoration .petal-18 { width: 13px; height: 13px; top: 8px; right: 35px; transform: rotate(145deg); }
+.greeting__rose-decoration .petal-19 { width: 11px; height: 11px; top: 25px; right: 105px; transform: rotate(205deg); }
+.greeting__rose-decoration .petal-20 { width: 14px; height: 14px; top: 35px; right: 55px; transform: rotate(265deg); }
+.greeting__rose-decoration .petal-21 { width: 10px; height: 10px; top: 12px; right: 45px; transform: rotate(325deg); }
+.greeting__rose-decoration .petal-22 { width: 12px; height: 12px; top: 30px; right: 25px; transform: rotate(35deg); }
+.greeting__rose-decoration .petal-23 { width: 9px; height: 9px; top: 20px; right: 120px; transform: rotate(155deg); }
+/* Additional 12 petals for fuller look */
+.greeting__rose-decoration .petal-24 { width: 11px; height: 11px; top: 0px; right: 70px; transform: rotate(45deg); }
+.greeting__rose-decoration .petal-25 { width: 13px; height: 13px; top: 40px; right: 85px; transform: rotate(110deg); }
+.greeting__rose-decoration .petal-26 { width: 10px; height: 10px; top: 18px; right: 15px; transform: rotate(175deg); }
+.greeting__rose-decoration .petal-27 { width: 14px; height: 14px; top: 42px; right: 35px; transform: rotate(240deg); }
+.greeting__rose-decoration .petal-28 { width: 9px; height: 9px; top: 6px; right: 100px; transform: rotate(300deg); }
+.greeting__rose-decoration .petal-29 { width: 12px; height: 12px; top: 33px; right: 115px; transform: rotate(10deg); }
+.greeting__rose-decoration .petal-30 { width: 15px; height: 15px; top: 2px; right: 40px; transform: rotate(70deg); }
+.greeting__rose-decoration .petal-31 { width: 10px; height: 10px; top: 45px; right: 60px; transform: rotate(130deg); }
+.greeting__rose-decoration .petal-32 { width: 13px; height: 13px; top: 8px; right: 130px; transform: rotate(190deg); }
+.greeting__rose-decoration .petal-33 { width: 11px; height: 11px; top: 36px; right: 95px; transform: rotate(250deg); }
+.greeting__rose-decoration .petal-34 { width: 14px; height: 14px; top: 14px; right: 50px; transform: rotate(310deg); }
+.greeting__rose-decoration .petal-35 { width: 10px; height: 10px; top: 30px; right: 10px; transform: rotate(20deg); }
 
-/* 20 more concentrated petals - clustered tightly */
-.greeting__rose-decoration .petal-4 { width: 10px; height: 10px; top: 10px; right: 45px; transform: rotate(30deg); animation-delay: 1.5s; }
-.greeting__rose-decoration .petal-5 { width: 13px; height: 13px; top: 30px; right: 70px; transform: rotate(90deg); animation-delay: 2s; }
-.greeting__rose-decoration .petal-6 { width: 11px; height: 11px; top: 18px; right: 30px; transform: rotate(150deg); animation-delay: 2.5s; }
-.greeting__rose-decoration .petal-7 { width: 15px; height: 15px; top: 8px; right: 75px; transform: rotate(210deg); animation-delay: 3s; }
-.greeting__rose-decoration .petal-8 { width: 9px; height: 9px; top: 28px; right: 50px; transform: rotate(270deg); animation-delay: 3.5s; }
-.greeting__rose-decoration .petal-9 { width: 12px; height: 12px; top: 12px; right: 100px; transform: rotate(330deg); animation-delay: 4s; }
-.greeting__rose-decoration .petal-10 { width: 14px; height: 14px; top: 32px; right: 85px; transform: rotate(15deg); animation-delay: 4.5s; }
-.greeting__rose-decoration .petal-11 { width: 10px; height: 10px; top: 5px; right: 55px; transform: rotate(75deg); animation-delay: 0.3s; }
-.greeting__rose-decoration .petal-12 { width: 13px; height: 13px; top: 22px; right: 20px; transform: rotate(135deg); animation-delay: 0.8s; }
-.greeting__rose-decoration .petal-13 { width: 11px; height: 11px; top: 35px; right: 40px; transform: rotate(195deg); animation-delay: 1.3s; }
-.greeting__rose-decoration .petal-14 { width: 14px; height: 14px; top: 15px; right: 110px; transform: rotate(255deg); animation-delay: 1.8s; }
-.greeting__rose-decoration .petal-15 { width: 9px; height: 9px; top: 28px; right: 65px; transform: rotate(315deg); animation-delay: 2.3s; }
-.greeting__rose-decoration .petal-16 { width: 12px; height: 12px; top: 5px; right: 90px; transform: rotate(25deg); animation-delay: 2.8s; }
-.greeting__rose-decoration .petal-17 { width: 10px; height: 10px; top: 38px; right: 75px; transform: rotate(85deg); animation-delay: 3.3s; }
-.greeting__rose-decoration .petal-18 { width: 13px; height: 13px; top: 8px; right: 35px; transform: rotate(145deg); animation-delay: 3.8s; }
-.greeting__rose-decoration .petal-19 { width: 11px; height: 11px; top: 25px; right: 105px; transform: rotate(205deg); animation-delay: 4.3s; }
-.greeting__rose-decoration .petal-20 { width: 14px; height: 14px; top: 35px; right: 55px; transform: rotate(265deg); animation-delay: 4.8s; }
-.greeting__rose-decoration .petal-21 { width: 10px; height: 10px; top: 12px; right: 45px; transform: rotate(325deg); animation-delay: 0.6s; }
-.greeting__rose-decoration .petal-22 { width: 12px; height: 12px; top: 30px; right: 25px; transform: rotate(35deg); animation-delay: 1.1s; }
-.greeting__rose-decoration .petal-23 { width: 9px; height: 9px; top: 20px; right: 120px; transform: rotate(155deg); animation-delay: 1.6s; }
-
-@keyframes petalFloat {
-  0%, 100% { 
-    transform: rotate(var(--rotation, 45deg)) translateY(0) scale(1);
-    opacity: 0.8;
-  }
-  50% { 
-    transform: rotate(var(--rotation, 45deg)) translateY(-6px) scale(0.95);
-    opacity: 0.9;
-  }
-}
+/* REMOVED: petalFloat animation - no longer needed for static petals */
+/* @keyframes petalFloat removed */
 
 /* Dark mode adjustments */
 body.dark-mode .greeting__rose-decoration .petal-1,
@@ -1054,10 +1074,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3-5) var(--space-4);
-  background: var(--surface-primary);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-6);
-  box-shadow: var(--shadow-inset);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: none;
   position: relative;
   overflow: hidden;
@@ -1090,9 +1110,9 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .progress-inline__bar {
   flex: 1;
   height: 8px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-full);
-  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1), inset -1px -1px 3px rgba(255, 255, 255, 0.7);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   position: relative;
 }
@@ -1647,9 +1667,9 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .quick-card {
   display: flex;
   align-items: center;
-  gap: var(--space-3-5);
-  padding: var(--space-5) var(--space-5);
-  border-radius: var(--radius-lg);
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6);
+  border-radius: var(--radius-xl);
   margin-bottom: var(--space-3);
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-spring),
@@ -1668,35 +1688,30 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   margin-bottom: var(--space-8);
 }
 
-/* Trendora-inspired colored backgrounds */
+/* Light mode colored backgrounds - soft pastel versions of dark mode colors */
 .quick-card--green {
-  background: linear-gradient(140deg, #EAF9EF 0%, #D6F3DF 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(48, 209, 88, 0.06);
+  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+  border-color: rgba(48, 209, 88, 0.25) !important;
 }
 
 .quick-card--gold {
-  background: linear-gradient(140deg, #FFF9F0 0%, #FFEDDA 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(212, 148, 58, 0.06);
+  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
+  border-color: rgba(212, 148, 58, 0.25) !important;
 }
 
 .quick-card--purple {
-  background: linear-gradient(140deg, #F5F3FF 0%, #EAE7FF 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(88, 86, 214, 0.06);
+  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+  border-color: rgba(88, 86, 214, 0.25) !important;
 }
 
 .quick-card--blue {
-  background: linear-gradient(140deg, #EDF5FF 0%, #D8EBFF 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(0, 122, 255, 0.06);
-}
-
-.quick-card--teal {
-  background: linear-gradient(140deg, #E8F8F5 0%, #D1F2EB 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(26, 188, 156, 0.06);
+  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+  border-color: rgba(0, 122, 255, 0.25) !important;
 }
 
 .quick-card--rose {
-  background: linear-gradient(140deg, #FFF0F0 0%, #FFE0E0 100%);
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(255, 107, 107, 0.06);
+  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
+  border-color: rgba(255, 107, 107, 0.25) !important;
 }
 
 /* Subtle glass highlight on top */
@@ -2236,7 +2251,7 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
   background: var(--surface-primary);
   border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
   padding-bottom: var(--safe-bottom);
-  transform: translateY(100%);
+  transform: translateY(100%) !important;
   transition: transform 0.45s var(--ease-ios-spring);
   box-shadow: 0 -12px 60px rgba(0, 0, 0, 0.12);
   max-height: 85vh;
@@ -2246,7 +2261,7 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 
 .sheet-overlay--active + .sheet,
 .sheet--active {
-  transform: translateY(0);
+  transform: translateY(0) !important;
 }
 
 .sheet__handle {

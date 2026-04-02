@@ -28,14 +28,16 @@ class OptimizedImageLoader {
             this.observer = new IntersectionObserver(
                 (entries) => {
                     entries.forEach(entry => {
-                        if (entry.isIntersecting) {
+                        if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
                             this.loadImage(entry.target);
-                            this.observer.unobserve(entry.target);
+                            // Delay unobserve to prevent flickering during momentum scroll
+                            setTimeout(() => this.observer.unobserve(entry.target), 100);
                         }
                     });
                 },
                 {
-                    rootMargin: '50px' // Start loading 50px before visible
+                    rootMargin: '100px', // Start loading 100px before visible (increased from 50px)
+                    threshold: 0.1 // Require at least 10% visibility before triggering
                 }
             );
         }
@@ -212,7 +214,7 @@ class OptimizedImageLoader {
     observeNewImages() {
         if (!('MutationObserver' in window)) return;
 
-        const observer = new MutationObserver((mutations) => {
+        this.mutationObserver = new MutationObserver((mutations) => {
             mutations.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
                     if (node.nodeType === 1) { // Element node
@@ -227,10 +229,18 @@ class OptimizedImageLoader {
             });
         });
 
-        observer.observe(document.body, {
+        this.mutationObserver.observe(document.body, {
             childList: true,
             subtree: true
         });
+
+        // Cleanup handler to prevent memory leaks
+        window.addEventListener('pagehide', () => {
+            if (this.mutationObserver) {
+                this.mutationObserver.disconnect();
+                this.mutationObserver = null;
+            }
+        }, { once: true });
     }
 }
 

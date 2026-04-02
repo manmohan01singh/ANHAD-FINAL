@@ -90,6 +90,9 @@
     _safetyTimer: null,
 
     navigateTo(path) {
+      // Clear any pending timers first
+      this._clearTimers();
+      
       const app = document.querySelector('.app');
       if (app) {
         app.classList.add('app--exiting');
@@ -105,9 +108,21 @@
             app.style.filter = '';
             console.warn('[Navigation] Safety: removed stuck app--exiting');
           }
+          this._clearTimers();
         }, 600);
       } else {
         window.location.href = path;
+      }
+    },
+    
+    _clearTimers() {
+      if (this._exitTimer) {
+        clearTimeout(this._exitTimer);
+        this._exitTimer = null;
+      }
+      if (this._safetyTimer) {
+        clearTimeout(this._safetyTimer);
+        this._safetyTimer = null;
       }
     },
 
@@ -133,6 +148,18 @@
       });
     }
   };
+
+  // Clear navigation timers on pagehide to prevent memory leaks
+  window.addEventListener('pagehide', () => {
+    if (Navigation._exitTimer) {
+      clearTimeout(Navigation._exitTimer);
+      Navigation._exitTimer = null;
+    }
+    if (Navigation._safetyTimer) {
+      clearTimeout(Navigation._safetyTimer);
+      Navigation._safetyTimer = null;
+    }
+  }, { once: true });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 5. CONTEXTUAL GURBANI GREETING
@@ -873,8 +900,19 @@
       // Update event card image (use portrait if available)
       const eventGuruImg = document.getElementById('eventGuruImg');
       if (eventGuruImg) {
-        eventGuruImg.src = portraitImg || guruImg || '';
-        eventGuruImg.alt = guruName || event.name;
+        const newSrc = portraitImg || guruImg || '';
+        if (newSrc) {
+          // Set onload before setting src to ensure it fires
+          eventGuruImg.onload = () => {
+            eventGuruImg.classList.add('loaded');
+          };
+          eventGuruImg.src = newSrc;
+          eventGuruImg.alt = guruName || event.name;
+          // If already cached, add class immediately
+          if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
+            eventGuruImg.classList.add('loaded');
+          }
+        }
       }
 
       // Update greeting portrait & salutation (use portrait if available)
@@ -883,6 +921,10 @@
       if (greetingImg) {
         greetingImg.src = portraitImg || guruImg || '';
         greetingImg.alt = guruName || event.name;
+        greetingImg.style.opacity = '0';
+        greetingImg.onload = () => {
+          greetingImg.style.opacity = '1';
+        };
       }
       if (salEl && guruName) {
         salEl.textContent = guruName;

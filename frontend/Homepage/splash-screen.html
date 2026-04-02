@@ -38,7 +38,7 @@
             justify-content: center;
         }
 
-        /* Animated gradient background */
+        /* REDUCED: Background pulse slower */
         .splash-bg {
             position: fixed;
             inset: 0;
@@ -47,12 +47,12 @@
                 #0f0f1a 50%,
                 #000000 100%
             );
-            animation: bgPulse 4s ease-in-out infinite;
+            animation: bgPulse 6s ease-in-out infinite;
         }
 
         @keyframes bgPulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+            50% { opacity: 0.85; }
         }
 
         /* Golden rays */
@@ -62,36 +62,26 @@
             background: conic-gradient(
                 from 0deg at 50% 50%,
                 transparent 0deg,
-                rgba(212, 148, 58, 0.15) 30deg,
+                rgba(212, 148, 58, 0.1) 30deg,
                 transparent 60deg,
-                rgba(212, 148, 58, 0.15) 90deg,
+                rgba(212, 148, 58, 0.1) 90deg,
                 transparent 120deg,
-                rgba(212, 148, 58, 0.15) 150deg,
+                rgba(212, 148, 58, 0.1) 150deg,
                 transparent 180deg,
-                rgba(212, 148, 58, 0.15) 210deg,
+                rgba(212, 148, 58, 0.1) 210deg,
                 transparent 240deg,
-                rgba(212, 148, 58, 0.15) 270deg,
+                rgba(212, 148, 58, 0.1) 270deg,
                 transparent 300deg,
-                rgba(212, 148, 58, 0.15) 330deg,
+                rgba(212, 148, 58, 0.1) 330deg,
                 transparent 360deg
             );
-            animation: raysRotate 30s linear infinite;
-            opacity: 0.4;
+            animation: raysRotate 60s linear infinite;
+            opacity: 0.3;
         }
 
         @keyframes raysRotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
-        }
-
-        /* Main container */
-        .splash-container {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 60px;
         }
 
         /* Ik Onkar symbol */
@@ -112,7 +102,7 @@
             background-clip: text;
             animation: 
                 symbolReveal 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                shimmer 3s ease-in-out infinite;
+                shimmer 5s ease-in-out infinite;
             opacity: 0;
             transform: scale(0.5) rotate(-20deg);
             text-shadow: 

@@ -54,7 +54,10 @@
         showGurmukhi: true,
         showRoman: true,
         showEnglish: true,
-        showPunjabi: false
+        showPunjabi: false,
+
+        // Ik Onkar Background
+        ikonkarTransparency: 50
     };
 
     // Color Palette
@@ -75,10 +78,14 @@
     // Font Families
     const FONT_MAP = {
         'noto': "'Noto Sans Gurmukhi', sans-serif",
-        'puratan': "'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
-        'riyasti-hast': "'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
         'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
-        'ladivar': "'Noto Sans Gurmukhi', sans-serif"
+        'khicho': "'Khicho', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-thikriwala': "'PG Thikriwala', 'Noto Sans Gurmukhi', sans-serif",
+        'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-bhojanshala': "'PG Bhojanshala', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
+        'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif"
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -124,6 +131,7 @@
             progressText: $('progressText'),
             scrollTopBtn: $('scrollTopBtn'),
             paperBackground: $('paperBackground'),
+            ikonkarBackground: $('ikonkarBackground'),
 
             // Header
             readerHeader: document.querySelector('.reader-header'),
@@ -189,6 +197,10 @@
             // Data
             downloadOfflineBtn: $('downloadOfflineBtn'),
             clearHistoryBtn: $('clearHistoryBtn'),
+
+            // Ik Onkar Background
+            ikonkarTransparency: $('ikonkarTransparency'),
+            transparencyValue: $('transparencyValue'),
 
             // Color Picker
             colorPickerModal: $('colorPickerModal'),
@@ -671,7 +683,7 @@
 
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
-            el.classList.remove('font-noto', 'font-puratan', 'font-riyasti-hast', 'font-riyasti-naveen');
+            el.classList.remove('font-noto', 'font-riyasti-naveen', 'font-khicho', 'font-pg-serif', 'font-pg-thikriwala', 'font-mfjashan', 'font-pg-bhojanshala', 'font-pg-khanna', 'font-pixel-r');
 
             // Add current font class
             el.classList.add(`font-${fontKey}`);
@@ -748,6 +760,38 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // IK ONKAR BACKGROUND TRANSPARENCY
+    // ═══════════════════════════════════════════════════════════════
+
+    function updateIkonkarBackground() {
+        const opacity = state.settings.ikonkarTransparency / 100;
+        if (els.ikonkarBackground) {
+            // Use CSS variable for theme-aware opacity
+            els.ikonkarBackground.style.setProperty('--ikonkar-opacity', opacity);
+            els.ikonkarBackground.style.opacity = opacity;
+            els.ikonkarBackground.style.display = 'block';
+            els.ikonkarBackground.style.visibility = 'visible';
+            // Remove hidden class if opacity > 0
+            if (opacity > 0) {
+                els.ikonkarBackground.classList.remove('hidden');
+            }
+            console.log('[ReaderEngine] Ik Onkar opacity set to:', opacity);
+        }
+        if (els.ikonkarTransparency) {
+            els.ikonkarTransparency.value = state.settings.ikonkarTransparency;
+        }
+        if (els.transparencyValue) {
+            els.transparencyValue.textContent = `${state.settings.ikonkarTransparency}%`;
+        }
+    }
+
+    function setIkonkarTransparency(value) {
+        state.settings.ikonkarTransparency = parseInt(value, 10);
+        updateIkonkarBackground();
+        saveSettings();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // APPLY ALL SETTINGS
     // ═══════════════════════════════════════════════════════════════
 
@@ -782,6 +826,9 @@
 
         // Apply font to verses
         applyFontToVerses();
+
+        // Apply Ik Onkar background
+        updateIkonkarBackground();
 
         // Update UI
         updateSettingsUI();
@@ -1288,6 +1335,11 @@
         els.playbackSpeedSelect?.addEventListener('change', (e) => {
             state.settings.playbackSpeed = parseFloat(e.target.value);
             saveSettings();
+        });
+
+        // Ik Onkar Background transparency slider
+        els.ikonkarTransparency?.addEventListener('input', (e) => {
+            setIkonkarTransparency(e.target.value);
         });
 
         // Color pickers

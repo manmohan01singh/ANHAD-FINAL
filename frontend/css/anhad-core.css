@@ -65,9 +65,7 @@
   align-items: center;
   padding-left: calc(var(--ac-safe-left) + 4px);
   padding-right: calc(var(--ac-safe-right) + 4px);
-  /* GPU-composited only */
-  will-change: transform;
-  transform: translateZ(0);
+  /* REMOVED: will-change and transform that caused scroll rendering glitches */
   transition: background 0.25s var(--ac-smooth),
               border-color 0.25s var(--ac-smooth);
 }
@@ -342,4 +340,225 @@
   .ac-offline-banner {
     transition: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PWA UPDATE SECTION — Manual Update Check Button (Static, below cards)
+────────────────────────────────────────────────────────────────────────────── */
+.pwa-update-section {
+  position: relative;
+  margin: 24px auto 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px;
+}
+
+.pwa-update-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--ac-btn-bg);
+  border: 0.5px solid var(--ac-nav-border);
+  border-radius: 20px;
+  color: var(--ac-nav-sub);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s var(--ac-smooth);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+}
+
+.pwa-update-btn:hover {
+  background: var(--ac-btn-hover);
+}
+
+.pwa-update-btn:active {
+  background: var(--ac-btn-active);
+  transform: scale(0.96);
+}
+
+.pwa-update-btn.checking {
+  color: var(--ac-gold);
+  border-color: var(--ac-gold-border);
+}
+
+.pwa-update-btn.checking .pwa-update-btn__icon {
+  animation: spin 1s linear infinite;
+}
+
+.pwa-update-btn.available {
+  background: rgba(48, 209, 88, 0.15);
+  color: #30d158;
+  border-color: rgba(48, 209, 88, 0.3);
+}
+
+.pwa-update-btn.uptodate {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pwa-update-btn.error {
+  color: #ff453a;
+  border-color: rgba(255, 69, 58, 0.3);
+}
+
+.pwa-update-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.pwa-update-btn__icon {
+  font-size: 14px;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pwa-update-status {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ac-nav-sub);
+  opacity: 0;
+  transition: opacity 0.2s var(--ac-smooth);
+}
+
+.pwa-update-status.checking,
+.pwa-update-status.available,
+.pwa-update-status.uptodate,
+.pwa-update-status.error {
+  opacity: 1;
+}
+
+.pwa-update-status.available {
+  color: #30d158;
+}
+
+.pwa-update-status.error {
+  color: #ff453a;
+}
+
+.pwa-update-lastcheck {
+  font-size: 10px;
+  color: var(--ac-nav-sub);
+  opacity: 0.6;
+}
+
+/* Light theme overrides */
+[data-theme="light"] .pwa-update-btn.uptodate {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* Desktop: center in main content */
+@media screen and (min-width: 1024px) {
+  .pwa-update-section {
+    margin-left: 120px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PWA UPDATE PROMPT — Install dialog
+────────────────────────────────────────────────────────────────────────────── */
+.pwa-update-prompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s var(--ac-smooth);
+  padding: 20px;
+}
+
+.pwa-update-prompt.visible {
+  opacity: 1;
+}
+
+.pwa-update-prompt__content {
+  background: var(--ac-nav-bg);
+  border: 0.5px solid var(--ac-nav-border);
+  border-radius: var(--ac-radius);
+  padding: 24px;
+  max-width: 320px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s var(--ac-spring);
+}
+
+.pwa-update-prompt.visible .pwa-update-prompt__content {
+  transform: scale(1);
+}
+
+.pwa-update-prompt__icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.pwa-update-prompt__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ac-nav-text);
+  margin-bottom: 8px;
+}
+
+.pwa-update-prompt__text {
+  font-size: 14px;
+  color: var(--ac-nav-sub);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.pwa-update-prompt__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.pwa-update-prompt__btn {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s var(--ac-smooth);
+}
+
+.pwa-update-prompt__btn--primary {
+  background: var(--ac-gold);
+  color: #000;
+}
+
+.pwa-update-prompt__btn--primary:hover {
+  background: #e5a547;
+}
+
+.pwa-update-prompt__btn--secondary {
+  background: var(--ac-btn-bg);
+  color: var(--ac-nav-text);
+}
+
+.pwa-update-prompt__btn--secondary:hover {
+  background: var(--ac-btn-hover);
+}
+
+/* Hide update section when install banner is shown */
+.install-banner:not([style*="display: none"]) ~ .app .pwa-update-section,
+.install-banner:not(.hidden) ~ .app .pwa-update-section {
+  margin-bottom: 80px;
 }

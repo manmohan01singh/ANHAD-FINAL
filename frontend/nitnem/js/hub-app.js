@@ -73,7 +73,7 @@
         // Load saved state
         loadState();
 
-        // Set greeting
+        // Set greeting immediately
         updateGreeting();
 
         // Apply theme
@@ -94,6 +94,22 @@
         // Hide loading - IMMEDIATE to prevent persistent overlay
         hideLoadingScreen();
 
+        // CRITICAL: Re-apply greeting after everything else loads
+        setTimeout(updateGreeting, 500);
+        setTimeout(updateGreeting, 1500);
+        setTimeout(updateGreeting, 3000);
+
+        // Start protecting greeting from overwrites
+        protectGreeting();
+
+        // AGGRESSIVE: Keep re-applying greeting every 500ms for 10 seconds
+        let attempts = 0;
+        const interval = setInterval(() => {
+            updateGreeting();
+            attempts++;
+            if (attempts >= 20) clearInterval(interval);
+        }, 500);
+
         console.log('✓ Nitnem Hub initialized');
     }
 
@@ -103,23 +119,77 @@
 
     function updateGreeting() {
         const hour = new Date().getHours();
+        console.log('[HubApp] Current hour:', hour, 'Updating greeting...');
         let greeting = '';
+        let icon = '';
 
-        if (hour >= 3 && hour < 6) {
-            greeting = 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥';
-        } else if (hour >= 6 && hour < 12) {
-            greeting = 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ • Good Morning';
-        } else if (hour >= 12 && hour < 17) {
-            greeting = 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ • Good Afternoon';
-        } else if (hour >= 17 && hour < 21) {
-            greeting = 'ਸੰਧਿਆ ਕਾਲ • Good Evening';
+        if (hour < 6) {
+            // Before 6 AM - 5 Banis Nitnem
+            icon = '🙏';
+            greeting = '5 ਬਾਣੀਆਂ ਦਾ ਨਿਤਨੇਮ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
+        } else if (hour >= 6 && hour < 18) {
+            // 6 AM - 6 PM - Day time, Sukhmani Sahib
+            icon = '🕊️';
+            greeting = 'ਰੀਲਾਂ ਨੂੰ ਛੱਡ ਕੇ ਇੱਥੇ ਪਹੁੰਚ ਗਏ ਓ • ਸੁਖਮਨੀ ਸਾਹਿਬ ਦਾ ਜਾਪ ਕਰੋ';
+        } else if (hour >= 18 && hour < 21) {
+            // 6 PM - 9 PM - Rehras Sahib time
+            icon = '🌆';
+            greeting = 'ਰਹਿਰਾਸ ਸਾਹਿਬ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
         } else {
-            greeting = 'ਰਾਤ ਦੀ ਬਾਣੀ • Good Night';
+            // 9 PM onwards - Sohila Sahib
+            icon = '🌙';
+            greeting = 'ਸੋਹਿਲਾ ਸਾਹਿਬ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
         }
 
-        if (elements.greeting) {
-            elements.greeting.textContent = greeting;
+        console.log('[HubApp] Setting greeting:', greeting);
+        // Re-query element each time to avoid stale reference
+        const greetingEl = document.getElementById('greeting');
+        if (greetingEl) {
+            const html = `<span class="greeting-icon">${icon}</span><span class="greeting-text">${greeting}</span>`;
+            greetingEl.innerHTML = html;
+            // Store current greeting to detect changes
+            greetingEl.dataset.expectedHtml = html;
+            console.log('[HubApp] Greeting element updated:', greetingEl.id, greetingEl.className);
+            // DEBUG: Check what's actually in the DOM after setting
+            setTimeout(() => {
+                const checkEl = document.getElementById('greeting');
+                if (checkEl) {
+                    const actualText = checkEl.textContent;
+                    const expectedText = icon + greeting;
+                    console.log('[HubApp] DEBUG - Expected:', expectedText);
+                    console.log('[HubApp] DEBUG - Actual:', actualText);
+                    console.log('[HubApp] DEBUG - Match:', actualText === expectedText);
+                    console.log('[HubApp] DEBUG - innerHTML:', checkEl.innerHTML.substring(0, 100));
+                }
+            }, 100);
+        } else {
+            console.error('[HubApp] Greeting element NOT FOUND!');
         }
+    }
+
+    // Protect greeting from being overwritten by other scripts
+    function protectGreeting() {
+        if (!elements.greeting) return;
+        
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    const expected = elements.greeting.dataset.expectedHtml;
+                    if (expected && elements.greeting.innerHTML !== expected) {
+                        console.log('[HubApp] Greeting was overwritten! Re-applying...');
+                        updateGreeting();
+                    }
+                }
+            });
+        });
+        
+        observer.observe(elements.greeting, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+        
+        console.log('[HubApp] Greeting protected from overwrites');
     }
 
     // ═══════════════════════════════════════════════════════════════

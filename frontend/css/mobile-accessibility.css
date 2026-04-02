@@ -1,0 +1,150 @@
+/**
+ * Mobile Accessibility CSS
+ * Enforces WCAG 2.5.5 minimum touch target sizes (44px × 44px)
+ * 
+ * Bug Condition: Touch targets < 44px causing accessibility failures
+ * Expected Behavior: Enforce 44px × 44px minimum for all interactive elements
+ * Preservation: Visual layout and spacing (Req 3.8)
+ * Requirements: 1.23, 2.23
+ */
+
+/* Target touch devices using pointer: coarse media query */
+@media (pointer: coarse) {
+  /* Base interactive elements */
+  button,
+  a,
+  .interactive,
+  .clickable,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Icon buttons - ensure proper centering */
+  .icon-button,
+  button.icon,
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  /* Navigation elements */
+  nav a,
+  .nav-link,
+  .menu-item {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 12px;
+  }
+
+  /* Form controls */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Custom controls and interactive cards */
+  .card.clickable,
+  .interactive-card {
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Ensure small icons have adequate touch area */
+  .icon-small,
+  .icon-xs {
+    padding: 14px; /* Extra padding for smaller icons */
+  }
+
+  /* Close buttons and small controls */
+  .close-button,
+  .dismiss-button,
+  .toggle-button {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Tabs and segmented controls */
+  .tab,
+  .segment-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Ensure proper spacing between adjacent touch targets */
+  button + button,
+  a + a,
+  .interactive + .interactive {
+    margin-left: 8px;
+  }
+
+  /* Floating action buttons */
+  .fab,
+  .floating-button {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Player controls */
+  .player-control,
+  .audio-control,
+  .video-control {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  /* Slider thumbs and range inputs */
+  input[type="range"] {
+    min-height: 44px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 44px;
+    height: 44px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Dropdown and select elements */
+  select {
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  /* Ensure text inputs have adequate height */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea {
+    min-height: 44px;
+    padding: 12px;
+  }
+}

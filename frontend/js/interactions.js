@@ -58,7 +58,7 @@ const Interactions = {
     ];
     let idx = 0;
     el.textContent = suggestions[0];
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       el.style.opacity = '0';
       setTimeout(() => {
         idx = (idx + 1) % suggestions.length;
@@ -66,6 +66,12 @@ const Interactions = {
         el.style.opacity = '1';
       }, 400);
     }, 3500);
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => {
+      clearInterval(intervalId);
+    }, { once: true });
+    
     input.addEventListener('focus', () => { el.style.opacity = '0'; });
     input.addEventListener('blur', () => { if (!input.value) el.style.opacity = '1'; });
     input.addEventListener('input', () => { el.style.opacity = input.value ? '0' : '1'; });
@@ -168,7 +174,7 @@ const Interactions = {
         card.style.transform = 'perspective(1200px) rotateX(0) rotateY(0) scale(1)';
         card.style.transition = 'transform 600ms cubic-bezier(0.34,1.56,0.64,1)';
         setTimeout(() => card.style.transition = '', 600);
-      });
+      }, { passive: true });
     });
   },
 
@@ -203,8 +209,12 @@ const Interactions = {
       const dist = 20 + Math.random() * 20;
       p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
       p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      // Add parent existence check before DOM mutation
+      if (!document.body || !document.body.isConnected) return;
       document.body.appendChild(p);
-      setTimeout(() => p.remove(), 600);
+      setTimeout(() => {
+        if (p && p.isConnected) p.remove();
+      }, 600);
     }
   },
 
@@ -254,13 +264,26 @@ const Interactions = {
         if (entry.isIntersecting) {
           const lines = card.querySelectorAll('.hukamnama-verse .line');
           lines.forEach((line, i) => {
-            setTimeout(() => line.classList.add('revealed'), i * 150);
+            setTimeout(() => {
+              line.classList.add('revealed');
+              // Use animation-play-state for smooth animations
+              line.style.animationPlayState = 'running';
+            }, i * 150);
           });
           observer.unobserve(card);
+        } else {
+          // Pause animations when not visible
+          const lines = card.querySelectorAll('.hukamnama-verse .line');
+          lines.forEach(line => {
+            line.style.animationPlayState = 'paused';
+          });
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0, rootMargin: '50px' });
     observer.observe(card);
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   },
 
   /* Item 32: Bento Entrance Stagger */
@@ -270,15 +293,27 @@ const Interactions = {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const delay = parseInt(entry.target.dataset.delay || '0');
-          setTimeout(() => entry.target.classList.add('entered'), delay);
+          setTimeout(() => {
+            entry.target.classList.add('entered');
+            // Use animation-play-state instead of DOM removal for performance
+            entry.target.style.animationPlayState = 'running';
+          }, delay);
           observer.unobserve(entry.target);
+        } else {
+          // Pause animation when not visible instead of removing from DOM
+          entry.target.style.animationPlayState = 'paused';
         }
       });
-    }, { threshold: 0.1 });
+    }, { threshold: 0, rootMargin: '50px' });
     items.forEach((item, i) => {
       item.dataset.delay = i * 80;
+      // Initialize with paused state
+      item.style.animationPlayState = 'paused';
       observer.observe(item);
     });
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   },
 
   /* Item 33: Press Haptic */
@@ -316,11 +351,23 @@ const Interactions = {
           const w = ctx.measureText(firstWord).width;
           h3.style.setProperty('--underline-w', w + 'px');
           h3.classList.add('revealed');
+          // Use animation-play-state for smooth reveal
+          h3.style.animationPlayState = 'running';
           observer.unobserve(h3);
+        } else {
+          // Pause animation when not visible
+          entry.target.style.animationPlayState = 'paused';
         }
       });
-    }, { threshold: 0.5 });
-    headings.forEach(h => observer.observe(h));
+    }, { threshold: 0, rootMargin: '50px' });
+    headings.forEach(h => {
+      // Initialize with paused state
+      h.style.animationPlayState = 'paused';
+      observer.observe(h);
+    });
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   },
 
   /* Item 40: Sadhana Progress Ring */
@@ -340,6 +387,8 @@ const Interactions = {
         if (entry.isIntersecting) {
           requestAnimationFrame(() => {
             fill.style.strokeDashoffset = circumference * (1 - pct);
+            // Use animation-play-state for smooth animation
+            fill.style.animationPlayState = 'running';
           });
           if (text) text.textContent = Math.round(pct * 100) + '%';
           if (pct >= 1) {
@@ -349,10 +398,19 @@ const Interactions = {
             }, 1300);
           }
           observer.unobserve(entry.target);
+        } else {
+          // Pause animation when not visible
+          fill.style.animationPlayState = 'paused';
         }
       });
-    }, { threshold: 0.3 });
-    observer.observe(fill.closest('.sadhana-card') || fill);
+    }, { threshold: 0, rootMargin: '50px' });
+    const ringContainer = fill.closest('.sadhana-card') || fill;
+    // Initialize with paused state
+    fill.style.animationPlayState = 'paused';
+    observer.observe(ringContainer);
+    
+    // Cleanup on pagehide
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   },
 
   /* Item 42: Segmented Progress Bar */

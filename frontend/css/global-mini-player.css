@@ -355,6 +355,26 @@ body.dark-mode .gmp__sub,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   DESKTOP OVERRIDE — Move mini player to sidebar
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@media screen and (min-width: 1024px) {
+  .gmp {
+    left: 12px !important;
+    right: auto !important;
+    bottom: 60px !important;
+    width: 256px !important;
+    max-width: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(160%) scale(0.95);
+  }
+  
+  .gmp--visible {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    REDUCED MOTION
    ═══════════════════════════════════════════════════════════════════════════════ */
 
