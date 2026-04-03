@@ -286,6 +286,9 @@
             filter: var(--blur-ultra);
             opacity: 0.5;
             animation: orbFloat 25s ease-in-out infinite;
+            will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
         
         .orb-1 {
@@ -308,7 +311,7 @@
         .orb-3 {
             width: 300px;
             height: 300px;
-            background: conic-gradient(from 240deg, var(--ios-teal), var(--ios-green), var(--ios-teal));
+            background: conic-gradient(from 240deg, var(--ios-pink), var(--ios-red), var(--ios-pink));
             bottom: -100px;
             right: -50px;
             animation-delay: -16s;

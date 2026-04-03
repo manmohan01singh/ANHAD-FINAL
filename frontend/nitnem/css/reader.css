@@ -1549,11 +1549,11 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 }
 
 [data-theme="light"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.5);
+    opacity: var(--ikonkar-opacity, 0.15);
 }
 
 html.dark-mode .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.5);
+    opacity: var(--ikonkar-opacity, 0.35);
 }
 
 .ikonkar-background.hidden {

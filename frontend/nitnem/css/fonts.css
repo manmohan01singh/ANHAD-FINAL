@@ -2,26 +2,6 @@
    CUSTOM GURMUKHI FONTS
    ═══════════════════════════════════════════════════════════════ */
 
-/* Riyasti Naveen */
-@font-face {
-    font-family: 'Riyasti Naveen';
-    src: url('../g-fonts/riyasti-naveen.woff2') format('woff2'),
-        url('../g-fonts/riyasti-naveen.woff') format('woff'),
-        url('../g-fonts/riyasti-naveen.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-/* Khicho */
-@font-face {
-    font-family: 'Khicho';
-    src: url('../g-fonts/khicho_02.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
 /* PG Serif Regular */
 @font-face {
     font-family: 'PG Serif';
@@ -40,28 +20,10 @@
     font-display: swap;
 }
 
-/* PG Thikriwala */
-@font-face {
-    font-family: 'PG Thikriwala';
-    src: url('../g-fonts/pg_thikriwala_1.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
 /* MFJashan */
 @font-face {
     font-family: 'MFJashan';
     src: url('../g-fonts/mffjashan.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-/* PG Bhojanshala */
-@font-face {
-    font-family: 'PG Bhojanshala';
-    src: url('../g-fonts/pg_bhojanshala_7.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -86,28 +48,12 @@
 }
 
 /* Font Classes */
-.font-riyasti-naveen {
-    font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
-}
-
-.font-khicho {
-    font-family: 'Khicho', 'Noto Sans Gurmukhi', sans-serif !important;
-}
-
 .font-pg-serif {
     font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.font-pg-thikriwala {
-    font-family: 'PG Thikriwala', 'Noto Sans Gurmukhi', sans-serif !important;
-}
-
 .font-mfjashan {
     font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
-}
-
-.font-pg-bhojanshala {
-    font-family: 'PG Bhojanshala', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
 .font-pg-khanna {

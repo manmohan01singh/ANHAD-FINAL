@@ -164,7 +164,7 @@ const BaniDB = (function () {
     }
 
     /**
-     * Get a specific Bani by ID
+     * Get a specific Bani by ID - with offline-first graceful fallback
      */
     async function getBani(baniId, options = {}) {
         const larivaar = options.larivaar ? '&larivaar=true' : '';
@@ -179,6 +179,13 @@ const BaniDB = (function () {
             return data;
         } catch (error) {
             console.error(`Failed to fetch Bani ${baniId}:`, error);
+            
+            // GRACEFUL OFFLINE FALLBACK: Return cached data even if expired
+            if (cached) {
+                console.log(`[BaniDB] Serving stale cached Bani ${baniId} due to network error`);
+                return cached;
+            }
+            
             throw error;
         }
     }

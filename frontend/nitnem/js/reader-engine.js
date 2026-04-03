@@ -78,12 +78,8 @@
     // Font Families
     const FONT_MAP = {
         'noto': "'Noto Sans Gurmukhi', sans-serif",
-        'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
-        'khicho': "'Khicho', 'Noto Sans Gurmukhi', sans-serif",
         'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
-        'pg-thikriwala': "'PG Thikriwala', 'Noto Sans Gurmukhi', sans-serif",
         'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
-        'pg-bhojanshala': "'PG Bhojanshala', 'Noto Sans Gurmukhi', sans-serif",
         'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
         'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif"
     };
@@ -333,9 +329,9 @@
 
             updateHeader(data);
             
-            // PROGRESSIVE RENDERING — hide skeleton, render verses in chunks
+            // Render ALL verses immediately to prevent disappearing panktis during scroll
             hideSkeleton();
-            renderVersesProgressive(data.verses);
+            renderVerses(data.verses);
             renderInfo(data);
 
             hideLoading();
@@ -683,7 +679,7 @@
 
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
-            el.classList.remove('font-noto', 'font-riyasti-naveen', 'font-khicho', 'font-pg-serif', 'font-pg-thikriwala', 'font-mfjashan', 'font-pg-bhojanshala', 'font-pg-khanna', 'font-pixel-r');
+            el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
 
             // Add current font class
             el.classList.add(`font-${fontKey}`);

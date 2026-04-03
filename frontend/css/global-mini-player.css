@@ -18,7 +18,7 @@
   right: 12px;
   z-index: 9000;
 
-  display: flex;
+  display: none; /* Hidden by default — shown via JS with display: flex */
   align-items: center;
   gap: 14px;
   padding: 10px 16px 10px 10px;
@@ -33,23 +33,13 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.8),
     0 0 0 1px rgba(255, 255, 255, 0.5);
 
-  /* Hidden by default — shown via JS */
-  transform: translateY(140%) scale(0.95);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.35s ease;
-  will-change: transform, opacity;
-
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
 .gmp--visible {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 
 /* ─── Artwork Thumbnail — Claymorphic Pill ─── */
@@ -366,11 +356,10 @@ body.dark-mode .gmp__sub,
     max-width: none !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-    transform: translateY(160%) scale(0.95);
   }
   
   .gmp--visible {
-    transform: translateY(0) scale(1);
+    display: flex;
   }
 }
 
@@ -379,9 +368,6 @@ body.dark-mode .gmp__sub,
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
-  .gmp {
-    transition-duration: 0.01ms !important;
-  }
   .gmp__live-dot {
     animation: none;
   }

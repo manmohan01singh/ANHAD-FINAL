@@ -359,8 +359,8 @@
                         </div>
                         <div class="slider-container">
                             <input type="range" class="transparency-slider" id="ikonkarTransparency" 
-                                   min="0" max="100" value="50" step="5">
-                            <span class="slider-value" id="transparencyValue">50%</span>
+                                   min="0" max="100" value="15" step="5">
+                            <span class="slider-value" id="transparencyValue">15%</span>
                         </div>
                     </div>
                 </div>
@@ -392,12 +392,8 @@
                         </div>
                         <select class="setting-select font-select" id="fontFamilySelect">
                             <option value="noto" selected>Noto Sans</option>
-                            <option value="riyasti-naveen">Riyasti Naveen</option>
-                            <option value="khicho">Khicho</option>
                             <option value="pg-serif">PG Serif</option>
-                            <option value="pg-thikriwala">PG Thikriwala</option>
                             <option value="mfjashan">MFJashan</option>
-                            <option value="pg-bhojanshala">PG Bhojanshala</option>
                             <option value="pg-khanna">PG Khanna</option>
                             <option value="pixel-r">Pixel R</option>
                         </select>
@@ -498,63 +494,99 @@
         
         console.log('✅ Orbs found:', { orb1, orb2, orb3 });
         
-        // Sacred color palettes for scroll journey
+        // Sacred color palettes for scroll journey - REDDISH/PINK THEME (no green)
         const darkThemeColors = [
-            { orb1: 'conic-gradient(from 0deg, #D4AF37, #FF8C00, #FFD700, #D4AF37)', orb2: 'conic-gradient(from 180deg, #AF52DE, #5856D6, #007AFF, #AF52DE)', orb3: 'conic-gradient(from 90deg, #30D158, #34C759, #32D74B, #30D158)' },
-            { orb1: 'conic-gradient(from 45deg, #FF6B6B, #FF8E53, #FED766, #FF6B6B)', orb2: 'conic-gradient(from 225deg, #A855F7, #6366F1, #2DD4BF, #A855F7)', orb3: 'conic-gradient(from 135deg, #F59E0B, #D97706, #B45309, #F59E0B)' },
-            { orb1: 'conic-gradient(from 90deg, #EC4899, #8B5CF6, #6366F1, #EC4899)', orb2: 'conic-gradient(from 270deg, #10B981, #059669, #047857, #10B981)', orb3: 'conic-gradient(from 0deg, #FF8C00, #FFD700, #FF6347, #FF8C00)' },
-            { orb1: 'conic-gradient(from 135deg, #3B82F6, #06B6D4, #10B981, #3B82F6)', orb2: 'conic-gradient(from 315deg, #F43F5E, #EC4899, #A855F7, #F43F5E)', orb3: 'conic-gradient(from 180deg, #D4AF37, #B8860B, #DAA520, #D4AF37)' },
-            { orb1: 'conic-gradient(from 180deg, #8B4513, #CD853F, #D4AF37, #8B4513)', orb2: 'conic-gradient(from 0deg, #6D28D9, #4C1D95, #7C3AED, #6D28D9)', orb3: 'conic-gradient(from 270deg, #14B8A6, #0D9488, #0F766E, #14B8A6)' }
+            { orb1: 'conic-gradient(from 0deg, #D4AF37, #FF8C00, #FFD700, #D4AF37)', orb2: 'conic-gradient(from 180deg, #AF52DE, #5856D6, #007AFF, #AF52DE)', orb3: 'conic-gradient(from 90deg, #FF2D55, #FF6B9D, #FF2D55, #FF2D55)' },
+            { orb1: 'conic-gradient(from 45deg, #FF6B6B, #FF8E53, #FED766, #FF6B6B)', orb2: 'conic-gradient(from 225deg, #A855F7, #6366F1, #2DD4BF, #A855F7)', orb3: 'conic-gradient(from 135deg, #F43F5E, #EC4899, #BE185D, #F43F5E)' },
+            { orb1: 'conic-gradient(from 90deg, #EC4899, #8B5CF6, #6366F1, #EC4899)', orb2: 'conic-gradient(from 270deg, #FF6B9D, #F43F5E, #BE185D, #FF6B9D)', orb3: 'conic-gradient(from 0deg, #FF8C00, #FFD700, #FF6347, #FF8C00)' },
+            { orb1: 'conic-gradient(from 135deg, #3B82F6, #06B6D4, #FF6B9D, #3B82F6)', orb2: 'conic-gradient(from 315deg, #F43F5E, #EC4899, #A855F7, #F43F5E)', orb3: 'conic-gradient(from 180deg, #D4AF37, #B8860B, #DAA520, #D4AF37)' },
+            { orb1: 'conic-gradient(from 180deg, #8B4513, #CD853F, #D4AF37, #8B4513)', orb2: 'conic-gradient(from 0deg, #6D28D9, #4C1D95, #7C3AED, #6D28D9)', orb3: 'conic-gradient(from 270deg, #FF6B9D, #F43F5E, #EC4899, #FF6B9D)' }
         ];
         
         let ticking = false;
+        let lastScrollY = 0;
+        let scrollTimeout = null;
+        let colorIndexCache = -1;
         
         function updateOrbs() {
+            const scrollY = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollProgress = docHeight > 0 ? window.scrollY / docHeight : 0;
+            const scrollProgress = docHeight > 0 ? scrollY / docHeight : 0;
             const theme = document.documentElement.getAttribute('data-theme') || 'dark';
             
-            // Only apply dynamic colors in dark mode
+            // Skip heavy work if not enough scroll change (throttle)
+            const scrollDelta = Math.abs(scrollY - lastScrollY);
+            if (scrollDelta < 5 && scrollProgress > 0 && scrollProgress < 1) {
+                ticking = false;
+                return;
+            }
+            lastScrollY = scrollY;
+            
+            // Only apply dynamic colors in dark mode, and only when color index changes
             if (theme === 'dark') {
-                // Calculate which color palette to use
-                const colorIndex = Math.min(Math.floor(scrollProgress * darkThemeColors.length), darkThemeColors.length - 1);
-                const currentColors = darkThemeColors[colorIndex];
-                
-                // Apply colors with smooth CSS transition
-                if (orb1 && currentColors) orb1.style.background = currentColors.orb1;
-                if (orb2 && currentColors) orb2.style.background = currentColors.orb2;
-                if (orb3 && currentColors) orb3.style.background = currentColors.orb3;
+                const newColorIndex = Math.min(Math.floor(scrollProgress * darkThemeColors.length), darkThemeColors.length - 1);
+                if (newColorIndex !== colorIndexCache) {
+                    colorIndexCache = newColorIndex;
+                    const currentColors = darkThemeColors[newColorIndex];
+                    if (orb1 && currentColors) orb1.style.background = currentColors.orb1;
+                    if (orb2 && currentColors) orb2.style.background = currentColors.orb2;
+                    if (orb3 && currentColors) orb3.style.background = currentColors.orb3;
+                }
             }
             
-            // Dynamic position based on scroll - MORE NOTICEABLE movement
-            const moveX = Math.sin(scrollProgress * Math.PI * 4) * 80;
-            const moveY = Math.cos(scrollProgress * Math.PI * 4) * 60;
+            // Simplified transform - use CSS custom properties for position, JS for values
+            const moveX = Math.sin(scrollProgress * Math.PI * 2) * 40; // Reduced amplitude
+            const moveY = Math.cos(scrollProgress * Math.PI * 2) * 30;
+            const rot1 = Math.floor(scrollProgress * 180); // Less rotation
+            const rot2 = Math.floor(-scrollProgress * 135);
+            const rot3 = Math.floor(scrollProgress * 90);
             
-            if (orb1) {
-                orb1.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${scrollProgress * 360}deg)`;
-            }
-            if (orb2) {
-                orb2.style.transform = `translate(${-moveX * 0.8}px, ${-moveY * 0.8}px) rotate(${-scrollProgress * 270}deg)`;
-            }
-            if (orb3) {
-                orb3.style.transform = `translate(${moveX * 0.6}px, ${moveY * 1.5}px) rotate(${scrollProgress * 180}deg)`;
-            }
+            if (orb1) orb1.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotate(${rot1}deg)`;
+            if (orb2) orb2.style.transform = `translate3d(${-moveX * 0.5}px, ${-moveY * 0.5}px, 0) rotate(${rot2}deg)`;
+            if (orb3) orb3.style.transform = `translate3d(${moveX * 0.3}px, ${moveY * 0.8}px, 0) rotate(${rot3}deg)`;
             
-            // Adjust opacity based on scroll - MORE VISIBLE
-            const baseOpacity = theme === 'dark' ? 0.35 : 0.18;
-            const opacityBoost = scrollProgress * 0.15;
-            if (orb1) orb1.style.opacity = baseOpacity + opacityBoost;
-            if (orb2) orb2.style.opacity = (baseOpacity * 0.9) + opacityBoost;
-            if (orb3) orb3.style.opacity = (baseOpacity * 0.7) + (opacityBoost * 0.8);
+            // Batch opacity updates - only update when significant change
+            const baseOpacity = theme === 'dark' ? 0.3 : 0.15;
+            const opacityBoost = scrollProgress * 0.1;
+            if (orb1) orb1.style.opacity = (baseOpacity + opacityBoost).toFixed(2);
+            if (orb2) orb2.style.opacity = ((baseOpacity * 0.9) + opacityBoost).toFixed(2);
+            if (orb3) orb3.style.opacity = ((baseOpacity * 0.7) + (opacityBoost * 0.8)).toFixed(2);
             
             ticking = false;
         }
         
+        // Optimized scroll handler with velocity detection
+        let isScrollingFast = false;
+        let lastScrollTime = Date.now();
+        
         window.addEventListener('scroll', function() {
+            const now = Date.now();
+            const timeDelta = now - lastScrollTime;
+            lastScrollTime = now;
+            
+            // Detect fast scrolling (> 2 frames worth of scroll)
+            isScrollingFast = timeDelta < 32;
+            
             if (!ticking) {
-                window.requestAnimationFrame(updateOrbs);
+                window.requestAnimationFrame(function() {
+                    // Skip orb updates during fast scroll, only update on slow/normal scroll
+                    if (!isScrollingFast) {
+                        updateOrbs();
+                    } else {
+                        ticking = false;
+                    }
+                });
                 ticking = true;
             }
+            
+            // Clear any pending timeout
+            if (scrollTimeout) clearTimeout(scrollTimeout);
+            
+            // Update orbs after scroll stops
+            scrollTimeout = setTimeout(function() {
+                isScrollingFast = false;
+                updateOrbs();
+            }, 150);
         }, { passive: true });
         
         // Initial call

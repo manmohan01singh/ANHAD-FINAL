@@ -474,7 +474,11 @@
 
   async function resumePlayback() {
     const state = loadState();
-    if (!state || !state.isPlaying || !state.stream) return; // Don't resume if no stream (user closed it)
+    if (!state || !state.isPlaying || !state.stream) {
+      // Don't resume if no stream (user closed it) - ensure mini player is hidden
+      updateMiniPlayerUI(false);
+      return;
+    }
     if (Date.now() - (state.timestamp || 0) > RESUME_THRESHOLD_MS) return;
 
     // Don't resume on player pages — those have their own audio
@@ -718,18 +722,25 @@
     if (!miniPlayerEl) return;
 
     const stream = STREAMS[currentStream];
-    if (!stream) {
-      // No stream selected, hide mini player
+
+    // Determine if we should actually show the mini player
+    // Only show when: explicitly forced, or audio is actually playing with valid source
+    const actuallyPlaying = isPlaying && audio && audio.src && audio.src !== window.location.href;
+    const shouldShow = forceVisible || actuallyPlaying;
+
+    if (!shouldShow || !stream) {
+      // Hide mini player - CSS has display:none by default
       miniPlayerEl.classList.remove('gmp--visible');
+      // Clear artwork to prevent broken image flash
+      const artImg = document.getElementById('gmpArt');
+      if (artImg) artImg.src = '';
       return;
     }
 
-    // Mini player should stay visible once shown, unless explicitly closed
-    // Only hide if there's no stream (user clicked close)
-    const shouldShow = true; // Always show if we have a stream
-    miniPlayerEl.classList.toggle('gmp--visible', shouldShow);
+    // Show mini player - CSS .gmp--visible has display:flex
+    miniPlayerEl.classList.add('gmp--visible');
 
-    // Update artwork
+    // Update artwork only when showing
     const artImg = document.getElementById('gmpArt');
     if (artImg && stream.artwork) artImg.src = stream.artwork;
 
