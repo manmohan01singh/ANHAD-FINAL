@@ -37,6 +37,37 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
+    <!-- AUTO CACHE BUST - Forces reload when app updates -->
+    <script>
+        (function() {
+            const APP_VERSION = '1.0.1'; // Increment this on every deploy
+            const storedVersion = localStorage.getItem('anhad_app_version');
+            
+            if (storedVersion !== APP_VERSION) {
+                localStorage.setItem('anhad_app_version', APP_VERSION);
+                // Force reload from server, not cache
+                if (storedVersion) {
+                    window.location.reload(true);
+                }
+            }
+            
+            // Service Worker registration for better cache control
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New version available - force reload
+                                window.location.reload();
+                            }
+                        });
+                    });
+                });
+            }
+        })();
+    </script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
