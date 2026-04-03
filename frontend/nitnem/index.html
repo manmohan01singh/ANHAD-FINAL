@@ -10,11 +10,10 @@
     const theme = localStorage.getItem('anhad_nitnem_theme') || 'light';
     const html = document.documentElement;
     if (theme === 'dark') {
-      html.classList.add('dark', 'dark-mode');
       html.setAttribute('data-theme', 'dark');
       html.style.colorScheme = 'dark';
     } else {
-      html.classList.remove('dark', 'dark-mode');
+      // Light is default (no attribute needed, but set for consistency)
       html.setAttribute('data-theme', 'light');
       html.style.colorScheme = 'light';
     }
@@ -133,21 +132,21 @@
             --sacred-saffron: #FF8C00;
             --sacred-cream: #FFF8DC;
             
-            /* Dark Theme (Default) */
-            --bg-primary: #000000;
-            --bg-secondary: #1C1C1E;
-            --bg-tertiary: #2C2C2E;
-            --bg-elevated: #3A3A3C;
-            --card-bg: rgba(28, 28, 30, 0.85);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --text-tertiary: rgba(255, 255, 255, 0.4);
-            --separator: rgba(255, 255, 255, 0.08);
+            /* LIGHT THEME (Default) */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #FAFAFA;
+            --bg-elevated: #FFFFFF;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(0, 0, 0, 0.04);
+            --text-primary: #000000;
+            --text-secondary: rgba(0, 0, 0, 0.5);
+            --text-tertiary: rgba(0, 0, 0, 0.3);
+            --separator: rgba(0, 0, 0, 0.06);
             
             /* Materials */
-            --glass-bg: rgba(28, 28, 30, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(0, 0, 0, 0.04);
             --blur-regular: blur(20px);
             --blur-thick: blur(40px);
             --blur-ultra: blur(80px);
@@ -170,19 +169,20 @@
             --tab-bar-height: 83px;
         }
         
-        [data-theme="light"] {
-            --bg-primary: #FFFFFF;
-            --bg-secondary: #FFFFFF;
-            --bg-tertiary: #FAFAFA;
-            --bg-elevated: #FFFFFF;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-border: rgba(0, 0, 0, 0.04);
-            --text-primary: #000000;
-            --text-secondary: rgba(0, 0, 0, 0.5);
-            --text-tertiary: rgba(0, 0, 0, 0.3);
-            --separator: rgba(0, 0, 0, 0.06);
-            --glass-bg: rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(0, 0, 0, 0.04);
+        [data-theme="dark"] {
+            /* DARK THEME (Override) */
+            --bg-primary: #000000;
+            --bg-secondary: #1C1C1E;
+            --bg-tertiary: #2C2C2E;
+            --bg-elevated: #3A3A3C;
+            --card-bg: rgba(28, 28, 30, 0.85);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-tertiary: rgba(255, 255, 255, 0.4);
+            --separator: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(28, 28, 30, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
         
         * {

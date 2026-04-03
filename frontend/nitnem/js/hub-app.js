@@ -532,15 +532,9 @@
     // ═══════════════════════════════════════════════════════════════
 
     function applyTheme(theme) {
+        // Use data-theme attribute only (light is default in CSS)
         document.documentElement.setAttribute('data-theme', theme);
         
-        // Also set/remove dark class for compatibility with other pages
-        if (theme === 'dark' || theme === 'amoled') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
         // Update meta theme-color
         const metaTheme = document.querySelector('meta[name="theme-color"]');
         if (metaTheme) {
@@ -550,7 +544,7 @@
                 sepia: '#F4ECD8',
                 amoled: '#000000'
             };
-            metaTheme.content = colors[theme] || colors.dark;
+            metaTheme.content = colors[theme] || colors.light; // Default to light
         }
     }
 
