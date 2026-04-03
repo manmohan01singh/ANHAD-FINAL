@@ -5,8 +5,9 @@
   <script>
 (function() {
   try {
-    // Use nitnem-specific theme key for independent theme control
-    const theme = localStorage.getItem('anhad_nitnem_theme') || localStorage.getItem('anhad_theme') || 'light';
+    // ONLY use nitnem-specific theme key - NO fallback to global theme
+    // Default is ALWAYS 'light' for first-time visitors
+    const theme = localStorage.getItem('anhad_nitnem_theme') || 'light';
     const html = document.documentElement;
     if (theme === 'dark') {
       html.classList.add('dark', 'dark-mode');
@@ -17,7 +18,7 @@
       html.setAttribute('data-theme', 'light');
       html.style.colorScheme = 'light';
     }
-    // Mark theme as ready
+    // Mark theme as ready immediately
     html.classList.add('theme-ready');
   } catch (e) {}
 })();

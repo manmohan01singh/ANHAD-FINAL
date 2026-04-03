@@ -574,25 +574,23 @@
 
     function loadState() {
         try {
-            // First check the nitnem-specific theme key (independent from global)
+            // ONLY use nitnem-specific theme key - NO fallback to global
+            // This ensures nitnem page always has its own theme independent of main app
             const nitnemTheme = localStorage.getItem('anhad_nitnem_theme');
-            // Fallback to global theme if nitnem-specific not set
-            const globalTheme = localStorage.getItem('anhad_theme');
             
             if (nitnemTheme) {
                 state.settings.theme = nitnemTheme;
-            } else if (globalTheme) {
-                state.settings.theme = globalTheme;
             }
+            // If no nitnem theme set, default to 'light' (already set in state default)
             
-            // Then load from hub-specific state (may override)
+            // Then load from hub-specific state
             const saved = localStorage.getItem('nitnemHub_state');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.recentlyRead = data.recentlyRead || [];
                 state.favorites = data.favorites || [];
-                // Only override theme if no theme keys were set
-                if (!nitnemTheme && !globalTheme && data.settings) {
+                // Only use saved settings if no nitnem theme was explicitly set
+                if (!nitnemTheme && data.settings) {
                     state.settings = { ...state.settings, ...data.settings };
                 }
             }
