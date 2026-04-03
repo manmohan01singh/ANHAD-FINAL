@@ -238,6 +238,16 @@
   </style>
 
   <script src="../js/bani-metadata.js"></script>
+  
+  <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+  <script src="../js/offline-bani-data.js?v=1"></script>
+  
+  <!-- BaniDB API - now with instant offline-first -->
+  <script src="../js/banidb-api.js?v=3"></script>
+  
+  <!-- Preload Manager for instant navigation -->
+  <script src="../js/preload-manager.js?v=1"></script>
+  
   <script>
     // Apply saved theme
     const savedTheme = localStorage.getItem('nitnem_theme') || 'dark';

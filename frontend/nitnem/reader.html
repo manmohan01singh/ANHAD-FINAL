@@ -34,6 +34,12 @@
     
     <!-- Global Theme System -->
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+    <script src="js/offline-bani-data.js?v=1"></script>
+    
+    <!-- BaniDB API - now with instant offline-first -->
+    <script src="js/banidb-api.js?v=3"></script>
 </head>
 <body>
 
@@ -355,12 +361,12 @@
                     <div class="setting-row slider-row">
                         <div class="setting-info">
                             <span class="setting-label">Ik Onkar Background</span>
-                            <span class="setting-desc">Adjust transparency</span>
+                            <span class="setting-desc">Adjust transparency (default: 10% light, 30% dark)</span>
                         </div>
                         <div class="slider-container">
                             <input type="range" class="transparency-slider" id="ikonkarTransparency" 
-                                   min="0" max="100" value="15" step="5">
-                            <span class="slider-value" id="transparencyValue">15%</span>
+                                   min="0" max="100" value="10" step="5">
+                            <span class="slider-value" id="transparencyValue">10%</span>
                         </div>
                     </div>
                 </div>
@@ -466,6 +472,7 @@
     
     <script src="js/banidb-api.js"></script>
     <script src="js/bani-metadata.js"></script>
+    <script src="js/local-bani-data.js"></script>
     <script src="../lib/user-stats.js"></script>
     <script src="js/reader-engine.js"></script>
     

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>PDF Viewer | ANHAD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0c0c0e;
+      --bg-secondary: #1c1c1e;
+      --bg-tertiary: #2c2c2e;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --ios-indigo: #5856D6;
+      --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+    }
+    [data-theme="light"] {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e5e5ea;
+      --text-primary: #1c1c1e;
+      --text-secondary: rgba(0, 0, 0, 0.6);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background: var(--bg-secondary);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 12px;
+      background: rgba(120,120,128,0.16);
+      border: none; border-radius: 10px;
+      color: var(--ios-indigo);
+      font-size: 15px; font-weight: 500;
+      text-decoration: none;
+    }
+    .title {
+      flex: 1; text-align: center;
+      font-family: var(--font-gurmukhi);
+      font-size: 17px; font-weight: 600;
+      margin-right: 60px;
+    }
+    .main {
+      display: flex;
+      height: 100vh;
+      padding-top: 60px;
+    }
+    .sidebar {
+      width: 300px;
+      background: var(--bg-secondary);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-title {
+      font-family: var(--font-gurmukhi);
+      font-size: 18px; font-weight: 600;
+    }
+    .sidebar-subtitle {
+      font-size: 12px; color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .bani-list {
+      flex: 1; overflow-y: auto;
+      padding: 8px;
+    }
+    .bani-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+    }
+    .bani-item:hover { background: rgba(88,86,214,0.1); }
+    .bani-item.active {
+      background: var(--ios-indigo);
+      color: white;
+    }
+    .bani-num {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+    }
+    .bani-item.active .bani-num { background: rgba(255,255,255,0.2); }
+    .bani-text { flex: 1; }
+    .bani-name {
+      font-family: var(--font-gurmukhi);
+      font-size: 15px; font-weight: 500;
+    }
+    .bani-range {
+      font-size: 12px; opacity: 0.7;
+      margin-top: 2px;
+    }
+    .content {
+      flex: 1;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .toolbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .tool-btn {
+      padding: 8px 16px;
+      background: rgba(120,120,128,0.16);
+      border: none; border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .tool-btn:hover { background: rgba(88,86,214,0.2); }
+    .page-badge {
+      padding: 6px 12px;
+      background: rgba(120,120,128,0.12);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+    .pdf-preview {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-primary);
+      padding: 20px;
+    }
+    .preview-content {
+      text-align: center;
+      max-width: 400px;
+    }
+    .preview-icon {
+      font-size: 80px;
+      margin-bottom: 16px;
+    }
+    .preview-title {
+      font-family: var(--font-gurmukhi);
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+    .preview-info {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .preview-page, .preview-range {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .preview-page strong {
+      color: var(--ios-indigo);
+      font-size: 18px;
+    }
+    .open-pdf-btn {
+      display: block;
+      margin: 0 auto;
+      padding: 20px 48px;
+      background: linear-gradient(135deg, #5856D6 0%, #4B48C4 50%, #3D3AA8 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 4px 20px rgba(88, 86, 214, 0.4),
+        0 8px 30px rgba(88, 86, 214, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      text-align: center;
+      min-width: 240px;
+      line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+    }
+    .open-pdf-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .open-pdf-btn:hover::before {
+      left: 100%;
+    }
+    .open-pdf-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 8px 30px rgba(88, 86, 214, 0.5),
+        0 12px 40px rgba(88, 86, 214, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    .open-pdf-btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    .open-pdf-btn span {
+      display: block;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+    .open-pdf-btn small {
+      display: block;
+      font-size: 13px;
+      opacity: 0.9;
+      font-weight: 500;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+    .note {
+      padding: 12px 16px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        left: 0; top: 60px; bottom: 0;
+        z-index: 90;
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.open { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <a href="category/sarbloh.html" class="back-btn" id="backBtn">← Back</a>
+    <div class="title" id="pageTitle">PDF Viewer</div>
+  </header>
+  
+  <div class="main">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">ਸੰਪੂਰਨ ਗ੍ਰੰਥ ਸੰਗ੍ਰਹਿ</div>
+        <div class="sidebar-subtitle">13 Banis from Sarbloh & Dasam Granth</div>
+      </div>
+      <div class="bani-list" id="baniList"></div>
+      <div class="note">
+        All Banis are in the Complete Sarbloh Granth PDF. 
+        Use the PDF viewer's page navigation to jump to specific pages.
+      </div>
+    </aside>
+    
+    <main class="content">
+      <div class="toolbar">
+        <button class="tool-btn" onclick="toggleSidebar()">☰ Banis</button>
+        <div class="page-badge" id="pageBadge">Page --</div>
+      </div>
+      <div class="pdf-preview" id="pdfPreview">
+        <div class="preview-content">
+          <div class="preview-icon">📖</div>
+          <div class="preview-title" id="previewTitle">ਸਰਬਲੋਹ ਕਵਚ</div>
+          <div class="preview-info">
+            <div class="preview-page">📄 Page <strong id="previewPage">73</strong> <span id="previewSource">of Complete Sarbloh Granth</span></div>
+            <div class="preview-range">📑 Page range: <span id="previewRange">73-95</span></div>
+          </div>
+          <button class="open-pdf-btn" onclick="openPDF()">
+            <span>📖 Open PDF</span>
+            <small>Opens at correct page in new tab</small>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const BANIS = {
+      // Complete Sarbloh Granth PDF Banis
+      'sarab-loh-kavach': { name: 'ਸਰਬਲੋਹ ਕਵਚ', page: 73, range: '73-95', num: '01' },
+      'maha-kaal-stottar': { name: 'ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ', page: 96, range: '96-120', num: '02' },
+      'bhagauti-astotar': { name: 'ਭਗਉਤੀ ਅਸਤੋਤਰ', page: 121, range: '121-145', num: '03' },
+      'tripuda': { name: 'ਤ੍ਰਿਪੁਦਾ', page: 146, range: '146-160', num: '04' },
+      'chandi-mata': { name: 'ਚੰਡੀ ਮਾਤਾ', page: 161, range: '161-175', num: '05' },
+      'ugardanti': { name: 'ਉਗਰਦੰਤੀ', page: 176, range: '176-195', num: '06' },
+      'sarab-loh-path': { name: 'ਸਰਬਲੋਹ ਪਾਠ', page: 196, range: '196-250', num: '07' },
+      'chandi-di-var': { name: 'ਚੰਡੀ ਦੀ ਵਾਰ', page: 251, range: '251-300', num: '08' },
+      'gobind-geet': { name: 'ਗੋਬਿੰਦ ਗੀਤ', page: 301, range: '301-340', num: '09' },
+      'akal-ustat': { name: 'ਅਕਾਲ ਉਸਤਤ', page: 341, range: '341-380', num: '10' },
+      'sarab-loh-prakash': { name: 'ਸਰਬਲੋਹ ਪ੍ਰਕਾਸ਼', page: 381, range: '381+', num: '11' },
+      
+      // The Five Adhiyas (Chapters)
+      'adhiya-1': { name: 'ਪਹਿਲਾ ਅਧਯਾਯ', page: 1, range: '1-300', num: 'A1', desc: 'Maha Maya, Chandi defeats Bhimnad' },
+      'adhiya-2': { name: 'ਦੂਜਾ ਅਧਯਾਯ', page: 301, range: '301-600', num: 'A2', desc: 'Sati, Indra\'s Letters' },
+      'adhiya-3': { name: 'ਤੀਜਾ ਅਧਯਾਯ', page: 601, range: '601-900', num: 'A3', desc: 'Demons Victory, Brijnad Refuses' },
+      'adhiya-4': { name: 'ਚੌਥਾ ਅਧਯਾਯ', page: 901, range: '901-1200', num: 'A4', desc: 'Intense Battle' },
+      'adhiya-5': { name: 'ਪੰਜਵਾ ਅਧਯਾਯ', page: 1201, range: '1201-1665', num: 'A5', desc: 'Sarbloh Avtar at Jagannath Puri' },
+      
+      // Appendix — Vishnu Avatars
+      'mach-avtar': { name: 'ਮੱਛ ਅਵਤਾਰ', page: 73, range: 'See Adhiya 1', num: 'V1', desc: 'Fish Avatar' },
+      'kach-avtar': { name: 'ਕੱਛ ਅਵਤਾਰ', page: 73, range: 'See Adhiya 1', num: 'V2', desc: 'Tortoise Avatar' },
+      'barha-avtar': { name: 'ਬਰਹਾ ਅਵਤਾਰ', page: 73, range: 'See Adhiya 1', num: 'V3', desc: 'Wild Boar Avatar' },
+      'nar-singh-avtar': { name: 'ਨਰ ਸਿੰਘ ਅਵਤਾਰ', page: 73, range: 'See Adhiya 1', num: 'V4', desc: 'Half Man Half Lion' },
+      'purshram-avtar': { name: 'ਪੁਰਸ਼ਰਾਮ ਅਵਤਾਰ', page: 73, range: 'See Adhiya 1', num: 'V6', desc: 'Parashurama Avatar' },
+      'bij-ramaein': { name: 'ਬੀਜ ਰਮਾਈਨ', page: 73, range: 'See Appendix', num: 'R1', desc: 'Ram Avatar' },
+      'dasam-sakand': { name: 'ਦਸਮ ਸਕੰਦ', page: 73, range: 'See Appendix', num: 'K1', desc: 'Krishna Avatar' },
+      
+      // Key Compositions
+      'khalsa-mahima': { name: 'ਖਾਲਸਾ ਮਹਿਮਾ', page: 73, range: 'Throughout Granth', num: 'K1', desc: 'Praise of the Khalsa' },
+      'das-grahi-tiagi': { name: 'ਦਸ ਗ੍ਰਾਹੀ — ਦਸ ਤਿਆਗੀ', page: 73, range: 'Throughout Granth', num: 'K2', desc: 'Ten virtues & vices' },
+      'jaap-sahib-naam': { name: 'ਜਾਪੁ ਸਾਹਿਬ ਦੇ ਨਾਮ', page: 73, range: 'Throughout Granth', num: 'K3', desc: 'Divine names from Jaap Sahib' },
+      
+      // Separate PDFs
+      'bachittar-natak': { name: 'ਬਚਿੱਤਰ ਨਾਟਕ', page: 1, range: 'Full PDF', num: '12', separate: true },
+      'zafarnama': { name: 'ਜ਼ਫ਼ਰਨਾਮਾ', page: 1, range: 'Full PDF', num: '13', separate: true }
+    };
+    
+    const PDF_URL = 'category/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf';
+    const BACHITTAR_URL = 'category/Bachitar_Natak.pdf';
+    const ZAFARNAMA_URL = 'category/Zafarnama.pdf';
+    
+    let currentBani = null;
+    
+    function init() {
+      const params = new URLSearchParams(location.search);
+      const baniId = params.get('bani') || 'sarab-loh-kavach';
+      
+      renderSidebar();
+      loadBani(baniId);
+    }
+    
+    function renderSidebar() {
+      const list = document.getElementById('baniList');
+      list.innerHTML = Object.entries(BANIS).map(([id, bani]) => `
+        <div class="bani-item ${id === currentBani ? 'active' : ''}" data-id="${id}" onclick="loadBani('${id}')">
+          <div class="bani-num">${bani.num}</div>
+          <div class="bani-text">
+            <div class="bani-name">${bani.name}</div>
+            <div class="bani-range">Pages ${bani.range}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function loadBani(id) {
+      const bani = BANIS[id];
+      if (!bani) return;
+      
+      currentBani = id;
+      
+      // Set correct back URL
+      const backUrl = bani.separate ? 'category/dasam.html' : 'category/sarbloh.html';
+      document.getElementById('backBtn').href = backUrl;
+      
+      // Update URL
+      history.replaceState({}, '', `?bani=${id}`);
+      
+      // Update UI
+      document.getElementById('pageTitle').textContent = bani.name;
+      document.getElementById('pageBadge').textContent = `Page ${bani.page}`;
+      
+      // Update preview panel
+      document.getElementById('previewTitle').textContent = bani.name;
+      document.getElementById('previewPage').textContent = bani.page;
+      document.getElementById('previewRange').textContent = bani.range;
+      
+      // Set correct PDF source text
+      const sourceText = bani.separate 
+        ? (id === 'bachittar-natak' ? 'of Bachittar Natak PDF' : 'of Zafarnama PDF')
+        : 'of Complete Sarbloh Granth';
+      document.getElementById('previewSource').textContent = sourceText;
+      
+      // Update active state
+      document.querySelectorAll('.bani-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === id);
+      });
+      
+      // Close sidebar on mobile
+      document.getElementById('sidebar').classList.remove('open');
+    }
+    
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+    
+    function openPDF() {
+      const bani = BANIS[currentBani];
+      const baseUrl = bani.separate 
+        ? (currentBani === 'bachittar-natak' ? BACHITTAR_URL : ZAFARNAMA_URL)
+        : PDF_URL;
+      const urlWithPage = `${baseUrl}#page=${bani.page}`;
+      window.open(urlWithPage, '_blank');
+    }
+    
+    // Init
+    init();
+  </script>
+</body>
+</html>

@@ -16,7 +16,7 @@
         recentlyRead: [],
         favorites: [],
         settings: {
-            theme: 'dark',
+            theme: 'light',
             viewMode: 'grid'
         },
         isSearchOpen: false,

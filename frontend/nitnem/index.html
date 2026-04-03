@@ -7,7 +7,7 @@
   try {
     // ONLY use nitnem-specific theme key - NO fallback to global theme
     // Default is ALWAYS 'light' for first-time visitors
-    const theme = localStorage.getItem('anhad_nitnem_theme') || 'light';
+    const theme = localStorage.getItem('anhad_theme') || 'light';
     const html = document.documentElement;
     if (theme === 'dark') {
       html.setAttribute('data-theme', 'dark');
@@ -33,6 +33,17 @@
       visibility: visible;
       transition: opacity 0.1s ease-out;
     }
+    /* FORCE light mode defaults - override external CSS */
+    html[data-theme="light"] body {
+      background: #FFFFFF !important;
+      color: #000000 !important;
+    }
+    html[data-theme="light"] .bg-effects {
+      opacity: 0.3 !important;
+    }
+    html[data-theme="light"] .orb {
+      opacity: 0.15 !important;
+    }
   </style>
   <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
@@ -41,7 +52,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#F8F9FA">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
@@ -87,15 +98,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- INSTANT LOADING: Preload critical resources -->
+    <link rel="preload" href="js/offline-bani-data.js" as="script">
+    <link rel="preload" href="js/banidb-api.js" as="script">
+    <link rel="preload" href="js/reader-engine.js" as="script">
+    <link rel="preload" href="css/reader.css" as="style">
+    
+    <!-- Prefetch next likely pages -->
+    <link rel="prefetch" href="category/sggs.html">
+    <link rel="prefetch" href="category/dasam.html">
+    <link rel="prefetch" href="reader.html">
+    
     <!-- Global Theme System -->
     <script src="../lib/global-theme.js?v=2"></script>
     <script src="../js/anhad-core.js?v=2" defer></script>
     
-    <!-- BaniDB API -->
-    <script src="js/banidb-api.js?v=2"></script>
+    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+    <script src="js/offline-bani-data.js?v=1"></script>
+    
+    <!-- BaniDB API - now with instant offline-first -->
+    <script src="js/banidb-api.js?v=3"></script>
+    
+    <!-- Preload Manager for instant navigation -->
+    <script src="js/preload-manager.js?v=1"></script>
     
     <!-- Hub App with cache bust -->
-    <script src="js/hub-app.js?v=4"></script>
+    <script src="js/hub-app.js?v=5"></script>
     
     <!-- Custom Gurmukhi Fonts -->
     <style>
@@ -1428,7 +1456,7 @@
                             </div>
                             <p class="category-desc">The Granth of All-Steel</p>
                             <div class="category-badges">
-                                <span class="badge">Coming Soon</span>
+                                <span class="badge">13 Banis</span>
                             </div>
                         </div>
                         <svg class="category-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

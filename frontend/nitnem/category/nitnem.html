@@ -324,66 +324,99 @@
         .bani-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
+        /* Ultimate Claymorphism - Puffy Cushion Bani Cards */
         .bani-card {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 18px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 3px solid rgba(255, 255, 255, 0.7);
-            border-radius: 24px;
+            padding: 20px;
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border: 4px solid rgba(255, 255, 255, 0.8);
+            border-radius: 28px;
             text-decoration: none;
             color: inherit;
             box-shadow:
-                14px 14px 45px rgba(100, 70, 40, 0.2),
-                7px 7px 22px rgba(100, 70, 40, 0.14),
-                -7px -7px 22px rgba(255, 255, 255, 0.95),
-                -3px -3px 11px rgba(255, 255, 255, 0.85),
-                0 0 0 2px rgba(255, 255, 255, 0.6),
-                inset 0 2px 4px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(100, 70, 40, 0.06);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(0);
+                18px 18px 50px rgba(100, 70, 40, 0.22),
+                12px 12px 30px rgba(100, 70, 40, 0.16),
+                6px 6px 15px rgba(100, 70, 40, 0.10),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(100, 70, 40, 0.08),
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0) scale(1);
         }
         
-        [data-theme="light"] .bani-card {
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border-color: rgba(255, 255, 255, 0.7);
-        }
-        
-        html.dark-mode .bani-card {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
+        .bani-card:hover {
+            transform: translateY(-4px) scale(1.02);
             box-shadow:
-                14px 14px 45px rgba(40, 30, 20, 0.45),
-                7px 7px 22px rgba(40, 30, 20, 0.32),
-                -7px -7px 22px rgba(255, 255, 255, 0.1),
-                -3px -3px 11px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(40, 30, 20, 0.2);
+                22px 22px 60px rgba(100, 70, 40, 0.25),
+                14px 14px 35px rgba(100, 70, 40, 0.18),
+                8px 8px 20px rgba(100, 70, 40, 0.12),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(100, 70, 40, 0.08);
         }
         
         .bani-card:active {
-            transform: scale(0.98) translateY(3px);
+            transform: scale(0.96) translateY(4px);
             box-shadow:
-                inset 6px 6px 16px rgba(100, 70, 40, 0.22),
-                inset 3px 3px 8px rgba(100, 70, 40, 0.14),
-                inset -4px -4px 12px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                3px 3px 10px rgba(100, 70, 40, 0.16);
+                inset 8px 8px 20px rgba(100, 70, 40, 0.25),
+                inset 4px 4px 10px rgba(100, 70, 40, 0.15),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.7),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.5),
+                0 0 0 2px rgba(255, 255, 255, 0.5),
+                4px 4px 12px rgba(100, 70, 40, 0.12);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        [data-theme="light"] .bani-card {
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        html.dark-mode .bani-card {
+            background: linear-gradient(165deg, #3C3C3E 0%, #323234 35%, #2A2A2C 65%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                18px 18px 50px rgba(40, 30, 20, 0.50),
+                12px 12px 30px rgba(40, 30, 20, 0.38),
+                6px 6px 15px rgba(40, 30, 20, 0.26),
+                -8px -8px 25px rgba(255, 255, 255, 0.10),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
+        }
+        
+        html.dark-mode .bani-card:hover {
+            box-shadow:
+                22px 22px 60px rgba(40, 30, 20, 0.55),
+                14px 14px 35px rgba(40, 30, 20, 0.42),
+                8px 8px 20px rgba(40, 30, 20, 0.30),
+                -8px -8px 25px rgba(255, 255, 255, 0.10),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
         }
         
         html.dark-mode .bani-card:active {
             box-shadow:
-                inset 6px 6px 16px rgba(40, 30, 20, 0.45),
-                inset 3px 3px 8px rgba(40, 30, 20, 0.3),
-                inset -4px -4px 12px rgba(255, 255, 255, 0.08),
+                inset 8px 8px 20px rgba(40, 30, 20, 0.48),
+                inset 4px 4px 10px rgba(40, 30, 20, 0.32),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.08),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.04),
                 0 0 0 2px rgba(255, 255, 255, 0.15),
-                3px 3px 10px rgba(40, 30, 20, 0.35);
+                4px 4px 12px rgba(40, 30, 20, 0.32);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .bani-icon {
@@ -444,38 +477,38 @@
             color: var(--text-tertiary);
         }
 
-        /* Info Card */
+        /* Puffy Info Card */
         .info-card {
             display: flex;
             gap: 14px;
-            padding: 20px;
-            background: linear-gradient(160deg, #FFF8F0 0%, #FFF0E0 40%, #FFE8D0 100%);
-            border: 3px solid rgba(212, 175, 55, 0.5);
-            border-radius: 26px;
+            padding: 24px;
+            background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E0 35%, #FFE8D8 65%, #FFE0D0 100%);
+            border: 4px solid rgba(212, 175, 55, 0.5);
+            border-radius: 30px;
             margin-bottom: 28px;
             box-shadow:
-                16px 16px 50px rgba(180, 140, 50, 0.25),
-                8px 8px 25px rgba(100, 70, 40, 0.16),
-                -8px -8px 25px rgba(255, 255, 255, 0.95),
-                -4px -4px 12px rgba(255, 255, 255, 0.85),
-                0 0 0 2px rgba(212, 175, 55, 0.3),
-                inset 0 2px 4px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(180, 140, 50, 0.1);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                20px 20px 60px rgba(180, 140, 50, 0.28),
+                10px 10px 30px rgba(100, 70, 40, 0.18),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(212, 175, 55, 0.35),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(180, 140, 50, 0.12);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
         
         html.dark-mode .info-card {
-            background: linear-gradient(160deg, #3D3020 0%, #302818 40%, #1D1808 100%);
-            border-color: rgba(212, 175, 55, 0.3);
+            background: linear-gradient(165deg, #4D4028 0%, #3D3020 35%, #2D2418 65%, #1D1808 100%);
+            border-color: rgba(212, 175, 55, 0.35);
             box-shadow:
-                16px 16px 50px rgba(40, 30, 20, 0.4),
-                8px 8px 25px rgba(40, 30, 20, 0.3),
-                -8px -8px 25px rgba(255, 255, 255, 0.06),
-                -4px -4px 12px rgba(255, 255, 255, 0.02),
-                0 0 0 2px rgba(212, 175, 55, 0.2),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(40, 30, 20, 0.25);
+                20px 20px 60px rgba(40, 30, 20, 0.45),
+                10px 10px 30px rgba(40, 30, 20, 0.32),
+                -8px -8px 25px rgba(255, 255, 255, 0.08),
+                -4px -4px 12px rgba(255, 255, 255, 0.03),
+                0 0 0 3px rgba(212, 175, 55, 0.25),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
         }
 
         .info-card-icon {
@@ -526,6 +559,15 @@
   <script src="../../lib/global-theme.js"></script>
     <!-- Smart Back Navigation -->
     <script src="../../lib/smart-back.js"></script>
+    
+    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+    <script src="../js/offline-bani-data.js?v=1"></script>
+    
+    <!-- BaniDB API - now with instant offline-first -->
+    <script src="../js/banidb-api.js?v=3"></script>
+    
+    <!-- Preload Manager for instant navigation -->
+    <script src="../js/preload-manager.js?v=1"></script>
 </head>
 
 <body>

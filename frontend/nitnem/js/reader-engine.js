@@ -56,8 +56,8 @@
         showEnglish: true,
         showPunjabi: false,
 
-        // Ik Onkar Background
-        ikonkarTransparency: 50
+        // Ik Onkar Background - default (will be adjusted by theme in loadSettings)
+        ikonkarTransparency: 10
     };
 
     // Color Palette
@@ -250,17 +250,10 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // LOAD BANI — Offline-first: Try IndexedDB, then API fallback
+    // LOAD BANI — Offline-first: Try IndexedDB, then API, then Local Data
     // ═══════════════════════════════════════════════════════════════
 
     async function loadBani() {
-        // Check if Sarbloh Granth (IDs 201-205)
-        if (state.baniId >= 201 && state.baniId <= 205) {
-            hideSkeleton();
-            showError('Sarbloh Granth Banis are not yet available via API. Coming soon! 🙏');
-            return;
-        }
-
         try {
             let data = null;
             let loadedFromCache = false;
@@ -293,31 +286,42 @@
                 }
             }
 
-            // 3. Final fallback to API
+            // 3. Try API (BaniDB)
             if (!data) {
                 console.log('[ReaderEngine] 🌐 Fetching from API:', state.baniId);
-                data = await BaniDB.getBani(state.baniId);
-                
-                // Save to both cache systems for future use
-                if (data && data.verses) {
-                    const meta = state.baniMeta || {};
+                try {
+                    data = await BaniDB.getBani(state.baniId);
                     
-                    // Save to BaniCacheOptimizer
-                    if (window.baniCacheOptimizer) {
-                        await window.baniCacheOptimizer.cacheBani(state.baniId, data);
+                    // Save to both cache systems for future use
+                    if (data && data.verses) {
+                        const meta = state.baniMeta || {};
+                        
+                        // Save to BaniCacheOptimizer
+                        if (window.baniCacheOptimizer) {
+                            await window.baniCacheOptimizer.cacheBani(state.baniId, data);
+                        }
+                        
+                        // Save to gurbaniLocalDB
+                        if (window.gurbaniLocalDB) {
+                            await window.gurbaniLocalDB.saveBani(
+                                state.baniId, 
+                                meta.name || meta.nameEnglish || 'Bani', 
+                                data.verses
+                            );
+                        }
+                        
+                        console.log('[ReaderEngine] ✓ Cached for future use');
+                        showOfflineBadge(true);
                     }
-                    
-                    // Save to gurbaniLocalDB
-                    if (window.gurbaniLocalDB) {
-                        await window.gurbaniLocalDB.saveBani(
-                            state.baniId, 
-                            meta.name || meta.nameEnglish || 'Bani', 
-                            data.verses
-                        );
+                } catch (apiError) {
+                    console.warn('[ReaderEngine] API failed, checking local fallback:', apiError);
+                    // 4. Final fallback: Check LocalBaniData for missing Banis
+                    if (typeof LocalBaniData !== 'undefined' && LocalBaniData[state.baniId]) {
+                        console.log('[ReaderEngine] Using LocalBaniData fallback for ID:', state.baniId);
+                        data = LocalBaniData[state.baniId];
+                    } else {
+                        throw apiError; // Re-throw if no local data either
                     }
-                    
-                    console.log('[ReaderEngine] ✓ Cached for future use');
-                    showOfflineBadge(true);
                 }
             }
 
@@ -398,11 +402,12 @@
         { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', icon: '📿' },
         { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', icon: '🤲' },
         { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', icon: '💎' },
-        { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', icon: '✨' },
-        { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', icon: '🌟' },
-        { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', icon: '⚔️' },
+        { id: 8, name: 'ਬਚਿੱਤਰ ਨਾਟਕ', english: 'Bachittar Natak', icon: '📜' },
+        { id: 12, name: 'ਜ਼ਫ਼ਰਨਾਮਾ', english: 'Zafarnama', icon: '✉️' },
         { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', icon: '🗡️' },
         { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', icon: '🔱' },
+        { id: 28, name: 'ਚੰਡੀ ਚਰਿਤ੍ਰ', english: 'Chandi Charitra', icon: '⚔️' },
+        { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat', icon: '🌟' },
         { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', icon: '🔥' },
     ];
 
@@ -1086,6 +1091,14 @@
     function loadSettings() {
         try {
             const saved = localStorage.getItem('anhad_reader_v5');
+            // Get current theme for default transparency
+            const currentTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) 
+                || localStorage.getItem('anhad_theme') 
+                || 'light';
+            
+            // Theme-aware default transparency
+            const defaultTransparency = currentTheme === 'dark' ? 30 : 10;
+            
             if (saved) {
                 const parsed = JSON.parse(saved);
                 // Sync with global theme on load - prefer global theme
@@ -1095,6 +1108,14 @@
                 } else if (!parsed.theme) {
                     parsed.theme = 'light'; // Default to light
                 }
+                // If no saved transparency, use theme-based default
+                if (parsed.ikonkarTransparency === undefined) {
+                    parsed.ikonkarTransparency = defaultTransparency;
+                }
+                // Migration: Reset old default 50 to new theme-based defaults
+                if (parsed.ikonkarTransparency === 50) {
+                    parsed.ikonkarTransparency = defaultTransparency;
+                }
                 state.settings = { ...DEFAULTS, ...parsed };
             } else {
                 // No saved settings - use defaults but sync with global theme
@@ -1103,9 +1124,14 @@
                 if (globalTheme) {
                     state.settings.theme = globalTheme;
                 }
+                // Set theme-based default transparency
+                state.settings.ikonkarTransparency = defaultTransparency;
             }
         } catch (e) { 
             state.settings = { ...DEFAULTS };
+            // Set theme-based default on error too
+            const currentTheme = localStorage.getItem('anhad_theme') || 'light';
+            state.settings.ikonkarTransparency = currentTheme === 'dark' ? 30 : 10;
         }
     }
 

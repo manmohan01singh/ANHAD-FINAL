@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Sarbloh Granth PDF | ANHAD</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0c0c0e;
+            --bg-secondary: #1c1c1e;
+            --bg-tertiary: #2c2c2e;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.5);
+            --ios-indigo: #5856D6;
+            --ios-orange: #FF9500;
+            --ios-red: #FF3B30;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f5f5f7;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e5e5ea;
+            --text-primary: #1c1c1e;
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --text-tertiary: rgba(0, 0, 0, 0.4);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .pdf-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, rgba(28, 28, 30, 0.95) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-theme="light"] .pdf-header {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(120, 120, 128, 0.16);
+            border: none;
+            border-radius: 12px;
+            color: var(--ios-indigo);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(88, 86, 214, 0.2);
+        }
+        
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .pdf-title {
+            flex: 1;
+            text-align: center;
+            font-family: var(--font-gurmukhi);
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-right: 60px;
+        }
+        
+        /* PDF Container with Sidebar */
+        .pdf-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            background: var(--bg-primary);
+        }
+        
+        /* Bani Sidebar */
+        .bani-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        [data-theme="light"] .bani-sidebar {
+            border-right-color: rgba(0, 0, 0, 0.08);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .sidebar-title {
+            font-family: var(--font-gurmukhi);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .close-sidebar {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(120, 120, 128, 0.16);
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .bani-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .bani-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .bani-item:hover {
+            background: rgba(88, 86, 214, 0.1);
+        }
+        
+        .bani-item.active {
+            background: var(--ios-indigo);
+            color: white;
+        }
+        
+        .bani-number {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .bani-item.active .bani-number {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .bani-info {
+            flex: 1;
+        }
+        
+        .bani-name {
+            font-family: var(--font-gurmukhi);
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+        
+        .bani-page {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+        
+        .sidebar-note {
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            line-height: 1.4;
+        }
+        
+        /* PDF Main Area */
+        .pdf-main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Toolbar */
+        .pdf-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .toolbar-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .toolbar-btn:hover {
+            background: rgba(120, 120, 128, 0.16);
+            color: var(--text-primary);
+        }
+        
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 4px;
+        }
+        
+        .page-display {
+            padding: 6px 12px;
+            background: rgba(120, 120, 128, 0.12);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 80;
+            display: none;
+        }
+        
+        .sidebar-overlay.visible {
+            display: block;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .bani-sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 90;
+                transform: translateX(-100%);
+            }
+            
+            .bani-sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .close-sidebar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: var(--bg-primary);
+        }
+        
+        /* Loading State */
+        .loading-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            z-index: 50;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(88, 86, 214, 0.2);
+            border-top-color: var(--ios-indigo);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Error State */
+        .error-state {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            z-index: 60;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .error-state.visible {
+            display: flex;
+        }
+        
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .error-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .error-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+        
+        .error-btn {
+            padding: 12px 24px;
+            background: var(--ios-indigo);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .error-btn:hover {
+            transform: scale(1.02);
+            background: #4a48c0;
+        }
+        
+        /* PDF Source Info */
+        .pdf-info {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 16px;
+            background: rgba(28, 28, 30, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            z-index: 40;
+        }
+        
+        [data-theme="light"] .pdf-info {
+            background: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="pdf-header">
+        <a href="category/sarbloh.html" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+            Back
+        </a>
+        <div class="pdf-title" id="pdfTitle">ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ</div>
+    </header>
+    
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading PDF...</div>
+    </div>
+    
+    <!-- Error State -->
+    <div class="error-state" id="errorState">
+        <div class="error-icon">📄❌</div>
+        <div class="error-title">Unable to Load PDF</div>
+        <div class="error-message" id="errorMessage">The PDF could not be loaded. Please check your internet connection.</div>
+        <button class="error-btn" onclick="location.reload()">Try Again</button>
+        <a href="category/sarbloh.html" class="back-btn" style="margin-top: 12px;">Return to Sarbloh Granth</a>
+    </div>
+    
+    <!-- PDF Container -->
+    <div class="pdf-container" id="pdfContainer">
+        <!-- Sidebar with Bani TOC -->
+        <div class="bani-sidebar" id="baniSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">ਸਰਬਲੋਹ ਗ੍ਰੰਥ</div>
+                <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+            </div>
+            <div class="bani-list">
+                <a class="bani-item" data-bani="sarab-loh-kavach" onclick="selectBani('sarab-loh-kavach')">
+                    <div class="bani-number">01</div>
+                    <div class="bani-info">
+                        <div class="bani-name">ਸਰਬਲੋਹ ਕਵਚ</div>
+                        <div class="bani-page">Page 73-95</div>
+                    </div>
+                </a>
+                <a class="bani-item" data-bani="maha-kaal-stottar" onclick="selectBani('maha-kaal-stottar')">
+                    <div class="bani-number">02</div>
+                    <div class="bani-info">
+                        <div class="bani-name">ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ</div>
+                        <div class="bani-page">Page 96-120</div>
+                    </div>
+                </a>
+                <a class="bani-item" data-bani="bhagauti-astotar" onclick="selectBani('bhagauti-astotar')">
+                    <div class="bani-number">03</div>
+                    <div class="bani-info">
+                        <div class="bani-name">ਭਗਉਤੀ ਅਸਤੋਤਰ</div>
+                        <div class="bani-page">Page 121-145</div>
+                    </div>
+                </a>
+                <a class="bani-item" data-bani="ugardanti" onclick="selectBani('ugardanti')">
+                    <div class="bani-number">04</div>
+                    <div class="bani-info">
+                        <div class="bani-name">ਉਗਰਦੰਤੀ</div>
+                        <div class="bani-page">Page 146-170</div>
+                    </div>
+                </a>
+                <a class="bani-item" data-bani="sarab-loh-path" onclick="selectBani('sarab-loh-path')">
+                    <div class="bani-number">05</div>
+                    <div class="bani-info">
+                        <div class="bani-name">ਸਰਬਲੋਹ ਪਾਠ</div>
+                        <div class="bani-page">Page 171+</div>
+                    </div>
+                </a>
+            </div>
+            <div class="sidebar-note">
+                All Banis are in the Complete Sarbloh Granth PDF. Click a Bani to see its starting page.
+            </div>
+        </div>
+        
+        <!-- Main PDF Area -->
+        <div class="pdf-main-area">
+            <!-- Toolbar -->
+            <div class="pdf-toolbar">
+                <button class="toolbar-btn" onclick="toggleSidebar()" title="Bani List">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="toolbar-btn" onclick="changePage(-1)" title="Previous Page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <div class="page-display">
+                    <span id="currentPage">--</span> / <span id="totalPagesDisplay">--</span>
+                </div>
+                <button class="toolbar-btn" onclick="changePage(1)" title="Next Page">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+                <button class="toolbar-btn" onclick="zoom(-0.2)" title="Zoom Out">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35M8 11h6"/>
+                    </svg>
+                </button>
+                <button class="toolbar-btn" onclick="zoom(0.2)" title="Zoom In">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/>
+                    </svg>
+                </button>
+                <div class="toolbar-divider"></div>
+                <a class="toolbar-btn" id="downloadBtn" href="#" target="_blank" title="Open/Download PDF">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <!-- Loading -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Loading PDF...</div>
+            </div>
+            
+            <!-- PDF iframe -->
+            <iframe class="pdf-iframe" id="pdfFrame" src="" frameborder="0"></iframe>
+        </div>
+    </div>
+    
+    <!-- Mobile overlay for sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- PDF Source Info -->
+    <div class="pdf-info" id="pdfInfo">
+        Source: Vidhia.com
+    </div>
+    
+    <script>
+        // PDF URLs mapping - Vidhia.com with specific page numbers
+        // Fast loading via Google Docs Viewer
+        const PDF_SOURCES = {
+            'sarab-loh-kavach': {
+                name: 'ਸਰਬਲੋਹ ਕਵਚ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 73,
+                notes: 'Page 73-95'
+            },
+            'maha-kaal-stottar': {
+                name: 'ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 96,
+                notes: 'Page 96-120'
+            },
+            'bhagauti-astotar': {
+                name: 'ਭਗਉਤੀ ਅਸਤੋਤਰ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 121,
+                notes: 'Page 121-145'
+            },
+            'ugardanti': {
+                name: 'ਉਗਰਦੰਤੀ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 146,
+                notes: 'Page 146-170'
+            },
+            'sarab-loh-path': {
+                name: 'ਸਰਬਲੋਹ ਪਾਠ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 171,
+                notes: 'Page 171+'
+            },
+            'bachittar-natak': {
+                name: 'ਬਚਿੱਤਰ ਨਾਟਕ',
+                url: 'https://www.vidhia.com/Bani/Bachitar%20Natak-Punjabi.pdf',
+                source: 'Vidhia.com',
+                page: 1
+            },
+            'zafarnama': {
+                name: 'ਜ਼ਫ਼ਰਨਾਮਾ',
+                url: 'https://www.vidhia.com/Bani/Zafarnama-Punjabi.pdf',
+                source: 'Vidhia.com',
+                page: 1
+            },
+            'complete': {
+                name: 'ਸ੍ਰੀ ਸਰਬਲੋਹ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ',
+                url: 'https://www.vidhia.com/Bani/Complete-Sri-Sarbloh-Granth-Sahib-Ji-Steek.pdf',
+                source: 'Vidhia.com',
+                page: 1
+            }
+        };
+        
+        // Alternative/backup sources
+        const BACKUP_SOURCES = {
+            'complete': 'https://archive.org/download/sarbloh_granth/sarbloh_granth_text.pdf'
+        };
+        
+        function loadPDF() {
+            const params = new URLSearchParams(window.location.search);
+            const baniId = params.get('bani') || 'sarab-loh-kavach';
+            
+            selectBani(baniId);
+        }
+        
+        function selectBani(baniId) {
+            const pdfData = PDF_SOURCES[baniId];
+            if (!pdfData) return;
+            
+            // Update URL without reloading
+            const url = new URL(window.location);
+            url.searchParams.set('bani', baniId);
+            window.history.replaceState({}, '', url);
+            
+            // Update title
+            document.getElementById('pdfTitle').textContent = pdfData.name;
+            document.title = pdfData.name + ' | ANHAD';
+            
+            // Update source info
+            document.getElementById('pdfInfo').textContent = 'Source: ' + pdfData.source;
+            document.getElementById('downloadBtn').href = pdfData.url;
+            
+            // Update active sidebar item
+            document.querySelectorAll('.bani-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.bani === baniId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Close sidebar on mobile
+            document.getElementById('baniSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('visible');
+            
+            // Show loading
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('errorState').classList.remove('visible');
+            
+            // Update page display
+            currentPage = pdfData.page || 1;
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPagesDisplay').textContent = '500+';
+            
+            // Load PDF using Google Docs Viewer
+            const encodedUrl = encodeURIComponent(pdfData.url);
+            const viewerUrl = `https://docs.google.com/gview?embedded=1&url=${encodedUrl}`;
+            
+            const pdfFrame = document.getElementById('pdfFrame');
+            pdfFrame.src = viewerUrl;
+            
+            // Hide loading after delay
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 2000);
+        }
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('baniSidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+        }
+        
+        function changePage(direction) {
+            // Google Docs viewer doesn't support programmatic page navigation
+            // Show a toast message to users
+            showToast('Use the PDF viewer controls to navigate pages');
+        }
+        
+        function zoom(delta) {
+            showToast('Use the PDF viewer zoom controls');
+        }
+        
+        function showToast(message) {
+            // Remove existing toast
+            const existing = document.querySelector('.toast-message');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                padding: 12px 20px;
+                border-radius: 12px;
+                font-size: 14px;
+                z-index: 200;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                border: 1px solid rgba(255,255,255,0.1);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+        
+        // Load on page load
+        document.addEventListener('DOMContentLoaded', loadPDF);
+    </script>
+</body>
+</html>
