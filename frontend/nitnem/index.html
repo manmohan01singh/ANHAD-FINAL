@@ -16,9 +16,23 @@
       html.setAttribute('data-theme', 'light');
       html.style.colorScheme = 'light';
     }
+    // Mark theme as ready
+    html.classList.add('theme-ready');
   } catch (e) {}
 })();
   </script>
+  <style>
+    /* Prevent FOUC - hide until theme ready */
+    html:not(.theme-ready) body { 
+      opacity: 0 !important; 
+      visibility: hidden !important;
+    }
+    html.theme-ready body { 
+      opacity: 1; 
+      visibility: visible;
+      transition: opacity 0.1s ease-out;
+    }
+  </style>
   <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
