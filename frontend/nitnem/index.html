@@ -5,7 +5,8 @@
   <script>
 (function() {
   try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
+    // Use nitnem-specific theme key for independent theme control
+    const theme = localStorage.getItem('anhad_nitnem_theme') || localStorage.getItem('anhad_theme') || 'light';
     const html = document.documentElement;
     if (theme === 'dark') {
       html.classList.add('dark', 'dark-mode');
@@ -269,7 +270,7 @@
         .skeleton-list-item { height: 90px; border-radius: 16px; }
         
         /* ═══════════════════════════════════════════════════════════════
-           BACKGROUND EFFECTS
+           BACKGROUND EFFECTS - SIMPLIFIED (No heavy animations)
         ═══════════════════════════════════════════════════════════════ */
         
         .bg-effects {
@@ -284,11 +285,9 @@
             position: absolute;
             border-radius: 50%;
             filter: var(--blur-ultra);
-            opacity: 0.5;
-            animation: orbFloat 25s ease-in-out infinite;
+            opacity: 0.3;
             will-change: transform;
             transform: translateZ(0);
-            backface-visibility: hidden;
         }
         
         .orb-1 {
@@ -305,7 +304,6 @@
             background: conic-gradient(from 120deg, var(--ios-purple), var(--ios-indigo), var(--ios-blue), var(--ios-purple));
             bottom: 10%;
             left: -200px;
-            animation-delay: -8s;
         }
         
         .orb-3 {
@@ -314,15 +312,9 @@
             background: conic-gradient(from 240deg, var(--ios-pink), var(--ios-red), var(--ios-pink));
             bottom: -100px;
             right: -50px;
-            animation-delay: -16s;
         }
         
-        @keyframes orbFloat {
-            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-            25% { transform: translate(30px, -40px) rotate(90deg) scale(1.05); }
-            50% { transform: translate(-20px, 30px) rotate(180deg) scale(0.95); }
-            75% { transform: translate(-40px, -20px) rotate(270deg) scale(1.02); }
-        }
+        /* REMOVED: orbFloat animation causing lag */
         
         .noise-overlay {
             position: absolute;
@@ -333,19 +325,14 @@
         }
         
         /* ═══════════════════════════════════════════════════════════════
-           APP CONTAINER
+           APP CONTAINER - No fade animation for instant load
         ═══════════════════════════════════════════════════════════════ */
         
         .app {
             position: relative;
             z-index: 1;
             min-height: 100vh;
-            opacity: 0;
-            animation: fadeIn 0.6s var(--ease-out) 0.3s forwards;
-        }
-        
-        @keyframes fadeIn {
-            to { opacity: 1; }
+            opacity: 1;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -449,7 +436,6 @@
             height: 180px;
             margin: 0 auto 16px;
             filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 80px rgba(255, 255, 255, 0.6));
-            animation: glowPulse 4s ease-in-out infinite;
             border-radius: 50%;
             padding: 10px;
             background: rgba(255, 255, 255, 0.15);
@@ -460,6 +446,8 @@
                 inset 0 2px 4px rgba(255, 255, 255, 0.5),
                 inset 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
+        
+        /* REMOVED: glowPulse animation causing lag */
         
         [data-theme="light"] .hero-ikonkar {
             filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.2));
@@ -486,16 +474,7 @@
             display: none;
         }
         
-        @keyframes glowPulse {
-            0%, 100% { 
-                filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 60px rgba(255, 255, 255, 0.3));
-                transform: scale(1);
-            }
-            50% { 
-                filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 100px rgba(255, 255, 255, 0.5));
-                transform: scale(1.03);
-            }
-        }
+        /* REMOVED: glowPulse keyframes causing lag */
         
         .hero-title {
             font-family: var(--font-hastlikhat);
@@ -643,27 +622,15 @@
         .section-icon { font-size: 24px; }
         
         /* ═══════════════════════════════════════════════════════════════
-           STAGGERED ANIMATIONS
+           STAGGERED ANIMATIONS - DISABLED for performance
         ═══════════════════════════════════════════════════════════════ */
         
         .stagger-item {
-            opacity: 0;
-            transform: translateY(30px);
-            animation: staggerIn 0.7s var(--ease-out) forwards;
+            opacity: 1;
+            transform: none;
         }
         
-        @keyframes staggerIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
-        .stagger-item:nth-child(2) { animation-delay: 0.15s; }
-        .stagger-item:nth-child(3) { animation-delay: 0.2s; }
-        .stagger-item:nth-child(4) { animation-delay: 0.25s; }
-        .stagger-item:nth-child(5) { animation-delay: 0.3s; }
-        .stagger-item:nth-child(6) { animation-delay: 0.35s; }
-        .stagger-item:nth-child(7) { animation-delay: 0.4s; }
-        .stagger-item:nth-child(8) { animation-delay: 0.45s; }
+        /* REMOVED: staggerIn animation causing lag */
         
         /* ═══════════════════════════════════════════════════════════════
            QUICK ACCESS GRID

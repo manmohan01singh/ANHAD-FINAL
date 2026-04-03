@@ -565,8 +565,8 @@
                 favorites: state.favorites,
                 settings: state.settings
             }));
-            // Sync theme to global key so other pages can read it
-            localStorage.setItem('anhad_theme', state.settings.theme);
+            // Save to nitnem-specific theme key for independent theme control
+            localStorage.setItem('anhad_nitnem_theme', state.settings.theme);
         } catch (e) {
             console.warn('Could not save state:', e);
         }
@@ -574,9 +574,14 @@
 
     function loadState() {
         try {
-            // First check the global anhad_theme (used by other pages)
+            // First check the nitnem-specific theme key (independent from global)
+            const nitnemTheme = localStorage.getItem('anhad_nitnem_theme');
+            // Fallback to global theme if nitnem-specific not set
             const globalTheme = localStorage.getItem('anhad_theme');
-            if (globalTheme) {
+            
+            if (nitnemTheme) {
+                state.settings.theme = nitnemTheme;
+            } else if (globalTheme) {
                 state.settings.theme = globalTheme;
             }
             
@@ -586,8 +591,8 @@
                 const data = JSON.parse(saved);
                 state.recentlyRead = data.recentlyRead || [];
                 state.favorites = data.favorites || [];
-                // Only override theme if global wasn't set
-                if (!globalTheme && data.settings) {
+                // Only override theme if no theme keys were set
+                if (!nitnemTheme && !globalTheme && data.settings) {
                     state.settings = { ...state.settings, ...data.settings };
                 }
             }
