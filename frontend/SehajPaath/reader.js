@@ -193,11 +193,14 @@ class SehajPaathReader {
             localStorage.setItem('sehajPaathHistory', JSON.stringify(history.slice(0, 100)));
             
             // ═══ SYNC WITH DASHBOARD ═══
-            // ONLY use UnifiedProgressTracker to avoid double counting
+            // Use UnifiedStats as single source of truth
+            if (window.UnifiedStats) {
+                window.UnifiedStats.recordAngRead(1);
+            }
+            // Legacy trackers for backward compatibility
             if (window.UnifiedProgressTracker) {
                 window.UnifiedProgressTracker.trackPagesRead(1);
             } else if (window.AnhadStats) {
-                // Fallback: only if UnifiedProgressTracker not available
                 window.AnhadStats.addPagesRead(1);
             }
             

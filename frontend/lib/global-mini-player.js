@@ -926,6 +926,12 @@
           console.log('[GMP] ✅ Synced', minutes, 'min to AnhadStats');
         }
         
+        // Sync to UnifiedStats (single source of truth)
+        if (window.UnifiedStats) {
+          window.UnifiedStats.recordKirtanListening(minutes);
+          console.log('[GMP] ✅ Synced', minutes, 'min to UnifiedStats');
+        }
+        
         // DIRECT: Sync to DashboardAnalytics for immediate chart update
         if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
           // First sync any pending time from other pages

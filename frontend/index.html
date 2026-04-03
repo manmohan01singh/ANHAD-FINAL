@@ -1110,7 +1110,7 @@
        MINI PLAYER — Persistent Floating Bar
   ════════════════════════════════════════════════════════════════════════ -->
   <aside class="mini-player" id="miniPlayer" aria-label="Now Playing" role="complementary">
-    <img class="mini-player__thumb" src="assets/darbar-sahib-evening.webp" alt="" width="46" height="46" loading="lazy" decoding="async">
+    <img class="mini-player__thumb" src="/assets/darbar-sahib-evening.webp" alt="" width="46" height="46" loading="lazy" decoding="async">
     <div class="mini-player__info">
       <div class="mini-player__title" id="miniTitle">
         <span class="mini-player__live-dot" aria-hidden="true"></span>Darbar Sahib Live
@@ -1171,7 +1171,7 @@
   <div class="install-banner" id="installBanner" role="alert">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
-        <img src="assets/new.webp" alt="ANHAD Logo">
+        <img src="/assets/new.webp" alt="ANHAD Logo">
       </div>
       <div class="install-banner__text">
         <div class="install-banner__title">Install ANHAD</div>
@@ -1187,6 +1187,9 @@
   <!-- ════════════════════════════════════════════════════════════════════════
        SCRIPTS — Critical path first, non-critical lazy-loaded
   ════════════════════════════════════════════════════════════════════════ -->
+  <!-- Critical: Unified Stats System (Single Source of Truth) -->
+  <script src="lib/unified-stats.js"></script>
+  
   <!-- Critical: fetch timeout utility — must load before any module that calls fetch() -->
   <script src="lib/fetch-utils.js"></script>
   <!-- Critical: bfcache recovery — must load first to clean stuck states on back-button -->

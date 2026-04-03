@@ -1136,6 +1136,12 @@
             if (window.AnhadStats && typeof window.AnhadStats.addNitnemCompleted === 'function') {
                 window.AnhadStats.addNitnemCompleted(1);
             }
+            // Unified Stats - record bani name and completion
+            if (window.UnifiedStats) {
+                const baniName = state.baniMeta?.nameEnglish || 'Bani';
+                window.UnifiedStats.recordNitnemBani(baniName);
+                window.UnifiedStats.recordNitnemComplete();
+            }
         }
 
         // Scroll top button

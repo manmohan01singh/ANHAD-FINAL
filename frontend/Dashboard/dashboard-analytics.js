@@ -17,7 +17,21 @@
     const MAX_DAYS = 7;
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // DATA MANAGEMENT
+    // INTEGRATION WITH UNIFIED STATS (Single Source of Truth)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    function syncWithUnifiedStats() {
+        // UnifiedStats is now the single source of truth
+        // Just render what we get from it
+        if (window.UnifiedStats) {
+            const allStats = window.UnifiedStats.getAllStats();
+            console.log('[Analytics] Synced with UnifiedStats:', allStats.today);
+            renderChart();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DATA MANAGEMENT - Now delegates to UnifiedStats
     // ═══════════════════════════════════════════════════════════════════════════
 
     function getTodayString() {
@@ -37,6 +51,24 @@
     }
 
     function getAnalyticsData() {
+        // Get from UnifiedStats if available
+        if (window.UnifiedStats) {
+            const allStats = window.UnifiedStats.getAllStats();
+            const data = {};
+            
+            // Convert UnifiedStats format to analytics format
+            allStats.last7Days.forEach(day => {
+                data[day.date] = {
+                    readPages: day.angRead || 0,
+                    listenMinutes: day.kirtanMinutes || 0,
+                    nitnemCount: day.nitnemComplete ? 1 : 0
+                };
+            });
+            
+            return data;
+        }
+        
+        // Fallback to legacy localStorage
         try {
             const stored = localStorage.getItem(ANALYTICS_KEY);
             return stored ? JSON.parse(stored) : {};
@@ -46,7 +78,9 @@
         }
     }
 
+    // Legacy save function - now updates through UnifiedStats
     function saveAnalyticsData(data) {
+        // Data is now saved via UnifiedStats, this is just for backward compatibility
         try {
             localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data));
         } catch (e) {
@@ -54,28 +88,21 @@
         }
     }
 
+    // Legacy update function - now routes to UnifiedStats
     function updateDailyData(type, value) {
-        const today = getTodayString();
-        const data = getAnalyticsData();
-
-        if (!data[today]) {
-            data[today] = {
-                readPages: 0,
-                listenMinutes: 0,
-                nitnemCount: 0
-            };
+        if (!window.UnifiedStats) {
+            console.warn('[Analytics] UnifiedStats not available');
+            return;
         }
-
+        
         if (type === 'read') {
-            data[today].readPages += value;
+            window.UnifiedStats.recordAngRead(value);
         } else if (type === 'listen') {
-            data[today].listenMinutes += value;
+            window.UnifiedStats.recordKirtanListening(value);
         } else if (type === 'nitnem') {
-            data[today].nitnemCount += value;
+            window.UnifiedStats.recordNitnemComplete();
         }
-
-        saveAnalyticsData(data);
-        console.log(`[Analytics] updateDailyData: ${type} +${value}, today=${today}, data=`, data[today]);
+        
         renderChart();
     }
 

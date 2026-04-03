@@ -1323,7 +1323,7 @@
       if (miniSubtitle) miniSubtitle.textContent = info.subtitle;
       if (miniPlayIcon) miniPlayIcon.innerHTML = isPlaying ? pauseIcon : playIcon;
       if (miniThumb) {
-        miniThumb.src = stream === 'amritvela' ? 'assets/Darbar-sahib-AMRITVELA.webp' : 'assets/darbar-sahib-evening.webp';
+        miniThumb.src = stream === 'amritvela' ? '/assets/Darbar-sahib-AMRITVELA.webp' : '/assets/darbar-sahib-evening.webp';
         miniThumb.alt = info.title;
       }
     }
