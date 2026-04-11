@@ -1013,3 +1013,666 @@ html.dark-mode .report-insight,
         -6px -6px 16px rgba(255,255,255,0.03),
         inset 2px 2px 4px rgba(255,255,255,0.05) !important;
 }
+
+/* ─── SECTION 26: ALARM COLLAPSIBLE ─── */
+.alarm-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.alarm-toggle-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.2s;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.alarm-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--text-secondary, #666);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.alarm-toggle-btn.rotated svg {
+    transform: rotate(180deg);
+}
+
+html.dark-mode .alarm-toggle-btn,
+[data-theme="dark"] .alarm-toggle-btn {
+    background: rgba(255,255,255,0.08);
+}
+
+.alarm-collapsed-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px 12px;
+    font-size: 13px;
+    transition: opacity 0.25s, max-height 0.3s;
+}
+
+.alarm-collapsed-summary .alarm-summary-stat {
+    font-weight: 700;
+    color: var(--system-blue, #007AFF);
+    font-size: 14px;
+}
+
+.alarm-collapsed-summary .alarm-summary-label {
+    color: var(--text-tertiary, #86868b);
+    font-size: 12px;
+}
+
+.alarm-collapsed-summary .alarm-summary-divider {
+    color: var(--text-tertiary, #86868b);
+    margin: 0 2px;
+}
+
+.alarm-body {
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1),
+                opacity 0.25s cubic-bezier(0.4,0,0.2,1),
+                padding 0.3s cubic-bezier(0.4,0,0.2,1);
+    overflow: hidden;
+}
+
+.alarm-body.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    pointer-events: none;
+}
+
+.alarm-body.expanded {
+    max-height: 2000px;
+    opacity: 1;
+}
+
+.alarm-collapsed-summary.hidden {
+    max-height: 0;
+    opacity: 0;
+    padding: 0 16px;
+    overflow: hidden;
+}
+
+/* ─── SECTION 27: MALA MENU PERFORMANCE ─── */
+.mala-menu-overlay {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(0,0,0,0.4) !important;
+}
+
+.mala-menu-overlay.pre-rendered {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.15s ease-out;
+}
+
+.mala-menu-overlay.pre-rendered.visible {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 1;
+}
+
+.mala-menu-overlay.pre-rendered .mala-menu {
+    transform: translateY(100%);
+    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+.mala-menu-overlay.pre-rendered.visible .mala-menu {
+    transform: translateY(0);
+}
+
+/* ─── SECTION 28: WEEK VIEW STICKY + SCROLL ─── */
+.week-attendance-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px;
+    padding-bottom: 8px;
+}
+
+.week-attendance-grid .week-day-card {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    min-width: 72px;
+}
+
+.week-summary {
+    position: sticky !important;
+    bottom: 0;
+    background: var(--glass-bg, rgba(255,255,255,0.9));
+    padding-top: 12px;
+    border-top: 1px solid var(--glass-border, rgba(0,0,0,0.08));
+    z-index: 2;
+}
+
+html.dark-mode .week-summary,
+[data-theme="dark"] .week-summary {
+    background: var(--glass-bg, rgba(44,44,46,0.95));
+}
+
+/* ─── SECTION 29: YESTERDAY BUTTON ─── */
+.yesterday-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(0,0,0,0.03);
+    color: var(--system-blue, #007AFF);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+}
+
+.yesterday-btn:active {
+    transform: scale(0.95);
+    background: rgba(0,122,255,0.08);
+}
+
+html.dark-mode .yesterday-btn,
+[data-theme="dark"] .yesterday-btn {
+    border-color: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+}
+
+/* Date strip popup */
+.date-strip-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.date-strip-container {
+    width: 100%;
+    max-width: 420px;
+    max-height: 80vh;
+    background: var(--glass-bg, #fff);
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+    animation: slideUp 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+
+html.dark-mode .date-strip-container,
+[data-theme="dark"] .date-strip-container {
+    background: #1c1c1e;
+}
+
+.date-strip-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+html.dark-mode .date-strip-header,
+[data-theme="dark"] .date-strip-header {
+    border-color: rgba(255,255,255,0.08);
+}
+
+.date-strip-header h3 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.date-strip-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.06);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.date-strip-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 16px 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.date-chip {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.06);
+    background: rgba(0,0,0,0.02);
+    cursor: pointer;
+    scroll-snap-align: center;
+    min-width: 56px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.date-chip:active,
+.date-chip.selected {
+    background: rgba(0,122,255,0.1);
+    border-color: var(--system-blue, #007AFF);
+}
+
+.date-chip .chip-day {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.date-chip .chip-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.date-chip .chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--system-green, #34C759);
+}
+
+.date-chip .chip-dot.incomplete {
+    background: var(--system-red, #FF3B30);
+}
+
+.date-chip .chip-dot.none {
+    background: transparent;
+}
+
+html.dark-mode .date-chip,
+[data-theme="dark"] .date-chip {
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+}
+
+/* Day detail modal */
+.day-detail-body {
+    padding: 16px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.day-detail-card {
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+html.dark-mode .day-detail-card,
+[data-theme="dark"] .day-detail-card {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.08);
+}
+
+.day-detail-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: var(--text-secondary);
+}
+
+.day-detail-card .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+.day-detail-card .detail-value {
+    font-weight: 600;
+}
+
+.day-detail-card .detail-value.complete {
+    color: var(--system-green, #34C759);
+}
+
+.day-detail-card .detail-value.incomplete {
+    color: var(--system-red, #FF3B30);
+}
+
+/* ─── SECTION 30: JAPTAP STREAK PENALTY VISUAL ─── */
+.streak-fire.penalty-active .fire-emoji {
+    filter: hue-rotate(200deg) saturate(1.5);
+}
+
+.streak-fire.penalty-active .streak-count {
+    color: #5AC8FA !important;
+}
+
+/* ─── SECTION 31: CARRY-FORWARD BADGE ─── */
+.bani-carry-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: rgba(255,149,0,0.12);
+    color: #FF9500;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+/* ═══ Yesterday Button ═══ */
+.yesterday-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border: 1px solid var(--glass-border, rgba(0,0,0,0.08));
+    border-radius: 16px;
+    background: var(--glass-bg, rgba(255,255,255,0.6));
+    color: var(--text-secondary, #666);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: 8px;
+}
+.yesterday-btn:active {
+    background: var(--accent, #007AFF);
+    color: #fff;
+}
+
+/* ═══ Date Strip Overlay ═══ */
+.date-strip-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.15s ease;
+}
+.date-strip-container {
+    width: 100%;
+    max-width: 480px;
+    background: var(--glass-bg, #fff);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 12px 24px;
+    animation: slideUp 0.2s ease;
+}
+.date-strip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 12px;
+}
+.date-strip-header h3 { margin: 0; font-size: 16px; }
+.date-strip-close {
+    background: none; border: none; font-size: 22px;
+    color: var(--text-tertiary); cursor: pointer;
+}
+.date-strip-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+.date-strip-scroll::-webkit-scrollbar { display: none; }
+
+/* ═══ Date Chips ═══ */
+.date-chip {
+    flex-shrink: 0;
+    min-width: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 6px 10px;
+    border-radius: 14px;
+    background: var(--card-bg, rgba(255,255,255,0.7));
+    border: 1px solid var(--glass-border, rgba(0,0,0,0.06));
+    cursor: pointer;
+    scroll-snap-align: start;
+    transition: background 0.15s, transform 0.1s;
+}
+.date-chip:active { transform: scale(0.95); background: var(--accent-bg, rgba(0,122,255,0.1)); }
+.chip-day { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; }
+.chip-num { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.chip-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #34C759;
+}
+.chip-dot.incomplete { background: #FF9500; }
+.chip-dot.none { background: var(--text-tertiary, #ccc); opacity: 0.3; }
+
+/* ═══ Stacked Day Detail Overlay (above date strip) ═══ */
+.day-detail-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.day-detail-modal {
+    width: 90%;
+    max-width: 400px;
+    max-height: 70vh;
+    background: var(--glass-bg, #fff);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+}
+
+.day-detail-modal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    flex-shrink: 0;
+}
+
+.day-detail-modal .modal-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.day-detail-modal .modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0,0,0,0.06);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+}
+
+.day-detail-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ═══ Day Detail Card ═══ */
+.day-detail-card {
+    background: var(--card-bg, rgba(255,255,255,0.7));
+    border: 1px solid var(--glass-border, rgba(0,0,0,0.06));
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+html.dark-mode .day-detail-modal,
+[data-theme="dark"] .day-detail-modal {
+    background: #1c1c1e;
+}
+
+.day-detail-card h4 { margin: 0 0 8px; font-size: 14px; }
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+.detail-value { font-weight: 600; }
+.detail-value.complete { color: #34C759; }
+.detail-value.incomplete { color: #FF3B30; }
+
+/* ═══ Pre-rendered Mala Menu ═══ */
+.mala-menu-overlay.pre-rendered {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.4);
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.mala-menu-overlay.pre-rendered.visible {
+    opacity: 1;
+}
+
+/* ═══ 90 FPS Performance Optimizations ═══ */
+
+/* GPU acceleration for animated elements */
+.progress-ring-circle,
+.bead,
+.modal-container,
+.date-strip-container,
+.mala-menu,
+.week-day-card,
+.chart-bar .bar-fill,
+.goal-fill,
+.wake-bar-fill {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Containment for isolated components */
+.card,
+.modal-overlay,
+.date-strip-overlay,
+.mala-menu-overlay,
+.week-attendance-grid {
+    contain: layout style;
+}
+
+/* Content visibility for off-screen sections */
+@media (prefers-reduced-motion: no-preference) {
+    .report-content:not(.active),
+    .collapsible-content.collapsed {
+        content-visibility: auto;
+        contain-intrinsic-size: 0 300px;
+    }
+}
+
+/* Smooth scrolling with momentum */
+.date-strip-scroll,
+.week-attendance-grid {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+/* Reduce paint areas */
+.bani-item,
+.week-day-card,
+.date-chip {
+    contain: layout;
+}
+
+/* Optimized transitions for 90 FPS */
+.bar-fill,
+.goal-fill,
+.wake-bar-fill,
+.progress-ring-circle {
+    transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                stroke-dashoffset 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .progress-ring-circle,
+    .bead,
+    .modal-container {
+        will-change: auto;
+    }
+}

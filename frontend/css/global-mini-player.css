@@ -372,3 +372,157 @@ body.dark-mode .gmp__sub,
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   VIEW TRANSITIONS — Persistent Mini Player During Navigation
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Mark mini player for view transition */
+#gmp {
+  view-transition-name: mini-player;
+}
+
+/* Hide the old snapshot of mini player (we want the real element) */
+::view-transition-old(mini-player) {
+  animation: none;
+  display: none;
+}
+
+/* Show new snapshot instantly without animation */
+::view-transition-new(mini-player) {
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INSTANT VISIBILITY — Show immediately on page load if audio was playing
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* When body has this class, force mini player visible immediately */
+body.gmp-should-be-visible #gmp {
+  display: flex !important;
+}
+
+/* Prevent flash of hidden mini player on load */
+#gmp {
+  /* Start with opacity 0 but still in layout for instant fade-in */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+#gmp.gmp--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quick fade in animation for smooth appearance */
+@keyframes gmp-quick-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#gmp.gmp--visible.gmp--animate-in {
+  animation: gmp-quick-fade-in 0.2s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LOADING STATE — Spinner animation while audio buffers
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Loading overlay on artwork */
+.gmp__loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 14px;
+  backdrop-filter: blur(2px);
+}
+
+.gmp__loading-overlay.active {
+  display: flex;
+}
+
+/* Spinner animation */
+.gmp__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: gmp-spin 0.8s linear infinite;
+}
+
+@keyframes gmp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Button spinner (inside play button) */
+.gmp__btn-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: gmp-spin 0.8s linear infinite;
+}
+
+.gmp__btn--play .gmp__btn-spinner {
+  border-top-color: #fff;
+}
+
+body.dark-mode .gmp__btn-spinner,
+[data-theme="dark"] .gmp__btn-spinner {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+}
+
+/* Loading text indicator */
+.gmp__loading-text {
+  font-size: 11px;
+  color: rgba(60, 60, 67, 0.6);
+  margin-top: 2px;
+  display: none;
+}
+
+.gmp--loading .gmp__loading-text {
+  display: block;
+}
+
+body.dark-mode .gmp__loading-text,
+[data-theme="dark"] .gmp__loading-text {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Artwork position for overlay */
+.gmp__art {
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION TRANSITION STATE
+   Keep mini player visible during view transitions
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+::view-transition-group(mini-player) {
+  animation-duration: 0ms;
+}
+
+/* Ensure mini player stays above transition overlay */
+html::view-transition {
+  z-index: 2147483647;
+}
+
+/* Hide default view transition background for seamless feel */
+::view-transition-image-wrapper(mini-player) {
+  isolation: auto;
+}

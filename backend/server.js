@@ -931,6 +931,9 @@ app.use('/api/banidb', async (req, res) => {
 // STATIC FILES - MUST be after all API routes
 // ═══════════════════════════════════════════════════════════════════
 
+// Serve OPPO weather assets (shaders, textures, etc.)
+app.use('/weather-assets', express.static(path.join(__dirname, '..', 'assets')));
+
 // Serve entire frontend folder
 app.use(express.static(CONFIG.FRONTEND_ROOT));
 

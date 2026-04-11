@@ -63,6 +63,7 @@
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>
     <script src="../js/anhad-core.js" defer></script>
 
@@ -411,6 +412,10 @@
                         <h2 class="card-title">ਅੱਜ ਦਾ ਨਿਤਨੇਮ</h2>
                         <p class="card-subtitle">Today's Nitnem</p>
                     </div>
+                    <button class="yesterday-btn" id="yesterdayBtn" onclick="DateHistoryView.show()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M15 18l-6-6 6-6"/></svg>
+                        Yesterday
+                    </button>
                     <div class="progress-ring-mini" id="progressRingMini">
                         <svg viewBox="0 0 36 36">
                             <circle class="progress-ring-bg" cx="18" cy="18" r="15" />
@@ -632,16 +637,32 @@
                         <h2 class="card-title">ਅਲਾਰਮ ਪਾਲਣਾ</h2>
                         <p class="card-subtitle">Alarm Obedience</p>
                     </div>
-                    <button class="link-reminders-btn" id="linkRemindersBtn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-                        </svg>
-                        <span>Link</span>
-                    </button>
+                    <div class="alarm-header-actions">
+                        <button class="link-reminders-btn" id="linkRemindersBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                            </svg>
+                            <span>Link</span>
+                        </button>
+                        <button class="alarm-toggle-btn" id="alarmToggleBtn" aria-label="Toggle alarm section">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="card-body alarm-body">
+                <!-- Collapsed summary (visible when collapsed) -->
+                <div class="alarm-collapsed-summary" id="alarmCollapsedSummary">
+                    <span class="alarm-summary-stat" id="alarmSummaryRate">0%</span>
+                    <span class="alarm-summary-label">Obedience Rate</span>
+                    <span class="alarm-summary-divider">·</span>
+                    <span class="alarm-summary-stat" id="alarmSummaryResponded">0</span>
+                    <span class="alarm-summary-label">Responded</span>
+                </div>
+
+                <div class="card-body alarm-body collapsed" id="alarmBody">
                     <!-- Weekly Calendar View -->
                     <div class="alarm-week-view" id="alarmWeekView">
                         <div class="week-header">
@@ -657,8 +678,10 @@
                                 </svg>
                             </button>
                         </div>
-                        <div class="week-days" id="weekDays">
-                            <!-- Days generated via JS -->
+                        <div class="week-days-scroll-container">
+                            <div class="week-days" id="weekDays">
+                                <!-- Days generated via JS -->
+                            </div>
                         </div>
                     </div>
 

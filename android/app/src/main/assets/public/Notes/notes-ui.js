@@ -215,7 +215,7 @@ class NotesUI {
     // ═══════════════════════════════════════════════════════════════
 
     initTheme() {
-        const savedTheme = localStorage.getItem('gurbani_notes_theme') || 'dark';
+        const savedTheme = localStorage.getItem('anhad_theme') || 'dark';
         this.setTheme(savedTheme);
     }
 
@@ -223,7 +223,7 @@ class NotesUI {
         const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         this.setTheme(newTheme);
-        localStorage.setItem('gurbani_notes_theme', newTheme);
+        localStorage.setItem('anhad_theme', newTheme);
         this.showToast(`${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)} mode enabled`);
     }
 

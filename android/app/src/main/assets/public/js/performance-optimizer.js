@@ -80,7 +80,7 @@
      */
     let liquidGlassTicking = false;
     let lastLiquidUpdate = 0;
-    const LIQUID_UPDATE_INTERVAL = 50; // Update every 50ms instead of every frame
+    const LIQUID_UPDATE_INTERVAL = 100; // Update every 100ms instead of every frame
 
     function updateLiquidGlassOptimized() {
         const now = performance.now();
@@ -124,10 +124,33 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
+    // UTILITY FUNCTIONS
+    // ═══════════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Debounce function to prevent rapid callback execution
+     * @param {Function} func - Function to debounce
+     * @param {number} wait - Delay in milliseconds
+     * @returns {Function} Debounced function
+     */
+    function debounce(func, wait = 100) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
     // INTERSECTION OBSERVER FOR OFF-SCREEN ANIMATIONS
     // ═══════════════════════════════════════════════════════════════════════════════
 
     let animationObserver = null;
+    let observedElements = new WeakSet();
 
     function initIntersectionPausing() {
         if (!CONFIG.enableIntersectionPausing || !window.IntersectionObserver) return;
@@ -146,22 +169,40 @@
 
         if (animatedElements.length === 0) return;
 
-        animationObserver = new IntersectionObserver((entries) => {
+        // Debounced callback to prevent rapid state changes during scroll bounce
+        const debouncedCallback = debounce((entries) => {
             entries.forEach(entry => {
                 const element = entry.target;
-                if (entry.isIntersecting) {
+                // Only pause when completely off-screen to prevent flickering
+                if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
                     element.style.animationPlayState = 'running';
-                } else {
+                } else if (!entry.isIntersecting && entry.boundingClientRect.top > window.innerHeight) {
+                    // Only pause if element is below viewport (not above - momentum scroll may bring it back)
                     element.style.animationPlayState = 'paused';
                 }
             });
-        }, {
+        }, 150); // 150ms debounce prevents rapid state changes
+
+        animationObserver = new IntersectionObserver(debouncedCallback, {
             root: null,
-            rootMargin: '50px',  // Start animation slightly before visible
-            threshold: 0
+            rootMargin: '100px', // Increased buffer to prevent flickering
+            threshold: [0, 0.1, 0.5, 1] // Multiple thresholds for smooth transitions
         });
 
-        animatedElements.forEach(el => animationObserver.observe(el));
+        animatedElements.forEach(el => {
+            if (!observedElements.has(el)) {
+                observedElements.add(el);
+                animationObserver.observe(el);
+            }
+        });
+        
+        // Cleanup on pagehide
+        window.addEventListener('pagehide', () => {
+            if (animationObserver) {
+                animationObserver.disconnect();
+                animationObserver = null;
+            }
+        }, { once: true });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -192,6 +233,8 @@
                 el.style.transform = 'translateZ(0)';
             }
             el.style.isolation = 'isolate';
+            // Add CSS containment for better performance
+            el.style.contain = 'layout style paint';
         });
     }
 

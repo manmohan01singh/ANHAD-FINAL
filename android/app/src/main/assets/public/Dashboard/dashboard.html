@@ -6,17 +6,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#FAF8F5">
+  <meta name="color-scheme" content="light dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+    }
+  } catch (e) {}
+})();
+  </script>
   
   <title>Dashboard • ANHAD</title>
   <link rel="icon" type="image/png" href="../favicon.ico">
   
   <!-- Global Theme (must be first!) -->
   <script src="../lib/global-theme.js"></script>
+  <script src="../lib/unified-stats.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/native-audio-bridge.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
   <script src="../lib/global-mini-player.js" defer></script>
   <script src="../js/anhad-core.js" defer></script>
   
@@ -26,6 +49,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
   <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="dashboard-graph-enhanced.css">
 </head>
 <body>
   <div class="top-nav-orb"></div>
@@ -169,7 +193,10 @@
   
   <!-- Scripts -->
   <script src="../lib/user-stats.js"></script>
+  <script src="../lib/unified-progress-tracker.js"></script>
+  <script src="../lib/kirtan-listening-tracker.js"></script>
   <script src="dashboard-analytics.js"></script>
+  <script src="dashboard-complete-fix.js"></script>
   <script>
     (function() {
       'use strict';
@@ -208,11 +235,45 @@
           naamAbhyas: { icon: 'fas fa-om', label: 'Naam Simran', color: 'purple', unit: 'session' }
         };
         
+        // Get Nitnem progress for better display
+        const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+        const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{"amritvela":[],"rehras":[],"sohila":[]}');
+        const today = new Date().toLocaleDateString('en-CA');
+        const totalBanis = (selectedBanis.amritvela?.length || 0) + (selectedBanis.rehras?.length || 0) + (selectedBanis.sohila?.length || 0);
+        const todayLog = nitnemLog[today];
+        let completedBanis = 0;
+        if (todayLog) {
+          completedBanis = (todayLog.amritvela?.length || 0) + (todayLog.rehras?.length || 0) + (todayLog.sohila?.length || 0);
+        }
+        
+        // Check if Nitnem is fully complete (all selected banis done)
+        const isNitnemComplete = totalBanis > 0 && completedBanis === totalBanis;
+        
         container.innerHTML = Object.entries(goals)
           .filter(([_, goal]) => goal.enabled)
           .map(([key, goal]) => {
             const config = goalConfig[key];
-            const isComplete = goal.complete;
+            
+            // For Nitnem, override with actual completion status
+            let isComplete = goal.complete;
+            if (key === 'completeNitnem') {
+              isComplete = isNitnemComplete;
+            }
+            
+            // Calculate percentage properly
+            let percent = 0;
+            if (goal.target > 0) {
+              percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
+            }
+            
+            // Special handling for Nitnem to show X/Y banis
+            let statusText = `${goal.current}/${goal.target} ${config.unit}`;
+            if (key === 'completeNitnem' && totalBanis > 0) {
+              statusText = `${completedBanis}/${totalBanis} banis`;
+              // Recalculate percentage for Nitnem based on actual banis
+              percent = totalBanis > 0 ? Math.min(100, Math.round((completedBanis / totalBanis) * 100)) : 0;
+            }
+            
             return `
               <div class="goal-card ${isComplete ? 'goal-card--complete' : ''}">
                 <div class="goal-card__icon bg-${config.color}">
@@ -221,10 +282,10 @@
                 <div class="goal-card__content">
                   <div class="goal-card__header-row">
                     <div class="goal-card__title">${config.label}</div>
-                    <div class="goal-card__status">${goal.current}/${goal.target} ${config.unit}</div>
+                    <div class="goal-card__status">${statusText}</div>
                   </div>
                   <div class="goal-card__progress-wrap">
-                    <div class="goal-card__fill bg-${config.color}" style="width: ${goal.percent}%"></div>
+                    <div class="goal-card__fill bg-${config.color}" style="width: ${percent}%"></div>
                   </div>
                 </div>
                 ${isComplete ? '<div class="goal-card__check"><i class="fas fa-check"></i></div>' : ''}
@@ -355,6 +416,31 @@
       
       // Listen for Nitnem updates
       window.addEventListener('nitnemUpdated', renderNitnemProgressChart);
+      
+      // TEST: Manual kirtan tracking test - press K to add 1 minute
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'k' || e.key === 'K') {
+          console.log('[Test] Adding 1 minute of kirtan listening...');
+          
+          // Direct sync to DashboardAnalytics
+          if (window.DashboardAnalytics) {
+            window.DashboardAnalytics.updateDailyData('listen', 1);
+            console.log('[Test] ✅ Synced to DashboardAnalytics');
+          }
+          
+          // Also update goals
+          if (window.AnhadStats) {
+            window.AnhadStats.addListeningTime(1);
+            console.log('[Test] ✅ Synced to AnhadStats');
+          }
+          
+          // Force refresh
+          window.dispatchEvent(new CustomEvent('statsUpdated'));
+          window.dispatchEvent(new CustomEvent('dashboardRefresh'));
+          
+          alert('✅ Added 1 minute of kirtan! Check graph and progress card.');
+        }
+      });
     })();
   </script>
   

@@ -23,12 +23,11 @@ class AudioManager {
         // Pre-define available sounds
         this.soundPaths = {
             'gentle-bell': 'assets/sounds/gentle-bell.mp3',
-            'tibetan-bowl': 'assets/sounds/tibetan-bowl.mp3',
             'soft-chime': 'assets/sounds/soft-chime.mp3',
-            'om-sound': 'assets/sounds/om-sound.mp3',
             'start-bell': 'assets/sounds/start-bell.mp3',
             'end-bell': 'assets/sounds/end-bell.mp3',
-            'ambient-waheguru': 'assets/sounds/ambient-waheguru.mp3'
+            'ambient-waheguru': 'assets/sounds/ambient-waheguru.mp3',
+            'vaheguru-jaap': 'assets/sounds/vaheguru-jaap.mp3'
         };
 
         // Initialize Audio Context on first user interaction
@@ -226,16 +225,19 @@ class AudioManager {
      * @param {number} volume - Volume for ambient sound
      */
     async playAmbient(volume = 0.3) {
-        return await this.play('ambient-waheguru', {
-            volume,
-            loop: true
-        });
+        // Try dedicated vaheguru-jaap first, fallback to ambient-waheguru
+        let audio = await this.play('vaheguru-jaap', { volume, loop: true });
+        if (!audio) {
+            audio = await this.play('ambient-waheguru', { volume, loop: true });
+        }
+        return audio;
     }
 
     /**
      * Stop ambient sound
      */
     stopAmbient() {
+        this.stop('vaheguru-jaap');
         this.stop('ambient-waheguru');
     }
 

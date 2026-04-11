@@ -697,6 +697,7 @@ html.dark-mode .chart-body {
 .chart-bar {
   flex: 1;
   min-height: 8px;
+  max-height: 144px; /* 90% of 160px container to prevent overflow */
   border-radius: 6px 6px 0 0;
   position: relative;
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);

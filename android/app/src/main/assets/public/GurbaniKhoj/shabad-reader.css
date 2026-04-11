@@ -40,11 +40,11 @@
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-    /* Orbs */
-    --orb-1: rgba(255, 180, 100, 0.4);
-    --orb-2: rgba(150, 200, 255, 0.35);
-    --orb-3: rgba(255, 150, 180, 0.3);
-    --orb-4: rgba(180, 255, 200, 0.25);
+    /* Orbs - Minimal iOS inspired */
+    --orb-1: rgba(0, 122, 255, 0.1);
+    --orb-2: rgba(255, 45, 85, 0.08);
+    --orb-3: rgba(175, 82, 222, 0.08);
+    --orb-4: rgba(52, 199, 89, 0.06);
 
     /* Font */
     --font-gurmukhi: 'Raavi', 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
@@ -92,6 +92,17 @@
     --orb-2: rgba(50, 150, 200, 0.3);
     --orb-3: rgba(200, 80, 150, 0.25);
     --orb-4: rgba(80, 200, 150, 0.2);
+
+    /* ═══ DARK MODE CLAYMORPHISM - No white glow ═══ */
+    --clay-outer: 8px 8px 20px rgba(0, 0, 0, 0.5),
+                  -4px -4px 12px rgba(40, 40, 50, 0.3),
+                  inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --clay-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.4),
+                  inset -2px -2px 6px rgba(50, 50, 60, 0.2);
+    --clay-outer-sm: 4px 4px 12px rgba(0, 0, 0, 0.4),
+                     -2px -2px 8px rgba(40, 40, 50, 0.25);
+    --clay-inner-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.35),
+                     inset -2px -2px 4px rgba(50, 50, 60, 0.15);
 }
 
 /* Font Variants */
@@ -428,10 +439,16 @@ body {
     border-radius: var(--radius);
     text-align: center;
     transition: all 0.3s ease;
-    background: var(--bg);
+    background: var(--surface-solid);
     border: 1px solid var(--border);
     /* Claymorphism */
     box-shadow: var(--clay-outer-sm);
+}
+
+/* Dark mode: use solid bg to block orb blur, lighter border for depth */
+[data-theme="dark"] .shabad-line {
+    background: var(--bg-soft);
+    border-color: rgba(255, 255, 255, 0.06);
 }
 
 .shabad-line:hover {
@@ -446,6 +463,12 @@ body {
     animation: highlightPulse 2s ease-in-out infinite;
 }
 
+[data-theme="dark"] .shabad-line.highlighted {
+    background: rgba(255, 214, 10, 0.15);
+    box-shadow: 0 8px 32px rgba(255, 214, 10, 0.15);
+    animation: highlightPulseDark 2s ease-in-out infinite;
+}
+
 @keyframes highlightPulse {
 
     0%,
@@ -455,6 +478,15 @@ body {
 
     50% {
         box-shadow: 0 8px 48px rgba(184, 134, 11, 0.35);
+    }
+}
+
+@keyframes highlightPulseDark {
+    0%, 100% {
+        box-shadow: 0 8px 32px rgba(255, 214, 10, 0.15);
+    }
+    50% {
+        box-shadow: 0 8px 48px rgba(255, 214, 10, 0.25);
     }
 }
 

@@ -356,6 +356,12 @@ class RitualEngine {
         if (activeState) activeState.classList.remove('hidden');
         if (completionState) completionState.classList.add('hidden');
 
+        // Pause heavy background animations for performance
+        const canvas = document.getElementById('cosmosCanvas');
+        if (canvas) canvas.style.display = 'none';
+        const starsField = document.getElementById('starsField');
+        if (starsField) starsField.style.animationPlayState = 'paused';
+
         // Update time range display
         const timeRange = document.getElementById('ritualTimeRange');
         if (timeRange && this.currentSession) {
@@ -377,6 +383,13 @@ class RitualEngine {
 
         // Play session start sound
         this.playBeep('start');
+
+        // Auto-play Vaheguru Jaap in background during session
+        if (this.app?.audioManager) {
+            this.app.audioManager.playAmbient(0.25).then(() => {
+                console.log('[RitualEngine] Vaheguru Jaap started');
+            }).catch(e => console.log('[RitualEngine] Vaheguru Jaap failed:', e));
+        }
 
         // Vibrate if enabled
         if (this.app?.config?.notifications?.vibration && navigator.vibrate) {
@@ -691,10 +704,119 @@ class RitualEngine {
         // Update stats
         this.updateCompletionStats();
 
-        // Auto-close after 3 seconds
+        // Trigger completion celebration animation
+        this.triggerCompletionCelebration();
+
+        // Auto-close after 5 seconds (extended for celebration)
         this.autoCloseTimeout = setTimeout(() => {
             this.continueDay();
-        }, 3000);
+        }, 5000);
+    }
+
+    /**
+     * Trigger golden particle celebration animation
+     */
+    triggerCompletionCelebration() {
+        const overlay = document.getElementById('ritualOverlay');
+        if (!overlay) return;
+
+        // Create celebration container
+        const celebration = document.createElement('div');
+        celebration.className = 'completion-celebration';
+        celebration.innerHTML = `
+            <div class="celebration-waheguru">ਵਾਹਿਗੁਰੂ</div>
+            <div class="celebration-particles"></div>
+        `;
+        overlay.appendChild(celebration);
+
+        // Create golden particles
+        const particlesContainer = celebration.querySelector('.celebration-particles');
+        const colors = ['#FFD700', '#FFA500', '#FFDF00', '#F0E68C', '#FFF8DC'];
+
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'celebration-particle';
+
+            const angle = (Math.random() * 360) * (Math.PI / 180);
+            const distance = 80 + Math.random() * 120;
+            const endX = Math.cos(angle) * distance;
+            const endY = Math.sin(angle) * distance;
+            const size = 4 + Math.random() * 8;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            particle.style.cssText = `
+                position: absolute;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border-radius: 50%;
+                box-shadow: 0 0 ${size * 2}px ${color};
+                left: 50%;
+                top: 50%;
+                animation: particleBurst 1.5s ease-out forwards;
+                animation-delay: ${Math.random() * 0.3}s;
+                --endX: ${endX}px;
+                --endY: ${endY}px;
+            `;
+
+            particlesContainer.appendChild(particle);
+        }
+
+        // Add celebration styles if not already added
+        if (!document.getElementById('celebration-styles')) {
+            const styles = document.createElement('style');
+            styles.id = 'celebration-styles';
+            styles.textContent = `
+                .completion-celebration {
+                    position: fixed;
+                    inset: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    pointer-events: none;
+                    z-index: 10000;
+                }
+                .celebration-waheguru {
+                    font-size: 2.5rem;
+                    font-weight: 700;
+                    color: #FFD700;
+                    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8),
+                                 0 0 60px rgba(255, 215, 0, 0.4);
+                    animation: waheguruAppear 0.8s ease-out forwards;
+                    opacity: 0;
+                    transform: scale(0.5);
+                }
+                .celebration-particles {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                }
+                .celebration-particle {
+                    opacity: 0;
+                }
+                @keyframes waheguruAppear {
+                    0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+                    50% { opacity: 1; transform: scale(1.1) translateY(-10px); }
+                    100% { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                @keyframes particleBurst {
+                    0% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(0);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(calc(-50% + var(--endX)), calc(-50% + var(--endY))) scale(1);
+                    }
+                }
+            `;
+            document.head.appendChild(styles);
+        }
+
+        // Cleanup celebration after animation
+        setTimeout(() => {
+            celebration.remove();
+        }, 2000);
     }
 
     /**
@@ -766,6 +888,16 @@ class RitualEngine {
             clearTimeout(this.autoCloseTimeout);
             this.autoCloseTimeout = null;
         }
+        // Stop Vaheguru Jaap ambient audio
+        if (this.app?.audioManager) {
+            this.app.audioManager.stopAmbient();
+        }
+
+        // Resume background animations
+        const canvas = document.getElementById('cosmosCanvas');
+        if (canvas) canvas.style.display = '';
+        const starsField = document.getElementById('starsField');
+        if (starsField) starsField.style.animationPlayState = '';
     }
 
     /**

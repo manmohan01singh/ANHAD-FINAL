@@ -2,6 +2,22 @@
 <html lang="en">
 
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -70,9 +86,7 @@
 
         <!-- Bottom -->
         <footer id="bottom-ui">
-            <p id="shabad" class="gurmukhi card-fade-in delay-1">ਧੰਨੁ ਸੁ ਵੇਲਾ ਜਿਤੁ ਮੈ ਸਤਿਗੁਰੁ ਮਿਲਿਆ</p>
-            <p id="translation" class="card-fade-in delay-2">Blessed is the time when I meet the True Guru</p>
-            <a href="../index.html" id="enter-btn" class="card-fade-in delay-3">
+            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1">
                 <span class="enter-btn-main">Enter ANHAD</span>
             </a>
             <p id="tap-hint" class="card-fade-in delay-4">Tap anywhere to start live kirtan</p>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/naam_widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/widget_background"
+    android:gravity="center">
+
+    <!-- Header: Icon and Title -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🙏"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Naam Abhyas"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Streak -->
+    <TextView
+        android:id="@+id/naam_streak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🙏 Start today"
+        android:textSize="14sp"
+        android:textColor="#B3FFFFFF"
+        android:layout_marginTop="4dp"
+        android:gravity="center" />
+
+    <!-- Stats Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:gravity="center">
+
+        <!-- Completed -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/naam_completed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#30D158" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Done"
+                android:textSize="11sp"
+                android:textColor="#B3FFFFFF" />
+        </LinearLayout>
+
+        <!-- Progress Circle -->
+        <TextView
+            android:id="@+id/naam_progress_text"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="0%"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:background="@drawable/circle_progress_bg" />
+
+        <!-- Remaining -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/naam_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FF9500" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Left"
+                android:textSize="11sp"
+                android:textColor="#B3FFFFFF" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Next Reminder -->
+    <TextView
+        android:id="@+id/naam_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hourly reminders active"
+        android:textSize="12sp"
+        android:textColor="#B3FFFFFF"
+        android:layout_marginTop="8dp"
+        android:gravity="center" />
+
+</LinearLayout>
