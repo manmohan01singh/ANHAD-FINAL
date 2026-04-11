@@ -13,7 +13,7 @@
 .ritual-overlay {
     position: fixed;
     inset: 0;
-    z-index: 10000;
+    z-index: 950;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,8 +35,8 @@
             rgba(10, 10, 20, 0.95) 0%,
             rgba(20, 15, 30, 0.98) 50%,
             rgba(10, 10, 20, 0.95) 100%);
-    backdrop-filter: blur(30px) saturate(150%);
-    -webkit-backdrop-filter: blur(30px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
 }
 
 /* Main Container */

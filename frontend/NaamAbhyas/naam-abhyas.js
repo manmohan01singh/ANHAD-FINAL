@@ -70,17 +70,9 @@ const NAAM_CONFIG = {
 
 class NaamAbhyasThemeEngine {
     constructor() {
-        // SYNC WITH GLOBAL THEME: Check global anhad_theme first
+        // ALWAYS follow the global theme from anhad_theme key
         const globalTheme = localStorage.getItem('anhad_theme');
-        const ownTheme = localStorage.getItem('anhad_theme');
-        
-        // If no own theme is set, use global theme
-        if (!ownTheme && globalTheme) {
-            this.currentTheme = globalTheme === 'dark' ? 'dark' : 'light';
-            localStorage.setItem('anhad_theme', this.currentTheme);
-        } else {
-            this.currentTheme = ownTheme || 'light'; // Default to light mode
-        }
+        this.currentTheme = globalTheme || 'light';
         
         this.init();
     }
@@ -90,11 +82,19 @@ class NaamAbhyasThemeEngine {
         this.setupSystemThemeListener();
         this.bindThemeButtons();
         
-        // Listen for global theme changes
+        // Listen for global theme changes (same-page dispatches)
         window.addEventListener('themechange', (e) => {
             if (e.detail && e.detail.theme) {
                 this.currentTheme = e.detail.theme;
                 this.applyTheme(e.detail.theme);
+            }
+        });
+
+        // Listen for cross-tab theme changes via localStorage
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                this.currentTheme = e.newValue;
+                this.applyTheme(e.newValue);
             }
         });
     }
@@ -103,16 +103,33 @@ class NaamAbhyasThemeEngine {
         const htmlEl = document.documentElement;
         document.body.classList.remove('theme-light', 'theme-dark');
 
+        // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
         let actualTheme = theme;
         if (theme === 'system') {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            actualTheme = prefersDark ? 'dark' : 'light';
+            const stored = localStorage.getItem('anhad_theme');
+            if (stored && stored !== 'system') {
+                actualTheme = stored;
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                actualTheme = prefersDark ? 'dark' : 'light';
+            }
         }
 
+        // Apply classes and attributes
         document.body.classList.add(`theme-${actualTheme}`);
         htmlEl.setAttribute('data-theme', actualTheme);
+        
+        // Also apply the dark/light classes that the global theme system uses
+        if (actualTheme === 'dark') {
+            htmlEl.classList.add('dark', 'dark-mode');
+            htmlEl.style.colorScheme = 'dark';
+        } else {
+            htmlEl.classList.remove('dark', 'dark-mode');
+            htmlEl.style.colorScheme = 'light';
+        }
 
         this.updateActiveButton(theme);
+        // Save to global key so other pages stay in sync
         localStorage.setItem('anhad_theme', theme);
         this.currentTheme = theme;
 
@@ -232,6 +249,11 @@ class NaamAbhyas {
         this.ritualEngine = null; // Sacred micro-commitment ritual system
         this.disciplineMetrics = null; // Product-minded KPI tracking
 
+        // Sound preview state
+        this.isPreviewPlaying = false;
+        this.previewAudio = null;
+        this.previewTimeout = null;
+
         // SAFETY: Force hide loading screen after 10 seconds no matter what
         setTimeout(() => {
             if (!this.isInitialized) {
@@ -244,90 +266,95 @@ class NaamAbhyas {
     /* ═════════════════════════════════════════════════════════════════════════
        INITIALIZATION
     ═════════════════════════════════════════════════════════════════════════ */
-
     async init() {
         try {
             console.log('🙏 Initializing Naam Abhyas...');
 
-            // Initialize components with error handling
+            // Phase 1: CRITICAL PATH - Must complete fast
+            // These must happen before hiding loading screen
             try {
-                this.initializeComponents();
+                this.loadConfig();
+                this.loadHistory();
             } catch (e) {
-                console.error('❌ Component initialization failed:', e);
-                this.showToast('Some features may not work properly', 'warning');
-                // Continue anyway - don't block the app
+                console.error('❌ Config/History loading failed:', e);
             }
 
-            // Bind event listeners
-            try {
-                this.bindEvents();
-            } catch (e) {
-                console.error('❌ Event binding failed:', e);
-            }
-
-            // Load initial state
-            try {
-                this.loadInitialState();
-            } catch (e) {
-                console.error('❌ State loading failed:', e);
-            }
-
-            // Initialize engines
+            // Initialize core UI first
             try {
                 this.themeEngine = new NaamAbhyasThemeEngine();
-                this.scheduleManager = new ScheduleManager(this);
+                this.themeEngine.applyTheme(this.themeEngine.currentTheme);
             } catch (e) {
-                console.error('❌ Engine initialization failed:', e);
+                console.error('❌ Theme init failed:', e);
             }
 
-            // Apply theme (initial sync)
+            // Generate schedule early (needed for UI)
             try {
-                if (this.themeEngine) {
-                    this.themeEngine.applyTheme(this.config.theme);
-                }
+                this.generateDailySchedule();
             } catch (e) {
-                console.error('❌ Theme application failed:', e);
+                console.error('❌ Schedule generation failed:', e);
             }
 
-            // Initialize UI
+            // Show UI immediately
             try {
                 this.updateUI();
             } catch (e) {
                 console.error('❌ UI update failed:', e);
             }
 
-            // If enabled, start the system
-            if (this.config.enabled) {
-                try {
-                    await this.enable();
-                } catch (e) {
-                    console.error('❌ Enable failed:', e);
-                }
-            }
-
-            // ALWAYS hide loading screen - even if there were errors
+            // Hide loading screen ASAP (under 800ms target)
             this.hideLoadingScreen();
-
             this.isInitialized = true;
-            console.log('✅ Naam Abhyas initialized successfully');
+            console.log('✅ Naam Abhyas core initialized');
 
-            // Setup Service Worker message listener for background notifications
-            try {
-                this.setupServiceWorkerListener();
-            } catch (e) {
-                console.error('❌ SW listener setup failed:', e);
-            }
+            // Phase 2: DEFERRED - Non-critical operations
+            // Use requestIdleCallback or setTimeout to defer heavy work
+            const initDeferred = () => {
+                console.log('🔄 Running deferred initialization...');
 
-            // Check for auto-start from notification
-            try {
-                this.checkAutoStart();
-            } catch (e) {
-                console.error('❌ Auto-start check failed:', e);
+                // Initialize components
+                try {
+                    this.initializeComponents();
+                } catch (e) {
+                    console.error('❌ Component initialization failed:', e);
+                }
+
+                // Bind event listeners
+                try {
+                    this.bindEventListeners();
+                } catch (e) {
+                    console.error('❌ Event binding failed:', e);
+                }
+
+                // Initialize engines
+                try {
+                    this.scheduleManager = new ScheduleManager(this);
+                    this.guaranteedAlarmSystem = new GuaranteedAlarmSystem(this);
+                } catch (e) {
+                    console.error('❌ Engine initialization failed:', e);
+                }
+
+                // Setup Service Worker listener
+                try {
+                    this.setupServiceWorkerListener();
+                } catch (e) {
+                    console.log('Service Worker listener not available:', e);
+                }
+
+                // Check for action in URL
+                this.checkUrlAction();
+
+                console.log('✅ Deferred initialization complete');
+            };
+
+            // Defer by 100ms to let browser paint
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(initDeferred, { timeout: 500 });
+            } else {
+                setTimeout(initDeferred, 100);
             }
 
         } catch (error) {
             console.error('❌ CRITICAL: Failed to initialize Naam Abhyas:', error);
-            // ALWAYS hide loading screen even on critical failure
             this.hideLoadingScreen();
             this.showToast('Failed to initialize. Please refresh.', 'error');
         }
@@ -431,9 +458,20 @@ class NaamAbhyas {
             this.statsTracker = new StatsTracker(this.history);
         }
 
-        // Initialize Audio Manager
+        // Initialize Audio Manager & preload key sounds
         if (typeof AudioManager !== 'undefined') {
             this.audioManager = new AudioManager();
+            // Preload notification + session sounds on first user interaction
+            const preloadOnce = () => {
+                if (this.audioManager) {
+                    this.audioManager.initAudioContext();
+                    this.audioManager.preloadAll();
+                }
+                document.removeEventListener('click', preloadOnce);
+                document.removeEventListener('touchstart', preloadOnce);
+            };
+            document.addEventListener('click', preloadOnce, { once: true });
+            document.addEventListener('touchstart', preloadOnce, { once: true });
         }
 
         // Initialize Ritual Engine - Sacred Micro-Commitment System
@@ -507,10 +545,16 @@ class NaamAbhyas {
 
         // Theme selection handled by ThemeEngine
 
-        // Duration options
+        // Duration options - toggle selected class on parent labels
         const durationOptions = document.querySelectorAll('input[name="duration"]');
         durationOptions.forEach(option => {
             option.addEventListener('change', (e) => {
+                // Remove selected from all duration labels
+                document.querySelectorAll('#durationOptions .radio-option').forEach(lbl => lbl.classList.remove('selected'));
+                // Add selected to the changed input's parent label
+                const parentLabel = e.target.closest('.radio-option');
+                if (parentLabel) parentLabel.classList.add('selected');
+
                 this.config.duration = parseInt(e.target.value);
                 this.saveConfig();
                 this.showToast(`Duration set to ${this.config.duration} minutes`, 'success');
@@ -553,11 +597,11 @@ class NaamAbhyas {
             });
         }
 
-        // Preview sound button
+        // Preview sound button with play/stop toggle
         const previewBtn = document.getElementById('previewSoundBtn');
         if (previewBtn) {
             previewBtn.addEventListener('click', () => {
-                this.playNotificationSound();
+                this.toggleSoundPreview();
             });
         }
 
@@ -738,10 +782,14 @@ class NaamAbhyas {
             themeRadio.checked = true;
         }
 
-        // Set duration radio
+        // Set duration radio and toggle selected class
         const durationRadio = document.querySelector(`input[name="duration"][value="${this.config.duration}"]`);
         if (durationRadio) {
             durationRadio.checked = true;
+            // Clear all selected, then mark the correct one
+            document.querySelectorAll('#durationOptions .radio-option').forEach(lbl => lbl.classList.remove('selected'));
+            const parentLabel = durationRadio.closest('.radio-option');
+            if (parentLabel) parentLabel.classList.add('selected');
         }
 
         // Set active hours
@@ -960,8 +1008,10 @@ class NaamAbhyas {
         Object.entries(this.currentSchedule).forEach(([hour, session]) => {
             const hourNum = parseInt(hour);
 
-            // Only schedule future sessions
-            if (hourNum > currentHour && session.status === 'pending') {
+            // Schedule for current hour (if session is still upcoming) and future sessions
+            const isFutureHour = hourNum > currentHour;
+            const isCurrentHourUpcoming = hourNum === currentHour && session.startMinute > now.getMinutes();
+            if ((isFutureHour || isCurrentHourUpcoming) && session.status === 'pending') {
                 // 1. Local notification engine (fallback, foreground only)
                 if (this.notificationEngine) {
                     this.notificationEngine.scheduleSessionNotifications(
@@ -1239,37 +1289,52 @@ class NaamAbhyas {
         const startHour = this.config.activeHours.start;
         const endHour = this.config.activeHours.end;
         const today = this.getTodayString();
+        const duration = this.config.duration || 2; // Duration in minutes
+
+        // Calculate spacing based on duration
+        // 2 min duration = 20 min spacing, 3 min = 30 min spacing, 5 min = 40 min spacing
+        const spacingMinutes = duration <= 2 ? 20 : (duration <= 3 ? 30 : 40);
+
+        console.log(`📅 Generating schedule: duration=${duration}min, spacing=${spacingMinutes}min`);
 
         // Check if we already have a schedule for today
         if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-            this.currentSchedule = this.history.scheduleHistory[today];
-            console.log('📅 Using existing schedule for today');
-
-            // --- BUG FIX: Cleanup sessions outside current active hours ---
-            let cleaned = false;
-            Object.keys(this.currentSchedule).forEach(hour => {
-                const hourNum = parseInt(hour);
-                if (hourNum < startHour || hourNum > endHour) {
-                    delete this.currentSchedule[hour];
-                    cleaned = true;
-                }
-            });
-
-            // Fill in missing hours if any
-            for (let hour = startHour; hour <= endHour; hour++) {
-                if (!this.currentSchedule[hour]) {
-                    this.currentSchedule[hour] = this.generateRandomTimeForHour(hour);
-                    cleaned = true;
-                }
-            }
-
-            if (cleaned) {
+            // Check if duration changed - if so, regenerate
+            const existingDuration = this.history.scheduleHistory[today]._duration;
+            if (existingDuration && existingDuration !== duration) {
+                console.log(`📅 Duration changed from ${existingDuration} to ${duration}, regenerating schedule`);
+                this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
                 this.history.scheduleHistory[today] = this.currentSchedule;
                 this.saveHistory();
-            }
-            // -------------------------------------------------------------
+            } else {
+                this.currentSchedule = this.history.scheduleHistory[today];
+                console.log('📅 Using existing schedule for today');
 
-            // Ensure refresher count exists for today (migration for existing data)
+                // Cleanup sessions outside current active hours
+                let cleaned = false;
+                Object.keys(this.currentSchedule).forEach(hour => {
+                    const hourNum = parseInt(hour);
+                    if (hourNum < startHour || hourNum > endHour) {
+                        delete this.currentSchedule[hour];
+                        cleaned = true;
+                    }
+                });
+
+                // Fill in missing hours if any
+                for (let hour = startHour; hour <= endHour; hour++) {
+                    if (!this.currentSchedule[hour]) {
+                        this.currentSchedule[hour] = this.generateRandomTimeForHour(hour, duration);
+                        cleaned = true;
+                    }
+                }
+
+                if (cleaned) {
+                    this.history.scheduleHistory[today] = this.currentSchedule;
+                    this.saveHistory();
+                }
+            }
+
+            // Ensure refresher count exists for today
             if (typeof this.history.dailyRefreshes === 'undefined') {
                 this.history.dailyRefreshes = {};
             }
@@ -1277,14 +1342,8 @@ class NaamAbhyas {
                 this.history.dailyRefreshes[today] = 0;
             }
         } else {
-            // Generate new schedule
-            this.currentSchedule = {};
-
-            console.log(`📅 Generating new schedule from ${startHour}:00 to ${endHour}:00`);
-
-            for (let hour = startHour; hour <= endHour; hour++) {
-                this.currentSchedule[hour] = this.generateRandomTimeForHour(hour);
-            }
+            // Generate new schedule based on duration
+            this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
 
             // Save to history
             if (!this.history.scheduleHistory) {
@@ -1303,6 +1362,48 @@ class NaamAbhyas {
 
         this.renderScheduleTimeline();
         this.updateRefreshButtonState();
+    }
+
+    /**
+     * Generate schedule based on duration spacing
+     */
+    generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration) {
+        const schedule = {};
+        const startMinute = startHour * 60;
+        const endMinute = endHour * 60;
+        let currentMinute = startMinute;
+        let sessionIndex = 0;
+
+        while (currentMinute < endMinute) {
+            const hour = Math.floor(currentMinute / 60);
+            const minute = currentMinute % 60;
+
+            // Don't exceed end hour
+            if (hour > endHour) break;
+
+            // Store session with duration metadata
+            schedule[hour] = {
+                startMinute: minute,
+                endMinute: minute + duration,
+                startTime: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+                endTime: `${hour.toString().padStart(2, '0')}:${(minute + duration).toString().padStart(2, '0')}`,
+                duration: duration,
+                status: 'pending',
+                index: sessionIndex++
+            };
+
+            // Add buffer time between sessions (minimum 5 minutes)
+            const buffer = Math.max(5, spacingMinutes - duration);
+            currentMinute += duration + buffer;
+
+            console.log(`📅 Session ${sessionIndex}: ${schedule[hour].startTime} - ${schedule[hour].endTime} (${duration}min)`);
+        }
+
+        // Store duration for change detection
+        schedule._duration = duration;
+        schedule._spacing = spacingMinutes;
+
+        return schedule;
     }
 
     regenerateSchedule() {
@@ -1739,6 +1840,11 @@ class NaamAbhyas {
             this.playSound('start-bell');
         }
 
+        // Auto-play Vaheguru Jaap in background
+        if (this.audioManager) {
+            this.audioManager.playAmbient(0.25).catch(e => console.log('Vaheguru Jaap failed:', e));
+        }
+
         // Start timer
         const duration = this.config.duration * 60; // seconds
         let remaining = duration;
@@ -1787,6 +1893,11 @@ class NaamAbhyas {
         // Vibrate completion
         if (this.config.notifications.vibration && navigator.vibrate) {
             navigator.vibrate([200, 100, 200]);
+        }
+
+        // Stop Vaheguru Jaap
+        if (this.audioManager) {
+            this.audioManager.stopAmbient();
         }
 
         // Update session status
@@ -1840,6 +1951,11 @@ class NaamAbhyas {
 
         // Release wake lock
         this.releaseWakeLock();
+
+        // Stop Vaheguru Jaap
+        if (this.audioManager) {
+            this.audioManager.stopAmbient();
+        }
 
         // Calculate actual duration
         const timerDisplay = document.getElementById('timerDisplay');
@@ -2277,6 +2393,11 @@ class NaamAbhyas {
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            // Pause heavy background animations for performance
+            const canvas = document.getElementById('cosmosCanvas');
+            if (canvas) canvas.style.display = 'none';
+            const starsField = document.getElementById('starsField');
+            if (starsField) starsField.style.animationPlayState = 'paused';
         }
     }
 
@@ -2285,6 +2406,11 @@ class NaamAbhyas {
         if (modal) {
             modal.classList.remove('active');
             document.body.style.overflow = '';
+            // Resume background animations
+            const canvas = document.getElementById('cosmosCanvas');
+            if (canvas) canvas.style.display = '';
+            const starsField = document.getElementById('starsField');
+            if (starsField) starsField.style.animationPlayState = '';
         }
     }
 
@@ -2455,13 +2581,100 @@ class NaamAbhyas {
     }
 
     playSound(soundName) {
-        try {
+        // Route through AudioManager for proper preloading & AudioContext support
+        if (this.audioManager) {
+            this.audioManager.play(soundName).catch(e => console.log('AudioManager play failed:', e));
+        } else {
+            // Fallback: create audio element directly
             const audio = new Audio(`assets/sounds/${soundName}.mp3`);
-            audio.volume = 0.7;
             audio.play().catch(e => console.log('Audio play failed:', e));
-        } catch (e) {
-            console.log('Audio not available:', e);
         }
+    }
+
+    /**
+     * Toggle sound preview (play/stop)
+     */
+    toggleSoundPreview() {
+        if (this.isPreviewPlaying) {
+            this.stopSoundPreview();
+        } else {
+            this.playSoundPreview();
+        }
+    }
+
+    /**
+     * Play sound preview
+     */
+    playSoundPreview() {
+        const soundName = this.config.notifications.sound;
+        if (!soundName) return;
+
+        // Clean up any existing audio first
+        if (this.previewAudio) {
+            this.previewAudio.pause();
+            this.previewAudio = null;
+        }
+
+        // Create new audio for preview
+        this.previewAudio = new Audio(`assets/sounds/${soundName}.mp3`);
+        this.previewAudio.loop = true;
+
+        // Set state BEFORE playing to prevent race conditions
+        this.isPreviewPlaying = true;
+        this.updatePreviewButtonState(true);
+
+        this.previewAudio.play().then(() => {
+            console.log('[NaamAbhyas] Sound preview playing:', soundName);
+        }).catch(e => {
+            console.log('Preview play failed:', e);
+            this.isPreviewPlaying = false;
+            this.updatePreviewButtonState(false);
+            this.previewAudio = null;
+        });
+
+        // Auto-stop after 5 seconds
+        if (this.previewTimeout) clearTimeout(this.previewTimeout);
+        this.previewTimeout = setTimeout(() => {
+            if (this.isPreviewPlaying) {
+                this.stopSoundPreview();
+            }
+        }, 5000);
+    }
+
+    /**
+     * Stop sound preview
+     */
+    stopSoundPreview() {
+        if (this.previewAudio) {
+            this.previewAudio.pause();
+            this.previewAudio = null;
+        }
+
+        if (this.previewTimeout) {
+            clearTimeout(this.previewTimeout);
+            this.previewTimeout = null;
+        }
+
+        this.isPreviewPlaying = false;
+        this.updatePreviewButtonState(false);
+        console.log('[NaamAbhyas] Sound preview stopped');
+    }
+
+    /**
+     * Update preview button UI state
+     */
+    updatePreviewButtonState(isPlaying) {
+        const btn = document.getElementById('previewSoundBtn');
+        if (!btn) return;
+
+        const playIcon = btn.querySelector('.play-icon');
+        const stopIcon = btn.querySelector('.stop-icon');
+
+        if (playIcon) playIcon.style.display = isPlaying ? 'none' : 'block';
+        if (stopIcon) stopIcon.style.display = isPlaying ? 'block' : 'none';
+
+        btn.classList.toggle('playing', isPlaying);
+        btn.setAttribute('aria-label', isPlaying ? 'Stop preview' : 'Preview sound');
     }
 
     /**

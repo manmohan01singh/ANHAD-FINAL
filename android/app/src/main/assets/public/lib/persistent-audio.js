@@ -20,12 +20,12 @@
         },
         amritvela: {
             name: 'Amritvela Kirtan',
-            baseUrl: null, // resolved at runtime via PA_API_BASE
+            // Direct R2 CDN - bypasses server, zero bandwidth cost
+            baseUrl: 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
             totalTracks: 40,
             type: 'playlist',
             getTrackUrl(index) {
-                const base = PA_API_BASE || 'https://anhad-final.onrender.com';
-                return `${base}/audio/day-${(index % this.totalTracks) + 1}.webm`;
+                return `${this.baseUrl}/day-${(index % this.totalTracks) + 1}.webm`;
             }
         }
     };
@@ -35,6 +35,8 @@
     let currentStream = 'darbar';
     let currentTrackIndex = 0;
     let broadcastStart = null;
+    let abortController = new AbortController();
+    let hasUserGesture = false;
 
     // Get saved state
     function getState() {
@@ -73,27 +75,22 @@
         return 'https://anhad-final.onrender.com';
     })();
 
-    // Cached server sync data - MUST be fetched from server
+    // BRUTAL VIRTUAL LIVE: NO CACHE - always fetch fresh position
+    // Even 1 second matters - once gone, gone forever
     let serverSyncData = null;
     let lastSyncTime = 0;
-    const SYNC_CACHE_TTL = 5000; // Cache server response for 5 seconds max
+    const SYNC_CACHE_TTL = 0; // ZERO cache for pure live
 
     // Get current position from SERVER (async) - THE ONLY SOURCE OF TRUTH
     async function getServerLivePosition() {
-        // Use cached data if fresh (< 5 seconds old)
-        if (serverSyncData && (Date.now() - lastSyncTime) < SYNC_CACHE_TTL) {
-            // Extrapolate position based on time elapsed since last sync
-            const elapsedSinceSync = (Date.now() - lastSyncTime) / 1000;
-            return {
-                trackIndex: serverSyncData.trackIndex,
-                trackPosition: serverSyncData.trackPosition + elapsedSinceSync,
-                fromCache: true
-            };
-        }
+        // BRUTAL VIRTUAL LIVE: NEVER use cache, always fetch fresh
+        // 1 second matters - once gone, gone forever
 
         try {
             const startTime = Date.now();
-            const resp = await fetch(`${PA_API_BASE}/api/radio/live`, {
+            // CRITICAL: Add cache buster to bypass ALL caching layers
+            const freshUrl = `${PA_API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+            const resp = await fetch(freshUrl, {
                 cache: 'no-store',
                 headers: { 'Cache-Control': 'no-cache' }
             });
@@ -146,6 +143,35 @@
         }
     }
 
+    // User gesture detection for mobile audio context
+    function setupUserGestureDetection() {
+        if (hasUserGesture) return;
+
+        const resumeAudio = async () => {
+            hasUserGesture = true;
+            
+            // Resume audio context if suspended (for Web Audio API compatibility)
+            if (audio && audio.context && audio.context.state === 'suspended') {
+                try {
+                    await audio.context.resume();
+                    console.log('[PersistentAudio] Audio context resumed after user gesture');
+                } catch (e) {
+                    console.error('[PersistentAudio] Failed to resume audio context:', e);
+                }
+            }
+            
+            // Remove listeners after first gesture
+            document.removeEventListener('click', resumeAudio);
+            document.removeEventListener('touchstart', resumeAudio);
+            
+            console.log('[PersistentAudio] User gesture detected, audio playback enabled');
+        };
+
+        // Listen for first user interaction
+        document.addEventListener('click', resumeAudio, { once: true, passive: true });
+        document.addEventListener('touchstart', resumeAudio, { once: true, passive: true });
+    }
+
     // Create and return audio element
     function createAudio() {
         if (audio) return audio;
@@ -153,6 +179,9 @@
         audio = new Audio();
         audio.crossOrigin = 'anonymous';
         audio.preload = 'none';
+        
+        // Setup user gesture detection for mobile browsers
+        setupUserGestureDetection();
 
         audio.addEventListener('playing', () => {
             console.log(`🔊 Playing: ${STREAMS[currentStream].name}`);
@@ -167,7 +196,10 @@
             if (STREAMS[currentStream].type === 'playlist') {
                 startDriftCorrection();
             }
-        });
+            
+            // FIX: Track listening time for dashboard
+            window._audioPlayStartTime = Date.now();
+        }, { signal: abortController.signal });
 
         audio.addEventListener('pause', () => {
             console.log('⏸️ Audio paused');
@@ -180,14 +212,24 @@
 
             // Stop drift correction
             stopDriftCorrection();
-        });
+            
+            // FIX: Report listening time to dashboard
+            if (window._audioPlayStartTime && window.AnhadStats) {
+                const minutes = Math.floor((Date.now() - window._audioPlayStartTime) / 60000);
+                if (minutes > 0) {
+                    window.AnhadStats.addListeningTime(minutes);
+                    console.log(`[Audio] Tracked ${minutes} minutes of listening`);
+                }
+                window._audioPlayStartTime = null;
+            }
+        }, { signal: abortController.signal });
 
         audio.addEventListener('ended', () => {
             // For playlist type, go to next track
             if (STREAMS[currentStream].type === 'playlist') {
                 nextTrack();
             }
-        });
+        }, { signal: abortController.signal });
 
         audio.addEventListener('error', (e) => {
             console.error('❌ Audio error:', e);
@@ -218,15 +260,23 @@
                 }
             };
             showNotification();
-        });
+        }, { signal: abortController.signal });
 
         return audio;
     }
 
-    // Drift correction - periodically check if we're in sync with server
+    // Cleanup function to abort all event listeners
+    function cleanup() {
+        abortController.abort();
+        abortController = new AbortController();
+        console.log('[PersistentAudio] Event listeners cleaned up');
+    }
+
+    // Drift correction - BRUTAL VIRTUAL LIVE: Disabled during playback
+    // Only check on resume/play, not during continuous playback (causes stuttering)
     let driftCorrectionInterval = null;
     const DRIFT_CHECK_INTERVAL = 30000; // Check every 30 seconds
-    const DRIFT_THRESHOLD = 5; // Correct if off by more than 5 seconds
+    const DRIFT_THRESHOLD = 0.5; // BRUTAL: Jump if off by even 0.5 seconds
 
     function startDriftCorrection() {
         stopDriftCorrection(); // Clear any existing interval
@@ -366,10 +416,14 @@
 
         const stream = STREAMS[currentStream];
 
-        // Set source if not set
-        if (!audio.src || audio.src === window.location.href) {
+        // Set source if not set - OR force reconnection for live streams to maintain "live" feel
+        if (!audio.src || audio.src === window.location.href || stream.type === 'live') {
             if (stream.type === 'live') {
-                audio.src = stream.url;
+                // CRITICAL FIX: Add cache buster to force fresh connection to live position
+                // Otherwise resuming after pause will continue from old buffer position
+                const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now();
+                audio.src = freshUrl;
+                console.log('[PersistentAudio] 🔴 Live stream reconnected to current position');
             } else if (stream.type === 'playlist') {
                 try {
                     const pos = await getServerLivePosition();
@@ -400,8 +454,17 @@
             window.AudioCoordinator.requestPlay('AnhadAudio');
         }
 
+        // Attempt to play - will be blocked if no user gesture on mobile
         audio.play().catch(e => {
-            console.log('Autoplay blocked, user interaction required');
+            if (!hasUserGesture) {
+                console.log('[PersistentAudio] Autoplay blocked - waiting for user gesture');
+                // Show user-friendly message
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Tap anywhere to start audio playback', { type: 'info', duration: 3000 });
+                }
+            } else {
+                console.log('Autoplay blocked, user interaction required');
+            }
         });
     }
 
@@ -486,6 +549,9 @@
     function nextTrack() {
         if (STREAMS[currentStream].type !== 'playlist') return;
 
+        // Cleanup old listeners before changing track
+        cleanup();
+
         currentTrackIndex = (currentTrackIndex + 1) % STREAMS[currentStream].totalTracks;
         const wasPlaying = isPlaying();
         audio.src = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
@@ -500,6 +566,9 @@
         if (audio.currentTime > 5) {
             audio.currentTime = 0;
         } else {
+            // Cleanup old listeners before changing track
+            cleanup();
+
             currentTrackIndex = (currentTrackIndex - 1 + STREAMS[currentStream].totalTracks) % STREAMS[currentStream].totalTracks;
             const wasPlaying = isPlaying();
             audio.src = STREAMS[currentStream].getTrackUrl(currentTrackIndex);
@@ -563,6 +632,12 @@
     } else {
         autoResume();
     }
+
+    // Cleanup on page hide to prevent memory leaks
+    window.addEventListener('pagehide', () => {
+        cleanup();
+        console.log('[PersistentAudio] Cleaned up on pagehide');
+    }, { once: true });
 
     console.log('🪯 ANHAD Persistent Audio System V2 loaded');
     console.log('📻 Available streams:', Object.keys(STREAMS).join(', '));

@@ -27,6 +27,57 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- WIDGET RECEIVERS -->
+        
+        <!-- Nitnem Tracker Widget -->
+        <receiver 
+            android:name=".widgets.NitnemWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nitnem_widget_info" />
+        </receiver>
+        
+        <!-- Naam Abhyas Widget -->
+        <receiver 
+            android:name=".widgets.NaamAbhyasWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/naam_abhyas_widget_info" />
+        </receiver>
+        
+        <!-- Calendar Widget -->
+        <receiver 
+            android:name=".widgets.CalendarWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calendar_widget_info" />
+        </receiver>
+        
+        <!-- Live Kirtan Widget -->
+        <receiver 
+            android:name=".widgets.KirtanWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/kirtan_widget_info" />
+        </receiver>
+        
     </application>
 
     <!-- Permissions -->

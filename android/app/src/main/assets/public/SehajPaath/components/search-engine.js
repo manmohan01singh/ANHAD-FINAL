@@ -40,7 +40,7 @@
         recognition: null,
         isListening: false,
         voiceLanguage: 'pa-IN', // 'pa-IN' for Punjabi, 'en-US' for English
-        theme: localStorage.getItem('gurbani_theme') || 'system'
+        theme: localStorage.getItem('anhad_theme') || 'system'
     };
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -853,7 +853,7 @@
         state.theme = themes[nextIndex];
 
         applyTheme(state.theme);
-        localStorage.setItem('gurbani_theme', state.theme);
+        localStorage.setItem('anhad_theme', state.theme);
 
         // Show toast
         const themeNames = { 'system': 'System', 'light': 'Light', 'dark': 'Dark' };

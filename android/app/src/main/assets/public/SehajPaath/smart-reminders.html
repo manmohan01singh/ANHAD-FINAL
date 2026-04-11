@@ -2,6 +2,20 @@
 <html lang="en">
 
 <head>
+  <meta name="color-scheme" content="light dark">
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'light';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport"

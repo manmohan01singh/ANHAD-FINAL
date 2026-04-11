@@ -22,7 +22,7 @@
         shabadId: null,
         shabadData: null,
         fontSize: localStorage.getItem('shabad_fontSize') || 'medium',
-        theme: localStorage.getItem('shabad_theme') || 'light',
+        theme: localStorage.getItem('anhad_theme') || 'light',
         showTransliteration: localStorage.getItem('shabad_transliteration') !== 'false',
         showTranslation: localStorage.getItem('shabad_translation') !== 'false',
         searchQuery: null
@@ -264,7 +264,7 @@
 
     function setTheme(theme) {
         state.theme = theme;
-        localStorage.setItem('shabad_theme', theme);
+        localStorage.setItem('anhad_theme', theme);
         applyTheme(theme);
 
         // Update active state on theme buttons

@@ -420,6 +420,52 @@ class PWAManager {
     }
   }
 
+  /**
+   * Get the current app version from service worker
+   * @returns {string} Current version or 'unknown'
+   */
+  getCurrentVersion() {
+    // Read from the service worker cache version
+    const swCode = localStorage.getItem('sw_cache_version');
+    if (swCode) return swCode;
+    
+    // Fallback: try to extract from sw.js if cached
+    return '3.7.0'; // Default version
+  }
+
+  /**
+   * Force a manual update check
+   * @returns {Promise<boolean>} Whether update is available
+   */
+  async forceUpdateCheck() {
+    if (!this.registration) return false;
+    
+    try {
+      await this.registration.update();
+      
+      // Wait for detection
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      return !!this.registration.waiting || !!this.registration.installing;
+    } catch (error) {
+      console.error('Force update check failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get last update check time
+   * @returns {number|null} Timestamp or null
+   */
+  getLastUpdateCheck() {
+    try {
+      const last = localStorage.getItem('pwa_last_update_check');
+      return last ? parseInt(last) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   showUpdateNotification() {
     if (document.querySelector('.pwa-update-banner')) return;
 

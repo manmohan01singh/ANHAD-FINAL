@@ -30,63 +30,66 @@ class SehajPaathReader {
     }
 
     async init() {
-        console.log('🚀 Initializing Sehaj Paath Reader...');
+        try {
+            console.log('🚀 Initializing Sehaj Paath Reader...');
 
-        // Get Ang from URL params
-        const params = new URLSearchParams(window.location.search);
-        this.currentAng = parseInt(params.get('ang')) || this.getSavedAng();
+            // Get Ang from URL params
+            const params = new URLSearchParams(window.location.search);
+            this.currentAng = parseInt(params.get('ang')) || this.getSavedAng();
 
-        // ═══════════════════════════════════════════════════════════════════════════
-        // TASK 2: SEARCH QUERY HIGHLIGHTING
-        // Capture the search query from URL to highlight the exact searched pangthi
-        // ═══════════════════════════════════════════════════════════════════════════
-        this.searchQuery = params.get('q') || null;
-        this.highlightedLineId = params.get('lineId') || null;
+            // Capture search query from URL
+            this.searchQuery = params.get('q') || null;
+            this.highlightedLineId = params.get('lineId') || null;
 
-        // Check if this is a detached reading session (Random, Search, Bookmark, etc.)
-        const source = params.get('source');
-        if (source && ['random', 'search', 'bookmark', 'share', 'hukamnama'].includes(source)) {
-            this.isDetachedMode = true;
-            this.detachedSource = source;
-            console.log(`📌 DETACHED MODE: ${source} - Progress will NOT be saved`);
+            // Check detached mode
+            const source = params.get('source');
+            if (source && ['random', 'search', 'bookmark', 'share', 'hukamnama'].includes(source)) {
+                this.isDetachedMode = true;
+                this.detachedSource = source;
+                console.log(`📌 DETACHED MODE: ${source}`);
+            }
+
+            if (this.searchQuery) {
+                this.isDetachedMode = true;
+                this.detachedSource = 'search';
+            }
+
+            console.log('� Loading Ang:', this.currentAng);
+
+            // Initialize API with error handling
+            try {
+                this.api = new BaniDBAPI();
+                console.log('✅ API initialized');
+            } catch (apiError) {
+                console.error('❌ Failed to initialize API:', apiError);
+                this.showErrorMessage('Failed to initialize reader. Please refresh.');
+                return;
+            }
+
+            // Setup event listeners
+            this.setupEventListeners();
+            this.applySettings();
+
+            // Load the Ang with error handling
+            try {
+                await this.loadAng(this.currentAng);
+                console.log('✅ Reader initialized successfully');
+            } catch (loadError) {
+                console.error('❌ Failed to load initial Ang:', loadError);
+                this.showErrorMessage('Failed to load Gurbani. Please check your connection.');
+            }
+
+            // Auto-download next 5 Angs
+            setTimeout(() => {
+                this.autoDownloadNextFiveAngs().catch(err => {
+                    console.warn('Auto-download failed:', err);
+                });
+            }, 2000);
+
+        } catch (error) {
+            console.error('❌ Reader initialization error:', error);
+            this.showErrorMessage('An error occurred. Please refresh the page.');
         }
-
-        // If coming from search, treat as detached
-        if (this.searchQuery) {
-            this.isDetachedMode = true;
-            this.detachedSource = 'search';
-            console.log('🔍 SEARCH MODE: Highlighting query:', this.searchQuery);
-        }
-
-        console.log('📖 Loading Ang:', this.currentAng);
-
-        // Initialize API
-        this.api = new BaniDBAPI();
-
-        // Setup event listeners
-        this.setupEventListeners();
-
-        // Apply saved settings
-        this.applySettings();
-
-        // Load the Ang
-        await this.loadAng(this.currentAng);
-
-        // Auto-download next 5 Angs in background after page load
-        setTimeout(() => {
-            this.autoDownloadNextFiveAngs();
-        }, 2000);
-
-        // Start reading timer
-        this.startReadingTimer();
-
-        // Update progress display
-        this.updateProgressDisplay();
-
-        // Update reading progress bar at top
-        this.updateReadingProgressBar();
-
-        console.log('✅ Reader initialized successfully');
     }
 
     loadSettings() {
@@ -188,6 +191,20 @@ class SehajPaathReader {
 
             // Keep last 100 entries
             localStorage.setItem('sehajPaathHistory', JSON.stringify(history.slice(0, 100)));
+            
+            // ═══ SYNC WITH DASHBOARD ═══
+            // Use UnifiedStats as single source of truth
+            if (window.UnifiedStats) {
+                window.UnifiedStats.recordAngRead(1);
+            }
+            // Legacy trackers for backward compatibility
+            if (window.UnifiedProgressTracker) {
+                window.UnifiedProgressTracker.trackPagesRead(1);
+            } else if (window.AnhadStats) {
+                window.AnhadStats.addPagesRead(1);
+            }
+            
+            console.log('[SehajPaath] ✅ Tracked 1 page read');
         } catch (e) {
             console.error('Error tracking history:', e);
         }

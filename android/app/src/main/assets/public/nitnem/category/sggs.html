@@ -2,6 +2,22 @@
 <html lang="pa" dir="ltr">
 
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
@@ -168,26 +184,67 @@
 
         /* Theme Toggle Button */
         .theme-toggle {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: none;
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
+            border: 3px solid rgba(255, 255, 255, 0.7);
             color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s var(--ease-out);
             font-size: 18px;
+            box-shadow:
+                8px 8px 25px rgba(90, 50, 60, 0.2),
+                4px 4px 12px rgba(90, 50, 60, 0.14),
+                -4px -4px 12px rgba(255, 255, 255, 0.95),
+                -2px -2px 6px rgba(255, 255, 255, 0.85),
+                0 0 0 2px rgba(255, 255, 255, 0.6),
+                inset 0 2px 3px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(90, 50, 60, 0.08);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
         }
-
+        
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        [data-theme="dark"] .theme-toggle,
+        html.dark-mode .theme-toggle {
+            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow:
+                8px 8px 25px rgba(40, 20, 25, 0.48),
+                4px 4px 12px rgba(40, 20, 25, 0.35),
+                -4px -4px 12px rgba(255, 255, 255, 0.1),
+                -2px -2px 6px rgba(255, 255, 255, 0.04),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                inset 0 2px 3px rgba(255, 255, 255, 0.08),
+                inset 0 -1px 2px rgba(40, 20, 25, 0.22);
+        }
+        
         .theme-toggle:active {
             transform: scale(0.9);
+            box-shadow:
+                inset 4px 4px 10px rgba(90, 50, 60, 0.22),
+                inset 2px 2px 5px rgba(90, 50, 60, 0.14),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.4),
+                2px 2px 6px rgba(90, 50, 60, 0.16);
         }
-
-        [data-theme="light"] .theme-toggle {
-            background: rgba(0, 0, 0, 0.08);
+        
+        [data-theme="dark"] .theme-toggle:active,
+        html.dark-mode .theme-toggle:active {
+            box-shadow:
+                inset 4px 4px 10px rgba(40, 20, 25, 0.45),
+                inset 2px 2px 5px rgba(40, 20, 25, 0.32),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.08),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                2px 2px 6px rgba(40, 20, 25, 0.38);
         }
 
         /* Hero */
@@ -240,16 +297,41 @@
         }
 
         /* Stats Card */
+        /* Puffy Stats Card */
         .stats-card {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            padding: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
+            padding: 24px;
+            background: linear-gradient(165deg, #FFF5F5 0%, #FFE8E8 35%, #FFE0E0 65%, #FFD8D8 100%);
+            border: 4px solid rgba(220, 120, 140, 0.5);
+            border-radius: 30px;
             margin-bottom: 24px;
             text-align: center;
+            box-shadow:
+                20px 20px 60px rgba(180, 100, 120, 0.28),
+                10px 10px 30px rgba(90, 50, 60, 0.18),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(220, 120, 140, 0.35),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(180, 100, 120, 0.12);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
+        }
+        
+        [data-theme="dark"] .stats-card,
+        html.dark-mode .stats-card {
+            background: linear-gradient(165deg, #4D2830 0%, #3D2028 35%, #2D1820 65%, #1D1018 100%);
+            border-color: rgba(220, 120, 140, 0.35);
+            box-shadow:
+                20px 20px 60px rgba(50, 25, 30, 0.48),
+                10px 10px 30px rgba(50, 25, 30, 0.35),
+                -8px -8px 25px rgba(255, 255, 255, 0.08),
+                -4px -4px 12px rgba(255, 255, 255, 0.03),
+                0 0 0 3px rgba(220, 120, 140, 0.25),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(50, 25, 30, 0.30);
         }
 
         .stat-item {
@@ -271,15 +353,39 @@
             letter-spacing: 0.5px;
         }
 
-        /* Info Card */
+        /* Puffy Info Card */
         .info-card {
             display: flex;
             gap: 14px;
-            padding: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
+            padding: 24px;
+            background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E0 35%, #FFE8D8 65%, #FFE0D0 100%);
+            border: 4px solid rgba(212, 175, 55, 0.5);
+            border-radius: 30px;
             margin-bottom: 24px;
+            box-shadow:
+                20px 20px 60px rgba(180, 140, 50, 0.28),
+                10px 10px 30px rgba(90, 50, 60, 0.18),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(212, 175, 55, 0.35),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(180, 140, 50, 0.12);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
+        }
+        
+        [data-theme="dark"] .info-card,
+        html.dark-mode .info-card {
+            background: linear-gradient(165deg, #4D4030 0%, #3D3028 35%, #2D2420 65%, #1D1810 100%);
+            border-color: rgba(212, 175, 55, 0.35);
+            box-shadow:
+                20px 20px 60px rgba(50, 30, 20, 0.48),
+                10px 10px 30px rgba(50, 30, 20, 0.35),
+                -8px -8px 25px rgba(255, 255, 255, 0.08),
+                -4px -4px 12px rgba(255, 255, 255, 0.03),
+                0 0 0 3px rgba(212, 175, 55, 0.25),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(50, 30, 20, 0.30);
         }
 
         .info-card-icon {
@@ -326,44 +432,99 @@
             gap: 10px;
         }
 
+        /* Ultimate Claymorphism - Puffy Cushion Bani Cards */
         .bani-card {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 16px;
+            padding: 18px;
             text-decoration: none;
             color: inherit;
-            border-radius: 24px;
-            /* Premium Soft Claymorphism */
-            background: linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(250,250,252,0.98) 100%);
+            border-radius: 28px;
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border: 4px solid rgba(255, 255, 255, 0.8);
             box-shadow:
-                8px 8px 24px rgba(0, 0, 0, 0.08),
-                4px 4px 12px rgba(0, 0, 0, 0.05),
-                -8px -8px 24px rgba(255, 255, 255, 0.9),
-                -4px -4px 12px rgba(255, 255, 255, 0.7),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                18px 18px 50px rgba(90, 50, 60, 0.22),
+                12px 12px 30px rgba(90, 50, 60, 0.16),
+                6px 6px 15px rgba(90, 50, 60, 0.10),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(90, 50, 60, 0.08),
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0) scale(1);
         }
-
+        
+        .bani-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow:
+                22px 22px 60px rgba(90, 50, 60, 0.25),
+                14px 14px 35px rgba(90, 50, 60, 0.18),
+                8px 8px 20px rgba(90, 50, 60, 0.12),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(90, 50, 60, 0.08);
+        }
+        
         .bani-card:active {
-            transform: scale(0.98) translateY(2px);
+            transform: scale(0.96) translateY(4px);
             box-shadow:
-                4px 4px 12px rgba(0, 0, 0, 0.06),
-                2px 2px 6px rgba(0, 0, 0, 0.04),
-                -4px -4px 12px rgba(255, 255, 255, 0.8),
-                inset 2px 2px 6px rgba(0, 0, 0, 0.05);
+                inset 8px 8px 20px rgba(90, 50, 60, 0.25),
+                inset 4px 4px 10px rgba(90, 50, 60, 0.15),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.7),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.5),
+                0 0 0 2px rgba(255, 255, 255, 0.5),
+                4px 4px 12px rgba(90, 50, 60, 0.12);
+            border-color: rgba(255, 255, 255, 0.6);
         }
-
-        [data-theme="dark"] .bani-card {
-            background: linear-gradient(145deg, rgba(44,44,46,0.98) 0%, rgba(36,36,38,0.98) 100%);
+        
+        [data-theme="light"] .bani-card {
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        [data-theme="dark"] .bani-card,
+        html.dark-mode .bani-card {
+            background: linear-gradient(165deg, #3C3C3E 0%, #323234 35%, #2A2A2C 65%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.15);
             box-shadow:
-                8px 8px 24px rgba(0, 0, 0, 0.25),
-                4px 4px 12px rgba(0, 0, 0, 0.15),
-                -8px -8px 24px rgba(255, 255, 255, 0.03),
-                -4px -4px 12px rgba(255, 255, 255, 0.02),
-                inset 0 1px 2px rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.08);
+                18px 18px 50px rgba(40, 20, 25, 0.52),
+                12px 12px 30px rgba(40, 20, 25, 0.40),
+                6px 6px 15px rgba(40, 20, 25, 0.28),
+                -8px -8px 25px rgba(255, 255, 255, 0.10),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(40, 20, 25, 0.30);
+        }
+        
+        [data-theme="dark"] .bani-card:hover,
+        html.dark-mode .bani-card:hover {
+            box-shadow:
+                22px 22px 60px rgba(40, 20, 25, 0.58),
+                14px 14px 35px rgba(40, 20, 25, 0.45),
+                8px 8px 20px rgba(40, 20, 25, 0.32),
+                -8px -8px 25px rgba(255, 255, 255, 0.10),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(40, 20, 25, 0.30);
+        }
+        
+        [data-theme="dark"] .bani-card:active,
+        html.dark-mode .bani-card:active {
+            box-shadow:
+                inset 8px 8px 20px rgba(40, 20, 25, 0.50),
+                inset 4px 4px 10px rgba(40, 20, 25, 0.35),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.08),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.04),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                4px 4px 12px rgba(40, 20, 25, 0.35);
+            border-color: rgba(255, 255, 255, 0.12);
         }
 
         .bani-icon {
@@ -458,6 +619,15 @@
   <script src="../../lib/global-theme.js"></script>
     <!-- Smart Back Navigation -->
     <script src="../../lib/smart-back.js"></script>
+    
+    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+    <script src="../js/offline-bani-data.js?v=1"></script>
+    
+    <!-- BaniDB API - now with instant offline-first -->
+    <script src="../js/banidb-api.js?v=3"></script>
+    
+    <!-- Preload Manager for instant navigation -->
+    <script src="../js/preload-manager.js?v=1"></script>
 </head>
 
 <body>
@@ -499,7 +669,7 @@
             <div class="stats-card">
                 <div class="stat-item">
                     <div class="stat-value">1430</div>
-                    <div class="stat-label">Ang (Pages)</div>
+                    <div class="stat-label">Ang</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value">5894</div>
@@ -530,8 +700,7 @@
                 <div class="bani-list">
 
                     <a href="../reader.html?id=2" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png"
-                                alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਜਪੁਜੀ ਸਾਹਿਬ</div>
                             <div class="bani-english">Japji Sahib</div>
@@ -546,7 +715,7 @@
                     </a>
 
                     <a href="../reader.html?id=31" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png"
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg"
                                 alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸੁਖਮਨੀ ਸਾਹਿਬ</div>
@@ -562,7 +731,7 @@
                     </a>
 
                     <a href="../reader.html?id=10" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-amar-das-ji.png"
+                        <div class="bani-icon"><img src="../../../guruimages/guruamardasji.jpeg"
                                 alt="Guru Amar Das Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਅਨੰਦੁ ਸਾਹਿਬ</div>
@@ -578,7 +747,7 @@
                     </a>
 
                     <a href="../reader.html?id=21" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-ramdas-ji.png" alt="Guru Ram Das Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gururamdassahebji.jpeg" alt="Guru Ram Das Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਰਹਿਰਾਸ ਸਾਹਿਬ</div>
                             <div class="bani-english">Rehras Sahib</div>
@@ -593,7 +762,7 @@
                     </a>
 
                     <a href="../reader.html?id=23" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸੋਹਿਲਾ ਸਾਹਿਬ</div>
                             <div class="bani-english">Kirtan Sohila</div>
@@ -619,7 +788,7 @@
                 <div class="bani-list">
 
                     <a href="../reader.html?id=90" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png"
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg"
                                 alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਆਸਾ ਦੀ ਵਾਰ</div>
@@ -635,7 +804,7 @@
                     </a>
 
                     <a href="../reader.html?id=36" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png" alt="Guru Arjan Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg" alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਦੁਖ ਭੰਜਨੀ ਸਾਹਿਬ</div>
                             <div class="bani-english">Dukh Bhanjani Sahib</div>
@@ -650,7 +819,7 @@
                     </a>
 
                     <a href="../reader.html?id=3" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png" alt="Guru Arjan Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg" alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸ਼ਬਦ ਹਜ਼ਾਰੇ</div>
                             <div class="bani-english">Shabad Hazare</div>
@@ -665,7 +834,7 @@
                     </a>
 
                     <a href="../reader.html?id=27" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png" alt="Guru Arjan Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg" alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਬਾਰਹ ਮਾਹਾ ਮਾਂਝ</div>
                             <div class="bani-english">Barah Maha</div>
@@ -680,7 +849,7 @@
                     </a>
 
                     <a href="../reader.html?id=30" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-tegh-bahadur-ji.png"
+                        <div class="bani-icon"><img src="../../../guruimages/gurutegbahadursahebji.jpeg"
                                 alt="Guru Tegh Bahadur Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸਲੋਕ ਮਹਲਾ ੯</div>
@@ -696,7 +865,7 @@
                     </a>
 
                     <a href="../reader.html?id=33" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png" alt="Guru Arjan Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg" alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਬਾਵਨ ਅਖਰੀ</div>
                             <div class="bani-english">Bavan Akhri</div>
@@ -711,7 +880,7 @@
                     </a>
 
                     <a href="../reader.html?id=34" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸਿਧ ਗੋਸਟਿ</div>
                             <div class="bani-english">Sidh Gosht</div>
@@ -726,7 +895,7 @@
                     </a>
 
                     <a href="../reader.html?id=35" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਦਖਣੀ ਓਅੰਕਾਰੁ</div>
                             <div class="bani-english">Dakhni Oankar</div>
@@ -741,7 +910,7 @@
                     </a>
 
                     <a href="../reader.html?id=22" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-nanak-dev-ji.png" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਆਰਤੀ</div>
                             <div class="bani-english">Aarti</div>
@@ -756,7 +925,7 @@
                     </a>
 
                     <a href="../reader.html?id=11" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-ramdas-ji.png" alt="Guru Ram Das Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gururamdassahebji.jpeg" alt="Guru Ram Das Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਲਾਵਾਂ</div>
                             <div class="bani-english">Lavan (Anand Karaj)</div>
@@ -771,7 +940,7 @@
                     </a>
 
                     <a href="../reader.html?id=32" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-arjan-dev-ji.png" alt="Guru Arjan Dev Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/guruarjanddevsahebji.jpeg" alt="Guru Arjan Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸੁਖਮਨਾ ਸਾਹਿਬ</div>
                             <div class="bani-english">Sukhmana Sahib</div>
@@ -786,7 +955,7 @@
                     </a>
 
                     <a href="../reader.html?id=38" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-granth-sahib-ji.png" alt="Sri Guru Granth Sahib Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਰਾਗ ਮਾਲਾ</div>
                             <div class="bani-english">Raag Mala</div>
@@ -801,7 +970,7 @@
                     </a>
 
                     <a href="../reader.html?id=77" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-granth-sahib-ji.png" alt="Sri Guru Granth Sahib Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀਉ ਕੇ</div>
                             <div class="bani-english">Salok Bhagat Kabir Ji</div>
@@ -816,7 +985,7 @@
                     </a>
 
                     <a href="../reader.html?id=78" class="bani-card">
-                        <div class="bani-icon"><img src="../../assets/icons/guru-granth-sahib-ji.png" alt="Sri Guru Granth Sahib Ji"></div>
+                        <div class="bani-icon"><img src="../../../guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ</div>
                             <div class="bani-english">Salok Sheikh Farid</div>
@@ -848,9 +1017,14 @@
         const themeIcon = document.getElementById('themeIcon');
         const html = document.documentElement;
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('nitnem_category_theme') || 'dark';
+        // Load saved theme from global key
+        const savedTheme = localStorage.getItem('anhad_theme') || 'light';
         html.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
         updateThemeIcon(savedTheme);
 
         // Toggle theme
@@ -858,7 +1032,7 @@
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('nitnem_category_theme', newTheme);
+            localStorage.setItem('anhad_theme', newTheme);
             updateThemeIcon(newTheme);
         });
 

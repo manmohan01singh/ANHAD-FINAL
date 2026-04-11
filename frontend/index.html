@@ -772,44 +772,6 @@
         </div>
         <div class="greeting__guru-portrait" id="guruPortraitWrapper">
           <img class="greeting__guru-img" id="guruPortraitImg" src="assets/icons/guru-har-krishan-portrait.png" alt="Sri Guru Har Krishan Ji" width="117" height="117" loading="eager">
-          <!-- Concentrated petals at bottom of portrait -->
-          <div class="greeting__rose-decoration" aria-hidden="true">
-            <div class="petal-1"></div>
-            <div class="petal-2"></div>
-            <div class="petal-3"></div>
-            <div class="petal-4"></div>
-            <div class="petal-5"></div>
-            <div class="petal-6"></div>
-            <div class="petal-7"></div>
-            <div class="petal-8"></div>
-            <div class="petal-9"></div>
-            <div class="petal-10"></div>
-            <div class="petal-11"></div>
-            <div class="petal-12"></div>
-            <div class="petal-13"></div>
-            <div class="petal-14"></div>
-            <div class="petal-15"></div>
-            <div class="petal-16"></div>
-            <div class="petal-17"></div>
-            <div class="petal-18"></div>
-            <div class="petal-19"></div>
-            <div class="petal-20"></div>
-            <div class="petal-21"></div>
-            <div class="petal-22"></div>
-            <div class="petal-23"></div>
-            <div class="petal-24"></div>
-            <div class="petal-25"></div>
-            <div class="petal-26"></div>
-            <div class="petal-27"></div>
-            <div class="petal-28"></div>
-            <div class="petal-29"></div>
-            <div class="petal-30"></div>
-            <div class="petal-31"></div>
-            <div class="petal-32"></div>
-            <div class="petal-33"></div>
-            <div class="petal-34"></div>
-            <div class="petal-35"></div>
-          </div>
         </div>
       </div>
     </section>
@@ -1168,7 +1130,7 @@
   <!-- ════════════════════════════════════════════════════════════════════════
        INSTALL BANNER — Smart App Banner
   ════════════════════════════════════════════════════════════════════════ -->
-  <div class="install-banner" id="installBanner" role="alert">
+  <div class="install-banner" id="installBanner" role="alert" style="transform:translateY(100%)">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
         <img src="/assets/new.webp" alt="ANHAD Logo">
@@ -1203,6 +1165,9 @@
   <!-- Critical: Capacitor Notifications — Unified notification API -->
   <script src="lib/capacitor-notifications.js"></script>
   
+  <!-- WIDGETS: Home Screen Widget Bridge — Syncs data to iOS/Android widgets -->
+  <script src="widgets/widget-bridge.js"></script>
+  
   <!-- Cache Optimization for instant loading -->
   <script src="lib/gurbani-db.js"></script>
   <script src="lib/bani-cache-optimizer.js"></script>
@@ -1212,6 +1177,8 @@
   <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
   <script src="lib/audio-coordinator.js"></script>
   <script src="lib/persistent-audio.js"></script>
+  <!-- CRITICAL: Smooth Navigation - View Transitions for persistent mini player -->
+  <script src="lib/smooth-navigation.js"></script>
   <script src="lib/global-mini-player.js"></script>
   
   <!-- Critical: Core UI logic -->

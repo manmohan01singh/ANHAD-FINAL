@@ -4,4 +4,10 @@
     <string name="title_activity_main">ANHAD</string>
     <string name="package_name">com.gurbaniradio.app</string>
     <string name="custom_url_scheme">com.gurbaniradio.app</string>
+    
+    <!-- Widget Descriptions -->
+    <string name="nitnem_widget_description">Track your daily Nitnem progress and streak</string>
+    <string name="naam_abhyas_widget_description">Hourly Vaheguru remembrance reminders</string>
+    <string name="calendar_widget_description">Upcoming Gurpurabs and daily Hukamnama</string>
+    <string name="kirtan_widget_description">Live Kirtan player and current track</string>
 </resources>

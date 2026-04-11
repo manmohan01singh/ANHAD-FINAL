@@ -29,7 +29,8 @@ const PA_API_BASE = (() => {
 })();
 
 const AUDIO_CONFIG = {
-    baseUrl: PA_API_BASE + '/audio',
+    // Direct R2 CDN URL - bypasses server for zero bandwidth cost
+    baseUrl: 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
 
     audioFiles: Array.from({ length: 40 }, (_, i) => `day-${i + 1}.webm`),
 

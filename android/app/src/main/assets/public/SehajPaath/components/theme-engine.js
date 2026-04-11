@@ -18,11 +18,11 @@ class ThemeEngine {
     }
 
     loadTheme() {
-        return localStorage.getItem('sehajPaathTheme') || 'gradient';
+        return localStorage.getItem('anhad_theme') || 'gradient';
     }
 
     saveTheme(theme) {
-        localStorage.setItem('sehajPaathTheme', theme);
+        localStorage.setItem('anhad_theme', theme);
     }
 
     applyTheme(theme) {

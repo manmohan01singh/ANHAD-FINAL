@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.7.0';
+const CACHE_VERSION = 'anhad-v3.8.0';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -290,6 +290,12 @@ self.addEventListener('fetch', (event) => {
   // Audio files - Cache but don't wait
   if (event.request.url.includes('/Audio/')) {
     event.respondWith(cacheFirst(event.request));
+    return;
+  }
+
+  // CRITICAL FIX: Never cache r2.dev audio files (Amritvela streams) - always fetch fresh
+  if (event.request.url.includes('r2.dev') && event.request.url.includes('.webm')) {
+    event.respondWith(fetch(event.request));
     return;
   }
 

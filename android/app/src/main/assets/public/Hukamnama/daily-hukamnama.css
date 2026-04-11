@@ -1,9 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    DAILY HUKAMNAMA - iOS 26+ ULTRA PREMIUM DESIGN
    Pure Apple-level aesthetics with sacred spirituality
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ═══════════════════════════════════════════════════════════════
    DESIGN TOKENS
    ═══════════════════════════════════════════════════════════════ */
 
@@ -25,29 +22,29 @@
     --sacred-cream: #FFF8DC;
     --sacred-amber: #FFBF00;
 
-    /* Dark Theme (Default) */
-    --bg-base: #000000;
-    --bg-elevated: #1C1C1E;
-    --bg-secondary: #2C2C2E;
-    --bg-tertiary: #3A3A3C;
+    /* Dark Theme (Default) - Clean white backgrounds */
+    --bg-base: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    --bg-secondary: #FFFFFF;
+    --bg-tertiary: #FFFFFF;
 
-    --surface-glass: rgba(28, 28, 30, 0.72);
-    --surface-elevated: rgba(44, 44, 46, 0.65);
-    --surface-card: rgba(38, 38, 40, 0.85);
+    --surface-glass: rgba(255, 255, 255, 0.95);
+    --surface-elevated: rgba(255, 255, 255, 0.98);
+    --surface-card: #FFFFFF;
 
-    --text-primary: rgba(255, 255, 255, 0.92);
-    --text-secondary: rgba(255, 255, 255, 0.55);
-    --text-tertiary: rgba(255, 255, 255, 0.30);
+    --text-primary: rgba(0, 0, 0, 0.92);
+    --text-secondary: rgba(0, 0, 0, 0.55);
+    --text-tertiary: rgba(0, 0, 0, 0.30);
 
-    --gurbani-primary: rgba(255, 255, 255, 0.95);
-    --gurbani-translation: rgba(255, 255, 255, 0.65);
-    --gurbani-translit: rgba(255, 255, 255, 0.5);
+    --gurbani-primary: rgba(0, 0, 0, 0.95);
+    --gurbani-translation: rgba(0, 0, 0, 0.65);
+    --gurbani-translit: rgba(0, 0, 0, 0.5);
 
-    --separator: rgba(255, 255, 255, 0.08);
-    --separator-opaque: #38383A;
+    --separator: rgba(0, 0, 0, 0.08);
+    --separator-opaque: #E5E5EA;
 
     --accent: var(--ios-blue);
-    --accent-subtle: rgba(10, 132, 255, 0.12);
+    --accent-subtle: rgba(0, 122, 255, 0.12);
 
     /* Glass & Blur */
     --blur-light: saturate(180%) blur(20px);
@@ -84,16 +81,16 @@
     --shadow-glow: 0 0 40px rgba(212, 175, 55, 0.3);
 }
 
-/* Light Theme */
+/* Light Theme - Clean white */
 [data-theme="light"] {
-    --bg-base: #F2F2F7;
+    --bg-base: #FFFFFF;
     --bg-elevated: #FFFFFF;
-    --bg-secondary: #E5E5EA;
-    --bg-tertiary: #D1D1D6;
+    --bg-secondary: #FFFFFF;
+    --bg-tertiary: #FFFFFF;
 
-    --surface-glass: rgba(255, 255, 255, 0.72);
-    --surface-elevated: rgba(255, 255, 255, 0.85);
-    --surface-card: rgba(255, 255, 255, 0.9);
+    --surface-glass: rgba(255, 255, 255, 0.95);
+    --surface-elevated: rgba(255, 255, 255, 0.98);
+    --surface-card: #FFFFFF;
 
     --text-primary: rgba(0, 0, 0, 0.88);
     --text-secondary: rgba(0, 0, 0, 0.50);
@@ -104,7 +101,7 @@
     --gurbani-translit: rgba(0, 0, 0, 0.45);
 
     --separator: rgba(0, 0, 0, 0.06);
-    --separator-opaque: #C6C6C8;
+    --separator-opaque: #E5E5EA;
 
     --accent-subtle: rgba(0, 122, 255, 0.08);
 }
@@ -161,7 +158,7 @@ a {
 .skeleton-container {
     position: fixed;
     inset: 0;
-    background: var(--bg-base);
+    background: #FFFFFF;
     z-index: 10000;
     padding: calc(var(--safe-top) + 60px) 20px 100px;
     transition: opacity 0.5s var(--ease-out), visibility 0.5s;
@@ -174,7 +171,7 @@ a {
 }
 
 .skeleton {
-    background: var(--bg-secondary);
+    background: #F2F2F7;
     border-radius: var(--radius-md);
     position: relative;
     overflow: hidden;
@@ -235,11 +232,7 @@ a {
    ═══════════════════════════════════════════════════════════════ */
 
 .ambient-bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 0;
+    display: none;
 }
 
 .ambient-orb {
@@ -481,11 +474,12 @@ a {
 
 .date-card {
     padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.08);
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 14px;
     text-align: center;
     min-width: 140px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .date-label {
@@ -516,14 +510,14 @@ a {
 
 .date-nav-btn {
     padding: 10px 20px;
-    background: var(--surface-glass);
-    border: 1px solid var(--separator);
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-full);
     font-size: 14px;
     font-weight: 500;
     color: var(--text-secondary);
-    backdrop-filter: var(--blur-light);
-    -webkit-backdrop-filter: var(--blur-light);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     transition: all 0.25s var(--ease-out);
 }
 
@@ -549,10 +543,11 @@ a {
    ═══════════════════════════════════════════════════════════════ */
 
 .hukamnama-card {
-    background: rgba(255, 255, 255, 0.08);
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* Metadata Strip */
@@ -561,8 +556,8 @@ a {
     justify-content: center;
     gap: 24px;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    background: #FFFFFF;
 }
 
 .meta-item {
@@ -745,7 +740,7 @@ a {
     position: relative;
     padding: 20px 16px;
     margin: 28px 0;
-    background: var(--accent-subtle);
+    background: rgba(0, 122, 255, 0.04);
     border-radius: var(--radius-lg);
     border-left: 3px solid var(--sacred-gold);
 }
@@ -767,7 +762,7 @@ a {
 }
 
 [data-theme="light"] .verse.rahao::before {
-    background: var(--bg-elevated);
+    background: #FFFFFF;
 }
 
 /* Larivaar Mode */
@@ -789,12 +784,12 @@ a {
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    background: var(--surface-elevated);
-    backdrop-filter: var(--blur-heavy);
-    -webkit-backdrop-filter: var(--blur-heavy);
+    background: #FFFFFF;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-radius: var(--radius-full);
-    border: 1px solid var(--separator);
-    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .control-btn {
@@ -855,8 +850,9 @@ a {
     left: 0;
     right: 0;
     z-index: 201;
-    background: var(--bg-elevated);
+    background: #FFFFFF;
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
     padding: 12px 20px calc(var(--safe-bottom) + 24px);
     max-height: 75vh;
     overflow-y: auto;
@@ -902,7 +898,7 @@ a {
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    background: var(--bg-secondary);
+    background: #F8F8F8;
     margin-bottom: 2px;
 }
 
@@ -1029,14 +1025,15 @@ a {
     transform: translateX(-50%) translateY(100px);
     z-index: 300;
     padding: 14px 24px;
-    background: var(--bg-tertiary);
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-full);
     font-size: 15px;
     font-weight: 500;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s var(--ease-out);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .toast.visible {

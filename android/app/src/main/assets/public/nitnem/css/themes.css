@@ -151,7 +151,7 @@
   
   /* ══════ Chromatic Aberration Colors ══════ */
   --chroma-red: rgba(255, 100, 100, 0.15);
-  --chroma-green: rgba(100, 255, 100, 0.1);
+  --chroma-rose: rgba(255, 120, 140, 0.1);
   --chroma-blue: rgba(100, 100, 255, 0.15);
   
   /* ══════ Liquid Orb Colors ══════ */
@@ -280,7 +280,7 @@
   
   /* ══════ Chromatic Aberration Colors ══════ */
   --chroma-red: rgba(255, 120, 120, 0.12);
-  --chroma-green: rgba(120, 255, 180, 0.08);
+  --chroma-rose: rgba(255, 140, 160, 0.08);
   --chroma-blue: rgba(120, 160, 255, 0.12);
   
   /* ══════ Liquid Orb Colors ══════ */

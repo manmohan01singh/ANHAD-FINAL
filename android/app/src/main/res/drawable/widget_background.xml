@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- iOS-style rounded corners -->
+    <corners android:radius="22dp" />
+    
+    <!-- Gradient background matching iOS widget style -->
+    <gradient
+        android:angle="135"
+        android:startColor="#2C2C2E"
+        android:endColor="#1C1C1E"
+        android:type="linear" />
+    
+    <!-- Subtle border -->
+    <stroke
+        android:width="1dp"
+        android:color="#33FFFFFF" />
+    
+    <!-- Padding inside widget -->
+    <padding
+        android:left="0dp"
+        android:top="0dp"
+        android:right="0dp"
+        android:bottom="0dp" />
+</shape>

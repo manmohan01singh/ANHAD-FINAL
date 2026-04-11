@@ -164,6 +164,7 @@ const Utils = {
 
     /**
      * Calculate streak from date array
+     * Fixed: Properly counts consecutive days including today
      */
     calculateStreak(dates) {
         if (!dates || dates.length === 0) return 0;
@@ -175,16 +176,21 @@ const Utils = {
         const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
         // Check if streak is active (today or yesterday)
-        if (sortedDates[0] !== today && sortedDates[0] !== yesterdayString) {
+        const mostRecent = sortedDates[0];
+        const isStreakActive = mostRecent === today || mostRecent === yesterdayString;
+
+        if (!isStreakActive) {
             return 0;
         }
 
+        // Count consecutive days starting from the most recent
         let streak = 1;
         for (let i = 0; i < sortedDates.length - 1; i++) {
             const current = new Date(sortedDates[i]);
-            const prev = new Date(sortedDates[i + 1]);
-            const diffDays = (current - prev) / (1000 * 60 * 60 * 24);
+            const next = new Date(sortedDates[i + 1]);
+            const diffDays = (current - next) / (1000 * 60 * 60 * 24);
 
+            // Consecutive days have exactly 1 day difference
             if (diffDays === 1) {
                 streak++;
             } else {
@@ -297,12 +303,43 @@ const Utils = {
         if (j === 2 && k !== 12) return num + 'nd';
         if (j === 3 && k !== 13) return num + 'rd';
         return num + 'th';
+    },
+
+    /**
+     * Schedule non-critical work for idle time
+     * Uses requestIdleCallback with fallback to setTimeout
+     */
+    scheduleIdleWork(callback, timeout = 2000) {
+        if ('requestIdleCallback' in window) {
+            return requestIdleCallback(callback, { timeout });
+        } else {
+            return setTimeout(callback, 1);
+        }
+    },
+
+    /**
+     * Batch DOM reads for layout performance
+     * Prevents layout thrashing by reading all values first
+     */
+    batchDOMReads(reads) {
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                const results = reads.map(read => read());
+                resolve(results);
+            });
+        });
+    },
+
+    /**
+     * Batch DOM writes for layout performance
+     * Groups all DOM mutations together
+     */
+    batchDOMWrites(writes) {
+        requestAnimationFrame(() => {
+            writes.forEach(write => write());
+        });
     }
 };
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 2.1: THEME ENGINE
-   ───────────────────────────────────────────────────────────────────────────── */
 
 class NitnemTrackerThemeEngine {
     constructor() {
@@ -1796,6 +1833,9 @@ const AmritvelaManager = {
         // Show toast
         Toast.success('ਹਾਜ਼ਰੀ ਲੱਗੀ!', `You woke up at ${entry.time} - ${slotInfo.label}`);
 
+        // Refresh date strip if open
+        DateHistoryView.refreshDateDots();
+
         // Animate button
         this.animateButton();
     },
@@ -2668,16 +2708,33 @@ const NitnemManager = {
 
         const percentage = totalBanis > 0 ? Math.round((completedBanis / totalBanis) * 100) : 0;
 
-        // Update progress ring
-        if (this.elements.progressRing) {
+        // Debug logging to trace 0% bug
+        console.log('[Nitnem] Progress update:', {
+            totalBanis,
+            completedBanis,
+            percentage,
+            selectedBanis: this.selectedBanis,
+            completedToday: this.completedToday
+        });
+
+        // Update progress ring with element guard
+        const progressRing = document.getElementById('nitnemProgressRing');
+        if (progressRing) {
             const circumference = 2 * Math.PI * 15; // radius = 15
             const offset = circumference - (percentage / 100) * circumference;
-            this.elements.progressRing.style.strokeDashoffset = offset;
+            progressRing.style.strokeDashoffset = offset;
+            console.log('[Nitnem] Progress ring updated:', percentage + '%');
+        } else {
+            console.warn('[Nitnem] Progress ring element not found');
         }
 
-        // Update percentage text
-        if (this.elements.progressPercent) {
-            this.elements.progressPercent.textContent = `${percentage}%`;
+        // Update percentage text with element guard
+        const progressPercent = document.getElementById('nitnemProgressPercent');
+        if (progressPercent) {
+            progressPercent.textContent = `${percentage}%`;
+            console.log('[Nitnem] Progress percent updated:', percentage + '%');
+        } else {
+            console.warn('[Nitnem] Progress percent element not found');
         }
 
         // Update complete all button
@@ -3889,79 +3946,106 @@ const MalaManager = {
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Show the three-dot menu for Mala section
+     * Pre-render the mala menu once (called from init or first open)
      */
-    showMalaMenu() {
-        // Load current goal if any
-        const dailyGoals = StorageManager.load('nt_mala_goals', {});
-        const currentGoal = dailyGoals[this.state.currentJaap] || dailyGoals.default || 0;
+    _menuRendered: false,
+    preRenderMenu() {
+        if (this._menuRendered) return;
+        this._menuRendered = true;
 
-        const menuHTML = `
-            <div class="mala-menu-overlay" id="malaMenuOverlay" onclick="MalaManager.closeMenu(event)">
-                <div class="mala-menu" onclick="event.stopPropagation()">
-                    <div class="menu-header">
-                        <h4>📿 Mala Options</h4>
-                        <button class="menu-close-btn" onclick="MalaManager.closeMenu()">×</button>
+        const overlay = document.createElement('div');
+        overlay.className = 'mala-menu-overlay pre-rendered';
+        overlay.id = 'malaMenuOverlay';
+        overlay.innerHTML = `
+            <div class="mala-menu" onclick="event.stopPropagation()">
+                <div class="menu-header">
+                    <h4>📿 Mala Options</h4>
+                    <button class="menu-close-btn" id="malaMenuCloseBtn">×</button>
+                </div>
+                <div class="menu-option" data-action="setDailyGoal">
+                    <span class="menu-icon">🎯</span>
+                    <div class="menu-text">
+                        <span class="menu-label">Set Daily Goal</span>
+                        <span class="menu-value" id="malaGoalValue">Not set</span>
                     </div>
-                    
-                    <div class="menu-option" onclick="MalaManager.setDailyGoal()">
-                        <span class="menu-icon">🎯</span>
-                        <div class="menu-text">
-                            <span class="menu-label">Set Daily Goal</span>
-                            <span class="menu-value">${currentGoal > 0 ? currentGoal + ' malas/day' : 'Not set'}</span>
-                        </div>
+                </div>
+                <div class="menu-option" data-action="viewPreviousData">
+                    <span class="menu-icon">📊</span>
+                    <div class="menu-text">
+                        <span class="menu-label">Previous Day Records</span>
+                        <span class="menu-value">Yesterday & Day Before</span>
                     </div>
-                    
-                    <div class="menu-option" onclick="MalaManager.viewPreviousData()">
-                        <span class="menu-icon">📊</span>
-                        <div class="menu-text">
-                            <span class="menu-label">Previous Day Records</span>
-                            <span class="menu-value">Yesterday & Day Before</span>
-                        </div>
+                </div>
+                <div class="menu-option" data-action="viewFullHistory">
+                    <span class="menu-icon">📅</span>
+                    <div class="menu-text">
+                        <span class="menu-label">View Full History</span>
+                        <span class="menu-value">Last 30 days</span>
                     </div>
-                    
-                    <div class="menu-option" onclick="MalaManager.viewFullHistory()">
-                        <span class="menu-icon">📅</span>
-                        <div class="menu-text">
-                            <span class="menu-label">View Full History</span>
-                            <span class="menu-value">Last 30 days</span>
-                        </div>
+                </div>
+                <div class="menu-option" data-action="addCustomMala">
+                    <span class="menu-icon">➕</span>
+                    <div class="menu-text">
+                        <span class="menu-label">Add Custom Naam Jap</span>
+                        <span class="menu-value">Create your own</span>
                     </div>
-                    
-                    <div class="menu-option" onclick="MalaManager.addCustomMala()">
-                        <span class="menu-icon">➕</span>
-                        <div class="menu-text">
-                            <span class="menu-label">Add Custom Naam Jap</span>
-                            <span class="menu-value">Create your own</span>
-                        </div>
-                    </div>
-                    
-                    <div class="menu-option" onclick="MalaManager.showPersonalBests()">
-                        <span class="menu-icon">🏆</span>
-                        <div class="menu-text">
-                            <span class="menu-label">Personal Bests</span>
-                            <span class="menu-value">Your records</span>
-                        </div>
+                </div>
+                <div class="menu-option" data-action="showPersonalBests">
+                    <span class="menu-icon">🏆</span>
+                    <div class="menu-text">
+                        <span class="menu-label">Personal Bests</span>
+                        <span class="menu-value">Your records</span>
                     </div>
                 </div>
             </div>
         `;
 
-        document.body.insertAdjacentHTML('beforeend', menuHTML);
+        document.body.appendChild(overlay);
+
+        // Bind events once
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) this.closeMenu();
+        });
+        overlay.querySelector('#malaMenuCloseBtn').addEventListener('click', () => this.closeMenu());
+        overlay.querySelectorAll('.menu-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                const action = opt.dataset.action;
+                this.closeMenu();
+                if (typeof this[action] === 'function') this[action]();
+            });
+        });
+    },
+
+    /**
+     * Show the three-dot menu for Mala section
+     */
+    showMalaMenu() {
+        this.preRenderMenu();
+
+        // Update dynamic goal value
+        const dailyGoals = StorageManager.load('nt_mala_goals', {});
+        const currentGoal = dailyGoals[this.state.currentJaap] || dailyGoals.default || 0;
+        const goalEl = document.getElementById('malaGoalValue');
+        if (goalEl) goalEl.textContent = currentGoal > 0 ? currentGoal + ' malas/day' : 'Not set';
+
+        const overlay = document.getElementById('malaMenuOverlay');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => {
+                overlay.classList.add('visible');
+            });
+        }
         HapticManager.light();
     },
 
     /**
-     * Close the menu
+     * Close the menu (instant CSS transition, no DOM removal)
      */
     closeMenu(event) {
-        if (event && event.target.id !== 'malaMenuOverlay') return;
-
         const overlay = document.getElementById('malaMenuOverlay');
-        if (overlay) {
-            overlay.classList.add('closing');
-            setTimeout(() => overlay.remove(), 200);
-        }
+        if (!overlay) return;
+        overlay.classList.remove('visible');
+        setTimeout(() => { overlay.style.display = 'none'; }, 200);
     },
 
     /**
@@ -4501,6 +4585,11 @@ const AlarmManager = {
         // Cache elements
         this.elements = {
             section: document.getElementById('alarmSection'),
+            body: document.getElementById('alarmBody'),
+            toggleBtn: document.getElementById('alarmToggleBtn'),
+            collapsedSummary: document.getElementById('alarmCollapsedSummary'),
+            summaryRate: document.getElementById('alarmSummaryRate'),
+            summaryResponded: document.getElementById('alarmSummaryResponded'),
             weekView: document.getElementById('alarmWeekView'),
             weekLabel: document.getElementById('weekLabel'),
             weekDays: document.getElementById('weekDays'),
@@ -4516,6 +4605,9 @@ const AlarmManager = {
             syncRemindersBtn: document.getElementById('syncRemindersBtn')
         };
 
+        // Setup collapsible toggle
+        this.setupCollapseToggle();
+
         // Load data
         this.loadAlarmData();
 
@@ -4530,6 +4622,45 @@ const AlarmManager = {
 
         // Update stats
         this.updateStats();
+    },
+
+    /**
+     * Setup alarm section collapse/expand toggle
+     */
+    setupCollapseToggle() {
+        const toggleBtn = this.elements.toggleBtn;
+        const body = this.elements.body;
+        const summary = this.elements.collapsedSummary;
+        if (!toggleBtn || !body) return;
+
+        toggleBtn.addEventListener('click', () => {
+            const isCollapsed = body.classList.contains('collapsed');
+            if (isCollapsed) {
+                body.classList.remove('collapsed');
+                body.classList.add('expanded');
+                toggleBtn.classList.add('rotated');
+                if (summary) summary.classList.add('hidden');
+            } else {
+                body.classList.add('collapsed');
+                body.classList.remove('expanded');
+                toggleBtn.classList.remove('rotated');
+                if (summary) summary.classList.remove('hidden');
+                this.updateCollapsedSummary();
+            }
+            HapticManager.selection();
+        });
+    },
+
+    /**
+     * Update collapsed summary stats
+     */
+    updateCollapsedSummary() {
+        if (this.elements.summaryRate) {
+            this.elements.summaryRate.textContent = this.elements.obedienceRate?.textContent || '0%';
+        }
+        if (this.elements.summaryResponded) {
+            this.elements.summaryResponded.textContent = this.elements.alarmsResponded?.textContent || '0';
+        }
     },
 
     /**
@@ -5184,6 +5315,9 @@ const AlarmManager = {
         if (this.elements.obedienceRate) {
             this.elements.obedienceRate.textContent = `${rate}%`;
         }
+
+        // Update collapsed summary
+        this.updateCollapsedSummary();
     },
 
     /**
@@ -5435,6 +5569,476 @@ const StreakManager = {
      */
     getData() {
         return { ...this.state };
+    }
+};
+
+/**
+ * SECTION 20.5: STREAK SAVER PUNISHMENT SYSTEM (Japtab)
+ * Allows users to save their streak by completing punishment Banis within 24h
+ */
+
+const StreakSaverManager = {
+    // Enhanced punishment tiers with Mathila-specific tracking
+    PUNISHMENT_TIERS: [
+        { min: 1, max: 7, count: 1, options: ['japji'], severity: 'low' },
+        { min: 7, max: 14, count: 2, options: ['japji'], severity: 'medium' },
+        { min: 14, max: 21, count: 3, options: ['japji'], severity: 'high' },
+        { min: 21, max: 28, count: 4, options: ['japji', 'jaap_sahib'], severity: 'very_high' },
+        { min: 28, max: Infinity, count: 5, options: ['japji', 'sukhmani', 'jaap_sahib'], severity: 'critical' }
+    ],
+
+    // Enhanced punishment Banis with Mathila-specific options
+    PUNISHMENT_BANIS: {
+        japji: { id: 'japji_sahib', name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        sukhmani: { id: 'sukhmani_sahib', name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        jaap_sahib: { id: 'jaap_sahib', name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' }
+    },
+
+    // Mathila-specific penalty configuration
+    MATHILA_CONFIG: {
+        minMalasForComplete: 1, // Minimum malas to consider Mathila complete
+        gracePeriodHours: 2, // Grace period after Amritvela
+        penaltyMultiplier: 1.5 // Extra penalty for missing Mathila
+    },
+
+    STORAGE_KEY: 'nitnemTracker_streakSaver',
+    ATTENDANCE_KEY: 'nitnemTracker_weakAttendance',
+
+    /**
+     * Initialize Streak Saver
+     */
+    init() {
+        this.checkAndCleanupExpired();
+        this.renderPunishmentUI();
+    },
+
+    /**
+     * Check if streak was broken and offer saver option (enhanced with Mathila & weak attendance)
+     */
+    checkStreakBreak() {
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+        const today = Utils.getTodayString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toLocaleDateString('en-CA');
+
+        // Check if user missed yesterday's Amritvela
+        const missedYesterday = !amritvelaLog[yesterdayString];
+        const hasStreak = StreakManager.state.current > 0;
+
+        // Check for missed Mathila (Mala Jap during Amritvela)
+        const missedMathila = this.checkMissedMathila(yesterdayString);
+
+        // Check for weak attendance pattern
+        const weakAttendance = this.checkWeakAttendance();
+
+        if (missedYesterday && hasStreak) {
+            // Calculate effective streak for punishment tier
+            let effectiveStreak = StreakManager.state.current;
+
+            // Increase penalty for missed Mathila
+            if (missedMathila) {
+                effectiveStreak = Math.floor(effectiveStreak * this.MATHILA_CONFIG.penaltyMultiplier);
+            }
+
+            // Store attendance info for punishment context
+            this.saveAttendanceData({
+                missedAmritvela: true,
+                missedMathila: missedMathila,
+                weakAttendance: weakAttendance,
+                date: yesterdayString
+            });
+
+            // Offer saver with potentially increased punishment
+            this.offerStreakSaver(effectiveStreak, { missedMathila, weakAttendance });
+        }
+    },
+
+    /**
+     * Check if user missed Mathila (Mala Jap) for a specific date
+     */
+    checkMissedMathila(dateStr) {
+        const malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+
+        // Mathila is Mala Jap done during Amritvela
+        // If Amritvela was attended but no malas completed = missed Mathila
+        const attendedAmritvela = amritvelaLog[dateStr];
+        const malaData = malaLog[dateStr] || { completedMalas: 0 };
+
+        if (attendedAmritvela && malaData.completedMalas < this.MATHILA_CONFIG.minMalasForComplete) {
+            return true;
+        }
+
+        return false;
+    },
+
+    /**
+     * Check for weak attendance pattern (less than 50% attendance in last 7 days)
+     */
+    checkWeakAttendance() {
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        let attendedDays = 0;
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toLocaleDateString('en-CA');
+            if (amritvelaLog[dateStr]) {
+                attendedDays++;
+            }
+        }
+
+        // Less than 50% attendance = weak attendance
+        return attendedDays < 4;
+    },
+
+    /**
+     * Save attendance data for context
+     */
+    saveAttendanceData(data) {
+        const existing = StorageManager.load(this.ATTENDANCE_KEY, []);
+        existing.push(data);
+        // Keep only last 30 entries
+        if (existing.length > 30) existing.shift();
+        StorageManager.save(this.ATTENDANCE_KEY, existing);
+    },
+
+    /**
+     * Offer streak saver with punishment
+     */
+    offerStreakSaver(brokenStreakCount, context) {
+        // Check if already has active punishment
+        const existing = this.getActivePunishment();
+        if (existing) return;
+
+        // Generate punishment based on tier
+        const punishment = this.generatePunishment(brokenStreakCount);
+
+        // Save punishment data
+        const saverData = {
+            brokenStreak: brokenStreakCount,
+            punishment: punishment,
+            offeredAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            completed: false,
+            punishmentBanisAdded: false,
+            context: context || {}
+        };
+
+        this.savePunishmentData(saverData);
+
+        // Add punishment Banis to Ajadta Nitnem
+        this.addPunishmentToNitnem(punishment);
+
+        // Show notification
+        this.showStreakSaverOffer(saverData);
+
+        // Render UI
+        this.renderPunishmentUI();
+    },
+
+    /**
+     * Generate punishment based on streak tier
+     */
+    generatePunishment(brokenStreak) {
+        // Find appropriate tier
+        const tier = this.PUNISHMENT_TIERS.find(t => brokenStreak >= t.min && brokenStreak < t.max);
+
+        if (!tier) {
+            return { type: 'japji', count: 1 };
+        }
+
+        // For high tiers (28+), give option between multiple Japji or Sukhmani
+        if (tier.options.includes('sukhmani')) {
+            // 50% chance: either 5 Japji OR 1 Sukhmani
+            const useSukhmani = Math.random() < 0.5;
+            if (useSukhmani) {
+                return { type: 'sukhmani', count: 1 };
+            }
+        }
+
+        // Default: Japji Sahib with tier count
+        return { type: 'japji', count: tier.count };
+    },
+
+    /**
+     * Add punishment Banis to Ajadta Nitnem
+     */
+    addPunishmentToNitnem(punishment) {
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
+            amritvela: [],
+            rehras: [],
+            sohila: []
+        });
+
+        const baniInfo = this.PUNISHMENT_BANIS[punishment.type];
+
+        // Check if punishment Bani already exists in user's Nitnem
+        const period = baniInfo.period;
+        const existingIndex = selectedBanis[period].findIndex(b => b.id === baniInfo.id);
+
+        if (existingIndex === -1) {
+            // Add punishment Bani temporarily
+            for (let i = 0; i < punishment.count; i++) {
+                selectedBanis[period].push({
+                    ...baniInfo,
+                    isPunishment: true,
+                    punishmentIndex: i
+                });
+            }
+
+            StorageManager.save(CONFIG.STORAGE_KEYS.SELECTED_BANIS, selectedBanis);
+
+            // Update saver data
+            const saverData = this.getActivePunishment();
+            if (saverData) {
+                saverData.punishmentBanisAdded = true;
+                this.savePunishmentData(saverData);
+            }
+
+            // Refresh Nitnem display
+            if (typeof NitnemManager !== 'undefined') {
+                NitnemManager.loadSelectedBanis();
+                NitnemManager.renderAllLists();
+            }
+        }
+    },
+
+    /**
+     * Remove punishment Banis from Ajadta Nitnem
+     */
+    removePunishmentFromNitnem() {
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
+            amritvela: [],
+            rehras: [],
+            sohila: []
+        });
+
+        // Remove all punishment Banis
+        Object.keys(selectedBanis).forEach(period => {
+            selectedBanis[period] = selectedBanis[period].filter(b => !b.isPunishment);
+        });
+
+        StorageManager.save(CONFIG.STORAGE_KEYS.SELECTED_BANIS, selectedBanis);
+
+        // Refresh Nitnem display
+        if (typeof NitnemManager !== 'undefined') {
+            NitnemManager.loadSelectedBanis();
+            NitnemManager.renderAllLists();
+        }
+    },
+
+    /**
+     * Check if punishment Banis are completed
+     */
+    checkPunishmentCompletion() {
+        const saverData = this.getActivePunishment();
+        if (!saverData || saverData.completed) return;
+
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        const today = Utils.getTodayString();
+        const todayData = nitnemLog[today] || { amritvela: [], rehras: [], sohila: [] };
+
+        const baniInfo = this.PUNISHMENT_BANIS[saverData.punishment.type];
+        const period = baniInfo.period;
+        const periodCompleted = todayData[period] || [];
+
+        // Check if all required punishment Banis are completed
+        let completedCount = 0;
+        for (let i = 0; i < saverData.punishment.count; i++) {
+            const punishmentBaniId = `${baniInfo.id}_punishment_${i}`;
+            if (periodCompleted.includes(punishmentBaniId) ||
+                periodCompleted.includes(baniInfo.id)) {
+                completedCount++;
+            }
+        }
+
+        if (completedCount >= saverData.punishment.count) {
+            this.completePunishment();
+        }
+    },
+
+    /**
+     * Complete punishment and save streak
+     */
+    completePunishment() {
+        const saverData = this.getActivePunishment();
+        if (!saverData) return;
+
+        saverData.completed = true;
+        saverData.completedAt = new Date().toISOString();
+        this.savePunishmentData(saverData);
+
+        // Remove punishment Banis from Nitnem
+        this.removePunishmentFromNitnem();
+
+        // Restore the streak (minus 1 since yesterday was missed)
+        const restoredStreak = saverData.brokenStreak;
+        StreakManager.state.current = restoredStreak;
+        StreakManager.saveStreakData();
+
+        // Show celebration
+        Toast.success('🎉 Streak Saved!', `Your ${restoredStreak}-day streak is restored!`);
+        CelebrationManager.show('streakSaved');
+
+        this.renderPunishmentUI();
+    },
+
+    /**
+     * Check and cleanup expired punishments
+     */
+    checkAndCleanupExpired() {
+        const saverData = this.getActivePunishment();
+        if (!saverData) return;
+
+        const now = new Date();
+        const expiresAt = new Date(saverData.expiresAt);
+
+        if (now > expiresAt && !saverData.completed) {
+            // Punishment expired - streak breaks
+            this.removePunishmentFromNitnem();
+            localStorage.removeItem(this.STORAGE_KEY);
+            Toast.info('⏰ Streak Saver Expired', 'Your streak has been reset. Start fresh today!');
+        }
+    },
+
+    /**
+     * Show streak saver offer notification
+     */
+    showStreakSaverOffer(saverData) {
+        const punishment = saverData.punishment;
+        const baniName = this.PUNISHMENT_BANIS[punishment.type].name;
+        const count = punishment.count;
+
+        let message = '';
+        if (punishment.type === 'sukhmani') {
+            message = `Complete 1 Sukhmani Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+        } else {
+            message = `Complete ${count} Japji Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+        }
+
+        // Show toast notification
+        Toast.warning('⚡ Streak Saver Available!', message, 10000);
+
+        // Show modal with details
+        this.showStreakSaverModal(saverData);
+    },
+
+    /**
+     * Show streak saver modal
+     */
+    showStreakSaverModal(saverData) {
+        const punishment = saverData.punishment;
+        const baniInfo = this.PUNISHMENT_BANIS[punishment.type];
+        const expiresAt = new Date(saverData.expiresAt);
+        const timeRemaining = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60));
+
+        let punishmentText = '';
+        if (punishment.type === 'sukhmani') {
+            punishmentText = 'Complete Sukhmani Sahib × 1';
+        } else {
+            punishmentText = `Complete Japji Sahib × ${punishment.count}`;
+        }
+
+        const modalHTML = `
+            <div class="modal-overlay active" id="streakSaverModal">
+                <div class="modal-container streak-saver-modal">
+                    <div class="modal-header">
+                        <div class="streak-saver-icon">⚡</div>
+                        <h3>Streak Saver Available!</h3>
+                        <p class="streak-saver-subtitle">Your ${saverData.brokenStreak}-day streak can be saved!</p>
+                    </div>
+                    <div class="modal-body">
+                        <div class="punishment-card">
+                            <div class="punishment-icon">📿</div>
+                            <div class="punishment-details">
+                                <h4>Punishment Task</h4>
+                                <p class="punishment-text">${punishmentText}</p>
+                                <p class="punishment-note">Complete within <strong>${timeRemaining} hours</strong></p>
+                            </div>
+                        </div>
+                        <div class="punishment-explanation">
+                            <p>💡 The punishment Bani has been added to your Nitnem. Complete it to restore your streak!</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="modal-btn primary" onclick="document.getElementById('streakSaverModal').remove()">
+                            I Understand
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    },
+
+    /**
+     * Render punishment UI in Nitnem section
+     */
+    renderPunishmentUI() {
+        const saverData = this.getActivePunishment();
+        const existingBanner = document.getElementById('streakSaverBanner');
+
+        if (!saverData || saverData.completed) {
+            if (existingBanner) existingBanner.remove();
+            return;
+        }
+
+        const expiresAt = new Date(saverData.expiresAt);
+        const now = new Date();
+        const hoursRemaining = Math.ceil((expiresAt - now) / (1000 * 60 * 60));
+
+        const punishment = saverData.punishment;
+        const baniInfo = this.PUNISHMENT_BANIS[punishment.type];
+
+        let statusText = '';
+        if (punishment.type === 'sukhmani') {
+            statusText = `Complete 1 Sukhmani Sahib - ${hoursRemaining}h remaining`;
+        } else {
+            statusText = `Complete ${punishment.count} Japji Sahib - ${hoursRemaining}h remaining`;
+        }
+
+        const bannerHTML = `
+            <div id="streakSaverBanner" class="streak-saver-banner">
+                <div class="banner-content">
+                    <span class="banner-icon">⚡</span>
+                    <div class="banner-text">
+                        <strong>Streak Saver Active!</strong>
+                        <span>${statusText}</span>
+                    </div>
+                </div>
+                <div class="banner-progress">
+                    <div class="banner-progress-bar" style="width: ${(hoursRemaining / 24) * 100}%"></div>
+                </div>
+            </div>
+        `;
+
+        if (existingBanner) {
+            existingBanner.outerHTML = bannerHTML;
+        } else {
+            const nitnemSection = document.getElementById('nitnemProgressSection');
+            if (nitnemSection) {
+                nitnemSection.insertAdjacentHTML('afterbegin', bannerHTML);
+            }
+        }
+    },
+
+    /**
+     * Get active punishment data
+     */
+    getActivePunishment() {
+        const data = localStorage.getItem(this.STORAGE_KEY);
+        return data ? JSON.parse(data) : null;
+    },
+
+    /**
+     * Save punishment data
+     */
+    savePunishmentData(data) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     }
 };
 
@@ -5798,10 +6402,25 @@ const ReportsManager = {
     },
 
     /**
-     * Render weekly report
+     * Render weekly report with safety checks
      */
     renderWeeklyReport() {
-        const report = this.generator.generateWeeklyReport();
+        // Safety check for generator availability
+        if (!this.generator || typeof this.generator.generateWeeklyReport !== 'function') {
+            console.warn('⚠️ ReportGenerator not available for weekly report');
+            this.renderWeeklyReportFallback();
+            return;
+        }
+
+        let report;
+        try {
+            report = this.generator.generateWeeklyReport();
+        } catch (e) {
+            console.warn('⚠️ generateWeeklyReport error:', e);
+            this.renderWeeklyReportFallback();
+            return;
+        }
+
         const { start, end } = Utils.getWeekRange();
 
         // Use generator's daily stats
@@ -5852,7 +6471,6 @@ const ReportsManager = {
             this.elements.weeklyChartBars.innerHTML = dailyData.map(day => {
                 const height = day.score;
                 const barClass = height === 100 ? '' : height > 0 ? 'partial' : 'empty';
-
                 return `
                     <div class="chart-bar">
                         <div class="bar-fill ${barClass}" style="height: ${Math.max(height, 4)}%"></div>
@@ -5862,43 +6480,55 @@ const ReportsManager = {
         }
 
         // Update insight
-        this.updateWeeklyInsight(report.amritvela.amritvelaWakeups, report.nitnem.completeDays, alarmRate); // passed values might need adjustment but logic inside uses them generically or I can pass text directly
-
-        // Actually, updateWeeklyInsight logic uses counts. Let's reuse it or better, use generator's insight
-        if (this.elements.weeklyInsight) {
-            const insightText = this.elements.weeklyInsight.querySelector('.insight-text');
-            if (insightText && report.nitnem.insight) {
-                // report.nitnem.insight isn't exactly standard but we have generator methods
-                // Let's rely on previous logic for now or custom generator insight
-
-                // Using generator's insight logic if adaptable, or stick to existing simple logic
-                // Existing logic:
-                this.updateWeeklyInsight(report.amritvela.amritvelaWakeups, Math.round(report.nitnem.totalCompleted / report.nitnem.targetBanis * 10) / 10, alarmRate);
-            }
-        }
+        this.updateWeeklyInsight(report.amritvela.amritvelaWakeups, report.nitnem.completeDays, alarmRate);
     },
 
     /**
-     * Check if Nitnem is complete for a day
+     * Fallback render for weekly report when generator fails
      */
-    isNitnemComplete(dayData) {
-        if (!dayData) return false;
+    renderWeeklyReportFallback() {
+        const dates = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            dates.push(d.toLocaleDateString('en-CA'));
+        }
 
-        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
-            amritvela: [],
-            rehras: [],
-            sohila: []
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+
+        let amritvelaDays = 0;
+        let nitnemDays = 0;
+
+        dates.forEach(date => {
+            if (amritvelaLog[date]) amritvelaDays++;
+            if (nitnemLog[date]) nitnemDays++;
         });
 
-        let totalSelected = 0;
-        let totalCompleted = 0;
+        const amritvelaRate = Math.round((amritvelaDays / 7) * 100);
+        const nitnemRate = Math.round((nitnemDays / 7) * 100);
 
-        Object.keys(selectedBanis).forEach(period => {
-            totalSelected += selectedBanis[period].length;
-            totalCompleted += (dayData[period] || []).length;
-        });
+        if (this.elements.weeklyAmritvelaFill) {
+            this.elements.weeklyAmritvelaFill.style.width = `${amritvelaRate}%`;
+        }
+        if (this.elements.weeklyAmritvelaValue) {
+            this.elements.weeklyAmritvelaValue.textContent = `${amritvelaDays}/7`;
+        }
 
-        return totalSelected > 0 && totalCompleted >= totalSelected;
+        if (this.elements.weeklyNitnemFill) {
+            this.elements.weeklyNitnemFill.style.width = `${nitnemRate}%`;
+        }
+        if (this.elements.weeklyNitnemValue) {
+            this.elements.weeklyNitnemValue.textContent = `${nitnemDays}/7`;
+        }
+
+        if (this.elements.weeklyChartBars) {
+            this.elements.weeklyChartBars.innerHTML = dates.map(() => `
+                <div class="chart-bar"><div class="bar-fill empty" style="height: 4%"></div></div>
+            `).join('');
+        }
+
+        this.updateWeeklyInsight(amritvelaDays, nitnemDays, 0);
     },
 
     /**
@@ -6739,6 +7369,142 @@ const InsightsEngine = {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 23.5.1: DATE HISTORY VIEW
+   Yesterday button — date strip popup and full day detail modal
+   ───────────────────────────────────────────────────────────────────────────── */
+
+const DateHistoryView = {
+    show() {
+        document.getElementById('dateStripOverlay')?.remove();
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const totalPerDay = (selectedBanis.amritvela?.length || 0) + (selectedBanis.rehras?.length || 0) + (selectedBanis.sohila?.length || 0);
+        let chipsHTML = '';
+        for (let i = 29; i >= 1; i--) {
+            const d = new Date(); d.setDate(d.getDate() - i);
+            const dateStr = d.toLocaleDateString('en-CA');
+            const dayData = nitnemLog[dateStr];
+            let completed = 0;
+            if (dayData) { completed = (dayData.amritvela?.length || 0) + (dayData.rehras?.length || 0) + (dayData.sohila?.length || 0); }
+            const dotClass = !dayData ? 'none' : (completed >= totalPerDay && totalPerDay > 0 ? '' : 'incomplete');
+            chipsHTML += '<div class="date-chip" data-date="' + dateStr + '" onclick="DateHistoryView.showDayDetail(\'' + dateStr + '\')"><span class="chip-day">' + dayNames[d.getDay()] + '</span><span class="chip-num">' + d.getDate() + '</span><span class="chip-dot ' + dotClass + '"></span></div>';
+        }
+        const overlay = document.createElement('div');
+        overlay.className = 'date-strip-overlay';
+        overlay.id = 'dateStripOverlay';
+        overlay.innerHTML = '<div class="date-strip-container"><div class="date-strip-header"><h3>📅 Date History</h3><button class="date-strip-close" onclick="document.getElementById(\'dateStripOverlay\').remove()">×</button></div><div class="date-strip-scroll">' + chipsHTML + '</div></div>';
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+        document.body.appendChild(overlay);
+        requestAnimationFrame(function() { var scroll = overlay.querySelector('.date-strip-scroll'); if (scroll) scroll.scrollLeft = scroll.scrollWidth; });
+        HapticManager.light();
+    },
+
+    showDayDetail(dateStr) {
+        // Remove existing day detail if any
+        document.getElementById('dayDetailOverlay')?.remove();
+
+        var d = new Date(dateStr);
+        var dateLabel = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        var nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        var selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
+        var dayNitnem = nitnemLog[dateStr] || {};
+        var nitnemRows = ''; var totalBanis = 0; var completedBanis = 0;
+        ['amritvela', 'rehras', 'sohila'].forEach(function(period) {
+            var periodBanis = selectedBanis[period] || [];
+            var completedUids = dayNitnem[period] || [];
+
+            periodBanis.forEach(function(bani) {
+                totalBanis++;
+                var done = completedUids.includes(bani.uid);
+                if (done) completedBanis++;
+                nitnemRows += '<div class="detail-row"><span>' + (bani.nameEnglish || bani.id) + '</span><span class="detail-value ' + (done ? 'complete' : 'incomplete') + '">' + (done ? '✓' : '✗') + '</span></div>';
+            });
+        });
+        var nitnemRate = totalBanis > 0 ? Math.round((completedBanis / totalBanis) * 100) : 0;
+        var malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
+        var dayMala = malaLog[dateStr] || {};
+        var malasCompleted = dayMala.completedMalas || 0;
+        var totalBeads = dayMala.totalCount || 0;
+        var amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        var amritEntry = amritvelaLog[dateStr];
+        var amritvelaStatus = amritEntry ? ('✓ ' + (amritEntry.time || 'Present')) : '✗ Absent';
+        var amritvelaClass = amritEntry ? 'complete' : 'incomplete';
+        var alarmLog = StorageManager.load(CONFIG.STORAGE_KEYS.ALARM_LOG, {});
+        var dayAlarms = alarmLog[dateStr] || {};
+        var aResponded = 0, aSnoozed = 0, aMissed = 0;
+        Object.values(dayAlarms).forEach(function(a) {
+            var st = typeof a === 'object' ? a.status : a;
+            if (st === 'responded') aResponded++;
+            else if (st === 'snoozed') aSnoozed++;
+            else if (st === 'missed') aMissed++;
+        });
+        var naamSessions = 0, naamMinutes = 0;
+        try { var naamHistory = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}'); var schedule = naamHistory.scheduleHistory && naamHistory.scheduleHistory[dateStr] ? naamHistory.scheduleHistory[dateStr] : {}; Object.values(schedule).forEach(function(s) { if (s.completed) { naamSessions++; naamMinutes += (s.duration || 0); } }); } catch (e) {}
+
+        // Create stacked day detail overlay (above date strip at z-index 10001)
+        var overlay = document.createElement('div');
+        overlay.className = 'day-detail-overlay';
+        overlay.id = 'dayDetailOverlay';
+        overlay.innerHTML = '<div class="day-detail-modal"><div class="modal-header"><h3>📋 ' + dateLabel + '</h3><button class="modal-close" id="dayDetailClose">×</button></div><div class="day-detail-scrollable">' +
+            '<div class="day-detail-card"><h4>🌅 Amritvela</h4><div class="detail-row"><span>Attendance</span><span class="detail-value ' + amritvelaClass + '">' + amritvelaStatus + '</span></div></div>' +
+            '<div class="day-detail-card"><h4>📖 Nitnem (' + nitnemRate + '%)</h4>' + (nitnemRows || '<div class="detail-row"><span>No data</span><span class="detail-value">—</span></div>') + '</div>' +
+            '<div class="day-detail-card"><h4>📿 Mala Jap</h4><div class="detail-row"><span>Malas</span><span class="detail-value">' + malasCompleted + '</span></div><div class="detail-row"><span>Total Beads</span><span class="detail-value">' + totalBeads + '</span></div></div>' +
+            '<div class="day-detail-card"><h4>🧘 Naam Abhyas</h4><div class="detail-row"><span>Sessions</span><span class="detail-value">' + naamSessions + '</span></div><div class="detail-row"><span>Minutes</span><span class="detail-value">' + naamMinutes + '</span></div></div>' +
+            '<div class="day-detail-card"><h4>⏰ Alarm Obedience</h4><div class="detail-row"><span>Responded</span><span class="detail-value complete">' + aResponded + '</span></div><div class="detail-row"><span>Snoozed</span><span class="detail-value">' + aSnoozed + '</span></div><div class="detail-row"><span>Missed</span><span class="detail-value incomplete">' + aMissed + '</span></div></div>' +
+            '</div></div>';
+
+        // Add backdrop click to close only day detail (keep date strip)
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.remove();
+            }
+        });
+
+        // Add close button handler
+        document.body.appendChild(overlay);
+        document.getElementById('dayDetailClose')?.addEventListener('click', function() {
+            overlay.remove();
+        });
+
+        HapticManager.light();
+    },
+
+    /**
+     * Refresh date dots in the date strip (called when state changes)
+     */
+    refreshDateDots() {
+        const dateStrip = document.getElementById('dateStripOverlay');
+        if (!dateStrip) return;
+
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
+        const totalPerDay = (selectedBanis.amritvela?.length || 0) + (selectedBanis.rehras?.length || 0) + (selectedBanis.sohila?.length || 0);
+
+        // Update each date chip's dot
+        const chips = dateStrip.querySelectorAll('.date-chip');
+        chips.forEach(chip => {
+            const dateStr = chip.dataset.date;
+            if (!dateStr) return;
+
+            const dayData = nitnemLog[dateStr];
+            let completed = 0;
+            if (dayData) {
+                completed = (dayData.amritvela?.length || 0) + (dayData.rehras?.length || 0) + (dayData.sohila?.length || 0);
+            }
+
+            const dotClass = !dayData ? 'none' : (completed >= totalPerDay && totalPerDay > 0 ? '' : 'incomplete');
+            const dot = chip.querySelector('.chip-dot');
+            if (dot) {
+                dot.className = 'chip-dot ' + dotClass;
+            }
+        });
+
+        console.log('[DateHistoryView] Date dots refreshed');
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────────────────────
    SECTION 23.6: CARRY-FORWARD SYSTEM
    Incomplete banis from previous day carry forward to next day
    ───────────────────────────────────────────────────────────────────────────── */
@@ -6753,10 +7519,9 @@ const CarryForwardSystem = {
     },
 
     /**
-     * Check if there are uncompleted banis from yesterday
+     * Check for uncompleted banis from all missed days (accumulating carry-forward)
      */
     checkForCarryForward() {
-        const yesterday = this.getYesterday();
         const today = Utils.getTodayString();
 
         // Check if we already processed carry-forward today
@@ -6770,41 +7535,58 @@ const CarryForwardSystem = {
             sohila: []
         });
 
-        const carryForward = StorageManager.load('nt_carry_forward', {
-            date: '',
+        // Load existing carry-forward data (for accumulating multiple days)
+        let carryForward = StorageManager.load('nt_carry_forward', {
+            date: today,
             banis: []
         });
 
-        // If we have yesterday's data, check for incomplete
-        if (nitnemLog[yesterday]) {
-            const yesterdayData = nitnemLog[yesterday];
-            const incompleteBanis = [];
+        // Ensure carryForward is for today and has banis array
+        if (carryForward.date !== today) {
+            carryForward = { date: today, banis: [] };
+        }
 
-            ['amritvela', 'rehras', 'sohila'].forEach(period => {
-                const periodBanis = selectedBanis[period] || [];
-                const completedUids = yesterdayData[period] || [];
+        // Find all missed days since last check (up to 30 days back)
+        const missedDays = this.getMissedDaysSince(lastProcessed || this.getDaysAgo(30));
+        let newAccumulatedBanis = [];
 
-                periodBanis.forEach(bani => {
-                    if (!completedUids.includes(bani.uid)) {
-                        incompleteBanis.push({
-                            ...bani,
-                            originalPeriod: period,
-                            carryDate: yesterday
-                        });
-                    }
+        // Check each missed day for incomplete banis
+        missedDays.forEach(missedDate => {
+            if (nitnemLog[missedDate]) {
+                const dayData = nitnemLog[missedDate];
+
+                ['amritvela', 'rehras', 'sohila'].forEach(period => {
+                    const periodBanis = selectedBanis[period] || [];
+                    const completedUids = dayData[period] || [];
+
+                    periodBanis.forEach(bani => {
+                        // Only add if not already in carry-forward list
+                        const alreadyCarried = carryForward.banis.some(b => b.uid === bani.uid && b.carryDate === missedDate);
+                        if (!completedUids.includes(bani.uid) && !alreadyCarried) {
+                            newAccumulatedBanis.push({
+                                ...bani,
+                                originalPeriod: period,
+                                carryDate: missedDate,
+                                daysOverdue: this.getDaysDifference(missedDate, today)
+                            });
+                        }
+                    });
                 });
+            }
+        });
+
+        // Accumulate new banis with existing carry-forward
+        if (newAccumulatedBanis.length > 0) {
+            carryForward.banis = [...carryForward.banis, ...newAccumulatedBanis];
+            StorageManager.save('nt_carry_forward', carryForward);
+
+            // Group by date for notification
+            const byDate = {};
+            newAccumulatedBanis.forEach(b => {
+                byDate[b.carryDate] = (byDate[b.carryDate] || 0) + 1;
             });
 
-            if (incompleteBanis.length > 0) {
-                // Save carry-forward banis
-                StorageManager.save('nt_carry_forward', {
-                    date: today,
-                    banis: incompleteBanis
-                });
-
-                // Show notification
-                this.showCarryForwardNotification(incompleteBanis);
-            }
+            this.showCarryForwardNotification(newAccumulatedBanis, byDate);
         }
 
         // Mark today as processed
@@ -6812,18 +7594,64 @@ const CarryForwardSystem = {
     },
 
     /**
-     * Get yesterday's date string
+     * Get all missed days since a given date
      */
-    getYesterday() {
+    getMissedDaysSince(sinceDate) {
+        const missed = [];
+        const today = new Date();
+        const since = new Date(sinceDate);
+        const maxLookBack = 30; // Don't look back more than 30 days
+
+        // If no last processed date, check yesterday only
+        if (!sinceDate || sinceDate === '') {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            return [yesterday.toLocaleDateString('en-CA')];
+        }
+
+        // Check days from the day after last processed up to yesterday
+        let checkDate = new Date(since);
+        checkDate.setDate(checkDate.getDate() + 1);
+
+        let daysChecked = 0;
+        while (checkDate < today && daysChecked < maxLookBack) {
+            missed.push(checkDate.toLocaleDateString('en-CA'));
+            checkDate.setDate(checkDate.getDate() + 1);
+            daysChecked++;
+        }
+
+        return missed;
+    },
+
+    /**
+     * Get date string for N days ago
+     */
+    getDaysAgo(days) {
         const d = new Date();
-        d.setDate(d.getDate() - 1);
+        d.setDate(d.getDate() - days);
         return d.toLocaleDateString('en-CA');
     },
 
     /**
-     * Show carry-forward notification
+     * Get yesterday's date string
      */
-    showCarryForwardNotification(incompleteBanis) {
+    getYesterday() {
+        return this.getDaysAgo(1);
+    },
+
+    /**
+     * Calculate days difference between two dates
+     */
+    getDaysDifference(date1, date2) {
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+        return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+    },
+
+    /**
+     * Show carry-forward notification (handles accumulated banis from multiple days)
+     */
+    showCarryForwardNotification(incompleteBanis, byDate) {
         const count = incompleteBanis.length;
         const baniNames = incompleteBanis.slice(0, 3).map(b => b.nameEnglish).join(', ');
         const extra = count > 3 ? ` +${count - 3} more` : '';
@@ -6831,16 +7659,18 @@ const CarryForwardSystem = {
         // Create persistent notification banner
         this.showCarryForwardBanner(incompleteBanis);
 
-        // Show toast
+        // Show toast with multi-day info
+        const uniqueDays = Object.keys(byDate || {}).length;
+        const dayText = uniqueDays === 1 ? 'yesterday' : `${uniqueDays} days`;
         Toast.warning(
             `📋 ${count} Bani${count > 1 ? 's' : ''} Carried Forward`,
-            `${baniNames}${extra} from yesterday`
+            `${baniNames}${extra} from ${dayText}`
         );
 
         // Browser notification
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Nitnem Carry-Forward', {
-                body: `${count} bani${count > 1 ? 's' : ''} incomplete from yesterday: ${baniNames}${extra}`,
+                body: `${count} bani${count > 1 ? 's' : ''} incomplete from ${dayText}: ${baniNames}${extra}`,
                 icon: '/frontend/assets/icons/icon-192.png',
                 tag: 'carry-forward'
             });
@@ -7075,28 +7905,31 @@ const MalaGoalTracker = {
 
 const AmritvelaWeekView = {
     /**
-     * Show week view modal with all attendance times
+     * Show week view modal with all attendance times (30 days, horizontal scroll, sticky summary)
      */
     show() {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-        const weekData = [];
+        const allData = [];
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        for (let i = 6; i >= 0; i--) {
+        for (let i = 29; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toLocaleDateString('en-CA');
             const entry = amritvelaLog[dateStr];
 
-            weekData.push({
+            allData.push({
                 date: dateStr,
                 dayName: dayNames[d.getDay()],
                 dayNum: d.getDate(),
+                month: d.toLocaleDateString('en-US', { month: 'short' }),
                 attended: !!entry,
                 time: entry?.time || null,
                 slot: entry?.slot || null
             });
         }
+
+        const last7 = allData.slice(-7);
 
         const getSlotClass = (slot) => {
             const classes = { excellent: 'green', good: 'blue', okay: 'orange', late: 'red' };
@@ -7105,17 +7938,18 @@ const AmritvelaWeekView = {
 
         const modalHTML = `
             <div class="modal-overlay active" id="weekViewModal">
-                <div class="modal-container">
+                <div class="modal-container" style="display:flex;flex-direction:column;max-height:80vh;">
                     <div class="modal-header">
-                        <h3>🌅 This Week's Attendance</h3>
+                        <h3>🌅 Attendance History</h3>
                         <button class="modal-close" onclick="document.getElementById('weekViewModal').remove()">×</button>
                     </div>
-                    <div class="modal-body">
-                        <div class="week-attendance-grid">
-                            ${weekData.map(day => `
-                                <div class="week-day-card ${day.attended ? 'attended' : 'missed'}">
+                    <div class="modal-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding-bottom:0;">
+                        <div class="week-attendance-grid" style="flex:1;overflow-x:auto;display:flex;gap:8px;padding-bottom:8px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;">
+                            ${allData.map(day => `
+                                <div class="week-day-card ${day.attended ? 'attended' : 'missed'}" style="flex-shrink:0;min-width:72px;scroll-snap-align:start;">
                                     <span class="day-name">${day.dayName}</span>
                                     <span class="day-num">${day.dayNum}</span>
+                                    <span style="font-size:10px;color:var(--text-tertiary)">${day.month}</span>
                                     ${day.attended
                 ? `<span class="day-time ${getSlotClass(day.slot)}">${day.time}</span>`
                 : `<span class="day-missed">—</span>`
@@ -7123,17 +7957,17 @@ const AmritvelaWeekView = {
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="week-summary">
+                        <div class="week-summary" style="position:sticky;bottom:0;flex-shrink:0;background:var(--glass-bg,#fff);padding:12px 0 16px;border-top:1px solid var(--glass-border,rgba(0,0,0,0.08));z-index:2;">
                             <div class="summary-item">
-                                <span class="summary-value">${weekData.filter(d => d.attended).length}/7</span>
-                                <span class="summary-label">Days Present</span>
+                                <span class="summary-value">${last7.filter(d => d.attended).length}/7</span>
+                                <span class="summary-label">This Week</span>
                             </div>
                             <div class="summary-item">
-                                <span class="summary-value">${this.getAverageWakeTime(weekData)}</span>
+                                <span class="summary-value">${this.getAverageWakeTime(allData)}</span>
                                 <span class="summary-label">Avg Wake Time</span>
                             </div>
                             <div class="summary-item">
-                                <span class="summary-value">${this.getEarliestWake(weekData)}</span>
+                                <span class="summary-value">${this.getEarliestWake(allData)}</span>
                                 <span class="summary-label">Earliest</span>
                             </div>
                         </div>
@@ -7143,6 +7977,13 @@ const AmritvelaWeekView = {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Auto-scroll to the right (today) after render
+        requestAnimationFrame(() => {
+            const grid = document.querySelector('#weekViewModal .week-attendance-grid');
+            if (grid) grid.scrollLeft = grid.scrollWidth;
+        });
+
         HapticManager.light();
     },
 
@@ -7659,12 +8500,22 @@ const DailyResetManager = {
             this.finalizeDay(yesterday);
         }
 
-        // 2. Reset Today's Temporary State
+        // 2. Check for streak break and offer streak saver
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const missedYesterday = yesterday && !amritvelaLog[yesterday];
+        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+
+        if (missedYesterday && streakData.current > 0) {
+            // Streak is breaking - trigger streak saver
+            StreakSaverManager.offerStreakSaver(streakData.current);
+        }
+
+        // 3. Reset Today's Temporary State
         // Clear any non-date-keyed temporary flags
         localStorage.removeItem('temp_amritvela_state');
         localStorage.removeItem('temp_mala_count');
 
-        // 3. Initialize Today's Entry if needed
+        // 4. Initialize Today's Entry if needed
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
         if (!nitnemLog[today]) {
             nitnemLog[today] = {
@@ -7734,14 +8585,15 @@ const initializeFullApp = async () => {
         await safeInit('NitnemManager', async () => await NitnemManager.init());
         await safeInit('BaniModal', () => BaniModal.init());
 
-        // Initialize Part 2 features
-        await safeInit('MalaManager', () => MalaManager.init());
-        await safeInit('AlarmManager', () => AlarmManager.init());
-        await safeInit('StreakManager', () => StreakManager.init());
-        await safeInit('AchievementManager', async () => await AchievementManager.init());
-        await safeInit('ReportsManager', () => ReportsManager.init());
-        await safeInit('CelebrationManager', () => CelebrationManager.init());
-        await safeInit('StatisticsModal', () => StatisticsModal.init());
+            // Initialize Part 2 features
+            await safeInit('MalaManager', () => MalaManager.init());
+            await safeInit('AlarmManager', () => AlarmManager.init());
+            await safeInit('StreakManager', () => StreakManager.init());
+            await safeInit('StreakSaverManager', () => StreakSaverManager.init());
+            await safeInit('AchievementManager', async () => await AchievementManager.init());
+            await safeInit('ReportsManager', () => ReportsManager.init());
+            await safeInit('CelebrationManager', () => CelebrationManager.init());
+            await safeInit('StatisticsModal', () => StatisticsModal.init());
 
         // Initialize settings (from Part 1)
         await safeInit('SettingsManager', () => SettingsManager.init());

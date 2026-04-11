@@ -124,19 +124,12 @@ body.modal-open .page {
   max-width: 680px;
   margin: 0 auto;
   -webkit-overflow-scrolling: touch;
-  /* FIX: Remove contain and will-change to prevent scroll disappearing */
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  /* FIX: Removed transform that caused text disappearing during scroll */
 }
 
-/* FIX: Ensure stable rendering during scroll */
-.calendar-cell,
-.date-item,
-.event-card,
-.event-row {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
+/* FIX: Ensure stable rendering during scroll - REMOVED problematic properties
+   Previous backface-visibility rules removed as they caused render issues */
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    NAVIGATION HEADER - iOS Style
@@ -153,8 +146,7 @@ body.modal-open .page {
   background: var(--bg-primary);
   /* backdrop-filter removed — extremely expensive during scroll */
   border-bottom: 0.5px solid var(--glass-border);
-  will-change: transform;
-  transform: translateZ(0);
+  /* REMOVED: will-change and transform that caused scroll rendering glitches */
 }
 
 .nav-title {
@@ -203,16 +195,35 @@ body.modal-open .page {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   GLASS CARDS
+   CLAYMORPHISM CARDS — Cushion effect with warm light colors
 ───────────────────────────────────────────────────────────────────────────── */
 
-.glass-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-xl);
+.clay-card {
+  background: linear-gradient(140deg, #FFF3E0 0%, #FFE0B2 100%);
+  border: none;
+  border-radius: 24px;
   box-shadow:
-    0 0 0 0.5px var(--glass-border),
-    0 2px 4px rgba(0, 0, 0, 0.02),
-    0 4px 16px rgba(0, 0, 0, 0.04);
+    12px 12px 30px rgba(0, 0, 0, 0.08),
+    -6px -6px 20px rgba(255, 255, 255, 0.95),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.clay-card:active {
+  box-shadow:
+    inset 6px 6px 12px rgba(0, 0, 0, 0.06),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.95);
+}
+
+.glass-card {
+  background: linear-gradient(140deg, #FFF3E0 0%, #FFE0B2 100%);
+  border-radius: 24px;
+  border: none;
+  box-shadow:
+    12px 12px 30px rgba(0, 0, 0, 0.08),
+    -6px -6px 20px rgba(255, 255, 255, 0.95),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
 
@@ -541,39 +552,50 @@ body.modal-open .page {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 2px;
-  contain: layout style;
-  transform: translateZ(0);
+  /* REMOVED: contain and transform that caused scroll disappearing */
 }
 
 .day {
-  background: transparent;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FFF8F0 100%);
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
   min-height: 60px;
   padding: var(--space-sm);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: background var(--duration-fast);
+  transition: all var(--duration-fast);
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.04),
+    -2px -2px 8px rgba(255, 255, 255, 0.9),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.8);
   -webkit-tap-highlight-color: transparent;
 }
 
 .day:hover {
-  background: rgba(0, 0, 0, 0.03);
+  box-shadow:
+    6px 6px 14px rgba(0, 0, 0, 0.06),
+    -3px -3px 10px rgba(255, 255, 255, 0.95),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.8);
 }
 
 .day:active {
-  background: rgba(0, 0, 0, 0.06);
+  box-shadow:
+    inset 3px 3px 8px rgba(0, 0, 0, 0.06),
+    inset -3px -3px 8px rgba(255, 255, 255, 0.95);
 }
 
 .day.other {
-  opacity: 0.3;
+  opacity: 0.4;
   cursor: default;
+  background: transparent;
+  box-shadow: none;
 }
 
 .day.other:hover,
 .day.other:active {
   background: transparent;
+  box-shadow: none;
 }
 
 .day.today .day-number {
@@ -1396,36 +1418,53 @@ body.modal-open .page {
    Version: 3.0 — Production-ready memorial vs celebration differentiation
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ─── MEMORIAL EVENTS (Jyoti Jyot, Shaheedi) — Respectful, somber styling ─── */
-.event-row.event-memorial,
-.event-card.event-memorial {
+/* ─── REMEMBRANCE EVENTS (Jyoti Jyot, Shaheedi) — Respectful, somber styling ─── */
+.event-row.event-remembrance,
+.event-card.event-remembrance {
   position: relative;
   background: rgba(60, 60, 67, 0.02);
 }
 
-.event-row.event-memorial .event-title {
+.event-row.event-remembrance .event-title {
   color: var(--text-primary);
   font-weight: 500;
 }
 
-.event-row.event-memorial .days-left {
+.event-row.event-remembrance .days-left {
   color: rgba(60, 60, 67, 0.6);
   font-weight: 400;
 }
 
-/* Memorial badge — subtle gray tone */
-.event-row.event-memorial .badge,
-.event-card.event-memorial .badge {
+/* Remembrance badge — subtle gray tone */
+.event-row.event-remembrance .badge,
+.event-card.event-remembrance .badge {
   background: linear-gradient(135deg, rgba(60, 60, 67, 0.65) 0%, rgba(60, 60, 67, 0.85) 100%);
   color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Soft glow for memorial events on today */
-.event-row.event-memorial.event-today {
-  background: rgba(60, 60, 67, 0.04);
-  border-left: 3px solid rgba(60, 60, 67, 0.3);
+/* Soft glow for remembrance events on today - SAME as celebrations */
+.event-row.event-remembrance.event-today {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 0, 0.05) 0%, 
+    rgba(255, 215, 0, 0.08) 50%, 
+    rgba(255, 107, 0, 0.05) 100%);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 0, 0.15),
+    0 0 40px rgba(255, 215, 0, 0.1);
+  border-left: 3px solid var(--kesri);
   padding-left: calc(var(--space-md) - 3px);
+}
+
+/* Neutral events today - visible highlight */
+.event-row.event-neutral.event-today {
+  background: linear-gradient(90deg, 
+    rgba(0, 122, 255, 0.06) 0%, 
+    rgba(0, 122, 255, 0.1) 50%, 
+    rgba(0, 122, 255, 0.06) 100%);
+  border-left: 3px solid var(--ios-blue);
+  padding-left: calc(var(--space-md) - 3px);
+  box-shadow: 0 0 16px rgba(0, 122, 255, 0.12);
 }
 
 /* ─── CELEBRATION EVENTS (Prakash, Gurgaddi, Vaisakhi) — Ring lights effect ─── */
@@ -1517,10 +1556,7 @@ body.modal-open .page {
   }
 }
 
-/* ─── NEUTRAL EVENTS — Standard styling ─── */
-.event-row.event-neutral {
-  /* Default styling, no special effects */
-}
+/* ─── NEUTRAL EVENTS — Uses base .event-row styles, no overrides needed ─── */
 
 /* ─── HOMEPAGE GURPURAB CARD — Ring lights for celebrations ─── */
 .glass-card.celebration-today {
@@ -1657,24 +1693,15 @@ body.modal-open .page {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   PERFORMANCE OPTIMIZATIONS
+   PERFORMANCE OPTIMIZATIONS — REMOVED problematic compositing layers
+   These were causing text to disappear during scroll on mobile browsers.
+   
+   REMOVED: transform: translateZ(0) and backface-visibility on .glass-card,
+   .section, .calendar-wrap, .grid - these forced GPU layers that glitched
+   during momentum scrolling, causing text/content to disappear.
+   
+   REMOVED: transform and will-change on .page-nav that caused sticky header glitches.
 ═══════════════════════════════════════════════════════════════════════════ */
-
-.glass-card,
-.section,
-.calendar-wrap,
-.grid {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.page-nav {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: transform;
-}
 
 .modal-body,
 .sheet-content {

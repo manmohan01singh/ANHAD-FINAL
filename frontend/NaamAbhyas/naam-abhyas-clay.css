@@ -130,6 +130,30 @@ html.dark-mode .hdr-btn, [data-theme="dark"] .hdr-btn, [data-theme="saffron"] .h
         4px 4px 10px rgba(0,0,0,0.25),
         -4px -4px 10px rgba(255,255,255,0.05),
         inset 2px 2px 5px rgba(255,255,255,0.05) !important;
+    color: #FFFFFF !important;
+}
+
+/* Dark mode icon visibility fix */
+html.dark-mode .hdr-btn svg, [data-theme="dark"] .hdr-btn svg,
+[data-theme="saffron"] .hdr-btn svg, [data-theme="gold"] .hdr-btn svg {
+    stroke: #FFFFFF !important;
+    color: #FFFFFF !important;
+    fill: none !important;
+}
+
+/* Light mode icon visibility fix */
+html:not(.dark-mode) .hdr-btn svg,
+[data-theme="light"] .hdr-btn svg {
+    stroke: #1a1a2e !important;
+    color: #1a1a2e !important;
+    fill: none !important;
+}
+
+/* Ensure all SVG icons are visible */
+.hdr-btn svg {
+    display: block !important;
+    width: 22px !important;
+    height: 22px !important;
 }
 
 .hdr-btn:active {
@@ -177,13 +201,28 @@ html.dark-mode .hdr-btn, [data-theme="dark"] .hdr-btn, [data-theme="saffron"] .h
 html.dark-mode .glass-card, [data-theme="dark"] .glass-card, [data-theme="saffron"] .glass-card, [data-theme="gold"] .glass-card,
 html.dark-mode .quick-actions, [data-theme="dark"] .quick-actions, [data-theme="saffron"] .quick-actions, [data-theme="gold"] .quick-actions,
 html.dark-mode .stats-card, [data-theme="dark"] .stats-card, [data-theme="saffron"] .stats-card, [data-theme="gold"] .stats-card,
-html.dark-mode .achievements-card, [data-theme="dark"] .achievements-card, [data-theme="saffron"] .achievements-card, [data-theme="gold"] .achievements-card {
+html.dark-mode .achievements-card, [data-theme="dark"] .achievements-card, [data-theme="saffron"] .achievements-card, [data-theme="gold"] .achievements-card,
+html.dark-mode .next-card, [data-theme="dark"] .next-card, [data-theme="saffron"] .next-card, [data-theme="gold"] .next-card,
+html.dark-mode .toggle-card, [data-theme="dark"] .toggle-card, [data-theme="saffron"] .toggle-card, [data-theme="gold"] .toggle-card,
+html.dark-mode .timeline-card, [data-theme="dark"] .timeline-card, [data-theme="saffron"] .timeline-card, [data-theme="gold"] .timeline-card,
+html.dark-mode .wisdom-card, [data-theme="dark"] .wisdom-card, [data-theme="saffron"] .wisdom-card, [data-theme="gold"] .wisdom-card {
     background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
     border-color: rgba(255,255,255,0.08) !important;
     box-shadow:
         16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
         -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
         inset 8px 8px 16px rgba(255,255,255,0.08),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+}
+
+/* Preserve next-card gradient in dark mode - override the override */
+html.dark-mode .next-card, [data-theme="dark"] .next-card, [data-theme="saffron"] .next-card, [data-theme="gold"] .next-card {
+    background: linear-gradient(145deg, #FFD60A 0%, #FF9500 50%, #FF6B00 100%) !important;
+    border-color: rgba(255,255,255,0.20) !important;
+    box-shadow:
+        16px 16px 32px rgba(255,149,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,0.15),
         inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
 }
 

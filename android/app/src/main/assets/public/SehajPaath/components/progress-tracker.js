@@ -73,6 +73,12 @@ class ProgressTracker {
 
         if (!history[today].angsRead.includes(ang)) {
             history[today].angsRead.push(ang);
+            
+            // FIX: Track Ang read for dashboard
+            if (window.AnhadStats) {
+                window.AnhadStats.addPagesRead(1);
+                console.log('[SehajPaath] Tracked 1 Ang read');
+            }
         }
 
         this.state.dailyHistory = history;

@@ -389,16 +389,26 @@
     function openSearch() {
         state.isSearchOpen = true;
         elements.searchModal.setAttribute('aria-hidden', 'false');
+        elements.searchModal.classList.add('visible');
         elements.searchInput.focus();
         document.body.style.overflow = 'hidden';
+        // Pause liquid glass orbs for performance
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = 'paused';
+        });
     }
 
     function closeSearch() {
         state.isSearchOpen = false;
         elements.searchModal.setAttribute('aria-hidden', 'true');
+        elements.searchModal.classList.remove('visible');
         elements.searchInput.value = '';
         elements.searchResults.innerHTML = '<p class="search-hint">Search by name in Gurmukhi, English, or Hindi...</p>';
         document.body.style.overflow = '';
+        // Resume liquid glass orbs
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = '';
+        });
     }
 
     function handleSearch(query) {
@@ -437,13 +447,23 @@
     function openSettings() {
         state.isSettingsOpen = true;
         elements.settingsModal?.setAttribute('aria-hidden', 'false');
+        elements.settingsModal?.classList.add('visible');
         document.body.style.overflow = 'hidden';
+        // Pause liquid glass orbs for performance
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = 'paused';
+        });
     }
 
     function closeSettings() {
         state.isSettingsOpen = false;
         elements.settingsModal?.setAttribute('aria-hidden', 'true');
+        elements.settingsModal?.classList.remove('visible');
         document.body.style.overflow = '';
+        // Resume liquid glass orbs
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = '';
+        });
     }
 
     function renderSettingsPanel() {
