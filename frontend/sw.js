@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.7.0';
+const CACHE_VERSION = 'anhad-v3.7.1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -29,7 +29,11 @@ const STATIC_FILES = [
   '/lib/global-alarm-system.js',
 
   // Assets
-  // Removed missing SVG files: favicon.svg, khanda-authentic.svg
+  '/assets/nishan-logo.webp',
+  '/assets/icons/guru-har-krishan-portrait.png',
+  '/assets/darbar-sahib-day.webp',
+  '/assets/Darbar-sahib-AMRITVELA.webp',
+  '/assets/HUKAMNAMA-SAHIB.webp',
 
   // Audio files for alarms
   '/Audio/audio1.mp3',

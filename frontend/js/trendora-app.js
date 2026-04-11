@@ -861,7 +861,7 @@
       // Check for portrait images first (homepage use)
       for (const [key, filename] of Object.entries(portraitImageMap)) {
         if (evId.includes(key)) {
-          portraitImg = 'assets/icons/' + filename;
+          portraitImg = '/assets/icons/' + filename;
           break;
         }
       }
@@ -869,7 +869,7 @@
       // Get standard icon for all sections
       for (const [key, filename] of Object.entries(guruImageMap)) {
         if (evId.includes(key)) {
-          guruImg = 'assets/icons/' + filename;
+          guruImg = '/assets/icons/' + filename;
           // Extract a readable Guru name
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
@@ -919,12 +919,16 @@
       const greetingImg = document.getElementById('guruPortraitImg');
       const salEl = document.getElementById('greetingSalutation');
       if (greetingImg) {
-        greetingImg.src = portraitImg || guruImg || '';
-        greetingImg.alt = guruName || event.name;
-        greetingImg.style.opacity = '0';
-        greetingImg.onload = () => {
+        const targetSrc = portraitImg || guruImg || '';
+        if (targetSrc) {
+          // Fix: Remove brittle opacity = '0' which causes race conditions
+          // The CSS transition on .greeting__guru-img will handle smooth swaps if needed
+          greetingImg.src = targetSrc;
+          greetingImg.alt = guruName || event.name;
+          
+          // Ensure it's visible (resetting any manual opacity set previously)
           greetingImg.style.opacity = '1';
-        };
+        }
       }
       if (salEl && guruName) {
         salEl.textContent = guruName;

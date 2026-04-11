@@ -177,7 +177,7 @@ html[data-theme="darbar-sahib"] {
     color-scheme: dark;
 
     /* Darbar Sahib evening background */
-    --page-bg-image: url('../assets/darbar-sahib-evening.jpg');
+    --page-bg-image: url('/assets/darbar-sahib-evening.jpg');
 
     /* Deep warm golden tones */
     --gold-300: #fcd34d;
@@ -199,7 +199,7 @@ html[data-theme="bangla-sahib"] {
     color-scheme: dark;
 
     /* Bangla Sahib night background */
-    --page-bg-image: url('../assets/bangla-sahib.jpg');
+    --page-bg-image: url('/assets/bangla-sahib.jpg');
 
     /* Slightly warmer golden palette */
     --gold-300: #ffe082;
@@ -226,7 +226,7 @@ html[data-theme="blue"] {
     color-scheme: dark;
 
     /* Hazur Sahib background */
-    --page-bg-image: url('../assets/hazur-sahib.jpg');
+    --page-bg-image: url('/assets/hazur-sahib.jpg');
 
     /* Blue sky palette with golden dome accents */
     --gold-300: #93c5fd;
@@ -253,7 +253,7 @@ html[data-theme="pink"] {
     color-scheme: dark;
 
     /* Patna Sahib sunset background */
-    --page-bg-image: url('../assets/patna-sahib.jpg');
+    --page-bg-image: url('/assets/patna-sahib.jpg');
 
     /* Rose pink palette */
     --gold-300: #fda4af;

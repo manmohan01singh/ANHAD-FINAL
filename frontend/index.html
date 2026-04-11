@@ -5,9 +5,9 @@
   <link rel="preconnect" href="https://anhad-final.onrender.com">
   <link rel="preconnect" href="https://api.banidb.com">
   <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
-  <link rel="stylesheet" href="css/global-mini-player.css?v=3">
-  <link rel="stylesheet" href="./css/desktop-responsive.css?v=3">
-  <link rel="stylesheet" href="./css/anhad-core.css?v=4">
+  <link rel="stylesheet" href="/css/global-mini-player.css?v=3">
+  <link rel="stylesheet" href="/css/desktop-responsive.css?v=3">
+  <link rel="stylesheet" href="/css/anhad-core.css?v=4">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
@@ -15,10 +15,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="ANHAD">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
   <meta name="description" content="ANHAD — 24/7 Gurbani Kirtan, Nitnem, Hukamnama, Sehaj Paath. Your sacred companion.">
 
@@ -40,9 +40,9 @@
   } catch (e) {}
 })();
   </script>
-  <script src="./js/anhad-core.js" defer></script>
+  <script src="/js/anhad-core.js" defer></script>
   <!-- Dark mode variables — always loaded, only activates via html.dark-mode selectors -->
-  <link rel="stylesheet" href="css/dark-mode.css">
+  <link rel="stylesheet" href="/css/dark-mode.css">
 
   <script>
     (function() {
@@ -53,8 +53,8 @@
   </script>
 
   <!-- Preloads — Critical Resources -->
-  <link rel="preload" href="assets/fonts/OptimusPrinceps.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" as="image" href="assets/darbar-sahib-day.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" href="/assets/fonts/OptimusPrinceps.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" as="image" href="/assets/darbar-sahib-day.webp" type="image/webp" fetchpriority="high">
   <!-- PERF: Removed duplicate PNG preload — WebP is sufficient for modern browsers -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,16 +62,16 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
-  <link rel="stylesheet" href="css/trendora-premium.css?v=8">
-  <link rel="stylesheet" href="css/anhad-clay.css?v=1">
-  <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
-  <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1">
-  <link rel="stylesheet" href="css/gurpurab-special-mode.css">
-  <link rel="stylesheet" href="css/install-button.css">
+  <link rel="stylesheet" href="/css/trendora-premium.css?v=8">
+  <link rel="stylesheet" href="/css/anhad-clay.css?v=1">
+  <link rel="stylesheet" href="/css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="/css/gurpurab-event-semantics.css?v=1">
+  <link rel="stylesheet" href="/css/gurpurab-special-mode.css">
+  <link rel="stylesheet" href="/css/install-button.css">
   <!-- Mobile Accessibility CSS - WCAG 2.5.5 touch targets -->
-  <link rel="stylesheet" href="css/mobile-accessibility.css">
+  <link rel="stylesheet" href="/css/mobile-accessibility.css">
   <!-- Non-critical CSS loaded async -->
-  <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/ios-override.css?v=8" media="print" onload="this.media='all'">
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -345,7 +345,7 @@
         width: 100vw !important;
         height: 100vh !important;
         z-index: -10000 !important;
-        background-image: url('assets/darbar-sahib-bg.png') !important;
+        background-image: url('/assets/darbar-sahib-bg.png') !important;
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
@@ -646,7 +646,7 @@
   ════════════════════════════════════════════════════════════════════════════ -->
   <aside class="desktop-sidebar" aria-label="Desktop Navigation">
     <div class="desktop-sidebar__brand">
-      <img src="assets/nishan-logo.webp" alt="ANHAD" class="desktop-sidebar__logo">
+      <img src="/assets/nishan-logo.webp" alt="ANHAD" class="desktop-sidebar__logo">
       <div>
         <div class="desktop-sidebar__title">ANHAD</div>
         <span class="desktop-sidebar__gurmukhi">ਅਨਹਦ</span>
@@ -740,7 +740,7 @@
     <header class="header" role="banner">
       <div class="header__left">
         <button class="header__logo-btn" id="themeToggle" aria-label="Toggle Light/Dark Mode" role="switch" aria-checked="false">
-          <img class="header__logo" src="assets/nishan-logo.webp" alt="ANHAD" width="46" height="46" loading="eager" decoding="async">
+          <img class="header__logo" src="/assets/nishan-logo.webp" alt="ANHAD" width="46" height="46" loading="eager" decoding="async">
           <span class="header__theme-dot" id="themeDot" aria-hidden="true"></span>
         </button>
       </div>
@@ -771,7 +771,7 @@
           <div class="greeting__nanakshahi" id="nanakshahiDate" aria-label="Nanakshahi Date"></div>
         </div>
         <div class="greeting__guru-portrait" id="guruPortraitWrapper">
-          <img class="greeting__guru-img" id="guruPortraitImg" src="assets/icons/guru-har-krishan-portrait.png" alt="Sri Guru Har Krishan Ji" width="117" height="117" loading="eager">
+          <img class="greeting__guru-img" id="guruPortraitImg" src="/assets/icons/guru-har-krishan-portrait.png" alt="Sri Guru Har Krishan Ji" width="117" height="117" loading="eager" decoding="async">
           <!-- Concentrated petals at bottom of portrait -->
           <div class="greeting__rose-decoration" aria-hidden="true">
             <div class="petal-1"></div>
@@ -837,8 +837,8 @@
         <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
-              <source srcset="assets/darbar-sahib-day.webp" type="image/webp">
-              <img class="hero-card__image" src="assets/darbar-sahib-day.png" alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async"
+              <source srcset="/assets/darbar-sahib-day.webp" type="image/webp">
+              <img class="hero-card__image" src="/assets/darbar-sahib-day.png" alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async"
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
@@ -860,8 +860,8 @@
         <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
-              <source srcset="assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
-              <img class="hero-card__image" src="assets/Darbar-sahib-AMRITVELA.png" alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="async"
+              <source srcset="/assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
+              <img class="hero-card__image" src="/assets/Darbar-sahib-AMRITVELA.png" alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--curated" aria-label="Curated collection">✦ CURATED</div>
@@ -881,8 +881,8 @@
         <article class="hero-card hero-card--hukam" id="heroCard3" data-color="#5B6AAE" data-color-rgb="91,106,174" aria-label="Today's Hukamnama" role="group" aria-roledescription="slide" onclick="window.location.href='Hukamnama/daily-hukamnama.html'">
           <div class="hero-card__image-wrapper">
             <picture>
-              <source srcset="assets/HUKAMNAMA-SAHIB.webp" type="image/webp">
-              <img class="hero-card__image" src="assets/HUKAMNAMA-SAHIB.png" alt="Sri Guru Granth Sahib Ji — Divine Hukamnama" width="430" height="242" loading="lazy" decoding="async"
+              <source srcset="/assets/HUKAMNAMA-SAHIB.webp" type="image/webp">
+              <img class="hero-card__image" src="/assets/HUKAMNAMA-SAHIB.png" alt="Sri Guru Granth Sahib Ji — Divine Hukamnama" width="430" height="242" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#92400E,#B8651A)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--curated" aria-label="Today">☸ HUKAMNAMA</div>
@@ -1188,36 +1188,36 @@
        SCRIPTS — Critical path first, non-critical lazy-loaded
   ════════════════════════════════════════════════════════════════════════ -->
   <!-- Critical: Unified Stats System (Single Source of Truth) -->
-  <script src="lib/unified-stats.js"></script>
+  <script src="/lib/unified-stats.js"></script>
   
   <!-- Critical: fetch timeout utility — must load before any module that calls fetch() -->
-  <script src="lib/fetch-utils.js"></script>
+  <script src="/lib/fetch-utils.js"></script>
   <!-- Critical: bfcache recovery — must load first to clean stuck states on back-button -->
-  <script src="lib/page-lifecycle.js"></script>
+  <script src="/lib/page-lifecycle.js"></script>
   <!-- Critical: Capacitor Bridge — Native storage adapter for APK -->
-  <script src="js/capacitor-bridge.js"></script>
+  <script src="/js/capacitor-bridge.js"></script>
   <!-- Critical: Capacitor initialization — Hardware back button handler -->
-  <script src="js/capacitor-init.js"></script>
+  <script src="/js/capacitor-init.js"></script>
   <!-- Critical: Storage Manager — Quota monitoring with IndexedDB fallback -->
-  <script src="lib/storage-manager.js"></script>
+  <script src="/lib/storage-manager.js"></script>
   <!-- Critical: Capacitor Notifications — Unified notification API -->
-  <script src="lib/capacitor-notifications.js"></script>
+  <script src="/lib/capacitor-notifications.js"></script>
   
   <!-- Cache Optimization for instant loading -->
-  <script src="lib/gurbani-db.js"></script>
-  <script src="lib/bani-cache-optimizer.js"></script>
-  <script src="lib/optimized-image-loader.js"></script>
+  <script src="/lib/gurbani-db.js"></script>
+  <script src="/lib/bani-cache-optimizer.js"></script>
+  <script src="/lib/optimized-image-loader.js"></script>
   
-  <script src="lib/audio-preload.js"></script>
+  <script src="/lib/audio-preload.js"></script>
   <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
-  <script src="lib/audio-coordinator.js"></script>
-  <script src="lib/persistent-audio.js"></script>
-  <script src="lib/global-mini-player.js"></script>
+  <script src="/lib/audio-coordinator.js"></script>
+  <script src="/lib/persistent-audio.js"></script>
+  <script src="/lib/global-mini-player.js"></script>
   
   <!-- Critical: Core UI logic -->
-  <script src="js/trendora-app.js" defer></script>
-  <script src="pwa-register.js" defer></script>
-  <script src="js/update-controller.js" defer></script>
+  <script src="/js/trendora-app.js?v=5" defer></script>
+  <script src="/pwa-register.js" defer></script>
+  <script src="/js/update-controller.js" defer></script>
 
   <!-- Lazy-loaded: Non-critical scripts loaded after first paint -->
   <script>
@@ -1227,14 +1227,14 @@
     // Lazy-load non-critical scripts — use idle callback for better main-thread scheduling
     var loadLazyScripts = function() {
       var lazyScripts = [
-        'js/anhad-popup.js',
-        'lib/global-theme.js',
-        'lib/user-stats.js',
-        'lib/gurbani-db.js',
-        'lib/alarm-coordinator.js',
-        'lib/guaranteed-alarm-system.js', // CRITICAL: Ensures ALL notifications fire
-        'lib/global-alarm-system.js',
-        'lib/ios-android-notifications.js'
+        '/js/anhad-popup.js',
+        '/lib/global-theme.js',
+        '/lib/user-stats.js',
+        '/lib/gurbani-db.js',
+        '/lib/alarm-coordinator.js',
+        '/lib/guaranteed-alarm-system.js', // CRITICAL: Ensures ALL notifications fire
+        '/lib/global-alarm-system.js',
+        '/lib/ios-android-notifications.js'
       ];
       lazyScripts.forEach(function(src) {
         var s = document.createElement('script');
