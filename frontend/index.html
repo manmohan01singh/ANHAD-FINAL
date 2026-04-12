@@ -636,7 +636,8 @@
           border-radius: 50% !important;
         }
       }
-    </style>
+    }
+  </style>
 
 </head>
 
@@ -1043,6 +1044,8 @@
     <span class="pwa-update-lastcheck" id="pwaUpdateLastCheck">Never checked</span>
   </div>
 
+  </main>
+
   <!-- ════════════════════════════════════════════════════════════════════════
        BOTTOM NAV — iOS Tab Bar with Emoji Icons
   ════════════════════════════════════════════════════════════════════════ -->
@@ -1068,29 +1071,7 @@
     </div>
   </nav>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-       MINI PLAYER — Persistent Floating Bar
-  ════════════════════════════════════════════════════════════════════════ -->
-  <aside class="mini-player" id="miniPlayer" aria-label="Now Playing" role="complementary">
-    <img class="mini-player__thumb" src="/assets/darbar-sahib-evening.webp" alt="" width="46" height="46" loading="lazy" decoding="async">
-    <div class="mini-player__info">
-      <div class="mini-player__title" id="miniTitle">
-        <span class="mini-player__live-dot" aria-hidden="true"></span>Darbar Sahib Live
-      </div>
-      <div class="mini-player__subtitle" id="miniSubtitle">Sri Harmandir Sahib Ji</div>
-    </div>
-    <div class="mini-player__controls">
-      <button class="mini-player__btn mini-player__btn--play ios-haptic" id="miniPlayerPlayBtn" aria-label="Play/Pause">
-        <svg id="miniPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-          <rect x="6" y="4" width="4" height="16" rx="1"/>
-          <rect x="14" y="4" width="4" height="16" rx="1"/>
-        </svg>
-      </button>
-    </div>
-    <div class="mini-player__progress" aria-hidden="true">
-      <div class="mini-player__progress-fill" id="miniProgressFill"></div>
-    </div>
-  </aside>
+  <!-- The Mini Player is now dynamically injected as a persistent overlay by lib/overlay-player.js -->
 
   <!-- ════════════════════════════════════════════════════════════════════════
        RADIO BOTTOM SHEET — Choose Stream (Emoji Icons)
@@ -1176,10 +1157,12 @@
   <script src="lib/audio-preload.js"></script>
   <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
   <script src="lib/audio-coordinator.js"></script>
-  <script src="lib/persistent-audio.js"></script>
-  <!-- CRITICAL: Smooth Navigation - View Transitions for persistent mini player -->
+  
+  <!-- Truly Independent Overlay Player (App Shell Pattern) -->
+  <script src="lib/overlay-player.js"></script>
+  
+  <!-- CRITICAL: Smooth Navigation - AJAX Content Swapping (App Shell Engine) -->
   <script src="lib/smooth-navigation.js"></script>
-  <script src="lib/global-mini-player.js"></script>
   
   <!-- Critical: Core UI logic -->
   <script src="js/trendora-app.js" defer></script>
