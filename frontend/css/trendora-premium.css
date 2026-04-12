@@ -485,7 +485,7 @@ a:active {
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(200%);
   padding: var(--space-2) var(--page-margin);
   margin: 0 calc(-1 * var(--page-margin));
-  border-bottom: 0.5px solid rgba(100, 140, 255, 0.07);
+  border-bottom: 0.5px solid rgba(212, 148, 58, 0.15);
 }
 
 body.dark-mode .header {
@@ -494,7 +494,7 @@ body.dark-mode .header {
 
 body.dark-mode .header--compact {
   background: rgba(10, 12, 30, 0.88) !important;
-  border-bottom-color: rgba(100, 140, 255, 0.08);
+  border-bottom-color: rgba(212, 148, 58, 0.2);
 }
 
 .header__left {
@@ -914,8 +914,15 @@ body.dark-mode .greeting__salutation {
 }
 
 .greeting__nanakshahi {
-  grid-column: 1 / -1;
+  display: inline-flex;
   margin-top: 4px;
+  width: fit-content;
+  padding: 4px 12px;
+  background: rgba(212, 148, 58, 0.08);
+  border-radius: var(--radius-full);
+  color: var(--accent);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
 }
 
 .greeting__context {
@@ -1854,14 +1861,14 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .event-card {
   position: relative;
   padding: var(--space-5) var(--space-5);
-  background: var(--accent-gradient-subtle);
+  background: linear-gradient(160deg, #FAF8F5 0%, #F5F0E8 100%);
   border-radius: var(--radius-xl);
   cursor: pointer;
   margin-bottom: var(--space-7);
   transition: transform var(--duration-fast) var(--ease-spring);
-  border: 1px solid var(--accent-light);
+  border: 1px solid rgba(212, 148, 58, 0.25);
   overflow: hidden;
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(212, 148, 58, 0.06);
+  box-shadow: var(--shadow-sm), 0 4px 20px rgba(139, 107, 62, 0.08);
 }
 
 .event-card:active {
@@ -2730,8 +2737,8 @@ body.dark-mode .ambient-bg {
 }
 
 body.dark-mode .event-card {
-  background: linear-gradient(160deg, rgba(212,148,58,0.06) 0%, rgba(212,148,58,0.03) 100%);
-  border-color: rgba(212, 148, 58, 0.12);
+  background: linear-gradient(160deg, rgba(40, 35, 28, 0.9) 0%, rgba(30, 26, 20, 0.95) 100%);
+  border-color: rgba(212, 148, 58, 0.3);
 }
 
 body.dark-mode .event-card::before {
