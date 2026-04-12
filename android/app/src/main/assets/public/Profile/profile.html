@@ -1,6 +1,25 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const html = document.documentElement;
+    if (theme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
@@ -329,6 +348,8 @@
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/native-audio-bridge.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
   <script src="../lib/global-mini-player.js" defer></script>
   
   <!-- User Stats Library -->

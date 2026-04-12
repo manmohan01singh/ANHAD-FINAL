@@ -1,7 +1,8 @@
 /**
- * BaniDB API Module
+ * BaniDB API Module - INSTANT OFFLINE-FIRST VERSION
  * Handles all interactions with the BaniDB API for fetching Gurbani content
- * @version 2.0.0
+ * NOW WITH INSTANT OFFLINE LOADING - Zero network delay for popular banis
+ * @version 3.0.0 - INSTANT LOADING EDITION
  */
 
 const BaniDB = (function () {
@@ -10,14 +11,18 @@ const BaniDB = (function () {
     // Configuration
     const CONFIG = {
         baseUrl: 'https://api.banidb.com/v2',
-        cacheVersion: 'v2',
-        cacheExpiry: 24 * 60 * 60 * 1000, // 24 hours
-        maxRetries: 3,
-        retryDelay: 1000
+        cacheVersion: 'v3',
+        cacheExpiry: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxRetries: 2,
+        retryDelay: 500,
+        offlineFirst: true // NEW: Always use offline data first
     };
 
     // Cache
     const cache = new Map();
+
+    // Check if offline data is available
+    const hasOfflineData = () => typeof OFFLINE_BANI_DATA !== 'undefined' && OFFLINE_BANI_DATA;
 
     // Bani ID Mapping (commonly used)
     const BANI_IDS = {
@@ -51,6 +56,9 @@ const BaniDB = (function () {
         night: [23],
         full: [2, 4, 6, 7, 9, 10, 21, 23]
     };
+
+    // POPULAR BANI IDS that have offline data
+    const OFFLINE_BANI_IDS = [2, 4, 9, 10, 21, 23, 31];
 
     /**
      * Escape HTML for security
@@ -146,6 +154,39 @@ const BaniDB = (function () {
     }
 
     /**
+     * Get offline bani data instantly
+     */
+    function getOfflineBani(baniId) {
+        if (!hasOfflineData()) return null;
+        const offlineData = OFFLINE_BANI_DATA[baniId];
+        if (!offlineData) return null;
+        
+        // Transform offline data to match API format
+        return {
+            baniID: offlineData.baniID,
+            baniName: offlineData.baniName,
+            gurmukhiUni: offlineData.gurmukhiUni,
+            transliteration: offlineData.transliteration,
+            info: offlineData.info,
+            verses: offlineData.verses.map(v => ({
+                verseId: v.verseId,
+                verse: {
+                    verseId: v.verseId,
+                    verse: v.gurmukhi,
+                    gurmukhi: v.gurmukhi,
+                    unicode: v.gurmukhi
+                },
+                transliteration: { english: v.transliteration, en: v.transliteration, roman: v.transliteration },
+                translation: { en: { bdb: v.english, ms: v.english }, pu: { ss: v.punjabi } },
+                lineNo: v.lineNo,
+                pageNo: v.pageNo,
+                shabadId: v.shabadId,
+                sourceId: v.sourceId
+            }))
+        };
+    }
+
+    /**
      * Get list of all Banis
      */
     async function getAllBanis() {
@@ -164,14 +205,52 @@ const BaniDB = (function () {
     }
 
     /**
-     * Get a specific Bani by ID
+     * Get a specific Bani by ID - INSTANT OFFLINE-FIRST with background sync
      */
     async function getBani(baniId, options = {}) {
         const larivaar = options.larivaar ? '&larivaar=true' : '';
         const cacheKey = getCacheKey(`bani_${baniId}${larivaar}`);
-        const cached = getCache(cacheKey);
-        if (cached && !options.forceRefresh) return cached;
+        
+        // INSTANT: Return offline data immediately if available
+        const offlineData = getOfflineBani(baniId);
+        if (offlineData && !options.forceRefresh) {
+            // Check for fresher cached data in background
+            const cached = getCache(cacheKey);
+            
+            // Return offline data instantly, but trigger background refresh if online
+            if (navigator.onLine && !options.skipBackgroundRefresh) {
+                // Background fetch to update cache
+                setTimeout(async () => {
+                    try {
+                        const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
+                        const freshData = await fetchWithRetry(url, {}, 1);
+                        setCache(cacheKey, freshData);
+                    } catch (e) {
+                        // Silent fail - offline data is already serving
+                    }
+                }, 100);
+            }
+            
+            return offlineData;
+        }
 
+        // Check cache for non-offline banis
+        const cached = getCache(cacheKey);
+        if (cached && !options.forceRefresh) {
+            // Background refresh if online
+            if (navigator.onLine && !options.skipBackgroundRefresh) {
+                setTimeout(async () => {
+                    try {
+                        const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
+                        const freshData = await fetchWithRetry(url, {}, 1);
+                        setCache(cacheKey, freshData);
+                    } catch (e) {}
+                }, 100);
+            }
+            return cached;
+        }
+
+        // Fetch from network
         try {
             const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
             const data = await fetchWithRetry(url);
@@ -179,6 +258,17 @@ const BaniDB = (function () {
             return data;
         } catch (error) {
             console.error(`Failed to fetch Bani ${baniId}:`, error);
+            
+            // GRACEFUL OFFLINE FALLBACK
+            if (offlineData) {
+                console.log(`[BaniDB] Serving offline Bani ${baniId} due to network error`);
+                return offlineData;
+            }
+            if (cached) {
+                console.log(`[BaniDB] Serving stale cached Bani ${baniId} due to network error`);
+                return cached;
+            }
+            
             throw error;
         }
     }
@@ -187,7 +277,7 @@ const BaniDB = (function () {
      * Search Banis by query
      */
     async function searchBanis(query, options = {}) {
-        const searchType = options.type || 0; // 0 = First Letter Start, 1 = First Letter Anywhere, etc.
+        const searchType = options.type || 0;
         const source = options.source || 'all';
 
         try {
@@ -223,7 +313,7 @@ const BaniDB = (function () {
         // Hukamnama should be refreshed every 4 hours
         if (cached) {
             const entry = cache.get(cacheKey);
-            if (Date.now() - entry.timestamp < 4 * 60 * 60 * 1000) {
+            if (entry && Date.now() - entry.timestamp < 4 * 60 * 60 * 1000) {
                 return cached;
             }
         }
@@ -234,6 +324,7 @@ const BaniDB = (function () {
             return data;
         } catch (error) {
             console.error('Failed to fetch Hukamnama:', error);
+            if (cached) return cached;
             throw error;
         }
     }
@@ -251,7 +342,7 @@ const BaniDB = (function () {
                 ? verse.verse
                 : verse.verse.unicode || verse.verse.gurmukhi || '';
         } else {
-            gurmukhi = verse.unicode || verse.gurmukhi || '';
+            gurmukhi = verse.unicode || verse.gurmukhi || verse.gurmukhi || '';
         }
 
         // Extract transliteration
@@ -332,12 +423,13 @@ const BaniDB = (function () {
      * Pre-cache popular Banis for offline use
      */
     async function preCachePopularBanis(onProgress) {
-        const popularBanis = [2, 4, 9, 10, 21, 23, 31];
+        const popularBanis = OFFLINE_BANI_IDS; // Use our offline list
         let loaded = 0;
 
         for (const baniId of popularBanis) {
             try {
-                await getBani(baniId);
+                // Use skipBackgroundRefresh to avoid double fetch
+                await getBani(baniId, { skipBackgroundRefresh: true });
                 loaded++;
                 if (onProgress) onProgress(loaded, popularBanis.length);
             } catch (error) {
@@ -378,7 +470,9 @@ const BaniDB = (function () {
         clearCache,
         BANI_IDS,
         NITNEM,
-        escapeHtml
+        OFFLINE_BANI_IDS,
+        escapeHtml,
+        hasOfflineData: () => hasOfflineData()
     };
 })();
 

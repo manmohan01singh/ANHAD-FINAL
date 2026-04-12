@@ -1077,7 +1077,8 @@ button {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s var(--ease-smooth);
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    will-change: opacity, visibility;
 }
 
 .session-alert-modal.active,
@@ -1092,8 +1093,9 @@ button {
 .settings-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 .alert-content,
@@ -1321,11 +1323,14 @@ button {
     left: 0;
     right: 0;
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
     max-height: 85vh;
     transform: translateY(100%);
-    transition: transform 0.4s var(--ease-smooth);
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+    contain: content;
 }
 
 .settings-modal.active .settings-modal-sheet {

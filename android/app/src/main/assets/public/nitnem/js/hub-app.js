@@ -16,7 +16,7 @@
         recentlyRead: [],
         favorites: [],
         settings: {
-            theme: 'dark',
+            theme: 'light',
             viewMode: 'grid'
         },
         isSearchOpen: false,
@@ -73,7 +73,7 @@
         // Load saved state
         loadState();
 
-        // Set greeting
+        // Set greeting immediately
         updateGreeting();
 
         // Apply theme
@@ -94,6 +94,22 @@
         // Hide loading - IMMEDIATE to prevent persistent overlay
         hideLoadingScreen();
 
+        // CRITICAL: Re-apply greeting after everything else loads
+        setTimeout(updateGreeting, 500);
+        setTimeout(updateGreeting, 1500);
+        setTimeout(updateGreeting, 3000);
+
+        // Start protecting greeting from overwrites
+        protectGreeting();
+
+        // AGGRESSIVE: Keep re-applying greeting every 500ms for 10 seconds
+        let attempts = 0;
+        const interval = setInterval(() => {
+            updateGreeting();
+            attempts++;
+            if (attempts >= 20) clearInterval(interval);
+        }, 500);
+
         console.log('✓ Nitnem Hub initialized');
     }
 
@@ -103,23 +119,77 @@
 
     function updateGreeting() {
         const hour = new Date().getHours();
+        console.log('[HubApp] Current hour:', hour, 'Updating greeting...');
         let greeting = '';
+        let icon = '';
 
-        if (hour >= 3 && hour < 6) {
-            greeting = 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥';
-        } else if (hour >= 6 && hour < 12) {
-            greeting = 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ • Good Morning';
-        } else if (hour >= 12 && hour < 17) {
-            greeting = 'ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ • Good Afternoon';
-        } else if (hour >= 17 && hour < 21) {
-            greeting = 'ਸੰਧਿਆ ਕਾਲ • Good Evening';
+        if (hour < 6) {
+            // Before 6 AM - 5 Banis Nitnem
+            icon = '🙏';
+            greeting = '5 ਬਾਣੀਆਂ ਦਾ ਨਿਤਨੇਮ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
+        } else if (hour >= 6 && hour < 18) {
+            // 6 AM - 6 PM - Day time, Sukhmani Sahib
+            icon = '🕊️';
+            greeting = 'ਰੀਲਾਂ ਨੂੰ ਛੱਡ ਕੇ ਇੱਥੇ ਪਹੁੰਚ ਗਏ ਓ • ਸੁਖਮਨੀ ਸਾਹਿਬ ਦਾ ਜਾਪ ਕਰੋ';
+        } else if (hour >= 18 && hour < 21) {
+            // 6 PM - 9 PM - Rehras Sahib time
+            icon = '🌆';
+            greeting = 'ਰਹਿਰਾਸ ਸਾਹਿਬ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
         } else {
-            greeting = 'ਰਾਤ ਦੀ ਬਾਣੀ • Good Night';
+            // 9 PM onwards - Sohila Sahib
+            icon = '🌙';
+            greeting = 'ਸੋਹਿਲਾ ਸਾਹਿਬ ਜ਼ਰੂਰ ਕਰਿਓ • ਵਾਹਿਗੁਰੂ ਜੀ';
         }
 
-        if (elements.greeting) {
-            elements.greeting.textContent = greeting;
+        console.log('[HubApp] Setting greeting:', greeting);
+        // Re-query element each time to avoid stale reference
+        const greetingEl = document.getElementById('greeting');
+        if (greetingEl) {
+            const html = `<span class="greeting-icon">${icon}</span><span class="greeting-text">${greeting}</span>`;
+            greetingEl.innerHTML = html;
+            // Store current greeting to detect changes
+            greetingEl.dataset.expectedHtml = html;
+            console.log('[HubApp] Greeting element updated:', greetingEl.id, greetingEl.className);
+            // DEBUG: Check what's actually in the DOM after setting
+            setTimeout(() => {
+                const checkEl = document.getElementById('greeting');
+                if (checkEl) {
+                    const actualText = checkEl.textContent;
+                    const expectedText = icon + greeting;
+                    console.log('[HubApp] DEBUG - Expected:', expectedText);
+                    console.log('[HubApp] DEBUG - Actual:', actualText);
+                    console.log('[HubApp] DEBUG - Match:', actualText === expectedText);
+                    console.log('[HubApp] DEBUG - innerHTML:', checkEl.innerHTML.substring(0, 100));
+                }
+            }, 100);
+        } else {
+            console.error('[HubApp] Greeting element NOT FOUND!');
         }
+    }
+
+    // Protect greeting from being overwritten by other scripts
+    function protectGreeting() {
+        if (!elements.greeting) return;
+        
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    const expected = elements.greeting.dataset.expectedHtml;
+                    if (expected && elements.greeting.innerHTML !== expected) {
+                        console.log('[HubApp] Greeting was overwritten! Re-applying...');
+                        updateGreeting();
+                    }
+                }
+            });
+        });
+        
+        observer.observe(elements.greeting, {
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+        
+        console.log('[HubApp] Greeting protected from overwrites');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -319,16 +389,26 @@
     function openSearch() {
         state.isSearchOpen = true;
         elements.searchModal.setAttribute('aria-hidden', 'false');
+        elements.searchModal.classList.add('visible');
         elements.searchInput.focus();
         document.body.style.overflow = 'hidden';
+        // Pause liquid glass orbs for performance
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = 'paused';
+        });
     }
 
     function closeSearch() {
         state.isSearchOpen = false;
         elements.searchModal.setAttribute('aria-hidden', 'true');
+        elements.searchModal.classList.remove('visible');
         elements.searchInput.value = '';
         elements.searchResults.innerHTML = '<p class="search-hint">Search by name in Gurmukhi, English, or Hindi...</p>';
         document.body.style.overflow = '';
+        // Resume liquid glass orbs
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = '';
+        });
     }
 
     function handleSearch(query) {
@@ -367,13 +447,23 @@
     function openSettings() {
         state.isSettingsOpen = true;
         elements.settingsModal?.setAttribute('aria-hidden', 'false');
+        elements.settingsModal?.classList.add('visible');
         document.body.style.overflow = 'hidden';
+        // Pause liquid glass orbs for performance
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = 'paused';
+        });
     }
 
     function closeSettings() {
         state.isSettingsOpen = false;
         elements.settingsModal?.setAttribute('aria-hidden', 'true');
+        elements.settingsModal?.classList.remove('visible');
         document.body.style.overflow = '';
+        // Resume liquid glass orbs
+        document.querySelectorAll('.liquid-orb').forEach(orb => {
+            orb.style.animationPlayState = '';
+        });
     }
 
     function renderSettingsPanel() {
@@ -462,8 +552,9 @@
     // ═══════════════════════════════════════════════════════════════
 
     function applyTheme(theme) {
+        // Use data-theme attribute only (light is default in CSS)
         document.documentElement.setAttribute('data-theme', theme);
-
+        
         // Update meta theme-color
         const metaTheme = document.querySelector('meta[name="theme-color"]');
         if (metaTheme) {
@@ -473,7 +564,7 @@
                 sepia: '#F4ECD8',
                 amoled: '#000000'
             };
-            metaTheme.content = colors[theme] || colors.dark;
+            metaTheme.content = colors[theme] || colors.light; // Default to light
         }
     }
 
@@ -488,6 +579,8 @@
                 favorites: state.favorites,
                 settings: state.settings
             }));
+            // Save to nitnem-specific theme key for independent theme control
+            localStorage.setItem('anhad_nitnem_theme', state.settings.theme);
         } catch (e) {
             console.warn('Could not save state:', e);
         }
@@ -495,12 +588,25 @@
 
     function loadState() {
         try {
+            // ONLY use nitnem-specific theme key - NO fallback to global
+            // This ensures nitnem page always has its own theme independent of main app
+            const nitnemTheme = localStorage.getItem('anhad_nitnem_theme');
+            
+            if (nitnemTheme) {
+                state.settings.theme = nitnemTheme;
+            }
+            // If no nitnem theme set, default to 'light' (already set in state default)
+            
+            // Then load from hub-specific state
             const saved = localStorage.getItem('nitnemHub_state');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.recentlyRead = data.recentlyRead || [];
                 state.favorites = data.favorites || [];
-                state.settings = { ...state.settings, ...data.settings };
+                // Only use saved settings if no nitnem theme was explicitly set
+                if (!nitnemTheme && data.settings) {
+                    state.settings = { ...state.settings, ...data.settings };
+                }
             }
         } catch (e) {
             console.warn('Could not load state:', e);

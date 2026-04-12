@@ -1,6 +1,22 @@
 <!DOCTYPE html>
-<html lang="pa" dir="ltr" data-theme="light">
+<html lang="pa" dir="ltr">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
@@ -146,20 +162,64 @@
         .header-spacer { width: 50px; }
         
         .theme-toggle {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
+            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
+            border: 3px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             font-size: 18px;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow:
+                8px 8px 25px rgba(70, 70, 100, 0.2),
+                4px 4px 12px rgba(70, 70, 100, 0.14),
+                -4px -4px 12px rgba(255, 255, 255, 0.95),
+                -2px -2px 6px rgba(255, 255, 255, 0.85),
+                0 0 0 2px rgba(255, 255, 255, 0.6),
+                inset 0 2px 3px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(70, 70, 100, 0.08);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
         }
         
-        .theme-toggle:active { transform: scale(0.9); }
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        html.dark-mode .theme-toggle {
+            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow:
+                8px 8px 25px rgba(25, 25, 45, 0.5),
+                4px 4px 12px rgba(25, 25, 45, 0.36),
+                -4px -4px 12px rgba(255, 255, 255, 0.1),
+                -2px -2px 6px rgba(255, 255, 255, 0.04),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                inset 0 2px 3px rgba(255, 255, 255, 0.08),
+                inset 0 -1px 2px rgba(25, 25, 45, 0.22);
+        }
+        
+        .theme-toggle:active {
+            transform: scale(0.9);
+            box-shadow:
+                inset 4px 4px 10px rgba(70, 70, 100, 0.22),
+                inset 2px 2px 5px rgba(70, 70, 100, 0.14),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.4),
+                2px 2px 6px rgba(70, 70, 100, 0.16);
+        }
+        
+        html.dark-mode .theme-toggle:active {
+            box-shadow:
+                inset 4px 4px 10px rgba(25, 25, 45, 0.45),
+                inset 2px 2px 5px rgba(25, 25, 45, 0.32),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.08),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                2px 2px 6px rgba(25, 25, 45, 0.38);
+        }
         
         /* Hero */
         .hero {
@@ -216,10 +276,33 @@
             align-items: center;
             gap: 12px;
             padding: 16px;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 16px;
+            background: linear-gradient(160deg, #FFFBF0 0%, #FFF5E6 40%, #FFE8CC 100%);
+            border: 3px solid rgba(245, 158, 11, 0.5);
+            border-radius: 24px;
             margin-bottom: 24px;
+            box-shadow:
+                14px 14px 45px rgba(200, 140, 40, 0.22),
+                7px 7px 22px rgba(100, 70, 40, 0.14),
+                -7px -7px 22px rgba(255, 255, 255, 0.95),
+                -3px -3px 11px rgba(255, 255, 255, 0.85),
+                0 0 0 2px rgba(245, 158, 11, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(200, 140, 40, 0.1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
+        }
+        
+        html.dark-mode .warning-banner {
+            background: linear-gradient(160deg, #3D3018 0%, #2D2410 40%, #1D1808 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+            box-shadow:
+                14px 14px 45px rgba(40, 30, 15, 0.45),
+                7px 7px 22px rgba(40, 30, 15, 0.32),
+                -7px -7px 22px rgba(255, 255, 255, 0.05),
+                -3px -3px 11px rgba(255, 255, 255, 0.02),
+                0 0 0 2px rgba(245, 158, 11, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.06),
+                inset 0 -1px 2px rgba(40, 30, 15, 0.25);
         }
         
         .warning-icon {
@@ -244,10 +327,33 @@
             display: flex;
             gap: 14px;
             padding: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
+            background: linear-gradient(160deg, #F0F0FF 0%, #E8E8F5 40%, #E0E0F0 100%);
+            border: 3px solid rgba(120, 140, 200, 0.5);
+            border-radius: 26px;
             margin-bottom: 24px;
+            box-shadow:
+                16px 16px 50px rgba(100, 110, 160, 0.22),
+                8px 8px 25px rgba(70, 70, 100, 0.14),
+                -8px -8px 25px rgba(255, 255, 255, 0.95),
+                -4px -4px 12px rgba(255, 255, 255, 0.85),
+                0 0 0 2px rgba(120, 140, 200, 0.3),
+                inset 0 2px 4px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(100, 110, 160, 0.1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
+        }
+        
+        html.dark-mode .info-card {
+            background: linear-gradient(160deg, #202035 0%, #181828 40%, #101020 100%);
+            border-color: rgba(120, 140, 200, 0.3);
+            box-shadow:
+                16px 16px 50px rgba(25, 25, 45, 0.45),
+                8px 8px 25px rgba(25, 25, 45, 0.32),
+                -8px -8px 25px rgba(255, 255, 255, 0.05),
+                -4px -4px 12px rgba(255, 255, 255, 0.02),
+                0 0 0 2px rgba(120, 140, 200, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.06),
+                inset 0 -1px 2px rgba(25, 25, 45, 0.25);
         }
         
         .info-card-icon {
@@ -289,27 +395,82 @@
         .bani-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 16px;
         }
         
+        .adhiya-section {
+            margin-bottom: 8px;
+        }
+        
+        .adhiya-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(88, 86, 214, 0.15), rgba(120, 140, 200, 0.1));
+            border-radius: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .adhiya-number {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--ios-indigo), var(--ios-purple));
+            color: white;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .adhiya-title {
+            font-family: var(--font-gurmukhi);
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .adhiya-desc {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+        }
+        
+        .composition-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-left: 8px;
+        }
+        
+        /* Enhanced Ultimate Claymorphism - Puffy Cushion Cards */
         .bani-card {
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 16px;
+            padding: 18px 16px;
             text-decoration: none;
             color: inherit;
-            border-radius: 24px;
-            /* Premium Soft Claymorphism */
-            background: linear-gradient(145deg, rgba(255,255,255,0.98) 0%, rgba(250,250,252,0.98) 100%);
+            border-radius: 28px;
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border: 4px solid rgba(255, 255, 255, 0.8);
             box-shadow:
-                8px 8px 24px rgba(0, 0, 0, 0.08),
-                4px 4px 12px rgba(0, 0, 0, 0.05),
-                -8px -8px 24px rgba(255, 255, 255, 0.9),
-                -4px -4px 12px rgba(255, 255, 255, 0.7),
-                inset 0 1px 2px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+                /* Deep outer shadow for 3D lift */
+                18px 18px 50px rgba(70, 70, 100, 0.22),
+                12px 12px 30px rgba(70, 70, 100, 0.16),
+                6px 6px 15px rgba(70, 70, 100, 0.10),
+                /* Soft highlights */
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                /* Inner border glow */
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(70, 70, 100, 0.08),
+                /* Subtle gradient overlay */
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0) scale(1);
             opacity: 0.6;
             pointer-events: none;
         }
@@ -319,24 +480,72 @@
             pointer-events: auto;
         }
         
-        .bani-card.available:active {
-            transform: scale(0.98) translateY(2px);
+        .bani-card.available:hover {
+            transform: translateY(-4px) scale(1.02);
             box-shadow:
-                4px 4px 12px rgba(0, 0, 0, 0.06),
-                2px 2px 6px rgba(0, 0, 0, 0.04),
-                -4px -4px 12px rgba(255, 255, 255, 0.8),
-                inset 2px 2px 6px rgba(0, 0, 0, 0.05);
+                22px 22px 60px rgba(70, 70, 100, 0.25),
+                14px 14px 35px rgba(70, 70, 100, 0.18),
+                8px 8px 20px rgba(70, 70, 100, 0.12),
+                -8px -8px 25px rgba(255, 255, 255, 0.98),
+                -4px -4px 12px rgba(255, 255, 255, 0.90),
+                0 0 0 3px rgba(255, 255, 255, 0.7),
+                inset 0 3px 6px rgba(255, 255, 255, 1),
+                inset 0 -2px 4px rgba(70, 70, 100, 0.08);
         }
         
-        [data-theme="dark"] .bani-card {
-            background: linear-gradient(145deg, rgba(44,44,46,0.98) 0%, rgba(36,36,38,0.98) 100%);
+        .bani-card.available:active {
+            transform: scale(0.96) translateY(4px);
             box-shadow:
-                8px 8px 24px rgba(0, 0, 0, 0.25),
-                4px 4px 12px rgba(0, 0, 0, 0.15),
-                -8px -8px 24px rgba(255, 255, 255, 0.03),
-                -4px -4px 12px rgba(255, 255, 255, 0.02),
-                inset 0 1px 2px rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.08);
+                /* Deep inset shadows for pressed cushion effect */
+                inset 8px 8px 20px rgba(70, 70, 100, 0.25),
+                inset 4px 4px 10px rgba(70, 70, 100, 0.15),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.7),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.5),
+                0 0 0 2px rgba(255, 255, 255, 0.5),
+                4px 4px 12px rgba(70, 70, 100, 0.12);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+        
+        [data-theme="light"] .bani-card {
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        html.dark-mode .bani-card {
+            background: linear-gradient(165deg, #3C3C3E 0%, #323234 35%, #2A2A2C 65%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                18px 18px 50px rgba(25, 25, 45, 0.55),
+                12px 12px 30px rgba(25, 25, 45, 0.40),
+                6px 6px 15px rgba(25, 25, 45, 0.28),
+                -8px -8px 25px rgba(255, 255, 255, 0.12),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(25, 25, 45, 0.30);
+        }
+        
+        html.dark-mode .bani-card.available:hover {
+            box-shadow:
+                22px 22px 60px rgba(25, 25, 45, 0.60),
+                14px 14px 35px rgba(25, 25, 45, 0.45),
+                8px 8px 20px rgba(25, 25, 45, 0.32),
+                -8px -8px 25px rgba(255, 255, 255, 0.12),
+                -4px -4px 12px rgba(255, 255, 255, 0.05),
+                0 0 0 3px rgba(255, 255, 255, 0.18),
+                inset 0 3px 6px rgba(255, 255, 255, 0.10),
+                inset 0 -2px 4px rgba(25, 25, 45, 0.30);
+        }
+        
+        html.dark-mode .bani-card.available:active {
+            box-shadow:
+                inset 8px 8px 20px rgba(25, 25, 45, 0.50),
+                inset 4px 4px 10px rgba(25, 25, 45, 0.35),
+                inset -6px -6px 15px rgba(255, 255, 255, 0.10),
+                inset -3px -3px 8px rgba(255, 255, 255, 0.06),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                4px 4px 12px rgba(25, 25, 45, 0.35);
+            border-color: rgba(255, 255, 255, 0.12);
         }
         
         .bani-icon {
@@ -387,10 +596,149 @@
             color: #F59E0B;
         }
         
-        .bani-arrow {
-            width: 20px;
-            height: 20px;
+        /* Puffy Composition Cards */
+        .composition-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 18px;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 24px;
+            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow:
+                14px 14px 40px rgba(70, 70, 100, 0.18),
+                8px 8px 20px rgba(70, 70, 100, 0.12),
+                4px 4px 10px rgba(70, 70, 100, 0.08),
+                -6px -6px 20px rgba(255, 255, 255, 0.98),
+                -3px -3px 10px rgba(255, 255, 255, 0.90),
+                0 0 0 2px rgba(255, 255, 255, 0.7),
+                inset 0 2px 4px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(70, 70, 100, 0.06);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
+        }
+        
+        .composition-card:hover {
+            transform: translateX(6px) translateY(-2px);
+            box-shadow:
+                18px 18px 50px rgba(70, 70, 100, 0.22),
+                10px 10px 25px rgba(70, 70, 100, 0.15),
+                5px 5px 12px rgba(70, 70, 100, 0.10),
+                -6px -6px 20px rgba(255, 255, 255, 0.98),
+                -3px -3px 10px rgba(255, 255, 255, 0.90),
+                0 0 0 2px rgba(255, 255, 255, 0.7),
+                inset 0 2px 4px rgba(255, 255, 255, 1),
+                inset 0 -1px 2px rgba(70, 70, 100, 0.06);
+        }
+        
+        .composition-card:active {
+            transform: translateX(4px) translateY(2px) scale(0.98);
+            box-shadow:
+                inset 6px 6px 15px rgba(70, 70, 100, 0.20),
+                inset 3px 3px 8px rgba(70, 70, 100, 0.12),
+                inset -4px -4px 10px rgba(255, 255, 255, 0.7),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.5),
+                0 0 0 2px rgba(255, 255, 255, 0.5),
+                2px 2px 8px rgba(70, 70, 100, 0.12);
+        }
+        
+        html.dark-mode .composition-card {
+            background: linear-gradient(165deg, #3C3C3E 0%, #323234 35%, #2A2A2C 65%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow:
+                14px 14px 40px rgba(25, 25, 45, 0.50),
+                8px 8px 20px rgba(25, 25, 45, 0.35),
+                4px 4px 10px rgba(25, 25, 45, 0.22),
+                -6px -6px 20px rgba(255, 255, 255, 0.10),
+                -3px -3px 10px rgba(255, 255, 255, 0.04),
+                0 0 0 2px rgba(255, 255, 255, 0.18),
+                inset 0 2px 4px rgba(255, 255, 255, 0.08),
+                inset 0 -1px 2px rgba(25, 25, 45, 0.28);
+        }
+        
+        html.dark-mode .composition-card:hover {
+            box-shadow:
+                18px 18px 50px rgba(25, 25, 45, 0.55),
+                10px 10px 25px rgba(25, 25, 45, 0.40),
+                5px 5px 12px rgba(25, 25, 45, 0.26),
+                -6px -6px 20px rgba(255, 255, 255, 0.10),
+                -3px -3px 10px rgba(255, 255, 255, 0.04),
+                0 0 0 2px rgba(255, 255, 255, 0.18),
+                inset 0 2px 4px rgba(255, 255, 255, 0.08),
+                inset 0 -1px 2px rgba(25, 25, 45, 0.28);
+        }
+        
+        html.dark-mode .composition-card:active {
+            box-shadow:
+                inset 6px 6px 15px rgba(25, 25, 45, 0.45),
+                inset 3px 3px 8px rgba(25, 25, 45, 0.30),
+                inset -4px -4px 10px rgba(255, 255, 255, 0.10),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.06),
+                0 0 0 2px rgba(255, 255, 255, 0.15),
+                2px 2px 8px rgba(25, 25, 45, 0.30);
+        }
+        
+        .composition-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(88, 86, 214, 0.1);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        
+        .composition-content {
+            flex: 1;
+        }
+        
+        .composition-name {
+            font-family: var(--font-gurmukhi);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .composition-english {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .composition-meta {
+            font-size: 11px;
             color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+        
+        .stats-banner {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--sacred-gold);
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
         }
         
         /* Footer */
@@ -415,6 +763,15 @@
             .main { max-width: 600px; margin: 0 auto; }
         }
     </style>
+    
+    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
+    <script src="../js/offline-bani-data.js?v=1"></script>
+    
+    <!-- BaniDB API - now with instant offline-first -->
+    <script src="../js/banidb-api.js?v=3"></script>
+    
+    <!-- Preload Manager for instant navigation -->
+    <script src="../js/preload-manager.js?v=1"></script>
 </head>
 
 <body>
@@ -451,12 +808,28 @@
         
         <main class="main">
             
-            <!-- Warning -->
+            <!-- Statistics Banner -->
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">ਅਧਯਾਯ<br>Adhiyas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">ਬਾਣੀ<br>Compositions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1,665</div>
+                    <div class="stat-label">ਅੰਗ<br>Ang</div>
+                </div>
+            </div>
+            
+            <!-- Warning Banner -->
             <div class="warning-banner">
                 <span class="warning-icon">⚠️</span>
                 <div class="warning-content">
-                    <h4>Content Coming Soon</h4>
-                    <p>These sacred Banis are not yet available digitally. We are working on sourcing authentic content from original manuscripts.</p>
+                    <h4>Sacred Scripture</h4>
+                    <p>Sri Sarbloh Granth Sahib Ji is also known as <strong>Manglacharan Puran</strong> or <strong>Sri Manglacharan Ji</strong>. Primarily revered by Nihang Singhs who attribute its authorship to Sri Guru Gobind Singh Ji.</p>
                 </div>
             </div>
             
@@ -469,69 +842,216 @@
                 </div>
             </div>
             
-            <!-- Banis -->
+            <!-- The Five Adhiyas -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-icon">🛡️</span>
-                    <h3>Sarbloh Banis</h3>
+                    <span class="section-icon">📖</span>
+                    <h3>ਪੰਜ ਅਧਯਾਯ — The Five Chapters</h3>
                 </div>
-                <div class="bani-list">
-                    
-                    <div class="bani-card">
-                        <div class="bani-icon">🛡️</div>
-                        <div class="bani-content">
-                            <div class="bani-name">ਸਰਬਲੋਹ ਕਵਚ</div>
-                            <div class="bani-english">Sarab Loh Kavach</div>
-                            <div class="bani-meta">
-                                <span class="coming-soon-badge">Coming Soon</span>
-                            </div>
+                
+                <!-- Adhiya 1 -->
+                <div class="adhiya-section">
+                    <div class="adhiya-header">
+                        <span class="adhiya-number">੧</span>
+                        <div>
+                            <div class="adhiya-title">ਪਹਿਲਾ ਅਧਯਾਯ</div>
+                            <div class="adhiya-desc">Pahila Adhiya — First Chapter</div>
                         </div>
                     </div>
-                    
-                    <div class="bani-card">
-                        <div class="bani-icon">🔱</div>
-                        <div class="bani-content">
-                            <div class="bani-name">ਮਹਾਕਾਲ ਸਤੋਤ੍ਰ</div>
-                            <div class="bani-english">Maha Kaal Stottar</div>
-                            <div class="bani-meta">
-                                <span class="coming-soon-badge">Coming Soon</span>
+                    <div class="composition-list">
+                        <a href="../pdf-viewer.html?bani=adhiya-1" class="composition-card">
+                            <div class="composition-icon">🙏</div>
+                            <div class="composition-content">
+                                <div class="composition-name">ਮਹਾ ਮਾਇਆ ਦੀ ਉਸਤਤਿ</div>
+                                <div class="composition-english">Maha Maya Di Ustat — Praise of Maha Maya</div>
+                                <div class="composition-meta">Opening praises of Maha Maya and Maha Kaal; Chandi defeats Bhimnad</div>
                             </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Adhiya 2 -->
+                <div class="adhiya-section">
+                    <div class="adhiya-header">
+                        <span class="adhiya-number">੨</span>
+                        <div>
+                            <div class="adhiya-title">ਦੂਜਾ ਅਧਯਾਯ</div>
+                            <div class="adhiya-desc">Duja Adhiya — Second Chapter</div>
                         </div>
                     </div>
-                    
-                    <div class="bani-card">
-                        <div class="bani-icon">⚔️</div>
-                        <div class="bani-content">
-                            <div class="bani-name">ਭਗਉਤੀ ਅਸਤੋਤਰ</div>
-                            <div class="bani-english">Bhagauti Astotar</div>
-                            <div class="bani-meta">
-                                <span class="coming-soon-badge">Coming Soon</span>
+                    <div class="composition-list">
+                        <a href="../pdf-viewer.html?bani=adhiya-2" class="composition-card">
+                            <div class="composition-icon">�</div>
+                            <div class="composition-content">
+                                <div class="composition-name">ਦੂਜਾ ਅਧਯਾਯ — ਸਤੀ ਅਤੇ ਇੰਦਰ ਦੇ ਖਤ</div>
+                                <div class="composition-english">Duja Adhiya — Sati & Indra's Letters</div>
+                                <div class="composition-meta">Bhimnad's wife commits sati; Brijnad prepares revenge; Indra calls demi-gods</div>
                             </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Adhiya 3 -->
+                <div class="adhiya-section">
+                    <div class="adhiya-header">
+                        <span class="adhiya-number">੩</span>
+                        <div>
+                            <div class="adhiya-title">ਤੀਜਾ ਅਧਯਾਯ</div>
+                            <div class="adhiya-desc">Tija Adhiya — Third Chapter</div>
                         </div>
                     </div>
-                    
-                    <div class="bani-card">
-                        <div class="bani-icon">🗡️</div>
-                        <div class="bani-content">
-                            <div class="bani-name">ਉਗਰਦੰਤੀ</div>
-                            <div class="bani-english">Ugardanti</div>
-                            <div class="bani-meta">
-                                <span class="coming-soon-badge">Coming Soon</span>
+                    <div class="composition-list">
+                        <a href="../pdf-viewer.html?bani=adhiya-3" class="composition-card">
+                            <div class="composition-icon">🏳️</div>
+                            <div class="composition-content">
+                                <div class="composition-name">ਤੀਜਾ ਅਧਯਾਯ — ਦੈਂਤਾਂ ਦੀ ਜਿੱਤ</div>
+                                <div class="composition-english">Tija Adhiya — Demons' Victory</div>
+                                <div class="composition-meta">Demons overpower demi-gods; Vishnu sends Narada; Brijnad refuses peace</div>
                             </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Adhiya 4 -->
+                <div class="adhiya-section">
+                    <div class="adhiya-header">
+                        <span class="adhiya-number">੪</span>
+                        <div>
+                            <div class="adhiya-title">ਚੌਥਾ ਅਧਯਾਯ</div>
+                            <div class="adhiya-desc">Chautha Adhiya — Fourth Chapter</div>
                         </div>
                     </div>
-                    
-                    <div class="bani-card">
-                        <div class="bani-icon">📿</div>
-                        <div class="bani-content">
-                            <div class="bani-name">ਸਰਬਲੋਹ ਪਾਠ</div>
-                            <div class="bani-english">Sarab Loh Path</div>
-                            <div class="bani-meta">
-                                <span class="coming-soon-badge">Coming Soon</span>
+                    <div class="composition-list">
+                        <a href="../pdf-viewer.html?bani=adhiya-4" class="composition-card">
+                            <div class="composition-icon">⚔️</div>
+                            <div class="composition-content">
+                                <div class="composition-name">ਚੌਥਾ ਅਧਯਾਯ — ਭਿਆਨਕ ਯੁੱਧ</div>
+                                <div class="composition-english">Chautha Adhiya — Intense Battle</div>
+                                <div class="composition-meta">Fierce war between demi-gods and demons; demi-gods appeal to Akal Purakh</div>
                             </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Adhiya 5 -->
+                <div class="adhiya-section">
+                    <div class="adhiya-header">
+                        <span class="adhiya-number">੫</span>
+                        <div>
+                            <div class="adhiya-title">ਪੰਜਵਾ ਅਧਯਾਯ</div>
+                            <div class="adhiya-desc">Panjva Adhiya — Fifth Chapter</div>
                         </div>
                     </div>
-                    
+                    <div class="composition-list">
+                        <a href="../pdf-viewer.html?bani=adhiya-5" class="composition-card">
+                            <div class="composition-icon">⚡</div>
+                            <div class="composition-content">
+                                <div class="composition-name">ਪੰਜਵਾ ਅਧਯਾਯ — ਸਰਬਲੋਹ ਅਵਤਾਰ</div>
+                                <div class="composition-english">Panjva Adhiya — Sarbloh Avtar</div>
+                                <div class="composition-meta">Akal Purakh incarnates at Jagannath Puri; Ganesha as ambassador; demons annihilated</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Appendix -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">📚</span>
+                    <h3>ਪਰਵਾਸ਼ — Appendix</h3>
+                </div>
+                <div class="composition-list">
+                    <a href="../pdf-viewer.html?bani=mach-avtar" class="composition-card">
+                        <div class="composition-icon">🐟</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਮੱਛ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Mach Avtar — Fish Avatar</div>
+                            <div class="composition-meta">Vishnu's first incarnation as a fish</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=kach-avtar" class="composition-card">
+                        <div class="composition-icon">🐢</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਕੱਛ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Kach Avtar — Tortoise Avatar</div>
+                            <div class="composition-meta">Vishnu's second incarnation as a tortoise</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=barha-avtar" class="composition-card">
+                        <div class="composition-icon">🐗</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਬਰਹਾ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Barha Avtar — Wild Boar Avatar</div>
+                            <div class="composition-meta">Third incarnation as wild boar</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=nar-singh-avtar" class="composition-card">
+                        <div class="composition-icon">🦁</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਨਰ ਸਿੰਘ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Nar Singh Avtar — Half Man Half Lion</div>
+                            <div class="composition-meta">Fourth incarnation as Narasimha</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=purshram-avtar" class="composition-card">
+                        <div class="composition-icon">🏹</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਪੁਰਸ਼ਰਾਮ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Purshram Avtar — Parashurama Avatar</div>
+                            <div class="composition-meta">Sixth incarnation as Parashurama</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=bij-ramaein" class="composition-card">
+                        <div class="composition-icon">🏹</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਬੀਜ ਰਮਾਈਨ — ਰਾਮ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Bij Ramaein — Ram Avatar</div>
+                            <div class="composition-meta">Ram Avatar section of the Granth</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=dasam-sakand" class="composition-card">
+                        <div class="composition-icon">🎵</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਦਸਮ ਸਕੰਦ — ਕ੍ਰਿਸ਼ਨ ਅਵਤਾਰ</div>
+                            <div class="composition-english">Dasam Sakand — Krishna Avatar</div>
+                            <div class="composition-meta">Krishna Avatar section of the Granth</div>
+                        </div>
+                    </a>
+                </div>
+            </section>
+            
+            <!-- Key Compositions -->
+            <section class="section">
+                <div class="section-header">
+                    <span class="section-icon">⭐</span>
+                    <h3>ਮੁੱਖ ਰਚਨਾਵਾਂ — Key Compositions</h3>
+                </div>
+                <div class="composition-list">
+                    <a href="../pdf-viewer.html?bani=khalsa-mahima" class="composition-card">
+                        <div class="composition-icon">🛡️</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਖਾਲਸਾ ਮਹਿਮਾ</div>
+                            <div class="composition-english">Khalsa Mahima — Praise of the Khalsa</div>
+                            <div class="composition-meta">Sacred praises of the Khalsa Panth</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=das-grahi-tiagi" class="composition-card">
+                        <div class="composition-icon">📿</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਦਸ ਗ੍ਰਾਹੀ — ਦਸ ਤਿਆਗੀ</div>
+                            <div class="composition-english">Das Grahi — Das Tiagi</div>
+                            <div class="composition-meta">Ten virtues to hold and ten vices to renounce for the Khalsa</div>
+                        </div>
+                    </a>
+                    <a href="../pdf-viewer.html?bani=jaap-sahib-naam" class="composition-card">
+                        <div class="composition-icon">📖</div>
+                        <div class="composition-content">
+                            <div class="composition-name">ਜਾਪੁ ਸਾਹਿਬ ਦੇ ਨਾਮ</div>
+                            <div class="composition-english">Jaap Sahib De Naam</div>
+                            <div class="composition-meta">All divine names used in Jaap Sahib appear in this Granth</div>
+                        </div>
+                    </a>
                 </div>
             </section>
             
@@ -550,9 +1070,14 @@
         const themeIcon = document.getElementById('themeIcon');
         const html = document.documentElement;
 
-        // Load saved theme
-        const savedTheme = localStorage.getItem('nitnem_theme') || 'dark';
+        // Load saved theme from global key
+        const savedTheme = localStorage.getItem('anhad_theme') || 'light';
         html.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
         updateThemeIcon(savedTheme);
 
         // Toggle theme
@@ -560,7 +1085,7 @@
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('nitnem_theme', newTheme);
+            localStorage.setItem('anhad_theme', newTheme);
             updateThemeIcon(newTheme);
         });
 

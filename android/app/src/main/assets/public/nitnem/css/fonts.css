@@ -1,52 +1,67 @@
 /* ═══════════════════════════════════════════════════════════════
-   CUSTOM GURMUKHI FONTS - TATTKHALSA POTHI STYLE
-   Beautiful handwritten & decorative Gurmukhi fonts
+   CUSTOM GURMUKHI FONTS
    ═══════════════════════════════════════════════════════════════ */
 
-/* Puratan Hastlikhat - Traditional Handwritten Style */
+/* PG Serif Regular */
 @font-face {
-    font-family: 'Puratan Hastlikhat';
-    src: url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.woff2') format('woff2'),
-        url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.woff') format('woff'),
-        url('../g-fonts/puratan-hathlikhat/puratan-hathlikhat/Puratan_Hastlikhat.ttf') format('truetype');
+    font-family: 'PG Serif';
+    src: url('../g-fonts/pg_serif_r.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* PG Serif Semi-bold */
+@font-face {
+    font-family: 'PG Serif';
+    src: url('../g-fonts/pg_serif_s.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* MFJashan */
+@font-face {
+    font-family: 'MFJashan';
+    src: url('../g-fonts/mffjashan.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
-/* Riyasti Hastlikhat - Royal Handwritten Style */
+/* PG Khanna */
 @font-face {
-    font-family: 'Riyasti Hastlikhat';
-    src: url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.woff2') format('woff2'),
-        url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.woff') format('woff'),
-        url('../g-fonts/riyasti-hastlikhat/riyasti-hastlikhat/RiyastiHastlikhat.ttf') format('truetype');
+    font-family: 'PG Khanna';
+    src: url('../g-fonts/pg_khanna_c_6.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
-/* Riyasti Naveen - Modern Royal Style */
+/* Pixel R */
 @font-face {
-    font-family: 'Riyasti Naveen';
-    src: url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.woff2') format('woff2'),
-        url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.woff') format('woff'),
-        url('../g-fonts/riyasti-naveen/riyasti-naveen/riyasti-naveen.ttf') format('truetype');
+    font-family: 'Pixel R';
+    src: url('../g-fonts/pixel_r_21.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
 }
 
-/* Font Classes for Easy Application */
-.font-puratan {
-    font-family: 'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+/* Font Classes */
+.font-pg-serif {
+    font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.font-riyasti-hast {
-    font-family: 'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+.font-mfjashan {
+    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.font-riyasti-naveen {
-    font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
+.font-pg-khanna {
+    font-family: 'PG Khanna', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-pixel-r {
+    font-family: 'Pixel R', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
 .font-noto {

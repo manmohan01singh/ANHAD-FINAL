@@ -45,6 +45,14 @@ const config: CapacitorConfig = {
             showSpinner: false,
             androidSpinnerStyle: 'small',
             spinnerColor: '#f7c634'
+        },
+
+        // Widget Data Bridge Plugin
+        WidgetDataBridge: {
+            // Android widget update interval in minutes
+            updateInterval: 15,
+            // Enable debug logging
+            debug: false
         }
     }
 };

@@ -531,7 +531,8 @@ body {
     transition: all 0.3s var(--ease-out);
 }
 
-.search-modal[aria-hidden="false"] {
+.search-modal[aria-hidden="false"],
+.search-modal.visible {
     opacity: 1;
     visibility: visible;
 }
@@ -540,7 +541,7 @@ body {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(2px);
 }
 
 .search-modal__content {
@@ -644,7 +645,8 @@ body {
     transition: all 0.3s var(--ease-out);
 }
 
-.settings-panel[aria-hidden="false"] {
+.settings-panel[aria-hidden="false"],
+.settings-panel.visible {
     opacity: 1;
     visibility: visible;
 }

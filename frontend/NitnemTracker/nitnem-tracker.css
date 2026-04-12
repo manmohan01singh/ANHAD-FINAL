@@ -2414,16 +2414,30 @@ ol {
 }
 
 .week-label {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
+font-size: var(--text-sm);
+font-weight: var(--font-semibold);
+color: var(--text-primary);
+}
+
+/* Week Days Scroll Container */
+.week-days-scroll-container {
+overflow-x: auto;
+overflow-y: hidden;
+-webkit-overflow-scrolling: touch;
+scrollbar-width: none;
+-ms-overflow-style: none;
+padding-bottom: var(--space-2);
+}
+
+.week-days-scroll-container::-webkit-scrollbar {
+display: none;
 }
 
 /* Week Days */
 .week-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    display: flex;
     gap: var(--space-2);
+    min-width: min-content;
 }
 
 .week-day {
@@ -2437,6 +2451,8 @@ ol {
     border: 1px solid transparent;
     transition: all var(--duration-fast) var(--ease-out);
     cursor: pointer;
+    min-width: 48px;
+    flex-shrink: 0;
 }
 
 .week-day:hover {
@@ -4616,15 +4632,20 @@ ol {
     }
 }
 
-/* Regular phones */
+/* Regular phones - consistent icon sizes across all mobiles */
 @media (max-width: 428px) {
     .header-actions {
         right: var(--space-3);
     }
 
     .header-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .header-btn svg {
+        width: 22px;
+        height: 22px;
     }
 
     .alarm-stats-grid {
@@ -4633,6 +4654,48 @@ ol {
 
     .alarm-stat-card.highlight {
         grid-column: span 2;
+    }
+
+    /* Consistent card icons across all mobile devices */
+    .card-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .card-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Consistent progress bars */
+    .progress-bar {
+        height: 8px;
+        min-height: 8px;
+    }
+
+    /* Consistent tab bar icons */
+    .tab-item svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Consistent button sizes */
+    .btn-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Consistent week day indicators */
+    .week-day {
+        min-width: 48px;
+        min-height: 48px;
+    }
+
+    .week-day .day-icon {
+        width: 28px;
+        height: 28px;
     }
 }
 
@@ -6988,6 +7051,149 @@ ol {
 
 [data-theme="dark"] .action-sheet-cancel:hover {
     background: rgba(255, 255, 255, 0.12);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION 32: STREAK SAVER PUNISHMENT SYSTEM STYLES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Streak Saver Banner */
+.streak-saver-banner {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.15), rgba(255, 149, 0, 0.15));
+    border: 1px solid rgba(255, 204, 0, 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    margin-bottom: var(--space-4);
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.banner-icon {
+    font-size: 24px;
+    animation: pulse 2s infinite;
+}
+
+.banner-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.banner-text strong {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+}
+
+.banner-text span {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+.banner-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.banner-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffcc00, #ff9500);
+    transition: width 1s ease-out;
+}
+
+/* Streak Saver Modal */
+.streak-saver-modal .modal-header {
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.1), rgba(255, 149, 0, 0.1));
+}
+
+.streak-saver-icon {
+    font-size: 48px;
+    margin-bottom: var(--space-3);
+    animation: bounce 1s infinite;
+}
+
+.streak-saver-subtitle {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: var(--space-2);
+}
+
+/* Punishment Card */
+.punishment-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border-light);
+    margin-bottom: var(--space-4);
+}
+
+.punishment-icon {
+    font-size: 40px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(175, 82, 222, 0.2), rgba(88, 86, 214, 0.2));
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+}
+
+.punishment-details h4 {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-1);
+}
+
+.punishment-text {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+}
+
+.punishment-note {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+}
+
+.punishment-explanation {
+    padding: var(--space-3);
+    background: rgba(0, 122, 255, 0.08);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--ios-blue);
+}
+
+.punishment-explanation p {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

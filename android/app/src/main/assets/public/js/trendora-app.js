@@ -64,7 +64,7 @@
   // § 3. NAVIGATION PATHS
   // ═══════════════════════════════════════════════════════════════════════════
   const NAV_PATHS = {
-    gurbaniRadio: 'GurbaniRadio/ios17-gurbani-radio.html',
+    gurbaniRadio: 'GurbaniRadio/gurbani-radio.html',
     gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
     randomShabad: 'RandomShabad/random-shabad.html',
@@ -90,6 +90,9 @@
     _safetyTimer: null,
 
     navigateTo(path) {
+      // Clear any pending timers first
+      this._clearTimers();
+      
       const app = document.querySelector('.app');
       if (app) {
         app.classList.add('app--exiting');
@@ -105,9 +108,21 @@
             app.style.filter = '';
             console.warn('[Navigation] Safety: removed stuck app--exiting');
           }
+          this._clearTimers();
         }, 600);
       } else {
         window.location.href = path;
+      }
+    },
+    
+    _clearTimers() {
+      if (this._exitTimer) {
+        clearTimeout(this._exitTimer);
+        this._exitTimer = null;
+      }
+      if (this._safetyTimer) {
+        clearTimeout(this._safetyTimer);
+        this._safetyTimer = null;
       }
     },
 
@@ -133,6 +148,18 @@
       });
     }
   };
+
+  // Clear navigation timers on pagehide to prevent memory leaks
+  window.addEventListener('pagehide', () => {
+    if (Navigation._exitTimer) {
+      clearTimeout(Navigation._exitTimer);
+      Navigation._exitTimer = null;
+    }
+    if (Navigation._safetyTimer) {
+      clearTimeout(Navigation._safetyTimer);
+      Navigation._safetyTimer = null;
+    }
+  }, { once: true });
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 5. CONTEXTUAL GURBANI GREETING
@@ -338,23 +365,51 @@
             name: e.name_en,
             id: e.id,
             date: new Date(e.gregorian_date),
-            type: e.type
+            type: e.type,
+            eventCategory: this.classifyEventType(e.type, e.name_en)
           }))
           .sort((a, b) => a.date - b.date);
 
         const now = new Date();
         const todayStr = now.toLocaleDateString('en-CA');
 
-        const todayEvent = events.find(g => g.date.toLocaleDateString('en-CA') === todayStr);
+        // Find ALL events for today (multiple Gurpurabs possible)
+        const todayEvents = events.filter(g => g.date.toLocaleDateString('en-CA') === todayStr);
+        
         let result = null;
-        if (todayEvent) {
-          result = { name: todayEvent.name, id: todayEvent.id, daysLeft: 0, dateStr: 'Today', isToday: true };
+        if (todayEvents.length > 0) {
+          // Multiple events today - return array
+          result = {
+            events: todayEvents.map(e => ({
+              name: e.name,
+              id: e.id,
+              daysLeft: 0,
+              dateStr: 'Today',
+              isToday: true,
+              eventCategory: e.eventCategory,
+              type: e.type
+            })),
+            isToday: true,
+            isMultiple: todayEvents.length > 1
+          };
         } else {
           const upcoming = events.find(g => g.date >= now);
           if (upcoming) {
             const daysLeft = Math.ceil((upcoming.date - now) / 86400000);
             const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            result = { name: upcoming.name, id: upcoming.id, daysLeft, dateStr, isToday: false };
+            result = {
+              events: [{
+                name: upcoming.name,
+                id: upcoming.id,
+                daysLeft,
+                dateStr,
+                isToday: false,
+                eventCategory: upcoming.eventCategory,
+                type: upcoming.type
+              }],
+              isToday: false,
+              isMultiple: false
+            };
           }
         }
 
@@ -364,6 +419,35 @@
       } catch (e) {
         return null;
       }
+    },
+
+    classifyEventType(type, eventName = '') {
+      const name = String(eventName || '').toLowerCase();
+      
+      // PRIORITY 1: Check event name for explicit memorial indicators
+      if (name.includes('jyoti jot') || name.includes('joti jot') || 
+          name.includes('ਜੋਤੀ ਜੋਤ') || name.includes('shaheedi') || 
+          name.includes('ਸ਼ਹੀਦੀ') || name.includes('barsi')) {
+        return 'remembrance';
+      }
+      
+      // PRIORITY 2: Check type for memorial events
+      const memorialTypes = ['shaheedi', 'historical', 'joti-jot', 'jyoti-jot', 'barsi'];
+      if (memorialTypes.includes(String(type).toLowerCase())) {
+        return 'remembrance';
+      }
+      
+      // PRIORITY 3: Check for celebration events
+      const celebrationTypes = ['prakash', 'gurgaddi', 'janam', 'vaisakhi', 'dastar'];
+      if (celebrationTypes.includes(String(type).toLowerCase()) || 
+          name.includes('prakash') || name.includes('gurgaddi') || 
+          name.includes('ਪ੍ਰਕਾਸ਼') || name.includes('ਗੁਰਗੱਦੀ') ||
+          name.includes('vaisakhi') || name.includes('ਵੈਸਾਖੀ')) {
+        return 'celebration';
+      }
+      
+      // Default to neutral
+      return 'neutral';
     },
 
     getNotificationCount() {
@@ -596,63 +680,179 @@
     },
 
     async updateEventCard() {
-      const event = await DataManager.getNextGurpurab();
+      const data = await DataManager.getNextGurpurab();
       const titleEl = document.getElementById('eventTitle');
       const dateEl = document.getElementById('eventDate');
       const countEl = document.getElementById('eventCountdown');
       const labelEl = document.getElementById('eventCountdownLabel');
+      const eyebrowEl = document.querySelector('.event-card__eyebrow');
+      const card = document.getElementById('eventCard');
 
-      if (!event) {
-        const card = document.getElementById('eventCard');
+      if (!data || !data.events || data.events.length === 0) {
         if (card) card.style.display = 'none';
         return;
       }
 
-      if (titleEl) {
-        titleEl.textContent = event.name;
-        titleEl.classList.remove('skeleton');
+      // Clear any existing rotation interval
+      if (card._rotationInterval) {
+        clearInterval(card._rotationInterval);
+        card._rotationInterval = null;
       }
 
-      if (event.isToday) {
-        if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
-        if (countEl) countEl.textContent = '🙏';
-        if (labelEl) labelEl.textContent = 'Today';
+      const events = data.events;
+      let currentIndex = 0;
+
+      // Function to update display for current event
+      const updateEventDisplay = (event) => {
+        if (titleEl) {
+          titleEl.textContent = event.name;
+          titleEl.classList.remove('skeleton');
+        }
+
+        // Apply event category styling
+        if (card) {
+          card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
+          
+          if (event.eventCategory === 'remembrance') {
+            card.classList.add('event-remembrance');
+          } else if (event.eventCategory === 'celebration') {
+            card.classList.add('event-celebration');
+          } else {
+            card.classList.add('event-neutral');
+          }
+          
+          if (event.isToday) {
+            card.classList.add('event-today');
+          }
+        }
+
+        // Update eyebrow text
+        if (eyebrowEl) {
+          eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
+        }
+
+        // Update date/countdown display
+        if (event.isToday) {
+          if (event.eventCategory === 'remembrance') {
+            if (dateEl) dateEl.textContent = '🕯️ In remembrance';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else if (event.eventCategory === 'celebration') {
+            if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
+            if (countEl) countEl.textContent = '✨';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else {
+            if (dateEl) dateEl.textContent = 'Today';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          }
+        } else {
+          if (dateEl) dateEl.textContent = event.dateStr;
+          if (countEl) countEl.textContent = event.daysLeft;
+          if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+        }
+
+        // Update Guru image
+        this._updateGuruImage(event);
+      };
+
+      // Display first event
+      updateEventDisplay(events[0]);
+
+      // ═══════════════════════════════════════════════════════════════════
+      // GURPURAB SPECIAL MODE — Activate divine visual effects
+      // ═══════════════════════════════════════════════════════════════════
+      if (data.isToday && events.length > 0) {
+        const firstEvent = events[0];
+        const isCelebration = firstEvent.eventCategory === 'celebration' || 
+                              ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
+        
+        // Add appropriate mode class to body
+        document.body.classList.add(
+          isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
+        );
+        
+        console.log(`🙏 Gurpurab Special Mode activated: ${isCelebration ? 'Celebration' : 'Remembrance'}`);
       } else {
-        if (dateEl) dateEl.textContent = event.dateStr;
-        if (countEl) countEl.textContent = event.daysLeft;
-        if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+        // Remove any existing Gurpurab mode classes
+        document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
       }
 
+      // Setup auto-rotation for multiple events with smooth spring physics
+      if (data.isMultiple && events.length > 1) {
+        // Add smooth transition styles to card and title
+        if (card) {
+          card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
+        }
+        if (titleEl) {
+          titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        }
+        
+        card._rotationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % events.length;
+          
+          // Dramatic exit: fade out, lift card, and scale down slightly
+          if (titleEl) {
+            titleEl.style.opacity = '0';
+            titleEl.style.transform = 'translateY(-10px)';
+          }
+          if (card) {
+            card.style.transform = 'scale(0.96) translateY(-4px)';
+            card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
+          }
+          
+          // Wait for exit animation then update and enter
+          setTimeout(() => {
+            updateEventDisplay(events[currentIndex]);
+            
+            // Dramatic entrance: fade in with spring bounce
+            if (titleEl) {
+              titleEl.style.opacity = '1';
+              titleEl.style.transform = 'translateY(0)';
+            }
+            if (card) {
+              card.style.transform = 'scale(1) translateY(0)';
+              card.style.boxShadow = '';
+            }
+          }, 500); // 500ms for smooth exit before content change
+        }, 6000); // 6 seconds for dramatic effect
+      }
+    },
+
+    _updateGuruImage(event) {
       // ── Guru Image Mapping ──
+      // New guruimages folder with updated filenames (jpeg format)
       const guruImageMap = {
-        'guru-nanak':      'guru-nanak-dev-ji.png',
-        'guru-angad':      'guru-angad-dev-ji.png',
-        'guru-amar-das':   'guru-amar-das-ji.png',
-        'guru-ram-das':    'guru-ramdas-ji.png',
-        'guru-arjan':      'guru-arjan-dev-ji.png',
-        'guru-hargobind':  'guru-hargobind-ji.png',
-        'guru-har-rai':    'guru-har-rai-ji.png',
-        'guru-harkrishan':  'guru-har-krishan-ji.png',
-        'guru-har-krishan': 'guru-har-krishan-ji.png',
-        'guru-tegh-bahadur': 'guru-tegh-bahadur-ji.png',
-        'guru-teg-bahadur': 'guru-tegh-bahadur-ji.png',
-        'guru-gobind':     'guru-gobind-singh-ji.png',
-        'sggs':            'guru-granth-sahib-ji.png',
-        'guru-granth':     'guru-granth-sahib-ji.png',
-        'sahibzad':        'sahibzade.png',
-        'vaisakhi':        'guru-gobind-singh-ji.png',
-        'khalsa':          'guru-gobind-singh-ji.png',
-        'bandi-chhor':     'guru-hargobind-ji.png',
-        'miri-piri':       'guru-hargobind-ji.png',
+        'guru-nanak':      'gurunanakdevsahebji.jpeg',
+        'guru-angad':      'guruangaddevsahebji.jpeg',
+        'guru-amar-das':   'guruamardasji.jpeg',
+        'guru-ram-das':    'gururamdassahebji.jpeg',
+        'guru-arjan':      'guruarjanddevsahebji.jpeg',
+        'guru-hargobind':  'guruhargobindsahebji.jpeg',
+        'guru-har-rai':    'guruharraisahebji.jpeg',
+        'guru-harkrishan':  'guruharkrishansahebji.jpeg',
+        'guru-har-krishan': 'guruharkrishansahebji.jpeg',
+        'guru-tegh-bahadur': 'gurutegbahadursahebji.jpeg',
+        'guru-teg-bahadur': 'gurutegbahadursahebji.jpeg',
+        'guru-gobind':     'gurugobindsinghsahebji.jpeg',
+        'sggs':            'gurugranthsahebji.jpeg',
+        'guru-granth':     'gurugranthsahebji.jpeg',
+        'sahibzad':        'gurugobindsinghsahebji.jpeg',
+        'vaisakhi':        'gurugobindsinghsahebji.jpeg',
+        'khalsa':          'gurugobindsinghsahebji.jpeg',
+        'bandi-chhor':     'guruhargobindsahebji.jpeg',
+        'miri-piri':       'guruhargobindsahebji.jpeg',
       };
 
       // Match event ID to Guru image
       let guruImg = null;
       let guruName = null;
       const evId = (event.id || '').toLowerCase();
+      
+      // Get standard icon for all sections
       for (const [key, filename] of Object.entries(guruImageMap)) {
         if (evId.includes(key)) {
-          guruImg = 'assets/icons/' + filename;
+          guruImg = '../guruimages/' + filename;
           // Extract a readable Guru name
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
@@ -680,22 +880,40 @@
         }
       }
 
+      // Default to Guru Granth Sahib Ji for events without specific Guru association
+      // (e.g., Sikh Diwas, historical events, sangrand, puranmashi, etc.)
+      const defaultImg = '../guruimages/gurugranthsahebji.jpeg';
+      const finalImg = guruImg || defaultImg;
+      const finalName = guruName || 'Sri Guru Granth Sahib Ji';
+
       // Update event card image
       const eventGuruImg = document.getElementById('eventGuruImg');
-      if (eventGuruImg && guruImg) {
-        eventGuruImg.src = guruImg;
-        eventGuruImg.alt = guruName || event.name;
+      if (eventGuruImg) {
+        // Set onload before setting src to ensure it fires
+        eventGuruImg.onload = () => {
+          eventGuruImg.classList.add('loaded');
+        };
+        eventGuruImg.src = finalImg;
+        eventGuruImg.alt = finalName;
+        // If already cached, add class immediately
+        if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
+          eventGuruImg.classList.add('loaded');
+        }
       }
 
       // Update greeting portrait & salutation
       const greetingImg = document.getElementById('guruPortraitImg');
       const salEl = document.getElementById('greetingSalutation');
-      if (greetingImg && guruImg) {
-        greetingImg.src = guruImg;
-        greetingImg.alt = guruName || event.name;
+      if (greetingImg) {
+        greetingImg.src = finalImg;
+        greetingImg.alt = finalName;
+        greetingImg.style.opacity = '0';
+        greetingImg.onload = () => {
+          greetingImg.style.opacity = '1';
+        };
       }
-      if (salEl && guruName) {
-        salEl.textContent = guruName;
+      if (salEl) {
+        salEl.textContent = finalName;
       }
     },
 
@@ -777,9 +995,10 @@
       if (!('Notification' in window) || !window.isSecureContext) return;
       if (Notification.permission !== 'granted') return;
 
-      const event = await DataManager.getNextGurpurab();
-      if (!event) return;
+      const data = await DataManager.getNextGurpurab();
+      if (!data || !data.events || data.events.length === 0) return;
 
+      const event = data.events[0]; // Check first/upcoming event
       if (event.daysLeft === 1) {
         const now = new Date();
         const todayStr = now.toLocaleDateString('en-CA');
@@ -1090,7 +1309,7 @@
       if (miniSubtitle) miniSubtitle.textContent = info.subtitle;
       if (miniPlayIcon) miniPlayIcon.innerHTML = isPlaying ? pauseIcon : playIcon;
       if (miniThumb) {
-        miniThumb.src = stream === 'amritvela' ? 'assets/Darbar-sahib-AMRITVELA.webp' : 'assets/darbar-sahib-evening.webp';
+        miniThumb.src = stream === 'amritvela' ? '/assets/Darbar-sahib-AMRITVELA.webp' : '/assets/darbar-sahib-evening.webp';
         miniThumb.alt = info.title;
       }
     }

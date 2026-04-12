@@ -54,7 +54,10 @@
         showGurmukhi: true,
         showRoman: true,
         showEnglish: true,
-        showPunjabi: false
+        showPunjabi: false,
+
+        // Ik Onkar Background - default (will be adjusted by theme in loadSettings)
+        ikonkarTransparency: 10
     };
 
     // Color Palette
@@ -75,10 +78,10 @@
     // Font Families
     const FONT_MAP = {
         'noto': "'Noto Sans Gurmukhi', sans-serif",
-        'puratan': "'Puratan Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
-        'riyasti-hast': "'Riyasti Hastlikhat', 'Noto Sans Gurmukhi', sans-serif",
-        'riyasti-naveen': "'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif",
-        'ladivar': "'Noto Sans Gurmukhi', sans-serif"
+        'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
+        'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
+        'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif"
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -124,6 +127,7 @@
             progressText: $('progressText'),
             scrollTopBtn: $('scrollTopBtn'),
             paperBackground: $('paperBackground'),
+            ikonkarBackground: $('ikonkarBackground'),
 
             // Header
             readerHeader: document.querySelector('.reader-header'),
@@ -190,6 +194,10 @@
             downloadOfflineBtn: $('downloadOfflineBtn'),
             clearHistoryBtn: $('clearHistoryBtn'),
 
+            // Ik Onkar Background
+            ikonkarTransparency: $('ikonkarTransparency'),
+            transparencyValue: $('transparencyValue'),
+
             // Color Picker
             colorPickerModal: $('colorPickerModal'),
             pickerTitle: $('pickerTitle'),
@@ -242,17 +250,10 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // LOAD BANI — Offline-first: Try IndexedDB, then API fallback
+    // LOAD BANI — Offline-first: Try IndexedDB, then API, then Local Data
     // ═══════════════════════════════════════════════════════════════
 
     async function loadBani() {
-        // Check if Sarbloh Granth (IDs 201-205)
-        if (state.baniId >= 201 && state.baniId <= 205) {
-            hideSkeleton();
-            showError('Sarbloh Granth Banis are not yet available via API. Coming soon! 🙏');
-            return;
-        }
-
         try {
             let data = null;
             let loadedFromCache = false;
@@ -285,31 +286,42 @@
                 }
             }
 
-            // 3. Final fallback to API
+            // 3. Try API (BaniDB)
             if (!data) {
                 console.log('[ReaderEngine] 🌐 Fetching from API:', state.baniId);
-                data = await BaniDB.getBani(state.baniId);
-                
-                // Save to both cache systems for future use
-                if (data && data.verses) {
-                    const meta = state.baniMeta || {};
+                try {
+                    data = await BaniDB.getBani(state.baniId);
                     
-                    // Save to BaniCacheOptimizer
-                    if (window.baniCacheOptimizer) {
-                        await window.baniCacheOptimizer.cacheBani(state.baniId, data);
+                    // Save to both cache systems for future use
+                    if (data && data.verses) {
+                        const meta = state.baniMeta || {};
+                        
+                        // Save to BaniCacheOptimizer
+                        if (window.baniCacheOptimizer) {
+                            await window.baniCacheOptimizer.cacheBani(state.baniId, data);
+                        }
+                        
+                        // Save to gurbaniLocalDB
+                        if (window.gurbaniLocalDB) {
+                            await window.gurbaniLocalDB.saveBani(
+                                state.baniId, 
+                                meta.name || meta.nameEnglish || 'Bani', 
+                                data.verses
+                            );
+                        }
+                        
+                        console.log('[ReaderEngine] ✓ Cached for future use');
+                        showOfflineBadge(true);
                     }
-                    
-                    // Save to gurbaniLocalDB
-                    if (window.gurbaniLocalDB) {
-                        await window.gurbaniLocalDB.saveBani(
-                            state.baniId, 
-                            meta.name || meta.nameEnglish || 'Bani', 
-                            data.verses
-                        );
+                } catch (apiError) {
+                    console.warn('[ReaderEngine] API failed, checking local fallback:', apiError);
+                    // 4. Final fallback: Check LocalBaniData for missing Banis
+                    if (typeof LocalBaniData !== 'undefined' && LocalBaniData[state.baniId]) {
+                        console.log('[ReaderEngine] Using LocalBaniData fallback for ID:', state.baniId);
+                        data = LocalBaniData[state.baniId];
+                    } else {
+                        throw apiError; // Re-throw if no local data either
                     }
-                    
-                    console.log('[ReaderEngine] ✓ Cached for future use');
-                    showOfflineBadge(true);
                 }
             }
 
@@ -321,9 +333,9 @@
 
             updateHeader(data);
             
-            // PROGRESSIVE RENDERING — hide skeleton, render verses in chunks
+            // Render ALL verses immediately to prevent disappearing panktis during scroll
             hideSkeleton();
-            renderVersesProgressive(data.verses);
+            renderVerses(data.verses);
             renderInfo(data);
 
             hideLoading();
@@ -390,11 +402,12 @@
         { id: 77, name: 'ਸਲੋਕ ਭਗਤ ਕਬੀਰ ਜੀ', english: 'Salok Bhagat Kabir Ji', icon: '📿' },
         { id: 78, name: 'ਸਲੋਕ ਸੇਖ ਫਰੀਦ ਕੇ', english: 'Salok Sheikh Farid', icon: '🤲' },
         { id: 5, name: 'ਸ਼ਬਦ ਹਜ਼ਾਰੇ ਪਾਤਿਸ਼ਾਹੀ ੧੦', english: 'Shabad Hazare P10', icon: '💎' },
-        { id: 8, name: 'ਅਕਾਲ ਉਸਤਤ ਚੌਪਈ', english: 'Akal Ustat Chaupai', icon: '✨' },
-        { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat (Full)', icon: '🌟' },
-        { id: 12, name: 'ਅਥ ਚੰਡੀਚਰਿਤ੍ਰ', english: 'Chandi Charitra', icon: '⚔️' },
+        { id: 8, name: 'ਬਚਿੱਤਰ ਨਾਟਕ', english: 'Bachittar Natak', icon: '📜' },
+        { id: 12, name: 'ਜ਼ਫ਼ਰਨਾਮਾ', english: 'Zafarnama', icon: '✉️' },
         { id: 13, name: 'ਚੰਡੀ ਦੀ ਵਾਰ', english: 'Chandi Di Vaar', icon: '🗡️' },
         { id: 19, name: 'ਸ਼ਸਤ੍ਰ ਨਾਮ ਮਾਲਾ', english: 'Shastar Naam Mala', icon: '🔱' },
+        { id: 28, name: 'ਚੰਡੀ ਚਰਿਤ੍ਰ', english: 'Chandi Charitra', icon: '⚔️' },
+        { id: 29, name: 'ਅਕਾਲ ਉਸਤਤ', english: 'Akal Ustat', icon: '🌟' },
         { id: 53, name: 'ਉਗ੍ਰਦੰਤੀ', english: 'Ugardanti', icon: '🔥' },
     ];
 
@@ -671,7 +684,7 @@
 
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
-            el.classList.remove('font-noto', 'font-puratan', 'font-riyasti-hast', 'font-riyasti-naveen');
+            el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
 
             // Add current font class
             el.classList.add(`font-${fontKey}`);
@@ -748,6 +761,38 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // IK ONKAR BACKGROUND TRANSPARENCY
+    // ═══════════════════════════════════════════════════════════════
+
+    function updateIkonkarBackground() {
+        const opacity = state.settings.ikonkarTransparency / 100;
+        if (els.ikonkarBackground) {
+            // Use CSS variable for theme-aware opacity
+            els.ikonkarBackground.style.setProperty('--ikonkar-opacity', opacity);
+            els.ikonkarBackground.style.opacity = opacity;
+            els.ikonkarBackground.style.display = 'block';
+            els.ikonkarBackground.style.visibility = 'visible';
+            // Remove hidden class if opacity > 0
+            if (opacity > 0) {
+                els.ikonkarBackground.classList.remove('hidden');
+            }
+            console.log('[ReaderEngine] Ik Onkar opacity set to:', opacity);
+        }
+        if (els.ikonkarTransparency) {
+            els.ikonkarTransparency.value = state.settings.ikonkarTransparency;
+        }
+        if (els.transparencyValue) {
+            els.transparencyValue.textContent = `${state.settings.ikonkarTransparency}%`;
+        }
+    }
+
+    function setIkonkarTransparency(value) {
+        state.settings.ikonkarTransparency = parseInt(value, 10);
+        updateIkonkarBackground();
+        saveSettings();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // APPLY ALL SETTINGS
     // ═══════════════════════════════════════════════════════════════
 
@@ -782,6 +827,9 @@
 
         // Apply font to verses
         applyFontToVerses();
+
+        // Apply Ik Onkar background
+        updateIkonkarBackground();
 
         // Update UI
         updateSettingsUI();
@@ -1043,8 +1091,48 @@
     function loadSettings() {
         try {
             const saved = localStorage.getItem('anhad_reader_v5');
-            if (saved) state.settings = { ...DEFAULTS, ...JSON.parse(saved) };
-        } catch (e) { }
+            // Get current theme for default transparency
+            const currentTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) 
+                || localStorage.getItem('anhad_theme') 
+                || 'light';
+            
+            // Theme-aware default transparency
+            const defaultTransparency = currentTheme === 'dark' ? 30 : 10;
+            
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Sync with global theme on load - prefer global theme
+                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
+                if (globalTheme) {
+                    parsed.theme = globalTheme;
+                } else if (!parsed.theme) {
+                    parsed.theme = 'light'; // Default to light
+                }
+                // If no saved transparency, use theme-based default
+                if (parsed.ikonkarTransparency === undefined) {
+                    parsed.ikonkarTransparency = defaultTransparency;
+                }
+                // Migration: Reset old default 50 to new theme-based defaults
+                if (parsed.ikonkarTransparency === 50) {
+                    parsed.ikonkarTransparency = defaultTransparency;
+                }
+                state.settings = { ...DEFAULTS, ...parsed };
+            } else {
+                // No saved settings - use defaults but sync with global theme
+                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
+                state.settings = { ...DEFAULTS };
+                if (globalTheme) {
+                    state.settings.theme = globalTheme;
+                }
+                // Set theme-based default transparency
+                state.settings.ikonkarTransparency = defaultTransparency;
+            }
+        } catch (e) { 
+            state.settings = { ...DEFAULTS };
+            // Set theme-based default on error too
+            const currentTheme = localStorage.getItem('anhad_theme') || 'light';
+            state.settings.ikonkarTransparency = currentTheme === 'dark' ? 30 : 10;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1069,6 +1157,12 @@
             _nitnemCompletionFired = true;
             if (window.AnhadStats && typeof window.AnhadStats.addNitnemCompleted === 'function') {
                 window.AnhadStats.addNitnemCompleted(1);
+            }
+            // Unified Stats - record bani name and completion
+            if (window.UnifiedStats) {
+                const baniName = state.baniMeta?.nameEnglish || 'Bani';
+                window.UnifiedStats.recordNitnemBani(baniName);
+                window.UnifiedStats.recordNitnemComplete();
             }
         }
 
@@ -1225,6 +1319,28 @@
             btn.addEventListener('click', () => setTheme(btn.dataset.theme));
         });
 
+        // ═══════════════════════════════════════════════════════════════
+        // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'anhad_theme' && e.newValue) {
+                state.settings.theme = e.newValue;
+                applyAllSettings();
+                saveSettings();
+                console.log('🎨 Nitnem Reader: Synced with global theme:', e.newValue);
+            }
+        });
+
+        // Listen for custom theme change events
+        window.addEventListener('themechange', (e) => {
+            if (e.detail?.theme) {
+                state.settings.theme = e.detail.theme;
+                applyAllSettings();
+                saveSettings();
+                console.log('🎨 Nitnem Reader: Theme changed via event:', e.detail.theme);
+            }
+        });
+
         // Font select - DIRECT FONT APPLICATION
         els.fontFamilySelect?.addEventListener('change', (e) => {
             state.settings.fontFamily = e.target.value;
@@ -1247,6 +1363,11 @@
         els.playbackSpeedSelect?.addEventListener('change', (e) => {
             state.settings.playbackSpeed = parseFloat(e.target.value);
             saveSettings();
+        });
+
+        // Ik Onkar Background transparency slider
+        els.ikonkarTransparency?.addEventListener('input', (e) => {
+            setIkonkarTransparency(e.target.value);
         });
 
         // Color pickers

@@ -234,8 +234,10 @@
         window.AudioCoordinator.notifyPause('GlobalMiniPlayer');
       }
       persistState();
-      updateMiniPlayerUI();
-      
+      // FIX: Don't hide mini-player on pause - only close button should hide it
+      // Pass forceVisible=true to keep player visible even when paused
+      updateMiniPlayerUI(true);
+
       // Notify KirtanListeningTracker
       window.dispatchEvent(new CustomEvent('anhadaudiostatechange', { detail: { isPlaying: false } }));
     });
@@ -278,15 +280,37 @@
   }
 
   async function playStream(streamName) {
+    // CRITICAL: Show mini player immediately with loading state
+    // This prevents the "disappearing" feeling when user clicks play
+    currentStream = streamName;
+    isPlaying = true; // Optimistically set to true for UI
+    updateMiniPlayerUI(true); // Force show immediately
+    setLoadingState(true); // Show loading spinner
+
     // CRITICAL: Create fresh audio element EVERY time to avoid cache
     createAudio();
-    
+
+    // Add loading event listeners
+    audio.addEventListener('waiting', () => {
+      console.log('[GMP] ⏳ Audio loading...');
+      setLoadingState(true);
+    });
+
+    audio.addEventListener('playing', () => {
+      console.log('[GMP] ▶ Audio playing');
+      setLoadingState(false);
+    });
+
+    audio.addEventListener('canplay', () => {
+      console.log('[GMP] ✓ Audio can play');
+      // Don't hide loading yet - wait for actual playing
+    });
+
     // Notify AudioCoordinator BEFORE playing to pause other players
     if (window.AudioCoordinator) {
       window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
     }
-    
-    currentStream = streamName;
+
     const stream = STREAMS[streamName];
 
     if (stream.type === 'live') {
@@ -295,7 +319,15 @@
       console.log('[GMP] 🔴 LIVE: Loading fresh stream:', freshUrl);
       audio.src = freshUrl;
       audio.load(); // Force reload
-      try { await audio.play(); } catch (e) { console.warn('[GMP] Autoplay blocked'); }
+      try {
+        await audio.play();
+        setLoadingState(false); // Hide loading once playing
+      } catch (e) {
+        console.warn('[GMP] Autoplay blocked');
+        setLoadingState(false);
+        isPlaying = false;
+        updateMiniPlayerUI();
+      }
     } else if (stream.type === 'playlist') {
       // CRITICAL FIX: ALWAYS fetch fresh server position
       try {
@@ -499,6 +531,10 @@
     const stream = STREAMS[currentStream];
     if (!stream) return;
 
+    // Show loading state immediately while resuming
+    setLoadingState(true);
+    updateMiniPlayerUI(true);
+
     if (stream.type === 'live') {
       // CRITICAL FIX: Add multiple cache busters to force fresh live connection
       const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&nocache=' + Math.random();
@@ -664,6 +700,9 @@
     el.innerHTML = `
       <div class="gmp__art">
         <img src="" alt="" width="46" height="46" id="gmpArt">
+        <div class="gmp__loading-overlay" id="gmpLoading">
+          <div class="gmp__spinner"></div>
+        </div>
       </div>
       <div class="gmp__info" id="gmpTap">
         <div class="gmp__title">
@@ -674,7 +713,8 @@
       </div>
       <div class="gmp__controls">
         <button class="gmp__btn gmp__btn--play" id="gmpPlay" aria-label="Play/Pause">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" id="gmpPlayIcon"><path d="M8 5v14l11-7z"/></svg>
+          <div class="gmp__btn-spinner" id="gmpBtnSpinner"></div>
         </button>
         <button class="gmp__btn gmp__btn--close" id="gmpClose" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -718,17 +758,63 @@
     });
   }
 
+  // Loading state management
+  let isLoading = false;
+
+  function setLoadingState(loading) {
+    isLoading = loading;
+
+    // Update artwork loading overlay
+    const loadingOverlay = document.getElementById('gmpLoading');
+    if (loadingOverlay) {
+      loadingOverlay.style.display = loading ? 'flex' : 'none';
+    }
+
+    // Update play button spinner
+    const playIcon = document.getElementById('gmpPlayIcon');
+    const btnSpinner = document.getElementById('gmpBtnSpinner');
+    if (playIcon && btnSpinner) {
+      if (loading) {
+        playIcon.style.display = 'none';
+        btnSpinner.style.display = 'block';
+      } else {
+        playIcon.style.display = 'block';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Also update the main play/pause icon when not loading
+    if (!loading) {
+      updatePlayPauseIcon();
+    }
+  }
+
+  function updatePlayPauseIcon() {
+    const playIcon = document.getElementById('gmpPlayIcon');
+    if (playIcon && !isLoading) {
+      playIcon.style.opacity = '0';
+      setTimeout(() => {
+        playIcon.innerHTML = isPlaying
+          ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+          : '<path d="M8 5v14l11-7z"/>';
+        playIcon.style.opacity = '1';
+      }, 150);
+    }
+  }
+
   function updateMiniPlayerUI(forceVisible) {
     if (!miniPlayerEl) return;
 
     const stream = STREAMS[currentStream];
 
     // Determine if we should actually show the mini player
-    // Only show when: explicitly forced, or audio is actually playing with valid source
+    // Show when: explicitly forced, OR audio is playing/loading with valid stream
+    const hasActiveStream = currentStream && stream;
     const actuallyPlaying = isPlaying && audio && audio.src && audio.src !== window.location.href;
-    const shouldShow = forceVisible || actuallyPlaying;
+    const isActive = isLoading || actuallyPlaying || forceVisible;
+    const shouldShow = isActive && hasActiveStream;
 
-    if (!shouldShow || !stream) {
+    if (!shouldShow) {
       // Hide mini player - CSS has display:none by default
       miniPlayerEl.classList.remove('gmp--visible');
       // Clear artwork to prevent broken image flash
@@ -754,21 +840,16 @@
     const liveDot = document.getElementById('gmpLiveDot');
     if (liveDot) liveDot.style.display = stream.type === 'live' ? '' : 'none';
 
-    // Update play/pause icon with smooth transition
-    const playBtn = document.getElementById('gmpPlay');
-    if (playBtn) {
-      const svg = playBtn.querySelector('svg');
-      if (svg) {
-        svg.style.opacity = '0';
-        setTimeout(() => {
-          svg.innerHTML = isPlaying
-            ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
-            : '<path d="M8 5v14l11-7z"/>';
-          svg.style.opacity = '1';
-        }, 150);
-      }
-    }
+    // Update loading state visual
+    setLoadingState(isLoading);
   }
+
+  // Expose setLoadingState globally for external use
+  window.GlobalMiniPlayer = {
+    ...window.GlobalMiniPlayer,
+    setLoading: setLoadingState,
+    isLoading: () => isLoading
+  };
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SAVE STATE BEFORE PAGE UNLOADS (critical for persistence)
@@ -866,8 +947,52 @@
   function init() {
     injectCSS();
     injectMiniPlayer();
+
+    // CRITICAL: Check if we should show mini player immediately
+    // This prevents the "gap" when navigating between pages
+    const state = loadState();
+    const wasNavigating = sessionStorage.getItem('anhad_navigating');
+
+    if (state?.isPlaying || wasNavigating) {
+      // Show mini player UI immediately BEFORE resuming audio
+      // This creates the visual continuity
+      currentStream = state?.stream || 'darbar';
+      isPlaying = state?.isPlaying || false;
+
+      // Force visible immediately with animation
+      if (miniPlayerEl) {
+        miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
+        updateMiniPlayerUI(true);
+
+        // Remove animation class after it plays
+        setTimeout(() => {
+          miniPlayerEl?.classList.remove('gmp--animate-in');
+        }, 250);
+      }
+
+      // Clear navigation flag
+      if (wasNavigating) {
+        sessionStorage.removeItem('anhad_navigating');
+      }
+    }
+
     resumePlayback();
   }
+
+  // Listen for restore event from smooth-navigation.js
+  window.addEventListener('anhadRestoreMiniPlayer', (e) => {
+    const state = loadState();
+    if (state?.isPlaying && miniPlayerEl) {
+      currentStream = state.stream || 'darbar';
+      isPlaying = true;
+      miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
+      updateMiniPlayerUI(true);
+
+      setTimeout(() => {
+        miniPlayerEl?.classList.remove('gmp--animate-in');
+      }, 250);
+    }
+  });
 
   // ─── Listening time tracker (feeds Dashboard stats) ──────────────────────
   // Every 10s while audio is playing, credit 1 minute to AnhadStats AND Dashboard.

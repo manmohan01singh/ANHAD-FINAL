@@ -821,55 +821,38 @@
 
     _updateGuruImage(event) {
       // ── Guru Image Mapping ──
-      // Portrait images for homepage card and header (full portraits)
-      const portraitImageMap = {
-        'guru-harkrishan':  'guru-har-krishan-portrait.png',
-        'guru-har-krishan': 'guru-har-krishan-portrait.png',
-        'guru-tegh-bahadur': 'guru-tegh-bahadur-portrait.png',
-        'guru-teg-bahadur': 'guru-tegh-bahadur-portrait.png',
-      };
-      
-      // Standard icons for nitnem/tracker sections (circular icons)
+      // New guruimages folder with updated filenames (jpeg format)
       const guruImageMap = {
-        'guru-nanak':      'guru-nanak-dev-ji.png',
-        'guru-angad':      'guru-angad-dev-ji.png',
-        'guru-amar-das':   'guru-amar-das-ji.png',
-        'guru-ram-das':    'guru-ramdas-ji.png',
-        'guru-arjan':      'guru-arjan-dev-ji.png',
-        'guru-hargobind':  'guru-hargobind-ji.png',
-        'guru-har-rai':    'guru-har-rai-ji.png',
-        'guru-harkrishan':  'guru-har-krishan-ji.png',
-        'guru-har-krishan': 'guru-har-krishan-ji.png',
-        'guru-tegh-bahadur': 'guru-tegh-bahadur-ji.png',
-        'guru-teg-bahadur': 'guru-tegh-bahadur-ji.png',
-        'guru-gobind':     'guru-gobind-singh-ji.png',
-        'sggs':            'guru-granth-sahib-ji.png',
-        'guru-granth':     'guru-granth-sahib-ji.png',
-        'sahibzad':        'sahibzade.png',
-        'vaisakhi':        'guru-gobind-singh-ji.png',
-        'khalsa':          'guru-gobind-singh-ji.png',
-        'bandi-chhor':     'guru-hargobind-ji.png',
-        'miri-piri':       'guru-hargobind-ji.png',
+        'guru-nanak':      'gurunanakdevsahebji.jpeg',
+        'guru-angad':      'guruangaddevsahebji.jpeg',
+        'guru-amar-das':   'guruamardasji.jpeg',
+        'guru-ram-das':    'gururamdassahebji.jpeg',
+        'guru-arjan':      'guruarjanddevsahebji.jpeg',
+        'guru-hargobind':  'guruhargobindsahebji.jpeg',
+        'guru-har-rai':    'guruharraisahebji.jpeg',
+        'guru-harkrishan':  'guruharkrishansahebji.jpeg',
+        'guru-har-krishan': 'guruharkrishansahebji.jpeg',
+        'guru-tegh-bahadur': 'gurutegbahadursahebji.jpeg',
+        'guru-teg-bahadur': 'gurutegbahadursahebji.jpeg',
+        'guru-gobind':     'gurugobindsinghsahebji.jpeg',
+        'sggs':            'gurugranthsahebji.jpeg',
+        'guru-granth':     'gurugranthsahebji.jpeg',
+        'sahibzad':        'gurugobindsinghsahebji.jpeg',
+        'vaisakhi':        'gurugobindsinghsahebji.jpeg',
+        'khalsa':          'gurugobindsinghsahebji.jpeg',
+        'bandi-chhor':     'guruhargobindsahebji.jpeg',
+        'miri-piri':       'guruhargobindsahebji.jpeg',
       };
 
       // Match event ID to Guru image
       let guruImg = null;
-      let portraitImg = null;
       let guruName = null;
       const evId = (event.id || '').toLowerCase();
-      
-      // Check for portrait images first (homepage use)
-      for (const [key, filename] of Object.entries(portraitImageMap)) {
-        if (evId.includes(key)) {
-          portraitImg = 'assets/icons/' + filename;
-          break;
-        }
-      }
       
       // Get standard icon for all sections
       for (const [key, filename] of Object.entries(guruImageMap)) {
         if (evId.includes(key)) {
-          guruImg = 'assets/icons/' + filename;
+          guruImg = '../guruimages/' + filename;
           // Extract a readable Guru name
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
@@ -897,37 +880,40 @@
         }
       }
 
-      // Update event card image (use portrait if available)
+      // Default to Guru Granth Sahib Ji for events without specific Guru association
+      // (e.g., Sikh Diwas, historical events, sangrand, puranmashi, etc.)
+      const defaultImg = '../guruimages/gurugranthsahebji.jpeg';
+      const finalImg = guruImg || defaultImg;
+      const finalName = guruName || 'Sri Guru Granth Sahib Ji';
+
+      // Update event card image
       const eventGuruImg = document.getElementById('eventGuruImg');
       if (eventGuruImg) {
-        const newSrc = portraitImg || guruImg || '';
-        if (newSrc) {
-          // Set onload before setting src to ensure it fires
-          eventGuruImg.onload = () => {
-            eventGuruImg.classList.add('loaded');
-          };
-          eventGuruImg.src = newSrc;
-          eventGuruImg.alt = guruName || event.name;
-          // If already cached, add class immediately
-          if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
-            eventGuruImg.classList.add('loaded');
-          }
+        // Set onload before setting src to ensure it fires
+        eventGuruImg.onload = () => {
+          eventGuruImg.classList.add('loaded');
+        };
+        eventGuruImg.src = finalImg;
+        eventGuruImg.alt = finalName;
+        // If already cached, add class immediately
+        if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
+          eventGuruImg.classList.add('loaded');
         }
       }
 
-      // Update greeting portrait & salutation (use portrait if available)
+      // Update greeting portrait & salutation
       const greetingImg = document.getElementById('guruPortraitImg');
       const salEl = document.getElementById('greetingSalutation');
       if (greetingImg) {
-        greetingImg.src = portraitImg || guruImg || '';
-        greetingImg.alt = guruName || event.name;
+        greetingImg.src = finalImg;
+        greetingImg.alt = finalName;
         greetingImg.style.opacity = '0';
         greetingImg.onload = () => {
           greetingImg.style.opacity = '1';
         };
       }
-      if (salEl && guruName) {
-        salEl.textContent = guruName;
+      if (salEl) {
+        salEl.textContent = finalName;
       }
     },
 

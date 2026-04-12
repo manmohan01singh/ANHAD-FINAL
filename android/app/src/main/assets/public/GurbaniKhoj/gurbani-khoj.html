@@ -1,6 +1,22 @@
 ﻿<!DOCTYPE html>
 <html lang="en" data-theme="light" data-bg="default" data-font="raavi">
 <head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
     <meta charset="UTF-8">
@@ -33,7 +49,7 @@
     
     <!-- iOS Navigation -->
     <nav class="ios-nav">
-        <button class="nav-back glass-nav__back" onclick="if(history.length > 1) { history.back(); } else { window.location.href='../index.html'; }" aria-label="Back">
+        <button class="nav-back glass-nav__back" onclick="window.location.href='../index.html'" aria-label="Back">
             <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
                 <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -120,9 +136,17 @@
 
             <!-- Search Filters -->
             <div class="search-filters">
-                <button class="filter-pill active" data-type="0">First Letter</button>
-                <button class="filter-pill" data-type="1">Gurmukhi</button>
-                <button class="filter-pill" data-type="2">English</button>
+                <button class="filter-pill active" data-type="1">Gurmukhi</button>
+            </div>
+
+            <!-- Live Kirtan Tracker Card -->
+            <div class="live-kirtan-card" id="liveKirtanCard">
+                <div class="live-kirtan-icon">🎙️</div>
+                <div class="live-kirtan-text">
+                    <h3>Live Kirtan Tracker</h3>
+                    <p>ਸ਼ਬਦ ਸੁਣੋ ਅਤੇ ਟਰੈਕ ਕਰੋ</p>
+                </div>
+                <span class="live-kirtan-arrow">→</span>
             </div>
         </section>
 
@@ -180,6 +204,50 @@
             </section>
         </div>
     </main>
+
+    <!-- Live Kirtan Tracker Overlay -->
+    <div class="live-kirtan-overlay" id="liveKirtanOverlay">
+        <div class="live-kirtan-backdrop"></div>
+        <div class="live-kirtan-panel glass">
+            <!-- Top Bar -->
+            <div class="live-kirtan-header">
+                <h2>Live Kirtan Tracker</h2>
+                <div class="mic-status mic--idle" id="micStatus">
+                    <span class="mic-pulse" id="micPulse"></span>
+                    <span class="mic-text" id="micText">Ready</span>
+                </div>
+                <button class="live-kirtan-close" id="liveKirtanClose">✕</button>
+            </div>
+            
+            <!-- Middle Zone - Live Transcript -->
+            <div class="live-transcript-zone" id="liveTranscriptZone">
+                <p class="transcript-label">What I'm hearing:</p>
+                <p class="transcript-text" id="transcriptText">...</p>
+            </div>
+            
+            <!-- Bottom Zone - Shabad Display -->
+            <div class="shabad-display-zone" id="shabadDisplayZone">
+                <!-- Searching State -->
+                <div class="searching-state" id="searchingState">
+                    <div class="shimmer-loader"></div>
+                    <p>ਸ਼ਬਦ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...</p>
+                </div>
+                
+                <!-- Locked State -->
+                <div class="locked-state hidden" id="lockedState">
+                    <div class="shabad-info" id="shabadInfo"></div>
+                    <div class="verses-container" id="versesContainer"></div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="tracker-controls" id="trackerControls">
+                <button class="control-btn" id="unlockBtn">🔓 Unlock</button>
+                <button class="control-btn" id="pauseBtn">⏸ Pause</button>
+                <button class="control-btn active" id="autoScrollBtn">📜 Auto-scroll</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Premium Gurmukhi Keyboard -->
     <div class="keyboard-overlay" id="keyboardOverlay">
@@ -320,8 +388,11 @@
     </div>
 
     <script src="gurbani-khoj.js"></script>
+    <script src="live-kirtan-tracker.js"></script>
     <script src="../lib/audio-preload.js"></script>
-  <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/native-audio-bridge.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
     <script src="../lib/global-mini-player.js" defer></script>
 </body>
 </html>

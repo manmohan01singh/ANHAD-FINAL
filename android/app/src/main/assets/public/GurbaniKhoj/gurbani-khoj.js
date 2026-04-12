@@ -15,10 +15,13 @@ const API = {
 };
 
 const SEARCH_TYPES = {
-    0: 0,  // First Letter
-    1: 1,  // Gurmukhi
-    2: 4   // English (Transliteration)
+    1: 1  // Gurmukhi (Full Word) - Always use this for best results
 };
+
+// Force Gurmukhi search type - always returns 1
+function getSearchType() {
+    return 1; // Always Gurmukhi
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DOM ELEMENTS
@@ -58,7 +61,10 @@ const DOM = {
     settingsDone: $('#settingsDone'),
 
     toast: $('#toast'),
-    toastText: $('#toastText')
+    toastText: $('#toastText'),
+
+    // Live Kirtan Tracker
+    liveKirtanCard: $('#liveKirtanCard')
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -67,7 +73,7 @@ const DOM = {
 
 const State = {
     query: '',
-    searchType: 0,
+    searchType: 1,  // Default to Gurmukhi (was 0 for First Letter)
     page: 1,
     totalPages: 1,
     searchedVerseId: null,
@@ -93,12 +99,12 @@ function getBaseConsonant(char) {
 
 // Extract ONLY the first base consonant (no matra) from each word
 function extractFirstLetters(text) {
-    // Map English letters to Gurmukhi base consonants
+    // Map English letters to Gurmukhi base consonants (NO matras)
     const englishToGurmukhi = {
         'a': 'ਅ', 'b': 'ਬ', 'c': 'ਚ', 'd': 'ਦ', 'e': 'ਏ', 'f': 'ਫ',
         'g': 'ਗ', 'h': 'ਹ', 'i': 'ਇ', 'j': 'ਜ', 'k': 'ਕ', 'l': 'ਲ',
         'm': 'ਮ', 'n': 'ਨ', 'o': 'ਓ', 'p': 'ਪ', 'q': 'ਕ', 'r': 'ਰ',
-        's': 'ਸ', 't': 'ਤ', 'u': 'ਉ', 'v': 'ਵ', 'w': 'ਵ', 'x': 'ਕ',
+        's': 'ਸ', 't': 'ਤ', 'u': 'ੳ', 'v': 'ਵ', 'w': 'ਵ', 'x': 'ਕ',
         'y': 'ਯ', 'z': 'ਜ਼'
     };
 
@@ -136,8 +142,14 @@ function extractFirstLetters(text) {
         if (/[\u0A00-\u0A7F]/.test(firstChar)) {
             // Strip matras to get base consonant only
             let baseChar = getBaseConsonant(firstChar);
-            // Normalize ALL Gurmukhi vowels to ਅ
-            if (/[ਅਆਇਈਉਊਏਐਓਔੳੲ]/.test(baseChar)) {
+            // Convert standalone vowels to their base consonant form
+            if (baseChar === 'ਉ') baseChar = 'ੳ';
+            if (baseChar === 'ਊ') baseChar = 'ੳ';
+            if (baseChar === 'ਇ') baseChar = 'ੲ';
+            if (baseChar === 'ਈ') baseChar = 'ੲ';
+            if (baseChar === 'ਏ') baseChar = 'ੲ';
+            // Normalize remaining standalone vowels to ਅ
+            if (/[ਅਆਐਓਔ]/.test(baseChar)) {
                 baseChar = 'ਅ';
             }
             if (baseChar) result += baseChar;
@@ -347,9 +359,10 @@ function haptic(style = 'light') {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const GurbaniAPI = {
-    async search(query, type = 0, page = 1) {
+    async search(query, type = 0, page = 1, resultsPerPage = null) {
         const searchType = SEARCH_TYPES[type] ?? 0;
-        const url = `${API.base}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=G&page=${page}`;
+        const perPage = resultsPerPage || API.perPage;
+        const url = `${API.base}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=G&page=${page}&results=${perPage}`;
 
         try {
             const controller = new AbortController();
@@ -365,14 +378,14 @@ const GurbaniAPI = {
             if (!response.ok) {
                 throw new Error(`Search failed with status: ${response.status}`);
             }
-            
+
             const data = await response.json();
-            
+
             // Validate response structure
             if (!data || typeof data !== 'object') {
                 throw new Error('Invalid response format');
             }
-            
+
             return data;
         } catch (error) {
             console.error('Search API Error:', error);
@@ -452,7 +465,7 @@ function showResults() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SEARCH LOGIC
+// SEARCH LOGIC (Gurmukhi Only)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function performSearch(append = false) {
@@ -477,7 +490,8 @@ async function performSearch(append = false) {
     }
 
     try {
-        const data = await GurbaniAPI.search(query, State.searchType, State.page);
+        // Always use Gurmukhi search type (1) for best results
+        const data = await GurbaniAPI.search(query, 1, State.page);
 
         if (!data.verses || data.verses.length === 0) {
             if (!append) showEmpty();
@@ -583,24 +597,61 @@ const VoiceSearch = {
         }
 
         this.recognition = new SpeechRecognition();
-        this.recognition.continuous = false;
-        this.recognition.interimResults = false;
+        this.recognition.continuous = true;
+        this.recognition.interimResults = true;
         this.recognition.lang = 'pa-IN';
+        this.silenceTimer = null;
+        this.transcriptBuffer = '';
+        this.isProcessing = false;
 
         this.recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            this.processVoice(transcript);
+            // Clear any pending silence timer
+            if (this.silenceTimer) {
+                clearTimeout(this.silenceTimer);
+                this.silenceTimer = null;
+            }
+
+            // Get the latest transcript
+            const results = event.results;
+            if (results.length > 0) {
+                const lastResult = results[results.length - 1];
+                this.transcriptBuffer = lastResult[0].transcript;
+                
+                // Show live preview in toast
+                if (!lastResult.isFinal) {
+                    showToast(`Hearing: ${this.transcriptBuffer}`);
+                }
+            }
+
+            // If this was a final result, start the silence timer
+            const lastResult = results[results.length - 1];
+            if (lastResult.isFinal) {
+                this.silenceTimer = setTimeout(() => {
+                    this.processBufferedVoice();
+                }, 1200); // 1.2 second silence before search
+            }
         };
 
         this.recognition.onend = () => {
-            this.stop();
+            // Restart if still listening (unless we're processing)
+            if (this.isListening && !this.isProcessing) {
+                try {
+                    this.recognition.start();
+                } catch (e) {
+                    console.log('Restart failed:', e);
+                }
+            }
         };
 
         this.recognition.onerror = (event) => {
             console.error('Voice error:', event.error);
-            this.stop();
             if (event.error === 'no-speech') {
-                showToast('No speech detected. Try again.');
+                // Don't stop on no-speech, just ignore and keep listening
+                return;
+            }
+            this.stop();
+            if (event.error !== 'aborted') {
+                showToast('Voice error. Try again.');
             }
         };
     },
@@ -644,16 +695,29 @@ const VoiceSearch = {
 
     stop() {
         this.isListening = false;
+        this.isProcessing = false;
         DOM.micBtn.classList.remove('listening');
         DOM.voicePanel.classList.remove('active');
+
+        // Clear any pending timer
+        if (this.silenceTimer) {
+            clearTimeout(this.silenceTimer);
+            this.silenceTimer = null;
+        }
 
         try {
             this.recognition?.stop();
         } catch (e) { }
     },
 
-    async processVoice(transcript) {
-        console.log('Voice transcript:', transcript);
+    async processBufferedVoice() {
+        if (!this.transcriptBuffer || this.isProcessing) return;
+        
+        this.isProcessing = true;
+        const transcript = this.transcriptBuffer;
+        this.transcriptBuffer = '';
+        
+        console.log('Processing after silence:', transcript);
         this.stop();
 
         // ALWAYS extract first letters (base consonants only, no matras)
@@ -662,14 +726,12 @@ const VoiceSearch = {
         if (firstLetters.length >= 2) {
             console.log('Extracted first letters:', firstLetters);
             DOM.searchInput.value = firstLetters;
-            State.searchType = 0; // First Letter search
-            updateFilterUI();
             showToast(`Searching: ${firstLetters}`);
             await performSearch();
         } else {
             showToast('Could not extract letters. Try again.');
         }
-    }
+    },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -842,6 +904,13 @@ function initEventListeners() {
                 Keyboard.addChar(key.textContent);
             }
         });
+    });
+
+    // Live Kirtan Tracker
+    DOM.liveKirtanCard?.addEventListener('click', () => {
+        if (window.LiveKirtanTracker) {
+            window.LiveKirtanTracker.openPanel();
+        }
     });
 
     // Filters

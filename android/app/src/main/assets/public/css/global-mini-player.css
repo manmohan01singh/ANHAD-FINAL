@@ -18,7 +18,7 @@
   right: 12px;
   z-index: 9000;
 
-  display: flex;
+  display: none; /* Hidden by default — shown via JS with display: flex */
   align-items: center;
   gap: 14px;
   padding: 10px 16px 10px 10px;
@@ -33,23 +33,13 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.8),
     0 0 0 1px rgba(255, 255, 255, 0.5);
 
-  /* Hidden by default — shown via JS */
-  transform: translateY(140%) scale(0.95);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-              opacity 0.35s ease;
-  will-change: transform, opacity;
-
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
 .gmp--visible {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 
 /* ─── Artwork Thumbnail — Claymorphic Pill ─── */
@@ -355,14 +345,107 @@ body.dark-mode .gmp__sub,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   DESKTOP OVERRIDE — Move mini player to sidebar
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@media screen and (min-width: 1024px) {
+  .gmp {
+    left: 12px !important;
+    right: auto !important;
+    bottom: 60px !important;
+    width: 256px !important;
+    max-width: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .gmp--visible {
+    display: flex;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    REDUCED MOTION
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
-  .gmp {
-    transition-duration: 0.01ms !important;
-  }
   .gmp__live-dot {
     animation: none;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   VIEW TRANSITIONS — Persistent Mini Player During Navigation
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Mark mini player for view transition */
+#gmp {
+  view-transition-name: mini-player;
+}
+
+/* Hide the old snapshot of mini player (we want the real element) */
+::view-transition-old(mini-player) {
+  animation: none;
+  display: none;
+}
+
+/* Show new snapshot instantly without animation */
+::view-transition-new(mini-player) {
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INSTANT VISIBILITY — Show immediately on page load if audio was playing
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* When body has this class, force mini player visible immediately */
+body.gmp-should-be-visible #gmp {
+  display: flex !important;
+}
+
+/* Prevent flash of hidden mini player on load */
+#gmp {
+  /* Start with opacity 0 but still in layout for instant fade-in */
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+#gmp.gmp--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quick fade in animation for smooth appearance */
+@keyframes gmp-quick-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#gmp.gmp--visible.gmp--animate-in {
+  animation: gmp-quick-fade-in 0.2s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION TRANSITION STATE
+   Keep mini player visible during view transitions
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+::view-transition-group(mini-player) {
+  animation-duration: 0ms;
+}
+
+/* Ensure mini player stays above transition overlay */
+html::view-transition {
+  z-index: 2147483647;
+}
+
+/* Hide default view transition background for seamless feel */
+::view-transition-image-wrapper(mini-player) {
+  isolation: auto;
 }
