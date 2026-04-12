@@ -16,7 +16,7 @@
   const STATE_KEY = 'anhad_global_audio';
 
   /**
-   * Navigate to a URL using View Transitions for smooth mini player persistence
+   * Navigate to a URL - DISABLED View Transitions to remove push animation delay
    * @param {string} url - Destination URL
    * @param {Object} options - Navigation options
    */
@@ -32,41 +32,10 @@
       return;
     }
 
-    // Check if View Transitions API is supported
-    const supportsViewTransitions = 'startViewTransition' in document;
-
-    if (!supportsViewTransitions) {
-      // Fallback: standard navigation
-      preserveMiniPlayerState();
-      window.location.href = url;
-      return;
-    }
-
-    // Preserve mini player state before transition
+    // DISABLED: View Transitions API removed to eliminate push animation delay
+    // Direct navigation for instant page loads
     preserveMiniPlayerState();
-
-    // Mark mini player for view transition
-    const gmp = document.getElementById(GMP_ID);
-    if (gmp) {
-      gmp.style.viewTransitionName = 'mini-player';
-    }
-
-    // Start the view transition
-    try {
-      document.startViewTransition(() => {
-        // During transition, keep mini player visible
-        if (gmp) {
-          gmp.style.opacity = '1';
-          gmp.style.transform = 'translateY(0)';
-        }
-
-        // Navigate to the new page
-        window.location.href = url;
-      });
-    } catch (e) {
-      console.warn('[SmoothNav] View transition failed, using fallback:', e);
-      window.location.href = url;
-    }
+    window.location.href = url;
   };
 
   /**

@@ -4974,7 +4974,7 @@ const AlarmManager = {
             }
 
             daysHTML += `
-                <div class="week-day ${dayClass}" data-date="${dateString}">
+                <div class="week-day ${dayClass}" data-date="${dateString}" onclick="AlarmHistoryView.showForDate('${dateString}')">
                     <span class="day-name">${dayNames[i]}</span>
                     <span class="day-number">${date.getDate()}</span>
                     <span class="day-indicator"></span>
@@ -7410,17 +7410,21 @@ const DateHistoryView = {
         var selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
         var dayNitnem = nitnemLog[dateStr] || {};
         var nitnemRows = ''; var totalBanis = 0; var completedBanis = 0;
+        // FIX: Only show banis that were actually completed on this specific date
         ['amritvela', 'rehras', 'sohila'].forEach(function(period) {
-            var periodBanis = selectedBanis[period] || [];
             var completedUids = dayNitnem[period] || [];
-
-            periodBanis.forEach(function(bani) {
-                totalBanis++;
-                var done = completedUids.includes(bani.uid);
-                if (done) completedBanis++;
-                nitnemRows += '<div class="detail-row"><span>' + (bani.nameEnglish || bani.id) + '</span><span class="detail-value ' + (done ? 'complete' : 'incomplete') + '">' + (done ? '✓' : '✗') + '</span></div>';
+            completedUids.forEach(function(uid) {
+                totalBanis++; completedBanis++;
+                var baniName = uid;
+                // Try to find bani name from NitnemManager's data
+                ['amritvela', 'rehras', 'sohila'].forEach(function(p) {
+                    var pb = NitnemManager.selectedBanis[p] || [];
+                    pb.forEach(function(b) { if (b.uid === uid) baniName = b.nameEnglish || b.name || b.id; });
+                });
+                nitnemRows += '<div class="detail-row"><span>' + baniName + '</span><span class="detail-value complete">✓</span></div>';
             });
         });
+        if (totalBanis === 0) { nitnemRows = '<div class="detail-row"><span>No banis completed</span><span class="detail-value">—</span></div>'; }
         var nitnemRate = totalBanis > 0 ? Math.round((completedBanis / totalBanis) * 100) : 0;
         var malaLog = StorageManager.load(CONFIG.STORAGE_KEYS.MALA_LOG, {});
         var dayMala = malaLog[dateStr] || {};

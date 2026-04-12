@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ANHAD">
+  <meta name="color-scheme" content="dark">
+  
+  <title>ANHAD — Sri Harmandir Sahib</title>
+  <meta name="description" content="Experience divine Gurbani with live Darbar Sahib Kirtan">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="ios26-homepage.css">
+</head>
+<body data-time="day">
+  <!-- EXTREME CLEAN: Only 4 Layers -->
+  
+  <!-- LAYER 1: Cinematic Darbar Sahib with EXTREME effects -->
+  <div id="cinematic-bg">
+    <div class="bg-image" data-time="amritvela" style="background-image: url('../assets/Darbar-sahib-AMRITVELA.webp')"></div>
+    <div class="bg-image" data-time="morning" style="background-image: url('../assets/darbar-sahib-day.webp')"></div>
+    <div class="bg-image" data-time="day" style="background-image: url('../assets/darbar-sahib-day.webp')"></div>
+    <div class="bg-image" data-time="evening" style="background-image: url('../assets/darbar-sahib-evening.webp')"></div>
+    <div class="bg-image" data-time="night" style="background-image: url('../assets/darbar-sahib-evening.webp')"></div>
+    <!-- Vignette -->
+    <div class="vignette"></div>
+    <!-- Temple Glow (shows when playing) -->
+    <div class="temple-glow"></div>
+    <!-- God Rays -->
+    <div class="god-rays">
+      <div class="ray ray-1"></div>
+      <div class="ray ray-2"></div>
+      <div class="ray ray-3"></div>
+      <div class="ray ray-4"></div>
+      <div class="ray ray-5"></div>
+    </div>
+    <!-- Floating Orbs -->
+    <div class="floating-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="orb orb-4"></div>
+      <div class="orb orb-5"></div>
+    </div>
+  </div>
+
+  <!-- LAYER 2: EXTREME Dynamic Island -->
+  <div id="extreme-island" class="island-collapsed">
+    <!-- Collapsed: Ultra Clean -->
+    <div class="island-minimal">
+      <div class="minimal-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="minimal-text">Live</span>
+      <div class="minimal-pulse"></div>
+    </div>
+    
+    <!-- Expanded: Full Immersion -->
+    <div class="island-full">
+      <div class="full-header">
+        <div class="full-art">
+          <div class="art-shimmer"></div>
+          <span>ਅ</span>
+        </div>
+        <div class="full-meta">
+          <span class="full-title">Darbar Sahib Live</span>
+          <span class="full-sub">Amritsar</span>
+        </div>
+        <button class="full-close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="full-visualizer">
+        <canvas id="extreme-visualizer"></canvas>
+      </div>
+      
+      <div class="full-controls">
+        <button id="extreme-play" class="control-main">
+          <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="full-status">
+        <span class="status-indicator"></span>
+        <span>Live from Sri Harmandir Sahib</span>
+      </div>
+    </div>
+    
+    <!-- Extreme Glow -->
+    <div class="island-aurora"></div>
+  </div>
+
+  <!-- LAYER 3: Sacred Text & Enter -->
+  <div id="sacred-center">
+    <div class="pulse-ring ring-1"></div>
+    <div class="pulse-ring ring-2"></div>
+    <div class="pulse-ring ring-3"></div>
+    <div class="divine-glow"></div>
+    <p class="waheguru">ਵਾਹਿਗੁਰੂ</p>
+    <p class="fateh">ਜੀ ਕਾ ਖਾਲਸਾ · ਜੀ ਕੀ ਫਤਿਹ</p>
+    <a href="../index.html" class="enter-extreme visible">
+      <span class="btn-3d-shadow"></span>
+      <span class="enter-shimmer"></span>
+      <span class="enter-text">Enter ANHAD</span>
+      <svg class="enter-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- OUT OF BOX: Sacred Geometry Overlay -->
+  <div class="sacred-geometry">
+    <div class="mandala mandala-outer"></div>
+    <div class="mandala mandala-inner"></div>
+  </div>
+
+  <!-- OUT OF BOX: Holographic Particles -->
+  <div class="holographic-field"></div>
+
+  <!-- LAYER 4: EXTREME Touch Effects Canvas -->
+  <canvas id="extreme-fx"></canvas>
+
+  <!-- Audio -->
+  <audio id="kirtan-audio" preload="metadata" crossorigin="anonymous">
+    <source src="https://live.sgpc.net:8443/;nocache=889869" type="audio/mpeg">
+  </audio>
+
+  <!-- Scripts -->
+  <script src="ios26-homepage.js"></script>
+</body>
+</html>
