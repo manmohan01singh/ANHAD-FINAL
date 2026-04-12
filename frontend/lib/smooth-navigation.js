@@ -1,8 +1,10 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * SMOOTH NAVIGATION (App Shell Engine v2)
+ * SMOOTH NAVIGATION (App Shell Engine v3 - Optimized)
  *
- * Turns a multi-page website into a high-performance SPA.
+ * This script turns the app into a high-performance Single Page Application (SPA).
+ * It intercepts link clicks, fetches the target page manually, and swaps content.
+ * This keeps the Overlay Player truly independent and uninterrupted.
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -19,23 +21,31 @@
   ];
 
   /**
-   * Navigate to a URL without reloading the browser
+   * Navigate to a URL using the App Shell swap (Optimized for instant load)
+   * @param {string} url - Destination URL
+   * @param {Object} options - Navigation options
    */
-  window.navigateTo = async function(url) {
-    if (!url) return;
-    
-    // Normalize URL
-    const targetUrl = new URL(url, window.location.origin);
-    if (targetUrl.href === window.location.href) return;
-
-    console.log('[SmoothNav] Intercepted navigation to:', url);
-
-    // Use View Transition API if supported
-    if (document.startViewTransition) {
-      document.startViewTransition(() => performSwap(url));
-    } else {
-      performSwap(url);
+  window.navigateTo = async function(url, options = {}) {
+    if (!url || typeof url !== 'string') {
+      console.warn('[SmoothNav] Invalid URL provided');
+      return;
     }
+
+    // Handle external links normally
+    if (url.startsWith('http') && !url.includes(window.location.hostname)) {
+      window.open(url, '_blank');
+      return;
+    }
+    
+    // Normalize URL for comparison
+    const targetUrl = new URL(url, window.location.origin);
+    if (targetUrl.href === window.location.href && !options.force) return;
+
+    console.log('[SmoothNav] Performing instant Shell Swap to:', url);
+
+    // Note: View Transitions removed to eliminate push animation delay/overhead
+    // for the fastest possible transition between pages.
+    await performSwap(url);
   };
 
   /**
@@ -57,30 +67,28 @@
       const currentContent = document.getElementById(MAIN_TARGET_ID);
 
       if (newContent && currentContent) {
-        // Update URL
+        // Update URL in address bar
         history.pushState(null, '', url);
 
         // 4. Update the content
-        // We replace the outerHTML or innerHTML based on what's safer
         currentContent.innerHTML = newContent.innerHTML;
 
-        // 5. Update Shell elements (Title, Metadata)
+        // 5. Update Shell elements (Title)
         document.title = newDoc.title;
         
-        // 6. Manage Scripts (The most critical part)
-        // We only want to execute scripts that are NOT shell scripts
+        // 6. Manage Scripts (The most critical part for logic continuity)
         executePageScripts(newDoc);
 
-        // 7. Cleanup & Events
+        // 7. Post-navigation logic
         window.scrollTo({ top: 0, behavior: 'instant' });
         window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
         
-        console.log('[SmoothNav] Page swap successful:', url);
+        console.log('[SmoothNav] Shell Swap Successful.');
       } else {
-        throw new Error('Target structure mismatch');
+        throw new Error('Target structure mismatch (no #app found)');
       }
     } catch (e) {
-      console.warn('[SmoothNav] Performance swap failed, falling back to hard reload:', e);
+      console.warn('[SmoothNav] App Shell swap failed, falling back to full reload:', e);
       window.location.href = url;
     }
   }
@@ -94,7 +102,7 @@
     scripts.forEach(script => {
       const src = script.getAttribute('src');
       
-      // Skip shell scripts to avoid double-init
+      // Skip core shell scripts to avoid double-initialization
       if (src && SHELL_SCRIPTS.some(shell => src.includes(shell))) {
         return;
       }
@@ -112,16 +120,13 @@
         newScript.innerHTML = script.innerHTML;
       }
 
-      // Append to body to execute
+      // Append to document to execute immediately
       document.body.appendChild(newScript);
-      
-      // Optional: remove after execution if it was a one-time script
-      // but usually safer to leave it unless it causes issues.
     });
   }
 
   /**
-   * Intercept all local links
+   * Intercept all internal link clicks
    */
   function setupLinkInterception() {
     document.addEventListener('click', e => {
@@ -130,7 +135,7 @@
 
       const href = link.getAttribute('href');
       
-      // Skip external links, anchors, and non-html links
+      // Skip external links, hash-links, and non-navigational links
       if (!href || 
           href.startsWith('http') || 
           href.startsWith('#') || 
@@ -140,24 +145,19 @@
         return;
       }
 
-      // Check if it's the same origin
-      const url = new URL(href, window.location.origin);
-      if (url.origin !== window.location.origin) return;
-
-      // Intercept!
+      // Intercept local link
       e.preventDefault();
       window.navigateTo(href);
     });
 
-    // Handle back/forward buttons
+    // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
-      // Use location.href to ensure search params are included
       performSwap(window.location.href);
     });
   }
 
-  // Initialize
+  // Self-initialize
   setupLinkInterception();
-  console.log('[SmoothNav] App Shell active. Multi-page transition logic ready.');
+  console.log('[SmoothNav] App Shell Optimized Engine active.');
 
 })();
