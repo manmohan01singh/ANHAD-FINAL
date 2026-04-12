@@ -1,190 +1,163 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * SMOOTH NAVIGATION — View Transitions API for Persistent Mini Player
+ * SMOOTH NAVIGATION (App Shell Engine v2)
  *
- * Provides Spotify-like page transitions where the mini player stays visible
- * during navigation. Uses the View Transitions API with graceful fallback.
- *
- * Usage: window.navigateTo('./Page/page.html') instead of location.href
+ * Turns a multi-page website into a high-performance SPA.
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 (function() {
   'use strict';
 
-  const GMP_ID = 'gmp';
-  const STATE_KEY = 'anhad_global_audio';
+  const MAIN_TARGET_ID = 'app'; 
+  const SHELL_SCRIPTS = [
+    'overlay-player.js',
+    'smooth-navigation.js',
+    'global-theme.js',
+    'audio-coordinator.js',
+    'trendora-app.js'
+  ];
 
   /**
-   * Navigate to a URL using View Transitions for smooth mini player persistence
-   * @param {string} url - Destination URL
-   * @param {Object} options - Navigation options
+   * Navigate to a URL without reloading the browser
    */
-  window.navigateTo = function(url, options = {}) {
-    if (!url || typeof url !== 'string') {
-      console.warn('[SmoothNav] Invalid URL provided');
-      return;
-    }
+  window.navigateTo = async function(url) {
+    if (!url) return;
+    
+    // Normalize URL
+    const targetUrl = new URL(url, window.location.origin);
+    if (targetUrl.href === window.location.href) return;
 
-    // Handle external links normally
-    if (url.startsWith('http') && !url.includes(window.location.hostname)) {
-      window.open(url, '_blank');
-      return;
-    }
+    console.log('[SmoothNav] Intercepted navigation to:', url);
 
-    // Check if View Transitions API is supported
-    const supportsViewTransitions = 'startViewTransition' in document;
-
-    if (!supportsViewTransitions) {
-      // Fallback: standard navigation
-      preserveMiniPlayerState();
-      window.location.href = url;
-      return;
-    }
-
-    // Preserve mini player state before transition
-    preserveMiniPlayerState();
-
-    // Mark mini player for view transition
-    const gmp = document.getElementById(GMP_ID);
-    if (gmp) {
-      gmp.style.viewTransitionName = 'mini-player';
-    }
-
-    // Start the view transition
-    try {
-      document.startViewTransition(() => {
-        // During transition, keep mini player visible
-        if (gmp) {
-          gmp.style.opacity = '1';
-          gmp.style.transform = 'translateY(0)';
-        }
-
-        // Navigate to the new page
-        window.location.href = url;
-      });
-    } catch (e) {
-      console.warn('[SmoothNav] View transition failed, using fallback:', e);
-      window.location.href = url;
+    // Use View Transition API if supported
+    if (document.startViewTransition) {
+      document.startViewTransition(() => performSwap(url));
+    } else {
+      performSwap(url);
     }
   };
 
   /**
-   * Preserve current mini player state to localStorage
+   * Fetch new page and swap content
    */
-  function preserveMiniPlayerState() {
+  async function performSwap(url) {
     try {
-      const currentState = localStorage.getItem(STATE_KEY);
-      if (currentState) {
-        const state = JSON.parse(currentState);
-        // Mark that we're in a transition
-        sessionStorage.setItem('anhad_navigating', 'true');
-        sessionStorage.setItem('anhad_navigate_time', Date.now().toString());
+      // 1. Fetch the page immediately
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      
+      // 2. Parse the content
+      const parser = new DOMParser();
+      const newDoc = parser.parseFromString(text, 'text/html');
+
+      // 3. Extract targets
+      const newContent = newDoc.getElementById(MAIN_TARGET_ID);
+      const currentContent = document.getElementById(MAIN_TARGET_ID);
+
+      if (newContent && currentContent) {
+        // Update URL
+        history.pushState(null, '', url);
+
+        // 4. Update the content
+        // We replace the outerHTML or innerHTML based on what's safer
+        currentContent.innerHTML = newContent.innerHTML;
+
+        // 5. Update Shell elements (Title, Metadata)
+        document.title = newDoc.title;
+        
+        // 6. Manage Scripts (The most critical part)
+        // We only want to execute scripts that are NOT shell scripts
+        executePageScripts(newDoc);
+
+        // 7. Cleanup & Events
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+        
+        console.log('[SmoothNav] Page swap successful:', url);
+      } else {
+        throw new Error('Target structure mismatch');
       }
     } catch (e) {
-      console.warn('[SmoothNav] Could not preserve state:', e);
+      console.warn('[SmoothNav] Performance swap failed, falling back to hard reload:', e);
+      window.location.href = url;
     }
   }
 
   /**
-   * Intercept all link clicks for smooth navigation
+   * Finds and executes scripts from the new document that aren't already in the shell
+   */
+  function executePageScripts(newDoc) {
+    const scripts = Array.from(newDoc.querySelectorAll('script'));
+    
+    scripts.forEach(script => {
+      const src = script.getAttribute('src');
+      
+      // Skip shell scripts to avoid double-init
+      if (src && SHELL_SCRIPTS.some(shell => src.includes(shell))) {
+        return;
+      }
+
+      // Create new script element to trigger execution
+      const newScript = document.createElement('script');
+      
+      // Copy attributes
+      Array.from(script.attributes).forEach(attr => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+
+      // Copy content if inline
+      if (script.innerHTML) {
+        newScript.innerHTML = script.innerHTML;
+      }
+
+      // Append to body to execute
+      document.body.appendChild(newScript);
+      
+      // Optional: remove after execution if it was a one-time script
+      // but usually safer to leave it unless it causes issues.
+    });
+  }
+
+  /**
+   * Intercept all local links
    */
   function setupLinkInterception() {
-    // Don't intercept on player pages - they have their own audio
-    const currentPath = window.location.pathname.toLowerCase();
-    if (currentPath.includes('gurbani-radio')) return;
-
-    document.addEventListener('click', function(e) {
-      // Find closest anchor tag
+    document.addEventListener('click', e => {
       const link = e.target.closest('a');
       if (!link) return;
 
       const href = link.getAttribute('href');
-      if (!href) return;
-
-      // Skip if it has specific attributes
-      if (link.hasAttribute('data-no-transition') ||
-          link.hasAttribute('download') ||
-          link.target === '_blank') {
+      
+      // Skip external links, anchors, and non-html links
+      if (!href || 
+          href.startsWith('http') || 
+          href.startsWith('#') || 
+          href.startsWith('mailto:') ||
+          href.startsWith('tel:') ||
+          href.startsWith('javascript:')) {
         return;
       }
 
-      // Skip external links
-      if (href.startsWith('http') && !href.includes(window.location.hostname)) {
-        return;
-      }
+      // Check if it's the same origin
+      const url = new URL(href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
 
-      // Skip hash-only links (smooth scroll)
-      if (href.startsWith('#')) return;
-
-      // Skip javascript: links
-      if (href.startsWith('javascript:')) return;
-
-      // This is a local page link - intercept it
+      // Intercept!
       e.preventDefault();
-      navigateTo(href);
-    }, true);
-  }
-
-  /**
-   * Check if we're navigating back and restore mini player instantly
-   */
-  function handleNavigationRestore() {
-    const wasNavigating = sessionStorage.getItem('anhad_navigating');
-    const navigateTime = parseInt(sessionStorage.getItem('anhad_navigate_time') || '0', 10);
-
-    if (wasNavigating) {
-      // Clear the navigation flags
-      sessionStorage.removeItem('anhad_navigating');
-      sessionStorage.removeItem('anhad_navigate_time');
-
-      // Calculate time since navigation started
-      const timeSinceNav = Date.now() - navigateTime;
-
-      // If navigation was recent (within 5 seconds), force show mini player
-      if (timeSinceNav < 5000) {
-        // Dispatch event to signal that we should show mini player immediately
-        window.dispatchEvent(new CustomEvent('anhadRestoreMiniPlayer', {
-          detail: { timeSinceNav }
-        }));
-
-        // Also check localStorage directly
-        try {
-          const state = localStorage.getItem(STATE_KEY);
-          if (state) {
-            const parsed = JSON.parse(state);
-            if (parsed.isPlaying) {
-              // Add a class to body to indicate we should show mini player
-              document.body.classList.add('gmp-should-be-visible');
-
-              // Remove it after a short delay
-              setTimeout(() => {
-                document.body.classList.remove('gmp-should-be-visible');
-              }, 100);
-            }
-          }
-        } catch (e) {}
-      }
-    }
-  }
-
-  // Setup on DOM ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      setupLinkInterception();
-      handleNavigationRestore();
+      window.navigateTo(href);
     });
-  } else {
-    setupLinkInterception();
-    handleNavigationRestore();
+
+    // Handle back/forward buttons
+    window.addEventListener('popstate', () => {
+      // Use location.href to ensure search params are included
+      performSwap(window.location.href);
+    });
   }
 
-  // Also handle when page becomes visible (for back navigation)
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      handleNavigationRestore();
-    }
-  });
+  // Initialize
+  setupLinkInterception();
+  console.log('[SmoothNav] App Shell active. Multi-page transition logic ready.');
 
-  console.log('[SmoothNav] Navigation system initialized');
 })();

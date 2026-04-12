@@ -90,26 +90,17 @@
     _safetyTimer: null,
 
     navigateTo(path) {
-      // Clear any pending timers first
-      this._clearTimers();
-      
+      // Use the shell's smooth navigation if available
+      if (window.navigateTo) {
+        window.navigateTo(path);
+        return;
+      }
+
+      // Fallback for standalone pages
       const app = document.querySelector('.app');
       if (app) {
         app.classList.add('app--exiting');
-        // Navigate after exit animation
         this._exitTimer = setTimeout(() => { window.location.href = path; }, 180);
-        // SAFETY: If navigation doesn't happen within 600ms (e.g. browser blocks it),
-        // remove the exit class so the page isn't stuck invisible
-        this._safetyTimer = setTimeout(() => {
-          if (app.classList.contains('app--exiting')) {
-            app.classList.remove('app--exiting');
-            app.style.opacity = '';
-            app.style.transform = '';
-            app.style.filter = '';
-            console.warn('[Navigation] Safety: removed stuck app--exiting');
-          }
-          this._clearTimers();
-        }, 600);
       } else {
         window.location.href = path;
       }
@@ -1633,10 +1624,21 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════════════════════════════════════════
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => App.init());
-  } else {
+  const boot = () => {
     App.init();
+    console.log('[Trendora] App Initialized');
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
+
+  // Handle SPA page changes from the shell
+  window.addEventListener('anhad_page_changed', () => {
+    console.log('[Trendora] Page change detected, re-initializing UI...');
+    App.init();
+  });
 
 })();
