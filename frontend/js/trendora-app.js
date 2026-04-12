@@ -812,7 +812,7 @@
 
     _updateGuruImage(event) {
       // ── Guru Image Mapping ──
-      // New guruimages folder with updated filenames (jpeg format)
+      // Standardized paths using root-relative guruimages folder
       const guruImageMap = {
         'guru-nanak':      'gurunanakdevsahebji.jpeg',
         'guru-angad':      'guruangaddevsahebji.jpeg',
@@ -840,11 +840,9 @@
       let guruName = null;
       const evId = (event.id || '').toLowerCase();
       
-      // Get standard icon for all sections
       for (const [key, filename] of Object.entries(guruImageMap)) {
         if (evId.includes(key)) {
-          guruImg = '../guruimages/' + filename;
-          // Extract a readable Guru name
+          guruImg = 'guruimages/' + filename; // Now root-relative in frontend/
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
             'guru-angad': 'Sri Guru Angad Dev Sahib Ji',
@@ -871,41 +869,47 @@
         }
       }
 
-      // Default to Guru Granth Sahib Ji for events without specific Guru association
-      // (e.g., Sikh Diwas, historical events, sangrand, puranmashi, etc.)
-      const defaultImg = '../guruimages/gurugranthsahebji.jpeg';
+      const defaultImg = 'guruimages/gurugranthsahebji.jpeg';
       const finalImg = guruImg || defaultImg;
       const finalName = guruName || 'Sri Guru Granth Sahib Ji';
 
-      // Update event card image
-      const eventGuruImg = document.getElementById('eventGuruImg');
-      if (eventGuruImg) {
-        // Set onload before setting src to ensure it fires
-        eventGuruImg.onload = () => {
-          eventGuruImg.classList.add('loaded');
-        };
-        eventGuruImg.src = finalImg;
-        eventGuruImg.alt = finalName;
-        // If already cached, add class immediately
-        if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
-          eventGuruImg.classList.add('loaded');
-        }
-      }
+      /**
+       * Helper to perform optimized image update
+       */
+      const updateImg = (el, src, alt, classToApply = 'loaded') => {
+        if (!el || el.getAttribute('src') === src) return;
 
-      // Update greeting portrait & salutation
-      const greetingImg = document.getElementById('guruPortraitImg');
-      const salEl = document.getElementById('greetingSalutation');
-      if (greetingImg) {
-        greetingImg.src = finalImg;
-        greetingImg.alt = finalName;
-        greetingImg.style.opacity = '0';
-        greetingImg.onload = () => {
-          greetingImg.style.opacity = '1';
+        // Reset visibility for fresh loading
+        el.style.opacity = '0';
+        el.classList.remove(classToApply);
+
+        // Define load handler
+        const onLoad = () => {
+          el.style.opacity = '1';
+          el.classList.add(classToApply);
+          el.removeEventListener('load', onLoad);
         };
-      }
-      if (salEl) {
-        salEl.textContent = finalName;
-      }
+        el.addEventListener('load', onLoad);
+        
+        // Execute update
+        el.src = src;
+        el.alt = alt;
+
+        // Instant check if already cached
+        if (el.complete && el.naturalWidth > 0) {
+          onLoad();
+        }
+      };
+
+      // 1. Update event card image
+      updateImg(document.getElementById('eventGuruImg'), finalImg, finalName);
+
+      // 2. Update greeting portrait
+      updateImg(document.getElementById('guruPortraitImg'), finalImg, finalName);
+      
+      // 3. Update salutation text
+      const salEl = document.getElementById('greetingSalutation');
+      if (salEl) salEl.textContent = finalName;
     },
 
     updateNaamCard() {
