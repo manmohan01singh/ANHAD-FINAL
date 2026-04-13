@@ -1,7 +1,7 @@
 {
-  "version": "3.9.2",
+  "version": "3.9.3",
   "buildTime": "2026-04-13T10:10:00.000Z",
   "timestamp": 1776075000000,
-  "commitHash": "cache-bust-v392",
+  "commitHash": "cache-bust-v393",
   "branch": "main"
 }
