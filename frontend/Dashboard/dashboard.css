@@ -91,6 +91,43 @@ html.dark-mode body {
   color: #FFFFFF;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SKELETON LOADER - For instant page load feedback
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e8e8e8 25%, #d0d0d0 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-text { height: 1em; margin: 0.5em 0; }
+.skeleton-number { height: 2.5em; width: 3em; margin: 0 auto; }
+.skeleton-card { height: 80px; }
+.skeleton-goal { height: 60px; margin-bottom: 8px; }
+
+html.dark-mode .skeleton {
+  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+}
+
+/* Analytics chart skeleton */
+.analytics-chart-skeleton {
+  padding: 20px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 16px;
+  margin: 16px 0;
+}
+
+html.dark-mode .analytics-chart-skeleton {
+  background: rgba(40,40,40,0.5);
+}
+
 .app {
   max-width: 500px;
   margin: 0 auto;
@@ -1087,6 +1124,50 @@ html.dark-mode .nav-tab--active .ios-emoji--nav {
 @media (min-width: 500px) {
   .app {
     padding: 0 24px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DESKTOP FIXES — Clean Images & Visible Back Button
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@media screen and (min-width: 1024px) {
+  /* Remove dark overlay from hero cards — show clean images */
+  .hero-card__overlay,
+  .hero-card__overlay--cinematic {
+    background: linear-gradient(180deg,
+      transparent 0%,
+      transparent 60%,
+      rgba(0, 0, 0, 0.3) 100%) !important;
+  }
+
+  /* Make back button clearly visible on desktop */
+  .header__back {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .header__back:hover {
+    background: #fff !important;
+    transform: scale(1.05);
+  }
+
+  /* Clean image display without filters */
+  .hero-card__image {
+    filter: none !important;
+    transform: none !important;
+  }
+
+  /* Better card shadows for desktop */
+  .hero-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+
+  .hero-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15) !important;
   }
 }
 

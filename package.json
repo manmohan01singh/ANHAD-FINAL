@@ -1,20 +1,21 @@
 {
     "name": "gurbani-radio",
-    "version": "1.0.0",
+    "version": "3.9.2",
     "description": "24/7 Divine Gurbani Kirtan streaming with reminders and Nitnem Tracker",
     "main": "electron-main.js",
     "scripts": {
         "start": "node backend/server.js",
         "dev": "node backend/server.js",
+        "build": "node scripts/generate-version.js",
         "electron": "electron .",
         "electron:dev": "electron . --dev",
-        "electron:build": "electron-builder --win",
-        "electron:build:all": "electron-builder --win --mac --linux",
+        "electron:build": "npm run build && electron-builder --win",
+        "electron:build:all": "npm run build && electron-builder --win --mac --linux",
         "cap:init": "npx cap init \"Gurbani Radio\" \"com.gurbaniradio.app\" --web-dir frontend",
         "cap:add:android": "npx cap add android",
-        "cap:sync": "npx cap sync",
+        "cap:sync": "npm run build && npx cap sync",
         "cap:open:android": "npx cap open android",
-        "cap:build": "npm run cap:sync && npx cap open android"
+        "cap:build": "npm run build && npm run cap:sync && npx cap open android"
     },
     "keywords": [
         "gurbani",

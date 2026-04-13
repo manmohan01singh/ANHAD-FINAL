@@ -194,6 +194,29 @@ async function loadShabad(shabadId) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// iOS NOTES STYLE SEARCH HIGHLIGHTING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function highlightSearchTerm(text, query) {
+    if (!query || !text) return text;
+    
+    // Escape special regex characters
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Create regex that matches the query (case-insensitive)
+    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+    
+    // Replace matches with highlighted span
+    return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
+// Get search query from URL if passed from Gurbani Khoj
+function getSearchQuery() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('q') || params.get('query') || '';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // RENDER SHABAD - Only show actual Shabad verses
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -225,39 +248,47 @@ function renderShabad(data) {
     // Check favorite status
     State.isFavorite = Favorites.isFavorite(State.shabadId);
     updateFavButton();
+    
+    // Get search query for highlighting
+    const searchQuery = getSearchQuery();
 
     // Render lines
     DOM.shabadLines.innerHTML = data.verses.map(verse => {
         const isHighlighted = String(verse.verseId) === String(State.highlightVerseId);
 
         // Gurmukhi (Padchhed or Larivaar)
-        const gurmukhi = State.displayMode === 'larivaar'
+        const gurmukhiRaw = State.displayMode === 'larivaar'
             ? (verse.larivaar?.unicode || verse.verse?.unicode || '')
             : (verse.verse?.unicode || '');
 
         // Transliteration
-        const translit = verse.transliteration?.english || '';
+        const translitRaw = verse.transliteration?.english || '';
 
         // Translation based on language
-        let translation = '';
+        let translationRaw = '';
         let transClass = 'translation';
 
         switch (State.translationLang) {
             case 'english':
-                translation = verse.translation?.en?.bdb || verse.translation?.en?.ms || '';
+                translationRaw = verse.translation?.en?.bdb || verse.translation?.en?.ms || '';
                 break;
             case 'punjabi':
-                translation = verse.translation?.pu?.ss?.unicode || verse.translation?.pu?.bdb?.unicode || '';
+                translationRaw = verse.translation?.pu?.ss?.unicode || verse.translation?.pu?.bdb?.unicode || '';
                 transClass += ' punjabi';
                 break;
             case 'hindi':
-                translation = verse.translation?.hi?.ss || verse.translation?.hi?.sts || '';
+                translationRaw = verse.translation?.hi?.ss || verse.translation?.hi?.sts || '';
                 transClass += ' hindi';
                 break;
             case 'none':
-                translation = '';
+                translationRaw = '';
                 break;
         }
+        
+        // Apply search highlighting
+        const gurmukhi = searchQuery ? highlightSearchTerm(gurmukhiRaw, searchQuery) : gurmukhiRaw;
+        const translit = searchQuery ? highlightSearchTerm(translitRaw, searchQuery) : translitRaw;
+        const translation = searchQuery ? highlightSearchTerm(translationRaw, searchQuery) : translationRaw;
 
         return `
             <div class="shabad-line ${isHighlighted ? 'highlighted' : ''}" data-verse="${verse.verseId}">

@@ -481,23 +481,36 @@
     });
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // INITIALIZATION
+    // INITIALIZATION - OPTIMIZED FOR INSTANT LOAD
     // ═══════════════════════════════════════════════════════════════════════════
 
     function init() {
-        // FIXED: Don't sync on init - this overwrites tracked data with 0 from other sources
-        // Only render existing data from localStorage
+        // Render chart immediately with existing data (fast)
         renderChart();
         
-        // Sync only happens when events are received (statsUpdated, nitnemUpdated)
-        console.log('[Analytics] Initialized with stored data');
+        // Defer heavy sync operations
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                syncWithNitnemTracker();
+                syncWithUserStats();
+            }, { timeout: 1000 });
+        } else {
+            setTimeout(() => {
+                syncWithNitnemTracker();
+                syncWithUserStats();
+            }, 200);
+        }
+        
+        console.log('[Analytics] Initialized (deferred sync)');
     }
 
-    // Initialize when DOM is ready
+    // Initialize when DOM is ready - use requestAnimationFrame for instant paint
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(init);
+        });
     } else {
-        init();
+        requestAnimationFrame(init);
     }
 
     // Expose API

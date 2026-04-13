@@ -469,16 +469,30 @@
     });
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // INITIALIZATION
+    // INITIALIZATION - DEFERRED FOR PERFORMANCE
     // ═══════════════════════════════════════════════════════════════════════════
 
-    // Check daily reset on load
-    checkAndResetDaily();
+    // Defer heavy operations to not block page load
+    function deferredInit() {
+        // Check daily reset
+        checkAndResetDaily();
+        // Track page visit as activity (but don't block)
+        try {
+            updateStreak();
+        } catch (e) {
+            console.warn('[UserStats] Streak update deferred');
+        }
+    }
 
-    // Track page visit as activity
-    updateStreak();
+    // Use requestIdleCallback if available, otherwise setTimeout
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(deferredInit, { timeout: 1000 });
+    } else {
+        // For Safari, defer with setTimeout
+        setTimeout(deferredInit, 50);
+    }
 
-    // Expose global API
+    // Expose global API immediately (doesn't depend on deferred init)
     window.AnhadStats = {
         // Get data
         getStats,

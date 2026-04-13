@@ -196,13 +196,13 @@ body {
 
 /* ─── HEADER ─── */
 .app-header {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  position: relative; top: auto; left: auto; right: auto; z-index: 300;
   padding-top: var(--sp-safe-top);
   background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
   border-bottom: none; box-shadow: none;
   transition: transform 0.4s var(--sp-ease-out), opacity 0.4s var(--sp-ease-out);
 }
-.app-header.scrolled-up { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+.app-header.scrolled-up { transform: none; opacity: 1; pointer-events: auto; }
 .header-blur-bg { display: none; }
 
 .header-content {
@@ -266,7 +266,7 @@ body {
 /* ─── MAIN CONTENT ─── */
 .main-content {
   flex: 1;
-  padding: calc(var(--sp-header-h) + var(--sp-safe-top)) var(--sp-4) calc(var(--sp-tab-h) + var(--sp-safe-bottom) + var(--sp-4));
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-tab-h) + var(--sp-safe-bottom) + var(--sp-4));
   max-width: var(--sp-max-w); margin: 0 auto; width: 100%;
   display: flex; flex-direction: column; gap: var(--sp-5);
   transition: padding-top 0.3s var(--sp-ease-out);

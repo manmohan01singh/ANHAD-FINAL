@@ -1,0 +1,538 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD Liquid Glass Navigation v1.0 — Ultra iOS 18 Floating Pill Nav
+ * Instagram 2024-style bottom navigation with frosted glass morphism
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE GLASS NAV CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.anhad-bottom-nav {
+  position: fixed;
+  bottom: 12px !important;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  width: fit-content;
+  min-width: 320px;
+  max-width: 400px;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  animation: navEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ALL MOBILE DEVICES: Position slightly above bottom */
+@media (max-width: 768px),
+       (max-device-width: 768px),
+       (max-device-height: 1024px) and (orientation: portrait) {
+  .anhad-bottom-nav {
+    bottom: 8px !important;
+  }
+}
+
+/* TABLET: Position */
+@media (min-width: 769px) and (max-width: 1024px),
+       (min-device-width: 769px) and (max-device-width: 1024px) {
+  .anhad-bottom-nav {
+    bottom: 10px !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .anhad-bottom-nav {
+    bottom: 6px !important;
+  }
+}
+
+@keyframes navEntrance {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE NAV PILL — Liquid Glass Container
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.anhad-bottom-nav .nav-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 20px;
+  height: 68px;
+  min-width: 280px;
+  border-radius: 50px;
+  pointer-events: all;
+  position: relative;
+  overflow: hidden;
+  will-change: transform, background, box-shadow;
+  
+  /* PURE BACKGROUND BLUR - NO COLOR TINT */
+  background: transparent;
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  
+  transition: 
+    background 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Subtle top highlight */
+.anhad-bottom-nav .nav-pill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* Remove all extra overlay layers - pure blur only */
+
+.anhad-bottom-nav .nav-pill:hover {
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.4),
+    0 24px 64px rgba(0, 0, 0, 0.28),
+    0 12px 32px rgba(0, 0, 0, 0.18),
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.5),
+    inset 0 0 100px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAV ITEM — Individual Button Container
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 48px;
+  border-radius: 24px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  transition: 
+    background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  will-change: transform, background, box-shadow;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NAV ICON WRAPPER — Contains SVG + Optional Dot
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.nav-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Spring scale animation on active state */
+.nav-item.active .nav-icon-wrap {
+  transform: scale(1.0);
+  animation: iconSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:not(.active) .nav-icon-wrap {
+  transform: scale(1);
+}
+
+@keyframes iconSpring {
+  0% { transform: scale(0.85); }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1.0); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SVG ICONS — SF Symbols Style (1.5px stroke)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.nav-icon-wrap svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.3s ease, opacity 0.3s ease;
+}
+
+/* Light theme default icon color */
+.nav-item .nav-icon-wrap {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.nav-item:hover .nav-icon-wrap {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.nav-item.active .nav-icon-wrap {
+  color: rgba(0, 0, 0, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTIVE STATE PILL — Glass Highlight Behind Active Icon
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.anhad-bottom-nav .nav-item.active {
+  /* PURE BLUR HIGHLIGHT - NO COLOR ADDED */
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(40px) saturate(150%);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: scale(1.08);
+  position: relative;
+}
+
+/* No extra shimmer effects - pure blur only */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NOTIFICATION DOT — Red Badge (8px circle)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.nav-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  background: #FF3B30;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: 0 1px 3px rgba(255, 59, 48, 0.4);
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Dot animation on appearance */
+@keyframes dotAppear {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.nav-dot.visible {
+  opacity: 1;
+  transform: scale(1);
+  animation: dotAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK THEME VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .anhad-bottom-nav .nav-pill,
+html.dark-mode .anhad-bottom-nav .nav-pill {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.55), rgba(20, 20, 20, 0.40));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 8px 40px rgba(0, 0, 0, 0.40),
+    0 4px 16px rgba(0, 0, 0, 0.30),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item,
+html.dark-mode .anhad-bottom-nav .nav-item {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item:hover,
+html.dark-mode .anhad-bottom-nav .nav-item:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item.active,
+html.dark-mode .anhad-bottom-nav .nav-item.active {
+  /* CLASSY SUBTLE HIGHLIGHT - Dark Mode (Not white droplet) */
+  background: linear-gradient(145deg,
+    rgba(80, 80, 90, 0.9) 0%,
+    rgba(60, 60, 70, 0.85) 50%,
+    rgba(50, 50, 60, 0.9) 100%);
+  box-shadow:
+    /* Subtle inner depth */
+    inset 0 1px 3px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3),
+    /* Soft outer glow - refined */
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    /* Subtle rim */
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    /* Classy ambient */
+    0 0 20px rgba(100, 100, 110, 0.15);
+  color: rgba(255, 255, 255, 1);
+  transform: scale(1.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark mode classy subtle highlight - refined gloss */
+[data-theme="dark"] .anhad-bottom-nav .nav-item.active::before,
+html.dark-mode .anhad-bottom-nav .nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 20%;
+  right: 20%;
+  height: 30%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%);
+  border-radius: 20px 20px 0 0;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item.active::after,
+html.dark-mode .anhad-bottom-nav .nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  left: 30%;
+  right: 30%;
+  height: 20%;
+  background: linear-gradient(0deg, 
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 100%);
+  border-radius: 0 0 16px 16px;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item.active .nav-icon-wrap,
+html.dark-mode .anhad-bottom-nav .nav-item.active .nav-icon-wrap {
+  color: rgba(255, 255, 255, 1);
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item .nav-icon-wrap,
+html.dark-mode .anhad-bottom-nav .nav-item .nav-icon-wrap {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .anhad-bottom-nav .nav-item:hover .nav-icon-wrap,
+html.dark-mode .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DIVINE GOLD THEME VARIANTS — Warm Amber Tint
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-pill {
+  background: linear-gradient(135deg, rgba(255, 220, 100, 0.20), rgba(200, 150, 0, 0.12));
+  border: 1px solid rgba(212, 160, 23, 0.25);
+  box-shadow: 
+    0 8px 40px rgba(139, 105, 20, 0.18),
+    0 4px 16px rgba(139, 105, 20, 0.12),
+    inset 0 1px 0 rgba(255, 240, 180, 0.4),
+    inset 0 -1px 0 rgba(255, 220, 100, 0.1);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item {
+  color: rgba(59, 42, 0, 0.6);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item:hover {
+  color: rgba(59, 42, 0, 0.85);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item.active {
+  background: rgba(255, 240, 180, 0.40);
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 248, 220, 0.7),
+    0 2px 12px rgba(139, 105, 20, 0.15);
+  color: rgba(59, 42, 0, 1);
+  transform: scale(1.02);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item.active .nav-icon-wrap {
+  color: rgba(59, 42, 0, 1);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item .nav-icon-wrap {
+  color: rgba(59, 42, 0, 0.55);
+}
+
+[data-theme="divineGold"] .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
+  color: rgba(59, 42, 0, 0.8);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEPIA THEME VARIANTS — Warm Cream Tint
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-pill {
+  background: linear-gradient(135deg, rgba(245, 235, 210, 0.25), rgba(230, 215, 185, 0.15));
+  border: 1px solid rgba(139, 105, 20, 0.18);
+  box-shadow: 
+    0 8px 40px rgba(59, 42, 0, 0.12),
+    0 4px 16px rgba(59, 42, 0, 0.08),
+    inset 0 1px 0 rgba(255, 250, 235, 0.5),
+    inset 0 -1px 0 rgba(245, 235, 210, 0.1);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item {
+  color: rgba(59, 42, 0, 0.6);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item:hover {
+  color: rgba(59, 42, 0, 0.85);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item.active {
+  background: rgba(245, 235, 210, 0.45);
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 250, 235, 0.8),
+    0 2px 12px rgba(59, 42, 0, 0.12);
+  color: rgba(59, 42, 0, 1);
+  transform: scale(1.02);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item.active .nav-icon-wrap {
+  color: rgba(59, 42, 0, 1);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item .nav-icon-wrap {
+  color: rgba(59, 42, 0, 0.55);
+}
+
+[data-theme="sepia"] .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
+  color: rgba(59, 42, 0, 0.8);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SAFE AREA INSETS — iOS Notch/Handlebar Support
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .anhad-bottom-nav {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+  
+  .anhad-bottom-nav .nav-pill {
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px) * 0.5);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE RESPONSIVENESS — Never Full Width
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 400px) {
+  .anhad-bottom-nav {
+    min-width: auto;
+    width: calc(100% - 32px);
+    max-width: none;
+  }
+  
+  .anhad-bottom-nav .nav-pill {
+    padding: 10px 12px;
+    gap: 4px;
+  }
+  
+  .nav-item {
+    width: 52px;
+    height: 44px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .nav-item {
+    width: 48px;
+    height: 42px;
+  }
+  
+  .nav-icon-wrap svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESKTOP ENHANCEMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media screen and (min-width: 1024px) {
+  .anhad-bottom-nav {
+    bottom: 32px;
+  }
+  
+  .anhad-bottom-nav .nav-pill {
+    padding: 12px 20px;
+  }
+  
+  .nav-item {
+    width: 60px;
+    height: 50px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION — Accessibility
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .anhad-bottom-nav,
+  .nav-pill,
+  .nav-item,
+  .nav-icon-wrap,
+  .nav-dot {
+    animation: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+  }
+  
+  .nav-item:active {
+    transform: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HIDE STATE — For scroll-away behavior
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.anhad-bottom-nav.hidden {
+  transform: translateX(-50%) translateY(150%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.3s ease;
+}

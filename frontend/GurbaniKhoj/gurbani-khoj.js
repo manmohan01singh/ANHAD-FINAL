@@ -18,6 +18,17 @@ const SEARCH_TYPES = {
     1: 1  // Gurmukhi (Full Word) - Always use this for best results
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MULTI-SOURCE CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const GURBANI_SOURCES = {
+    G: { id: 'G', name: 'Sri Guru Granth Sahib Ji', shortName: 'SGGS', color: '#b8860b', priority: 1 },
+    D: { id: 'D', name: 'Sri Dasam Granth Sahib Ji', shortName: 'Dasam', color: '#007aff', priority: 2 },
+    B: { id: 'B', name: 'Bhai Gurdas Ji', shortName: 'Bhai Gurdas', color: '#34c759', priority: 3 },
+    N: { id: 'N', name: 'Bhai Nand Lal Ji', shortName: 'Bhai Nand Lal', color: '#ff9500', priority: 4 }
+};
+
 // Force Gurmukhi search type - always returns 1
 function getSearchType() {
     return 1; // Always Gurmukhi
@@ -33,11 +44,12 @@ const $$ = (sel) => document.querySelectorAll(sel);
 const DOM = {
     searchInput: $('#searchInput'),
     searchBar: $('#searchBar'),
-    clearBtn: $('#clearBtn'),
     micBtn: $('#micBtn'),
-    keyboardBtn: $('#keyboardBtn'),
     voicePanel: $('#voicePanel'),
     voiceCancel: $('#voiceCancel'),
+    voiceStatus: $('#voiceStatus'),
+    voiceHint: $('#voiceHint'),
+    voiceTranscriptPreview: $('#voiceTranscriptPreview'),
     themeToggle: $('#themeToggle'),
 
     resultsView: $('#resultsView'),
@@ -49,16 +61,16 @@ const DOM = {
     emptyState: $('#emptyState'),
     emptyMessage: $('#emptyMessage'),
     welcomeState: $('#welcomeState'),
-    historySection: $('#historySection'),
-    historyList: $('#historyList'),
 
     keyboardOverlay: $('#keyboardOverlay'),
     keyboardPreview: $('#keyboardPreview'),
-    keyboardDone: $('#keyboardDone'),
 
-    settingsBtn: $('#settingsBtn'),
-    settingsOverlay: $('#settingsOverlay'),
-    settingsDone: $('#settingsDone'),
+    historyBtn: $('#historyBtn'),
+    historyOverlay: $('#historyOverlay'),
+    historyClose: $('#historyClose'),
+    historyClearAll: $('#historyClearAll'),
+    historyListModal: $('#historyListModal'),
+    historyEmpty: $('#historyEmpty'),
 
     toast: $('#toast'),
     toastText: $('#toastText'),
@@ -81,7 +93,9 @@ const State = {
     keyboardText: '',
     theme: 'light',
     searchHistory: [],
-    favorites: []
+    favorites: [],
+    sourceFilter: 'all', // 'all' | 'G' | 'D' | 'B' | 'N'
+    allResults: [] // Store all results for client-side filtering
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -280,9 +294,12 @@ const SearchHistory = {
         // Add click handlers
         DOM.historyList.querySelectorAll('.history-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                if (e.target.classList.contains('history-remove')) {
+                // Check if clicked element or its parent is the remove button
+                const removeBtn = e.target.closest('.history-remove');
+                if (removeBtn) {
                     e.stopPropagation();
-                    this.remove(decodeURIComponent(e.target.dataset.remove));
+                    e.preventDefault();
+                    this.remove(decodeURIComponent(removeBtn.dataset.remove));
                     haptic();
                     return;
                 }
@@ -359,10 +376,11 @@ function haptic(style = 'light') {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const GurbaniAPI = {
-    async search(query, type = 0, page = 1, resultsPerPage = null) {
+    // Search a single source
+    async searchSource(query, type = 0, page = 1, resultsPerPage = null, source = 'G') {
         const searchType = SEARCH_TYPES[type] ?? 0;
         const perPage = resultsPerPage || API.perPage;
-        const url = `${API.base}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=G&page=${page}&results=${perPage}`;
+        const url = `${API.base}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=${source}&page=${page}&results=${perPage}`;
 
         try {
             const controller = new AbortController();
@@ -376,24 +394,71 @@ const GurbaniAPI = {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                throw new Error(`Search failed with status: ${response.status}`);
+                throw new Error(`Search failed for source ${source}: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // Validate response structure
-            if (!data || typeof data !== 'object') {
-                throw new Error('Invalid response format');
+            // Add source attribution to each verse
+            if (data.verses && Array.isArray(data.verses)) {
+                data.verses.forEach(verse => {
+                    verse._source = GURBANI_SOURCES[source];
+                });
             }
 
             return data;
         } catch (error) {
-            console.error('Search API Error:', error);
-            if (error.name === 'AbortError') {
-                throw new Error('Request timeout. Please check your connection.');
-            }
-            throw new Error('Failed to load Gurbani. Please check your connection and try again.');
+            console.warn(`Search API Error for source ${source}:`, error.message);
+            // Return empty result instead of throwing to allow partial results
+            return { verses: [], resultsInfo: { totalResults: 0 } };
         }
+    },
+
+    // Search all sources in parallel
+    async searchAllSources(query, type = 0, page = 1, resultsPerPage = null) {
+        const sources = Object.keys(GURBANI_SOURCES);
+
+        // Search all sources in parallel
+        const searchPromises = sources.map(sourceId =>
+            this.searchSource(query, type, page, resultsPerPage, sourceId)
+        );
+
+        const results = await Promise.all(searchPromises);
+
+        // Merge all verses and sort by relevance (keeping source priority)
+        let allVerses = [];
+        let totalResults = 0;
+
+        results.forEach((result, index) => {
+            const sourceId = sources[index];
+            const sourceInfo = GURBANI_SOURCES[sourceId];
+
+            if (result.verses && result.verses.length > 0) {
+                // Add source priority for sorting
+                result.verses.forEach(verse => {
+                    verse._sourcePriority = sourceInfo.priority;
+                });
+                allVerses = allVerses.concat(result.verses);
+            }
+
+            totalResults += result.resultsInfo?.totalResults || 0;
+        });
+
+        // Sort by source priority (SGGS first, then Dasam, etc.)
+        allVerses.sort((a, b) => a._sourcePriority - b._sourcePriority);
+
+        return {
+            verses: allVerses,
+            resultsInfo: {
+                totalResults: totalResults,
+                pages: { totalPages: Math.ceil(allVerses.length / (resultsPerPage || API.perPage)) }
+            }
+        };
+    },
+
+    // Legacy single-source search (for backward compatibility)
+    async search(query, type = 0, page = 1, resultsPerPage = null) {
+        return this.searchAllSources(query, type, page, resultsPerPage);
     },
 
     async getShabad(shabadId) {
@@ -485,7 +550,7 @@ async function performSearch(append = false) {
         DOM.resultsList.innerHTML = '';
         showLoading();
 
-        // Add to history
+        // Add to old history
         SearchHistory.add(query);
     }
 
@@ -498,11 +563,33 @@ async function performSearch(append = false) {
             return;
         }
 
-        State.totalPages = data.resultsInfo?.pages?.totalPages || 1;
-        displayResults(data.verses, append);
+        // Add to new history with gurmukhi text from first result
+        if (!append && data.verses.length > 0) {
+            const firstVerse = data.verses[0];
+            const sourceName = firstVerse._source?.shortName || 'All Sources';
+            History.add({
+                query: query,
+                gurmukhi: firstVerse.gurmukhi || query,
+                source: sourceName
+            });
+        }
 
-        const total = data.resultsInfo?.totalResults || data.verses.length;
-        DOM.resultsCount.textContent = `${total} results`;
+        State.totalPages = data.resultsInfo?.pages?.totalPages || 1;
+
+        // Store all results for client-side filtering
+        if (!append) {
+            State.allResults = data.verses || [];
+        } else {
+            State.allResults = State.allResults.concat(data.verses || []);
+        }
+
+        // Apply source filter if needed
+        const filteredResults = State.sourceFilter === 'all'
+            ? State.allResults
+            : filterResultsBySource(State.allResults, State.sourceFilter);
+
+        displayResults(filteredResults, append);
+        updateResultsCount(filteredResults.length, State.allResults.length);
 
         DOM.loadMoreBtn.style.display = State.page < State.totalPages ? 'block' : 'none';
         showResults();
@@ -517,27 +604,71 @@ async function performSearch(append = false) {
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SOURCE FILTERING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function filterResultsBySource(results, sourceFilter) {
+    if (sourceFilter === 'all') return results;
+    return results.filter(verse => {
+        const source = verse._source || GURBANI_SOURCES.G;
+        return source.id === sourceFilter;
+    });
+}
+
+function updateResultsCount(filtered, total) {
+    if (State.sourceFilter === 'all') {
+        DOM.resultsCount.textContent = `${total} results`;
+    } else {
+        const sourceName = GURBANI_SOURCES[State.sourceFilter]?.shortName || State.sourceFilter;
+        DOM.resultsCount.textContent = `${filtered} / ${total} results (${sourceName})`;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// iOS NOTES STYLE SEARCH HIGHLIGHTING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function highlightSearchTerm(text, query) {
+    if (!query || !text) return text;
+    
+    // Escape special regex characters
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Create regex that matches the query (case-insensitive for Gurmukhi)
+    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+    
+    // Replace matches with highlighted span
+    return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+}
+
 function displayResults(verses, append = false) {
-    const html = verses.map(verse => {
+    const query = State.query || DOM.searchInput.value.trim();
+
+    const html = verses.map((verse, index) => {
         const ang = verse.pageNo || verse.source?.pageNo || '';
-        const raag = verse.raag?.english || '';
-        const gurmukhi = verse.verse?.unicode || '';
-        const translation = verse.translation?.en?.bdb || verse.translation?.en?.ms || '';
+        const gurmukhiRaw = verse.verse?.unicode || '';
         const shabadId = verse.shabadId;
         const verseId = verse.verseId;
-        const isFav = Favorites.isFavorite(shabadId);
+
+        // Get source info for badge
+        const source = verse._source || GURBANI_SOURCES.G;
+
+        // Apply search highlighting
+        const gurmukhi = query ? highlightSearchTerm(gurmukhiRaw, query) : gurmukhiRaw;
+
+        // Stagger animation delay
+        const animDelay = Math.min(index * 40, 360);
 
         return `
-            <article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}">
+            <article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}" style="animation-delay: ${animDelay}ms">
                 <div class="result-meta">
+                    <span class="result-source-badge" style="background: ${source.color}15; color: ${source.color}">
+                        ${source.shortName}
+                    </span>
                     <span class="result-ang">Ang ${ang}</span>
-                    <span class="result-raag">${raag}</span>
-                    <button class="result-fav ${isFav ? 'active' : ''}" data-fav-shabad="${shabadId}" data-fav-ang="${ang}" data-fav-gurmukhi="${encodeURIComponent(gurmukhi)}">
-                        ${isFav ? '❤️' : '🤍'}
-                    </button>
                 </div>
                 <p class="result-gurmukhi">${gurmukhi}</p>
-                <p class="result-translation">${translation}</p>
             </article>
         `;
     }).join('');
@@ -548,29 +679,9 @@ function displayResults(verses, append = false) {
         DOM.resultsList.innerHTML = html;
     }
 
-    // Add click handlers
+    // Add click handlers for navigation
     DOM.resultsList.querySelectorAll('.result-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Check if favorite button was clicked
-            if (e.target.classList.contains('result-fav')) {
-                e.stopPropagation();
-                const shabadId = e.target.dataset.favShabad;
-                const ang = e.target.dataset.favAng;
-                const gurmukhi = decodeURIComponent(e.target.dataset.favGurmukhi);
-
-                if (Favorites.isFavorite(shabadId)) {
-                    Favorites.remove(shabadId);
-                    e.target.textContent = '🤍';
-                    e.target.classList.remove('active');
-                } else {
-                    Favorites.add({ shabadId, ang, gurmukhi });
-                    e.target.textContent = '❤️';
-                    e.target.classList.add('active');
-                }
-                haptic();
-                return;
-            }
-
+        card.addEventListener('click', () => {
             haptic();
             const shabadId = card.dataset.shabad;
             const verseId = card.dataset.verse;
@@ -590,9 +701,12 @@ const VoiceSearch = {
     isListening: false,
 
     init() {
+        console.log('VoiceSearch.init() called');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        console.log('SpeechRecognition available:', !!SpeechRecognition);
         if (!SpeechRecognition) {
             console.warn('Voice not supported');
+            if (DOM.micBtn) DOM.micBtn.style.display = 'none';
             return;
         }
 
@@ -616,8 +730,23 @@ const VoiceSearch = {
             if (results.length > 0) {
                 const lastResult = results[results.length - 1];
                 this.transcriptBuffer = lastResult[0].transcript;
-                
-                // Show live preview in toast
+
+                // Update live transcript preview in voice panel
+                if (DOM.voiceTranscriptPreview) {
+                    DOM.voiceTranscriptPreview.textContent = this.transcriptBuffer;
+                }
+
+                // Update status text based on state
+                if (DOM.voiceStatus) {
+                    DOM.voiceStatus.textContent = lastResult.isFinal ? 'Processing...' : 'Listening...';
+                }
+
+                // Add processing state styling when final
+                if (lastResult.isFinal && DOM.voicePanel) {
+                    DOM.voicePanel.classList.add('processing');
+                }
+
+                // Show interim preview in toast for feedback
                 if (!lastResult.isFinal) {
                     showToast(`Hearing: ${this.transcriptBuffer}`);
                 }
@@ -628,7 +757,7 @@ const VoiceSearch = {
             if (lastResult.isFinal) {
                 this.silenceTimer = setTimeout(() => {
                     this.processBufferedVoice();
-                }, 1200); // 1.2 second silence before search
+                }, 500); // 0.5 second silence before search - faster response
             }
         };
 
@@ -657,6 +786,12 @@ const VoiceSearch = {
     },
 
     async start() {
+        // Prevent starting if already listening
+        if (this.isListening) {
+            console.log('VoiceSearch: Already listening');
+            return;
+        }
+
         if (!this.recognition) {
             showToast('Voice search not supported on this browser');
             return;
@@ -680,8 +815,18 @@ const VoiceSearch = {
         }
 
         this.isListening = true;
+        this.isProcessing = false;
+        this.transcriptBuffer = '';
+
+        // Reset UI state
         DOM.micBtn.classList.add('listening');
         DOM.voicePanel.classList.add('active');
+        DOM.voicePanel.classList.remove('processing');
+
+        // Reset voice panel UI
+        if (DOM.voiceStatus) DOM.voiceStatus.textContent = 'Listening...';
+        if (DOM.voiceHint) DOM.voiceHint.textContent = 'Speak a Gurbani line';
+        if (DOM.voiceTranscriptPreview) DOM.voiceTranscriptPreview.textContent = '';
 
         try {
             this.recognition.start();
@@ -698,11 +843,17 @@ const VoiceSearch = {
         this.isProcessing = false;
         DOM.micBtn.classList.remove('listening');
         DOM.voicePanel.classList.remove('active');
+        DOM.voicePanel.classList.remove('processing');
 
         // Clear any pending timer
         if (this.silenceTimer) {
             clearTimeout(this.silenceTimer);
             this.silenceTimer = null;
+        }
+
+        // Clear transcript preview
+        if (DOM.voiceTranscriptPreview) {
+            DOM.voiceTranscriptPreview.textContent = '';
         }
 
         try {
@@ -740,87 +891,137 @@ const VoiceSearch = {
 
 const Keyboard = {
     open() {
-        State.keyboardText = DOM.searchInput.value;
-        this.updatePreview();
+        State.keyboardText = DOM.searchInput.value || '';
         DOM.keyboardOverlay.classList.add('active');
+        document.body.classList.add('keyboard-open');
+        this.updatePreview();
         haptic();
     },
 
     close() {
         DOM.keyboardOverlay.classList.remove('active');
+        document.body.classList.remove('keyboard-open');
         DOM.searchInput.value = State.keyboardText;
-        DOM.searchInput.focus();
-    },
-
-    updatePreview() {
-        const preview = DOM.keyboardPreview.querySelector('.preview-text') || DOM.keyboardPreview;
-        preview.textContent = State.keyboardText || '';
     },
 
     addChar(char) {
         State.keyboardText += char;
+        DOM.searchInput.value = State.keyboardText;
         this.updatePreview();
         haptic();
     },
 
     backspace() {
         State.keyboardText = State.keyboardText.slice(0, -1);
+        DOM.searchInput.value = State.keyboardText;
         this.updatePreview();
         haptic();
     },
 
     space() {
         State.keyboardText += ' ';
+        DOM.searchInput.value = State.keyboardText;
         this.updatePreview();
         haptic();
     },
 
     search() {
+        DOM.searchInput.value = State.keyboardText;
         this.close();
         performSearch();
         haptic('medium');
+    },
+
+    updatePreview() {
+        if (DOM.keyboardPreview) {
+            DOM.keyboardPreview.textContent = State.keyboardText || '';
+        }
     }
 };
 
+// Make Keyboard global for HTML onclick handlers
+window.Keyboard = Keyboard;
+
 // ═══════════════════════════════════════════════════════════════════════════════
-// SETTINGS
+// HISTORY
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const Settings = {
+const History = {
+    items: [],
+
     open() {
-        DOM.settingsOverlay.classList.add('active');
+        this.render();
+        DOM.historyOverlay.classList.add('active');
         haptic();
     },
 
     close() {
-        DOM.settingsOverlay.classList.remove('active');
+        DOM.historyOverlay.classList.remove('active');
     },
 
-    setFont(font) {
-        document.documentElement.dataset.font = font;
-        localStorage.setItem('gurbaniFont', font);
-
-        $$('.font-options .setting-opt').forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.font === font);
-        });
+    add(item) {
+        // Add to beginning, remove duplicates, keep max 20
+        this.items = this.items.filter(i => i.query !== item.query);
+        this.items.unshift(item);
+        if (this.items.length > 20) this.items.pop();
+        this.save();
     },
 
-    setBackground(bg) {
-        document.documentElement.dataset.bg = bg;
-        localStorage.setItem('gurbaniBg', bg);
+    clear() {
+        this.items = [];
+        this.save();
+        this.render();
+        showToast('History cleared');
+    },
 
-        $$('.bg-options .setting-opt').forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.bg === bg);
-        });
+    save() {
+        localStorage.setItem('gurbaniHistory', JSON.stringify(this.items));
     },
 
     load() {
-        const font = localStorage.getItem('gurbaniFont') || 'raavi';
-        const bg = localStorage.getItem('gurbaniBg') || 'default';
-        this.setFont(font);
-        this.setBackground(bg);
+        try {
+            const saved = localStorage.getItem('gurbaniHistory');
+            if (saved) {
+                this.items = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error('Failed to load history:', e);
+        }
+    },
+
+    render() {
+        if (!DOM.historyListModal) return;
+
+        if (this.items.length === 0) {
+            DOM.historyListModal.innerHTML = '';
+            DOM.historyEmpty.classList.add('active');
+            if (DOM.historyClearAll) DOM.historyClearAll.style.display = 'none';
+            return;
+        }
+
+        DOM.historyEmpty.classList.remove('active');
+        if (DOM.historyClearAll) DOM.historyClearAll.style.display = 'block';
+
+        DOM.historyListModal.innerHTML = this.items.map((item, index) => `
+            <button class="history-item-modal" data-index="${index}" onclick="History.select(${index})">
+                <div class="history-gurmukhi">${item.gurmukhi || item.query}</div>
+                <div class="history-source">${item.source || 'All Sources'}</div>
+            </button>
+        `).join('');
+    },
+
+    select(index) {
+        const item = this.items[index];
+        if (item) {
+            DOM.searchInput.value = item.query;
+            performSearch();
+            this.close();
+        }
     }
 };
+
+// Make History global
+window.History = History;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FILTER UI
@@ -840,9 +1041,12 @@ function initEventListeners() {
     // Theme toggle
     DOM.themeToggle?.addEventListener('click', () => Theme.toggle());
 
-    // Search input
+    // Search input with debounced search
     let searchTimeout;
-    DOM.searchInput.addEventListener('input', () => {
+    DOM.searchInput.addEventListener('input', (e) => {
+        // Update keyboard text state when typing directly
+        State.keyboardText = e.target.value;
+
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             if (DOM.searchInput.value.trim()) {
@@ -850,7 +1054,7 @@ function initEventListeners() {
             } else {
                 showWelcome();
             }
-        }, 500);
+        }, 350); // Faster 350ms debounce for better responsiveness
     });
 
     DOM.searchInput.addEventListener('keydown', (e) => {
@@ -860,40 +1064,51 @@ function initEventListeners() {
         }
     });
 
-    // Clear
-    DOM.clearBtn.addEventListener('click', () => {
-        DOM.searchInput.value = '';
-        State.keyboardText = '';
-        showWelcome();
-        haptic();
-    });
-
-    // Mic
-    DOM.micBtn.addEventListener('click', () => {
-        if (VoiceSearch.isListening) {
-            VoiceSearch.stop();
-        } else {
+    // Mic button
+    DOM.micBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!VoiceSearch.isListening) {
             VoiceSearch.start();
         }
     });
 
-    DOM.voiceCancel.addEventListener('click', () => {
+    // Search bar - open keyboard when clicking (not the buttons)
+    DOM.searchBar?.addEventListener('click', (e) => {
+        // Don't open if clicking mic button
+        if (e.target.closest('#micBtn')) return;
+        // Open Gurmukhi keyboard
+        Keyboard.open();
+    });
+
+    DOM.voiceCancel?.addEventListener('click', () => {
         VoiceSearch.stop();
     });
 
-    // Keyboard
-    DOM.keyboardBtn.addEventListener('click', () => Keyboard.open());
-    DOM.keyboardDone.addEventListener('click', () => Keyboard.close());
+    // Keyboard - closes when clicking backdrop or after search
 
-    DOM.keyboardOverlay.querySelector('.keyboard-backdrop').addEventListener('click', () => {
+    // Click on backdrop closes keyboard
+    DOM.keyboardOverlay?.querySelector('.keyboard-backdrop')?.addEventListener('click', (e) => {
+        e.stopPropagation();
         Keyboard.close();
     });
 
-    // Keyboard keys
-    $$('.kb-key').forEach(key => {
-        key.addEventListener('click', () => {
-            const action = key.dataset.action;
+    // Keyboard keys - use both click and touch events for mobile
+    const keyboardBody = DOM.keyboardOverlay?.querySelector('.keyboard-body');
+    console.log('Keyboard body found:', keyboardBody);
+    if (keyboardBody) {
+        const handleKeyPress = (e) => {
+            console.log('Key press event:', e.type, e.target);
+            const key = e.target.closest('.kb-key');
+            if (!key) {
+                console.log('No .kb-key found for click');
+                return;
+            }
 
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log('Key clicked:', key.textContent.trim(), 'action:', key.dataset.action);
+            const action = key.dataset.action;
             if (action === 'backspace') {
                 Keyboard.backspace();
             } else if (action === 'space') {
@@ -901,10 +1116,16 @@ function initEventListeners() {
             } else if (action === 'search') {
                 Keyboard.search();
             } else {
-                Keyboard.addChar(key.textContent);
+                Keyboard.addChar(key.textContent.trim());
             }
-        });
-    });
+        };
+
+        keyboardBody.addEventListener('click', handleKeyPress);
+        keyboardBody.addEventListener('touchstart', handleKeyPress, { passive: false });
+        console.log('Keyboard event listeners attached');
+    } else {
+        console.error('Keyboard body not found!');
+    }
 
     // Live Kirtan Tracker
     DOM.liveKirtanCard?.addEventListener('click', () => {
@@ -926,6 +1147,26 @@ function initEventListeners() {
         });
     });
 
+    // Source filter chips
+    $$('.source-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            // Update active state
+            $$('.source-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+
+            // Update state
+            State.sourceFilter = chip.dataset.source;
+            haptic();
+
+            // Re-display results with filter applied
+            if (State.allResults.length > 0) {
+                const filtered = filterResultsBySource(State.allResults, State.sourceFilter);
+                displayResults(filtered, false);
+                updateResultsCount(filtered.length, State.allResults.length);
+            }
+        });
+    });
+
     // Load more
     DOM.loadMoreBtn.addEventListener('click', () => {
         State.page++;
@@ -933,26 +1174,13 @@ function initEventListeners() {
         haptic();
     });
 
-    // Settings
-    DOM.settingsBtn?.addEventListener('click', () => Settings.open());
-    DOM.settingsDone?.addEventListener('click', () => Settings.close());
+    // History
+    DOM.historyBtn?.addEventListener('click', () => History.open());
+    DOM.historyClose?.addEventListener('click', () => History.close());
+    DOM.historyClearAll?.addEventListener('click', () => History.clear());
 
-    DOM.settingsOverlay?.querySelector('.settings-backdrop')?.addEventListener('click', () => {
-        Settings.close();
-    });
-
-    $$('.font-options .setting-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            Settings.setFont(opt.dataset.font);
-            haptic();
-        });
-    });
-
-    $$('.bg-options .setting-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            Settings.setBackground(opt.dataset.bg);
-            haptic();
-        });
+    DOM.historyOverlay?.querySelector('.history-backdrop')?.addEventListener('click', () => {
+        History.close();
     });
 }
 
@@ -960,14 +1188,20 @@ function initEventListeners() {
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
+console.log('=== GURBANI KHOJ JS LOADED ===');
+
+function init() {
+    console.log('=== INIT FUNCTION CALLED ===');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     Theme.init();
-    Settings.load();
     SearchHistory.load();
+    History.load();
     Favorites.load();
     VoiceSearch.init();
     initEventListeners();
     showWelcome();
 
-    console.log('Gurbani Khoj Premium initialized');
+    console.log('Gurbani Khoj initialized');
 });

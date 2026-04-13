@@ -1,0 +1,215 @@
+/**
+ * ANHAD Unified Theme Variables
+ * 
+ * Defines CSS custom properties for all 4 themes using data-theme selectors.
+ * No classes, no !important — only [data-theme="..."] attribute selectors.
+ * 
+ * Tokens available:
+ *   --bg-primary        - Main page background
+ *   --bg-secondary      - Cards, panels, sidebars
+ *   --bg-tertiary       - Inputs, subtle containers
+ *   --text-primary      - Headings, body text
+ *   --text-secondary    - Muted/secondary text
+ *   --text-accent       - Links, highlights
+ *   --border-color      - Dividers, outlines
+ *   --shadow-color      - Box-shadow base color
+ *   --highlight-color   - Search match highlight
+ *   --btn-bg            - Primary button background
+ *   --btn-text          - Primary button text
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT THEME — White/Gray scale, #1C1C1E text, #FFD60A highlight
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+    /* Backgrounds */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: #E5E5EA;
+    
+    /* Text */
+    --text-primary: #1C1C1E;
+    --text-secondary: #8E8E93;
+    --text-accent: #007AFF;
+    
+    /* UI Elements */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --highlight-color: #FFD60A;
+    --btn-bg: #007AFF;
+    --btn-text: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK THEME — #1C1C1E bg, #F5F5F7 text, #FFD60A highlight
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+    /* Backgrounds */
+    --bg-primary: #1C1C1E;
+    --bg-secondary: #2C2C2E;
+    --bg-tertiary: #3A3A3C;
+    
+    /* Text */
+    --text-primary: #F5F5F7;
+    --text-secondary: #8E8E93;
+    --text-accent: #0A84FF;
+    
+    /* UI Elements */
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --highlight-color: #FFD60A;
+    --btn-bg: #0A84FF;
+    --btn-text: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIVINE GOLD THEME — Warm cream #FFF8E7 bg, #3B2A00 text, #D4A017 highlight
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="divineGold"] {
+    /* Backgrounds */
+    --bg-primary: #FFF8E7;
+    --bg-secondary: #FFF5E0;
+    --bg-tertiary: #FAEED8;
+    
+    /* Text */
+    --text-primary: #3B2A00;
+    --text-secondary: #7A6A4F;
+    --text-accent: #B8860B;
+    
+    /* UI Elements */
+    --border-color: rgba(59, 42, 0, 0.15);
+    --shadow-color: rgba(59, 42, 0, 0.15);
+    --highlight-color: #D4A017;
+    --btn-bg: #D4A017;
+    --btn-text: #3B2A00;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEPIA THEME — #F4ECD8 bg, #3B2A00 text, #C8860A highlight
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="sepia"] {
+    /* Backgrounds */
+    --bg-primary: #F4ECD8;
+    --bg-secondary: #EDE4CF;
+    --bg-tertiary: #E5DBC5;
+    
+    /* Text */
+    --text-primary: #3B2A00;
+    --text-secondary: #7A6A4F;
+    --text-accent: #8B6914;
+    
+    /* UI Elements */
+    --border-color: rgba(59, 42, 0, 0.12);
+    --shadow-color: rgba(59, 42, 0, 0.12);
+    --highlight-color: #C8860A;
+    --btn-bg: #C8860A;
+    --btn-text: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DEFAULT/FALLBACK (no data-theme set) — Light theme values
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root:not([data-theme]),
+html:not([data-theme]) {
+    /* Backgrounds */
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F2F2F7;
+    --bg-tertiary: #E5E5EA;
+    
+    /* Text */
+    --text-primary: #1C1C1E;
+    --text-secondary: #8E8E93;
+    --text-accent: #007AFF;
+    
+    /* UI Elements */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --highlight-color: #FFD60A;
+    --btn-bg: #007AFF;
+    --btn-text: #FFFFFF;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES using CSS variables
+   These apply universally regardless of theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Cards and panels */
+.card,
+.panel,
+.glass-card {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+/* Form inputs */
+input,
+textarea,
+select {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn-primary,
+button.primary {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+}
+
+/* Text elements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
+.text-muted,
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+a,
+.link {
+    color: var(--text-accent);
+}
+
+/* Dividers */
+hr,
+.divider {
+    border-color: var(--border-color);
+}
+
+/* Highlight/selection */
+::selection {
+    background-color: var(--highlight-color);
+    color: var(--text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-primary);
+}

@@ -55,152 +55,6 @@
     eventsByYear: new Map()
   };
 
-  // Add to gurpurab-calendar.js
-  class CalendarThemeEngine {
-    constructor() {
-      this.themes = {
-        light: {
-          '--cal-bg': '#f8f9fa',
-          '--cal-card': '#ffffff',
-          '--cal-text': '#1d1d1f',
-          '--cal-muted': '#6e6e73',
-          '--cal-accent': '#007aff',
-          '--cal-highlight': 'rgba(0, 122, 255, 0.1)',
-          '--cal-border': 'rgba(0, 0, 0, 0.08)'
-        },
-        dark: {
-          '--cal-bg': '#0d0d12',
-          '--cal-card': 'rgba(255, 255, 255, 0.05)',
-          '--cal-text': '#ffffff',
-          '--cal-muted': '#8e8e93',
-          '--cal-accent': '#d4a574',
-          '--cal-highlight': 'rgba(212, 165, 116, 0.15)',
-          '--cal-border': 'rgba(255, 255, 255, 0.1)'
-        },
-        divineGold: {
-          '--cal-bg': 'linear-gradient(180deg, #1a1510 0%, #0d0a06 100%)',
-          '--cal-card': 'rgba(201, 168, 108, 0.08)',
-          '--cal-text': '#f0e6d3',
-          '--cal-muted': '#9a8b70',
-          '--cal-accent': '#c9a86c',
-          '--cal-highlight': 'rgba(201, 168, 108, 0.2)',
-          '--cal-border': 'rgba(201, 168, 108, 0.15)'
-        },
-        sepia: {
-          '--cal-bg': '#f4ecd8',
-          '--cal-card': '#faf6eb',
-          '--cal-text': '#5c4b37',
-          '--cal-muted': '#8b7355',
-          '--cal-accent': '#8b6914',
-          '--cal-highlight': 'rgba(139, 115, 85, 0.15)',
-          '--cal-border': 'rgba(92, 75, 55, 0.2)'
-        }
-      };
-
-      this.currentTheme = localStorage.getItem('anhad_theme') || this.getInitialThemeFromGlobal();
-      this.init();
-    }
-
-    init() {
-      this.applyTheme(this.currentTheme, false);
-      this.bindSettingsModal();
-    }
-
-    getInitialThemeFromGlobal() {
-      // Sync with global theme on first visit for consistent UX
-      const globalTheme = localStorage.getItem('anhad_theme');
-      if (globalTheme === 'dark') return 'dark';
-      return 'light';
-    }
-
-    getThemeColor(themeName) {
-      const colors = {
-        light: '#F2F2F7',
-        dark: '#0d0d12',
-        divineGold: '#1a1510',
-        sepia: '#f4ecd8'
-      };
-      return colors[themeName] || '#F2F2F7';
-    }
-
-    applyTheme(themeName, save = true) {
-      const theme = this.themes[themeName];
-      if (!theme) return;
-
-      Object.entries(theme).forEach(([prop, value]) => {
-        document.documentElement.style.setProperty(prop, value);
-      });
-
-      // Update html data-theme attribute for CSS targeting
-      document.documentElement.setAttribute('data-theme', themeName);
-
-      // Update meta theme-color for mobile status bar
-      const metaTheme = document.getElementById('themeColorMeta');
-      if (metaTheme) {
-        metaTheme.content = this.getThemeColor(themeName);
-      }
-
-      if (save) {
-        localStorage.setItem('anhad_theme', themeName);
-      }
-      this.currentTheme = themeName;
-      this.updateActiveThemeButton();
-    }
-
-    bindSettingsModal() {
-      // Bind settings button
-      const btnSettings = qs('btnSettings');
-      if (btnSettings) {
-        btnSettings.addEventListener('click', () => this.openSettingsModal());
-      }
-
-      // Bind close button and backdrop
-      qs('settingsClose')?.addEventListener('click', () => this.closeSettingsModal());
-      qs('settingsBackdrop')?.addEventListener('click', () => this.closeSettingsModal());
-
-      // Bind theme options
-      const themeGrid = qs('themeGrid');
-      if (themeGrid) {
-        themeGrid.querySelectorAll('[data-theme]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            this.applyTheme(btn.dataset.theme);
-          });
-        });
-      }
-    }
-
-    openSettingsModal() {
-      const modal = qs('settingsModal');
-      const backdrop = qs('settingsBackdrop');
-      if (modal && backdrop) {
-        lockBodyScroll();
-        backdrop.classList.add('visible');
-        modal.classList.add('visible');
-        modal.setAttribute('aria-hidden', 'false');
-        backdrop.setAttribute('aria-hidden', 'false');
-        this.updateActiveThemeButton();
-      }
-    }
-
-    closeSettingsModal() {
-      const modal = qs('settingsModal');
-      const backdrop = qs('settingsBackdrop');
-      if (modal && backdrop) {
-        backdrop.classList.remove('visible');
-        modal.classList.remove('visible');
-        modal.setAttribute('aria-hidden', 'true');
-        backdrop.setAttribute('aria-hidden', 'true');
-        unlockBodyScroll();
-      }
-    }
-
-    updateActiveThemeButton() {
-      document.querySelectorAll('[data-theme]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.theme === this.currentTheme);
-      });
-    }
-  }
-
   // ═══ Body Scroll Lock — prevents page overscroll behind modals ═══
   let _scrollLockCount = 0;
   let _savedScrollY = 0;
@@ -231,12 +85,80 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    window.calendarTheme = new CalendarThemeEngine();
     bindUI();
+    bindThemeSettings();
     boot().catch(() => {
       render();
     });
   });
+
+  /**
+   * Bind theme settings modal to use global AnhadTheme API
+   * Replaces internal CalendarThemeEngine with unified theme system
+   */
+  function bindThemeSettings() {
+    // Bind settings button
+    const btnSettings = qs('btnSettings');
+    if (btnSettings) {
+      btnSettings.addEventListener('click', () => openSettingsModal());
+    }
+
+    // Bind close button and backdrop
+    qs('settingsClose')?.addEventListener('click', () => closeSettingsModal());
+    qs('settingsBackdrop')?.addEventListener('click', () => closeSettingsModal());
+
+    // Bind theme options to use global AnhadTheme.set()
+    const themeGrid = qs('themeGrid');
+    if (themeGrid) {
+      themeGrid.querySelectorAll('[data-theme]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (window.AnhadTheme) {
+            window.AnhadTheme.set(btn.dataset.theme);
+          }
+        });
+      });
+    }
+
+    // Listen for theme changes to update active button state
+    document.addEventListener('anhad-theme-change', () => {
+      updateActiveThemeButton();
+    });
+
+    // Set initial active state
+    updateActiveThemeButton();
+  }
+
+  function openSettingsModal() {
+    const modal = qs('settingsModal');
+    const backdrop = qs('settingsBackdrop');
+    if (modal && backdrop) {
+      lockBodyScroll();
+      backdrop.classList.add('visible');
+      modal.classList.add('visible');
+      modal.setAttribute('aria-hidden', 'false');
+      backdrop.setAttribute('aria-hidden', 'false');
+      updateActiveThemeButton();
+    }
+  }
+
+  function closeSettingsModal() {
+    const modal = qs('settingsModal');
+    const backdrop = qs('settingsBackdrop');
+    if (modal && backdrop) {
+      backdrop.classList.remove('visible');
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+      backdrop.setAttribute('aria-hidden', 'true');
+      unlockBodyScroll();
+    }
+  }
+
+  function updateActiveThemeButton() {
+    const currentTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'light';
+    document.querySelectorAll('[data-theme]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+    });
+  }
 
   function qs(id) {
     return document.getElementById(id);

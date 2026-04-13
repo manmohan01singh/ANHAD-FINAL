@@ -1676,3 +1676,41 @@ html.dark-mode .day-detail-modal,
         will-change: auto;
     }
 }
+
+/* ─── REMOVE PUSH ANIMATION DELAY AND SCALE ─── */
+button, .card, .mala-center-btn, .present-btn, .header-btn, .time-period-tabs, .period-tab {
+    transition: transform 0s, background 0.1s, box-shadow 0.1s !important;
+}
+
+button:active, 
+.card:active, 
+.header-btn:active, 
+.present-btn:active, 
+.complete-all-btn:active, 
+.add-bani-btn:active, 
+.mala-action-btn:active, 
+.mala-center-btn:active,
+.tab-item:active {
+    transform: none !important;
+}
+
+/* Maintain translateY for elements that explicitly translate on hover/active, but without the scale */
+.card:active {
+    transform: translateY(2px) !important;
+}
+
+/* ─── REMOVE CLAYMORPHISM FROM STAT BUTTON ─── */
+#statsBtn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: var(--text-primary) !important;
+}
+
+html.dark-mode #statsBtn,
+[data-theme="dark"] #statsBtn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    color: var(--text-primary) !important;
+}

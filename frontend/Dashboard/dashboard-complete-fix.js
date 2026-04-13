@@ -234,15 +234,29 @@
         }, 500);
     }
 
-    // Auto-run on load
+    // Defer heavy sync operations to not block page load
+    function deferredInit() {
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                runCompleteFix();
+            }, { timeout: 2000 });
+        } else {
+            // Fallback for Safari
+            setTimeout(() => {
+                runCompleteFix();
+            }, 300);
+        }
+    }
+
+    // Auto-run on load (deferred)
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', runCompleteFix);
+        document.addEventListener('DOMContentLoaded', deferredInit);
     } else {
-        runCompleteFix();
+        deferredInit();
     }
 
     // Expose for manual use
     window.runCompleteDashboardFix = runCompleteFix;
     
-    console.log('💡 You can also run: window.runCompleteDashboardFix()');
+    console.log('💡 Dashboard fix loaded (deferred). Run manually: window.runCompleteDashboardFix()');
 })();

@@ -1327,7 +1327,7 @@ class UIController extends EventEmitter {
             'notesConfirmOverlay', 'confirmSaveBtn', 'confirmDiscardBtn', 'confirmCancelBtn',
             'notesToast', 'notesToastMessage',
             // Shabad
-            'randomShabadCard', 'shabadOverlay', 'shabadClose',
+            'shabadVicharCard', 'shabadOverlay', 'shabadClose',
             'shabadContainer', 'shabadLoading', 'shabadContent', 'shabadError',
             'savedShabadsModal', 'savedShabadsList', 'savedShabadsClose', 'shabadMenuBtn',
             'shabadAngNumber', 'shabadGurmukhi',
@@ -1824,9 +1824,9 @@ class UIController extends EventEmitter {
         // RANDOM SHABAD MODAL
         // ═══════════════════════════════════════════════════════════════
 
-        this.addClickHandler('randomShabadCard', () => {
-            console.log('[UI] ✅ Random Shabad card clicked');
-            this.openShabadModal();
+        this.addClickHandler('shabadVicharCard', () => {
+            console.log('[UI] ✅ Shabad Vichar card clicked');
+            window.location.href = 'ShabadVichar/shabad-vichar.html';
         });
 
         this.addClickHandler('shabadClose', () => this.closeShabadModal());

@@ -322,10 +322,10 @@ body {
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 .shabad-meta {
-    position: fixed;
-    top: calc(56px + var(--safe-top));
-    left: 0;
-    right: 0;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
     z-index: 90;
     display: flex;
     align-items: center;
@@ -375,7 +375,7 @@ body {
 .shabad-content {
     position: relative;
     z-index: 1;
-    padding-top: calc(56px + var(--safe-top) + 60px + 20px);
+    padding-top: 20px;
     padding-bottom: calc(80px + var(--safe-bottom));
     padding-left: 16px;
     padding-right: 16px;
@@ -427,71 +427,65 @@ body {
     }
 }
 
-/* Shabad Lines */
+/* Shabad Lines - iOS Notes Style */
 .shabad-lines {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 0;
 }
 
 .shabad-line {
-    padding: 16px;
-    border-radius: var(--radius);
+    padding: 24px 0;
     text-align: center;
     transition: all 0.3s ease;
-    background: var(--surface-solid);
-    border: 1px solid var(--border);
-    /* Claymorphism */
-    box-shadow: var(--clay-outer-sm);
-}
-
-/* Dark mode: use solid bg to block orb blur, lighter border for depth */
-[data-theme="dark"] .shabad-line {
-    background: var(--bg-soft);
-    border-color: rgba(255, 255, 255, 0.06);
+    /* iOS Notes style - no box, just line separator */
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .shabad-line:hover {
-    box-shadow: var(--clay-inner-sm), 0 4px 16px var(--shadow);
+    background: var(--accent-light);
+    transform: translateX(4px);
 }
 
-/* Highlighted Line */
+/* Dark mode: adjust border for dark theme */
+[data-theme="dark"] .shabad-line {
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* iOS NOTES STYLE SEARCH HIGHLIGHT */
+.search-highlight {
+    background: rgba(255, 214, 10, 0.3);
+    border-radius: 3px;
+    padding: 0 2px;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .search-highlight {
+    background: rgba(255, 214, 10, 0.25);
+}
+
+/* Highlighted Line - Subtle left accent only, NO full background */
 .shabad-line.highlighted {
-    background: var(--highlight);
-    border: 2px solid var(--highlight-border);
-    box-shadow: 0 8px 32px rgba(184, 134, 11, 0.2);
-    animation: highlightPulse 2s ease-in-out infinite;
+    background: transparent;
+    border: none;
+    border-left: 4px solid var(--gold);
+    padding-left: 16px;
+    box-shadow: none;
 }
 
 [data-theme="dark"] .shabad-line.highlighted {
-    background: rgba(255, 214, 10, 0.15);
-    box-shadow: 0 8px 32px rgba(255, 214, 10, 0.15);
-    animation: highlightPulseDark 2s ease-in-out infinite;
-}
-
-@keyframes highlightPulse {
-
-    0%,
-    100% {
-        box-shadow: 0 8px 32px rgba(184, 134, 11, 0.2);
-    }
-
-    50% {
-        box-shadow: 0 8px 48px rgba(184, 134, 11, 0.35);
-    }
-}
-
-@keyframes highlightPulseDark {
-    0%, 100% {
-        box-shadow: 0 8px 32px rgba(255, 214, 10, 0.15);
-    }
-    50% {
-        box-shadow: 0 8px 48px rgba(255, 214, 10, 0.25);
-    }
+    background: transparent;
+    border-left: 4px solid var(--gold);
+    box-shadow: none;
 }
 
 .shabad-line.highlighted .gurmukhi {
-    color: var(--gold);
+    color: var(--text);
 }
 
 /* Gurmukhi Text */

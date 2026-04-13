@@ -618,15 +618,16 @@ body {
     animation-delay: 0.25s;
 }
 
-/* Gurmukhi Text */
+/* Gurmukhi Text - MFJashan as default */
 .verse-gurmukhi {
-    font-family: var(--font-gurmukhi);
+    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif;
     font-size: var(--gurmukhi-size);
-    font-weight: var(--font-weight);
+    font-weight: normal;
     line-height: var(--line-spacing);
     color: var(--text-primary);
     margin-bottom: 8px;
     transition: font-family 0.3s, font-size 0.3s;
+    letter-spacing: 0.5px;
 }
 
 /* Font Classes - For handwritten fonts */

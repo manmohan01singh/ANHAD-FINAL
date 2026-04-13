@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.8.0';
+const CACHE_VERSION = 'anhad-v3.9.2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -23,13 +23,27 @@ const STATIC_FILES = [
   '/style.css',
   '/script.js',
   '/manifest.json',
+  '/version.json',
   '/pwa-register.js',
   '/enhanced-functionality.js',
   '/js/audio-core.js',
   '/lib/global-alarm-system.js',
 
-  // Assets
-  // Removed missing SVG files: favicon.svg, khanda-authentic.svg
+  // Assets - Icons (CRITICAL: All manifest icons must be listed for cache bust)
+  '/assets/icons/icon-72x72.png',
+  '/assets/icons/icon-152x152.png',
+  '/assets/icons/icon-192x192.png',
+  '/assets/icons/icon-512x512.png',
+  '/assets/icons/icon-1024x1024.png',
+  '/assets/app-logo-96.png',
+  '/assets/app-logo-128.png',
+  '/assets/app-logo-144.png',
+  '/assets/app-logo-384.png',
+  '/assets/pwa-icon-192.png',
+  '/assets/pwa-icon-512.png',
+  '/assets/apple-touch-icon.png',
+  '/assets/favicon-16x16.png',
+  '/assets/favicon-32x32.png',
 
   // Audio files for alarms
   '/Audio/audio1.mp3',
@@ -781,8 +795,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || 'Time for your spiritual practice',
-    icon: '/assets/favicon.svg',
-    badge: '/assets/favicon.svg',
+    icon: '/assets/icons/icon-192x192.png',
+    badge: '/assets/icons/icon-72x72.png',
     vibrate: [200, 100, 200],
     tag: data.tag || 'gurbani-reminder',
     renotify: true,
@@ -1030,8 +1044,8 @@ async function triggerAlarm(alarm) {
   try {
     await self.registration.showNotification(title, {
       body,
-      icon: '/assets/alarm-icon.png',
-      badge: '/assets/badge.png',
+      icon: '/assets/icons/icon-192x192.png',
+      badge: '/assets/icons/icon-72x72.png',
       tag: `alarm-${alarm.id}`,
       requireInteraction: true,
       renotify: true,

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const NAV_PATHS = {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
-    randomShabadCard: 'RandomShabad/random-shabad.html',
+    shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
     nitnemCard: 'nitnem/indexbani.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',

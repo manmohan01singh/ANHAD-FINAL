@@ -569,11 +569,7 @@
   }
   
   .hero-card__image-wrapper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
-    pointer-events: none;
+    display: none !important;
   }
   
   .hero-card__image {
@@ -647,10 +643,7 @@
   }
   
   .hero-card__overlay {
-    background: linear-gradient(180deg, 
-      transparent 0%, 
-      rgba(0,0,0,0.4) 50%,
-      rgba(0,0,0,0.7) 100%) !important;
+    background: transparent !important;
   }
   
   .hero-card__play-btn {
@@ -681,12 +674,14 @@
   }
   
   .greeting__gurbani {
-    font-size: 1.875rem;
-    color: #B47A1F !important;
-    font-weight: 500;
+    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
+    font-size: 2rem;
+    color: #D4943A !important;
+    font-weight: normal;
     max-width: 700px;
     margin: 0 auto 16px;
-    line-height: 1.6;
+    line-height: 1.5;
+    letter-spacing: 1px;
   }
   
   .greeting__translation {
@@ -923,7 +918,7 @@
   }
   
   /* ═════════════════════════════════════════════════════════════════════════════
-     EVENT CARD — LIGHT MODE (Default)
+     EVENT CARD — EXTREME PILLOW CLAYMORPHISM (Desktop)
      ═════════════════════════════════════════════════════════════════════════════ */
   .event-card {
     clear: both !important;
@@ -931,20 +926,54 @@
     max-width: 100%;
     width: 100%;
     margin: 32px 0 48px 0;
-    border-radius: 20px;
+    border-radius: 32px !important;
     padding: 32px !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
-    transition: all 0.2s ease;
+    background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
+    border: 2px solid rgba(212, 148, 58, 0.15) !important;
+    box-shadow:
+      24px 24px 80px rgba(0, 0, 0, 0.12),
+      -12px -12px 50px rgba(255, 255, 255, 1),
+      0 0 60px rgba(212, 148, 58, 0.15),
+      inset 8px 8px 20px rgba(255, 255, 255, 0.95),
+      inset 4px 4px 12px rgba(255, 255, 255, 0.8),
+      inset -8px -8px 20px rgba(212, 148, 58, 0.12),
+      inset -4px -4px 12px rgba(139, 90, 43, 0.06),
+      0 0 0 2px rgba(255, 255, 255, 0.6),
+      0 0 0 4px rgba(212, 148, 58, 0.1) !important;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     position: relative;
     overflow: hidden;
   }
-  
+
+  /* Glossy highlight overlay for pillow effect */
+  .event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%);
+    border-radius: 30px 30px 0 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   .event-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
-    border-color: rgba(212, 148, 58, 0.2);
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow:
+      30px 30px 100px rgba(0, 0, 0, 0.15),
+      -15px -15px 60px rgba(255, 255, 255, 1),
+      0 0 80px rgba(212, 148, 58, 0.2),
+      inset 10px 10px 24px rgba(255, 255, 255, 0.98),
+      inset 5px 5px 15px rgba(255, 255, 255, 0.85),
+      inset -10px -10px 24px rgba(212, 148, 58, 0.15),
+      inset -5px -5px 15px rgba(139, 90, 43, 0.08),
+      0 0 0 2px rgba(255, 255, 255, 0.7),
+      0 0 0 5px rgba(212, 148, 58, 0.15) !important;
   }
   
   .event-card__title {

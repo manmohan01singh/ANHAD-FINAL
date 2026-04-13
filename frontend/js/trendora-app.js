@@ -67,7 +67,7 @@
     gurbaniRadio: 'GurbaniRadio/gurbani-radio.html',
     gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
-    randomShabad: 'RandomShabad/random-shabad.html',
+    shabadVichar: 'ShabadVichar/shabad-vichar.html',
     nitnem: 'nitnem/indexbani.html',
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
@@ -361,6 +361,7 @@
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         const events = (data.years['2026'] || [])
+          .filter(e => !e.type?.toLowerCase().includes('dastar') && !e.name_en?.toLowerCase().includes('dastar'))
           .map(e => ({
             name: e.name_en,
             id: e.id,
@@ -758,6 +759,9 @@
 
       // Display first event
       updateEventDisplay(events[0]);
+      
+      // Apply progressive decoration based on days until event (5-day buildup)
+      this._applyProgressiveDecoration(events[0]);
 
       // ═══════════════════════════════════════════════════════════════════
       // GURPURAB SPECIAL MODE — Activate divine visual effects
@@ -819,6 +823,30 @@
       }
     },
 
+    _applyProgressiveDecoration(event) {
+      const card = document.getElementById('eventCard');
+      const container = document.getElementById('gurpurabContainer');
+      if (!card || !event) return;
+      
+      const daysLeft = event.daysLeft || 0;
+      const isToday = event.isToday || daysLeft === 0;
+      
+      // Remove existing decoration classes
+      card.classList.remove('gurpurab-decor-day-5', 'gurpurab-decor-day-4', 'gurpurab-decor-day-3', 'gurpurab-decor-day-2', 'gurpurab-decor-day-1', 'gurpurab-decor-today');
+      
+      // Apply progressive decoration based on days remaining
+      if (isToday) {
+        card.classList.add('gurpurab-decor-today');
+        if (container) container.classList.add('gurpurab-mode--celebration');
+      } else if (daysLeft <= 5) {
+        card.classList.add(`gurpurab-decor-day-${daysLeft}`);
+        // Show container for 3+ days
+        if (daysLeft <= 3 && container) {
+          container.classList.add('gurpurab-mode--celebration');
+        }
+      }
+    },
+
     _updateGuruImage(event) {
       // ── Guru Image Mapping ──
       // New guruimages folder with updated filenames (jpeg format)
@@ -870,8 +898,8 @@
             'sggs': 'Sri Guru Granth Sahib Ji',
             'guru-granth': 'Sri Guru Granth Sahib Ji',
             'sahibzad': 'Chaar Sahib Jizade',
-            'vaisakhi': 'Khalsa Panth',
-            'khalsa': 'Khalsa Panth',
+            'vaisakhi': 'DHAN GURU GOBIND SINGH SAHIB JI',
+            'khalsa': 'DHAN GURU GOBIND SINGH SAHIB JI',
             'bandi-chhor': 'Sri Guru Hargobind Ji',
             'miri-piri': 'Sri Guru Hargobind Ji',
           };
@@ -1597,7 +1625,7 @@
       // Quick access cards
       Navigation.bindCard('nitnemTrackerCard', NAV_PATHS.nitnemTracker);
       Navigation.bindCard('naamCard', NAV_PATHS.naamAbhyas);
-      Navigation.bindCard('shabadCard', NAV_PATHS.randomShabad);
+      Navigation.bindCard('shabadVicharCard', NAV_PATHS.shabadVichar);
       Navigation.bindCard('searchCard', NAV_PATHS.gurbaniKhoj);
       Navigation.bindCard('eventCard', NAV_PATHS.calendar);
 
@@ -1637,6 +1665,56 @@
     document.addEventListener('DOMContentLoaded', () => App.init());
   } else {
     App.init();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DESKTOP: Remove hero card dark overlays
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (window.innerWidth >= 1024) {
+    const removeOverlays = () => {
+      // Inject CSS
+      const style = document.createElement('style');
+      style.id = 'hero-overlay-remover';
+      style.textContent = `
+        .hero-card__image-wrapper::before,
+        .hero-card__image-wrapper::after {
+          display: none !important;
+          content: none !important;
+          background: none !important;
+          opacity: 0 !important;
+        }
+        .hero-card__image {
+          mask-image: none !important;
+          -webkit-mask-image: none !important;
+          filter: none !important;
+        }
+        .hero-card__overlay {
+          background: transparent !important;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Directly modify elements
+      document.querySelectorAll('.hero-card__image-wrapper').forEach(el => {
+        el.style.cssText += '; position: relative; overflow: hidden; border-radius: 16px;';
+      });
+      document.querySelectorAll('.hero-card__image').forEach(el => {
+        el.style.cssText += '; mask-image: none; -webkit-mask-image: none; filter: none;';
+      });
+      document.querySelectorAll('.hero-card__overlay').forEach(el => {
+        el.style.cssText += '; background: transparent;';
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', removeOverlays);
+    } else {
+      removeOverlays();
+    }
+
+    // Also run after a short delay to catch any dynamically added elements
+    setTimeout(removeOverlays, 500);
+    setTimeout(removeOverlays, 1000);
   }
 
 })();

@@ -1334,3 +1334,27 @@
    ═══════════════════════════════════════════════ */
 .hero-card__image--dark { display: none; }
 .hero-card__image--light { display: block; }
+
+/* ═══════════════════════════════════════════════
+   DESKTOP: Clean image display without dark overlays
+   ═══════════════════════════════════════════════ */
+@media screen and (min-width: 1024px) {
+  .hero-card__image {
+    filter: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  .hero-card__overlay,
+  .hero-card__overlay--cinematic {
+    background: transparent !important;
+  }
+
+  .hero-card__image-wrapper::after,
+  .hero-card__image-wrapper::before {
+    display: none !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
