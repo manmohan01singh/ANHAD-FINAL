@@ -1093,7 +1093,8 @@
           box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         }
       }
-    </style>
+    }
+  </style>
 
 </head>
 
@@ -1493,6 +1494,8 @@
     <span class="pwa-update-lastcheck" id="pwaUpdateLastCheck">Never checked</span>
   </div>
 
+  </main>
+
   <!-- ════════════════════════════════════════════════════════════════════════
        MINI PLAYER — Persistent Floating Bar
   ════════════════════════════════════════════════════════════════════════ -->
@@ -1601,10 +1604,12 @@
   <script src="lib/audio-preload.js"></script>
   <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
   <script src="lib/audio-coordinator.js"></script>
-  <script src="lib/persistent-audio.js"></script>
-  <!-- CRITICAL: Smooth Navigation - View Transitions for persistent mini player -->
+  
+  <!-- Truly Independent Overlay Player (App Shell Pattern) -->
+  <script src="lib/overlay-player.js"></script>
+  
+  <!-- CRITICAL: Smooth Navigation - AJAX Content Swapping (App Shell Engine) -->
   <script src="lib/smooth-navigation.js"></script>
-  <script src="lib/global-mini-player.js"></script>
   
   <!-- Critical: Core UI logic -->
   <script src="js/trendora-app.js" defer></script>
