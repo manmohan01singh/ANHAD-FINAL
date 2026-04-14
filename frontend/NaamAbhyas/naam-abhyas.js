@@ -103,30 +103,31 @@ class NaamAbhyasThemeEngine {
         const htmlEl = document.documentElement;
         document.body.classList.remove('theme-light', 'theme-dark');
 
-        // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
-        let actualTheme = theme;
-        if (theme === 'system') {
-            const stored = localStorage.getItem('anhad_theme');
-            if (stored && stored !== 'system') {
-                actualTheme = stored;
-            } else {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                actualTheme = prefersDark ? 'dark' : 'light';
-            }
-        }
-
-        // Apply classes and attributes
-        document.body.classList.add(`theme-${actualTheme}`);
-        htmlEl.setAttribute('data-theme', actualTheme);
-        
-        // Also apply the dark/light classes that the global theme system uses
-        if (actualTheme === 'dark') {
-            htmlEl.classList.add('dark', 'dark-mode');
-            htmlEl.style.colorScheme = 'dark';
+    // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
+    let actualTheme = theme;
+    if (theme === 'system') {
+        const stored = localStorage.getItem('anhad_theme');
+        if (stored && stored !== 'system') {
+            actualTheme = stored;
         } else {
-            htmlEl.classList.remove('dark', 'dark-mode');
-            htmlEl.style.colorScheme = 'light';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            actualTheme = prefersDark ? 'dark' : 'light';
         }
+    }
+
+    // Apply classes and attributes
+    document.body.classList.add(`theme-${actualTheme}`);
+    htmlEl.setAttribute('data-theme', actualTheme);
+    
+    // Also apply the dark/light classes that the global theme system uses
+    if (actualTheme === 'dark') {
+        htmlEl.classList.add('dark', 'dark-mode');
+        htmlEl.style.colorScheme = 'dark';
+    } else if (theme !== 'system' || actualTheme !== 'dark') {
+        // Only remove if we are explicitly setting light or if system is light
+        htmlEl.classList.remove('dark', 'dark-mode');
+        htmlEl.style.colorScheme = 'light';
+    }
 
         this.updateActiveButton(theme);
         // Save to global key so other pages stay in sync
@@ -301,7 +302,13 @@ class NaamAbhyas {
                 console.error('❌ UI update failed:', e);
             }
 
-            // Hide loading screen ASAP (under 800ms target)
+            // Bind event listeners IMMEDIATELY (Critical Phase 1)
+            try {
+                this.bindEvents();
+            } catch (e) {
+                console.error('❌ Event binding failed:', e);
+            }
+
             this.hideLoadingScreen();
             this.isInitialized = true;
             console.log('✅ Naam Abhyas core initialized');
@@ -318,17 +325,19 @@ class NaamAbhyas {
                     console.error('❌ Component initialization failed:', e);
                 }
 
-                // Bind event listeners
-                try {
-                    this.bindEventListeners();
-                } catch (e) {
-                    console.error('❌ Event binding failed:', e);
-                }
+
 
                 // Initialize engines
                 try {
                     this.scheduleManager = new ScheduleManager(this);
-                    this.guaranteedAlarmSystem = new GuaranteedAlarmSystem(this);
+                    
+                    // GuaranteedAlarmSystem is an object, not a constructor
+                    if (window.GuaranteedAlarmSystem) {
+                        this.guaranteedAlarmSystem = window.GuaranteedAlarmSystem;
+                        if (typeof this.guaranteedAlarmSystem.init === 'function') {
+                            this.guaranteedAlarmSystem.init();
+                        }
+                    }
                 } catch (e) {
                     console.error('❌ Engine initialization failed:', e);
                 }
@@ -341,7 +350,7 @@ class NaamAbhyas {
                 }
 
                 // Check for action in URL
-                this.checkUrlAction();
+                this.checkAutoStart();
 
                 console.log('✅ Deferred initialization complete');
             };
@@ -1274,9 +1283,12 @@ class NaamAbhyas {
        THEME MANAGEMENT
     ═════════════════════════════════════════════════════════════════════════ */
 
-    applyTheme() {
+    applyTheme(themeName) {
+        const theme = themeName || this.config.theme || 'system';
+        document.documentElement.setAttribute('data-theme', theme);
+        
         if (this.themeEngine) {
-            this.themeEngine.applyTheme(this.config.theme || 'system');
+            this.themeEngine.applyTheme(theme);
         }
     }
 
@@ -2389,15 +2401,21 @@ class NaamAbhyas {
     }
 
     showSettingsModal() {
+        console.log('🛡️ NaamAbhyas: Opening settings modal...');
         const modal = document.getElementById('settingsModal');
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
             // Pause heavy background animations for performance
             const canvas = document.getElementById('cosmosCanvas');
             if (canvas) canvas.style.display = 'none';
             const starsField = document.getElementById('starsField');
             if (starsField) starsField.style.animationPlayState = 'paused';
+            
+            console.log('✅ Modal active state applied');
+        } else {
+            console.error('❌ Settings modal element not found!');
         }
     }
 
