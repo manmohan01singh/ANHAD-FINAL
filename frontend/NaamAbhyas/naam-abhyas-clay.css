@@ -79,22 +79,25 @@ html.dark-mode body,
     --clay-radius-inner: 20px;
 
     --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --clay-card-bg: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%);
+    --clay-card-shadow: 
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,1),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow));
 }
 
-html.dark-mode,
-[data-theme="dark"],
-[data-theme="saffron"],
-[data-theme="gradient"],
-[data-theme="gold"] {
-    --clay-bg-primary: #1C1C1E;
-    --clay-bg-secondary: #2C2C2E;
+html.dark-mode, [data-theme="dark"] {
     --clay-page-bg: #1A1A1C;
     --clay-shadow-deep: 0.25;
-    --clay-shadow-mid: 0.18;
-    --clay-shadow-soft: 0.15;
     --clay-highlight: 0.08;
-    --clay-border-glow: 0.15;
     --clay-inset-shadow: 0.25;
+    --clay-card-bg: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%);
+    --clay-card-shadow:
+        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255,255,255,0.1),
+        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow));
 }
 
 /* ─── SECTION 2: PAGE BACKGROUND ─── */
@@ -108,6 +111,14 @@ body {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-bottom: none !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important; /* Extremely high to stay above all cards */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 16px !important;
+    pointer-events: auto !important;
 }
 
 .hdr-btn {
@@ -183,37 +194,18 @@ html:not(.dark-mode) .hdr-btn svg,
 .stats-card,
 .achievements-card {
     position: relative !important;
-    background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
+    background: var(--clay-card-bg) !important;
     border-radius: var(--clay-radius-card) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow:
-        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255,255,255,1),
-        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+    box-shadow: var(--clay-card-shadow) !important;
     transition: all 0.4s var(--clay-spring) !important;
     overflow: visible !important;
     margin-bottom: 24px !important;
 }
 
-html.dark-mode .glass-card, [data-theme="dark"] .glass-card, [data-theme="saffron"] .glass-card, [data-theme="gold"] .glass-card,
-html.dark-mode .quick-actions, [data-theme="dark"] .quick-actions, [data-theme="saffron"] .quick-actions, [data-theme="gold"] .quick-actions,
-html.dark-mode .stats-card, [data-theme="dark"] .stats-card, [data-theme="saffron"] .stats-card, [data-theme="gold"] .stats-card,
-html.dark-mode .achievements-card, [data-theme="dark"] .achievements-card, [data-theme="saffron"] .achievements-card, [data-theme="gold"] .achievements-card,
-html.dark-mode .next-card, [data-theme="dark"] .next-card, [data-theme="saffron"] .next-card, [data-theme="gold"] .next-card,
-html.dark-mode .toggle-card, [data-theme="dark"] .toggle-card, [data-theme="saffron"] .toggle-card, [data-theme="gold"] .toggle-card,
-html.dark-mode .timeline-card, [data-theme="dark"] .timeline-card, [data-theme="saffron"] .timeline-card, [data-theme="gold"] .timeline-card,
-html.dark-mode .wisdom-card, [data-theme="dark"] .wisdom-card, [data-theme="saffron"] .wisdom-card, [data-theme="gold"] .wisdom-card {
-    background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
-    border-color: rgba(255,255,255,0.08) !important;
-    box-shadow:
-        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255,255,255,0.08),
-        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
-}
+
 
 /* Preserve next-card gradient in dark mode - override the override */
 html.dark-mode .next-card, [data-theme="dark"] .next-card, [data-theme="saffron"] .next-card, [data-theme="gold"] .next-card {
@@ -579,9 +571,14 @@ html.dark-mode .toast, [data-theme="dark"] .toast, [data-theme="saffron"] .toast
         inset -4px -4px 16px rgba(0,0,0,0.03) !important;
 }
 
-html.dark-mode .settings-modal-sheet, [data-theme="dark"] .settings-modal-sheet, [data-theme="saffron"] .settings-modal-sheet, [data-theme="gold"] .settings-modal-sheet,
-html.dark-mode .alert-content, [data-theme="dark"] .alert-content, [data-theme="saffron"] .alert-content, [data-theme="gold"] .alert-content,
-html.dark-mode .completion-content, [data-theme="dark"] .completion-content, [data-theme="saffron"] .completion-content, [data-theme="gold"] .completion-content,
+html.dark-mode .settings-modal-sheet, 
+[data-theme="dark"] .settings-modal-sheet, 
+body.theme-dark .settings-modal-sheet {
+    background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
+    box-shadow: 
+        0 -8px 32px rgba(0,0,0,0.6) !important,
+        inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}html.dark-mode .completion-content, [data-theme="dark"] .completion-content, [data-theme="saffron"] .completion-content, [data-theme="gold"] .completion-content,
 html.dark-mode .welcome-content, [data-theme="dark"] .welcome-content, [data-theme="saffron"] .welcome-content, [data-theme="gold"] .welcome-content {
     background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
     border-color: rgba(255,255,255,0.08) !important;
