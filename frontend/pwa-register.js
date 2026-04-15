@@ -517,10 +517,6 @@ class PWAManager {
   }
 
   /**
-   * Apply update immediately (skip waiting and reload)
-   */
-  applyUpdateImmediately() {
-=======
    * Apply update silently without user interaction
    */
   applyUpdateSilently() {
@@ -533,7 +529,6 @@ class PWAManager {
     }
     
     // Tell the waiting service worker to skip waiting and become active
->>>>>>> 05bb64a (Implement automatic PWA updates with cache clearing)
     if (this.registration?.waiting) {
       console.log('[PWA] Applying update now...');
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
