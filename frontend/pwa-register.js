@@ -138,35 +138,35 @@ class PWAManager {
       }
 
       // ═══════════════════════════════════════════════════════════════════════
-      // SILENT AUTO-UPDATE MANAGEMENT
+      // AUTOMATIC UPDATE MANAGEMENT
       // ═══════════════════════════════════════════════════════════════════════
 
-      // Check for pending updates from previous session
-      this.applyPendingUpdateIfSafe();
-
-      // If SW is already waiting, handle it silently
+      // Check for waiting worker on initial load
       if (this.registration.waiting) {
-        this.handleSilentUpdate();
+        console.log('[PWA] Update detected on load - applying automatically');
+        this.applyUpdateSilently();
       }
 
-      // Check for updates every 15 minutes (faster detection)
+      // Check for updates every hour
       this.checkForUpdates();
       setInterval(() => this.checkForUpdates(), 15 * 60 * 1000);
 
-      // Listen for new updates
+      // Listen for new service worker installation
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration.installing;
+        console.log('[PWA] New service worker found');
+        
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('[PWA] New version downloaded, handling silently...');
-            this.handleSilentUpdate();
+            console.log('[PWA] New service worker installed - applying update automatically');
+            this.applyUpdateSilently();
           }
         });
       });
 
-      // Handle controller change (update applied)
+      // Handle controller change (when new SW takes control)
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[PWA] New service worker activated, reloading...');
+        console.log('[PWA] Service worker controller changed - reloading page');
         window.location.reload();
       });
 
@@ -475,112 +475,6 @@ class PWAManager {
   }
 
   /**
-   * ═══════════════════════════════════════════════════════════════════════════════
-   * SILENT AUTO-UPDATE METHODS
-   * ═══════════════════════════════════════════════════════════════════════════════
-   */
-
-  /**
-   * Check if current page is "sensitive" - should not auto-reload during use
-   * @returns {boolean}
-   */
-  isSensitivePage() {
-    const path = window.location.pathname.toLowerCase();
-    const hash = window.location.hash.toLowerCase();
-    
-    // Nitnem/reading pages where auto-reload would be disruptive
-    const sensitivePatterns = [
-      '/nitnem/reader.html',
-      '/nitnem/japji-sahib.html',
-      '/nitnem/jaap-sahib.html',
-      '/nitnem/anand-sahib.html',
-      '/nitnem/rehras-sahib.html',
-      '/nitnem/sohila-sahib.html',
-      '/nitnem/chaupai-sahib.html',
-      '/nitnem/tav-prasad-savaiye.html',
-      '/sehajpaath/reader.html',
-      '/sehaj-paath/reader.html',
-      '/gurbanikhoj/shabad-reader.html',
-      '/hukamnama/daily-hukamnama.html'
-    ];
-    
-    // Check if current path matches any sensitive pattern
-    const isSensitivePath = sensitivePatterns.some(pattern => path.includes(pattern));
-    
-    // Also check for active audio playback
-    const isAudioPlaying = this.isAudioCurrentlyPlaying();
-    
-    return isSensitivePath || isAudioPlaying;
-  }
-
-  /**
-   * Check if Gurbani audio is currently playing
-   * @returns {boolean}
-   */
-  isAudioCurrentlyPlaying() {
-    // Check audio-core if available
-    if (window.AudioCore && typeof window.AudioCore.isPlaying === 'function') {
-      return window.AudioCore.isPlaying();
-    }
-    
-    // Check for any playing audio elements
-    const audioElements = document.querySelectorAll('audio');
-    for (const audio of audioElements) {
-      if (!audio.paused && !audio.ended && audio.currentTime > 0) {
-        return true;
-      }
-    }
-    
-    // Check for media session playback state
-    if (navigator.mediaSession && navigator.mediaSession.playbackState === 'playing') {
-      return true;
-    }
-    
-    return false;
-  }
-
-  /**
-   * Handle update silently - queue if sensitive, apply immediately if safe
-   */
-  handleSilentUpdate() {
-    if (!this.registration?.waiting) return;
-    
-    this.updateAvailable = true;
-    
-    if (this.isSensitivePage()) {
-      // On sensitive page - queue the update for later
-      console.log('[PWA] Update available but on sensitive page - queued for later');
-      this.queueUpdate();
-    } else {
-      // Safe to apply immediately
-      console.log('[PWA] Safe to update - applying immediately');
-      this.applyUpdateImmediately();
-    }
-  }
-
-  /**
-   * Queue update for later application (when user leaves sensitive page)
-   */
-  queueUpdate() {
-    try {
-      localStorage.setItem(this.pendingUpdateKey, 'true');
-      
-      // Listen for page navigation to apply update
-      this.setupNavigationListener();
-      
-      // Also listen for beforeunload to apply before user leaves
-      window.addEventListener('beforeunload', () => {
-        this.applyUpdateImmediately();
-      }, { once: true });
-      
-    } catch (e) {
-      console.error('[PWA] Failed to queue update:', e);
-    }
-  }
-
-  /**
-   * Check and apply pending update if now safe
-   */
   applyPendingUpdateIfSafe() {
     try {
       const hasPending = localStorage.getItem(this.pendingUpdateKey);
@@ -626,6 +520,20 @@ class PWAManager {
    * Apply update immediately (skip waiting and reload)
    */
   applyUpdateImmediately() {
+=======
+   * Apply update silently without user interaction
+   */
+  applyUpdateSilently() {
+    console.log('[PWA] Applying update silently');
+    
+    // Clear any existing update notification
+    const existingBanner = document.querySelector('.pwa-update-banner');
+    if (existingBanner) {
+      existingBanner.remove();
+    }
+    
+    // Tell the waiting service worker to skip waiting and become active
+>>>>>>> 05bb64a (Implement automatic PWA updates with cache clearing)
     if (this.registration?.waiting) {
       console.log('[PWA] Applying update now...');
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -633,20 +541,18 @@ class PWAManager {
   }
 
   /**
-   * Legacy method - replaced by silent update flow
-   * @deprecated Use handleSilentUpdate instead
+   * Show update notification (kept for backward compatibility but auto-applies)
    */
   showUpdateNotification() {
-    // Legacy: now handled silently by handleSilentUpdate
-    this.handleSilentUpdate();
+    console.log('[PWA] Update available - applying automatically');
+    this.applyUpdateSilently();
   }
 
   /**
-   * Legacy method - replaced by applyUpdateImmediately
-   * @deprecated Use applyUpdateImmediately instead
+   * Apply update (legacy method - now redirects to silent apply)
    */
   applyUpdate() {
-    this.applyUpdateImmediately();
+    this.applyUpdateSilently();
   }
 }
 
