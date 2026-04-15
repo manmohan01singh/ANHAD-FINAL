@@ -258,26 +258,43 @@ self.addEventListener('install', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ACTIVATE EVENT - Clean old caches and claim clients
+// ACTIVATE EVENT - Clean ALL caches and claim clients for automatic updates
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating - clearing all caches for fresh update...');
 
   event.waitUntil(
     caches.keys()
       .then(keys => {
-        return Promise.all(
-          keys
-            .filter(key => key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key !== DATA_CACHE)
-            .map(key => {
-              console.log('[SW] Deleting old cache:', key);
-              return caches.delete(key);
-            })
-        );
+        console.log(`[SW] Found ${keys.length} cache keys to process`);
+        
+        // Delete ALL caches including current ones to ensure fresh content
+        const deletionPromises = keys.map(key => {
+          console.log(`[SW] Deleting cache: ${key}`);
+          return caches.delete(key);
+        });
+        
+        return Promise.all(deletionPromises);
       })
       .then(() => {
-        console.log('[SW] Claiming clients');
+        console.log('[SW] All caches cleared, claiming clients');
         return self.clients.claim();
+      })
+      .then(() => {
+        console.log('[SW] Notifying all clients about update completion');
+        // Notify all clients that update is complete
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'SW_UPDATE_COMPLETE',
+              version: CACHE_VERSION,
+              timestamp: Date.now()
+            });
+          });
+        });
+      })
+      .catch(err => {
+        console.error('[SW] Activation failed:', err);
       })
   );
 });
@@ -375,7 +392,20 @@ async function networkFirst(request) {
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
+    console.log('[SW] SKIP_WAITING received - activating new service worker');
     self.skipWaiting();
+  }
+  
+  if (event.data?.type === 'FORCE_CACHE_CLEAR') {
+    console.log('[SW] FORCE_CACHE_CLEAR received - clearing all caches');
+    event.waitUntil(
+      caches.keys().then(keys => {
+        return Promise.all(keys.map(key => {
+          console.log(`[SW] Force deleting cache: ${key}`);
+          return caches.delete(key);
+        }));
+      })
+    );
   }
 
   if (event.data?.type === 'SCHEDULE_NOTIFICATION' && event.data.payload) {
