@@ -31,7 +31,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- SEO -->
-    <title>??? ?? ???????? | Daily Hukamnama � ANHAD</title>
+    <title>ਪਰਮ ਆਦੇਸ | Daily Hukamnama | ANHAD</title>
     <meta name="description" content="Today's Hukamnama from Sri Darbar Sahib, Amritsar. Start your day with divine guidance from Guru Granth Sahib Ji.">
     
     <!-- Favicons -->
@@ -101,7 +101,7 @@
                 </a>
                 
                 <div class="header-center">
-                    <h1 class="header-title">????????</h1>
+                    <h1 class="header-title">ਹੁਕਮਨਾਮਾ</h1>
                     <p class="header-subtitle" id="headerDate"></p>
                 </div>
                 
@@ -128,7 +128,7 @@
                 
                 <!-- Hero Section -->
                 <section class="hero">
-                    <div class="hero-symbol">?</div>
+                    <div class="hero-symbol">🙏</div>
                     
                     <div class="date-cards">
                         <div class="date-card">
@@ -136,8 +136,8 @@
                             <p class="date-value" id="englishDate">Loading...</p>
                         </div>
                         <div class="date-card">
-                            <p class="date-label">?????????</p>
-                            <p class="date-value gurmukhi" id="nanakshahiDate">�</p>
+                            <p class="date-label">ਨਾਨਕਸ਼ਾਹੀ ਮਿਤੀ</p>
+                            <p class="date-value gurmukhi" id="nanakshahiDate">�</p>
                         </div>
                     </div>
                     
@@ -167,15 +167,15 @@
                     <div class="hukamnama-meta" id="hukamnamaMeta">
                         <div class="meta-item">
                             <p class="meta-label">???</p>
-                            <p class="meta-value" id="metaAng">�</p>
+                            <p class="meta-value" id="metaAng">�</p>
                         </div>
                         <div class="meta-item">
                             <p class="meta-label">Raag</p>
-                            <p class="meta-value" id="metaRaag">�</p>
+                            <p class="meta-value" id="metaRaag">�</p>
                         </div>
                         <div class="meta-item">
                             <p class="meta-label">Writer</p>
-                            <p class="meta-value" id="metaWriter">�</p>
+                            <p class="meta-value" id="metaWriter">�</p>
                         </div>
                     </div>
                     
@@ -571,9 +571,9 @@
                 
                 return {
                     date: data.date,
-                    pageNo: shabad.shabadInfo?.pageNo || '�',
-                    raag: shabad.shabadInfo?.raag?.english || '�',
-                    writer: shabad.shabadInfo?.writer?.english || '�',
+                    pageNo: shabad.shabadInfo?.pageNo || '�',
+                    raag: shabad.shabadInfo?.raag?.english || '�',
+                    writer: shabad.shabadInfo?.writer?.english || '�',
                     source: shabad.shabadInfo?.source?.english || 'Sri Guru Granth Sahib Ji',
                     verses: shabad.verses.map(v => ({
                         gurmukhi: v.verse?.unicode || '',
@@ -631,11 +631,11 @@
                         const gurmukhiYear = Utils.toGurmukhiNumerals(nanakshahi.year);
                         DOM.nanakshahiDate.textContent = `${gurmukhiDay} ${nanakshahi.month} ${gurmukhiYear}`;
                     } else {
-                        DOM.nanakshahiDate.textContent = '�';
+                        DOM.nanakshahiDate.textContent = '�';
                     }
                 } catch (e) {
                     console.error('[Hukamnama] Error calculating Nanakshahi date:', e);
-                    DOM.nanakshahiDate.textContent = '�';
+                    DOM.nanakshahiDate.textContent = '�';
                 }
             },
             
@@ -761,7 +761,7 @@
                     
                     // Show offline fallback notice if using yesterday's
                     if (cached.offlineFallback) {
-                        UI.showToast('Showing cached Hukamnama � connect to internet for today\'s');
+                        UI.showToast('Showing cached Hukamnama � connect to internet for today\'s');
                     }
                     
                     // Still try to fetch fresh if online
@@ -831,7 +831,7 @@
                 try {
                     await navigator.share({
                         title: "Today's Hukamnama",
-                        text: text + '\n\n� Sri Guru Granth Sahib Ji',
+                        text: text + '\n\n� Sri Guru Granth Sahib Ji',
                         url: window.location.href
                     });
                 } catch (error) {
@@ -951,7 +951,7 @@
     window.addEventListener('load', () => {
         setTimeout(() => {
             const nanakshahiEl = document.getElementById('nanakshahiDate');
-            if (nanakshahiEl && nanakshahiEl.textContent === '�') {
+            if (nanakshahiEl && nanakshahiEl.textContent === '�') {
                 console.log('[Backup] Forcing Nanakshahi date update...');
                 try {
                     const today = new Date();
