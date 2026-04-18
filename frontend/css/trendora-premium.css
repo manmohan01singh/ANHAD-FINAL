@@ -728,7 +728,7 @@ body.dark-mode .deco-logo-home img {
 
 .greeting__content {
   display: grid;
-  grid-template-columns: 1fr 140px;
+  grid-template-columns: 1fr 160px; /* Matched to portrait size to prevent overflow */
   gap: 12px 16px;
   align-items: center;
 }
@@ -746,8 +746,11 @@ body.dark-mode .deco-logo-home img {
   min-height: 160px;
   aspect-ratio: 1 / 1;
   position: relative;
-  justify-self: end;
+  justify-self: center; /* Changed from end to center for perfect alignment */
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   /* Ambient glow behind the portrait */
   filter: drop-shadow(0 20px 40px rgba(212, 148, 58, 0.3))
           drop-shadow(0 0 60px rgba(255, 200, 100, 0.15));
