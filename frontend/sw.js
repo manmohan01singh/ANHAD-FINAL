@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v4.0.7';
+const CACHE_VERSION = 'anhad-v4.0.9';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -54,10 +54,8 @@ const STATIC_FILES = [
   '/Audio/audio6.mpeg',
 
   // CSS
-  '/css/ios-glass.css',
-  '/css/unified-glass-system.css',
-  '/css/anhad-install.css',
-  '/css/ios-liquid-glass.css',
+  '/css/nav-glass.css',
+  '/css/install-button.css',
   '/css/anhad-core.css',
   '/js/anhad-core.js',
   '/offline.html',
@@ -71,7 +69,6 @@ const STATIC_FILES = [
   '/lib/ios-android-notifications.js',
   '/lib/alarm-persistence.js',
   '/lib/keep-alive-worker.js',
-  '/lib/global-theme.js',
   '/lib/user-stats.js',
   '/lib/share-card.js',
   '/lib/smart-back.js',

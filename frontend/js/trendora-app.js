@@ -1365,7 +1365,10 @@
       
       if (!banner) return;
 
+      console.log('[PWA] Initializing InstallController...');
+
       if (this._isStandalone()) {
+        console.log('[PWA] App is already standalone, hiding banner');
         banner.style.display = 'none';
         return;
       }
@@ -1373,15 +1376,16 @@
       // Check for persistent dismissal (24h cooldown)
       const dismissedTime = Store.get(KEYS.INSTALL_DISMISSED);
       if (dismissedTime && (Date.now() - parseInt(dismissedTime)) < 86400000) {
+        console.log('[PWA] Banner dismissed recently, waiting for cooldown');
         banner.style.display = 'none';
         return;
       }
 
       // Capture native prompt (Android/Chrome)
       window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('[PWA] Native beforeinstallprompt event fired');
         e.preventDefault();
         this._deferredPrompt = e;
-        console.log('[PWA] Native install prompt available');
         this._showBanner();
       });
 
@@ -1394,7 +1398,10 @@
 
       // Bind actions
       if (installCta) {
-        installCta.onclick = () => this._triggerInstall();
+        installCta.onclick = () => {
+          console.log('[PWA] Install CTA clicked');
+          this._triggerInstall();
+        };
       }
 
       if (dismissBtn) {
@@ -1405,7 +1412,7 @@
         };
       }
 
-      // Fallback for iOS/Safari: show after delay if not dismissed
+      // Fallback for iOS/Safari: show after delay if not dismissed and no prompt yet
       setTimeout(() => {
         if (!this._isStandalone() && !this._deferredPrompt) {
           const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
@@ -1414,7 +1421,7 @@
             this._showBanner();
           }
         }
-      }, 3000);
+      }, 5000); // 5s delay for stability
     },
 
     _isStandalone() {
@@ -1429,10 +1436,15 @@
       const banner = document.getElementById('installBanner');
       if (!banner) return;
       
+      console.log('[PWA] Displaying install banner');
       banner.style.display = 'block';
+      // Force reflow
+      banner.offsetHeight;
+      
       requestAnimationFrame(() => {
-        banner.style.transform = 'translateY(0)';
+        banner.classList.add('install-banner--visible');
         banner.style.opacity = '1';
+        banner.style.transform = 'translateY(0)';
       });
     },
 
@@ -1440,29 +1452,35 @@
       const banner = document.getElementById('installBanner');
       if (!banner) return;
       
+      console.log('[PWA] Hiding install banner');
+      banner.classList.remove('install-banner--visible');
       banner.style.transform = 'translateY(100%)';
       banner.style.opacity = '0';
       setTimeout(() => {
-        banner.style.display = 'none';
+        if (!banner.classList.contains('install-banner--visible')) {
+          banner.style.display = 'none';
+        }
       }, 500);
     },
 
-    async _triggerInstall() {
+    _triggerInstall() {
       if (this._deferredPrompt) {
+        console.log('[PWA] Triggering native install prompt');
         this._deferredPrompt.prompt();
-        const { outcome } = await this._deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          Store.set(KEYS.PWA_INSTALLED, true);
+        this._deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('[PWA] User accepted install');
+            Store.set(KEYS.PWA_INSTALLED, true);
+          }
+          this._deferredPrompt = null;
           this._hideBanner();
-        }
-        this._deferredPrompt = null;
+        });
       } else {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const msg = isIOS 
-          ? "To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Scroll down and tap 'Add to Home Screen'\n3. Tap 'Add' to confirm"
-          : "Use your browser's menu to select 'Install App' or 'Add to Home Screen'.";
-        alert(msg);
+        // iOS or non-supported browser fallback
+        console.log('[PWA] Native prompt unavailable, showing manual instructions');
+        alert('To install ANHAD:\n\n1. Tap the Share button ⎙\n2. Select "Add to Home Screen" ⊞');
       }
+    }
     }
   };
 

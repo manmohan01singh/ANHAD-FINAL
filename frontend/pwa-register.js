@@ -110,15 +110,6 @@ class PWAManager {
       // PWA INSTALLATION DETECTION
       // ═══════════════════════════════════════════════════════════════════════
 
-      // Capture install prompt for later use
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        this.deferredPrompt = e;
-        console.log('📲 PWA install prompt captured');
-        // Dispatch event for UI components to show install button
-        window.dispatchEvent(new CustomEvent('pwaInstallAvailable', { detail: { prompt: e } }));
-      });
-
       // Handle successful installation
       window.addEventListener('appinstalled', () => {
         console.log('✅ PWA Installed - registering alarms and notifications');
