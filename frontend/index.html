@@ -161,6 +161,9 @@
     .event-card__guru-img-wrapper {
       width: 130px !important;
       height: 130px !important;
+      min-width: 130px !important;
+      min-height: 130px !important;
+      aspect-ratio: 1 / 1 !important;
       flex-shrink: 0 !important;
       margin-right: -5px !important;
     }
@@ -498,9 +501,11 @@
     }
     
     .event-card__guru-img {
-      width: 118px !important;
-      height: 118px !important;
+      width: 100% !important;
+      height: 100% !important;
+      aspect-ratio: 1 / 1 !important;
       object-fit: cover;
+      object-position: center 10%;
       border-radius: 50%;
       transition: opacity 0.3s ease, transform 0.3s ease;
       border: 2px solid rgba(255, 255, 255, 0.8);
@@ -1366,7 +1371,7 @@
           </div>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper">
-          <img class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="110" height="110" loading="eager" style="object-position: center 5%;">
+          <img class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="118" height="118" loading="eager">
         </div>
       </div>
     </article>
