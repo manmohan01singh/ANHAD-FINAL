@@ -42,3 +42,4 @@ build/
 out/
 .gemini/
 .kiro/
+backend/radio-state.json

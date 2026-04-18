@@ -324,21 +324,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ━━━ INSTALL BANNER ━━━
-  let deferredInstallPrompt = null;
-  const iosInstallBanner = document.getElementById('iosInstallBanner'), installBtn = document.getElementById('installBtn'), installDismiss = document.getElementById('installDismiss'), headerInstallBtn = document.getElementById('headerInstallBtn');
-  function isStandalone() { try { return window.matchMedia?.('(display-mode: standalone)')?.matches || navigator.standalone || localStorage.getItem('pwaInstalled') === 'true'; } catch (e) { return false; } }
-  function showInstallUI() { if (isStandalone()) return; headerInstallBtn?.classList.add('visible'); try { const d = localStorage.getItem('installBannerDismissed'); if (d && (Date.now() - parseInt(d)) < 86400000) return; } catch (e) {} iosInstallBanner?.classList.add('visible'); }
-  function hideInstallUI() { iosInstallBanner?.classList.remove('visible'); headerInstallBtn?.classList.remove('visible'); }
-  async function triggerInstall() {
-    if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); const { outcome } = await deferredInstallPrompt.userChoice; if (outcome === 'accepted') { try { localStorage.setItem('pwaInstalled', 'true'); } catch (e) {} hideInstallUI(); } deferredInstallPrompt = null; }
-    else { const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent); alert(isIOS ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm' : 'Use your browser\'s menu to install this app.'); }
-  }
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstallPrompt = e; setTimeout(showInstallUI, 1500); });
-  if (!isStandalone()) headerInstallBtn?.classList.add('visible');
-  installBtn?.addEventListener('click', triggerInstall);
-  headerInstallBtn?.addEventListener('click', triggerInstall);
-  installDismiss?.addEventListener('click', () => { try { localStorage.setItem('installBannerDismissed', Date.now().toString()); } catch (e) {} iosInstallBanner?.classList.remove('visible'); });
-  window.addEventListener('appinstalled', () => { try { localStorage.setItem('pwaInstalled', 'true'); } catch (e) {} hideInstallUI(); });
+  // Handled centrally in trendora-app.js (InstallController)
+  // to prevent ID conflicts and double-firing logic.
 
   // ━━━ RADIO MENU ━━━
   const radioMenu = document.getElementById('radioMenu'), radioMenuCancel = document.getElementById('radioMenuCancel'), gurbaniRadioCard = document.getElementById('gurbaniRadioCard');

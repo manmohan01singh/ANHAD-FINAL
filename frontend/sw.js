@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.9.4';
+const CACHE_VERSION = 'anhad-v4.0.9';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -54,10 +54,8 @@ const STATIC_FILES = [
   '/Audio/audio6.mpeg',
 
   // CSS
-  '/css/ios-glass.css',
-  '/css/unified-glass-system.css',
-  '/css/anhad-install.css',
-  '/css/ios-liquid-glass.css',
+  '/css/nav-glass.css',
+  '/css/install-button.css',
   '/css/anhad-core.css',
   '/js/anhad-core.js',
   '/offline.html',
@@ -71,7 +69,6 @@ const STATIC_FILES = [
   '/lib/ios-android-notifications.js',
   '/lib/alarm-persistence.js',
   '/lib/keep-alive-worker.js',
-  '/lib/global-theme.js',
   '/lib/user-stats.js',
   '/lib/share-card.js',
   '/lib/smart-back.js',
@@ -248,8 +245,8 @@ self.addEventListener('install', (event) => {
         });
       })
       .then(() => {
-        console.log('[SW] Installation complete');
-        // DON'T call skipWaiting() here - let user control when to update
+        console.log('[SW] Pre-caching complete - skipping waiting');
+        return self.skipWaiting();
       })
       .catch(err => {
         console.error('[SW] Installation failed:', err);
@@ -266,15 +263,16 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then(keys => {
-        console.log(`[SW] Found ${keys.length} cache keys to process`);
+        const expectedCaches = [STATIC_CACHE, DYNAMIC_CACHE, DATA_CACHE];
         
-        // Delete ALL caches including current ones to ensure fresh content
-        const deletionPromises = keys.map(key => {
-          console.log(`[SW] Deleting cache: ${key}`);
-          return caches.delete(key);
-        });
-        
-        return Promise.all(deletionPromises);
+        return Promise.all(
+          keys.map(key => {
+            if (!expectedCaches.includes(key)) {
+              console.log(`[SW] Deleting old cache: ${key}`);
+              return caches.delete(key);
+            }
+          })
+        );
       })
       .then(() => {
         console.log('[SW] All caches cleared, claiming clients');

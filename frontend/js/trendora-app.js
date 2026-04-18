@@ -1318,7 +1318,23 @@
 
       // Mini player
       const miniPlayer = document.getElementById('miniPlayer');
-      if (miniPlayer) miniPlayer.classList.toggle('mini-player--visible', isPlaying);
+      if (miniPlayer) {
+        if (isPlaying) {
+          miniPlayer.style.display = 'flex';
+          // Small delay to allow display:flex to take effect before transition
+          requestAnimationFrame(() => {
+            miniPlayer.classList.add('mini-player--visible');
+          });
+        } else {
+          miniPlayer.classList.remove('mini-player--visible');
+          // Wait for transition then hide
+          setTimeout(() => {
+            if (!miniPlayer.classList.contains('mini-player--visible')) {
+              miniPlayer.style.display = 'none';
+            }
+          }, 500);
+        }
+      }
 
       const info = this._info[stream] || this._info.darbar;
       const miniTitle = document.getElementById('miniTitle');
@@ -1343,33 +1359,69 @@
     _deferredPrompt: null,
 
     init() {
-      const installBtn = document.getElementById('installAppBtn');
+      const banner = document.getElementById('installBanner');
+      const installCta = document.getElementById('installCta');
+      const dismissBtn = document.getElementById('installDismiss');
       
+      if (!banner) return;
+
+      console.log('[PWA] Initializing InstallController...');
+
       if (this._isStandalone()) {
-        if (installBtn) installBtn.style.display = 'none';
+        console.log('[PWA] App is already standalone, hiding banner');
+        banner.style.display = 'none';
         return;
       }
 
+      // Check for persistent dismissal (24h cooldown)
+      const dismissedTime = Store.get(KEYS.INSTALL_DISMISSED);
+      if (dismissedTime && (Date.now() - parseInt(dismissedTime)) < 86400000) {
+        console.log('[PWA] Banner dismissed recently, waiting for cooldown');
+        banner.style.display = 'none';
+        return;
+      }
+
+      // Capture native prompt (Android/Chrome)
       window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('[PWA] Native beforeinstallprompt event fired');
         e.preventDefault();
         this._deferredPrompt = e;
-        console.log('[PWA] Install prompt captured');
-        setTimeout(() => this._showButton(), 2000);
+        this._showBanner();
       });
 
+      // Handle successful install
       window.addEventListener('appinstalled', () => {
-        console.log('[PWA] App installed');
+        console.log('[PWA] App installed successfully');
         Store.set(KEYS.PWA_INSTALLED, true);
-        this._hideButton();
+        this._hideBanner();
       });
 
-      // Fallback: Show button after 3 seconds if not standalone (for testing)
+      // Bind actions
+      if (installCta) {
+        installCta.onclick = () => {
+          console.log('[PWA] Install CTA clicked');
+          this._triggerInstall();
+        };
+      }
+
+      if (dismissBtn) {
+        dismissBtn.onclick = () => {
+          console.log('[PWA] User dismissed install banner');
+          Store.set(KEYS.INSTALL_DISMISSED, Date.now().toString());
+          this._hideBanner();
+        };
+      }
+
+      // Fallback for iOS/Safari: show after delay if not dismissed and no prompt yet
       setTimeout(() => {
-        if (!this._isStandalone() && installBtn && installBtn.style.display === 'none') {
-          console.log('[PWA] Showing install button (fallback)');
-          this._showButton();
+        if (!this._isStandalone() && !this._deferredPrompt) {
+          const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
+          if (!dismissed || (Date.now() - parseInt(dismissed)) > 86400000) {
+            console.log('[PWA] Showing install banner (Fallback/iOS)');
+            this._showBanner();
+          }
         }
-      }, 3000);
+      }, 5000); // 5s delay for stability
     },
 
     _isStandalone() {
@@ -1380,54 +1432,55 @@
       } catch (e) { return false; }
     },
 
-    _showButton() {
-      const installBtn = document.getElementById('installAppBtn');
-      if (!installBtn) {
-        console.log('[PWA] Install button not found in DOM');
-        return;
-      }
-
-      console.log('[PWA] Showing install button');
-      installBtn.style.display = 'flex';
+    _showBanner() {
+      const banner = document.getElementById('installBanner');
+      if (!banner) return;
       
-      // Add entrance animation
+      console.log('[PWA] Displaying install banner');
+      banner.style.display = 'block';
+      // Force reflow
+      banner.offsetHeight;
+      
       requestAnimationFrame(() => {
-        installBtn.classList.add('visible');
-      });
-
-      // Remove old listeners by cloning
-      const newBtn = installBtn.cloneNode(true);
-      installBtn.parentNode.replaceChild(newBtn, installBtn);
-
-      newBtn.addEventListener('click', async () => {
-        console.log('[PWA] Install button clicked');
-        if (this._deferredPrompt) {
-          this._deferredPrompt.prompt();
-          const { outcome } = await this._deferredPrompt.userChoice;
-          console.log('[PWA] User choice:', outcome);
-          if (outcome === 'accepted') {
-            Store.set(KEYS.PWA_INSTALLED, true);
-            this._hideButton();
-          }
-          this._deferredPrompt = null;
-        } else {
-          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-          alert(isIOS
-            ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Tap "Add to Home Screen"\n3. Tap "Add"'
-            : 'Use your browser\'s menu to install this app.');
-        }
+        banner.classList.add('install-banner--visible');
+        banner.style.opacity = '1';
+        banner.style.transform = 'translateY(0)';
       });
     },
 
-    _hideButton() {
-      const installBtn = document.getElementById('installAppBtn');
-      if (installBtn) {
-        console.log('[PWA] Hiding install button');
-        installBtn.classList.remove('visible');
-        setTimeout(() => {
-          installBtn.style.display = 'none';
-        }, 400);
+    _hideBanner() {
+      const banner = document.getElementById('installBanner');
+      if (!banner) return;
+      
+      console.log('[PWA] Hiding install banner');
+      banner.classList.remove('install-banner--visible');
+      banner.style.transform = 'translateY(100%)';
+      banner.style.opacity = '0';
+      setTimeout(() => {
+        if (!banner.classList.contains('install-banner--visible')) {
+          banner.style.display = 'none';
+        }
+      }, 500);
+    },
+
+    _triggerInstall() {
+      if (this._deferredPrompt) {
+        console.log('[PWA] Triggering native install prompt');
+        this._deferredPrompt.prompt();
+        this._deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('[PWA] User accepted install');
+            Store.set(KEYS.PWA_INSTALLED, true);
+          }
+          this._deferredPrompt = null;
+          this._hideBanner();
+        });
+      } else {
+        // iOS or non-supported browser fallback
+        console.log('[PWA] Native prompt unavailable, showing manual instructions');
+        alert('To install ANHAD:\n\n1. Tap the Share button ⎙\n2. Select "Add to Home Screen" ⊞');
       }
+    }
     }
   };
 
