@@ -21,7 +21,7 @@ const PathValidator = {
             'nitnem': './nitnem/indexbani.html',
             'nitnem-tracker': './NitnemTracker/nitnem-tracker.html',
             'sehaj-paath': './SehajPaath/sehaj-paath.html',
-            'calendar': './Calendar/Gurupurab-Calendar.html',
+            'calendar': './Calendar/GurpurabCalendar-ios.html',
             'reminders': './reminders/smart-reminders.html',
             'naam-abhyas': './NaamAbhyas/naam-abhyas.html',
             'gurbani-khoj': './GurbaniKhoj/gurbani-khoj.html'
@@ -35,7 +35,7 @@ const PathValidator = {
             'nitnem': '../nitnem/indexbani.html',
             'nitnem-tracker': '../NitnemTracker/nitnem-tracker.html',
             'sehaj-paath': '../SehajPaath/sehaj-paath.html',
-            'calendar': '../Calendar/Gurupurab-Calendar.html',
+            'calendar': '../Calendar/GurpurabCalendar-ios.html',
             'reminders': '../reminders/smart-reminders.html',
             'naam-abhyas': '../NaamAbhyas/naam-abhyas.html',
             'gurbani-khoj': '../GurbaniKhoj/gurbani-khoj.html'

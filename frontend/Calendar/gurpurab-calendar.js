@@ -1325,7 +1325,7 @@
         tag: `gurpurab-${event.id}-${daysBefore}`,
         requireInteraction: daysBefore === 0,
         icon: 'assets/favicon-32x32.png',
-        data: { url: 'Gurupurab-Calendar.html' }
+        data: { url: 'GurpurabCalendar-ios.html' }
       });
 
       n.onclick = (ev) => {

@@ -40,7 +40,7 @@ const NAV_PATHS = {
     nitnemTracker: './NitnemTracker/nitnem-tracker.html',
     sehajPaath: './SehajPaath/sehaj-paath.html',
     gurbaniKhoj: './GurbaniKhoj/gurbani-khoj.html',
-    calendar: './Calendar/Gurupurab-Calendar.html',
+    calendar: './Calendar/GurpurabCalendar-ios.html',
     notes: './Notes/notes.html',
     reminders: './reminders/smart-reminders.html'
 };

@@ -72,7 +72,7 @@
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',
-    calendar: 'Calendar/Gurupurab-Calendar.html',
+    calendar: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTracker: 'NitnemTracker/nitnem-tracker.html',
     reminders: 'reminders/smart-reminders.html',
     notes: 'Notes/notes.html',

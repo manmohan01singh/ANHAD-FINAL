@@ -165,7 +165,7 @@
             scheduledTime: when,
             tag: `gurupurab-${r.gurupurabId}`,
             requireInteraction: r.daysBefore === 0,
-            data: { url: `/Gurupurab-Calendar.html?highlight=${encodeURIComponent(r.gurupurabId)}` }
+            data: { url: `/GurpurabCalendar-ios.html?highlight=${encodeURIComponent(r.gurupurabId)}` }
           }
         });
       }
@@ -199,12 +199,12 @@
           badge: '/assets/favicon-32x32.png',
           tag: reminder.id,
           requireInteraction: true,
-          data: { url: `/Gurupurab-Calendar.html?highlight=${encodeURIComponent(reminder.gurupurabId)}` }
+          data: { url: `/GurpurabCalendar-ios.html?highlight=${encodeURIComponent(reminder.gurupurabId)}` }
         });
 
         n.onclick = () => {
           window.focus();
-          window.location.href = `/Gurupurab-Calendar.html?highlight=${encodeURIComponent(reminder.gurupurabId)}`;
+          window.location.href = `/GurpurabCalendar-ios.html?highlight=${encodeURIComponent(reminder.gurupurabId)}`;
         };
       } catch {
         // ignore

@@ -155,9 +155,9 @@ const STATIC_FILES = [
   '/SehajPaath/sehaj-paath.js',
 
   // Calendar
-  '/Calendar/Gurupurab-Calendar.html',
-  '/Calendar/gurpurab-calendar.css',
-  '/Calendar/gurpurab-calendar.js',
+  '/Calendar/GurpurabCalendar-ios.html',
+  '/Calendar/gurpurab-calendar-ios.css',
+  '/Calendar/gurpurab-calendar-ios.js',
   '/Calendar/gurupurab-reminders.js',
   '/Calendar/nanakshahi-calendar.js',
 
