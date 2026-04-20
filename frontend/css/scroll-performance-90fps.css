@@ -1,0 +1,294 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SCROLL PERFORMANCE OPTIMIZATION - 90 FPS TARGET
+   ═══════════════════════════════════════════════════════════════════════════════
+   
+   This file optimizes scroll performance by:
+   - Disabling expensive blur filters during scroll
+   - Adding hardware acceleration (GPU compositing)
+   - Simplifying box-shadows during scroll
+   - Using will-change strategically
+   - Enabling passive scroll listeners via CSS hints
+   
+   Load this AFTER all other CSS files.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── FORCE GPU ACCELERATION ON SCROLL CONTAINERS ─── */
+html, body {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* All scrollable containers */
+.main-content,
+#app,
+.app,
+.gurbani-scroll,
+.verses-container,
+.modal-body,
+[data-scrollable] {
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  will-change: scroll-position;
+  contain: layout style paint;
+}
+
+/* ─── DISABLE EXPENSIVE BLUR FILTERS DURING SCROLL ─── */
+/* Aurora backgrounds - major performance killers */
+.aurora-bg::before,
+.aurora-bg::after,
+.aurora-bg-extra {
+  filter: none !important;
+  -webkit-filter: none !important;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Glassmorphism effects - disable blur during scroll */
+.glass,
+.glass-effect,
+.backdrop-blur,
+[style*="backdrop-filter"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.dark-mode .glass,
+html.dark-mode .glass-effect,
+html.dark-mode .backdrop-blur {
+  background: rgba(28, 28, 30, 0.95) !important;
+}
+
+/* ─── SIMPLIFY BOX-SHADOWS DURING SCROLL ─── */
+.clay-card,
+.clay,
+.quick-card,
+.practice-card,
+.event-card,
+.hero-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  transition: box-shadow 0.2s ease !important;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ─── DISABLE SCROLL REVEAL BLUR EFFECTS ─── */
+[data-animate] {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 0;
+  transform: translateY(20px) translateZ(0);
+  will-change: opacity, transform;
+}
+
+[data-animate].animate-in {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
+}
+
+/* ─── OPTIMIZE ANIMATIONS ─── */
+/* Disable non-essential animations during scroll */
+@keyframes reveal-up {
+  to {
+    opacity: 1;
+    transform: translateY(0) translateZ(0);
+    filter: none !important;
+  }
+}
+
+@keyframes reveal-left {
+  to {
+    opacity: 1;
+    transform: translateX(0) translateZ(0);
+    filter: none !important;
+  }
+}
+
+@keyframes reveal-scale {
+  to {
+    opacity: 1;
+    transform: scale(1) translateZ(0);
+    filter: none !important;
+  }
+}
+
+/* ─── PERFORMANCE MODE FOR MOBILE ─── */
+@media (max-width: 768px) {
+  /* Disable all blur effects on mobile */
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Simplify shadows on mobile */
+  .clay-card,
+  .clay,
+  .quick-card,
+  .practice-card,
+  .event-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  /* Disable aurora animations on mobile */
+  .aurora-bg,
+  .aurora-bg-extra {
+    display: none !important;
+  }
+  
+  /* Disable mandana watermark on mobile */
+  .mandana-watermark {
+    display: none !important;
+  }
+}
+
+/* ─── REDUCED MOTION SUPPORT ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .aurora-bg,
+  .aurora-bg-extra,
+  .mandana-watermark {
+    display: none !important;
+  }
+}
+
+/* ─── SCROLL CONTAINER OPTIMIZATION ─── */
+/* Enable smooth scrolling with hardware acceleration */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── IMAGE OPTIMIZATION ─── */
+img {
+  will-change: transform;
+  transform: translateZ(0);
+  content-visibility: auto;
+}
+
+/* ─── TEXT RENDERING OPTIMIZATION ─── */
+body {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── CONTAINMENT FOR BETTER PERFORMANCE ─── */
+.card,
+.quick-card,
+.practice-card,
+.event-card,
+.hero-card {
+  contain: layout style paint;
+  transform: translateZ(0);
+}
+
+/* ─── DISABLE EXPENSIVE DROP SHADOWS ─── */
+.hero-card__badge,
+.event-card__guru-img-wrapper {
+  filter: none !important;
+  -webkit-filter: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── OPTIMIZE PROGRESS BAR ANIMATIONS ─── */
+.progress-inline__fill::after {
+  animation: none !important;
+}
+
+/* ─── DISABLE PARTICLE EFFECTS ─── */
+.spark-burst,
+.particle-burst {
+  display: none !important;
+}
+
+/* ─── HEADER SCROLL OPTIMIZATION ─── */
+header,
+#appHeader,
+.nav-glass {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+}
+
+html.dark-mode header,
+html.dark-mode #appHeader,
+html.dark-mode .nav-glass {
+  background: rgba(28, 28, 30, 0.98) !important;
+}
+
+/* ─── MINI PLAYER OPTIMIZATION ─── */
+.mini-player,
+.gmp {
+  will-change: transform;
+  transform: translateZ(0);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── CAROUSEL OPTIMIZATION ─── */
+.hero-carousel,
+.carousel {
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout style paint;
+}
+
+.hero-carousel__dot {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* ─── MODAL OPTIMIZATION ─── */
+.modal,
+.modal-overlay,
+.modal-content {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ─── FORCE COMPOSITING LAYER FOR FREQUENTLY UPDATED ELEMENTS ─── */
+.live-badge,
+.live-dot,
+.progress-bar,
+.audio-waveform {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ─── DISABLE LAYOUT SHIFTS ─── */
+.event-card,
+.quick-card,
+.practice-card {
+  contain: layout;
+}
+
+/* ─── SCROLL SNAP FOR BETTER PERFORMANCE ─── */
+@media (hover: none) and (pointer: coarse) {
+  .main-content,
+  .gurbani-scroll {
+    scroll-snap-type: y proximity;
+  }
+  
+  .card,
+  .quick-card {
+    scroll-snap-align: start;
+  }
+}

@@ -1225,55 +1225,76 @@
         if (!state.baniId) return;
 
         try {
-            // Get today's date in YYYY-MM-DD format
             const today = new Date().toISOString().split('T')[0];
-            
-            // Load Nitnem Tracker data
             const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
             const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
 
-            // Get or create today's progress
             if (!nitnemLog[today]) {
-                nitnemLog[today] = {
-                    amritvela: [],
-                    rehras: [],
-                    sohila: []
-                };
+                nitnemLog[today] = { amritvela: [], rehras: [], sohila: [] };
             }
 
             const todayProgress = nitnemLog[today];
-            const isTicked = checkIfBaniTicked(todayProgress);
+            const isTicked = checkIfBaniTicked(todayProgress, selectedBanis);
 
             if (isTicked) {
-                // Untick: Remove bani from all periods
+                // Untick: Find the LAST completed instance and remove it, or remove legacy ticks
                 ['amritvela', 'rehras', 'sohila'].forEach(period => {
-                    todayProgress[period] = todayProgress[period].filter(uid => uid !== `bani-${state.baniId}`);
+                    const progress = todayProgress[period] || [];
+                    // Remove legacy fallback ticks
+                    todayProgress[period] = progress.filter(uid => uid !== `bani-${state.baniId}`);
+                    
+                    // Remove ONE actual UID instance if present
+                    if (selectedBanis[period]) {
+                        const instances = selectedBanis[period].filter(b => b.id === state.baniId);
+                        for (let inst of instances) {
+                            const idx = todayProgress[period].indexOf(inst.uid);
+                            if (idx > -1) {
+                                todayProgress[period].splice(idx, 1);
+                                break; // Only remove one at a time for accurate multi-tracking
+                            }
+                        }
+                    }
                 });
                 els.tickBtn?.classList.remove('ticked');
                 console.log('[Reader] Bani unticked in Nitnem Tracker');
             } else {
-                // Tick: Add bani to appropriate period based on current time
-                const currentHour = new Date().getHours();
-                let period = 'rehras'; // default
+                // Tick
+                let targetUid = `bani-${state.baniId}`; // Legacy Fallback
+                let targetPeriod = null;
 
-                if (currentHour >= 0 && currentHour < 12) {
-                    period = 'amritvela';
-                } else if (currentHour >= 12 && currentHour < 18) {
-                    period = 'rehras';
-                } else {
-                    period = 'sohila';
+                // 1. Try to find an uncompleted instance in selectedBanis
+                for (const period of ['amritvela', 'rehras', 'sohila']) {
+                    if (selectedBanis[period]) {
+                        const instances = selectedBanis[period].filter(b => b.id === state.baniId);
+                        const uncompleted = instances.find(inst => !todayProgress[period].includes(inst.uid));
+                        if (uncompleted) {
+                            targetUid = uncompleted.uid;
+                            targetPeriod = period;
+                            break;
+                        }
+                    }
                 }
 
-                // Add bani to the period
-                const baniUid = `bani-${state.baniId}`;
-                if (!Array.isArray(todayProgress[period])) {
-                    todayProgress[period] = [];
+                // 2. Fallback if not tracked in a specific period
+                if (!targetPeriod) {
+                    const currentHour = new Date().getHours();
+                    targetPeriod = (currentHour >= 0 && currentHour < 12) ? 'amritvela' 
+                                 : (currentHour >= 12 && currentHour < 18) ? 'rehras' 
+                                 : 'sohila';
                 }
-                if (!todayProgress[period].includes(baniUid)) {
-                    todayProgress[period].push(baniUid);
+
+                if (!Array.isArray(todayProgress[targetPeriod])) {
+                    todayProgress[targetPeriod] = [];
                 }
+                
+                if (!todayProgress[targetPeriod].includes(targetUid)) {
+                    todayProgress[targetPeriod].push(targetUid);
+                }
+                
                 els.tickBtn?.classList.add('ticked');
-                console.log('[Reader] Bani ticked in Nitnem Tracker for period:', period);
+                console.log('[Reader] Bani ticked in Nitnem Tracker for period:', targetPeriod, targetUid);
+                
+                // Do NOT call AnhadStats here to prevent double counting with the 90% scroll trigger.
             }
 
             // Save back to localStorage
@@ -1292,12 +1313,22 @@
         }
     }
 
-    function checkIfBaniTicked(todayProgress) {
+    function checkIfBaniTicked(todayProgress, selectedBanis) {
         if (!todayProgress || !state.baniId) return false;
-        const baniUid = `bani-${state.baniId}`;
         
         return ['amritvela', 'rehras', 'sohila'].some(period => {
-            return Array.isArray(todayProgress[period]) && todayProgress[period].includes(baniUid);
+            if (!Array.isArray(todayProgress[period])) return false;
+            
+            // Check if any proper UID instance of this bani is completed
+            if (selectedBanis && selectedBanis[period]) {
+                const instances = selectedBanis[period].filter(b => b.id === state.baniId);
+                if (instances.some(inst => todayProgress[period].includes(inst.uid))) {
+                    return true;
+                }
+            }
+            
+            // Legacy/fallback check
+            return todayProgress[period].includes(`bani-${state.baniId}`);
         });
     }
 
@@ -1305,9 +1336,10 @@
         try {
             const today = new Date().toISOString().split('T')[0];
             const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+            const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
             const todayProgress = nitnemLog[today];
             
-            const isTicked = checkIfBaniTicked(todayProgress);
+            const isTicked = checkIfBaniTicked(todayProgress, selectedBanis);
             els.tickBtn?.classList.toggle('ticked', isTicked);
             
             console.log('[Reader] Nitnem tick state:', isTicked);
