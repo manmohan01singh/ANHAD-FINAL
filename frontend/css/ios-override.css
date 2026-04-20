@@ -103,14 +103,12 @@ body {
   /* FIX: Ensure body can scroll and content isn't clipped */
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 100vh;
-  min-height: 100dvh;
-  /* FIX: Proper padding for nav + mini-player clearance */
-  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 16px) !important;
 }
 
-body:has(.mini-player--visible) {
-  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 160px) !important;
+body:has(.mini-player--visible),
+body:has(.gmp--visible) {
+  /* When mini player is visible, add padding to ensure content clears mini player */
+  padding-bottom: calc(var(--mini-player-height, 68px) + env(safe-area-inset-bottom, 34px) + var(--space-4)) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -304,17 +302,22 @@ body.dark-mode .ios-glass {
   position: sticky;
   top: 0;
   z-index: 100;
+  background: #F1F3F6 !important;
+}
+
+body.dark-mode .header {
+  background: #1A1A1F !important;
 }
 
 .header--compact {
-  background: rgba(242, 242, 247, 0.94);
+  background: #F1F3F6 !important;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
+  border-bottom: none;
 }
 
 body.dark-mode .header--compact {
-  background: rgba(0, 0, 0, 0.85);
+  background: #1A1A1F !important;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -451,8 +454,15 @@ body.dark-mode .header--compact {
     inset -8px -8px 16px rgba(255, 255, 255, 0.9) !important;
 }
 
+/* Notes card (last quick card) - ensure proper spacing from nav bar */
 .quick-card:last-child {
-  margin-bottom: 0;
+  margin-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 20px);
+}
+
+/* When mini player is visible, add more margin to notes card */
+body:has(.mini-player--visible) .quick-card:last-child,
+body:has(.gmp--visible) .quick-card:last-child {
+  margin-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 100px);
 }
 
 /* Light mode colored card backgrounds */

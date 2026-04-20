@@ -6674,10 +6674,11 @@ const StreakSaverManager = {
     ],
 
     // Enhanced punishment Banis with Mathila-specific options
+    // NOTE: id must match actual bani IDs from the database (numeric)
     PUNISHMENT_BANIS: {
-        japji: { id: 'japji_sahib', name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        sukhmani: { id: 'sukhmani_sahib', name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        jaap_sahib: { id: 'jaap_sahib', name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' }
+        japji: { id: 2, name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        sukhmani: { id: 31, name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        jaap_sahib: { id: 4, name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' }
     },
 
     // Mathila-specific penalty configuration
@@ -6710,9 +6711,34 @@ const StreakSaverManager = {
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
-        // Check if user missed yesterday's Amritvela
-        const missedYesterday = !amritvelaLog[yesterdayString];
+        const currentHour = new Date().getHours();
         const hasStreak = StreakManager.state.current > 0;
+
+        // ═══════════════════════════════════════════════════════════════
+        // PROACTIVE CHECK: Amritvela not marked by 7 AM today
+        // ═══════════════════════════════════════════════════════════════
+        const todayNotMarked = !amritvelaLog[today];
+        const past7AM = currentHour >= 7;
+
+        // If it's past 7 AM and Amritvela not marked today, activate Streak Saver warning
+        if (todayNotMarked && past7AM && hasStreak) {
+            // Check if we already have an active punishment for today
+            const existing = this.getActivePunishment();
+            if (!existing) {
+                // Offer streak saver as a warning (lighter punishment since it's same day)
+                this.offerStreakSaver(StreakManager.state.current, {
+                    type: 'same_day_warning',
+                    missedAmritvela: false,
+                    warning: 'Amritvela not marked by 7 AM'
+                });
+            }
+            return; // Don't proceed to yesterday check if today is the issue
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // RETROACTIVE CHECK: User missed yesterday's Amritvela
+        // ═══════════════════════════════════════════════════════════════
+        const missedYesterday = !amritvelaLog[yesterdayString];
 
         // Check for missed Mathila (Mala Jap during Amritvela)
         const missedMathila = this.checkMissedMathila(yesterdayString);
@@ -6870,10 +6896,11 @@ const StreakSaverManager = {
         const existingIndex = selectedBanis[period].findIndex(b => b.id === baniInfo.id);
 
         if (existingIndex === -1) {
-            // Add punishment Bani temporarily
+            // Add punishment Bani temporarily with proper UIDs
             for (let i = 0; i < punishment.count; i++) {
                 selectedBanis[period].push({
                     ...baniInfo,
+                    uid: `punishment_${baniInfo.id}_${i}_${Date.now()}`,
                     isPunishment: true,
                     punishmentIndex: i
                 });
@@ -6935,12 +6962,20 @@ const StreakSaverManager = {
         const period = baniInfo.period;
         const periodCompleted = todayData[period] || [];
 
+        // Load selected banis to find punishment bani UIDs
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {});
+        const periodBanis = selectedBanis[period] || [];
+
+        // Find all punishment banis for this type
+        const punishmentBanis = periodBanis.filter(b =>
+            b.isPunishment && b.id === baniInfo.id
+        );
+
         // Check if all required punishment Banis are completed
         let completedCount = 0;
-        for (let i = 0; i < saverData.punishment.count; i++) {
-            const punishmentBaniId = `${baniInfo.id}_punishment_${i}`;
-            if (periodCompleted.includes(punishmentBaniId) ||
-                periodCompleted.includes(baniInfo.id)) {
+        for (const punishmentBani of punishmentBanis) {
+            // Check if this punishment bani's UID is in the completed list
+            if (periodCompleted.includes(punishmentBani.uid)) {
                 completedCount++;
             }
         }

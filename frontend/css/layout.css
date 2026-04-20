@@ -237,7 +237,7 @@ html.dark-mode .hero-card__image--light {
 
 /* ── LANDSCAPE SAFETY ── */
 @media (orientation: landscape) and (max-height: 500px) {
-  .app { padding-bottom: 70px; }
+  .app { padding-bottom: 0; }
   .nav-pill { bottom: 10px; padding: 6px 12px; }
   .hero-card { min-height: 260px; }
 }

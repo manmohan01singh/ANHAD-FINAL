@@ -249,9 +249,9 @@
      ═════════════════════════════════════════════════════════════════════════════ */
   html.dark-mode .desktop-sidebar,
   [data-theme="dark"] .desktop-sidebar {
-    background: linear-gradient(180deg, 
-      rgba(25, 28, 35, 0.98) 0%, 
-      rgba(18, 21, 28, 0.99) 100%) !important;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 250, 252, 0.95) 100%) !important;
     border-right: 1px solid rgba(255,255,255,0.08);
   }
   
@@ -438,7 +438,7 @@
   .header {
     position: sticky;
     top: 0;
-    background: transparent !important;
+    background: #F1F3F6 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     border-radius: 0;
@@ -450,6 +450,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    opacity: 1 !important;
+  }
+
+  html.dark-mode .header,
+  [data-theme="dark"] .header {
+    background: #1A1A1F !important;
+    opacity: 1 !important;
   }
   
   .header__title {
@@ -1132,15 +1139,15 @@
      ═════════════════════════════════════════════════════════════════════════════ */
   html.dark-mode .desktop-sidebar,
   [data-theme="dark"] .desktop-sidebar {
-    background: linear-gradient(180deg, 
-      rgba(30,30,35,0.98) 0%, 
-      rgba(20,20,25,0.99) 100%);
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 250, 252, 0.95) 100%);
     border-right-color: rgba(255,255,255,0.08);
   }
   
   html.dark-mode .header,
   [data-theme="dark"] .header {
-    background: rgba(30,30,35,0.85);
+    background: #F1F3F6;
     border-color: rgba(255,255,255,0.08);
   }
 }

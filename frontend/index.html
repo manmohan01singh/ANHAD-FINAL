@@ -43,12 +43,15 @@
   <!-- Critical inline CSS to prevent flash -->
   <style>
     html { color-scheme: var(--color-scheme, light); }
-    html.dark-mode, body.dark-mode { background-color: #1A1A1F !important; color: #FFFFFF !important; }
-    html:not(.dark-mode), body:not(.dark-mode) { background-color: #F1F3F6 !important; color: #1A1A1F !important; }
-    body { transition: background-color 0s, color 0s !important; }
-    /* Hide body initially to prevent flash */
-    body { opacity: 0; }
+    html.dark-mode, body.dark-mode { color: #FFFFFF !important; }
+    html:not(.dark-mode), body:not(.dark-mode) { color: #1A1A1F !important; }
+    body {
+      transition: background-color 0s, color 0s !important;
+      background-color: transparent !important;
+      opacity: 0;
+    }
     body.theme-loaded { opacity: 1; transition: opacity 0.2s ease; }
+    html.dark-mode { --bg-primary: transparent !important; }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -277,6 +280,13 @@
     }
     .header {
       margin-bottom: 16px !important;
+      background: transparent !important;
+    }
+    body.dark-mode .header {
+      background: #1A1A1F !important;
+    }
+    body:not(.dark-mode) .header {
+      background: #F1F3F6 !important;
     }
     .progress-inline {
       display: flex !important;
@@ -752,6 +762,12 @@
         visibility: visible !important;
         display: block !important;
       }
+
+      /* Hide background image in dark mode to prevent dark appearance */
+      html body.dark-mode::before,
+      body.dark-mode::before {
+        display: none !important;
+      }
       
       /* Override trendora-premium.css body::after with MAXIMUM specificity */
       html body::after {
@@ -764,18 +780,36 @@
         width: 100vw !important;
         height: 100vh !important;
         z-index: -9999 !important;
-        background: linear-gradient(180deg, 
-          rgba(255, 255, 255, 0.72) 0%, 
+        background: linear-gradient(180deg,
+          rgba(255, 255, 255, 0.72) 0%,
           rgba(248, 250, 252, 0.77) 100%) !important;
         pointer-events: none !important;
         opacity: 1 !important;
         display: block !important;
+      }
+
+      /* Remove dark mode gradient - use same light gradient in both modes */
+      html body.dark-mode::after,
+      body.dark-mode::after {
+        background: linear-gradient(180deg,
+          rgba(255, 255, 255, 0.72) 0%,
+          rgba(248, 250, 252, 0.77) 100%) !important;
       }
       
       /* Main content colors */
       .app, main, #app {
         background: transparent !important;
         color: inherit !important;
+      }
+
+      /* Header background fix for desktop */
+      html body.dark-mode .app .header,
+      body.dark-mode .app .header {
+        background: #1A1A1F !important;
+      }
+      html body:not(.dark-mode) .app .header,
+      body:not(.dark-mode) .app .header {
+        background: #F1F3F6 !important;
       }
       
       /* ═══════════════════════════════════════════════════════════════════════════
@@ -1156,8 +1190,8 @@
        FLOATING TAB BAR — Same as Nitnem Page (Ditto Copy)
     ═══════════════════════════════════════════════════════════════════════════ */
     .tab-bar {
-      position: fixed;
-      bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
+      position: relative;
+      bottom: 0;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1000;
@@ -1165,6 +1199,7 @@
       align-items: center;
       gap: 4px;
       padding: 8px 12px;
+      padding-bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
       background: rgba(22, 22, 24, 1);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 28px;
@@ -1233,6 +1268,36 @@
     }
   </style>
 
+  <!-- Header background fix - override all transparent backgrounds -->
+  <style>
+    @media screen and (min-width: 1024px) {
+      html body.dark-mode main.app header.header[role="banner"],
+      body.dark-mode main.app header.header[role="banner"],
+      html.dark-mode main.app header.header[role="banner"],
+      [data-theme="dark"] main.app header.header[role="banner"] {
+        background: #1A1A1F !important;
+      }
+      html body:not(.dark-mode) main.app header.header[role="banner"],
+      body:not(.dark-mode) main.app header.header[role="banner"],
+      html:not(.dark-mode) main.app header.header[role="banner"],
+      [data-theme="light"] main.app header.header[role="banner"] {
+        background: #F1F3F6 !important;
+      }
+    }
+    html body.dark-mode main.app header.header[role="banner"],
+    body.dark-mode main.app header.header[role="banner"],
+    html.dark-mode main.app header.header[role="banner"],
+    [data-theme="dark"] main.app header.header[role="banner"] {
+      background: #1A1A1F !important;
+    }
+    html body:not(.dark-mode) main.app header.header[role="banner"],
+    body:not(.dark-mode) main.app header.header[role="banner"],
+    html:not(.dark-mode) main.app header.header[role="banner"],
+    [data-theme="light"] main.app header.header[role="banner"] {
+      background: #F1F3F6 !important;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -1280,7 +1345,7 @@
     </nav>
     
     <div class="desktop-sidebar__footer">
-      <a href="Calendar/Gurupurab-Calendar.html" class="desktop-sidebar__link">
+      <a href="Calendar/GurpurabCalendar-ios.html" class="desktop-sidebar__link">
         <span class="ios-emoji" role="img" aria-label="calendar">📅</span>
         Calendar
       </a>
@@ -1328,7 +1393,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
-    <header class="header" role="banner">
+    <header class="header" role="banner" style="background: #F1F3F6 !important;">
       <div class="header__left">
         <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" aria-label="Go Back">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1486,7 +1551,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" onclick="window.location.href='Calendar/Gurupurab-Calendar.html'" style="margin-top: -30px !important;">
+    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" onclick="window.location.href='Calendar/GurpurabCalendar-ios.html'" style="margin-top: -30px !important;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
@@ -1883,16 +1948,22 @@
       function applyTheme(theme) {
         // Save to localStorage
         localStorage.setItem('anhad_theme', theme);
-        
+
         // Update classes
         if (theme === 'dark') {
           html.classList.add('dark-mode');
           body.classList.add('dark-mode');
           html.setAttribute('data-theme', 'dark');
           html.style.colorScheme = 'dark';
-          
+
           // Remove inline styles to let CSS take over
           body.style.backgroundColor = '';
+
+          // Update header background
+          const header = document.querySelector('.header');
+          if (header) {
+            header.style.background = '#1A1A1F';
+          }
           body.style.color = '';
           
           // Update icon
@@ -1920,6 +1991,12 @@
 
       // Apply initial theme
       applyTheme(savedTheme);
+
+      // Set initial header background based on theme
+      const header = document.querySelector('.header');
+      if (header) {
+        header.style.background = savedTheme === 'dark' ? '#1A1A1F' : '#F1F3F6';
+      }
 
       // Add click handler
       if (themeToggleBtn) {

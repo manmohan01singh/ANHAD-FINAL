@@ -63,7 +63,6 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.8),
         inset 0 -0.5px 0 rgba(0, 0, 0, 0.03);
       transition: transform 0.3s ease, opacity 0.25s ease;
-      padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
     }
 
     .shared-nav-pill.hidden {

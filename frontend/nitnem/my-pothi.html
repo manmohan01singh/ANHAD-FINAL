@@ -444,50 +444,77 @@
             try {
                 // Load Nitnem Tracker selected banis
                 const nitnemSelected = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
-                
+
                 // Ensure all periods exist
                 if (!nitnemSelected.amritvela) nitnemSelected.amritvela = [];
                 if (!nitnemSelected.rehras) nitnemSelected.rehras = [];
                 if (!nitnemSelected.sohila) nitnemSelected.sohila = [];
 
-                // Get current hour to determine default period
-                const currentHour = new Date().getHours();
-                let defaultPeriod = 'rehras';
-                if (currentHour >= 0 && currentHour < 12) {
-                    defaultPeriod = 'amritvela';
-                } else if (currentHour >= 12 && currentHour < 18) {
-                    defaultPeriod = 'rehras';
-                } else {
-                    defaultPeriod = 'sohila';
+                // Helper: Generate unique ID like Nitnem Tracker does
+                function generateId() {
+                    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
                 }
 
-                // Add each bani from Pothi to Nitnem Tracker (if not already present)
+                // Helper: Get default period based on bani ID (Nitnem Maryada)
+                function getDefaultPeriod(baniId) {
+                    // Amritvela banis (morning)
+                    const amritvelaIds = [2, 4, 6, 7, 9, 10]; // Japji, Jaap, Tav Prasad, Chaupai, Anand
+                    // Rehras banis (evening)
+                    const rehrasIds = [21]; // Rehras Sahib
+                    // Sohila banis (night)
+                    const sohilaIds = [23, 24]; // Kirtan Sohila, Ardas
+
+                    if (amritvelaIds.includes(baniId)) return 'amritvela';
+                    if (rehrasIds.includes(baniId)) return 'rehras';
+                    if (sohilaIds.includes(baniId)) return 'sohila';
+
+                    // Default based on current time for other banis
+                    const currentHour = new Date().getHours();
+                    if (currentHour >= 0 && currentHour < 12) return 'amritvela';
+                    if (currentHour >= 12 && currentHour < 18) return 'rehras';
+                    return 'sohila';
+                }
+
+                // Track which banis we've added to avoid duplicates in the same sync
+                const addedUids = new Set();
+
+                // Add each bani from Pothi to Nitnem Tracker
                 pothiOrder.forEach(id => {
                     const bani = ALL_BANIS.find(b => b.id === id);
                     if (!bani) return;
 
-                    // Determine which period to add to (use bani's default period if available, else current time)
-                    const period = bani.defaultPeriod || defaultPeriod;
+                    // Determine which period to add to
+                    const period = getDefaultPeriod(bani.id);
 
-                    // Create entry with uid
+                    // Check if this bani (by ID) already exists in the target period
+                    const exists = nitnemSelected[period].some(b => b.id === bani.id);
+                    if (exists) {
+                        console.log(`[My Pothi] ${bani.name} already exists in ${period}, skipping`);
+                        return;
+                    }
+
+                    // Create entry with PROPER UID (matching Nitnem Tracker format)
                     const entry = {
                         id: bani.id,
-                        uid: `bani-${bani.id}`,
+                        uid: generateId(), // Generate unique ID like Nitnem Tracker
                         nameGurmukhi: bani.name,
-                        nameEnglish: bani.english
+                        nameEnglish: bani.english,
+                        defaultPeriod: period
                     };
 
-                    // Check if already in this period
-                    const exists = nitnemSelected[period].some(b => b.id === bani.id);
-                    if (!exists) {
-                        nitnemSelected[period].push(entry);
-                        console.log(`[My Pothi] Added ${bani.name} to Nitnem Tracker (${period})`);
-                    }
+                    nitnemSelected[period].push(entry);
+                    addedUids.add(entry.uid);
+                    console.log(`[My Pothi] Added ${bani.name} to Nitnem Tracker (${period}) with UID ${entry.uid}`);
                 });
 
                 // Save to Nitnem Tracker
                 localStorage.setItem('nitnemTracker_selectedBanis', JSON.stringify(nitnemSelected));
-                console.log('[My Pothi] Synced with Nitnem Tracker');
+                console.log('[My Pothi] Synced with Nitnem Tracker:', addedUids.size, 'banis added');
+
+                // Dispatch event to notify Nitnem Tracker to refresh
+                window.dispatchEvent(new CustomEvent('nitnemUpdated', {
+                    detail: { source: 'myPothi', addedCount: addedUids.size }
+                }));
             } catch (e) {
                 console.error('[My Pothi] Error syncing with Nitnem Tracker:', e);
             }

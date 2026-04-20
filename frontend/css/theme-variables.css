@@ -135,7 +135,6 @@ html:not([data-theme]) {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 body {
-    background-color: var(--bg-primary);
     color: var(--text-primary);
 }
 

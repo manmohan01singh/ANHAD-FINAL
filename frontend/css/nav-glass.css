@@ -10,14 +10,13 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .anhad-bottom-nav {
-  position: fixed;
+  position: relative;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 80;
   width: 100%;
   padding: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0);
   margin: 0;
   box-sizing: border-box;
   display: flex;
@@ -453,10 +452,6 @@ html.dark-mode .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .anhad-bottom-nav {
     bottom: 0;
-  }
-  
-  .anhad-bottom-nav .nav-pill {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 

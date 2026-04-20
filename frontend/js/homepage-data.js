@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
-    calendarCard: 'Calendar/Gurupurab-Calendar.html',
+    calendarCard: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
     remindersCard: 'reminders/smart-reminders.html',
     notesCard: 'Notes/notes.html'

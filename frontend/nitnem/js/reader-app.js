@@ -333,7 +333,7 @@
 
     function updateSettingsUI() {
         // Theme buttons
-        document.querySelectorAll('.theme-btn').forEach(btn => {
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
         });
 
@@ -598,7 +598,7 @@
         });
 
         // Theme buttons
-        document.querySelectorAll('.theme-btn').forEach(btn => {
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
             btn.addEventListener('click', () => setTheme(btn.dataset.theme));
         });
 

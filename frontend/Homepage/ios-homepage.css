@@ -264,17 +264,17 @@ body {
     padding: 14px 24px;
     /* Premium glassmorphism */
     background: linear-gradient(145deg,
-        rgba(255, 59, 48, 0.3) 0%,
-        rgba(255, 59, 48, 0.2) 50%,
-        rgba(255, 59, 48, 0.1) 100%);
-    border: 1.5px solid rgba(255, 59, 48, 0.4);
+        rgba(201, 162, 39, 0.3) 0%,
+        rgba(201, 162, 39, 0.2) 50%,
+        rgba(201, 162, 39, 0.1) 100%);
+    border: 1.5px solid rgba(201, 162, 39, 0.4);
     border-radius: var(--clay-radius-full);
     box-shadow: 
         /* Outer shadows for depth */
         8px 8px 24px rgba(0, 0, 0, 0.5),
         -4px -4px 16px rgba(255, 255, 255, 0.1),
         /* Glow effect */
-        0 0 30px rgba(255, 59, 48, 0.35),
+        0 0 30px rgba(201, 162, 39, 0.35),
         /* Inner highlight */
         inset 0 1px 2px rgba(255, 255, 255, 0.2),
         inset 0 -1px 2px rgba(0, 0, 0, 0.1);
@@ -291,10 +291,10 @@ body {
     box-shadow: 
         12px 12px 32px rgba(0, 0, 0, 0.55),
         -6px -6px 20px rgba(255, 255, 255, 0.12),
-        0 0 45px rgba(255, 59, 48, 0.5),
+        0 0 45px rgba(201, 162, 39, 0.5),
         inset 0 1px 2px rgba(255, 255, 255, 0.25),
         inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    border-color: rgba(255, 59, 48, 0.6);
+    border-color: rgba(201, 162, 39, 0.6);
 }
 
 @keyframes badgeReveal {
@@ -307,12 +307,12 @@ body {
 #live-badge .dot {
     width: 11px;
     height: 11px;
-    background: #FF3B30;
+    background: #C9A227;
     border-radius: 50%;
     animation: livePulse 1.8s ease-in-out infinite;
     box-shadow: 
-        0 0 15px rgba(255, 59, 48, 0.9),
-        0 0 30px rgba(255, 59, 48, 0.5),
+        0 0 15px rgba(201, 162, 39, 0.9),
+        0 0 30px rgba(201, 162, 39, 0.5),
         inset -1px -1px 3px rgba(0, 0, 0, 0.3),
         inset 1px 1px 3px rgba(255, 255, 255, 0.4);
 }
@@ -593,20 +593,20 @@ body.audio-playing #temple-glow {
 
 body.audio-playing #live-badge {
     background: linear-gradient(145deg,
-        rgba(255, 59, 48, 0.4) 0%,
-        rgba(255, 59, 48, 0.25) 50%,
-        rgba(255, 59, 48, 0.12) 100%);
-    box-shadow: 
+        rgba(201, 162, 39, 0.4) 0%,
+        rgba(201, 162, 39, 0.25) 50%,
+        rgba(201, 162, 39, 0.12) 100%);
+    box-shadow:
         10px 10px 28px rgba(0, 0, 0, 0.5),
         -5px -5px 16px rgba(255, 255, 255, 0.12),
-        0 0 40px rgba(255, 59, 48, 0.5),
+        0 0 40px rgba(201, 162, 39, 0.5),
         inset 0 1px 2px rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 59, 48, 0.5);
+    border-color: rgba(201, 162, 39, 0.5);
 }
 
 body.audio-playing #live-badge .dot {
-    box-shadow: 
-        0 0 20px rgba(255, 59, 48, 0.9),
+    box-shadow:
+        0 0 20px rgba(201, 162, 39, 0.9),
         inset -1px -1px 2px rgba(0, 0, 0, 0.3),
         inset 1px 1px 2px rgba(255, 255, 255, 0.4);
 }
