@@ -110,7 +110,7 @@ body {
 }
 
 body:has(.mini-player--visible) {
-  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 80px) !important;
+  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 160px) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

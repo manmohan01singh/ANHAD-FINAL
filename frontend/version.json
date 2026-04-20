@@ -1,7 +1,7 @@
 {
-  "version": "4.1.0",
-  "buildTime": "2026-04-20T19:05:00.000Z",
-  "timestamp": 1776701100000,
-  "commitHash": "cache-bust-v410",
+  "version": "4.1.1",
+  "buildTime": "2026-04-20T19:16:00.000Z",
+  "timestamp": 1776701760000,
+  "commitHash": "cache-bust-v411",
   "branch": "main"
 }
