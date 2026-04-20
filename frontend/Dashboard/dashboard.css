@@ -51,7 +51,7 @@
 }
 
 /* Dark Mode Tokens */
-html.dark-mode {
+[data-theme="dark"] {
   --dash-bg-primary: #1C1C1F;
   --dash-card-shadow: 
     16px 16px 32px rgba(0,0,0,0.6), 
@@ -83,11 +83,11 @@ body {
   background: var(--dash-bg-primary);
   color: var(--text-primary, #000000);
   min-height: 100vh;
-  padding-bottom: calc(120px + var(--safe-bottom));
+  padding-bottom: calc(80px + var(--safe-bottom));
   -webkit-font-smoothing: antialiased;
 }
 
-html.dark-mode body {
+[data-theme="dark"] body {
   color: #FFFFFF;
 }
 
@@ -167,10 +167,15 @@ html.dark-mode .top-nav-orb {
   max-width: 500px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 10px 20px;
   z-index: 101;
+}
+
+.header__back {
+  position: absolute;
+  left: 20px;
 }
 
 .spacer {

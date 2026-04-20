@@ -49,7 +49,7 @@
             return '../Audio/';
         }
         if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
-            return '/Audio/';
+            return './Audio/';
         }
         if (loc.pathname.includes('/reminders/')) {
             return '../Audio/';

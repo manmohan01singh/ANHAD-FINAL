@@ -413,24 +413,7 @@ class SehajPaathReader {
             this.saveSettings();
         });
 
-        // Auto-hide header
-        document.getElementById('autoHideHeader')?.addEventListener('change', (e) => {
-            this.settings.autoHideHeader = e.target.checked;
-            this.saveSettings();
-        });
-
-        // Haptic feedback
-        document.getElementById('hapticFeedback')?.addEventListener('change', (e) => {
-            this.settings.hapticFeedback = e.target.checked;
-            this.saveSettings();
-        });
-
-        // Show line numbers
-        document.getElementById('showLineNumbers')?.addEventListener('change', (e) => {
-            this.settings.showLineNumbers = e.target.checked;
-            this.applyLineNumbersVisibility();
-            this.saveSettings();
-        });
+        // Auto-hide header is always enabled for immersive reading
 
         // Continuous Reading toggle
         document.getElementById('continuousReading')?.addEventListener('change', (e) => {
@@ -1135,11 +1118,8 @@ class SehajPaathReader {
         if (transLang) transLang.value = this.settings.translationLang;
 
         // Other settings
-        const autoHide = document.getElementById('autoHideHeader');
-        if (autoHide) autoHide.checked = this.settings.autoHideHeader;
-
-        const haptic = document.getElementById('hapticFeedback');
-        if (haptic) haptic.checked = this.settings.hapticFeedback;
+        // Auto-hide header is always enabled for immersive reading
+        this.settings.autoHideHeader = true;
     }
 
     openSettings() {

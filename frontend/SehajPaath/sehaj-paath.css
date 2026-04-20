@@ -125,8 +125,8 @@
 
 [data-theme="dark"] {
     --bg-primary: linear-gradient(180deg, #000000 0%, #1c1c1e 50%, #000000 100%);
-    --glass-bg: rgba(44, 44, 46, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(22, 22, 24, 1);
+    --glass-border: rgba(255, 255, 255, 0.15);
     --text-gurmukhi: #FFE4B5;
 }
 

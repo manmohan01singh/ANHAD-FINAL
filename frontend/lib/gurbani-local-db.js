@@ -124,30 +124,34 @@
         }
 
         /**
-         * Fetch bani from BaniDB API
-         * Uses correct endpoint: /v2/banis/{id}
+         * Fetch bani from offline JSON (chunked)
+         * Uses local chunked JSON files for speed
          */
         async fetchFromAPI(baniId) {
-            // Primary endpoint (correct BaniDB v2 API)
-            const url = `https://api.banidb.com/v2/banis/${baniId}`;
-
-            try {
-                const response = await fetch(url, {
-                    headers: { 'Accept': 'application/json' },
-                    // Add timeout to prevent hanging
-                    signal: AbortSignal.timeout(10000)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error(`[GurbaniLocalDB] API fetch failed for bani ${baniId}:`, error);
-                throw error;
+            // Use BaniDB chunked loading if available
+            if (window.BaniDB && window.BaniDB.getBani) {
+                console.log(`[GurbaniLocalDB] Using BaniDB chunked loading: ${baniId}`);
+                return await window.BaniDB.getBani(baniId);
             }
+            
+            // Fallback to nitnem bundle for nitnem banis
+            const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
+            if (nitnemBanis.includes(baniId)) {
+                try {
+                    const response = await fetch('../data/banis-chunks/nitnem-banis.json');
+                    if (!response.ok) throw new Error('Failed to load nitnem bundle');
+                    const jsonData = await response.json();
+                    
+                    if (jsonData.banis && jsonData.banis[baniId]) {
+                        console.log(`[GurbaniLocalDB] ✅ Loaded from nitnem bundle: ${baniId}`);
+                        return jsonData.banis[baniId];
+                    }
+                } catch (error) {
+                    console.error(`[GurbaniLocalDB] ❌ Failed to load from nitnem bundle for bani ${baniId}:`, error);
+                }
+            }
+            
+            throw new Error(`Bani ${baniId} not available offline`);
         }
 
         /**

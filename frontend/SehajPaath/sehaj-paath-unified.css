@@ -75,7 +75,7 @@
 html.dark-mode,
 [data-theme="dark"] {
   --sp-page-bg: #1A1A1C;
-  --sp-surface: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%);
+  --sp-surface: rgba(22, 22, 24, 1);
   --sp-surface-inner: linear-gradient(145deg, rgba(50,50,52,0.6), rgba(38,38,40,0.6));
   --sp-surface-btn: linear-gradient(145deg, #3A3A3C, #2C2C2E);
   --sp-gold-icon-bg: linear-gradient(145deg, #3A2E18, #2A2010);

@@ -22,6 +22,7 @@ const DOM = {
     navBack: $('#navBack'),
     navTitle: $('#navTitle'),
     themeToggle: $('#themeToggle'),
+    fullscreenBtn: $('#fullscreenBtn'),
     settingsBtn: $('#settingsBtn'),
     favBtn: $('#favBtn'),
 
@@ -59,7 +60,8 @@ const State = {
     showTranslit: false,
     fontSizeBase: 22,
     fontGurmukhi: 'raavi',
-    isFavorite: false
+    isFavorite: false,
+    isFullscreen: false
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -431,6 +433,22 @@ function loadFontSize() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// FULLSCREEN
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Define toggleFullscreen immediately and make it global
+window.toggleFullscreen = function() {
+    console.log('Toggle fullscreen called');
+    State.isFullscreen = !State.isFullscreen;
+    document.body.classList.toggle('fullscreen', State.isFullscreen);
+    if (DOM.fullscreenBtn) {
+        DOM.fullscreenBtn.classList.toggle('active', State.isFullscreen);
+    }
+    haptic('medium');
+    console.log('Fullscreen state:', State.isFullscreen);
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // SHARE
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -464,6 +482,14 @@ function initEvents() {
 
     // Theme
     DOM.themeToggle.addEventListener('click', () => Theme.toggle());
+
+    // Fullscreen
+    if (DOM.fullscreenBtn) {
+        DOM.fullscreenBtn.addEventListener('click', toggleFullscreen);
+        console.log('Fullscreen button event listener attached');
+    } else {
+        console.error('Fullscreen button not found');
+    }
 
     // Favorite
     if (DOM.favBtn) {

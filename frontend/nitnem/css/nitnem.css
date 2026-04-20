@@ -913,14 +913,6 @@ a:hover {
 
 /* Header Glass Effect */
 .gutka-header {
-  background: rgba(255, 255, 255, var(--glass-opacity-2, 0.06));
-  backdrop-filter: blur(var(--dynamic-blur, 20px)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--dynamic-blur, 20px)) saturate(180%);
-}
-
-:root[data-theme="night"] .gutka-header {
-  background: rgba(15, 15, 15, var(--glass-opacity-3, 0.1));
-}
 
 /* Bani Card Glass Enhancement */
 .bani-card__link {
@@ -929,11 +921,6 @@ a:hover {
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-:root[data-theme="night"] .bani-card__link {
-  background: rgba(30, 30, 30, var(--glass-opacity-4, 0.15));
-  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .bani-card__link:hover {
@@ -951,19 +938,6 @@ a:hover {
   -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 
-:root[data-theme="night"] .gutka-nav__back,
-:root[data-theme="night"] .settings-toggle {
-  background: rgba(30, 30, 30, var(--glass-opacity-3, 0.1));
-}
-
-/* Ik Onkar Enhanced Glow */
-.ik-onkar {
-  text-shadow: 
-    0 0 20px var(--color-accent-glow),
-    0 0 40px var(--color-accent-glow),
-    0 0 60px rgba(196, 132, 29, 0.2);
-}
-
 /* Section Heading Glass */
 .bani-section__heading {
   background: rgba(255, 255, 255, var(--glass-opacity-2, 0.06));
@@ -974,19 +948,11 @@ a:hover {
   margin-bottom: var(--space-lg);
 }
 
-:root[data-theme="night"] .bani-section__heading {
-  background: rgba(30, 30, 30, var(--glass-opacity-2, 0.08));
-}
-
 /* Footer Glass */
 .gutka-footer {
   background: rgba(255, 255, 255, var(--glass-opacity-2, 0.06));
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-}
-
-:root[data-theme="night"] .gutka-footer {
-  background: rgba(15, 15, 15, var(--glass-opacity-3, 0.1));
 }
 
 /* Intersection Animation Styles */

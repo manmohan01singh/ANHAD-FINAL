@@ -48,6 +48,9 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="naam-abhyas.css?v=3.1">
     <link rel="stylesheet" href="naam-abhyas-ultra-premium.css?v=3.1">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
     <link rel="stylesheet" href="naam-abhyas-clay.css?v=3.1">
     <link rel="stylesheet" href="components/ritual-overlay.css?v=3.1">
 
@@ -85,7 +88,7 @@
             <div class="load-ring"></div>
             <div class="load-ring load-ring-2"></div>
         </div>
-        <div class="loading-ik-onkar">?</div>
+        <div class="loading-ik-onkar">ੴ</div>
         <div class="loading-text">ਵਾਹਿਗੁਰੂ</div>
         <div class="loading-sub">Preparing your sacred practice...</div>
     </div>
@@ -109,10 +112,10 @@
         <div class="welcome-backdrop"></div>
         <div class="welcome-content">
             <div class="welcome-glow"></div>
-            <div class="welcome-symbol">?</div>
+            <div class="welcome-symbol">ੴ</div>
             <h2 class="welcome-title">ਨਾਮ ਅਭਿਆਸ</h2>
             <p class="welcome-subtitle">Welcome to Naam Abhyas</p>
-            <p class="welcome-quote">"??? ??? ?? ???? ?????"</p>
+            <p class="welcome-quote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
             <p class="welcome-translation">Chanting the Naam, millions of sins are erased</p>
             <div class="welcome-stats">
                 <div class="welcome-stat">
@@ -186,7 +189,7 @@
                         <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,179,71,0.04)"
                             stroke-width="0.3" />
                     </svg>
-                    <div class="hero-symbol">?</div>
+                    <div class="hero-symbol">ੴ</div>
                 </div>
                 <h1 class="hero-title">
                     <span class="hero-gurmukhi">ਵਾਹਿਗੁਰੂ</span>
@@ -272,7 +275,7 @@
             <section class="glass-card wisdom-card" id="wisdomCard">
                 <div class="wisdom-accent"></div>
                 <div class="wisdom-icon">💡</div>
-                <p class="wisdom-quote" id="wisdomQuote">"??? ??? ?? ???? ?????"</p>
+                <p class="wisdom-quote" id="wisdomQuote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
                 <p class="wisdom-translation" id="wisdomTranslation">Chanting the Naam, millions of sins are erased</p>
                 <p class="wisdom-source" id="wisdomSource">� Sri Guru Granth Sahib Ji, Ang 289</p>
                 <button class="wisdom-refresh" id="wisdomRefreshBtn" aria-label="New quote">
@@ -296,7 +299,7 @@
                         </div>
                     </button>
                     <button class="qa-btn" id="quickNaamBtn">
-                        <span class="qa-emoji">?</span>
+                        <span class="qa-emoji">⚡</span>
                         <div class="qa-text">
                             <span class="qa-title">Quick</span>
                             <span class="qa-sub">30 sec</span>
@@ -326,7 +329,7 @@
                         <p class="stats-subtitle" id="dashboardSubtitle">Keep the streak alive!</p>
                     </div>
                     <div class="perfect-day-indicator hidden" id="perfectDayIndicator">
-                        <span class="perfect-badge">??</span>
+                        <span class="perfect-badge">🏆</span>
                     </div>
                 </div>
 
@@ -476,8 +479,8 @@
         <div class="alert-backdrop"></div>
         <div class="alert-content">
             <div class="alert-pulse"></div>
-            <div class="alert-icon">??</div>
-            <div class="alert-gurmukhi">? ??? ????</div>
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-gurmukhi">ਵਾਹਿਗੁਰੂ</div>
             <h2 class="alert-title">Time for Naam Abhyas</h2>
             <p class="alert-message">Leave all work. Close your eyes.<br>Remember Vaheguru for 2 minutes.</p>
             <div class="alert-actions">
@@ -498,22 +501,22 @@
     <div class="completion-modal" id="completionModal">
         <div class="completion-backdrop"></div>
         <div class="completion-content">
-            <div class="completion-emojis">? ?? ?</div>
-            <div class="completion-gurmukhi">??? ???? ????</div>
+            <div class="completion-emojis">🎉 ✨ 🙏</div>
+            <div class="completion-gurmukhi">ਮੁਕੰਮਲ ਹੋਇਆ</div>
             <h2 class="completion-title">Session Complete!</h2>
             <div class="completion-stats">
                 <div class="comp-stat">
-                    <span class="comp-stat-icon">??</span>
+                    <span class="comp-stat-icon">⏱️</span>
                     <span class="comp-stat-label">Duration</span>
                     <span class="comp-stat-value" id="compDuration">2:00</span>
                 </div>
                 <div class="comp-stat">
-                    <span class="comp-stat-icon">??</span>
+                    <span class="comp-stat-icon">🔥</span>
                     <span class="comp-stat-label">Streak</span>
                     <span class="comp-stat-value" id="compStreak">0</span>
                 </div>
                 <div class="comp-stat">
-                    <span class="comp-stat-icon">??</span>
+                    <span class="comp-stat-icon">📅</span>
                     <span class="comp-stat-label">Today</span>
                     <span class="comp-stat-value" id="compToday">0/0</span>
                 </div>
@@ -521,7 +524,7 @@
 
             <!-- Achievement Unlock -->
             <div class="achievement-unlock hidden" id="achievementUnlock">
-                <div class="achievement-unlock-badge" id="achievementBadge">??</div>
+                <div class="achievement-unlock-badge" id="achievementBadge">🏅</div>
                 <div class="achievement-unlock-text">
                     <span class="achievement-label">Achievement Unlocked!</span>
                     <h3 class="achievement-name" id="achievementName">First Step</h3>
@@ -578,21 +581,21 @@
                         <label class="theme-option" data-theme="system">
                             <input type="radio" name="theme" value="system" checked>
                             <span class="theme-box">
-                                <span class="theme-icon">??</span>
+                                <span class="theme-icon">💻</span>
                                 <span class="theme-label">System</span>
                             </span>
                         </label>
                         <label class="theme-option" data-theme="light">
                             <input type="radio" name="theme" value="light">
                             <span class="theme-box">
-                                <span class="theme-icon">??</span>
+                                <span class="theme-icon">☀️</span>
                                 <span class="theme-label">Light</span>
                             </span>
                         </label>
                         <label class="theme-option" data-theme="dark">
                             <input type="radio" name="theme" value="dark">
                             <span class="theme-box">
-                                <span class="theme-icon">??</span>
+                                <span class="theme-icon">🌙</span>
                                 <span class="theme-label">Dark</span>
                             </span>
                         </label>
@@ -705,8 +708,8 @@
                     </div>
                     <div class="sound-select-wrapper">
                         <select id="notificationSound" class="sound-select">
-                            <option value="gentle-bell">?? Gentle Bell</option>
-                            <option value="soft-chime">? Soft Chime</option>
+                            <option value="gentle-bell">🔔 Gentle Bell</option>
+                            <option value="soft-chime">🎵 Soft Chime</option>
                         </select>
                         <button class="preview-sound-btn" id="previewSoundBtn" aria-label="Preview sound">
                             <svg class="play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

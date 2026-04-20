@@ -25,7 +25,8 @@
 
   // Critical CSS and JS to preload
   const CRITICAL_ASSETS = [
-    '/nitnem/js/offline-bani-data.js',
+    '/data/banis-chunks/index.json',
+    '/data/banis-chunks/nitnem-banis.json',
     '/nitnem/js/banidb-api.js',
     '/nitnem/js/reader-engine.js',
     '/nitnem/css/reader.css'

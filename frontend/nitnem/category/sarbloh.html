@@ -1,22 +1,7 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
-  <script>
-(function() {
-  try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  } catch (e) {}
-})();
-  </script>
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
@@ -764,11 +749,8 @@
         }
     </style>
     
-    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
-    <script src="../js/offline-bani-data.js?v=1"></script>
-    
-    <!-- BaniDB API - now with instant offline-first -->
-    <script src="../js/banidb-api.js?v=3"></script>
+    <!-- BaniDB API - FULLY OFFLINE VERSION -->
+    <script src="../js/banidb-api.js?v=5"></script>
     
     <!-- Preload Manager for instant navigation -->
     <script src="../js/preload-manager.js?v=1"></script>

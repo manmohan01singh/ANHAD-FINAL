@@ -106,6 +106,10 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   /* FIX: Proper padding for nav + mini-player clearance */
+  padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 16px) !important;
+}
+
+body:has(.mini-player--visible) {
   padding-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 80px) !important;
 }
 
@@ -333,7 +337,7 @@ body.dark-mode .header--compact {
 /* ── Practice Cards — TALLER CLAYMORPHISM ── */
 .practice-card {
   border-radius: 30px !important;
-  padding: 16px 10px 14px !important;
+  padding: 12px 10px 10px !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -420,7 +424,7 @@ body.dark-mode .header--compact {
 
 /* Practice card emoji icon */
 .practice-card__ring-icon .ios-emoji {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   width: auto;
   height: auto;
   filter: none;
@@ -429,8 +433,8 @@ body.dark-mode .header--compact {
 /* ── Quick Access Cards — SQUARCLE CLAYMORPHISM ── */
 .quick-card {
   border-radius: 22px;
-  padding: 18px 20px;
-  margin-bottom: 14px;
+  padding: 14px 20px;
+  margin-bottom: 10px;
   transition: transform 0.3s var(--ios-ease);
   box-shadow: 
     10px 10px 24px rgba(0, 0, 0, 0.06),
@@ -448,7 +452,7 @@ body.dark-mode .header--compact {
 }
 
 .quick-card:last-child {
-  margin-bottom: 36px;
+  margin-bottom: 0;
 }
 
 /* Light mode colored card backgrounds */
@@ -481,14 +485,14 @@ body.dark-mode .header--compact {
 
 .quick-card__icon {
   background: rgba(255, 255, 255, 0.85);
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
 }
 
 /* ── Event Card — more rounded + padding ── */
 .event-card {
   border-radius: 22px;
-  padding: 22px 22px;
+  padding: 16px 20px;
 }
 
 .event-card__main {
@@ -505,13 +509,13 @@ body.dark-mode .header--compact {
 
 .event-card__guru-img-wrapper {
   flex-shrink: 0;
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
 }
 
 .event-card__guru-img {
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
@@ -529,20 +533,20 @@ body.dark-mode .header--compact {
 
 /* ── Section spacing ── */
 .section-header {
-  margin-bottom: 18px;
-  margin-top: 8px;
+  margin-bottom: 12px;
+  margin-top: 6px;
 }
 
 .practice-grid {
-  gap: 14px;
-  margin-bottom: 32px;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 /* ── Progress bar — Ultimate Claymorphism ── */
 .progress-inline {
   border-radius: 36px !important;
-  padding: 18px 22px !important;
-  margin-bottom: 32px !important;
+  padding: 14px 20px !important;
+  margin-bottom: 16px !important;
   background: linear-gradient(165deg, #f5f5f7 0%, #ebebf0 100%) !important;
   box-shadow: 
     12px 12px 24px rgba(0, 0, 0, 0.08),
@@ -892,36 +896,141 @@ html.dark-mode body.dark-mode .quick-card--rose {
   background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%) !important;
 }
 
-/* Ultimate Dark Mode Claymorphism for Quick Cards */
+/* Ultimate Dark Mode Claymorphism for Quick Cards - 3D Pumping Out Effect */
 html.dark-mode body.dark-mode .quick-card {
+  background: #0D0D0F !important;
   box-shadow: 
-    12px 12px 30px rgba(0, 0, 0, 0.6),
-    inset 4px 4px 12px rgba(255, 255, 255, 0.06),
-    inset -4px -4px 12px rgba(0, 0, 0, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html.dark-mode body.dark-mode .quick-card:active {
   box-shadow: 
-    inset 12px 12px 25px rgba(0, 0, 0, 0.7),
-    inset -4px -4px 12px rgba(255, 255, 255, 0.04) !important;
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
 }
 
 html.dark-mode body.dark-mode .quick-card__icon {
-  background: rgba(44, 44, 46, 0.82) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(20, 20, 22, 0.95) !important;
+  border: none !important;
+  box-shadow: 
+    /* Strong 3D shadow for icon - popping out */
+    0 8px 20px rgba(0, 0, 0, 0.5),
+    0 4px 10px rgba(0, 0, 0, 0.3),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.1),
+    inset -3px -3px 8px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Improve emoji visibility in dark mode for Quick Access cards */
+html.dark-mode body.dark-mode .quick-card__icon .ios-emoji {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3)) !important;
+  opacity: 1 !important;
+}
+
+/* More vibrant dark mode colors for Quick Access card variants */
+html.dark-mode body.dark-mode .quick-card--green {
+  background: #0D0D0F !important;
+  border: none !important;
+}
+html.dark-mode body.dark-mode .quick-card--gold {
+  background: #0D0D0F !important;
+  border: none !important;
+}
+html.dark-mode body.dark-mode .quick-card--purple {
+  background: #0D0D0F !important;
+  border: none !important;
+}
+html.dark-mode body.dark-mode .quick-card--blue {
+  background: #0D0D0F !important;
+  border: none !important;
+}
+html.dark-mode body.dark-mode .quick-card--rose {
+  background: #0D0D0F !important;
+  border: none !important;
+}
+html.dark-mode body.dark-mode .quick-card--teal {
+  background: #0D0D0F !important;
+  border: none !important;
 }
 
 html.dark-mode body.dark-mode .event-card {
-  background: transparent !important;
-  border-color: rgba(255, 255, 255, 0.08) !important; /* Faint border instead of dark background */
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .event-card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
+/* Hero Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .hero-card {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .hero-card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
 }
 
 /* Enhancing Hero Play button visibility in Dark Mode - REMOVE CLAYMORPHISM */
 html.dark-mode body.dark-mode .hero-card__image-wrapper::before,
 html.dark-mode body.dark-mode .hero-card__image-wrapper::after {
   box-shadow: none !important;
-  border: none !important; /* Removes the white/silver overlay border on the hero cards in dark mode! */
+  border: none !important;
   mix-blend-mode: normal !important;
 }
 
@@ -933,6 +1042,152 @@ html.dark-mode body.dark-mode .hero-card__play-btn {
               inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
+
+/* Practice Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .practice-card {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .practice-card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
+/* Glass Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .glass-card {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .glass-card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
+/* Stat Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .stat-card {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .stat-card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
+/* Generic Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .card {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .card:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
+/* Nitnem Page Bani Cards - Dark Claymorphism 3D Effect */
+html.dark-mode body.dark-mode .bani-card__link {
+  background: #0D0D0F !important;
+  box-shadow: 
+    /* Strong outer shadow for 3D lift - pumping out effect */
+    25px 25px 50px rgba(0, 0, 0, 0.7),
+    15px 15px 30px rgba(0, 0, 0, 0.5),
+    -8px -8px 25px rgba(255, 255, 255, 0.04),
+    /* Inner highlights - strong top-left glow for 3D pop */
+    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
+    /* Inner shadows - deep bottom-right for depth */
+    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
+    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  border: none !important;
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html.dark-mode body.dark-mode .bani-card__link:active {
+  box-shadow: 
+    /* Pressed state - deep inset shadows */
+    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
+    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  background: #0A0A0C !important;
+  transform: translateY(0) scale(0.98);
+}
+
 html.dark-mode body.dark-mode .hero-card__play-btn svg {
   color: #FFFFFF !important;
 }

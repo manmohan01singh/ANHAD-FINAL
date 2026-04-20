@@ -1,8 +1,13 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
+const path = require('path');
 
-// API ONLY - no static files for now
+// Serve static files from frontend directory
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+
+// API routes
 app.get('/api/radio/live', (req, res) => {
     res.json({
         trackIndex: 25,
@@ -23,6 +28,7 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log('API-only server running on http://localhost:' + PORT);
+    console.log('Server running on http://localhost:' + PORT);
+    console.log('Serving static files from:', frontendPath);
     console.log('Test: http://localhost:' + PORT + '/api/radio/live');
 });

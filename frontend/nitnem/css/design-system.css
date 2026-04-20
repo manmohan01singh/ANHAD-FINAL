@@ -47,29 +47,8 @@
     --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     --duration-fast: 200ms;
     --duration-normal: 300ms;
-}
 
-/* Dark Theme */
-[data-theme="dark"],
-:root {
-    --bg-primary: #0A0A0F;
-    --bg-secondary: #12121A;
-    --bg-tertiary: #1A1A24;
-    --bg-card: rgba(255, 255, 255, 0.03);
-    --bg-card-hover: rgba(255, 255, 255, 0.06);
-    --bg-glass: rgba(20, 20, 28, 0.8);
-    --text-primary: rgba(255, 255, 255, 0.95);
-    --text-secondary: rgba(255, 255, 255, 0.7);
-    --text-tertiary: rgba(255, 255, 255, 0.5);
-    --accent-primary: #C9A227;
-    --accent-secondary: rgba(201, 162, 39, 0.15);
-    --accent-glow: rgba(201, 162, 39, 0.4);
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-light: rgba(255, 255, 255, 0.1);
-}
-
-/* Light Theme */
-[data-theme="light"] {
+    /* Light Theme Colors (Default) */
     --bg-primary: #F8F9FA;
     --bg-secondary: #FFFFFF;
     --bg-tertiary: #F1F3F5;
@@ -80,14 +59,9 @@
     --text-secondary: rgba(0, 0, 0, 0.65);
     --text-tertiary: rgba(0, 0, 0, 0.45);
     --accent-primary: #9A7B1D;
-}
-
-/* Sepia Theme */
-[data-theme="sepia"] {
-    --bg-primary: #F4ECD8;
-    --bg-secondary: #FAF6EB;
-    --text-primary: #3D2914;
-    --accent-primary: #8B5A2B;
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-light: rgba(0, 0, 0, 0.1);
+    --accent-glow: rgba(201, 162, 39, 0.4);
 }
 
 /* Glass Effect */

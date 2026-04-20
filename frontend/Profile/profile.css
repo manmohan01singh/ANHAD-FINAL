@@ -58,8 +58,8 @@ html:not(.dark-mode),
     --text-tertiary: rgba(0, 0, 0, 0.4);
 }
 
-/* Dark Theme - needs html.dark-mode */
-html.dark-mode {
+/* Dark Theme - needs data-theme */
+[data-theme="dark"] {
     --bg-primary: #0d0d12;
     --bg-secondary: #1a1a24;
     --bg-card: rgba(255, 255, 255, 0.05);
@@ -872,7 +872,7 @@ body {
 }
 
 /* Dark mode nav */
-html.dark-mode .bottom-nav {
+[data-theme="dark"] .bottom-nav {
     background: transparent !important;
     border-top: none !important;
 }
@@ -888,11 +888,11 @@ html.dark-mode .bottom-nav {
     border-radius: 20px;
 }
 
-html.dark-mode .bottom-nav__container {
-    background: linear-gradient(to bottom, rgba(50, 50, 55, 0.7) 0%, rgba(20, 20, 22, 0.85) 100%) !important;
+[data-theme="dark"] .bottom-nav__container {
+    background: rgba(22, 22, 24, 1) !important;
     backdrop-filter: blur(60px) saturate(350%) brightness(1.4) !important;
     -webkit-backdrop-filter: blur(60px) saturate(350%) brightness(1.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-top: 1.5px solid rgba(255, 255, 255, 0.4) !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.9) !important;
     box-shadow: 
@@ -903,7 +903,7 @@ html.dark-mode .bottom-nav__container {
     position: relative;
     overflow: hidden;
 }
-html.dark-mode .bottom-nav__container::after {
+[data-theme="dark"] .bottom-nav__container::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -934,16 +934,16 @@ html.dark-mode .bottom-nav__container::after {
 }
 
 /* Dark mode icon visibility - IMPORTANT */
-html.dark-mode .nav-item {
+[data-theme="dark"] .nav-item {
     color: rgba(255, 255, 255, 0.5);
 }
 
-html.dark-mode .nav-item--active {
+[data-theme="dark"] .nav-item--active {
     color: #FFFFFF !important;
     background: transparent !important;
     box-shadow: none !important;
     border: none !important;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
+    filter: none !important;
     transform: scale(1.35) translateY(-3px) !important;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

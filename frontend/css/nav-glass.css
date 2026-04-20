@@ -11,51 +11,53 @@
 
 .anhad-bottom-nav {
   position: fixed;
-  bottom: 12px !important;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 80;
-  width: fit-content;
-  min-width: 320px;
-  max-width: 400px;
+  width: 100%;
   padding: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0);
   margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
   pointer-events: none;
   animation: navEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* ALL MOBILE DEVICES: Position slightly above bottom */
+/* ALL MOBILE DEVICES: Position at bottom with safe area */
 @media (max-width: 768px),
        (max-device-width: 768px),
        (max-device-height: 1024px) and (orientation: portrait) {
   .anhad-bottom-nav {
-    bottom: 8px !important;
+    bottom: 0;
   }
 }
 
-/* TABLET: Position */
+/* TABLET: Position at bottom */
 @media (min-width: 769px) and (max-width: 1024px),
        (min-device-width: 769px) and (max-device-width: 1024px) {
   .anhad-bottom-nav {
-    bottom: 10px !important;
+    bottom: 0;
   }
 }
 
 /* Small phones */
 @media (max-width: 480px) {
   .anhad-bottom-nav {
-    bottom: 6px !important;
+    bottom: 0;
   }
 }
 
 @keyframes navEntrance {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(60px);
+    transform: translateY(60px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 }
 
@@ -67,20 +69,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 12px 20px;
-  height: 68px;
-  min-width: 280px;
+  gap: 8px;
+  padding: 8px 16px;
+  height: 60px;
+  width: fit-content;
+  min-width: 320px;
+  max-width: 90%;
+  margin: 0;
   border-radius: 50px;
   pointer-events: all;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
   will-change: transform, background, box-shadow;
   
-  /* PURE BACKGROUND BLUR - NO COLOR TINT */
-  background: transparent;
-  backdrop-filter: blur(60px) saturate(180%);
-  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  /* WHITE/BLURRISH BACKGROUND */
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(80px) saturate(180%);
+  -webkit-backdrop-filter: blur(80px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.15),
@@ -159,6 +165,7 @@
   justify-content: center;
   width: 24px;
   height: 24px;
+  font-size: 24px;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -262,12 +269,12 @@
 
 [data-theme="dark"] .anhad-bottom-nav .nav-pill,
 html.dark-mode .anhad-bottom-nav .nav-pill {
-  background: linear-gradient(135deg, rgba(30, 30, 30, 0.55), rgba(20, 20, 20, 0.40));
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 22, 24, 1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 
-    0 8px 40px rgba(0, 0, 0, 0.40),
+    0 8px 40px rgba(0, 0, 0, 0.45),
     0 4px 16px rgba(0, 0, 0, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
     inset 0 -1px 0 rgba(255, 255, 255, 0.03);
 }
 
@@ -445,11 +452,11 @@ html.dark-mode .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
 
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .anhad-bottom-nav {
-    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    bottom: 0;
   }
   
   .anhad-bottom-nav .nav-pill {
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px) * 0.5);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
@@ -458,12 +465,6 @@ html.dark-mode .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media screen and (max-width: 400px) {
-  .anhad-bottom-nav {
-    min-width: auto;
-    width: calc(100% - 32px);
-    max-width: none;
-  }
-  
   .anhad-bottom-nav .nav-pill {
     padding: 10px 12px;
     gap: 4px;
@@ -492,10 +493,6 @@ html.dark-mode .anhad-bottom-nav .nav-item:hover .nav-icon-wrap {
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media screen and (min-width: 1024px) {
-  .anhad-bottom-nav {
-    bottom: 32px;
-  }
-  
   .anhad-bottom-nav .nav-pill {
     padding: 12px 20px;
   }

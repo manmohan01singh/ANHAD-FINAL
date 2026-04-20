@@ -223,7 +223,6 @@
   --border-card: 1px solid rgba(0, 0, 0, 0.03);
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════════
    § 2. RESET & BASE — Surgical Foundation
 ═══════════════════════════════════════════════════════════════════════════════ */
@@ -260,7 +259,6 @@ body {
   overflow-x: hidden;
   line-height: 1.47059;
   letter-spacing: -0.022em;
-  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + var(--space-10) + 80px);
   -webkit-overflow-scrolling: touch;
   position: relative;
 }
@@ -469,8 +467,8 @@ a:active {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: var(--space-4) 0 var(--space-3);
-  margin-bottom: var(--space-2);
+  padding: var(--space-3) 0 var(--space-2);
+  margin-bottom: var(--space-1);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -587,12 +585,12 @@ body.dark-mode .header__theme-dot {
   line-height: 1.0;
   color: #D4943A;
   text-transform: uppercase;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.15), -2px -2px 5px rgba(255,255,255,1);
+  text-shadow: none;
 }
 
-/* Dark mode: white text */
+/* Dark mode: golden text */
 body.dark-mode .header__title {
-  color: #FFFFFF;
+  color: #D4943A;
 }
 
 .header__title-gurmukhi {
@@ -746,16 +744,13 @@ body.dark-mode .deco-logo-home img {
   min-height: 160px;
   aspect-ratio: 1 / 1;
   position: relative;
-  justify-self: center; /* Changed from end to center for perfect alignment */
+  justify-self: center;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Ambient glow behind the portrait */
-  filter: drop-shadow(0 20px 40px rgba(212, 148, 58, 0.3))
-          drop-shadow(0 0 60px rgba(255, 200, 100, 0.15));
-  /* Gentle floating animation moved to wrapper to keep rings synced */
-  animation: guruFloat 8s ease-in-out infinite;
+  /* Minimal ambient glow */
+  filter: drop-shadow(0 16px 32px rgba(212, 148, 58, 0.25));
 }
 
 .greeting__guru-img {
@@ -766,71 +761,47 @@ body.dark-mode .deco-logo-home img {
   object-fit: cover;
   object-position: center 10%;
   image-orientation: from-image;
-  /* Premium multi-layer shadow for depth */
+  /* Royal frame - elegant thin gold border */
+  border: 2px solid #D4A84B;
+  /* Subtle inner shadow for depth */
   box-shadow:
-    0 8px 32px rgba(212, 148, 58, 0.35),
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    0 0 0 4px rgba(255, 255, 255, 0.5),
-    inset 0 2px 8px rgba(255, 255, 255, 0.5);
-  /* Subtle glassmorphism border */
-  border: 3px solid rgba(212, 148, 58, 0.4);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
-              box-shadow 0.4s ease;
+    inset 0 2px 6px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
-@keyframes guruFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-/* Animated rotating gradient ring behind the image - REDUCED speed */
+/* Unique royal frame - elegant double ring */
 .greeting__guru-portrait::before {
   content: '';
   position: absolute;
-  inset: -6px;
+  inset: -4px;
   border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    #D4943A 0%,
-    #FFD700 25%,
-    #FF9500 50%,
-    #FFD700 75%,
-    #D4943A 100%
+  /* Royal gradient - antique gold tones */
+  background: linear-gradient(
+    145deg,
+    #B8860B 0%,
+    #D4A84B 35%,
+    #F4D03F 50%,
+    #D4A84B 65%,
+    #B8860B 100%
   );
-  animation: rotateRing 15s linear infinite;
   z-index: -1;
-  opacity: 0.6;
-  filter: blur(2px);
+  /* Subtle decorative ring */
+  box-shadow:
+    0 0 0 1px rgba(139, 69, 19, 0.15),
+    0 0 0 3px rgba(212, 168, 75, 0.1);
 }
 
-/* Secondary subtle glow ring - REDUCED animation */
+/* Outer subtle halo - minimal and elegant */
 .greeting__guru-portrait::after {
   content: '';
   position: absolute;
-  inset: -12px;
+  inset: -10px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 200, 100, 0.4) 0%,
-    transparent 60%
-  );
+  border: 1px solid rgba(212, 168, 75, 0.2);
   z-index: -2;
-  animation: pulseGlow 6s ease-in-out infinite;
-}
-
-@keyframes guruFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-@keyframes rotateRing {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.02); }
 }
 
 .greeting__guru-img:hover {
@@ -1158,7 +1129,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .hero-carousel {
   position: relative;
-  margin-bottom: var(--space-6);
+  margin-bottom: 0;
 }
 
 /* Golden Orb — REMOVED per user request, replaced with rose decoration */
@@ -1178,7 +1149,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding: var(--space-1) var(--space-0-5) var(--space-1);
+  padding: var(--space-1) var(--space-0-5) 0;
   scroll-padding: var(--space-0-5);
 }
 
@@ -1430,7 +1401,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   justify-content: center;
   align-items: center;
   gap: 6px;
-  margin-top: var(--space-4);
+  margin-top: 0;
 }
 
 .hero-carousel__dot {
@@ -1858,39 +1829,35 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .event-card {
   position: relative;
   padding: var(--space-5) var(--space-5);
-  background: var(--accent-gradient-subtle);
+  background: var(--surface-primary);
   border-radius: var(--radius-xl);
   cursor: pointer;
+  margin-top: 0;
   margin-bottom: var(--space-7);
   transition: transform var(--duration-fast) var(--ease-spring);
-  border: 1px solid var(--accent-light);
+  border: 1px solid var(--border-color);
   overflow: hidden;
-  box-shadow: var(--shadow-sm), 0 4px 20px rgba(212, 148, 58, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .event-card:active {
   transform: scale(0.98);
 }
 
-/* Top accent line */
+/* Top accent line - simplified */
 .event-card::before {
   content: '';
   position: absolute;
   top: 0; left: var(--space-5); right: var(--space-5);
-  height: 2px;
-  background: var(--accent-gradient);
+  height: 3px;
+  background: var(--accent);
   border-radius: 0 0 2px 2px;
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
-/* Subtle warm glow */
+/* Remove subtle warm glow */
 .event-card::after {
-  content: '';
-  position: absolute;
-  top: -20px; right: -20px;
-  width: 120px; height: 120px;
-  background: radial-gradient(circle, rgba(212, 148, 58, 0.1) 0%, transparent 70%);
-  pointer-events: none;
+  display: none;
 }
 
 .event-card__eyebrow {
@@ -1942,7 +1909,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 ═══════════════════════════════════════════════════════════════════════════════ */
 .mini-player {
   position: fixed;
-  bottom: calc(var(--nav-height) + var(--safe-bottom) + 14px);
+  bottom: calc(var(--nav-height) + var(--safe-bottom) + 8px);
   left: 50%;
   transform: translateX(-50%) translateY(200%);
   width: calc(100% - 28px);
@@ -2211,12 +2178,11 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .nav-tab--active .ios-emoji--nav {
   opacity: 1 !important;
   transform: scale(1.35) translateY(-3px);
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body.dark-mode .nav-tab--active .ios-emoji--nav {
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
+  filter: none !important;
 }
 
 .nav-tab--active .nav-tab__label {
@@ -2757,10 +2723,10 @@ body.dark-mode .mini-player {
 
 /* ═══ Dark Mode Nav — Premium Clean Glass (mirrors light mode structure) ═══ */
 body.dark-mode .bottom-nav__glass {
-  background: rgba(22, 22, 24, 0.78) !important;
+  background: rgba(22, 22, 24, 0.98) !important;
   backdrop-filter: blur(var(--blur-2xl)) saturate(220%) brightness(0.95) !important;
   -webkit-backdrop-filter: blur(var(--blur-2xl)) saturate(220%) brightness(0.95) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.10) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow:
     0 6px 32px rgba(0, 0, 0, 0.45),
     0 2px 10px rgba(0, 0, 0, 0.25),
@@ -2916,7 +2882,7 @@ body.dark-mode .install-banner {
 
 /* ── Section Headers — Premium Styling ── */
 .section-header {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-1);
 }
 
 .section-header__title {
@@ -2930,7 +2896,7 @@ body.dark-mode .install-banner {
 
 /* ── Last Quick Card — Bottom Breathing Room ── */
 .quick-card:last-of-type {
-  margin-bottom: var(--space-10);
+  margin-bottom: 0;
 }
 
 /* Skeleton loading states */

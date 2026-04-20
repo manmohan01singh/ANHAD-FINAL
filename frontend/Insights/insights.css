@@ -96,8 +96,8 @@ html:not(.dark-mode) {
                       inset -3px -3px 6px rgba(255, 255, 255, 1);
 }
 
-/* Dark Theme - needs html.dark-mode */
-html.dark-mode {
+/* Dark Theme - needs [data-theme="dark"] */
+[data-theme="dark"] {
     --bg-primary: #1C1C1F;
     --bg-secondary: #1C1C1F;
     --bg-card: var(--bg-primary);
@@ -140,7 +140,7 @@ body {
     z-index: 1;
     padding: var(--spacing-md);
     padding-top: calc(var(--safe-top) + 60px);
-    padding-bottom: calc(var(--safe-bottom) + 100px);
+    padding-bottom: calc(83px + var(--safe-bottom) + 20px);
     max-width: 600px;
     margin: 0 auto;
 }
@@ -157,12 +157,21 @@ body {
     z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: var(--spacing-sm) var(--spacing-lg);
     padding-top: calc(var(--safe-top));
     background: transparent;
     border-bottom: none;
     transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+.insights-header .back-btn {
+    position: absolute;
+    left: var(--spacing-lg);
+}
+
+.insights-header__title {
+    text-align: center;
 }
 
 .insights-header.scrolled {
@@ -349,7 +358,7 @@ html:not(.dark-mode) .glass-card {
 }
 
 /* Dark mode - twilight sky */
-html.dark-mode .inspiration-section {
+[data-theme="dark"] .inspiration-section {
     background: linear-gradient(180deg, 
         #1E3A5F 0%, 
         #0F2847 25%,
@@ -366,14 +375,14 @@ html.dark-mode .inspiration-section {
         inset 0 -1px 2px rgba(0, 0, 0, 0.3);
 }
 
-html.dark-mode .inspiration-section::before,
-html.dark-mode .inspiration-section::after,
-html.dark-mode .inspiration-section .cloud-layer {
+[data-theme="dark"] .inspiration-section::before,
+[data-theme="dark"] .inspiration-section::after,
+[data-theme="dark"] .inspiration-section .cloud-layer {
     opacity: 0.25;
     filter: blur(2px);
 }
 
-html.dark-mode .inspiration-section .sun-glow {
+[data-theme="dark"] .inspiration-section .sun-glow {
     background: radial-gradient(circle, rgba(125,211,252,0.15) 0%, rgba(14,165,233,0.05) 40%, transparent 70%);
 }
 
@@ -397,7 +406,7 @@ html.dark-mode .inspiration-section .sun-glow {
     border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-html.dark-mode .inspiration-tag {
+[data-theme="dark"] .inspiration-tag {
     color: #7DD3FC;
     background: rgba(14, 165, 233, 0.2);
     border-color: rgba(255, 255, 255, 0.1);
@@ -422,7 +431,7 @@ html.dark-mode .inspiration-tag {
     font-size: 16px;
 }
 
-html.dark-mode .refresh-btn {
+[data-theme="dark"] .refresh-btn {
     background: rgba(14, 165, 233, 0.2);
     color: #7DD3FC;
     border-color: rgba(255, 255, 255, 0.1);
@@ -444,7 +453,7 @@ html.dark-mode .refresh-btn {
     z-index: 2;
 }
 
-html.dark-mode .inspiration-quote__text {
+[data-theme="dark"] .inspiration-quote__text {
     color: #E0F2FE;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
@@ -459,7 +468,7 @@ html.dark-mode .inspiration-quote__text {
     z-index: 2;
 }
 
-html.dark-mode .inspiration-quote__translation {
+[data-theme="dark"] .inspiration-quote__translation {
     color: #BAE6FD;
 }
 
@@ -475,7 +484,7 @@ html.dark-mode .inspiration-quote__translation {
     z-index: 2;
 }
 
-html.dark-mode .inspiration-meta {
+[data-theme="dark"] .inspiration-meta {
     border-top-color: rgba(255, 255, 255, 0.1);
     color: #94A3B8;
 }
@@ -501,7 +510,7 @@ html.dark-mode .inspiration-meta {
     border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
-html.dark-mode .share-btn {
+[data-theme="dark"] .share-btn {
     background: rgba(14, 165, 233, 0.2);
     color: #7DD3FC;
     border-color: rgba(255, 255, 255, 0.1);
@@ -598,7 +607,7 @@ html:not(.dark-mode) .wisdom-card:active {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
-html.dark-mode .wisdom-icon {
+[data-theme="dark"] .wisdom-icon {
     box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
@@ -639,7 +648,7 @@ html:not(.dark-mode) .wisdom-gurbani {
     border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
-html.dark-mode .wisdom-gurbani {
+[data-theme="dark"] .wisdom-gurbani {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -846,7 +855,7 @@ html:not(.dark-mode) .wisdom-pankti {
 }
 
 /* Dark mode adjustments for claymorphism effects */
-html.dark-mode .wisdom-glow {
+[data-theme="dark"] .wisdom-glow {
     background: linear-gradient(135deg, rgba(212, 165, 116, 0.2) 0%, rgba(212, 165, 116, 0.05) 100%);
     box-shadow: 
         8px 8px 20px rgba(0, 0, 0, 0.4),
@@ -854,7 +863,7 @@ html.dark-mode .wisdom-glow {
         inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
-html.dark-mode .wisdom-glow::after {
+[data-theme="dark"] .wisdom-glow::after {
     background: linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0.05) 100%);
     box-shadow: 
         6px 6px 16px rgba(0, 0, 0, 0.3),
@@ -862,15 +871,15 @@ html.dark-mode .wisdom-glow::after {
         inset 0 1px 2px rgba(255, 255, 255, 0.08);
 }
 
-html.dark-mode .wisdom-rays {
+[data-theme="dark"] .wisdom-rays {
     background: 
         radial-gradient(circle at 20% 30%, rgba(212, 165, 116, 0.1) 0%, transparent 25%),
         radial-gradient(circle at 80% 70%, rgba(167, 139, 250, 0.08) 0%, transparent 20%),
         radial-gradient(circle at 40% 80%, rgba(110, 231, 183, 0.06) 0%, transparent 18%);
 }
 
-html.dark-mode .wisdom-rays::before,
-html.dark-mode .wisdom-rays::after {
+[data-theme="dark"] .wisdom-rays::before,
+[data-theme="dark"] .wisdom-rays::after {
     background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
     box-shadow: 
         3px 3px 8px rgba(0, 0, 0, 0.3),
@@ -878,7 +887,7 @@ html.dark-mode .wisdom-rays::after {
         inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
-html.dark-mode .wisdom-particles span {
+[data-theme="dark"] .wisdom-particles span {
     background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 100%);
     box-shadow: 
         2px 2px 6px rgba(0, 0, 0, 0.2),
@@ -1035,7 +1044,7 @@ html.dark-mode .wisdom-particles span {
 }
 
 /* Dark mode category icons - softer appearance */
-html.dark-mode .category-card[data-topic="history"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="history"] .category-icon {
     background: linear-gradient(135deg, rgba(224, 122, 95, 0.15) 0%, rgba(224, 122, 95, 0.1) 100%) !important;
     color: #F4A896;
     box-shadow: 
@@ -1045,7 +1054,7 @@ html.dark-mode .category-card[data-topic="history"] .category-icon {
     border: 1px solid rgba(244, 168, 150, 0.2);
 }
 
-html.dark-mode .category-card[data-topic="sakhis"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="sakhis"] .category-icon {
     background: linear-gradient(135deg, rgba(155, 122, 232, 0.15) 0%, rgba(155, 122, 232, 0.1) 100%) !important;
     color: #B8A0F0;
     box-shadow: 
@@ -1055,7 +1064,7 @@ html.dark-mode .category-card[data-topic="sakhis"] .category-icon {
     border: 1px solid rgba(184, 160, 240, 0.2);
 }
 
-html.dark-mode .category-card[data-topic="raags"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="raags"] .category-icon {
     background: linear-gradient(135deg, rgba(78, 203, 156, 0.15) 0%, rgba(78, 203, 156, 0.1) 100%) !important;
     color: #6EE7B7;
     box-shadow: 
@@ -1065,7 +1074,7 @@ html.dark-mode .category-card[data-topic="raags"] .category-icon {
     border: 1px solid rgba(110, 231, 183, 0.2);
 }
 
-html.dark-mode .category-card[data-topic="composers"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="composers"] .category-icon {
     background: linear-gradient(135deg, rgba(90, 156, 245, 0.15) 0%, rgba(90, 156, 245, 0.1) 100%) !important;
     color: #7DB8FA;
     box-shadow: 
@@ -1075,7 +1084,7 @@ html.dark-mode .category-card[data-topic="composers"] .category-icon {
     border: 1px solid rgba(125, 184, 250, 0.2);
 }
 
-html.dark-mode .category-card[data-topic="themes"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="themes"] .category-icon {
     background: linear-gradient(135deg, rgba(232, 107, 154, 0.15) 0%, rgba(232, 107, 154, 0.1) 100%) !important;
     color: #F094B4;
     box-shadow: 
@@ -1085,7 +1094,7 @@ html.dark-mode .category-card[data-topic="themes"] .category-icon {
     border: 1px solid rgba(240, 148, 180, 0.2);
 }
 
-html.dark-mode .category-card[data-topic="guruSahibs"] .category-icon {
+[data-theme="dark"] .category-card[data-topic="guruSahibs"] .category-icon {
     background: linear-gradient(135deg, rgba(212, 163, 75, 0.15) 0%, rgba(212, 163, 75, 0.1) 100%) !important;
     color: #E8C87A;
     box-shadow: 
@@ -1096,32 +1105,32 @@ html.dark-mode .category-card[data-topic="guruSahibs"] .category-icon {
 }
 
 /* Dark mode category card backgrounds - fix light colors */
-html.dark-mode .category-card[data-topic="history"] { 
+[data-theme="dark"] .category-card[data-topic="history"] { 
     background: linear-gradient(145deg, rgba(244, 168, 150, 0.15) 0%, rgba(224, 122, 95, 0.08) 100%) !important; 
     border-color: rgba(244, 168, 150, 0.15);
 }
 
-html.dark-mode .category-card[data-topic="sakhis"] { 
+[data-theme="dark"] .category-card[data-topic="sakhis"] { 
     background: linear-gradient(145deg, rgba(184, 160, 240, 0.15) 0%, rgba(155, 122, 232, 0.08) 100%) !important; 
     border-color: rgba(184, 160, 240, 0.15);
 }
 
-html.dark-mode .category-card[data-topic="raags"] { 
+[data-theme="dark"] .category-card[data-topic="raags"] { 
     background: linear-gradient(145deg, rgba(110, 231, 183, 0.15) 0%, rgba(78, 203, 156, 0.08) 100%) !important; 
     border-color: rgba(110, 231, 183, 0.15);
 }
 
-html.dark-mode .category-card[data-topic="composers"] { 
+[data-theme="dark"] .category-card[data-topic="composers"] { 
     background: linear-gradient(145deg, rgba(125, 184, 250, 0.15) 0%, rgba(90, 156, 245, 0.08) 100%) !important; 
     border-color: rgba(125, 184, 250, 0.15);
 }
 
-html.dark-mode .category-card[data-topic="themes"] { 
+[data-theme="dark"] .category-card[data-topic="themes"] { 
     background: linear-gradient(145deg, rgba(240, 148, 180, 0.15) 0%, rgba(232, 107, 154, 0.08) 100%) !important; 
     border-color: rgba(240, 148, 180, 0.15);
 }
 
-html.dark-mode .category-card[data-topic="guruSahibs"] { 
+[data-theme="dark"] .category-card[data-topic="guruSahibs"] { 
     background: linear-gradient(145deg, rgba(232, 200, 122, 0.15) 0%, rgba(212, 163, 75, 0.08) 100%) !important; 
     border-color: rgba(232, 200, 122, 0.15);
 }
@@ -1380,8 +1389,8 @@ html:not(.dark-mode) .quick-stat__divider {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
   position: relative; overflow: hidden;
 }
-html.dark-mode .bottom-nav__glass {
-  background: rgba(28, 28, 30, 0.65) !important;
+[data-theme="dark"] .bottom-nav__glass {
+  background: rgba(22, 22, 24, 1) !important;
   backdrop-filter: blur(40px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
   border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
@@ -1391,7 +1400,7 @@ html.dark-mode .bottom-nav__glass {
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 -0.5px 0 rgba(0, 0, 0, 0.2) !important;
 }
-html.dark-mode .bottom-nav__glass::before {
+[data-theme="dark"] .bottom-nav__glass::before {
   background: linear-gradient(90deg,
     transparent 0%,
     rgba(255, 255, 255, 0.10) 30%,
@@ -1400,7 +1409,7 @@ html.dark-mode .bottom-nav__glass::before {
     transparent 100%
   ) !important;
 }
-html.dark-mode .bottom-nav__glass::after {
+[data-theme="dark"] .bottom-nav__glass::after {
   display: none !important;
 }
 .nav-tab {
@@ -1410,16 +1419,16 @@ html.dark-mode .bottom-nav__glass::after {
   cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent; min-width: 56px;
 }
-html.dark-mode .nav-tab { color: rgba(255, 255, 255, 0.38); }
+[data-theme="dark"] .nav-tab { color: rgba(255, 255, 255, 0.38); }
 .nav-tab:active { transform: scale(0.85); }
 .ios-emoji--nav { font-size: 22px; line-height: 1; opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
 .nav-tab:hover .ios-emoji--nav { opacity: 0.8; }
 .nav-tab__label { font-size: 10px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
 
 .nav-tab--active { color: #000000 !important; background: transparent; }
-html.dark-mode .nav-tab--active { color: #FFFFFF !important; background: transparent !important; }
+[data-theme="dark"] .nav-tab--active { color: #FFFFFF !important; background: transparent !important; }
 .nav-tab--active .nav-tab__label { font-weight: 700; color: #000000; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-html.dark-mode .nav-tab--active .nav-tab__label { 
+[data-theme="dark"] .nav-tab--active .nav-tab__label { 
   color: #FFFFFF !important; 
   font-weight: 800;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
@@ -1429,11 +1438,11 @@ html.dark-mode .nav-tab--active .nav-tab__label {
   opacity: 1 !important; 
   background: transparent !important;
   transform: scale(1.35) translateY(-3px); 
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  filter: none;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-html.dark-mode .nav-tab--active .ios-emoji--nav {
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
+[data-theme="dark"] .nav-tab--active .ios-emoji--nav {
+  filter: none !important;
 }
 
 
@@ -1804,8 +1813,8 @@ a.topic-card svg {
     pointer-events: none;
 }
 
-html.dark-mode .bottom-nav__glass {
-  background: rgba(28, 28, 30, 0.65) !important;
+[data-theme="dark"] .bottom-nav__glass {
+  background: rgba(22, 22, 24, 1) !important;
   backdrop-filter: blur(40px) saturate(200%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
   border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
@@ -1815,7 +1824,7 @@ html.dark-mode .bottom-nav__glass {
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     inset 0 -0.5px 0 rgba(0, 0, 0, 0.2) !important;
 }
-html.dark-mode .bottom-nav__glass::before {
+[data-theme="dark"] .bottom-nav__glass::before {
   background: linear-gradient(90deg,
     transparent 0%,
     rgba(255, 255, 255, 0.10) 30%,
@@ -1824,7 +1833,7 @@ html.dark-mode .bottom-nav__glass::before {
     transparent 100%
   ) !important;
 }
-html.dark-mode .bottom-nav__glass::after {
+[data-theme="dark"] .bottom-nav__glass::after {
   display: none !important;
 }
 
@@ -1847,15 +1856,15 @@ html.dark-mode .bottom-nav__glass::after {
     z-index: 1;
 }
 
-html.dark-mode .nav-tab { color: rgba(255, 255, 255, 0.35); }
+[data-theme="dark"] .nav-tab { color: rgba(255, 255, 255, 0.35); }
 .nav-tab:active { transform: scale(0.82); }
 .ios-emoji--nav { font-size: 22px; line-height: 1; }
 .nav-tab__label { font-size: 10px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
 
 .nav-tab--active { color: #000000 !important; background: transparent; }
-html.dark-mode .nav-tab--active { color: #FFFFFF !important; background: transparent !important; box-shadow: none; }
+[data-theme="dark"] .nav-tab--active { color: #FFFFFF !important; background: transparent !important; box-shadow: none; }
 .nav-tab--active .nav-tab__label { font-weight: 700; color: #000000; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-html.dark-mode .nav-tab--active .nav-tab__label { 
+[data-theme="dark"] .nav-tab--active .nav-tab__label { 
   color: #FFFFFF !important; 
   font-weight: 800;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
@@ -1870,8 +1879,8 @@ html.dark-mode .nav-tab--active .nav-tab__label {
   box-shadow: none;
   border: none;
 }
-html.dark-mode .nav-tab--active .ios-emoji--nav {
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
+[data-theme="dark"] .nav-tab--active .ios-emoji--nav {
+  filter: none !important;
   box-shadow: none !important;
   border: none !important;
 }

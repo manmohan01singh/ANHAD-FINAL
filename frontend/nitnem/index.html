@@ -1,51 +1,7 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
-  <script>
-(function() {
-  try {
-    // ONLY use nitnem-specific theme key - NO fallback to global theme
-    // Default is ALWAYS 'light' for first-time visitors
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    const html = document.documentElement;
-    if (theme === 'dark') {
-      html.setAttribute('data-theme', 'dark');
-      html.style.colorScheme = 'dark';
-    } else {
-      // Light is default (no attribute needed, but set for consistency)
-      html.setAttribute('data-theme', 'light');
-      html.style.colorScheme = 'light';
-    }
-    // Mark theme as ready immediately
-    html.classList.add('theme-ready');
-  } catch (e) {}
-})();
-  </script>
-  <style>
-    /* Prevent FOUC - hide until theme ready */
-    html:not(.theme-ready) body { 
-      opacity: 0 !important; 
-      visibility: hidden !important;
-    }
-    html.theme-ready body { 
-      opacity: 1; 
-      visibility: visible;
-      transition: opacity 0.1s ease-out;
-    }
-    /* FORCE light mode defaults - override external CSS */
-    html[data-theme="light"] body {
-      background: #FFFFFF !important;
-      color: #000000 !important;
-    }
-    html[data-theme="light"] .bg-effects {
-      opacity: 0.3 !important;
-    }
-    html[data-theme="light"] .orb {
-      opacity: 0.15 !important;
-    }
-  </style>
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
@@ -64,6 +20,11 @@
     <meta http-equiv="Expires" content="0">
     
     <!-- AUTO CACHE BUST - Forces reload when app updates -->
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/global-theme.js"></script>
+    
     <script>
         (function() {
             const APP_VERSION = '1.0.1'; // Increment this on every deploy
@@ -99,9 +60,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- INSTANT LOADING: Preload critical resources -->
-    <link rel="preload" href="js/offline-bani-data.js" as="script">
     <link rel="preload" href="js/banidb-api.js" as="script">
-    <link rel="preload" href="js/reader-engine.js" as="script">
+    <link rel="preload" href="../data/all-banis-offline.json" as="fetch" crossorigin>
     <link rel="preload" href="css/reader.css" as="style">
     
     <!-- Prefetch next likely pages -->
@@ -113,11 +73,8 @@
     <script src="../lib/global-theme.js?v=2"></script>
     <script src="../js/anhad-core.js?v=2" defer></script>
     
-    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
-    <script src="js/offline-bani-data.js?v=1"></script>
-    
-    <!-- BaniDB API - now with instant offline-first -->
-    <script src="js/banidb-api.js?v=3"></script>
+    <!-- BaniDB API - CHUNKED OFFLINE VERSION -->
+    <script src="js/banidb-api.js?v=5"></script>
     
     <!-- Preload Manager for instant navigation -->
     <script src="js/preload-manager.js?v=1"></script>
@@ -160,25 +117,6 @@
             --sacred-saffron: #FF8C00;
             --sacred-cream: #FFF8DC;
             
-            /* LIGHT THEME (Default) */
-            --bg-primary: #FFFFFF;
-            --bg-secondary: #FFFFFF;
-            --bg-tertiary: #FAFAFA;
-            --bg-elevated: #FFFFFF;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-border: rgba(0, 0, 0, 0.04);
-            --text-primary: #000000;
-            --text-secondary: rgba(0, 0, 0, 0.5);
-            --text-tertiary: rgba(0, 0, 0, 0.3);
-            --separator: rgba(0, 0, 0, 0.06);
-            
-            /* Materials */
-            --glass-bg: rgba(255, 255, 255, 0.9);
-            --glass-border: rgba(0, 0, 0, 0.04);
-            --blur-regular: blur(20px);
-            --blur-thick: blur(40px);
-            --blur-ultra: blur(80px);
-            
             /* Spacing */
             --safe-top: env(safe-area-inset-top, 47px);
             --safe-bottom: env(safe-area-inset-bottom, 34px);
@@ -197,22 +135,6 @@
             --tab-bar-height: 83px;
         }
         
-        [data-theme="dark"] {
-            /* DARK THEME (Override) */
-            --bg-primary: #000000;
-            --bg-secondary: #1C1C1E;
-            --bg-tertiary: #2C2C2E;
-            --bg-elevated: #3A3A3C;
-            --card-bg: rgba(28, 28, 30, 0.85);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --text-tertiary: rgba(255, 255, 255, 0.4);
-            --separator: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(28, 28, 30, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
-        
         * {
             margin: 0;
             padding: 0;
@@ -222,12 +144,11 @@
         
         html {
             font-size: 16px;
-            scroll-behavior: smooth;
         }
         
         body {
             font-family: var(--font-primary);
-            background: var(--bg-primary);
+            background: #F8F9FA;
             color: var(--text-primary);
             min-height: 100vh;
             min-height: 100dvh;
@@ -243,7 +164,7 @@
         .skeleton-container {
             position: fixed;
             inset: 0;
-            background: var(--bg-primary);
+            background: #F8F9FA;
             z-index: 10000;
             padding: 60px 20px 100px;
             transition: opacity 0.5s var(--ease-out), visibility 0.5s;
@@ -269,19 +190,10 @@
             background: linear-gradient(
                 90deg,
                 transparent 0%,
-                rgba(255, 255, 255, 0.08) 50%,
-                transparent 100%
-            );
-            animation: shimmer 1.5s infinite;
-        }
-        
-        [data-theme="light"] .skeleton::after {
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
                 rgba(0, 0, 0, 0.04) 50%,
                 transparent 100%
             );
+            animation: shimmer 1.5s infinite;
         }
         
         @keyframes shimmer {
@@ -315,35 +227,10 @@
             border-radius: 50%;
             filter: var(--blur-ultra);
             opacity: 0.3;
-            will-change: transform;
             transform: translateZ(0);
         }
         
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: conic-gradient(from 0deg, var(--sacred-gold), var(--ios-orange), var(--sacred-saffron), var(--sacred-gold));
-            top: -250px;
-            right: -200px;
-        }
-        
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: conic-gradient(from 120deg, var(--ios-purple), var(--ios-indigo), var(--ios-blue), var(--ios-purple));
-            bottom: 10%;
-            left: -200px;
-        }
-        
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: conic-gradient(from 240deg, var(--ios-pink), var(--ios-red), var(--ios-pink));
-            bottom: -100px;
-            right: -50px;
-        }
-        
-        /* REMOVED: orbFloat animation causing lag */
+        /* REMOVED: orb elements causing color circles in background */
         
         .noise-overlay {
             position: absolute;
@@ -351,6 +238,7 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
             opacity: 0.02;
             mix-blend-mode: overlay;
+            display: none; /* Disabled for performance */
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -377,8 +265,6 @@
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
             background: var(--glass-bg);
-            backdrop-filter: var(--blur-thick);
-            -webkit-backdrop-filter: var(--blur-thick);
             border-bottom: 1px solid var(--separator);
         }
         
@@ -429,19 +315,6 @@
             transform: translateY(0);
         }
         
-        html.dark-mode .theme-toggle {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                8px 8px 25px rgba(20, 20, 25, 0.5),
-                4px 4px 12px rgba(20, 20, 25, 0.35),
-                -4px -4px 12px rgba(255, 255, 255, 0.12),
-                -2px -2px 6px rgba(255, 255, 255, 0.05),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 3px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.2);
-        }
-        
         .theme-toggle:active {
             transform: scale(0.9);
             box-shadow:
@@ -465,33 +338,16 @@
             width: 180px;
             height: 180px;
             margin: 0 auto 16px;
-            filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.5)) drop-shadow(0 0 100px rgba(255, 165, 0, 0.3));
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 100px rgba(255, 165, 0, 0.3));
             border-radius: 50%;
             padding: 10px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 165, 0, 0.2) 50%, rgba(184, 134, 11, 0.3) 100%);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 215, 0, 0.5);
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                0 0 60px rgba(255, 215, 0, 0.2),
-                inset 0 2px 4px rgba(255, 255, 255, 0.3),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* REMOVED: glowPulse animation causing lag */
-        
-        [data-theme="light"] .hero-ikonkar {
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4));
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #D4AF37 60%, #B8860B 100%);
+            backdrop-filter: blur(10px);
             border: 3px solid rgba(255, 215, 0, 0.6);
             box-shadow: 
                 0 12px 40px rgba(0, 0, 0, 0.2),
                 inset 0 2px 6px rgba(255, 255, 255, 0.2),
                 inset 0 -2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        [data-theme="light"] .hero-ikonkar img {
-            filter: brightness(1.2) contrast(1.2) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
         
         .hero-ikonkar img {
@@ -540,19 +396,6 @@
             transform: translateY(0);
         }
         
-        html.dark-mode .hero-greeting {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                12px 12px 40px rgba(20, 20, 25, 0.45),
-                6px 6px 20px rgba(20, 20, 25, 0.32),
-                -6px -6px 20px rgba(255, 255, 255, 0.1),
-                -3px -3px 10px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.18);
-        }
-        
         .greeting-icon { font-size: 22px; }
         
         .greeting-text {
@@ -586,19 +429,6 @@
                 0 2px 6px rgba(60, 60, 70, 0.05);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
-        }
-        
-        html.dark-mode .search-trigger {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                12px 12px 40px rgba(20, 20, 25, 0.5),
-                6px 6px 20px rgba(20, 20, 25, 0.35),
-                -6px -6px 20px rgba(255, 255, 255, 0.1),
-                -3px -3px 10px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.2);
         }
         
         .search-trigger:hover {
@@ -696,24 +526,6 @@
             transform: translateY(0);
         }
         
-        [data-theme="light"] .quick-card {
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border-color: rgba(255, 255, 255, 0.7);
-        }
-        
-        html.dark-mode .quick-card {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                20px 20px 60px rgba(20, 20, 25, 0.5),
-                10px 10px 30px rgba(20, 20, 25, 0.38),
-                -10px -10px 30px rgba(255, 255, 255, 0.1),
-                -5px -5px 15px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.18);
-        }
-        
         .quick-card:active {
             transform: scale(0.96) translateY(4px);
             box-shadow:
@@ -722,15 +534,6 @@
                 inset -5px -5px 15px rgba(255, 255, 255, 0.6),
                 0 0 0 2px rgba(255, 255, 255, 0.4),
                 4px 4px 12px rgba(60, 60, 70, 0.18);
-        }
-        
-        html.dark-mode .quick-card:active {
-            box-shadow:
-                inset 8px 8px 20px rgba(20, 20, 25, 0.45),
-                inset 4px 4px 10px rgba(20, 20, 25, 0.3),
-                inset -5px -5px 15px rgba(255, 255, 255, 0.08),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                4px 4px 12px rgba(20, 20, 25, 0.35);
         }
         
         .quick-card-glow {
@@ -801,19 +604,6 @@
             transform: translateY(0);
         }
         
-        html.dark-mode .category-card {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252528 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
-                16px 16px 50px rgba(20, 20, 25, 0.48),
-                8px 8px 25px rgba(20, 20, 25, 0.36),
-                -8px -8px 25px rgba(255, 255, 255, 0.1),
-                -4px -4px 12px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.18);
-        }
-        
         .category-card:active {
             transform: scale(0.98) translateY(3px);
             box-shadow:
@@ -822,15 +612,6 @@
                 inset -4px -4px 12px rgba(255, 255, 255, 0.6),
                 0 0 0 2px rgba(255, 255, 255, 0.4),
                 3px 3px 10px rgba(60, 60, 70, 0.18);
-        }
-        
-        html.dark-mode .category-card:active {
-            box-shadow:
-                inset 6px 6px 16px rgba(20, 20, 25, 0.45),
-                inset 3px 3px 8px rgba(20, 20, 25, 0.3),
-                inset -4px -4px 12px rgba(255, 255, 255, 0.08),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                3px 3px 10px rgba(20, 20, 25, 0.35);
         }
         
         .category-card:hover {
@@ -843,17 +624,6 @@
                 0 0 0 2px rgba(255, 255, 255, 0.6),
                 inset 0 2px 4px rgba(255, 255, 255, 1),
                 inset 0 -1px 2px rgba(60, 60, 70, 0.06);
-        }
-        
-        html.dark-mode .category-card:hover {
-            box-shadow:
-                20px 20px 60px rgba(20, 20, 25, 0.55),
-                10px 10px 30px rgba(20, 20, 25, 0.42),
-                -10px -10px 30px rgba(255, 255, 255, 0.1),
-                -5px -5px 15px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.08),
-                inset 0 -1px 2px rgba(20, 20, 25, 0.18);
         }
         
         .category-glow {
@@ -1022,20 +792,11 @@
             z-index: 1000;
             display: flex;
             align-items: center;
-            gap: 4px;
-            padding: 8px 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            gap: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 28px;
-            backdrop-filter: var(--blur-thick);
-            -webkit-backdrop-filter: var(--blur-thick);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-        }
-        
-        [data-theme="light"] .tab-bar {
-            background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         
@@ -1043,22 +804,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 4px;
-            padding: 8px 18px;
+            padding: 8px 16px;
             border-radius: 20px;
             text-decoration: none;
             color: var(--text-secondary);
-            transition: all 0.3s var(--ease-out);
-            position: relative;
+            transition: all 0.2s;
         }
+        
+        .tab-item.active { background: rgba(0, 0, 0, 0.05); }
         
         .tab-item.active {
             color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.05);
         }
-        
-        [data-theme="light"] .tab-item.active { background: rgba(0, 0, 0, 0.05); }
         
         .tab-item.active::before {
             content: '';
@@ -1107,7 +866,6 @@
             position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
         }
         
         .modal-content {
@@ -1115,7 +873,7 @@
             width: 100%;
             max-width: 600px;
             max-height: 80vh;
-            background: var(--bg-primary);
+            background: #FFFFFF;
             border-radius: 24px 24px 0 0;
             overflow: hidden;
             animation: slideUp 0.3s ease-out;
@@ -1131,7 +889,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 20px;
-            border-bottom: 1px solid var(--separator);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .modal-header h2 {
@@ -1167,10 +925,10 @@
             width: 100%;
             padding: 16px 20px;
             font-size: 17px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--separator);
+            background: #F8F9FA;
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 14px;
-            color: var(--text-primary);
+            color: #1C1C1E;
             outline: none;
             margin-bottom: 16px;
         }
@@ -1197,7 +955,7 @@
             align-items: center;
             gap: 16px;
             padding: 16px;
-            background: var(--bg-secondary);
+            background: #F8F9FA;
             border-radius: 14px;
             text-decoration: none;
             color: inherit;
@@ -1206,7 +964,7 @@
         
         .search-result-item:active {
             transform: scale(0.98);
-            background: var(--fill-primary);
+            background: #E5E5EA;
         }
         
         .result-icon {

@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-20",
+  "composers": [
+    {
+      "id": 1,
+      "name": "Guru Nanak Dev Ji",
+      "namePa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+      "nameHi": "गुरु नानक देव जी",
+      "type": "Guru",
+      "shabads": 974,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Founder of Sikhism (1469-1539). Born at Rai Bhoi Di Talwandi (Nankana Sahib). Composed 974 shabads in SGGS Ji. Established the principles of Naam Japna, Kirat Karna, and Vand Chakna.",
+        "pa": "ਸਿੱਖ ਧਰਮ ਦੇ ਬਾਨੀ (1469-1539)। ਰਾਇ ਭੋਈ ਦੀ ਤਲਵੰਡੀ (ਨਨਕਾਣਾ ਸਾਹਿਬ) ਵਿਖੇ ਜੰਮੇ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 974 ਸ਼ਬਦ ਰਚੇ। ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨਾ, ਅਤੇ ਵੰਡ ਛਕਣਾ ਦੇ ਸਿਧਾਂਤ ਸਥਾਪਿਤ ਕੀਤੇ।",
+        "hi": "सिख धर्म के संस्थापक (1469-1539)। राइ भोई दी तलवंडी (ननकाना साहिब) में जन्मे। श्री गुरु ग्रंथ साहिब जी में 974 शबद रचे। नाम जपना, किरत करना, और वंड छकना के सिद्धांत स्थापित किए।"
+      },
+      "notableWorks": {
+        "en": "Mool Mantar, Japji Sahib, Asa Di Var, Sidh Gosht",
+        "pa": "ਮੂਲ ਮੰਤਰ, ਜਪੁਜੀ ਸਾਹਿਬ, ਆਸਾ ਦੀ ਵਾਰ, ਸਿੱਧ ਗੋਸ਼ਟ",
+        "hi": "मूल मंत्र, जपजी साहिब, आसा दी वार, सिध गोष्ट"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Guru Angad Dev Ji",
+      "namePa": "ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+      "nameHi": "गुरु अंगद देव जी",
+      "type": "Guru",
+      "shabads": 62,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Second Sikh Guru (1504-1552). Standardized Gurmukhi script. Promoted physical fitness through Mall Akhara. Composed 62 shabads in SGGS Ji.",
+        "pa": "ਦੂਜਾ ਸਿੱਖ ਗੁਰੂ (1504-1552)। ਗੁਰਮੁਖੀ ਲਿਪੀ ਨੂੰ ਮਿਆਰੀ ਬਣਾਇਆ। ਮੱਲ ਅਖਾੜਾ ਰਾਹੀਂ ਸਰੀਰਕ ਫਿਟਨੈਸ ਨੂੰ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 62 ਸ਼ਬਦ ਰਚੇ।",
+        "hi": "दूसरे सिख गुरु (1504-1552)। गुरमुखी लिपि को मानकीकृत किया। मल्ल अखाड़ा के माध्यम से शारीरिक फिटनेस को बढ़ावा दिया। श्री गुरु ग्रंथ साहिब जी में 62 शबद रचे।"
+      },
+      "notableWorks": {
+        "en": "Anand Sahib (part of daily Nitnem)",
+        "pa": "ਅਨੰਦ ਸਾਹਿਬ (ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਦਾ ਹਿੱਸਾ)",
+        "hi": "अनंद साहिब (दैनिक नितनेम का हिस्सा)"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Guru Amar Das Ji",
+      "namePa": "ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+      "nameHi": "गुरु अमर दास जी",
+      "type": "Guru",
+      "shabads": 907,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Third Sikh Guru (1479-1574). Established the Manji system for preaching. Abolished Sati. Instituted Anand Karaj. Composed 907 shabads in SGGS Ji.",
+        "pa": "ਤੀਜਾ ਸਿੱਖ ਗੁਰੂ (1479-1574)। ਪ੍ਰਚਾਰ ਲਈ ਮੰਜੀ ਪ੍ਰਣਾਲੀ ਸਥਾਪਿਤ ਕੀਤੀ। ਸਤੀ ਪ੍ਰਥਾ ਖਤਮ ਕੀਤੀ। ਅਨੰਦ ਕਾਰਜ ਦੀ ਸ਼ੁਰੂਆਤ ਕੀਤੀ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 907 ਸ਼ਬਦ ਰਚੇ।",
+        "hi": "तीसरे सिख गुरु (1479-1574)। प्रचार के लिए मंजी प्रणाली स्थापित की। सती प्रथा समाप्त की। अनंद कारज की शुरुआत की। श्री गुरु ग्रंथ साहिब जी में 907 शबद रचे।"
+      },
+      "notableWorks": {
+        "en": "Anand Sahib, Laavan (marriage hymns)",
+        "pa": "ਅਨੰਦ ਸਾਹਿਬ, ਲਾਵਾਂ (ਵਿਆਹ ਹਿਮਣ)",
+        "hi": "अनंद साहिब, लावां (विवाह हिम्न)"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Guru Ram Das Ji",
+      "namePa": "ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+      "nameHi": "गुरु राम दास जी",
+      "type": "Guru",
+      "shabads": 679,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Fourth Sikh Guru (1534-1581). Founded Amritsar and began Harmandir Sahib construction. Composed Laavan for Sikh marriage. Composed 679 shabads in SGGS Ji.",
+        "pa": "ਚੌਥਾ ਸਿੱਖ ਗੁਰੂ (1534-1581)। ਅੰਮ੍ਰਿਤਸਰ ਦੀ ਨੀਂਹ ਰੱਖੀ ਅਤੇ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਉਸਾਰੀ ਸ਼ੁਰੂ ਕੀਤੀ। ਸਿੱਖ ਵਿਆਹ ਲਈ ਲਾਵਾਂ ਰਚੇ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 679 ਸ਼ਬਦ ਰਚੇ।",
+        "hi": "चौथे सिख गुरु (1534-1581)। अमृतसर की नींव रखी और हरिमंदर साहिब का निर्माण शुरू किया। सिख विवाह के लिए लावां रचे। श्री गुरु ग्रंथ साहिब जी में 679 शबद रचे।"
+      },
+      "notableWorks": {
+        "en": "Laavan (four marriage hymns), Sukhmani Sahib (stanzas)",
+        "pa": "ਲਾਵਾਂ (ਚਾਰ ਵਿਆਹ ਹਿਮਣ), ਸੁਖਮਨੀ ਸਾਹਿਬ (ਪਦੇ)",
+        "hi": "लावां (चार विवाह हिम्न), सुखमनी साहिब (पद)"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Guru Arjan Dev Ji",
+      "namePa": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+      "nameHi": "गुरु अर्जन देव जी",
+      "type": "Guru",
+      "shabads": 2218,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Fifth Sikh Guru (1563-1606). Compiled Adi Granth (1604). Completed Harmandir Sahib. First Sikh martyr. Composed most shabads (2218) in SGGS Ji.",
+        "pa": "ਪੰਜਵਾਂ ਸਿੱਖ ਗੁਰੂ (1563-1606)। ਆਦਿ ਗ੍ਰੰਥ ਸੰਕਲਿਤ (1604)। ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਉਸਾਰੀ ਮੁਕੰਮਲ। ਪਹਿਲਾ ਸਿੱਖ ਸ਼ਹੀਦ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸ਼ਬਦ (2218) ਰਚੇ।",
+        "hi": "पांचवें सिख गुरु (1563-1606)। आदि ग्रंथ संकलित (1604)। हरिमंदर साहिब का निर्माण पूरा। पहले सिख शहीद। श्री गुरु ग्रंथ साहिब जी में सबसे अधिक शबद (2218) रचे।"
+      },
+      "notableWorks": {
+        "en": "Sukhmani Sahib, Barah Maha, compilation of Adi Granth",
+        "pa": "ਸੁਖਮਨੀ ਸਾਹਿਬ, ਬਾਰਹ ਮਾਹਾ, ਆਦਿ ਗ੍ਰੰਥ ਦਾ ਸੰਕਲਨ",
+        "hi": "सुखमनी साहिब, बारह माहा, आदि ग्रंथ का संकलन"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Guru Tegh Bahadur Ji",
+      "namePa": "ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ",
+      "nameHi": "गुरु तेग बहादुर जी",
+      "type": "Guru",
+      "shabads": 116,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Ninth Sikh Guru (1621-1675). Known as 'Hind Di Chadar' (Shield of India). Martyred protecting religious freedom of Kashmiri Pandits. Composed 116 shabads in SGGS Ji.",
+        "pa": "ਨੌਵਾਂ ਸਿੱਖ ਗੁਰੂ (1621-1675)। 'ਹਿੰਦ ਦੀ ਚਾਦਰ' (ਭਾਰਤ ਦੀ ਢਾਲ) ਵਜੋਂ ਜਾਣੇ ਜਾਂਦੇ ਸਨ। ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੀ ਰੱਖਿਆ ਲਈ ਸ਼ਹੀਦ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 116 ਸ਼ਬਦ ਰਚੇ।",
+        "hi": "नौवें सिख गुरु (1621-1675)। 'हिंद दी चादर' (भारत की ढाल) के रूप में जाने जाते हैं। कश्मीरी पंडितों की धार्मिक स्वतंत्रता की रक्षा के लिए शहीद। श्री गुरु ग्रंथ साहिब जी में 116 शबद रचे।"
+      },
+      "notableWorks": {
+        "en": "Shabad Hazaare, Salok Mahalla 9",
+        "pa": "ਸ਼ਬਦ ਹਜ਼ਾਰੇ, ਸਲੋਕ ਮਹਲਾ 9",
+        "hi": "शबद हज़ारे, सलोक महला 9"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Guru Gobind Singh Ji",
+      "namePa": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ",
+      "nameHi": "गुरु गोबिंद सिंह जी",
+      "type": "Guru",
+      "shabads": 0,
+      "emoji": "🙏",
+      "biography": {
+        "en": "Tenth Sikh Guru (1666-1708). Created Khalsa (1699). Declared Guru Granth Sahib Ji as eternal Guru (1708). Composed Dasam Granth. No shabads in SGGS Ji.",
+        "pa": "ਦਸਵਾਂ ਸਿੱਖ ਗੁਰੂ (1666-1708)। ਖ਼ਾਲਸਾ ਦੀ ਸਾਜਨਾ (1699)। ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ (1708)। ਦਸਮ ਗ੍ਰੰਥ ਦੀ ਰਚਨਾ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ਕੋਈ ਸ਼ਬਦ ਨਹੀਂ।",
+        "hi": "दसवें सिख गुरु (1666-1708)। खालसा की स्थापना (1699)। गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित (1708)। दशम ग्रंथ की रचना। श्री गुरु ग्रंथ साहिब जी में कोई शबद नहीं।"
+      },
+      "notableWorks": {
+        "en": "Dasam Granth, Jaap Sahib, Chaupai Sahib",
+        "pa": "ਦਸਮ ਗ੍ਰੰਥ, ਜਾਪ ਸਾਹਿਬ, ਚੌਪਈ ਸਾਹਿਬ",
+        "hi": "दशम ग्रंथ, जाप साहिब, चौपाई साहिब"
+      }
+    },
+    {
+      "id": 8,
+      "name": "Bhagat Kabir Ji",
+      "namePa": "ਭਗਤ ਕਬੀਰ ਜੀ",
+      "nameHi": "भगत कबीर जी",
+      "type": "Bhagat",
+      "shabads": 541,
+      "emoji": "📿",
+      "biography": {
+        "en": "15th-century mystic poet and saint. Born in Varanasi. Preached against caste system and ritualism. His compositions emphasize devotion to one God. 541 shabads in SGGS Ji.",
+        "pa": "15ਵੀਂ ਸਦੀ ਦਾ ਰਹੱਸਵੀ ਕਵੀ ਅਤੇ ਸੰਤ। ਵਾਰਾਣਸੀ ਵਿੱਚ ਜੰਮੇ। ਜਾਤ-ਪਾਤ ਪ੍ਰਣਾਲੀ ਅਤੇ ਰਸਮਵਾਦ ਖਿਲਾਫ਼ ਪ੍ਰਚਾਰ ਕੀਤਾ। ਉਨ੍ਹਾਂ ਦੀਆਂ ਰਚਨਾਵਾਂ ਇੱਕ ਪਰਮਾਤਮਾ ਪ੍ਰਤੀ ਭਗਤੀ 'ਤੇ ਜ਼ੋਰ ਦਿੰਦੀਆਂ ਹਨ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 541 ਸ਼ਬਦ।",
+        "hi": "15वीं शताब्दी के रहस्यवादी कवि और संत। वाराणसी में जन्मे। जाति-प्रथा और अनुष्ठानवाद के खिलाफ़ प्रचार किया। उनकी रचनाएं एक परमात्मा के प्रति भक्ति पर जोर देती हैं। श्री गुरु ग्रंथ साहिब जी में 541 शबद।"
+      },
+      "notableWorks": {
+        "en": "Kabir Bani, Ghat Ramayan",
+        "pa": "ਕਬੀਰ ਬਾਣੀ, ਘਟ ਰਾਮਾਇਣ",
+        "hi": "कबीर बाणी, घट रामायण"
+      }
+    },
+    {
+      "id": 9,
+      "name": "Bhagat Farid Ji",
+      "namePa": "ਭਗਤ ਫਰੀਦ ਜੀ",
+      "nameHi": "भगत फरीद जी",
+      "type": "Bhagat",
+      "shabads": 134,
+      "emoji": "📿",
+      "biography": {
+        "en": "12th-13th century Sufi saint. Known for his poetry and spiritual wisdom. Emphasized devotion, humility, and love for God. 134 shabads in SGGS Ji.",
+        "pa": "12-13ਵੀਂ ਸਦੀ ਦਾ ਸੂਫੀ ਸੰਤ। ਆਪਣੀ ਕਵਿਤਾ ਅਤੇ ਆਧਿਆਤਮਿਕ ਗਿਆਨ ਲਈ ਜਾਣੇ ਜਾਂਦੇ। ਭਗਤੀ, ਨਿਮਰਤਾ, ਅਤੇ ਪਰਮਾਤਮਾ ਪ੍ਰਤੀ ਪਿਆਰ 'ਤੇ ਜ਼ੋਰ ਦਿੰਦੇ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 134 ਸ਼ਬਦ।",
+        "hi": "12-13वीं शताब्दी के सूफी संत। अपनी कविता और आध्यात्मिक ज्ञान के लिए जाने जाते हैं। भक्ति, नम्रता, और परमात्मा के प्रति प्यार पर जोर देते। श्री गुरु ग्रंथ साहिब जी में 134 शबद।"
+      },
+      "notableWorks": {
+        "en": "Farid Bani (Shabads and Sloks)",
+        "pa": "ਫਰੀਦ ਬਾਣੀ (ਸ਼ਬਦ ਅਤੇ ਸਲੋਕ)",
+        "hi": "फरीद बाणी (शबद और श्लोक)"
+      }
+    },
+    {
+      "id": 10,
+      "name": "Bhagat Namdev Ji",
+      "namePa": "ਭਗਤ ਨਾਮਦੇਵ ਜੀ",
+      "nameHi": "भगत नामदेव जी",
+      "type": "Bhagat",
+      "shabads": 60,
+      "emoji": "📿",
+      "biography": {
+        "en": "14th-century saint from Maharashtra. Devoted to Vithoba (form of Vishnu). His poetry emphasizes devotion and equality. 60 shabads in SGGS Ji.",
+        "pa": "14ਵੀਂ ਸਦੀ ਦਾ ਮਹਾਰਾਸ਼ਟਰ ਤੋਂ ਸੰਤ। ਵਿਥੋਬਾ (ਵਿਸ਼ਨੂ ਦਾ ਰੂਪ) ਪ੍ਰਤੀ ਸਮਰਪਿਤ। ਉਨ੍ਹਾਂ ਦੀ ਕਵਿਤਾ ਭਗਤੀ ਅਤੇ ਬਰਾਬਰਤਾ 'ਤੇ ਜ਼ੋਰ ਦਿੰਦੀ ਹੈ। ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ 60 ਸ਼ਬਦ।",
+        "hi": "14वीं शताब्दी के महाराष्ट्र के संत। विठोबा (विष्णु का रूप) के प्रति समर्पित। उनकी कविता भक्ति और बराबरी पर जोर देती है। श्री गुरु ग्रंथ साहिब जी में 60 शबद।"
+      },
+      "notableWorks": {
+        "en": "Namdev Bani",
+        "pa": "ਨਾਮਦੇਵ ਬਾਣੀ",
+        "hi": "नामदेव बाणी"
+      }
+    }
+  ]
+}

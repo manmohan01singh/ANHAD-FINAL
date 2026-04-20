@@ -302,11 +302,6 @@
   color: var(--color-button-text-active);
 }
 
-/* Night button specific styling when active in night mode */
-:root[data-theme="night"] .theme-toggle__btn--night[aria-pressed="true"] {
-  background-color: var(--color-button-bg-active);
-  color: var(--color-button-text-active);
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FONT SIZE CONTROLS
@@ -555,13 +550,6 @@ body.settings-open {
     inset 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
-:root[data-theme="night"] .settings-panel__content {
-  background: rgba(20, 20, 20, 0.9);
-  box-shadow: 
-    -10px 0 60px rgba(0, 0, 0, 0.4),
-    inset 1px 0 0 rgba(255, 255, 255, 0.05);
-}
-
 .settings-panel__backdrop {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -575,19 +563,8 @@ body.settings-open {
   border-radius: var(--radius-xl);
 }
 
-:root[data-theme="night"] .theme-toggle {
-  background: rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
 .theme-toggle__btn {
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.theme-toggle__btn[aria-pressed="true"] {
-  box-shadow: 
-    0 4px 20px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .font-size-controls {
@@ -596,11 +573,6 @@ body.settings-open {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-xl);
-}
-
-:root[data-theme="night"] .font-size-controls {
-  background: rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.05);
 }
 
 .font-size-btn {

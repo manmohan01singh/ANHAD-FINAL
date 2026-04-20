@@ -16,7 +16,7 @@ body, html {
   min-height: 100dvh;
   max-width: 480px;
   margin: 0 auto;
-  padding-bottom: 110px;
+  padding-bottom: 0;
   overflow-y: auto;
   overscroll-behavior-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -40,7 +40,7 @@ body, html {
 /* ── CONTENT SECTIONS ── */
 .content-section {
   padding: 0 var(--space-20);
-  margin-bottom: var(--space-24);
+  margin-bottom: var(--space-12);
   contain: layout style;
 }
 
@@ -48,9 +48,9 @@ body, html {
 .features-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 12px;
   padding: 0 var(--space-20);
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-12);
   contain: layout;
 }
 
@@ -60,14 +60,14 @@ body, html {
   }
 
   .feature-card {
-    height: 200px;
+    height: 160px;
   }
 }
 
 /* ── QUICK ACCESS LIST ── */
 .quick-access {
   padding: 0 var(--space-20);
-  margin-bottom: var(--space-32);
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
   gap: 0;

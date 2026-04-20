@@ -106,6 +106,37 @@
     --accent-subtle: rgba(0, 122, 255, 0.08);
 }
 
+/* Dark Theme - Deep dark backgrounds */
+[data-theme="dark"] {
+    --bg-base: #0D0D0F;
+    --bg-elevated: #1C1C1E;
+    --bg-secondary: #2C2C2E;
+    --bg-tertiary: #3A3A3C;
+
+    --surface-glass: rgba(28, 28, 30, 0.95);
+    --surface-elevated: rgba(44, 44, 46, 0.98);
+    --surface-card: #1C1C1E;
+
+    --text-primary: rgba(255, 255, 255, 0.92);
+    --text-secondary: rgba(255, 255, 255, 0.60);
+    --text-tertiary: rgba(255, 255, 255, 0.35);
+
+    --gurbani-primary: rgba(255, 255, 255, 0.95);
+    --gurbani-translation: rgba(255, 255, 255, 0.70);
+    --gurbani-translit: rgba(255, 255, 255, 0.55);
+
+    --separator: rgba(255, 255, 255, 0.10);
+    --separator-opaque: #3A3A3C;
+
+    --accent-subtle: rgba(10, 132, 255, 0.20);
+    
+    /* Shadows for dark mode */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.50);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.60);
+    --shadow-glow: 0 0 40px rgba(212, 175, 55, 0.15);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    RESET & BASE
    ═══════════════════════════════════════════════════════════════ */
@@ -158,10 +189,14 @@ a {
 .skeleton-container {
     position: fixed;
     inset: 0;
-    background: #FFFFFF;
+    background: var(--bg-base);
     z-index: 10000;
     padding: calc(var(--safe-top) + 60px) 20px 100px;
     transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+}
+
+[data-theme="dark"] .skeleton-container {
+    background: #0D0D0F;
 }
 
 .skeleton-container.hidden {
@@ -175,6 +210,10 @@ a {
     border-radius: var(--radius-md);
     position: relative;
     overflow: hidden;
+}
+
+[data-theme="dark"] .skeleton {
+    background: var(--bg-secondary);
 }
 
 .skeleton::after {
@@ -451,6 +490,15 @@ a {
     animation: glowPulse 4s ease-in-out infinite;
 }
 
+.hero-symbol .guru-image {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
 @keyframes glowPulse {
 
     0%,
@@ -480,6 +528,11 @@ a {
     text-align: center;
     min-width: 140px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .date-card {
+    background: var(--surface-card);
+    border-color: var(--separator);
 }
 
 .date-label {
@@ -521,6 +574,11 @@ a {
     transition: all 0.25s var(--ease-out);
 }
 
+[data-theme="dark"] .date-nav-btn {
+    background: var(--surface-card);
+    border-color: var(--separator);
+}
+
 .date-nav-btn:active {
     transform: scale(0.95);
 }
@@ -543,11 +601,11 @@ a {
    ═══════════════════════════════════════════════════════════════ */
 
 .hukamnama-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
 }
 
 /* Metadata Strip */
@@ -557,7 +615,7 @@ a {
     gap: 24px;
     padding: 16px 20px;
     border-bottom: 1px solid rgba(0,0,0,0.06);
-    background: #FFFFFF;
+    background: transparent;
 }
 
 .meta-item {
@@ -565,7 +623,7 @@ a {
 }
 
 .meta-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -574,7 +632,7 @@ a {
 }
 
 .meta-value {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -701,7 +759,7 @@ a {
 
 .verse-gurmukhi {
     font-family: var(--font-gurmukhi);
-    font-size: var(--gurmukhi-size, 22px);
+    font-size: var(--gurmukhi-size, 24px);
     font-weight: 500;
     line-height: 2.1;
     color: var(--gurbani-primary);
@@ -709,7 +767,7 @@ a {
 }
 
 .verse-transliteration {
-    font-size: 14px;
+    font-size: 16px;
     font-style: italic;
     line-height: 1.7;
     color: var(--gurbani-translit);
@@ -723,7 +781,7 @@ a {
 }
 
 .verse-translation {
-    font-size: 14px;
+    font-size: 18px;
     line-height: 1.7;
     color: var(--gurbani-translation);
     text-align: center;
@@ -790,6 +848,12 @@ a {
     border-radius: var(--radius-full);
     border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .bottom-controls {
+    background: var(--surface-card);
+    border-color: var(--separator);
+    box-shadow: var(--shadow-md);
 }
 
 .control-btn {
@@ -860,6 +924,11 @@ a {
     transition: transform 0.4s var(--ease-out);
 }
 
+[data-theme="dark"] .settings-sheet {
+    background: var(--surface-card);
+    border-color: var(--separator);
+}
+
 .sheet-overlay.active .settings-sheet {
     transform: translateY(0);
 }
@@ -900,6 +969,10 @@ a {
     padding: 14px 16px;
     background: #F8F8F8;
     margin-bottom: 2px;
+}
+
+[data-theme="dark"] .setting-row {
+    background: var(--bg-secondary);
 }
 
 .setting-row:first-of-type {
@@ -1034,6 +1107,12 @@ a {
     visibility: hidden;
     transition: all 0.3s var(--ease-out);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .toast {
+    background: var(--surface-card);
+    border-color: var(--separator);
+    box-shadow: var(--shadow-md);
 }
 
 .toast.visible {

@@ -27,18 +27,15 @@ class BaniCacheOptimizer {
         this.db = null;
         
         // Popular banis to prefetch
-        this.popularBanis = [2, 4, 6, 7, 9, 10, 21, 23, 31, 36, 90];
+        this.popularBanis = [2, 4, 6, 7, 9, 10, 21, 23];
         
         // Guru images to preload
         this.guruImages = [
             '/assets/darbar-sahib-day.webp',
-            '/assets/darbar-sahib-day.png',
             '/assets/Darbar-sahib-AMRITVELA.webp',
-            '/assets/Darbar-sahib-AMRITVELA.png',
             '/assets/darbar-sahib-evening.webp',
             '/assets/darbar-sahib-evening.jpg',
-            '/assets/HUKAMNAMA-SAHIB.webp',
-            '/assets/HUKAMNAMA-SAHIB.png'
+            '/assets/HUKAMNAMA-SAHIB.webp'
         ];
         
         // Background download queue
@@ -139,9 +136,9 @@ class BaniCacheOptimizer {
             return cached.data;
         }
 
-        // 3. Fetch from API (slow)
-        console.log(`[BaniCache] 🌐 API fetch: ${baniId}`);
-        const data = await this.fetchBaniFromAPI(baniId);
+        // 3. Load from offline JSON
+        console.log(`[BaniCache] 📁 Loading from offline JSON: ${baniId}`);
+        const data = await this.fetchBaniFromOfflineJSON(baniId);
         
         // Cache it for next time
         await this.cacheBani(baniId, data);
@@ -166,10 +163,32 @@ class BaniCacheOptimizer {
         });
     }
 
-    async fetchBaniFromAPI(baniId) {
-        const response = await fetch(`https://api.banidb.com/v2/banis/${baniId}`);
-        if (!response.ok) throw new Error(`Failed to fetch bani ${baniId}`);
-        return await response.json();
+    async fetchBaniFromOfflineJSON(baniId) {
+        try {
+            // Use BaniDB chunked loading if available
+            if (window.BaniDB && window.BaniDB.getBani) {
+                console.log(`[BaniCache] Using BaniDB chunked loading: ${baniId}`);
+                return await window.BaniDB.getBani(baniId);
+            }
+            
+            // Fallback to nitnem bundle for nitnem banis
+            const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
+            if (nitnemBanis.includes(baniId)) {
+                const response = await fetch('../data/banis-chunks/nitnem-banis.json');
+                if (!response.ok) throw new Error('Failed to load nitnem bundle');
+                const jsonData = await response.json();
+                
+                if (jsonData.banis && jsonData.banis[baniId]) {
+                    console.log(`[BaniCache] ✅ Loaded from nitnem bundle: ${baniId}`);
+                    return jsonData.banis[baniId];
+                }
+            }
+            
+            throw new Error(`Bani ${baniId} not found in offline data`);
+        } catch (error) {
+            console.error(`[BaniCache] ❌ Failed to load from offline data:`, error);
+            throw error;
+        }
     }
 
     async cacheBani(baniId, data) {
@@ -352,9 +371,9 @@ class BaniCacheOptimizer {
     }
 
     async fetchAngFromAPI(angNumber) {
-        const response = await fetch(`https://api.banidb.com/v2/angs/${angNumber}`);
-        if (!response.ok) throw new Error(`Failed to fetch Ang ${angNumber}`);
-        return await response.json();
+        // Ang data not available in offline JSON - return null
+        console.warn(`[BaniCache] Ang ${angNumber} not available in offline mode`);
+        return null;
     }
 
     async cacheAng(angNumber, data) {

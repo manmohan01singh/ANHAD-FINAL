@@ -457,6 +457,12 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 .gurpurab-container {
   position: relative;
   z-index: 1;
+  display: none;
+}
+
+.gurpurab-mode--celebration .gurpurab-container,
+.gurpurab-mode--remembrance .gurpurab-container {
+  display: block;
 }
 
 /* Ensure the greeting section has positioning context */

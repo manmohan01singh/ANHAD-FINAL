@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-20",
+  "raags": [
+    {
+      "id": 1,
+      "name": "Sri Raag",
+      "namePa": "ਸ੍ਰੀ ਰਾਗ",
+      "nameHi": "श्री राग",
+      "shabads": 158,
+      "timeOfDay": "Late afternoon to sunset",
+      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ",
+      "timeOfDayHi": "दोपहर से सूर्यास्त तक",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "The king of all Raags, Sri Raag evokes devotion and peace. It is considered the most important Raag in Gurbani.",
+        "pa": "ਸਾਰੇ ਰਾਗਾਂ ਦਾ ਰਾਜਾ, ਸ੍ਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਸ਼ਾਂਤੀ ਦਾ ਅਹਿਸਾਸ ਕਰਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਗੁਰਬਾਣੀ ਵਿੱਚ ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਰਾਗ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ।",
+        "hi": "सभी रागों का राजा, श्री राग भक्ति और शांति का अहसास कराता है। इसे गुरबाणी में सबसे महत्वपूर्ण राग माना जाता है।"
+      },
+      "notableShabads": {
+        "en": "Mitar Pyare Nu, Dukh Bhanjan Tera Naam",
+        "pa": "ਮਿਤਰ ਪਿਆਰੇ ਨੂੰ, ਦੁਖ ਭੰਜਨ ਤੇਰਾ ਨਾਮ",
+        "hi": "मित्र प्यारे नू, दुख भंजन तेरा नाम"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Raag Maajh",
+      "namePa": "ਰਾਗ ਮਾਝ",
+      "nameHi": "राग माझ",
+      "shabads": 173,
+      "timeOfDay": "Late afternoon",
+      "timeOfDayPa": "ਦੁਪਹਿਰ ਦੇ ਅੰਤ",
+      "timeOfDayHi": "दोपहर के अंत",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Maajh Raag creates a mood of separation and longing for the Divine. It expresses the pain of being separated from the Beloved.",
+        "pa": "ਮਾਝ ਰਾਗ ਦੈਵੀ ਤੋਂ ਵੱਖ ਹੋਣ ਅਤੇ ਉਸਦੀ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਹ ਪਿਆਰੇ ਤੋਂ ਵੱਖ ਹੋਣ ਦਾ ਦਰਦ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ।",
+        "hi": "माझ राग दैवीय से वियोग और उसकी तान्हा का माहौल बनाता है। यह प्रिय से वियोग का दर्द व्यक्त करता है।"
+      },
+      "notableShabads": {
+        "en": "Jin Prem Kio Tin Hi Prabh Paayo",
+        "pa": "ਜਿਨ ਪ੍ਰੇਮ ਕਿਉ ਤਿਨ ਹੀ ਪ੍ਰਭ ਪਾਇਓ",
+        "hi": "जिन प्रेम किउ तिन ही प्रभ पाइओ"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Raag Gauri",
+      "namePa": "ਰਾਗ ਗੌਰੀ",
+      "nameHi": "राग गौरी",
+      "shabads": 347,
+      "timeOfDay": "Late night to early morning",
+      "timeOfDayPa": "ਦੇਰ ਰਾਤ ਤੋਂ ਸਵੇਰੇ",
+      "timeOfDayHi": "देर रात से सुबह",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Gauri Raag has the most shabads in SGGS Ji. It represents purity, devotion, and the awakening of spiritual consciousness.",
+        "pa": "ਗੌਰੀ ਰਾਗ ਦੇ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸ਼ਬਦ ਹਨ। ਇਹ ਪਵਿੱਤਰਤਾ, ਭਗਤੀ, ਅਤੇ ਆਧਿਆਤਮਿਕ ਚੇਤਨਾ ਦੇ ਜਾਗਰਣ ਦਾ ਪ੍ਰਤੀਕ ਹੈ।",
+        "hi": "गौरी राग के श्री गुरु ग्रंथ साहिब जी में सबसे अधिक शबद हैं। यह पवित्रता, भक्ति, और आध्यात्मिक चेतना के जागरण का प्रतीक है।"
+      },
+      "notableShabads": {
+        "en": "Gauri Purakh Ki, Charan Kamal",
+        "pa": "ਗੌਰੀ ਪੁਰਖ ਕੀ, ਚਰਨ ਕਮਲ",
+        "hi": "गौरी पुरख की, चरण कमल"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Raag Aasa",
+      "namePa": "ਰਾਗ ਆਸਾ",
+      "nameHi": "राग आसा",
+      "shabads": 435,
+      "timeOfDay": "Late afternoon",
+      "timeOfDayPa": "ਦੁਪਹਿਰ",
+      "timeOfDayHi": "दोपहर",
+      "season": "Rainy season",
+      "seasonPa": "ਬਾਰਿਸ਼ ਰੁੱਤ",
+      "seasonHi": "वर्षा ऋतु",
+      "description": {
+        "en": "Aasa Raag means 'hope' and creates a mood of expectation and longing for the Divine. It is sung during the rainy season.",
+        "pa": "ਆਸਾ ਰਾਗ ਦਾ ਮਤਲਬ 'ਉਮੀਦ' ਹੈ ਅਤੇ ਦੈਵੀ ਲਈ ਉਡੀਕ ਅਤੇ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਬਾਰਿਸ਼ ਰੁੱਤ ਵਿੱਚ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        "hi": "आसा राग का अर्थ 'आशा' है और दैवीय के लिए प्रत्याशा और तान्हा का माहौल बनाता है। इसे वर्षा ऋतु में गाया जाता है।"
+      },
+      "notableShabads": {
+        "en": "Aasa Kehi Vad Bhagat Purana",
+        "pa": "ਆਸਾ ਕੇਹੀ ਵਡ ਭਗਤ ਪੁਰਾਨਾ",
+        "hi": "आसा केही वड भगत पुराना"
+      }
+    },
+    {
+      "id": 5,
+      "name": "Raag Gujri",
+      "namePa": "ਰਾਗ ਗੁਜਰੀ",
+      "nameHi": "राग गुजरी",
+      "shabads": 78,
+      "timeOfDay": "Morning to midday",
+      "timeOfDayPa": "ਸਵੇਰੇ ਤੋਂ ਦੁਪਹਿਰ ਤੱਕ",
+      "timeOfDayHi": "सुबह से दोपहर तक",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Gujri Raag evokes feelings of peace, devotion, and deep meditation. It is associated with the rainy season and spiritual contemplation.",
+        "pa": "ਗੁਜਰੀ ਰਾਗ ਸ਼ਾਂਤੀ, ਭਗਤੀ, ਅਤੇ ਡੂੰਘੀ ਧਿਆਨ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਹ ਬਾਰਿਸ਼ ਰੁੱਤ ਅਤੇ ਆਧਿਆਤਮਿਕ ਚਿੰਤਨ ਨਾਲ ਜੁੜਿਆ ਹੈ।",
+        "hi": "गुजरी राग शांति, भक्ति, और गहरी ध्यान की भावनाओं को जागृत करता है। यह वर्षा ऋतु और आध्यात्मिक चिंतन से जुड़ा है।"
+      },
+      "notableShabads": {
+        "en": "Gujri Tera Khajaana",
+        "pa": "ਗੁਜਰੀ ਤੇਰਾ ਖਜ਼ਾਨਾ",
+        "hi": "गुजरी तेरा खज़ाना"
+      }
+    },
+    {
+      "id": 6,
+      "name": "Raag Devgandhari",
+      "namePa": "ਰਾਗ ਦੇਵਗੰਧਾਰੀ",
+      "nameHi": "राग देवगंधारी",
+      "shabads": 51,
+      "timeOfDay": "Late afternoon",
+      "timeOfDayPa": "ਦੁਪਹਿਰ",
+      "timeOfDayHi": "दोपहर",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Devgandhari Raag creates a mood of devotion and spiritual awakening. It is sung to invoke divine blessings.",
+        "pa": "ਦੇਵਗੰਧਾਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਆਧਿਆਤਮਿਕ ਜਾਗਰਣ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਦੈਵੀ ਆਸ਼ੀਰਵਾਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        "hi": "देवगंधारी राग भक्ति और आध्यात्मिक जागरण का माहौल बनाता है। इसे दैवी आशीर्वाद प्राप्त करने के लिए गाया जाता है।"
+      },
+      "notableShabads": {
+        "en": "Devgandhari Mahima",
+        "pa": "ਦੇਵਗੰਧਾਰੀ ਮਹਿਮਾ",
+        "hi": "देवगंधारी महिमा"
+      }
+    },
+    {
+      "id": 7,
+      "name": "Raag Bihagra",
+      "namePa": "ਰਾਗ ਬਿਹਾਗੜਾ",
+      "nameHi": "राग बिहागड़ा",
+      "shabads": 47,
+      "timeOfDay": "Late afternoon to evening",
+      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸ਼ਾਮ",
+      "timeOfDayHi": "दोपहर से शाम",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Bihagra Raag expresses the pain of separation and longing for union with the Divine. It creates a mood of deep emotional yearning.",
+        "pa": "ਬਿਹਾਗੜਾ ਰਾਗ ਦੈਵੀ ਨਾਲ ਇੱਕਮੁੱਕਤ ਹੋਣ ਦੀ ਤਾਂਘ ਅਤੇ ਵੱਖ ਹੋਣ ਦਾ ਦਰਦ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ। ਇਹ ਡੂੰਘੇ ਭਾਵਨਾਤਮਕ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ।",
+        "hi": "बिहागड़ा राग दैवीय के साथ एकीकरण की तान्हा और वियोग का दर्द व्यक्त करता है। यह गहरी भावनात्मक तान्हा का माहौल बनाता है।"
+      },
+      "notableShabads": {
+        "en": "Bihagra Bairaag",
+        "pa": "ਬਿਹਾਗੜਾ ਬੈਰਾਗ",
+        "hi": "बिहागड़ा बैराग"
+      }
+    },
+    {
+      "id": 8,
+      "name": "Raag Wadhans",
+      "namePa": "ਰਾਗ ਵਡਹੰਸ",
+      "nameHi": "राग वडहंस",
+      "shabads": 92,
+      "timeOfDay": "Morning",
+      "timeOfDayPa": "ਸਵੇਰੇ",
+      "timeOfDayHi": "सुबह",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Wadhans Raag evokes feelings of peace and contentment. It is associated with spiritual satisfaction and divine bliss.",
+        "pa": "ਵਡਹੰਸ ਰਾਗ ਸ਼ਾਂਤੀ ਅਤੇ ਸੰਤੋਖ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਹ ਆਧਿਆਤਮਿਕ ਸੰਤੁਸ਼ਟੀ ਅਤੇ ਦੈਵੀ ਆਨੰਦ ਨਾਲ ਜੁੜਿਆ ਹੈ।",
+        "hi": "वडहंस राग शांति और संतोष की भावनाओं को जागृत करता है। यह आध्यात्मिक संतुष्टि और दैवी आनंद से जुड़ा है।"
+      },
+      "notableShabads": {
+        "en": "Wadhans Dukh",
+        "pa": "ਵਡਹੰਸ ਦੁਖ",
+        "hi": "वडहंस दुख"
+      }
+    },
+    {
+      "id": 9,
+      "name": "Raag Sorath",
+      "namePa": "ਰਾਗ ਸੋਰਠ",
+      "nameHi": "राग सोरठ",
+      "shabads": 164,
+      "timeOfDay": "Late afternoon to evening",
+      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸ਼ਾਮ",
+      "timeOfDayHi": "दोपहर से शाम",
+      "season": "All seasons",
+      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
+      "seasonHi": "सभी मौसम",
+      "description": {
+        "en": "Sorath Raag creates a mood of spiritual strength and courage. It is sung to invoke divine protection and blessings.",
+        "pa": "ਸੋਰਠ ਰਾਗ ਆਧਿਆਤਮਿਕ ਤਾਕਤ ਅਤੇ ਬਹਾਦਰੀ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਦੈਵੀ ਰੱਖਿਆ ਅਤੇ ਆਸ਼ੀਰਵਾਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        "hi": "सोरठ राग आध्यात्मिक शक्ति और साहस का माहौल बनाता है। इसे दैवी रक्षा और आशीर्वाद प्राप्त करने के लिए गाया जाता है।"
+      },
+      "notableShabads": {
+        "en": "Sorath Mahima",
+        "pa": "ਸੋਰਠ ਮਹਿਮਾ",
+        "hi": "सोरठ महिमा"
+      }
+    },
+    {
+      "id": 10,
+      "name": "Raag Dhanasri",
+      "namePa": "ਰਾਗ ਧਨਾਸਰੀ",
+      "nameHi": "राग धनासरी",
+      "shabads": 111,
+      "timeOfDay": "Late night to early morning",
+      "timeOfDayPa": "ਦੇਰ ਰਾਤ ਤੋਂ ਸਵੇਰੇ",
+      "timeOfDayHi": "देर रात से सुबह",
+      "season": "Rainy season",
+      "seasonPa": "ਬਾਰਿਸ਼ ਰੁੱਤ",
+      "seasonHi": "वर्षा ऋतु",
+      "description": {
+        "en": "Dhanasri Raag evokes feelings of devotion and spiritual joy. It is sung during the rainy season to celebrate divine blessings.",
+        "pa": "ਧਨਾਸਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਆਧਿਆਤਮਿਕ ਖੁਸ਼ੀ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਸਨੂੰ ਬਾਰਿਸ਼ ਰੁੱਤ ਵਿੱਚ ਦੈਵੀ ਆਸ਼ੀਰਵਾਦ ਮਨਾਉਣ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
+        "hi": "धनासरी राग भक्ति और आध्यात्मिक आनंद की भावनाओं को जागृत करता है। इसे वर्षा ऋतु में दैवी आशीर्वाद मनाने के लिए गाया जाता है।"
+      },
+      "notableShabads": {
+        "en": "Dhanasri Ke Prabhu",
+        "pa": "ਧਨਾਸਰੀ ਕੇ ਪ੍ਰਭੂ",
+        "hi": "धनासरी के प्रभु"
+      }
+    }
+  ]
+}

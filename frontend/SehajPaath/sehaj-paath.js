@@ -1098,7 +1098,7 @@ class SehajPaathApp {
                     ${allAchievements.map(a => `
                         <div class="achievement-card ${unlocked.includes(a.id) ? 'unlocked' : 'locked'}">
                             <span class="achievement-icon">${unlocked.includes(a.id) ? a.icon : '🔒'}</span>
-                            <span class="achievement-name">${unlocked.includes(a.id) ? a.name : '???'}</span>
+                            <span class="achievement-name">${unlocked.includes(a.id) ? a.name : 'Locked'}</span>
                             <span class="achievement-desc">${a.desc}</span>
                         </div>
                     `).join('')}

@@ -2,20 +2,23 @@
 <html lang="en">
 
 <head>
-  <meta name="color-scheme" content="light dark">
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
     (function() {
       try {
         const theme = localStorage.getItem('anhad_theme') || 'light';
+        const html = document.documentElement;
+        html.setAttribute('data-theme', theme);
+        html.style.colorScheme = theme;
         if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
+          html.classList.add('dark', 'dark-mode');
         } else {
-          document.documentElement.classList.remove('dark');
+          html.classList.remove('dark', 'dark-mode');
         }
       } catch (e) {}
     })();
   </script>
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -28,6 +31,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="cinematic-reminders.css?v=4.0.0">
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/global-theme.js"></script>
 </head>
 
 <body>

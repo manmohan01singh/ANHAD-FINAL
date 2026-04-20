@@ -1,8 +1,7 @@
 /**
- * BaniDB API Module - INSTANT OFFLINE-FIRST VERSION
- * Handles all interactions with the BaniDB API for fetching Gurbani content
- * NOW WITH INSTANT OFFLINE LOADING - Zero network delay for popular banis
- * @version 3.0.0 - INSTANT LOADING EDITION
+ * BaniDB API Module - CHUNKED OFFLINE VERSION
+ * Banis loaded from chunked JSON files for maximum speed
+ * @version 5.0.0 - CHUNKED OFFLINE EDITION
  */
 
 const BaniDB = (function () {
@@ -10,19 +9,143 @@ const BaniDB = (function () {
 
     // Configuration
     const CONFIG = {
-        baseUrl: 'https://api.banidb.com/v2',
-        cacheVersion: 'v3',
-        cacheExpiry: 7 * 24 * 60 * 60 * 1000, // 7 days
-        maxRetries: 2,
-        retryDelay: 500,
-        offlineFirst: true // NEW: Always use offline data first
+        chunksPath: '../data/banis-chunks',
+        cacheVersion: 'v5',
+        offlineFirst: true
     };
 
     // Cache
     const cache = new Map();
+    let indexData = null;
+    let nitnemBundle = null;
+    let popularBundle = null;
+    let loadedChunks = new Map();
+
+    // Nitnem banis (preloaded on startup)
+    const NITNEM_BANIS = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
+
+    /**
+     * Load index file
+     */
+    async function loadIndex() {
+        if (indexData) return indexData;
+
+        try {
+            const response = await fetch(`${CONFIG.chunksPath}/index.json`);
+            indexData = await response.json();
+            console.log('[BaniDB] Loaded index');
+            return indexData;
+        } catch (error) {
+            console.error('[BaniDB] Failed to load index:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Load nitnem bundle (small, preloaded for instant access)
+     */
+    async function loadNitnemBundle() {
+        if (nitnemBundle) return nitnemBundle;
+
+        try {
+            const response = await fetch(`${CONFIG.chunksPath}/nitnem-banis.json`);
+            nitnemBundle = await response.json();
+            console.log(`[BaniDB] Loaded nitnem bundle (${Object.keys(nitnemBundle.banis).length} banis)`);
+            return nitnemBundle;
+        } catch (error) {
+            console.error('[BaniDB] Failed to load nitnem bundle:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Load popular bundle (preloaded after nitnem)
+     */
+    async function loadPopularBundle() {
+        if (popularBundle) return popularBundle;
+
+        try {
+            const response = await fetch(`${CONFIG.chunksPath}/popular-banis.json`);
+            popularBundle = await response.json();
+            console.log(`[BaniDB] Loaded popular bundle (${Object.keys(popularBundle.banis).length} banis)`);
+            return popularBundle;
+        } catch (error) {
+            console.error('[BaniDB] Failed to load popular bundle:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Load a specific chunk
+     */
+    async function loadChunk(chunkFile) {
+        if (loadedChunks.has(chunkFile)) {
+            return loadedChunks.get(chunkFile);
+        }
+
+        try {
+            const response = await fetch(`${CONFIG.chunksPath}/${chunkFile}`);
+            const chunkData = await response.json();
+            loadedChunks.set(chunkFile, chunkData);
+            console.log(`[BaniDB] Loaded chunk: ${chunkFile}`);
+            return chunkData;
+        } catch (error) {
+            console.error(`[BaniDB] Failed to load chunk ${chunkFile}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Get bani data from appropriate chunk
+     */
+    async function getOfflineBani(baniId) {
+        const id = parseInt(baniId);
+        
+        // Check if it's in nitnem bundle (already loaded)
+        if (nitnemBundle && nitnemBundle.banis[id]) {
+            return nitnemBundle.banis[id];
+        }
+
+        // Check if it's in popular bundle
+        if (popularBundle && popularBundle.banis[id]) {
+            return popularBundle.banis[id];
+        }
+
+        // Load index if not loaded
+        if (!indexData) {
+            await loadIndex();
+        }
+
+        // Find which chunk contains this bani
+        if (indexData && indexData.baniIndex[id]) {
+            const chunkFile = indexData.baniIndex[id];
+            const chunk = await loadChunk(chunkFile);
+            if (chunk && chunk.banis[id]) {
+                return chunk.banis[id];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Initialize - preload nitnem bundle on startup
+     */
+    async function initialize() {
+        console.log('[BaniDB] Initializing - preloading nitnem bundle...');
+        await loadNitnemBundle();
+        
+        // Preload popular bundle in background
+        setTimeout(async () => {
+            await loadPopularBundle();
+        }, 100);
+    }
+
+    // Auto-initialize when script loads
+    initialize();
 
     // Check if offline data is available
-    const hasOfflineData = () => typeof OFFLINE_BANI_DATA !== 'undefined' && OFFLINE_BANI_DATA;
+    const hasOfflineData = () => nitnemBundle !== null;
 
     // Bani ID Mapping (commonly used)
     const BANI_IDS = {
@@ -57,8 +180,8 @@ const BaniDB = (function () {
         full: [2, 4, 6, 7, 9, 10, 21, 23]
     };
 
-    // POPULAR BANI IDS that have offline data
-    const OFFLINE_BANI_IDS = [2, 4, 9, 10, 21, 23, 31];
+    // ALL BANI IDS are now available offline
+    const OFFLINE_BANI_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107];
 
     /**
      * Escape HTML for security
@@ -71,262 +194,117 @@ const BaniDB = (function () {
     }
 
     /**
-     * Get cache key
-     */
-    function getCacheKey(endpoint) {
-        return `banidb_${CONFIG.cacheVersion}_${endpoint}`;
-    }
-
-    /**
-     * Store in cache (localStorage + memory)
-     */
-    function setCache(key, data) {
-        const entry = {
-            data,
-            timestamp: Date.now()
-        };
-
-        cache.set(key, entry);
-
-        try {
-            localStorage.setItem(key, JSON.stringify(entry));
-        } catch (e) {
-            console.warn('Could not cache to localStorage:', e);
-        }
-    }
-
-    /**
-     * Get from cache
-     */
-    function getCache(key) {
-        // Check memory cache first
-        if (cache.has(key)) {
-            const entry = cache.get(key);
-            if (Date.now() - entry.timestamp < CONFIG.cacheExpiry) {
-                return entry.data;
-            }
-            cache.delete(key);
-        }
-
-        // Check localStorage
-        try {
-            const stored = localStorage.getItem(key);
-            if (stored) {
-                const entry = JSON.parse(stored);
-                if (Date.now() - entry.timestamp < CONFIG.cacheExpiry) {
-                    cache.set(key, entry);
-                    return entry.data;
-                }
-                localStorage.removeItem(key);
-            }
-        } catch (e) {
-            console.warn('Could not read from localStorage:', e);
-        }
-
-        return null;
-    }
-
-    /**
-     * Fetch with retry logic
-     */
-    async function fetchWithRetry(url, options = {}, retries = CONFIG.maxRetries) {
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers: {
-                    'Accept': 'application/json',
-                    ...options.headers
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            return await response.json();
-        } catch (error) {
-            if (retries > 0) {
-                await new Promise(resolve => setTimeout(resolve, CONFIG.retryDelay));
-                return fetchWithRetry(url, options, retries - 1);
-            }
-            throw error;
-        }
-    }
-
-    /**
-     * Get offline bani data instantly
+     * Get bani data from offline JSON file
      */
     function getOfflineBani(baniId) {
         if (!hasOfflineData()) return null;
-        const offlineData = OFFLINE_BANI_DATA[baniId];
-        if (!offlineData) return null;
+        return allBanisData.banis[baniId] || null;
+    }
+
+    /**
+     * Get list of all Banis from index
+     */
+    async function getAllBanis() {
+        await loadIndex();
+        if (!indexData) return [];
         
-        // Transform offline data to match API format
+        // Return index info without loading all banis
         return {
-            baniID: offlineData.baniID,
-            baniName: offlineData.baniName,
-            gurmukhiUni: offlineData.gurmukhiUni,
-            transliteration: offlineData.transliteration,
-            info: offlineData.info,
-            verses: offlineData.verses.map(v => ({
-                verseId: v.verseId,
-                verse: {
-                    verseId: v.verseId,
-                    verse: v.gurmukhi,
-                    gurmukhi: v.gurmukhi,
-                    unicode: v.gurmukhi
-                },
-                transliteration: { english: v.transliteration, en: v.transliteration, roman: v.transliteration },
-                translation: { en: { bdb: v.english, ms: v.english }, pu: { ss: v.punjabi } },
-                lineNo: v.lineNo,
-                pageNo: v.pageNo,
-                shabadId: v.shabadId,
-                sourceId: v.sourceId
-            }))
+            version: indexData.version,
+            lastUpdated: indexData.lastUpdated,
+            totalBanis: indexData.totalBanis,
+            chunks: indexData.chunks
         };
     }
 
     /**
-     * Get list of all Banis
-     */
-    async function getAllBanis() {
-        const cacheKey = getCacheKey('banis');
-        const cached = getCache(cacheKey);
-        if (cached) return cached;
-
-        try {
-            const data = await fetchWithRetry(`${CONFIG.baseUrl}/banis`);
-            setCache(cacheKey, data);
-            return data;
-        } catch (error) {
-            console.error('Failed to fetch Banis list:', error);
-            throw error;
-        }
-    }
-
-    /**
-     * Get a specific Bani by ID - INSTANT OFFLINE-FIRST with background sync
+     * Get a specific Bani by ID - CHUNKED LOADING
      */
     async function getBani(baniId, options = {}) {
-        const larivaar = options.larivaar ? '&larivaar=true' : '';
-        const cacheKey = getCacheKey(`bani_${baniId}${larivaar}`);
+        // Initialize if not already done
+        if (!nitnemBundle) {
+            await initialize();
+        }
         
-        // INSTANT: Return offline data immediately if available
-        const offlineData = getOfflineBani(baniId);
-        if (offlineData && !options.forceRefresh) {
-            // Check for fresher cached data in background
-            const cached = getCache(cacheKey);
-            
-            // Return offline data instantly, but trigger background refresh if online
-            if (navigator.onLine && !options.skipBackgroundRefresh) {
-                // Background fetch to update cache
-                setTimeout(async () => {
-                    try {
-                        const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
-                        const freshData = await fetchWithRetry(url, {}, 1);
-                        setCache(cacheKey, freshData);
-                    } catch (e) {
-                        // Silent fail - offline data is already serving
-                    }
-                }, 100);
-            }
-            
-            return offlineData;
+        const baniData = await getOfflineBani(baniId);
+        if (!baniData) {
+            console.error(`[BaniDB] Bani ${baniId} not found in offline data`);
+            return null;
         }
-
-        // Check cache for non-offline banis
-        const cached = getCache(cacheKey);
-        if (cached && !options.forceRefresh) {
-            // Background refresh if online
-            if (navigator.onLine && !options.skipBackgroundRefresh) {
-                setTimeout(async () => {
-                    try {
-                        const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
-                        const freshData = await fetchWithRetry(url, {}, 1);
-                        setCache(cacheKey, freshData);
-                    } catch (e) {}
-                }, 100);
-            }
-            return cached;
-        }
-
-        // Fetch from network
-        try {
-            const url = `${CONFIG.baseUrl}/banis/${baniId}${larivaar ? `?larivaar=true` : ''}`;
-            const data = await fetchWithRetry(url);
-            setCache(cacheKey, data);
-            return data;
-        } catch (error) {
-            console.error(`Failed to fetch Bani ${baniId}:`, error);
-            
-            // GRACEFUL OFFLINE FALLBACK
-            if (offlineData) {
-                console.log(`[BaniDB] Serving offline Bani ${baniId} due to network error`);
-                return offlineData;
-            }
-            if (cached) {
-                console.log(`[BaniDB] Serving stale cached Bani ${baniId} due to network error`);
-                return cached;
-            }
-            
-            throw error;
-        }
+        
+        return baniData;
     }
 
     /**
-     * Search Banis by query
+     * Search Banis by query - OFFLINE VERSION (searches within loaded banis)
      */
     async function searchBanis(query, options = {}) {
-        const searchType = options.type || 0;
-        const source = options.source || 'all';
+        await loadOfflineBanis();
+        if (!allBanisData) return [];
 
-        try {
-            const url = `${CONFIG.baseUrl}/search/${encodeURIComponent(query)}?searchtype=${searchType}&source=${source}`;
-            const data = await fetchWithRetry(url);
-            return data;
-        } catch (error) {
-            console.error('Search failed:', error);
-            throw error;
-        }
-    }
+        const results = [];
+        const queryLower = query.toLowerCase();
 
-    /**
-     * Get random Shabad
-     */
-    async function getRandomShabad() {
-        try {
-            const data = await fetchWithRetry(`${CONFIG.baseUrl}/random`);
-            return data;
-        } catch (error) {
-            console.error('Failed to fetch random Shabad:', error);
-            throw error;
-        }
-    }
+        // Search through all banis
+        for (const [baniId, bani] of Object.entries(allBanisData.banis)) {
+            const baniInfo = bani.baniInfo;
+            if (!baniInfo) continue;
 
-    /**
-     * Get Today's Hukamnama from Sri Darbar Sahib
-     */
-    async function getHukamnama() {
-        const cacheKey = getCacheKey('hukamnama_today');
-        const cached = getCache(cacheKey);
+            // Search in bani name
+            if (baniInfo.unicode?.toLowerCase().includes(queryLower) ||
+                baniInfo.english?.toLowerCase().includes(queryLower)) {
+                results.push({
+                    ID: parseInt(baniId),
+                    gurmukhiUni: baniInfo.unicode,
+                    gurmukhi: baniInfo.gurmukhi,
+                    transliteration: baniInfo.english
+                });
+                continue;
+            }
 
-        // Hukamnama should be refreshed every 4 hours
-        if (cached) {
-            const entry = cache.get(cacheKey);
-            if (entry && Date.now() - entry.timestamp < 4 * 60 * 60 * 1000) {
-                return cached;
+            // Search in verses
+            if (bani.verses) {
+                for (const verse of bani.verses) {
+                    const verseText = verse.verse?.gurmukhi || verse.verse?.verse || '';
+                    if (verseText.toLowerCase().includes(queryLower)) {
+                        results.push({
+                            ID: parseInt(baniId),
+                            gurmukhiUni: baniInfo.unicode,
+                            gurmukhi: baniInfo.gurmukhi,
+                            transliteration: baniInfo.english
+                        });
+                        break;
+                    }
+                }
             }
         }
 
-        try {
-            const data = await fetchWithRetry(`${CONFIG.baseUrl}/hukamnamas/today`);
-            setCache(cacheKey, data);
-            return data;
-        } catch (error) {
-            console.error('Failed to fetch Hukamnama:', error);
-            if (cached) return cached;
-            throw error;
-        }
+        return results;
+    }
+
+    /**
+     * Get random Shabad - OFFLINE VERSION (returns random verse from loaded banis)
+     */
+    async function getRandomShabad() {
+        await loadOfflineBanis();
+        if (!allBanisData) return null;
+
+        const baniIds = Object.keys(allBanisData.banis);
+        const randomBaniId = baniIds[Math.floor(Math.random() * baniIds.length)];
+        const bani = allBanisData.banis[randomBaniId];
+
+        if (!bani?.verses || bani.verses.length === 0) return null;
+
+        const randomVerse = bani.verses[Math.floor(Math.random() * bani.verses.length)];
+        return randomVerse;
+    }
+
+    /**
+     * Get Today's Hukamnama - DISABLED (requires API)
+     */
+    async function getHukamnama() {
+        console.warn('[BaniDB] Hukamnama requires API - offline version not available');
+        return null;
     }
 
     /**
@@ -420,45 +398,34 @@ const BaniDB = (function () {
     }
 
     /**
-     * Pre-cache popular Banis for offline use
+     * Pre-cache popular Banis - Load nitnem and popular bundles
      */
     async function preCachePopularBanis(onProgress) {
-        const popularBanis = OFFLINE_BANI_IDS; // Use our offline list
-        let loaded = 0;
-
-        for (const baniId of popularBanis) {
-            try {
-                // Use skipBackgroundRefresh to avoid double fetch
-                await getBani(baniId, { skipBackgroundRefresh: true });
-                loaded++;
-                if (onProgress) onProgress(loaded, popularBanis.length);
-            } catch (error) {
-                console.warn(`Failed to pre-cache Bani ${baniId}:`, error);
-            }
+        await initialize();
+        
+        // Nitnem bundle is already loaded
+        let loaded = Object.keys(nitnemBundle?.banis || {}).length;
+        
+        // Popular bundle loads in background
+        if (popularBundle) {
+            loaded += Object.keys(popularBundle.banis).length;
         }
-
+        
+        if (onProgress) onProgress(loaded, 112);
         return loaded;
     }
 
     /**
-     * Clear all caches
+     * Clear all caches - NOT NEEDED (no caching in offline mode)
      */
     function clearCache() {
         cache.clear();
-
-        try {
-            Object.keys(localStorage).forEach(key => {
-                if (key.startsWith('banidb_')) {
-                    localStorage.removeItem(key);
-                }
-            });
-        } catch (e) {
-            console.warn('Could not clear localStorage cache:', e);
-        }
+        console.log('[BaniDB] Cache cleared (offline mode)');
     }
 
     // Public API
     return {
+        initialize,
         getAllBanis,
         getBani,
         searchBanis,

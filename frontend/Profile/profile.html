@@ -42,8 +42,94 @@
   <link rel="stylesheet" href="profile.css">
   
   <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
   <script src="../js/anhad-core.js" defer></script>
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════════════
+       FLOATING TAB BAR — Same as Home Page (Ditto Copy)
+    ═══════════════════════════════════════════════════════════════════════════ */
+    .tab-bar {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: rgba(28, 28, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+
+    [data-theme="light"] .tab-bar,
+    html:not([data-theme="dark"]) .tab-bar {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    [data-theme="light"] .tab-item,
+    html:not([data-theme="dark"]) .tab-item {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .tab-item.active {
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="light"] .tab-item.active,
+    html:not([data-theme="dark"]) .tab-item.active {
+      color: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-item.active::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      background: #D4AF37;
+      border-radius: 50%;
+    }
+
+    .tab-item:active { transform: scale(0.9); }
+
+    .tab-icon { font-size: 22px; line-height: 1; }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    
+    /* Hide old bottom nav */
+    .bottom-nav { display: none !important; }
+  </style>
 </head>
 
 <body>
@@ -77,9 +163,6 @@
         <i class="fas fa-fire"></i>
         <span id="currentStreak">0</span>
       </div>
-      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme" style="margin-left: 8px;">
-        <i class="fas fa-moon" id="themeIcon"></i>
-      </button>
     </section>
 
     <!-- Quick Stats Grid -->
@@ -174,7 +257,7 @@
             </div>
             <div class="streak-info__item">
               <span class="streak-info__label">Freezes Available</span>
-              <span class="streak-info__value" id="freezesAvailable">0 ??</span>
+              <span class="streak-info__value" id="freezesAvailable">0</span>
             </div>
           </div>
         </div>
@@ -333,14 +416,24 @@
     <div style="height: 100px;"></div>
   </main>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <div class="bottom-nav__container">
-      <a href="../index.html" class="nav-item" aria-label="Home"><i class="fas fa-house"></i></a>
-      <a href="../Insights/insights.html" class="nav-item" aria-label="Insights"><i class="fas fa-lightbulb"></i></a>
-      <a href="../Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
-      <button class="nav-item nav-item--active" aria-label="Profile"><i class="fas fa-user"></i></button>
-    </div>
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="../Insights/insights.html" class="tab-item">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">�</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
   </nav>
 
   <!-- Global Theme -->

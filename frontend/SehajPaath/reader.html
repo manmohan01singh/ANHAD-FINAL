@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="reader-error-fix.css?v=1.0">
     
     <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
     
     <!-- Favicon -->
@@ -48,16 +49,9 @@
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p class="loading-text">ਗੁਰਬਾਣੀ ਲੋਡ ਹੋ ਰਹੀ ਹੈ...</p>
+            <p class="loading-text">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</p>
+            <p class="loading-text" style="font-size: 14px; opacity: 0.6; margin-top: 8px;">Loading Gurbani...</p>
         </div>
-    </div>
-
-    <!-- Background Orbs - iOS Inspired -->
-    <div class="bg-orbs">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
     </div>
 
     <!-- Main Reader Container -->
@@ -70,7 +64,6 @@
         
         <!-- Header (Auto-hide on scroll) -->
         <header class="reader-header" id="readerHeader">
-            <div class="header-blur"></div>
             <div class="header-content">
                 <button class="header-btn back-btn" id="backBtn" aria-label="Go back">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -142,7 +135,6 @@
 
         <!-- Footer Navigation (Auto-hide) -->
         <footer class="reader-footer" id="readerFooter">
-            <div class="footer-blur"></div>
             <div class="footer-content">
                 <button class="nav-btn prev-btn" id="prevAngBtn" aria-label="Previous Ang">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -301,9 +293,11 @@
                     <div class="settings-section">
                         <h3>🔤 Font Style</h3>
                         <select id="fontStyleSelect" class="modern-select">
-                            <option value="Noto Sans Gurmukhi">Noto Sans Gurmukhi</option>
-                            <option value="Mukta Mahee">Mukta Mahee</option>
-                            <option value="AnmolLipi">AnmolLipi</option>
+                            <option value="Noto Sans Gurmukhi">Noto Sans Gurmukhi (Default)</option>
+                            <option value="PG Serif">PG Serif</option>
+                            <option value="MFJashan">MFJashan</option>
+                            <option value="PG Khanna">PG Khanna</option>
+                            <option value="Pixel R">Pixel R</option>
                         </select>
                     </div>
                     
@@ -328,15 +322,7 @@
                     <!-- Reading Experience -->
                     <div class="settings-section">
                         <h3>✨ Reading Experience</h3>
-                        
-                        <div class="setting-item toggle-item">
-                            <label>Auto-hide Header</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="autoHideHeader" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        
+
                         <div class="setting-item toggle-item">
                             <label>Continuous Reading</label>
                             <label class="toggle">
@@ -344,35 +330,11 @@
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-                        
+
                         <div class="setting-item toggle-item">
                             <label>Paragraph Mode</label>
                             <label class="toggle">
                                 <input type="checkbox" id="paragraphMode">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="setting-item toggle-item" id="larivaarAssistRow" style="display: none;">
-                            <label>Larivaar Assist</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="larivaarAssist">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="setting-item toggle-item">
-                            <label>Haptic Feedback</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="hapticFeedback" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        
-                        <div class="setting-item toggle-item">
-                            <label>Show Line Numbers</label>
-                            <label class="toggle">
-                                <input type="checkbox" id="showLineNumbers" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
@@ -381,21 +343,6 @@
             </div>
         </div>
         
-        <!-- Floating Quick Actions Bar -->
-        <div class="floating-actions-bar" id="floatingActionsBar">
-            <button class="fab-btn" id="fabBookmark" title="Bookmark">
-                <span class="fab-icon">🔖</span>
-                <span class="fab-label">Bookmark</span>
-            </button>
-            <button class="fab-btn" id="fabShare" title="Share">
-                <span class="fab-icon">📤</span>
-                <span class="fab-label">Share</span>
-            </button>
-            <button class="fab-btn" id="fabCopy" title="Copy">
-                <span class="fab-icon">📋</span>
-                <span class="fab-label">Copy</span>
-            </button>
-        </div>
     </div>
 
     <!-- Search/Go to Ang Modal -->

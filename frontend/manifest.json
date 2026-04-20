@@ -6,7 +6,6 @@
   "scope": "./",
   "id": "/gurbani-radio",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#f7c634",
   "categories": [

@@ -808,3 +808,83 @@ body {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   FULLSCREEN MODE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.fullscreen .ios-nav {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.fullscreen .shabad-meta {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.fullscreen .bottom-controls {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Fullscreen button styling */
+.fullscreen-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    z-index: 10;
+    position: relative;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.fullscreen-toggle:active {
+    transform: scale(0.92);
+    opacity: 0.8;
+}
+
+.fullscreen-toggle .compress-icon {
+    display: none;
+}
+
+.fullscreen-toggle.active .expand-icon {
+    display: none;
+}
+
+.fullscreen-toggle.active .compress-icon {
+    display: block;
+}
+
+/* Show fullscreen hint when active */
+body.fullscreen::after {
+    content: 'Tap anywhere to exit fullscreen';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 50;
+}
+
+body.fullscreen:hover::after {
+    opacity: 1;
+}

@@ -162,45 +162,12 @@ class ShabadVichar {
         // Swipe to close settings
         this.initSheetGestures();
 
-        // Pull to refresh
-        this.initPullToRefresh();
-
         // Keyboard
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeSettings();
                 this.closeInfoSheet();
             }
-        });
-    }
-
-    initPullToRefresh() {
-        let startY = 0;
-        let isPulling = false;
-        const content = this.$.versesContainer;
-        
-        if (!content) return;
-
-        content.addEventListener('touchstart', (e) => {
-            if (content.scrollTop === 0) {
-                startY = e.touches[0].clientY;
-                isPulling = true;
-            }
-        }, { passive: true });
-
-        content.addEventListener('touchmove', (e) => {
-            if (!isPulling) return;
-            const currentY = e.touches[0].clientY;
-            const diff = currentY - startY;
-            if (diff > 80 && !this.state.isLoading) {
-                this.haptic('light');
-                this.fetchShabad(false);
-                isPulling = false;
-            }
-        }, { passive: true });
-
-        content.addEventListener('touchend', () => {
-            isPulling = false;
         });
     }
 

@@ -44,6 +44,7 @@ const $$ = (sel) => document.querySelectorAll(sel);
 const DOM = {
     searchInput: $('#searchInput'),
     searchBar: $('#searchBar'),
+    keyboardBtn: $('#keyboardBtn'),
     micBtn: $('#micBtn'),
     voicePanel: $('#voicePanel'),
     voiceCancel: $('#voiceCancel'),
@@ -555,8 +556,44 @@ async function performSearch(append = false) {
     }
 
     try {
-        // Always use Gurmukhi search type (1) for best results
-        const data = await GurbaniAPI.search(query, 1, State.page);
+        // First try to search from cache
+        const cachedResults = GurbaniCache.search(query, State.sourceFilter);
+        
+        let data;
+        let fromCache = false;
+
+        if (cachedResults.verses && cachedResults.verses.length > 0) {
+            // Use cached results
+            data = { verses: cachedResults.verses, resultsInfo: { totalResults: cachedResults.verses.length } };
+            fromCache = true;
+            console.log(`Found ${cachedResults.verses.length} results in cache`);
+            
+            if (cachedResults.totalInCache) {
+                showToast(`Offline: ${cachedResults.totalInCache} verses cached`);
+            }
+        } else {
+            // If no cache results or insufficient, try API
+            try {
+                // Always use Gurmukhi search type (1) for best results
+                data = await GurbaniAPI.search(query, 1, State.page);
+                
+                // Cache the API results
+                if (data.verses && data.verses.length > 0) {
+                    GurbaniCache.addVerses(data.verses);
+                }
+            } catch (apiError) {
+                // If API fails, try cache again with broader search
+                console.log('API failed, trying cache fallback:', apiError.message);
+                const fallbackResults = GurbaniCache.search(query.substring(0, 2), 'all');
+                if (fallbackResults.verses && fallbackResults.verses.length > 0) {
+                    data = { verses: fallbackResults.verses, resultsInfo: { totalResults: fallbackResults.verses.length } };
+                    fromCache = true;
+                    showToast('Showing cached results (offline)');
+                } else {
+                    throw apiError;
+                }
+            }
+        }
 
         if (!data.verses || data.verses.length === 0) {
             if (!append) showEmpty();
@@ -593,6 +630,16 @@ async function performSearch(append = false) {
 
         DOM.loadMoreBtn.style.display = State.page < State.totalPages ? 'block' : 'none';
         showResults();
+
+        if (fromCache) {
+            // Show cache indicator
+            const cacheIndicator = document.createElement('div');
+            cacheIndicator.className = 'cache-indicator';
+            cacheIndicator.textContent = '📴 Offline';
+            cacheIndicator.style.cssText = 'position: fixed; bottom: 80px; right: 20px; background: rgba(52, 199, 89, 0.9); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; z-index: 1000;';
+            document.body.appendChild(cacheIndicator);
+            setTimeout(() => cacheIndicator.remove(), 2000);
+        }
 
     } catch (error) {
         console.error('Search error:', error);
@@ -950,8 +997,14 @@ const History = {
     items: [],
 
     open() {
+        console.log('History.open() called, items:', this.items.length);
         this.render();
-        DOM.historyOverlay.classList.add('active');
+        if (DOM.historyOverlay) {
+            DOM.historyOverlay.classList.add('active');
+            console.log('History overlay activated');
+        } else {
+            console.error('History overlay element not found');
+        }
         haptic();
     },
 
@@ -1012,10 +1065,11 @@ const History = {
 
     select(index) {
         const item = this.items[index];
-        if (item) {
+        if (item && item.query) {
             DOM.searchInput.value = item.query;
-            performSearch();
             this.close();
+            performSearch();
+            haptic();
         }
     }
 };
@@ -1072,10 +1126,16 @@ function initEventListeners() {
         }
     });
 
+    // Keyboard button
+    DOM.keyboardBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        Keyboard.open();
+    });
+
     // Search bar - open keyboard when clicking (not the buttons)
     DOM.searchBar?.addEventListener('click', (e) => {
-        // Don't open if clicking mic button
-        if (e.target.closest('#micBtn')) return;
+        // Don't open if clicking mic button or keyboard button
+        if (e.target.closest('#micBtn') || e.target.closest('#keyboardBtn')) return;
         // Open Gurmukhi keyboard
         Keyboard.open();
     });
@@ -1175,7 +1235,15 @@ function initEventListeners() {
     });
 
     // History
-    DOM.historyBtn?.addEventListener('click', () => History.open());
+    if (DOM.historyBtn) {
+        DOM.historyBtn.addEventListener('click', () => {
+            console.log('History button clicked');
+            History.open();
+        });
+        console.log('History button event listener attached');
+    } else {
+        console.error('History button not found');
+    }
     DOM.historyClose?.addEventListener('click', () => History.close());
     DOM.historyClearAll?.addEventListener('click', () => History.clear());
 

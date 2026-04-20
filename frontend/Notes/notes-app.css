@@ -78,8 +78,8 @@
     --header-height: 56px;
 }
 
-/* Dark Theme - Support both html.dark-mode and data-theme */
-html.dark-mode,
+/* Dark Theme - Support both [data-theme="dark"] and data-theme */
+[data-theme="dark"],
 html[data-theme="dark"],
 [data-theme="dark"] {
     --bg-primary: #1C1C1F;
@@ -177,7 +177,7 @@ button, input, textarea {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-html.dark-mode .notes-header {
+[data-theme="dark"] .notes-header {
     background: rgba(28, 28, 31, 0.85);
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
@@ -251,7 +251,7 @@ html.dark-mode .notes-header {
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-html.dark-mode .header-btn {
+[data-theme="dark"] .header-btn {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     color: var(--text-primary);
     box-shadow:
@@ -272,7 +272,7 @@ html.dark-mode .header-btn {
         0 0 0 2px rgba(255, 255, 255, 0.4);
 }
 
-html.dark-mode .header-btn:active {
+[data-theme="dark"] .header-btn:active {
     box-shadow:
         inset 10px 10px 30px rgba(0, 0, 0, 0.4),
         inset -6px -6px 20px rgba(255, 255, 255, 0.03),
@@ -326,7 +326,7 @@ html.dark-mode .header-btn:active {
     border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-html.dark-mode .search-input-wrapper {
+[data-theme="dark"] .search-input-wrapper {
     background: var(--bg-tertiary);
     box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.3),
@@ -412,7 +412,7 @@ html.dark-mode .search-input-wrapper {
     -ms-overflow-style: none;
 }
 
-html.dark-mode .folder-tabs {
+[data-theme="dark"] .folder-tabs {
     background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1F 100%);
     box-shadow:
         15px 15px 40px rgba(0, 0, 0, 0.3),
@@ -470,7 +470,7 @@ html.dark-mode .folder-tabs {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-html.dark-mode .folder-tab.active {
+[data-theme="dark"] .folder-tab.active {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     color: #60A5FA;
     box-shadow:
@@ -537,7 +537,7 @@ html.dark-mode .folder-tab.active {
     border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-html.dark-mode .note-card {
+[data-theme="dark"] .note-card {
     background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1F 100%);
     box-shadow:
         inset 0 2px 4px rgba(255, 255, 255, 0.03),
@@ -551,7 +551,7 @@ html.dark-mode .note-card {
         inset 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-html.dark-mode .note-card:active {
+[data-theme="dark"] .note-card:active {
     box-shadow:
         inset 0 2px 6px rgba(0, 0, 0, 0.4);
 }
@@ -562,7 +562,7 @@ html.dark-mode .note-card:active {
     background: linear-gradient(145deg, #FFFBF5 0%, #FFF8EB 100%);
 }
 
-html.dark-mode .note-card.pinned {
+[data-theme="dark"] .note-card.pinned {
     background: linear-gradient(145deg, #2A2520 0%, #1F1C18 100%);
     border-color: rgba(255, 183, 3, 0.2);
 }
@@ -724,7 +724,7 @@ html.dark-mode .note-card.pinned {
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-html.dark-mode .empty-icon {
+[data-theme="dark"] .empty-icon {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         20px 20px 60px rgba(0, 0, 0, 0.3),
@@ -888,7 +888,7 @@ html.dark-mode .empty-icon {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-html.dark-mode .editor-header {
+[data-theme="dark"] .editor-header {
     background: rgba(28, 28, 31, 0.9);
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
@@ -916,7 +916,7 @@ html.dark-mode .editor-header {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-html.dark-mode .editor-btn.back {
+[data-theme="dark"] .editor-btn.back {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         8px 8px 20px rgba(0, 0, 0, 0.3),
@@ -933,7 +933,7 @@ html.dark-mode .editor-btn.back {
         inset -2px -2px 6px rgba(255, 255, 255, 0.8);
 }
 
-html.dark-mode .editor-btn.back:active {
+[data-theme="dark"] .editor-btn.back:active {
     box-shadow:
         inset 4px 4px 10px rgba(0, 0, 0, 0.3),
         inset -2px -2px 6px rgba(255, 255, 255, 0.02);
@@ -988,7 +988,7 @@ html.dark-mode .editor-btn.back:active {
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-html.dark-mode .editor-meta {
+[data-theme="dark"] .editor-meta {
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -1020,7 +1020,7 @@ html.dark-mode .editor-meta {
         inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-html.dark-mode .editor-toolbar {
+[data-theme="dark"] .editor-toolbar {
     background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1F 100%);
     border-top-color: rgba(255, 255, 255, 0.05);
     box-shadow:
@@ -1048,7 +1048,7 @@ html.dark-mode .editor-toolbar {
     transition: all 0.2s ease;
 }
 
-html.dark-mode .toolbar-btn {
+[data-theme="dark"] .toolbar-btn {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         6px 6px 15px rgba(0, 0, 0, 0.3),
@@ -1071,7 +1071,7 @@ html.dark-mode .toolbar-btn {
         inset -2px -2px 5px rgba(255, 255, 255, 0.8);
 }
 
-html.dark-mode .toolbar-btn:active {
+[data-theme="dark"] .toolbar-btn:active {
     box-shadow:
         inset 3px 3px 8px rgba(0, 0, 0, 0.3),
         inset -2px -2px 5px rgba(255, 255, 255, 0.02);
@@ -1090,7 +1090,7 @@ html.dark-mode .toolbar-btn:active {
     margin: 0 var(--space-sm);
 }
 
-html.dark-mode .toolbar-divider {
+[data-theme="dark"] .toolbar-divider {
     background: rgba(255, 255, 255, 0.08);
 }
 
@@ -1118,7 +1118,7 @@ html.dark-mode .toolbar-divider {
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-html.dark-mode .folder-picker {
+[data-theme="dark"] .folder-picker {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         20px 20px 60px rgba(0, 0, 0, 0.4),
@@ -1144,7 +1144,7 @@ html.dark-mode .folder-picker {
     margin-bottom: var(--space-md);
 }
 
-html.dark-mode .folder-picker-header {
+[data-theme="dark"] .folder-picker-header {
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -1201,7 +1201,7 @@ html.dark-mode .folder-picker-header {
     transition: all 0.2s ease;
 }
 
-html.dark-mode .folder-option {
+[data-theme="dark"] .folder-option {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         4px 4px 12px rgba(0, 0, 0, 0.2),
@@ -1274,7 +1274,7 @@ html.dark-mode .folder-option {
         inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-html.dark-mode .menu-sheet {
+[data-theme="dark"] .menu-sheet {
     background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1F 100%);
     box-shadow:
         0 -10px 40px rgba(0, 0, 0, 0.3),
@@ -1293,7 +1293,7 @@ html.dark-mode .menu-sheet {
     margin: 0 auto var(--space-lg);
 }
 
-html.dark-mode .menu-handle {
+[data-theme="dark"] .menu-handle {
     background: rgba(255, 255, 255, 0.2);
 }
 
@@ -1324,7 +1324,7 @@ html.dark-mode .menu-handle {
     transition: all 0.2s ease;
 }
 
-html.dark-mode .menu-option {
+[data-theme="dark"] .menu-option {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         8px 8px 25px rgba(0, 0, 0, 0.3),
@@ -1342,7 +1342,7 @@ html.dark-mode .menu-option {
         inset -2px -2px 6px rgba(255, 255, 255, 0.8);
 }
 
-html.dark-mode .menu-option:active {
+[data-theme="dark"] .menu-option:active {
     box-shadow:
         inset 4px 4px 10px rgba(0, 0, 0, 0.3),
         inset -2px -2px 6px rgba(255, 255, 255, 0.02);
@@ -1375,7 +1375,7 @@ html.dark-mode .menu-option:active {
     margin: var(--space-sm) 0;
 }
 
-html.dark-mode .menu-divider {
+[data-theme="dark"] .menu-divider {
     background: rgba(255, 255, 255, 0.08);
 }
 
@@ -1419,7 +1419,7 @@ html.dark-mode .menu-divider {
         inset 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-html.dark-mode .sort-content {
+[data-theme="dark"] .sort-content {
     background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1F 100%);
     box-shadow:
         0 -10px 40px rgba(0, 0, 0, 0.3),
@@ -1438,7 +1438,7 @@ html.dark-mode .sort-content {
     margin: 0 auto var(--space-lg);
 }
 
-html.dark-mode .sort-handle {
+[data-theme="dark"] .sort-handle {
     background: rgba(255, 255, 255, 0.2);
 }
 
@@ -1477,7 +1477,7 @@ html.dark-mode .sort-handle {
     transition: all 0.2s ease;
 }
 
-html.dark-mode .sort-option {
+[data-theme="dark"] .sort-option {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         8px 8px 25px rgba(0, 0, 0, 0.3),
@@ -1495,7 +1495,7 @@ html.dark-mode .sort-option {
         inset -2px -2px 6px rgba(255, 255, 255, 0.8);
 }
 
-html.dark-mode .sort-option:active {
+[data-theme="dark"] .sort-option:active {
     box-shadow:
         inset 4px 4px 10px rgba(0, 0, 0, 0.3),
         inset -2px -2px 6px rgba(255, 255, 255, 0.02);
@@ -1566,7 +1566,7 @@ html.dark-mode .sort-option:active {
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-html.dark-mode .confirm-dialog {
+[data-theme="dark"] .confirm-dialog {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         25px 25px 80px rgba(0, 0, 0, 0.4),
@@ -1600,7 +1600,7 @@ html.dark-mode .confirm-dialog {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-html.dark-mode .confirm-icon {
+[data-theme="dark"] .confirm-icon {
     background: linear-gradient(145deg, #3A2525 0%, #2C1F1F 100%);
     box-shadow:
         8px 8px 25px rgba(255, 69, 58, 0.15),
@@ -1650,7 +1650,7 @@ html.dark-mode .confirm-icon {
     border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-html.dark-mode .confirm-btn.cancel {
+[data-theme="dark"] .confirm-btn.cancel {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         6px 6px 15px rgba(0, 0, 0, 0.3),
@@ -1712,7 +1712,7 @@ html.dark-mode .confirm-btn.cancel {
     border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
-html.dark-mode .toast {
+[data-theme="dark"] .toast {
     background: linear-gradient(145deg, #3A3A3C 0%, #2C2C2E 100%);
     box-shadow:
         15px 15px 40px rgba(0, 0, 0, 0.4),

@@ -976,7 +976,7 @@
   pointer-events: none;
 }
 
-:root[data-theme="night"] .theme-toggle__slider {
+.theme-toggle__slider {
   transform: translateX(100%);
 }
 

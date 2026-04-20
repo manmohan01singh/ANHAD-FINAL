@@ -306,6 +306,7 @@
   }
 
   async function boot() {
+    console.log('[Calendar] Booting...');
     updateTodayCard();
 
     // FIX: Cache-first loading - show cached data immediately, refresh in background
@@ -320,14 +321,14 @@
         const parsed = JSON.parse(cached);
         state.eventsByYear = new Map(parsed);
         state.events = combineLoadedEvents();
+        console.log('[Calendar] Loaded from cache, events:', state.events.length);
         render();
-        console.log('[Calendar] Loaded from cache');
         
         // Hide loader immediately if we have cached data
         const loader = qs('calendarLoader');
         if (loader) loader.classList.add('hidden');
       } catch (e) {
-        console.warn('[Calendar] Cache parse error, will fetch fresh');
+        console.warn('[Calendar] Cache parse error, will fetch fresh:', e);
       }
     }
 
@@ -339,9 +340,11 @@
 
     try {
       const year = state.today.getFullYear();
+      console.log('[Calendar] Loading year:', year);
       await ensureYearLoaded(year);
       await ensureYearLoaded(year + 1);
       state.events = combineLoadedEvents();
+      console.log('[Calendar] Loaded events total:', state.events.length);
 
       // Ensure events array is valid
       if (!Array.isArray(state.events)) {
@@ -356,17 +359,22 @@
 
       scheduleLocalNotifications();
     } catch (error) {
-      console.error('Calendar boot error:', error);
+      console.error('[Calendar] Boot error:', error);
       state.events = state.events || [];
     } finally {
       if (calendarSection) {
         calendarSection.classList.remove('loading');
       }
       
-      // Always hide global loader when done
+      // ALWAYS hide global loader when done, even on error
       const loader = qs('calendarLoader');
-      if (loader) loader.classList.add('hidden');
+      if (loader) {
+        loader.classList.add('hidden');
+        console.log('[Calendar] Loader hidden');
+      }
       
+      // ALWAYS render, even if empty
+      console.log('[Calendar] Rendering with events:', state.events.length);
       render();
     }
 
@@ -553,17 +561,25 @@
   }
 
   function renderUpcoming() {
+    console.log('[Calendar] renderUpcoming called with events:', state.events.length);
     const list = qs('upcomingList');
-    if (!list) return;
-
-    const filtered = applyFilter(state.events);
-    const up = upcomingEvents(filtered);
-
-    if (up.length === 0) {
-      list.innerHTML = '<div style="padding: 8px 2px; font-weight: 800; color: rgba(11,11,15,0.55);">No upcoming events found.</div>';
+    if (!list) {
+      console.log('[Calendar] upcomingList element not found');
       return;
     }
 
+    const filtered = applyFilter(state.events);
+    console.log('[Calendar] Filtered events:', filtered.length);
+    const up = upcomingEvents(filtered);
+    console.log('[Calendar] Upcoming events (next 365 days):', up.length);
+
+    if (up.length === 0) {
+      list.innerHTML = '<div style="padding: 8px 2px; font-weight: 800; color: rgba(11,11,15,0.55);">No upcoming events found.</div>';
+      console.log('[Calendar] No upcoming events to display');
+      return;
+    }
+
+    console.log('[Calendar] Rendering upcoming events...');
     list.innerHTML = '';
     up.forEach((e) => {
       const d = e._date;
@@ -1509,20 +1525,29 @@
   }
 
   async function loadLocalEvents(year) {
+    console.log('[Calendar] Loading local events for year:', year);
     try {
       // For 2026, try to load from the specific 2026 events file first
       if (year === 2026) {
         try {
+          console.log('[Calendar] Loading from 2026 specific file...');
           const res2026 = await fetch('../data/gurpurab-events-2026.json', { cache: 'no-cache' });
+          console.log('[Calendar] 2026 fetch response:', res2026.status, res2026.ok);
           if (res2026.ok) {
             const json2026 = await res2026.json();
+            console.log('[Calendar] 2026 JSON parsed:', json2026);
             if (json2026 && json2026.years && Array.isArray(json2026.years['2026'])) {
-              console.log('✅ Loaded 2026 events from dedicated file:', json2026.years['2026'].length, 'events');
-              return json2026.years['2026'].map((e, idx) => normalizeLocalEvent(e, year, idx)).filter(Boolean);
+              const events = json2026.years['2026'].map((e, idx) => normalizeLocalEvent(e, year, idx)).filter(Boolean);
+              console.log('✅ Loaded 2026 events from dedicated file:', events.length, 'events');
+              return events;
+            } else {
+              console.warn('[Calendar] 2026 JSON structure invalid:', json2026);
             }
+          } else {
+            console.warn('[Calendar] 2026 fetch failed with status:', res2026.status);
           }
         } catch (e) {
-          console.warn('Could not load 2026 specific events file:', e);
+          console.error('[Calendar] Could not load 2026 specific events file:', e);
         }
       }
 

@@ -1507,19 +1507,25 @@ body.keyboard-open .search-bar-thin {
 .results-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 12px;
+    padding: 0 16px;
 }
 
-/* Minimal Result Items - Line separated, no boxes */
+/* Improved Result Cards with better design - iOS Notes style */
 .result-card {
-    background: transparent;
+    background: var(--surface-solid);
     border: none;
-    border-bottom: 1px solid var(--border);
     border-radius: 0;
     padding: 16px 0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.2s ease;
     animation: resultFadeIn 0.3s ease backwards;
+    border-bottom: 0.5px solid var(--border);
+}
+
+[data-theme="dark"] .result-card {
+    background: var(--surface-solid);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
 }
 
 .result-card:last-child {
@@ -1527,15 +1533,15 @@ body.keyboard-open .search-bar-thin {
 }
 
 .result-card:nth-child(1) { animation-delay: 0ms; }
-.result-card:nth-child(2) { animation-delay: 40ms; }
-.result-card:nth-child(3) { animation-delay: 80ms; }
-.result-card:nth-child(4) { animation-delay: 120ms; }
-.result-card:nth-child(5) { animation-delay: 160ms; }
-.result-card:nth-child(6) { animation-delay: 200ms; }
-.result-card:nth-child(7) { animation-delay: 240ms; }
-.result-card:nth-child(8) { animation-delay: 280ms; }
-.result-card:nth-child(9) { animation-delay: 320ms; }
-.result-card:nth-child(10) { animation-delay: 360ms; }
+.result-card:nth-child(2) { animation-delay: 30ms; }
+.result-card:nth-child(3) { animation-delay: 60ms; }
+.result-card:nth-child(4) { animation-delay: 90ms; }
+.result-card:nth-child(5) { animation-delay: 120ms; }
+.result-card:nth-child(6) { animation-delay: 150ms; }
+.result-card:nth-child(7) { animation-delay: 180ms; }
+.result-card:nth-child(8) { animation-delay: 210ms; }
+.result-card:nth-child(9) { animation-delay: 240ms; }
+.result-card:nth-child(10) { animation-delay: 270ms; }
 
 @keyframes resultFadeIn {
     from {
@@ -1549,23 +1555,28 @@ body.keyboard-open .search-bar-thin {
 }
 
 .result-card:hover {
-    background: rgba(0,0,0,0.02);
+    background: var(--bg-soft);
 }
 
 [data-theme="dark"] .result-card:hover {
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .result-card:active {
-    background: rgba(0,0,0,0.04);
+    background: var(--bg);
 }
 
-/* Minimal meta - just source and ang */
+[data-theme="dark"] .result-card:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Improved meta with better spacing and badges */
 .result-meta {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
 }
 
 .result-source-badge {
@@ -1592,10 +1603,12 @@ body.keyboard-open .search-bar-thin {
 
 .result-gurmukhi {
     font-family: var(--font-gurmukhi);
-    font-size: 22px;
-    line-height: 1.7;
+    font-size: 24px;
+    line-height: 1.8;
     color: var(--text);
     padding-right: 0;
+    font-weight: 500;
+    letter-spacing: 0.3px;
 }
 
 /* Translation removed - minimal view */
@@ -1898,6 +1911,9 @@ body.keyboard-open .search-bar-thin {
     filter: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    isolation: isolate;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
 .keyboard-overlay.active {
@@ -1925,6 +1941,10 @@ body.keyboard-open .search-bar-thin {
     box-shadow: 
         0 -8px 32px rgba(0, 0, 0, 0.15),
         inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    isolation: isolate;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 /* Dark mode keyboard sheet */
@@ -2314,6 +2334,31 @@ body.keyboard-open .search-bar-thin {
 .kb-key.matra-key:active {
     background: linear-gradient(180deg, #D4B896 0%, #C4A882 100%);
     transform: scale(0.95);
+}
+
+.kb-key.special-key {
+    min-width: 24px;
+    max-width: 28px;
+    height: 40px;
+    font-size: 16px;
+    background: linear-gradient(180deg, #C8E6C9 0%, #A5D6A7 100%);
+    color: #2E7D32;
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.kb-key.special-key:active {
+    background: linear-gradient(180deg, #A5D6A7 0%, #81C784 100%);
+    transform: scale(0.95);
+}
+
+[data-theme="dark"] .kb-key.special-key {
+    background: linear-gradient(180deg, #2E7D32 0%, #1B5E20 100%);
+    color: #C8E6C9;
+}
+
+[data-theme="dark"] .kb-key.special-key:active {
+    background: linear-gradient(180deg, #1B5E20 0%, #0D3B0D 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

@@ -27,11 +27,12 @@
   <meta name="theme-color" content="#FAF8F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="ANHAD Learning & Library � Your gateway to Gursikhi wisdom, sakhis, history, and spiritual knowledge">
+  <meta name="description" content="ANHAD Learning & Library — Your gateway to Gursikhi wisdom, sakhis, history, and spiritual knowledge">
   <title>Learning & Library | ANHAD</title>
   <link rel="icon" type="image/png" href="../favicon.ico">
   
   <!-- Global Theme (must be first!) -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
@@ -49,6 +50,88 @@
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
   <link rel="stylesheet" href="insights.css">
   <link rel="stylesheet" href="../css/nav-glass.css">
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════════════
+       FLOATING TAB BAR — Same as Home Page (Ditto Copy)
+    ═══════════════════════════════════════════════════════════════════════════ */
+    .tab-bar {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: rgba(28, 28, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+
+    [data-theme="light"] .tab-bar,
+    html:not([data-theme="dark"]) .tab-bar {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    [data-theme="light"] .tab-item,
+    html:not([data-theme="dark"]) .tab-item {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .tab-item.active {
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    [data-theme="light"] .tab-item.active,
+    html:not([data-theme="dark"]) .tab-item.active {
+      color: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-item.active::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      background: #D4AF37;
+      border-radius: 50%;
+    }
+
+    .tab-item:active { transform: scale(0.9); }
+
+    .tab-icon { font-size: 22px; line-height: 1; }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+  </style>
 </head>
 
 <body>
@@ -62,9 +145,6 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <h1 class="insights-header__title">Library</h1>
-    <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle theme">
-      <span id="themeIcon">🌙</span>
-    </button>
   </header>
 
   <!-- Main Content -->
@@ -75,11 +155,11 @@
       <div class="cloud-layer"></div>
       <div class="sun-glow"></div>
       <div class="inspiration-header">
-        <span class="inspiration-tag">? Today's Inspiration</span>
+        <span class="inspiration-tag">✨ Today's Inspiration</span>
       </div>
       <div class="inspiration-quote">
-        <p class="inspiration-quote__text" id="quoteText">?? ??? ???? ????? ?? ???? ???? ????? ?</p>
-        <p class="inspiration-quote__translation" id="quoteTranslation">O my mind, you are the embodiment of the Divine Light � recognize your own origin.</p>
+        <p class="inspiration-quote__text" id="quoteText">ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ</p>
+        <p class="inspiration-quote__translation" id="quoteTranslation">O my mind, you are the embodiment of the Divine Light — recognize your own origin.</p>
       </div>
       <div class="inspiration-meta">
         <span id="quoteMeta">📖 Ang 441</span>
@@ -97,11 +177,11 @@
           <span></span><span></span><span></span><span></span><span></span>
         </div>
         <div class="wisdom-icon">💎</div>
-        <h3 class="wisdom-title" id="wisdomTitle">Contentment (?????)</h3>
+        <h3 class="wisdom-title" id="wisdomTitle">Contentment (ਸੰਤੋਖ)</h3>
         <p class="wisdom-desc" id="wisdomDesc">True peace comes from accepting Waheguru's will. Freedom from greed and desire leads to lasting happiness.</p>
         <div class="wisdom-gurbani">
-          <p class="wisdom-pankti" id="wisdomPankti">?????? ??? ????? ?</p>
-          <span class="wisdom-source" id="wisdomSource">� Guru Arjan Dev Ji</span>
+          <p class="wisdom-pankti" id="wisdomPankti">ਸੰਤੋਖੁ ਸੁਖੁ ਊਪਜੈ ਦੂਜੈ ਦੁਖੁ ਨ ਹੋਇ</p>
+          <span class="wisdom-source" id="wisdomSource">— Guru Arjan Dev Ji</span>
         </div>
       </div>
     </section>
@@ -203,24 +283,24 @@
         </div>
         <div class="shabad-card glass-card" data-ang="917">
           <div class="shabad-info">
-            <span class="shabad-title">???? ?????</span>
-            <span class="shabad-meta">Ang 917 � Guru Amar Das Ji</span>
+            <span class="shabad-title">ਗੁਰਬਾਣੀ</span>
+            <span class="shabad-meta">Ang 917 • Guru Amar Das Ji</span>
           </div>
-          <button class="shabad-play-btn" aria-label="Open Shabad">?</button>
+          <button class="shabad-play-btn" aria-label="Open Shabad">🔍</button>
         </div>
         <div class="shabad-card glass-card" data-ang="262">
           <div class="shabad-info">
-            <span class="shabad-title">?????? ?????</span>
-            <span class="shabad-meta">Ang 262 � Guru Arjan Dev Ji</span>
+            <span class="shabad-title">ਇਤਿਹਾਸ</span>
+            <span class="shabad-meta">Ang 262 • Guru Arjan Dev Ji</span>
           </div>
-          <button class="shabad-play-btn" aria-label="Open Shabad">?</button>
+          <button class="shabad-play-btn" aria-label="Open Shabad">🔍</button>
         </div>
       </div>
     </section>
 
     <!-- --- YOUR JOURNEY STATS --- -->
     <section class="quick-stats-section glass-card">
-      <h2 class="section-title" style="margin-bottom: 16px;">?? Your Journey</h2>
+      <h2 class="section-title" style="margin-bottom: 16px;">📈 Your Journey</h2>
       <div class="quick-stats">
         <div class="quick-stat">
           <span class="quick-stat__value" id="weeklyListening">0</span>
@@ -239,8 +319,7 @@
       </div>
     </section>
 
-    <!-- Bottom Spacer -->
-    <div style="height: 100px;"></div>
+    <!-- Bottom Spacer removed - navbar touches bottom -->
   </main>
 
   <!-- Learn & Discover Modal -->
@@ -249,12 +328,12 @@
     <div class="insight-modal__content">
       <div class="insight-modal__header">
         <h2 class="insight-modal__title" id="modalTitle">Title</h2>
-        <button class="insight-modal__close" onclick="closeModal()">?</button>
+        <button class="insight-modal__close" onclick="closeModal()">✕</button>
       </div>
       <div class="insight-modal__lang-switch" id="langSwitch" style="display:none;">
         <button class="lang-btn lang-btn--active" data-lang="en">English</button>
-        <button class="lang-btn" data-lang="pa">??????</button>
-        <button class="lang-btn" data-lang="hi">?????</button>
+        <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
+        <button class="lang-btn" data-lang="hi">ਹਿੰਦੀ</button>
       </div>
       <div class="insight-modal__body" id="modalBody">
         <!-- Content will be populated by JS -->
@@ -273,47 +352,25 @@
   <!-- Insights Scripts -->
   <script src="insights.js"></script>
 
-  <!-- Liquid Glass Navigation -->
-  <nav class="anhad-bottom-nav" id="mainNav" aria-label="Main Navigation">
-    <div class="nav-pill">
-      <button class="nav-item" data-page="home" aria-label="Home">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item active" data-page="learning" aria-label="Learning">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item" data-page="favorites" aria-label="Favorites">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item" data-page="profile" aria-label="Profile">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-    </div>
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="insights.html" class="tab-item active">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
   </nav>
-  <script src="../js/anhad-nav.js"></script>
 
 </body>
 </html>

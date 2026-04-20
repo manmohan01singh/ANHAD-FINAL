@@ -77,6 +77,12 @@
             await this.init();
 
             return new Promise((resolve, reject) => {
+                // Check if database is still open
+                if (!this.db || this.db.readyState === 'closed') {
+                    reject(new Error('Database connection is closed'));
+                    return;
+                }
+
                 const transaction = this.db.transaction(STORE_NAME, 'readonly');
                 const store = transaction.objectStore(STORE_NAME);
                 const request = store.get(dateKey);

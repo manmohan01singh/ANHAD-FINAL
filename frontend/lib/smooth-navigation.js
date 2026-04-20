@@ -11,7 +11,8 @@
 (function() {
   'use strict';
 
-  const MAIN_TARGET_ID = 'app'; 
+  const MAIN_TARGET_ID = 'app';
+  const GMP_ID = 'global-mini-player';
   const SHELL_SCRIPTS = [
     'overlay-player.js',
     'smooth-navigation.js',
@@ -51,13 +52,9 @@
 
     if (!supportsViewTransitions) {
       // Fallback: standard navigation (instant for dashboard)
-      preserveMiniPlayerState();
       window.location.href = url;
       return;
     }
-
-    // Preserve mini player state before transition
-    preserveMiniPlayerState();
 
     // Mark mini player for view transition
     const gmp = document.getElementById(GMP_ID);

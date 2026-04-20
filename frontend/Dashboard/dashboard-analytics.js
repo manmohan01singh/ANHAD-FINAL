@@ -129,7 +129,25 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // CHART RENDERING - VERBOSE LOGGING FOR DEBUGGING
+    // PROGRESS SCORE CALCULATION - Weighted Average
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function calculateDailyProgressScore(dayData) {
+        // Weighted average calculation:
+        // Nitnem Complete: 40% weight (1 if complete, 0 if not)
+        // Kirtan Minutes: 35% weight (normalized to 0-1 based on 30 min goal)
+        // Sehaj Path (Ang Read): 25% weight (normalized to 0-1 based on 5 pages goal)
+        
+        const nitnemScore = dayData.nitnemCount === 1 ? 1 : 0; // 40% weight
+        const kirtanScore = Math.min(dayData.listenMinutes / 30, 1); // 35% weight, capped at 30 min
+        const angScore = Math.min(dayData.readPages / 5, 1); // 25% weight, capped at 5 pages
+        
+        const weightedScore = (nitnemScore * 0.4) + (kirtanScore * 0.35) + (angScore * 0.25);
+        return Math.round(weightedScore * 100); // Return as percentage (0-100)
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // CHART RENDERING - Simple Line Chart (Stock Style)
     // ═══════════════════════════════════════════════════════════════════════════
 
     function renderChart() {
@@ -141,152 +159,106 @@
 
         const data = getLast7DaysData();
         
-        // Log all 7 days data for debugging
-        console.log('[Analytics] Rendering chart with data:', data.map(d => ({
+        // Calculate progress scores for each day
+        const scores = data.map(day => ({
+            ...day,
+            score: calculateDailyProgressScore(day)
+        }));
+        
+        console.log('[Analytics] Rendering line chart with scores:', scores.map(d => ({
             day: d.label,
-            read: d.readPages,
-            listen: d.listenMinutes,
-            nitnem: d.nitnemCount
+            score: d.score
         })));
         
-        // Fixed target values for consistent scaling
-        const TARGET_PAGES = 5;      // Daily goal for reading
-        const TARGET_MINUTES = 30;   // Daily goal for listening
-        const TARGET_NITNEM = 1;     // Daily goal (1 = full day complete)
+        const currentScore = scores[scores.length - 1].score;
+        const prevScore = scores.length > 1 ? scores[scores.length - 2].score : currentScore;
+        const trend = currentScore >= prevScore ? 'up' : 'down';
         
-        // GOAL LINE at 50% height = 100% achievement
-        // Bars at 50% = goal achieved, bars above 50% = exceeded goal
-        const GOAL_LINE_PERCENT = 50;
+        // Build SVG points for line
+        const svgPoints = scores.map((d, i) => {
+            const x = (i / (scores.length - 1)) * 100;
+            const y = 100 - Math.max(d.score, 2);
+            return `${x},${y}`;
+        }).join(' ');
         
-        // Calculate bar height: ratio * 50% 
-        // - Read Gurbani (Sehaj Paath): Can exceed goal line (uncapped for over-achievement)
-        // - Listen Kirtan: Cap at goal line (50%)
-        // - Nitnem: Touch goal line when complete (50%)
-        const getBarHeight = (value, target, type) => {
-            if (!value || value <= 0) return 2;
-            const ratio = value / target;
-            // 100% target = 50% height
-            let heightPercent = ratio * 50;
-            // For reading: allow overflow above goal line (can go beyond 50%)
-            // For listening: cap at goal line (50%)
-            // For nitnem: if complete (1), set to exactly 50% to touch goal line
-            if (type === 'listen') {
-                heightPercent = Math.min(heightPercent, 50);
-            } else if (type === 'nitnem') {
-                // If nitnem is complete (value === 1), set to exactly 50% to touch goal line
-                heightPercent = value === 1 ? 50 : Math.min(heightPercent, 50);
-            }
-            // For read: allow any height (can exceed 50%)
-            const finalHeight = Math.max(heightPercent, 2);
-            console.log(`[Chart] ${type}=${value}, target=${target}, ratio=${ratio.toFixed(2)}, height=${finalHeight.toFixed(1)}%`);
-            return finalHeight;
-        };
-
-        // Generate HTML with target line
+        // Build dots HTML
+        const dotsHTML = scores.map((d, i) => {
+            const x = (i / (scores.length - 1)) * 100;
+            const y = 100 - Math.max(d.score, 2);
+            const r = i === scores.length - 1 ? 3 : 2;
+            return `<circle cx="${x}" cy="${y}" r="${r}" fill="#D4943A" stroke="white" stroke-width="0.5"/>`;
+        }).join('');
+        
+        // Build labels HTML
+        const labelsHTML = scores.map(d => `<span>${d.label}</span>`).join('');
+        
         container.innerHTML = `
-            <div class="analytics-chart">
+            <div class="analytics-chart analytics-chart--line">
                 <div class="chart-header">
-                    <h3 class="chart-title">
-                        <i class="fas fa-chart-bar"></i>
-                        Last 7 Days Progress
-                    </h3>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <span class="legend-dot legend-dot--blue"></span>
-                            <span class="legend-label">Read Gurbani (${TARGET_PAGES} pages)</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-dot legend-dot--yellow"></span>
-                            <span class="legend-label">Listen Kirtan (${TARGET_MINUTES} min)</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-dot legend-dot--green"></span>
-                            <span class="legend-label">Complete Nitnem (daily)</span>
-                        </div>
+                    <h3 class="chart-title"><i class="fas fa-chart-line"></i> Your Progress</h3>
+                    <div class="chart-current-score">
+                        <span class="score-value">${currentScore}</span>
+                        <span class="score-label">Score</span>
+                        <span class="score-trend ${trend}"><i class="fas fa-arrow-${trend === 'up' ? 'up' : 'down'}"></i></span>
                     </div>
                 </div>
-                <div class="chart-body">
-                    ${data.map(day => `
-                        <div class="chart-day">
-                            <div class="chart-bars">
-                                <!-- Target Line - positioned inside each chart-bars for correct coordinate alignment -->
-                                <div class="chart-target-line" style="bottom: ${GOAL_LINE_PERCENT}%; top: auto;"></div>
-                                
-                                <div class="chart-bar chart-bar--blue" 
-                                     style="height: ${getBarHeight(day.readPages, TARGET_PAGES, 'read')}%"
-                                     data-value="${day.readPages}"
-                                     title="${day.readPages} pages read">
-                                    <span class="bar-value">${day.readPages}</span>
-                                </div>
-                                <div class="chart-bar chart-bar--yellow" 
-                                     style="height: ${getBarHeight(day.listenMinutes, TARGET_MINUTES, 'listen')}%"
-                                     data-value="${day.listenMinutes}"
-                                     title="${day.listenMinutes} min listened">
-                                    <span class="bar-value">${day.listenMinutes}</span>
-                                </div>
-                                <div class="chart-bar chart-bar--green" 
-                                     style="height: ${getBarHeight(day.nitnemCount, TARGET_NITNEM, 'nitnem')}%"
-                                     data-value="${day.nitnemCount}"
-                                     title="${day.nitnemCount === 1 ? 'Nitnem Complete ✓' : 'Nitnem Incomplete'}">
-                                    <span class="bar-value">${day.nitnemCount === 1 ? '✓' : '✗'}</span>
-                                </div>
-                            </div>
-                            <div class="chart-label">${day.label}</div>
-                            <div class="chart-goal-label">GOAL</div>
-                        </div>
-                    `).join('')}
+                <div class="minimal-line-chart">
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <polyline points="${svgPoints}" fill="none" stroke="#D4943A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        ${dotsHTML}
+                    </svg>
+                    <div class="minimal-labels">${labelsHTML}</div>
                 </div>
                 <div class="chart-footer">
-                    <div class="chart-insight">
-                        ${generateInsight(data)}
-                    </div>
+                    <div class="chart-insight">${generateLineInsight(scores)}</div>
                 </div>
             </div>
         `;
-
-        // Animate bars
-        setTimeout(() => {
-            container.querySelectorAll('.chart-bar').forEach(bar => {
-                bar.classList.add('animated');
-            });
-        }, 100);
     }
 
-    function generateInsight(data) {
-        const today = data[data.length - 1];
-        const yesterday = data[data.length - 2];
+    function generateLineInsight(scores) {
+        const today = scores[scores.length - 1];
+        const yesterday = scores[scores.length - 2];
         
-        const totalRead = data.reduce((sum, d) => sum + d.readPages, 0);
-        const totalListen = data.reduce((sum, d) => sum + d.listenMinutes, 0);
-        const totalNitnem = data.reduce((sum, d) => sum + d.nitnemCount, 0);
+        const avgScore = Math.round(scores.reduce((sum, d) => sum + d.score, 0) / scores.length);
+        const trend = yesterday ? (today.score - yesterday.score) : 0;
         
-        const avgRead = Math.round(totalRead / 7);
-        const avgListen = Math.round(totalListen / 7);
-        const avgNitnem = Math.round(totalNitnem / 7);
-
-        // Determine trend
         let insight = '';
         
-        if (today.readPages > yesterday.readPages && 
-            today.listenMinutes > yesterday.listenMinutes && 
-            today.nitnemCount > yesterday.nitnemCount) {
-            insight = `🌟 Amazing! You're improving across all areas! Keep up the great work.`;
-        } else if (totalRead === 0 && totalListen === 0 && totalNitnem === 0) {
-            insight = `📚 Start your spiritual journey today! Track your progress and watch yourself grow.`;
-        } else if (avgNitnem >= 1) {
-            insight = `🙏 Excellent consistency! You're averaging ${avgNitnem} Nitnem per day.`;
-        } else if (avgListen >= 20) {
-            insight = `🎧 Great listening habit! ${avgListen} minutes of Kirtan daily.`;
-        } else if (avgRead >= 3) {
-            insight = `📖 Wonderful reading progress! ${avgRead} pages daily on average.`;
+        if (scores.length < 2) {
+            insight = `Start tracking to see your progress trend!`;
+        } else if (today.score === 100) {
+            insight = `🎉 Perfect day! You achieved all your goals!`;
+        } else if (trend > 10) {
+            insight = `📈 Great improvement! Your score went up by ${trend} points.`;
+        } else if (trend > 0) {
+            insight = `↗️ Making progress! Keep it up.`;
+        } else if (trend < -10) {
+            insight = `📉 Score dropped by ${Math.abs(trend)} points. Let's bounce back!`;
+        } else if (trend < 0) {
+            insight = `↘️ Slight dip. Tomorrow is a new day!`;
+        } else if (avgScore >= 70) {
+            insight = `🙏 Excellent consistency! Average score: ${avgScore}%`;
+        } else if (avgScore >= 50) {
+            insight = `💪 Good progress! Average score: ${avgScore}%`;
+        } else if (avgScore > 0) {
+            insight = `🌱 Building habits. Average score: ${avgScore}%`;
         } else {
-            insight = `💪 Every step counts! Keep building your spiritual practice.`;
+            insight = `� Start your journey today! Complete Nitnem, listen to Kirtan, read Gurbani.`;
         }
 
         return `
             <i class="fas fa-lightbulb"></i>
             <span>${insight}</span>
         `;
+    }
+
+    function generateInsight(data) {
+        // Legacy function kept for compatibility
+        return generateLineInsight(data.map(d => ({
+            ...d,
+            score: calculateDailyProgressScore(d)
+        })));
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

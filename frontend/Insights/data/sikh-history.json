@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-20",
+  "sections": {
+    "guruSahibaan": {
+      "en": {
+        "title": "The Ten Guru Sahibaan",
+        "intro": "The ten Sikh Gurus established the foundation of Sikhism over a period of 239 years (1469-1708). Each Guru contributed unique teachings, established institutions, and guided the Sikh community through different historical challenges.",
+        "gurus": [
+          {
+            "name": "Guru Nanak Dev Ji",
+            "namePunjabi": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "nameHindi": "गुरु नानक देव जी",
+            "years": "1469–1539",
+            "birthPlace": "Rai Bhoi Di Talwandi (Nankana Sahib)",
+            "birthPlacePa": "ਰਾਇ ਭੋਈ ਦੀ ਤਲਵੰਡੀ (ਨਨਕਾਣਾ ਸਾਹਿਬ)",
+            "birthPlaceHi": "राइ भोई दी तलवंडी (ननकाना साहिब)",
+            "contributions": "Founded Sikhism, established Ik Onkar (One God), preached equality, created Langar. Composed 974 shabads.",
+            "contributionsPa": "ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਰੱਖੀ, ਇੱਕ ਪਰਮਾਤਮਾ ਦਾ ਸੰਕਲਪ, ਬਰਾਬਰਤਾ ਦਾ ਪ੍ਰਚਾਰ, ਲੰਗਰ ਦੀ ਸਥਾਪਨਾ। 974 ਸ਼ਬਦ ਰਚੇ।",
+            "contributionsHi": "सिख धर्म की नींव रखी, एक परमात्मा का संकल्प, बराबरी का प्रचार, लंगर की स्थापना। 974 शबद रचे।",
+            "keyEvents": "Four udasis across India, Tibet, Arabia, Sri Lanka. Established Kartarpur Sahib. Appointed Bhai Lehna as Guru Angad.",
+            "keyEventsPa": "ਚਾਰ ਉਦਾਸੀਆਂ। ਕਾਰਤਾਰਪੁਰ ਸਾਹਿਬ ਦੀ ਸਥਾਪਨਾ। ਭਾਈ ਲਹਿਣਾ ਨੂੰ ਗੁਰੂ ਅੰਗਦ ਵਜੋਂ ਨਿਯੁਕਤ।",
+            "keyEventsHi": "चार उदासियाँ। कारतारपुर साहिब की स्थापना। भाई लहणा को गुरु अंगद के रूप में नियुक्त।",
+            "teachings": "Naam Japna, Kirat Karna, Vand Chakna. Truthful living, equality, service.",
+            "teachingsPa": "ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨਾ, ਵੰਡ ਛਕਣਾ। ਸੱਚ ਜੀਵਨ, ਬਰਾਬਰਤਾ, ਸੇਵਾ।",
+            "teachingsHi": "नाम जपना, किरत करना, वंड छकना। सच्चा जीवन, बराबरी, सेवा।"
+          }
+        ]
+      },
+      "pa": {
+        "title": "ਦਸ ਗੁਰੂ ਸਾਹਿਬਾਨ",
+        "intro": "ਦਸ ਸਿੱਖ ਗੁਰੂਆਂ ਨੇ 239 ਸਾਲਾਂ (1469-1708) ਦੌਰਾਨ ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਰੱਖੀ। ਹਰ ਗੁਰੂ ਨੇ ਵਿਲੱਖਣ ਸਿਖਿਆਵਾਂ ਦਿੱਤੀਆਂ, ਸੰਸਥਾਵਾਂ ਸਥਾਪਿਤ ਕੀਤੀਆਂ, ਅਤੇ ਸਿੱਖ ਸਮਾਜ ਦੀ ਅਗਵਾਈ ਕੀਤੀ।"
+      },
+      "hi": {
+        "title": "दस गुरु साहिबान",
+        "intro": "दस सिख गुरुओं ने 239 वर्षों (1469-1708) के दौरान सिख धर्म की नींव रखी। हर गुरु ने अद्वितीय शिक्षाएं दीं, संस्थाएं स्थापित कीं, और सिख समुदाय का मार्गदर्शन किया।"
+      }
+    },
+    "majorEvents": {
+      "en": {
+        "title": "Major Historical Events",
+        "events": [
+          {
+            "year": "1469",
+            "event": "Birth of Guru Nanak Dev Ji",
+            "eventPa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਜਨਮ",
+            "eventHi": "गुरु नानक देव जी का जन्म",
+            "description": "Founder of Sikhism born at Rai Bhoi Di Talwandi"
+          },
+          {
+            "year": "1604",
+            "event": "Compilation of Adi Granth",
+            "eventPa": "ਆਦਿ ਗ੍ਰੰਥ ਦਾ ਸੰਕਲਨ",
+            "eventHi": "आदि ग्रंथ का संकलन",
+            "description": "Guru Arjan Dev Ji compiled the first version of SGGS Ji"
+          },
+          {
+            "year": "1606",
+            "event": "Martyrdom of Guru Arjan Dev Ji",
+            "eventPa": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੀ ਸ਼ਹੀਦੀ",
+            "eventHi": "गुरु अर्जन देव जी की शहीदी",
+            "description": "First Sikh Guru martyred for protecting faith"
+          },
+          {
+            "year": "1606",
+            "event": "Akal Takht Established",
+            "eventPa": "ਅਕਾਲ ਤਖ਼ਤ ਦੀ ਸਥਾਪਨਾ",
+            "eventHi": "अकाल तख़्त की स्थापना",
+            "description": "Guru Hargobind Sahib Ji established the Throne of the Immortal"
+          },
+          {
+            "year": "1699",
+            "event": "Creation of Khalsa",
+            "eventPa": "ਖ਼ਾਲਸਾ ਦੀ ਸਾਜਨਾ",
+            "eventHi": "खालसा की स्थापना",
+            "description": "Guru Gobind Singh Ji created the Khalsa Panth at Vaisakhi"
+          },
+          {
+            "year": "1708",
+            "event": "Guru Granth Sahib Ji Declared Eternal Guru",
+            "eventPa": "ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ",
+            "eventHi": "गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित",
+            "description": "Guru Gobind Singh Ji declared SGGS Ji as eternal Guru"
+          },
+          {
+            "year": "1710",
+            "event": "Sikh Rule Established",
+            "eventPa": "ਸਿੱਖ ਰਾਜ ਦੀ ਸਥਾਪਨਾ",
+            "eventHi": "सिख राज की स्थापना",
+            "description": "Banda Singh Bahadur established Sikh rule at Sirhind"
+          },
+          {
+            "year": "1799",
+            "event": "Sikh Empire under Maharaja Ranjit Singh",
+            "eventPa": "ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਹੇਠ ਸਿੱਖ ਸਾਮਰਾਜ",
+            "eventHi": "महाराजा रणजीत सिंह के अंतर्गत सिख साम्राज्य",
+            "description": "Sikh Empire established covering Punjab, Kashmir, Ladakh"
+          },
+          {
+            "year": "1849",
+            "event": "Annexation of Sikh Empire",
+            "eventPa": "ਸਿੱਖ ਸਾਮਰਾਜ ਦਾ ਗੈਰ-ਕਬੂ",
+            "eventHi": "सिख साम्राज्य का विलयन",
+            "description": "British annexed the Sikh Empire after Anglo-Sikh wars"
+          },
+          {
+            "year": "1984",
+            "event": "Operation Blue Star",
+            "eventPa": "ਆਪਰੇਸ਼ਨ ਬਲੂ ਸਟਾਰ",
+            "eventHi": "ऑपरेशन ब्लू स्टार",
+            "description": "Indian Army attacked Sri Darbar Sahib, significant tragedy"
+          }
+        ]
+      }
+    },
+    "sikhEmpire": {
+      "en": {
+        "title": "Sikh Empire (1799-1849)",
+        "intro": "The Sikh Empire was a major power in the Indian subcontinent, founded by Maharaja Ranjit Singh. It was known for its secular governance, military strength, and administrative reforms.",
+        "sections": [
+          {
+            "title": "Maharaja Ranjit Singh",
+            "content": "Known as the 'Lion of Punjab', he unified the Sikh misls and established the empire. He modernized the army with European training, created a secular administration, and built the Harmandir Sahib with marble and gold."
+          },
+          {
+            "title": "Military Achievements",
+            "content": "The Sikh army (Fauj-i-Khas) was one of the most disciplined in Asia. Conquered Kashmir, Ladakh, and Peshawar. Defeated Afghan invasions multiple times."
+          },
+          {
+            "title": "Administration",
+            "content": "Secular governance with equal representation of Hindus, Muslims, and Sikhs. Established a fair judicial system and promoted trade and commerce."
+          },
+          {
+            "title": "Fall of the Empire",
+            "content": "After Ranjit Singh's death in 1839, internal conflicts led to the Anglo-Sikh Wars (1845-1849). The empire was annexed by the British in 1849."
+          }
+        ]
+      },
+      "pa": {
+        "title": "ਸਿੱਖ ਸਾਮਰਾਜ (1799-1849)",
+        "intro": "ਸਿੱਖ ਸਾਮਰਾਜ ਭਾਰਤੀ ਉਪਮਹਾਦੀਪ ਦੀ ਇੱਕ ਪ੍ਰਮੁਖ ਸ਼ਕਤੀ ਸੀ, ਜਿਸਦੀ ਸਥਾਪਨਾ ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਨੇ ਕੀਤੀ।"
+      },
+      "hi": {
+        "title": "सिख साम्राज्य (1799-1849)",
+        "intro": "सिख साम्राज्य भारतीय उपमहाद्वीप की एक प्रमुख शक्ति था, जिसकी स्थापना महाराजा रणजीत सिंह ने की।"
+      }
+    },
+    "modernHistory": {
+      "en": {
+        "title": "Modern Sikh History",
+        "sections": [
+          {
+            "title": "Singh Sabha Movement (1870s-1920s)",
+            "content": "Reform movement to restore Sikh principles, remove Hindu rituals, and promote education. Led to establishment of Khalsa College, Gurdwara reform movement."
+          },
+          {
+            "title": "Gurdwara Reform Movement (1920-1925)",
+            "content": "Sikhs fought to free Gurdwaras from Mahant control. Resulted in the Gurdwara Act of 1925, establishing Shiromani Gurdwara Parbandhak Committee (SGPC)."
+          },
+          {
+            "title": "1947 Partition",
+            "content": "Division of Punjab caused massive migration and violence. Sikhs lost holy sites in West Punjab. Refugee crisis led to rebuilding of East Punjab."
+          },
+          {
+            "title": "1984 Tragedy",
+            "content": "Operation Blue Star (June 1984) attack on Darbar Sahib. Assassination of Indira Gandhi (October 1984). Anti-Sikh riots in November 1984."
+          },
+          {
+            "title": "Global Sikh Diaspora",
+            "content": "Sikhs now live in over 100 countries. Major communities in Canada, UK, USA, Australia, Europe. Maintain Gurdwaras, schools, and cultural institutions."
+          }
+        ]
+      }
+    },
+    "sikhExpansion": {
+      "en": {
+        "title": "Global Sikh Expansion",
+        "sections": [
+          {
+            "title": "Early Migration",
+            "content": "Sikhs first migrated as soldiers in British Army (19th century). Worked in police, railways across British Empire."
+          },
+          {
+            "title": "20th Century Migration",
+            "content": "Post-WWII migration to UK, Canada, East Africa. 1970s-80s migration due to economic opportunities and political instability."
+          },
+          {
+            "title": "Current Global Presence",
+            "content": "Over 30 million Sikhs worldwide. Largest populations: India (28 million), Canada (800,000), UK (500,000), USA (700,000)."
+          },
+          {
+            "title": "Institutions Abroad",
+            "content": "Over 1,000 Gurdwaras outside India. Sikh schools, universities, cultural centers, media organizations maintaining Sikh identity globally."
+          }
+        ]
+      }
+    }
+  }
+}

@@ -35,7 +35,6 @@
         shahmukhiTranslit: false,
 
         // Colors
-        theme: 'dark',
         gurmukhiColorIdx: 0,
         translationColorIdx: 2,
         translitColorIdx: 2,
@@ -137,6 +136,7 @@
             settingsDrawer: $('settingsDrawer'),
             settingsCloseFloat: $('settingsCloseFloat'),
             bookmarkBtn: $('bookmarkBtn'),
+            tickBtn: $('tickBtn'),
             readAgainBtn: $('readAgainBtn'),
             resetBtn: $('resetBtn'),
 
@@ -265,7 +265,6 @@
                     if (data && data.verses && data.verses.length > 0) {
                         console.log('[ReaderEngine] ⚡ Loaded from cache:', state.baniId);
                         loadedFromCache = true;
-                        showOfflineBadge(true);
                     }
                 } catch (e) {
                     console.warn('[ReaderEngine] Cache failed, trying fallback:', e);
@@ -282,7 +281,6 @@
                         baniInfo: { unicode: cached.name, transliteration: cached.name }
                     };
                     loadedFromCache = true;
-                    showOfflineBadge(true);
                 }
             }
 
@@ -311,7 +309,6 @@
                         }
                         
                         console.log('[ReaderEngine] ✓ Cached for future use');
-                        showOfflineBadge(true);
                     }
                 } catch (apiError) {
                     console.warn('[ReaderEngine] API failed, checking local fallback:', apiError);
@@ -343,6 +340,7 @@
             els.readerEnd.style.display = 'block';
 
             checkBookmark();
+            checkNitnemTick();
 
         } catch (error) {
             console.error('Load failed:', error);
@@ -1220,6 +1218,105 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // NITNEM TRACKER TICK
+    // ═══════════════════════════════════════════════════════════════
+
+    function toggleNitnemTick() {
+        if (!state.baniId) return;
+
+        try {
+            // Get today's date in YYYY-MM-DD format
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Load Nitnem Tracker data
+            const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+            const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
+
+            // Get or create today's progress
+            if (!nitnemLog[today]) {
+                nitnemLog[today] = {
+                    amritvela: [],
+                    rehras: [],
+                    sohila: []
+                };
+            }
+
+            const todayProgress = nitnemLog[today];
+            const isTicked = checkIfBaniTicked(todayProgress);
+
+            if (isTicked) {
+                // Untick: Remove bani from all periods
+                ['amritvela', 'rehras', 'sohila'].forEach(period => {
+                    todayProgress[period] = todayProgress[period].filter(uid => uid !== `bani-${state.baniId}`);
+                });
+                els.tickBtn?.classList.remove('ticked');
+                console.log('[Reader] Bani unticked in Nitnem Tracker');
+            } else {
+                // Tick: Add bani to appropriate period based on current time
+                const currentHour = new Date().getHours();
+                let period = 'rehras'; // default
+
+                if (currentHour >= 0 && currentHour < 12) {
+                    period = 'amritvela';
+                } else if (currentHour >= 12 && currentHour < 18) {
+                    period = 'rehras';
+                } else {
+                    period = 'sohila';
+                }
+
+                // Add bani to the period
+                const baniUid = `bani-${state.baniId}`;
+                if (!Array.isArray(todayProgress[period])) {
+                    todayProgress[period] = [];
+                }
+                if (!todayProgress[period].includes(baniUid)) {
+                    todayProgress[period].push(baniUid);
+                }
+                els.tickBtn?.classList.add('ticked');
+                console.log('[Reader] Bani ticked in Nitnem Tracker for period:', period);
+            }
+
+            // Save back to localStorage
+            localStorage.setItem('nitnemTracker_nitnemLog', JSON.stringify(nitnemLog));
+
+            // Dispatch event to notify Nitnem Tracker
+            window.dispatchEvent(new CustomEvent('nitnemUpdated', {
+                detail: {
+                    baniId: state.baniId,
+                    date: today
+                }
+            }));
+
+        } catch (e) {
+            console.error('[Reader] Error toggling Nitnem tick:', e);
+        }
+    }
+
+    function checkIfBaniTicked(todayProgress) {
+        if (!todayProgress || !state.baniId) return false;
+        const baniUid = `bani-${state.baniId}`;
+        
+        return ['amritvela', 'rehras', 'sohila'].some(period => {
+            return Array.isArray(todayProgress[period]) && todayProgress[period].includes(baniUid);
+        });
+    }
+
+    function checkNitnemTick() {
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+            const todayProgress = nitnemLog[today];
+            
+            const isTicked = checkIfBaniTicked(todayProgress);
+            els.tickBtn?.classList.toggle('ticked', isTicked);
+            
+            console.log('[Reader] Nitnem tick state:', isTicked);
+        } catch (e) {
+            console.error('[Reader] Error checking Nitnem tick:', e);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // UI HELPERS
     // ═══════════════════════════════════════════════════════════════
 
@@ -1282,6 +1379,7 @@
 
         // Bookmark & actions
         els.bookmarkBtn?.addEventListener('click', toggleBookmark);
+        els.tickBtn?.addEventListener('click', toggleNitnemTick);
         els.readAgainBtn?.addEventListener('click', scrollToTop);
         els.resetBtn?.addEventListener('click', resetSettings);
         els.retryBtn?.addEventListener('click', loadBani);

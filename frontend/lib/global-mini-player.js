@@ -172,6 +172,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   const currentPath = window.location.pathname.toLowerCase();
+  // Hide mini player on Gurbani Radio page (it has its own full player)
   const isPlayerPage = currentPath.includes('gurbani-radio');
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -184,6 +185,7 @@
   let isPlaying = false;
   let miniPlayerEl = null;
   let isInitialPageLoad = true; // Track if this is the first page load
+  let pendingUIUpdate = null; // Queue for UI updates before mini player is ready
 
   function createAudio() {
     // CRITICAL FIX: Always create NEW audio element to avoid cache
@@ -474,14 +476,28 @@
       return;
     }
     if (audio.paused) {
-      // CRITICAL FIX: ALWAYS recreate audio and jump to live - NO CACHE
+      // CRITICAL FIX: ALWAYS jump to live position on resume
       if (STREAMS[currentStream].type === 'playlist') {
         console.log('[GMP] 🔴 RECREATING AUDIO FOR LIVE PLAYBACK');
         playStream(currentStream); // This will fetch fresh position and create new audio
       } else {
-        // Live stream - RECREATE audio element to force fresh connection
-        console.log('[GMP] 🔴 RECREATING AUDIO FOR LIVE STREAM');
-        playStream(currentStream); // This will create fresh audio with cache buster
+        // Live stream - Force reconnect to current live position
+        console.log('[GMP] 🔴 LIVE STREAM: Forcing reconnect to current live position');
+        // Add cache buster to force fresh connection
+        const stream = STREAMS[currentStream];
+        const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
+        audio.src = freshUrl;
+        audio.load();
+        // CRITICAL: Set currentTime to a very high value to force seek to live edge
+        // This makes the browser drop the old buffer and reconnect at current live position
+        audio.currentTime = 999999;
+        console.log('[GMP] 🔴 LIVE STREAM: Set currentTime to 999999 to force live edge seek');
+        // Now play
+        try {
+          await audio.play();
+        } catch (e) {
+          console.warn('[GMP] Autoplay blocked');
+        }
       }
     } else {
       audio.pause();
@@ -685,7 +701,13 @@
   }
 
   function injectMiniPlayer() {
-    if (document.getElementById('gmp') || isPlayerPage) return;
+    console.log('[GMP] injectMiniPlayer called - checking conditions...');
+    const hasExisting = document.getElementById('gmp');
+    console.log('[GMP] hasExisting:', hasExisting, 'isPlayerPage:', isPlayerPage);
+    if (hasExisting || isPlayerPage) {
+      console.log('[GMP] injectMiniPlayer - returning early (element exists or is player page)');
+      return;
+    }
 
     const el = document.createElement('aside');
     el.id = 'gmp';
@@ -727,6 +749,15 @@
 
     document.body.appendChild(el);
     miniPlayerEl = el;
+
+    // Apply any pending UI update that was queued before injection
+    if (pendingUIUpdate !== null) {
+      console.log('[GMP] Applying pending UI update after injection. forceVisible:', pendingUIUpdate);
+      const forceVisible = pendingUIUpdate;
+      pendingUIUpdate = null;
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(() => updateMiniPlayerUI(forceVisible), 0);
+    }
 
     // Event handlers
     document.getElementById('gmpPlay')?.addEventListener('click', (e) => {
@@ -803,7 +834,12 @@
   }
 
   function updateMiniPlayerUI(forceVisible) {
-    if (!miniPlayerEl) return;
+    if (!miniPlayerEl) {
+      // Queue the update for when mini player is ready
+      pendingUIUpdate = forceVisible;
+      console.log('[GMP] updateMiniPlayerUI: miniPlayerEl is null, queuing update. forceVisible:', forceVisible);
+      return;
+    }
 
     const stream = STREAMS[currentStream];
 
@@ -812,7 +848,8 @@
     const hasActiveStream = currentStream && stream;
     const actuallyPlaying = isPlaying && audio && audio.src && audio.src !== window.location.href;
     const isActive = isLoading || actuallyPlaying || forceVisible;
-    const shouldShow = isActive && hasActiveStream;
+    // MODIFIED: Show when forceVisible is true even without active stream
+    const shouldShow = (isActive && hasActiveStream) || forceVisible;
 
     if (!shouldShow) {
       // Hide mini player - CSS has display:none by default
@@ -828,17 +865,17 @@
 
     // Update artwork only when showing
     const artImg = document.getElementById('gmpArt');
-    if (artImg && stream.artwork) artImg.src = stream.artwork;
+    if (artImg && stream?.artwork) artImg.src = stream.artwork;
 
     // Update title/subtitle
     const titleEl = document.getElementById('gmpTitle');
     const subEl = document.getElementById('gmpSub');
-    if (titleEl) titleEl.textContent = stream.name;
-    if (subEl) subEl.textContent = stream.subtitle;
+    if (titleEl) titleEl.textContent = stream?.name || '';
+    if (subEl) subEl.textContent = stream?.subtitle || '';
 
     // Show/hide live dot
     const liveDot = document.getElementById('gmpLiveDot');
-    if (liveDot) liveDot.style.display = stream.type === 'live' ? '' : 'none';
+    if (liveDot) liveDot.style.display = stream?.type === 'live' ? '' : 'none';
 
     // Update loading state visual
     setLoadingState(isLoading);
@@ -945,8 +982,10 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function init() {
+    console.log('[GMP] init() called');
     injectCSS();
     injectMiniPlayer();
+    console.log('[GMP] after injectMiniPlayer, miniPlayerEl:', miniPlayerEl);
 
     // CRITICAL: Check if we should show mini player immediately
     // This prevents the "gap" when navigating between pages

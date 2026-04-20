@@ -327,6 +327,87 @@ html.dark-mode .chart-insight {
 .chart-day:nth-child(6) .chart-bar { animation-delay: 0.35s; }
 .chart-day:nth-child(7) .chart-bar { animation-delay: 0.4s; }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MINIMAL LINE CHART
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.analytics-chart--line {
+    padding: 16px;
+}
+
+.chart-current-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(212, 148, 58, 0.1);
+    border-radius: 8px;
+}
+
+.score-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #D4943A;
+}
+
+.score-label {
+    font-size: 11px;
+    color: rgba(0,0,0,0.5);
+}
+
+.score-trend {
+    margin-left: auto;
+    font-size: 16px;
+}
+
+.score-trend.up { color: #34C759; }
+.score-trend.down { color: #FF3B30; }
+
+.minimal-line-chart {
+    height: 120px;
+    margin: 12px 0;
+    position: relative;
+}
+
+.minimal-line-chart svg {
+    width: 100%;
+    height: 100px;
+    display: block;
+}
+
+.minimal-line-chart polyline {
+    stroke: #D4943A;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.minimal-line-chart circle {
+    stroke: white;
+    stroke-width: 1;
+}
+
+.minimal-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 4px;
+    margin-top: 4px;
+}
+
+.minimal-labels span {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.4);
+    text-transform: uppercase;
+}
+
+html.dark-mode .score-label,
+html.dark-mode .minimal-labels span {
+    color: rgba(255,255,255,0.5);
+}
+
 /* Responsive */
 @media (max-width: 400px) {
     .chart-bars {
@@ -339,5 +420,13 @@ html.dark-mode .chart-insight {
     
     .chart-label {
         font-size: 10px;
+    }
+    
+    .chart-label-text {
+        font-size: 10px;
+    }
+    
+    .score-value {
+        font-size: 28px;
     }
 }

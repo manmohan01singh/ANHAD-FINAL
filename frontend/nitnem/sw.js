@@ -1,8 +1,8 @@
-// ANHAD Service Worker - INSTANT OFFLINE-FIRST CACHE
+// ANHAD Service Worker - CHUNKED OFFLINE CACHE
 // Version must be changed on every deploy to force cache refresh
-const CACHE_NAME = 'anhad-instant-v1.0.2';
-const STATIC_CACHE = 'anhad-static-v1.0.2';
-const BANI_CACHE = 'anhad-bani-v1.0.2';
+const CACHE_NAME = 'anhad-instant-v2.1.0';
+const STATIC_CACHE = 'anhad-static-v2.1.0';
+const BANI_CACHE = 'anhad-bani-v2.1.0';
 
 // Critical resources that must be available instantly
 const CRITICAL_ASSETS = [
@@ -23,7 +23,9 @@ const CRITICAL_ASSETS = [
   '/nitnem/category/nitnem.html',
   '/nitnem/category/sarbloh.html',
   '/nitnem/category/favorites.html',
-  '/nitnem/js/offline-bani-data.js',
+  '/data/banis-chunks/index.json',
+  '/data/banis-chunks/nitnem-banis.json',
+  '/data/banis-chunks/popular-banis.json',
   '/nitnem/js/banidb-api.js',
   '/nitnem/js/reader-engine.js',
   '/nitnem/js/hub-app.js',
@@ -136,28 +138,10 @@ self.addEventListener('fetch', event => {
       url.hostname.includes('analytics') ||
       url.hostname.includes('gtag')) return;
   
-  // Strategy 1: BaniDB API requests - Stale-while-revalidate
-  if (url.hostname.includes('banidb.com')) {
-    event.respondWith(
-      caches.open(BANI_CACHE).then(cache => {
-        return cache.match(request).then(cached => {
-          const fetchPromise = fetch(request)
-            .then(response => {
-              if (response.ok) {
-                cache.put(request, response.clone());
-              }
-              return response;
-            })
-            .catch(() => cached);
-          
-          return cached || fetchPromise;
-        });
-      })
-    );
-    return;
-  }
+  // Skip BaniDB API requests since we're fully offline now
+  if (url.hostname.includes('banidb.com')) return;
   
-  // Strategy 2: Static assets - Cache First (instant loading)
+  // Strategy: Static assets - Cache First (instant loading)
   if (isStaticAsset(url.pathname)) {
     event.respondWith(
       caches.open(STATIC_CACHE).then(cache => {

@@ -30,6 +30,10 @@
   <link rel="stylesheet" href="../css/anhad-core.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="../css/anhad-core.css"></noscript>
   
+  <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <script src="../lib/global-theme.js"></script>
+  
   <title>Dashboard • ANHAD</title>
   <link rel="icon" type="image/png" href="../favicon.ico">
   
@@ -41,6 +45,7 @@
   <script src="../lib/audio-coordinator.js" defer></script>
   <script src="../lib/smooth-navigation.js" defer></script>
   <script src="../lib/global-mini-player.js" defer></script>
+  <script src="../lib/mini-player-extreme.js"></script>
   <script src="../js/anhad-core.js" defer></script>
   
   <!-- Async font loading - prevent render blocking -->
@@ -58,7 +63,7 @@
   <!-- Inline critical CSS to prevent FOUC -->
   <style>
     /* Critical dashboard styles - inlined for instant paint */
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #E8EAEF; color: #000; min-height: 100vh; margin: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #E8EAEF; color: #000; min-height: 100vh; margin: 0; padding-bottom: calc(83px + env(safe-area-inset-bottom, 34px) + 20px); }
     html.dark-mode body { background: #1C1C1F; color: #fff; }
     .app { max-width: 500px; margin: 0 auto; padding: 0 20px; }
     .header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; }
@@ -79,6 +84,83 @@
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     .skeleton { background: linear-gradient(90deg, #e0e0e0 25%, #c0c0c0 50%, #e0e0e0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     html.dark-mode .skeleton { background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%); }
+    
+    /* ═══════════════════════════════════════════════════════════════════════════
+       FLOATING TAB BAR — Same as Home Page (Ditto Copy)
+    ═══════════════════════════════════════════════════════════════════════════ */
+    .tab-bar {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: rgba(28, 28, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    }
+
+    html:not(.dark-mode) .tab-bar {
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 18px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    html:not(.dark-mode) .tab-item {
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .tab-item.active {
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    html:not(.dark-mode) .tab-item.active {
+      color: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .tab-item.active::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      background: #D4AF37;
+      border-radius: 50%;
+    }
+
+    .tab-item:active { transform: scale(0.9); }
+
+    .tab-icon { font-size: 22px; line-height: 1; }
+
+    .tab-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
   </style>
   
   <!-- Critical CSS - load immediately for instant paint -->
@@ -98,11 +180,6 @@
       // Instant page load indicator
       document.documentElement.style.setProperty('--page-load-start', performance.now());
     </script>
-    <div class="header__actions">
-      <button class="header__btn" onclick="AnhadTheme.toggle()">
-        <i class="fas fa-sun" id="themeIcon"></i>
-      </button>
-    </div>
   </header>
   
   <div class="spacer"></div>
@@ -560,47 +637,25 @@
     })();
   </script>
 
-  <!-- Liquid Glass Navigation -->
-  <nav class="anhad-bottom-nav" id="mainNav" aria-label="Main Navigation">
-    <div class="nav-pill">
-      <button class="nav-item" data-page="home" aria-label="Home">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item" data-page="learning" aria-label="Learning">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item" data-page="favorites" aria-label="Favorites">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-      <button class="nav-item active" data-page="profile" aria-label="Profile">
-        <div class="nav-icon-wrap">
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          <span class="nav-dot"></span>
-        </div>
-      </button>
-    </div>
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="../Insights/insights.html" class="tab-item">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="dashboard.html" class="tab-item active">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
   </nav>
-  <script src="../js/anhad-nav.js"></script>
 
 </body>
 </html>

@@ -156,7 +156,7 @@ class AchievementsEngine {
                     ${locked.map(a => `
                         <div class="achievement-card locked">
                             <span class="achievement-icon">🔒</span>
-                            <span class="achievement-name">???</span>
+                            <span class="achievement-name">Locked</span>
                             <span class="achievement-desc">${a.desc}</span>
                         </div>
                     `).join('')}

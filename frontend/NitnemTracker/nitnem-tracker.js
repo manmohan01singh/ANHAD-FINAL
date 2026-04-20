@@ -1254,6 +1254,11 @@ const HeaderManager = {
         // Setup penalty system
         this.setupPenaltyListeners();
         this.updatePenaltyState();
+
+        // Periodic penalty state check (every minute)
+        setInterval(() => {
+            this.updatePenaltyState();
+        }, 60000);
     },
 
     /**
@@ -2324,10 +2329,22 @@ const HeaderManager = {
         if (this.elements.penaltyBtn) {
             this.elements.penaltyBtn.addEventListener('click', () => {
                 const activePunishment = StreakSaverManager.getActivePunishment();
+                const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+                const today = Utils.getTodayString();
+                const todayMarked = !!amritvelaLog[today];
+                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+                const streakAtRisk = !todayMarked && streakData.current > 0;
+
                 if (activePunishment && !activePunishment.completed) {
+                    // Punishment mode - show penalty modal
                     HapticManager.medium();
                     this.showPenaltyModal();
+                } else if (streakAtRisk) {
+                    // Preventive mode - show streak risk warning
+                    HapticManager.warning();
+                    this.showStreakRiskModal();
                 } else {
+                    // Safe mode - show info modal
                     HapticManager.light();
                     ModalManager.open('penaltyInfoModal');
                 }
@@ -2419,10 +2436,20 @@ const HeaderManager = {
 
         // === 3. Penalty Button ===
         if (this.elements.penaltyBtn) {
-            if (hasPenalty) {
+            // Activate if: has active punishment OR streak at risk (today not marked + streak > 0)
+            const shouldActivate = hasPenalty || streakAtRisk;
+            
+            if (shouldActivate) {
                 this.elements.penaltyBtn.classList.add('penalty-active');
+                // Show badge if at risk or has penalty
+                if (this.elements.penaltyBadge) {
+                    this.elements.penaltyBadge.style.display = 'flex';
+                }
             } else {
                 this.elements.penaltyBtn.classList.remove('penalty-active');
+                if (this.elements.penaltyBadge) {
+                    this.elements.penaltyBadge.style.display = 'none';
+                }
             }
         }
     },
@@ -2571,6 +2598,63 @@ const HeaderManager = {
                 CelebrationManager.show('streakSaved');
             }
         }, 800);
+    },
+
+    /**
+     * Show streak risk warning modal (preventive mode)
+     */
+    showStreakRiskModal() {
+        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+        const hours = new Date().getHours();
+
+        // Check if modal already exists
+        let modal = document.getElementById('streakRiskModal');
+        if (!modal) {
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="streakRiskModal">
+                    <div class="modal-container penalty-modal-container">
+                        <div class="penalty-modal-header">
+                            <div class="penalty-modal-icon-wrap">
+                                <div class="penalty-modal-icon-glow"></div>
+                                <span class="penalty-modal-icon">⚠️</span>
+                            </div>
+                            <h2 class="penalty-modal-title">Streak at Risk!</h2>
+                            <p class="penalty-modal-subtitle">Mark Amritvela to save your streak</p>
+                        </div>
+                        <div class="modal-body penalty-modal-body">
+                            <div class="penalty-streak-info">
+                                <div class="penalty-streak-number">
+                                    <span class="penalty-streak-fire">🔥</span>
+                                    <span class="penalty-streak-count">${streakData.current}</span>
+                                    <span class="penalty-streak-label">Day Streak</span>
+                                </div>
+                            </div>
+                            <div class="penalty-motivation">
+                                <span class="penalty-motivation-icon">🙏</span>
+                                <p class="penalty-motivation-text">ਅੱਜ ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਮਾਰੋ!</p>
+                                <p class="penalty-motivation-english">Mark Amritvela today to keep your streak alive!</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer penalty-modal-footer">
+                            <button class="penalty-complete-all-btn" data-close-modal>
+                                I'll Mark It Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Add close listener
+            modal = document.getElementById('streakRiskModal');
+            modal.querySelector('[data-close-modal]').addEventListener('click', () => {
+                ModalManager.close('streakRiskModal');
+            });
+        }
+
+        ModalManager.open('streakRiskModal');
+        HapticManager.warning();
     },
 
     /**
