@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
-  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.7">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
@@ -150,12 +150,18 @@
         body {
             font-family: var(--font-primary);
             background: #F8F9FA;
-            color: var(--text-primary);
+            color: #1D1D1F;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             padding-bottom: 100px;
+        }
+
+        /* Dark Mode Body Override */
+        [data-theme="dark"] body {
+            background: #000000;
+            color: #FFFFFF;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -936,6 +942,74 @@
         @media (min-width: 768px) {
             .main { max-width: 600px; margin: 0 auto; }
             .quick-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           DARK MODE OVERRIDES
+        ═══════════════════════════════════════════════════════════════ */
+        
+        [data-theme="dark"] .skeleton-container {
+            background: #000000;
+        }
+        
+        [data-theme="dark"] .header {
+            background: rgba(18, 18, 18, 0.8) !important;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-theme="dark"] .theme-toggle,
+        [data-theme="dark"] .hero-greeting,
+        [data-theme="dark"] .search-trigger,
+        [data-theme="dark"] .quick-card,
+        [data-theme="dark"] .category-card,
+        [data-theme="dark"] .search-result-item {
+            background: linear-gradient(160deg, #1C1C1E 0%, #121214 100%) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #FFFFFF !important;
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        }
+        
+        [data-theme="dark"] .theme-toggle {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        [data-theme="dark"] .search-trigger svg {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+        
+        [data-theme="dark"] .hero-subtitle,
+        [data-theme="dark"] .category-desc,
+        [data-theme="dark"] .result-english {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        
+        [data-theme="dark"] .badge {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        [data-theme="dark"] .modal-content {
+            background: #1C1C1E !important;
+            color: #FFFFFF !important;
+        }
+        
+        [data-theme="dark"] .search-input {
+            background: #2C2C2E !important;
+            color: #FFFFFF !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        [data-theme="dark"] .search-hint {
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        [data-theme="dark"] .search-result-item:active,
+        [data-theme="dark"] .quick-card:active,
+        [data-theme="dark"] .category-card:active {
+            background: #2C2C2E !important;
         }
     </style>
 </head>
