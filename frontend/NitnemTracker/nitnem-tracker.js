@@ -3117,8 +3117,10 @@ const AmritvelaManager = {
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const dates = Object.keys(log);
 
-        // Calculate streak
-        const streak = Utils.calculateStreak(dates);
+        // SYNC: Use global streak data to match header streak
+        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+        const streak = streakData.current;
+
         if (this.elements.streakDisplay) {
             Utils.animateNumber(this.elements.streakDisplay,
                 parseInt(this.elements.streakDisplay.textContent) || 0,
