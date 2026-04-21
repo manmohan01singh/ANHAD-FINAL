@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.7">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
@@ -154,7 +155,7 @@
             min-height: 100dvh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            padding-bottom: calc(var(--tab-bar-height) + 20px);
+            padding-bottom: 100px;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -780,66 +781,7 @@
             opacity: 0.4;
         }
         
-        /* ═══════════════════════════════════════════════════════════════
-           FLOATING TAB BAR
-        ═══════════════════════════════════════════════════════════════ */
-        
-        .tab-bar {
-            position: relative;
-            width: calc(100% - 32px);
-            margin: 24px auto;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            padding-bottom: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 28px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            color: var(--text-secondary);
-            transition: all 0.2s;
-        }
-        
-        .tab-item.active { background: rgba(0, 0, 0, 0.05); }
-        
-        .tab-item.active {
-            color: var(--text-primary);
-            background: rgba(0, 0, 0, 0.05);
-        }
-        
-        .tab-item.active::before {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 5px;
-            height: 5px;
-            background: var(--sacred-gold);
-            border-radius: 50%;
-        }
-        
-        .tab-item:active { transform: scale(0.9); }
-        
-        .tab-icon { font-size: 22px; line-height: 1; }
-        
-        .tab-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
+        /* Tab bar styles now handled by shared css/nav-glass.css */
         
         /* ═══════════════════════════════════════════════════════════════
            SEARCH MODAL

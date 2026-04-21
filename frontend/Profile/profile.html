@@ -40,6 +40,7 @@
   
   <!-- Profile Styles -->
   <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.7">
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
@@ -47,86 +48,8 @@
   <script src="../js/anhad-core.js" defer></script>
   
   <style>
-    /* ═══════════════════════════════════════════════════════════════════════════
-       FLOATING TAB BAR — Same as Home Page (Ditto Copy)
-    ═══════════════════════════════════════════════════════════════════════════ */
-    .tab-bar {
-      position: relative;
-      width: calc(100% - 32px);
-      margin: 24px auto;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 8px 12px;
-      padding-bottom: 20px;
-      background: rgba(28, 28, 30, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 28px;
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    }
 
-    [data-theme="light"] .tab-bar,
-    html:not([data-theme="dark"]) .tab-bar {
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 8px 18px;
-      border-radius: 20px;
-      text-decoration: none;
-      color: rgba(255, 255, 255, 0.6);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    [data-theme="light"] .tab-item,
-    html:not([data-theme="dark"]) .tab-item {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .tab-item.active {
-      color: rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    [data-theme="light"] .tab-item.active,
-    html:not([data-theme="dark"]) .tab-item.active {
-      color: rgba(0, 0, 0, 0.9);
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .tab-item.active::before {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      background: #D4AF37;
-      border-radius: 50%;
-    }
-
-    .tab-item:active { transform: scale(0.9); }
-
-    .tab-icon { font-size: 22px; line-height: 1; }
-
-    .tab-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
+    /* Tab bar styles now handled by shared css/nav-glass.css */
     
     /* Hide old bottom nav */
     .bottom-nav { display: none !important; }
@@ -150,7 +73,7 @@
     <div class="glass-nav__action"></div>
   </nav>
 
-  <main class="profile-app page-enter" style="padding-top: calc(var(--safe-top) + 64px);">
+  <main class="profile-app page-enter" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
     <!-- User Card -->
     <section class="user-card glass-card">
       <div class="user-card__avatar">
@@ -417,6 +340,20 @@
     <div style="height: 100px;"></div>
   </main>
 
+  <!-- Global Theme -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  
+  
+  <!-- User Stats Library -->
+  <script src="../lib/user-stats.js"></script>
+  
+  <!-- Profile Scripts -->
+  <script src="profile.js"></script>
+
   <!-- Floating Tab Bar — Same as Home Page -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
     <a href="../index.html" class="tab-item">
@@ -432,23 +369,9 @@
       <span class="tab-label">Favorites</span>
     </a>
     <a href="../Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">�</span>
+      <span class="tab-icon">📈</span>
       <span class="tab-label">Dashboard</span>
     </a>
   </nav>
-
-  <!-- Global Theme -->
-  <script src="../lib/global-theme.js"></script>
-  <script src="../lib/page-lifecycle.js"></script>
-  <script src="../lib/audio-preload.js"></script>
-  <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/smooth-navigation.js"></script>
-  
-  
-  <!-- User Stats Library -->
-  <script src="../lib/user-stats.js"></script>
-  
-  <!-- Profile Scripts -->
-  <script src="profile.js"></script>
 </body>
 </html>

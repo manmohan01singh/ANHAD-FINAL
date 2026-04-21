@@ -88,86 +88,13 @@
     /* ═══════════════════════════════════════════════════════════════════════════
        FLOATING TAB BAR — Same as Home Page (Ditto Copy)
     ═══════════════════════════════════════════════════════════════════════════ */
-    .tab-bar {
-      position: relative;
-      width: calc(100% - 32px);
-      margin: 24px auto;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 8px 12px;
-      padding-bottom: 20px;
-      background: rgba(28, 28, 30, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 28px;
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    }
-
-    html:not(.dark-mode) .tab-bar {
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 8px 18px;
-      border-radius: 20px;
-      text-decoration: none;
-      color: rgba(255, 255, 255, 0.6);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    html:not(.dark-mode) .tab-item {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .tab-item.active {
-      color: rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    html:not(.dark-mode) .tab-item.active {
-      color: rgba(0, 0, 0, 0.9);
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .tab-item.active::before {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      background: #D4AF37;
-      border-radius: 50%;
-    }
-
-    .tab-item:active { transform: scale(0.9); }
-
-    .tab-icon { font-size: 22px; line-height: 1; }
-
-    .tab-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
+    /* Tab bar styles now handled by shared css/nav-glass.css */
   </style>
   
   <!-- Critical CSS - load immediately for instant paint -->
   <link rel="stylesheet" href="dashboard.css">
   <link rel="stylesheet" href="dashboard-graph-enhanced.css">
-  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.7">
 </head>
 <body>
   <div class="top-nav-orb"></div>
@@ -185,7 +112,7 @@
   
   <div class="spacer"></div>
   
-  <div class="app page-enter" id="dashboardApp">
+  <div class="app page-enter" id="dashboardApp" style="padding-bottom: 100px;">
 
     <!-- Streak Hero -->
     <section class="streak-hero" id="streakHero">
@@ -637,7 +564,7 @@
       window.addEventListener('themechange', updateThemeIcon);
     })();
   </script>
-
+  
   <!-- Floating Tab Bar — Same as Home Page -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
     <a href="../index.html" class="tab-item">

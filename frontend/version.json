@@ -1,7 +1,6 @@
 {
-  "version": "4.1.0",
-  "buildTime": "2026-04-20T19:05:00.000Z",
-  "timestamp": 1776701100000,
-  "commitHash": "cache-bust-v410",
-  "branch": "main"
+  "version": "4.1.7",
+  "build": "20260421.7",
+  "timestamp": "2026-04-21T17:37:00Z",
+  "commit": "anhad-nav-isolation-v1"
 }

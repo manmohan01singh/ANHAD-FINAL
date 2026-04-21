@@ -123,7 +123,7 @@
   <link rel="stylesheet" href="css/install-button.css">
   <!-- Mobile Accessibility CSS - WCAG 2.5.5 touch targets -->
   <link rel="stylesheet" href="css/mobile-accessibility.css">
-  <link rel="stylesheet" href="css/nav-glass.css">
+  <link rel="stylesheet" href="css/nav-glass.css?v=4.1.7">
   <!-- Non-critical CSS loaded async -->
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
 
@@ -336,7 +336,7 @@
     }
 
     /* FOUC-free: show content immediately, animate children */
-    .app { opacity: 1; }
+    .app { opacity: 1; padding-bottom: 100px; }
     .app > * { animation: anhad-enter 0.5s cubic-bezier(0.19, 1, 0.22, 1) backwards; }
 
     /* Live Hukamnama Caption Overlay */
@@ -1186,86 +1186,6 @@
       }
     }
 
-    /* ═══════════════════════════════════════════════════════════════════════════
-       FLOATING TAB BAR — Same as Nitnem Page (Ditto Copy)
-    ═══════════════════════════════════════════════════════════════════════════ */
-    .tab-bar {
-      position: relative;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 8px 12px;
-      padding-bottom: calc(env(safe-area-inset-bottom, 34px) + 8px);
-      background: rgba(22, 22, 24, 1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 28px;
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-    }
-
-    [data-theme="light"] .tab-bar,
-    html:not([data-theme="dark"]) .tab-bar {
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .tab-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 8px 18px;
-      border-radius: 20px;
-      text-decoration: none;
-      color: rgba(255, 255, 255, 0.6);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    [data-theme="light"] .tab-item,
-    html:not([data-theme="dark"]) .tab-item {
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    .tab-item.active {
-      color: rgba(255, 255, 255, 0.95);
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    [data-theme="light"] .tab-item.active,
-    html:not([data-theme="dark"]) .tab-item.active {
-      color: rgba(0, 0, 0, 0.9);
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .tab-item.active::before {
-      content: '';
-      position: absolute;
-      top: 4px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      background: #D4AF37;
-      border-radius: 50%;
-    }
-
-    .tab-item:active { transform: scale(0.9); }
-
-    .tab-icon { font-size: 22px; line-height: 1; }
-
-    .tab-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
   </style>
 
   <!-- Header background fix - override all transparent backgrounds -->
@@ -1298,6 +1218,8 @@
     }
   </style>
 
+    }
+  </style>
 </head>
 
 <body>
@@ -1737,6 +1659,8 @@
     </div>
   </div>
 
+  </main>
+
   <!-- ════════════════════════════════════════════════════════════════════════
        SCRIPTS — Critical path first, non-critical lazy-loaded
   ════════════════════════════════════════════════════════════════════════ -->
@@ -1812,26 +1736,6 @@
       setTimeout(loadLazyScripts, 2500);
     }
   </script>
-
-  <!-- Floating Tab Bar — Same as Home Page -->
-  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-    <a href="index.html" class="tab-item active">
-      <span class="tab-icon">🏠</span>
-      <span class="tab-label">Home</span>
-    </a>
-    <a href="Insights/insights.html" class="tab-item">
-      <span class="tab-icon">📚</span>
-      <span class="tab-label">Learning</span>
-    </a>
-    <a href="Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
-      <span class="tab-label">Favorites</span>
-    </a>
-    <a href="Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">📈</span>
-      <span class="tab-label">Dashboard</span>
-    </a>
-  </nav>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
        NISHAN SAHIB CLICK - Creative Message
@@ -2009,5 +1913,23 @@
     })();
   </script>
 
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="index.html" class="tab-item active">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="Insights/insights.html" class="tab-item">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
+  </nav>
 </body>
 </html>
