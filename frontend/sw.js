@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD - SERVICE WORKER v3.0.0
+ * ANHAD - SERVICE WORKER v4.1.2
  * iOS/Android Optimized with Persistent Background Notifications
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v4.1.0';
+const CACHE_VERSION = 'anhad-v4.1.7';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -24,6 +24,7 @@ const STATIC_FILES = [
   '/script.js',
   '/manifest.json',
   '/version.json',
+  '/css/nav-glass.css',
   '/pwa-register.js',
   '/enhanced-functionality.js',
   '/js/audio-core.js',
