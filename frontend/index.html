@@ -2027,5 +2027,54 @@
     </a>
   </nav>
 
+  <!-- Service Worker Registration with Auto-Update -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((registration) => {
+            console.log('[Service Worker] Registered successfully:', registration.scope);
+
+            // Auto-update check every hour
+            setInterval(() => {
+              registration.update();
+            }, 60 * 60 * 1000);
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New version available
+                  console.log('[Service Worker] New version available');
+                  
+                  // Show update notification to user
+                  if (confirm('A new version of ANHAD is available. Update now?')) {
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  }
+                }
+              });
+            });
+
+            // Handle controller change (when new worker activates)
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+              console.log('[Service Worker] Controller changed, reloading page');
+              window.location.reload();
+            });
+          })
+          .catch((error) => {
+            console.error('[Service Worker] Registration failed:', error);
+          });
+      });
+
+      // Handle messages from service worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'SKIP_WAITING') {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
