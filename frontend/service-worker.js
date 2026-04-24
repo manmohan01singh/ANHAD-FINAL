@@ -1,5 +1,5 @@
-const CACHE_NAME = 'anhad-pwa-v1';
-const RUNTIME_CACHE = 'anhad-runtime-v1';
+const CACHE_NAME = 'anhad-pwa-v2';
+const RUNTIME_CACHE = 'anhad-runtime-v2';
 
 // Files to cache on install
 const PRECACHE_URLS = [
@@ -137,10 +137,23 @@ async function checkForUpdates() {
   }
 }
 
-// Periodic update check (every 30 minutes)
+// Periodic update check (every 15 minutes for mobile)
 setInterval(() => {
   checkForUpdates();
-}, 30 * 60 * 1000);
+}, 15 * 60 * 1000);
+
+// Check for updates on visibility change (mobile optimization)
+self.addEventListener('visibilitychange', () => {
+  if (self.clients && self.clients.matchAll) {
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        if (client.visibilityState === 'visible') {
+          checkForUpdates();
+        }
+      });
+    });
+  }
+});
 
 // Push notification handler (optional)
 self.addEventListener('push', (event) => {

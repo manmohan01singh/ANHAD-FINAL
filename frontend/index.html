@@ -2035,10 +2035,17 @@
           .then((registration) => {
             console.log('[Service Worker] Registered successfully:', registration.scope);
 
-            // Auto-update check every hour
+            // Auto-update check every 15 minutes (more frequent for mobile)
             setInterval(() => {
               registration.update();
-            }, 60 * 60 * 1000);
+            }, 15 * 60 * 1000);
+
+            // Check for updates when page becomes visible (mobile optimization)
+            document.addEventListener('visibilitychange', () => {
+              if (!document.hidden) {
+                registration.update();
+              }
+            });
 
             // Listen for updates
             registration.addEventListener('updatefound', () => {
@@ -2048,10 +2055,8 @@
                   // New version available
                   console.log('[Service Worker] New version available');
                   
-                  // Show update notification to user
-                  if (confirm('A new version of ANHAD is available. Update now?')) {
-                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  }
+                  // Create custom update notification
+                  showUpdateNotification(newWorker);
                 }
               });
             });
@@ -2073,6 +2078,99 @@
           navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
         }
       });
+    }
+
+    // Custom update notification function
+    function showUpdateNotification(newWorker) {
+      // Remove existing notification if any
+      const existingNotification = document.getElementById('pwa-update-notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.id = 'pwa-update-notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        z-index: 999999;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        max-width: 90%;
+        animation: slideDown 0.3s ease-out;
+      `;
+
+      notification.innerHTML = `
+        <div style="margin-bottom: 12px;">🔄 New version available!</div>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button id="update-now-btn" style="
+            background: white;
+            color: #D4943A;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+          ">Update Now</button>
+          <button id="update-later-btn" style="
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+          ">Later</button>
+        </div>
+      `;
+
+      // Add animation keyframes
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideDown {
+          from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+
+      document.body.appendChild(notification);
+
+      // Handle button clicks
+      document.getElementById('update-now-btn').addEventListener('click', () => {
+        newWorker.postMessage({ type: 'SKIP_WAITING' });
+        notification.remove();
+      });
+
+      document.getElementById('update-later-btn').addEventListener('click', () => {
+        notification.remove();
+        // Auto-update after 5 minutes if user clicks later
+        setTimeout(() => {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          }
+        }, 5 * 60 * 1000);
+      });
+
+      // Auto-update after 30 seconds if no interaction
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          newWorker.postMessage({ type: 'SKIP_WAITING' });
+          notification.remove();
+        }
+      }, 30 * 1000);
     }
   </script>
 
