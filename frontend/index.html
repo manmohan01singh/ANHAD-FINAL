@@ -2030,52 +2030,85 @@
   <!-- Service Worker Registration with Auto-Update -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then((registration) => {
-            console.log('[Service Worker] Registered successfully:', registration.scope);
+      let registration;
+      
+      // Register service worker immediately
+      navigator.serviceWorker.register('./service-worker.js')
+        .then((reg) => {
+          registration = reg;
+          console.log('[Service Worker] Registered successfully:', reg.scope);
+          console.log('[Service Worker] State:', reg.active ? 'active' : 'not active');
+          console.log('[Service Worker] Installing:', reg.installing ? 'yes' : 'no');
+          console.log('[Service Worker] Waiting:', reg.waiting ? 'yes' : 'no');
 
-            // Auto-update check every 15 minutes (more frequent for mobile)
-            setInterval(() => {
-              registration.update();
-            }, 15 * 60 * 1000);
+          // Force update check immediately
+          reg.update().then(() => {
+            console.log('[Service Worker] Initial update check complete');
+          });
 
-            // Check for updates when page becomes visible (mobile optimization)
-            document.addEventListener('visibilitychange', () => {
-              if (!document.hidden) {
-                registration.update();
+          // Auto-update check every 5 minutes (more aggressive for PWA)
+          setInterval(() => {
+            console.log('[Service Worker] Checking for updates...');
+            reg.update();
+          }, 5 * 60 * 1000);
+
+          // Check for updates when page becomes visible (mobile optimization)
+          document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+              console.log('[Service Worker] Page visible, checking for updates...');
+              reg.update();
+            }
+          });
+
+          // Check for updates when app comes to foreground (PWA specific)
+          window.addEventListener('focus', () => {
+            console.log('[Service Worker] App focused, checking for updates...');
+            reg.update();
+          });
+
+          // Listen for updates
+          reg.addEventListener('updatefound', () => {
+            console.log('[Service Worker] Update found!');
+            const newWorker = reg.installing;
+            
+            newWorker.addEventListener('statechange', () => {
+              console.log('[Service Worker] New worker state:', newWorker.state);
+              
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version available
+                console.log('[Service Worker] New version available, showing notification');
+                
+                // Create custom update notification
+                showUpdateNotification(newWorker);
+              } else if (newWorker.state === 'activated') {
+                console.log('[Service Worker] New worker activated');
               }
             });
-
-            // Listen for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New version available
-                  console.log('[Service Worker] New version available');
-                  
-                  // Create custom update notification
-                  showUpdateNotification(newWorker);
-                }
-              });
-            });
-
-            // Handle controller change (when new worker activates)
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-              console.log('[Service Worker] Controller changed, reloading page');
-              window.location.reload();
-            });
-          })
-          .catch((error) => {
-            console.error('[Service Worker] Registration failed:', error);
           });
+
+          // If there's already a waiting worker, notify user
+          if (reg.waiting) {
+            console.log('[Service Worker] Waiting worker found on registration');
+            showUpdateNotification(reg.waiting);
+          }
+        })
+        .catch((error) => {
+          console.error('[Service Worker] Registration failed:', error);
+        });
+
+      // Handle controller change (when new worker activates)
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[Service Worker] Controller changed, reloading page');
+        window.location.reload();
       });
 
       // Handle messages from service worker
       navigator.serviceWorker.addEventListener('message', (event) => {
+        console.log('[Service Worker] Message received:', event.data);
         if (event.data && event.data.type === 'SKIP_WAITING') {
-          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          }
         }
       });
     }
@@ -2150,27 +2183,31 @@
 
       // Handle button clicks
       document.getElementById('update-now-btn').addEventListener('click', () => {
+        console.log('[Service Worker] User clicked Update Now');
         newWorker.postMessage({ type: 'SKIP_WAITING' });
         notification.remove();
       });
 
       document.getElementById('update-later-btn').addEventListener('click', () => {
+        console.log('[Service Worker] User clicked Later');
         notification.remove();
-        // Auto-update after 5 minutes if user clicks later
+        // Auto-update after 2 minutes if user clicks later (shorter for PWA)
         setTimeout(() => {
           if (navigator.serviceWorker.controller) {
+            console.log('[Service Worker] Auto-updating after Later click');
             navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
           }
-        }, 5 * 60 * 1000);
+        }, 2 * 60 * 1000);
       });
 
-      // Auto-update after 30 seconds if no interaction
+      // Auto-update after 15 seconds if no interaction (shorter for PWA)
       setTimeout(() => {
         if (document.body.contains(notification)) {
+          console.log('[Service Worker] Auto-updating after timeout');
           newWorker.postMessage({ type: 'SKIP_WAITING' });
           notification.remove();
         }
-      }, 30 * 1000);
+      }, 15 * 1000);
     }
   </script>
 

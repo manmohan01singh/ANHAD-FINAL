@@ -29,6 +29,7 @@ const PRECACHE_URLS = [
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing...');
+  self.clients.claim(); // Claim clients immediately
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -38,6 +39,9 @@ self.addEventListener('install', (event) => {
       .then(() => {
         console.log('[Service Worker] Installation complete');
         return self.skipWaiting(); // Activate immediately
+      })
+      .catch((error) => {
+        console.error('[Service Worker] Installation failed:', error);
       })
   );
 });
