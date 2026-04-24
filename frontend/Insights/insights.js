@@ -72,47 +72,57 @@
                 { name: "Guru Arjan Dev Ji", type: "Guru", shabads: 2218, emoji: "🙏" },
                 { name: "Guru Tegh Bahadur Ji", type: "Guru", shabads: 116, emoji: "🙏" },
                 { name: "Bhagat Kabir Ji", type: "Bhagat", shabads: 541, emoji: "📿" },
-                { name: "Bhagat Farid Ji", type: "Bhagat", shabads: 134, emoji: "📿" },
                 { name: "Bhagat Namdev Ji", type: "Bhagat", shabads: 60, emoji: "📿" },
                 { name: "Bhagat Ravidas Ji", type: "Bhagat", shabads: 41, emoji: "📿" },
-                { name: "Bhagat Trilochan Ji", type: "Bhagat", shabads: 4, emoji: "📿" },
-                { name: "Bhagat Dhanna Ji", type: "Bhagat", shabads: 4, emoji: "📿" },
+                { name: "Bhagat Farid Ji", type: "Bhagat", shabads: 134, emoji: "📿" },
+                { name: "Bhagat Ramanand Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
                 { name: "Bhagat Beni Ji", type: "Bhagat", shabads: 3, emoji: "📿" },
+                { name: "Bhagat Dhanna Ji", type: "Bhagat", shabads: 4, emoji: "📿" },
+                { name: "Bhagat Jaidev Ji", type: "Bhagat", shabads: 2, emoji: "📿" },
+                { name: "Bhagat Bhikhan Ji", type: "Bhagat", shabads: 2, emoji: "📿" },
+                { name: "Bhagat Trilochan Ji", type: "Bhagat", shabads: 4, emoji: "📿" },
+                { name: "Bhagat Parmanand Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
+                { name: "Bhagat Surdas Ji", type: "Bhagat", shabads: 2, emoji: "📿" },
                 { name: "Bhagat Sain Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
                 { name: "Bhagat Pipa Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
                 { name: "Bhagat Sadhna Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
-                { name: "Bhagat Ramanand Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
-                { name: "Bhagat Parmanand Ji", type: "Bhagat", shabads: 1, emoji: "📿" },
-                { name: "Bhagat Surdas Ji", type: "Bhagat", shabads: 2, emoji: "📿" },
-                { name: "Bhagat Jaidev Ji", type: "Bhagat", shabads: 2, emoji: "📿" },
-                { name: "Bhatt Kal Sahar", type: "Bhatt", shabads: 54, emoji: "✨" },
-                { name: "Bhatt Gyand", type: "Bhatt", shabads: 13, emoji: "✨" },
-                { name: "Bhatt Balh", type: "Bhatt", shabads: 5, emoji: "✨" },
+                { name: "Bhatt Kalshar Ji", type: "Bhatt", shabads: 54, emoji: "✨" },
+                { name: "Bhatt Balh Ji", type: "Bhatt", shabads: 5, emoji: "✨" },
+                { name: "Bhatt Bhalh Ji", type: "Bhatt", shabads: 1, emoji: "✨" },
+                { name: "Bhatt Bhikha Ji", type: "Bhatt", shabads: 2, emoji: "✨" },
+                { name: "Bhatt Gayand Ji", type: "Bhatt", shabads: 13, emoji: "✨" },
+                { name: "Bhatt Harbans Ji", type: "Bhatt", shabads: 2, emoji: "✨" },
+                { name: "Bhatt Jalap Ji", type: "Bhatt", shabads: 5, emoji: "✨" },
+                { name: "Bhatt Kirat Ji", type: "Bhatt", shabads: 8, emoji: "✨" },
+                { name: "Bhatt Mathura Ji", type: "Bhatt", shabads: 14, emoji: "✨" },
+                { name: "Bhatt Nalh Ji", type: "Bhatt", shabads: 16, emoji: "✨" },
+                { name: "Bhatt Salh Ji", type: "Bhatt", shabads: 3, emoji: "✨" },
                 { name: "Bhai Mardana Ji", type: "Sikh", shabads: 3, emoji: "🎵" },
                 { name: "Bhai Satta Ji", type: "Sikh", shabads: 1, emoji: "🎵" },
-                { name: "Bhai Sundar Ji", type: "Sikh", shabads: 6, emoji: "🎵" }
+                { name: "Bhai Balwand Ji", type: "Sikh", shabads: 1, emoji: "🎵" }
             ];
             THEMES = [
-                { title: "Divine Love (ਪ੍ਰੇਮ)", emoji: "💕", desc: "The profound spiritual love between the soul and Waheguru. True love transcends attachment and ego." },
-                { title: "Devotion (ਭਗਤੀ)", emoji: "🙏", desc: "Complete surrender to the One through naam simran, kirtan, and seva." },
-                { title: "Divine Wisdom (ਗਿਆਨ)", emoji: "💎", desc: "Spiritual knowledge that reveals the nature of reality and the soul." },
-                { title: "Humility (ਨਿਮਰਤਾ)", emoji: "🪷", desc: "The foundation of all virtues. True greatness lies in serving others." },
-                { title: "Contentment (ਸੰਤੋਖ)", emoji: "☮️", desc: "Finding peace in Waheguru's will. Freedom from endless desires." },
-                { title: "Compassion (ਦਇਆ)", emoji: "❤️", desc: "Kindness and care for all creation. Seeing Waheguru in every being." },
-                { title: "Truth (ਸੱਚ)", emoji: "✨", desc: "Living in truthfulness of thought, word, and deed." },
-                { title: "Detachment (ਵੈਰਾਗ)", emoji: "🕊️", desc: "Freedom from worldly attachments while living in the world." }
+                { title: "Divine Love", titlePa: "ਪ੍ਰੇਮ", titleHi: "प्रेम", emoji: "💕", desc: "The profound spiritual love between the soul and Waheguru. True love transcends attachment and ego." },
+                { title: "Devotion", titlePa: "ਭਗਤੀ", titleHi: "भक्ति", emoji: "🙏", desc: "Complete surrender to the One through naam simran, kirtan, and seva." },
+                { title: "Divine Wisdom", titlePa: "ਗਿਆਨ", titleHi: "ज्ञान", emoji: "💎", desc: "Spiritual knowledge that reveals the nature of reality and the soul." },
+                { title: "Humility", titlePa: "ਨਿਮਰਤਾ", titleHi: "नम्रता", emoji: "🪷", desc: "The foundation of all virtues. True greatness lies in serving others." },
+                { title: "Contentment", titlePa: "ਸੰਤੋਖ", titleHi: "संतोष", emoji: "☮️", desc: "Finding peace in Waheguru's will. Freedom from endless desires." },
+                { title: "Compassion", titlePa: "ਦਇਆ", titleHi: "दया", emoji: "❤️", desc: "Kindness and care for all creation. Seeing Waheguru in every being." },
+                { title: "Truth", titlePa: "ਸੱਚ", titleHi: "सत्य", emoji: "✨", desc: "Living in truthfulness of thought, word, and deed." },
+                { title: "Detachment", titlePa: "ਵੈਰਾਗ", titleHi: "वैराग्य", emoji: "🕊️", desc: "Freedom from worldly attachments while living in the world." }
             ];
             GURU_SAHIBAAN = [
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ", english: "Sri Guru Nanak Dev Ji", years: "1469–1539", desc: "Founder of Sikhi. Taught the Oneness of God, equality of all humanity, and the practice of honest living." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ", english: "Sri Guru Angad Dev Ji", years: "1504–1552", desc: "Standardized the Gurmukhi script, promoted physical fitness through Mall Akhara." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ", english: "Sri Guru Amar Das Ji", years: "1479–1574", desc: "Established the Manji system, abolished sati, and instituted the Langar tradition." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ", english: "Sri Guru Ram Das Ji", years: "1534–1581", desc: "Founded the city of Amritsar, composed the Laavan for Anand Karaj." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ", english: "Sri Guru Arjan Dev Ji", years: "1563–1606", desc: "Compiled the Adi Granth, built Sri Harmandir Sahib Ji. First Sikh martyr." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Hargobind Sahib Ji", years: "1595–1644", desc: "Introduced Miri-Piri concept, wore two swords of spiritual and temporal authority." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Rai Sahib Ji", years: "1630–1661", desc: "Known for compassion, maintained a large cavalry, ran free medical clinics." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Krishan Sahib Ji", years: "1656–1664", desc: "Youngest Guru, healed the sick during a smallpox epidemic in Delhi." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Tegh Bahadur Sahib Ji", years: "1621–1675", desc: "Hind Di Chadar — gave his life to protect religious freedom for all." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Gobind Singh Sahib Ji", years: "1666–1708", desc: "Created the Khalsa, finalized Sri Guru Granth Sahib Ji as the eternal Guru." }
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ", english: "Sri Guru Nanak Dev Ji", years: "1469–1539", desc: "Founder of Sikhi. Taught the Oneness of God, equality of all humanity." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ", english: "Sri Guru Angad Dev Ji", years: "1504–1552", desc: "Standardized the Gurmukhi script." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ", english: "Sri Guru Amar Das Ji", years: "1479–1574", desc: "Established the Manji system, abolished sati." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ", english: "Sri Guru Ram Das Ji", years: "1534–1581", desc: "Founded the city of Amritsar, composed the Laavan." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ", english: "Sri Guru Arjan Dev Ji", years: "1563–1606", desc: "Compiled the Adi Granth, built Sri Harmandir Sahib Ji." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Hargobind Sahib Ji", years: "1595–1644", desc: "Introduced Miri-Piri concept." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Rai Sahib Ji", years: "1630–1661", desc: "Known for compassion, maintained a large cavalry." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Krishan Sahib Ji", years: "1656–1664", desc: "Youngest Guru, healed the sick during smallpox epidemic." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Tegh Bahadur Sahib Ji", years: "1621–1675", desc: "Hind Di Chadar — gave his life for religious freedom." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Gobind Singh Sahib Ji", years: "1666–1708", desc: "Created the Khalsa, finalized SGGS Ji as eternal Guru." },
+                { name: "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Granth Sahib Ji", years: "1708–Present", desc: "The Eternal Living Guru of the Sikhs." }
             ];
             SAKHIS = [
                 { title: "ਸੱਚਾ ਸੌਦਾ — The True Deal", guru: "Guru Nanak Dev Ji", desc: "Young Nanak was given 20 rupees by his father to make a profitable trade. Instead, he spent it feeding hungry sadhus, calling it the truest deal of all." },
@@ -241,7 +251,7 @@
                 setupLangSwitch();
                 break;
             case 'guruSahibs':
-                title.textContent = '🙏 10 Guru Sahib Ji';
+                title.textContent = '🙏 11 Guru Sahib Ji';
                 body.innerHTML = renderGuruSahibaan(currentLang);
                 langSwitch.style.display = 'flex';
                 setupLangSwitch();
@@ -249,12 +259,14 @@
         }
 
         modal.classList.add('insight-modal--active');
+        document.body.classList.add('modal-open');
         document.body.style.overflow = 'hidden';
     };
 
     window.closeModal = function () {
         const modal = document.getElementById('insightModal');
         modal.classList.remove('insight-modal--active');
+        document.body.classList.remove('modal-open');
         document.body.style.overflow = '';
     };
 
@@ -295,11 +307,21 @@
         const titleField = lang === 'pa' ? 'titlePa' : lang === 'hi' ? 'titleHi' : 'title';
         const descField = lang === 'pa' ? 'descriptionPa' : lang === 'hi' ? 'descriptionHi' : 'description';
         
-        return THEMES.map(t => `
+        return THEMES.map(t => {
+            const title = t[titleField] || t.title;
+            let desc = t[descField] || t.desc || '';
+            
+            // Fix for [object Object] issue
+            if (typeof desc === 'object' && desc !== null) {
+                desc = desc[lang] || desc['en'] || '';
+            }
+            
+            return `
             <div class="theme-card">
-                <div class="theme-card__title">${t.emoji} ${t[titleField] || t.title}</div>
-                <div class="theme-card__desc">${t[descField] || t.desc}</div>
-            </div>`).join('');
+                <div class="theme-card__title">${t.emoji} ${title}</div>
+                <div class="theme-card__desc">${desc}</div>
+            </div>`;
+        }).join('');
     }
 
     function renderHistory(lang) {
@@ -321,7 +343,7 @@
                         <div class="theme-card__title">🙏 ${g.english}</div>
                         <div style="font-size: 14px; font-weight: 600; color: var(--gold-400); margin: 2px 0;">${g.namePunjabi || g.name}</div>
                         <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px;">${g.years}</div>
-                        <div class="theme-card__desc">${g.majorContributions}</div>
+                        <div class="theme-card__desc">${g.contributions}</div>
                     </div>`;
                 });
             }
@@ -564,9 +586,10 @@
 
     function setupNavigation() {
         const backBtn = document.getElementById('backBtn');
-        if (backBtn) {
+        if (backBtn && !backBtn._anhadBackWired) {
             backBtn.addEventListener('click', () => {
-                if (window.history.length > 1) window.history.back();
+                if (window.anhadGoBack) window.anhadGoBack('../index.html');
+                else if (window.history.length > 1) window.history.back();
                 else window.location.href = '../index.html';
             });
         }

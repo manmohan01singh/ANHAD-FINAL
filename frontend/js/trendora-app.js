@@ -338,8 +338,11 @@
 
     async getNextGurpurab() {
       try {
-        // Check sessionStorage cache first (1-hour TTL)
-        const cacheKey = 'gurpurab_cache';
+        // Get filter preference from localStorage first (default to guru-sahib)
+        const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
+        
+        // Check sessionStorage cache first (1-hour TTL) - include filter in cache key
+        const cacheKey = 'gurpurab_cache_' + nameFilter;
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
           try {
@@ -351,10 +354,44 @@
         const response = await fetch('data/gurpurab-events-2026.json');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
+        
+        // List of the 10 Gurus' names to match (include variations)
+        const guruNames = [
+          'guru nanak', 'ਗੁਰੂ ਨਾਨਕ',
+          'guru angad', 'ਗੁਰੂ ਅੰਗਦ',
+          'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ',
+          'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ',
+          'guru arjan', 'ਗੁਰੂ ਅਰਜਨ',
+          'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ',
+          'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ',
+          'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ',
+          'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ',
+          'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ',
+          'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ',
+          'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'
+        ];
+        
         const events = (data.years['2026'] || [])
-          .filter(e => !e.type?.toLowerCase().includes('dastar') && !e.name_en?.toLowerCase().includes('dastar'))
+          .filter(e => {
+            // Filter out dastar events
+            if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) {
+              return false;
+            }
+            
+            // Apply name filter if set to guru-sahib
+            if (nameFilter === 'guru-sahib') {
+              const name = String(e.name_en || '').toLowerCase();
+              const namePa = String(e.name_pa || '').toLowerCase();
+              return guruNames.some(guruName => 
+                name.includes(guruName) || namePa.includes(guruName)
+              );
+            }
+            
+            return true;
+          })
           .map(e => ({
             name: e.name_en,
+            name_pa: e.name_pa,
             id: e.id,
             date: new Date(e.gregorian_date),
             type: e.type,
@@ -755,6 +792,9 @@
 
           // Update Guru image
           this._updateGuruImage(event);
+          
+          // Update greeting section with Guru Sahib info if filter is active
+          this._updateGreetingForGuruSahib(event);
         };
 
         // Display first event
@@ -911,7 +951,7 @@
             'guru-amar-das': 'Sri Guru Amar Das Sahib Ji',
             'guru-ram-das': 'Sri Guru Ram Das Sahib Ji',
             'guru-arjan': 'Sri Guru Arjan Dev Sahib Ji',
-            'guru-hargobind': 'Sri Guru Hargobind Ji',
+            'guru-hargobind': 'Sri Guru Hargobind Sahib Ji',
             'guru-har-rai': 'Sri Guru Har Rai Sahib Ji',
             'guru-harkrishan': 'Sri Guru Har Krishan Sahib Ji',
             'guru-har-krishan': 'Sri Guru Har Krishan Sahib Ji',
@@ -922,14 +962,14 @@
             'sahibzad': 'Chaar Sahib Jizade',
             'vaisakhi': 'DHAN GURU GOBIND SINGH SAHIB JI',
             'khalsa': 'DHAN GURU GOBIND SINGH SAHIB JI',
-            'bandi-chhor': 'Sri Guru Hargobind Ji',
-            'miri-piri': 'Sri Guru Hargobind Ji',
+            'bandi-chhor': 'Sri Guru Hargobind Sahib Ji',
+            'miri-piri': 'Sri Guru Hargobind Sahib Ji',
             'nanak': 'Sri Guru Nanak Dev Sahib Ji',
             'angad': 'Sri Guru Angad Dev Sahib Ji',
             'amar-das': 'Sri Guru Amar Das Sahib Ji',
             'ram-das': 'Sri Guru Ram Das Sahib Ji',
             'arjan': 'Sri Guru Arjan Dev Sahib Ji',
-            'hargobind': 'Sri Guru Hargobind Ji',
+            'hargobind': 'Sri Guru Hargobind Sahib Ji',
             'har-rai': 'Sri Guru Har Rai Sahib Ji',
             'harkrishan': 'Sri Guru Har Krishan Sahib Ji',
             'har-krishan': 'Sri Guru Har Krishan Sahib Ji',
@@ -1003,6 +1043,76 @@
       } else {
         console.log('[GuruImage] Salutation element not found');
       }
+    },
+
+    _updateGreetingForGuruSahib(event) {
+      // Only update greeting if filter is set to guru-sahib
+      const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'all';
+      
+      if (nameFilter !== 'guru-sahib') {
+        console.log('[Greeting] Filter not set to guru-sahib, skipping greeting update');
+        return;
+      }
+
+      console.log('[Greeting] Updating greeting for Guru Sahib event:', event.name);
+      
+      // Get Guru image and name
+      const guruInfo = this._getGuruInfoFromEvent(event);
+      
+      if (guruInfo) {
+        // Update greeting portrait
+        const portraitImgEl = document.getElementById('guruPortraitImg');
+        if (portraitImgEl) {
+          portraitImgEl.src = guruInfo.image;
+          portraitImgEl.alt = guruInfo.name;
+        }
+        
+        // Update salutation text
+        const salEl = document.getElementById('greetingSalutation');
+        if (salEl) {
+          salEl.textContent = guruInfo.name;
+        }
+      }
+    },
+
+    _getGuruInfoFromEvent(event) {
+      const guruImageMap = {
+        'guru-nanak':      { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'guru-angad':      { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'guru-amar-das':   { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'guru-ram-das':    { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'guru-arjan':      { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'guru-hargobind':  { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'guru-har-rai':    { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'guru-harkrishan':  { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'guru-har-krishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'guru-teg-bahadur': { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+        'guru-gobind':     { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'nanak':           { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'angad':           { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'amar-das':        { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'ram-das':         { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'arjan':           { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'hargobind':       { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'har-rai':         { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'harkrishan':      { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'har-krishan':     { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'teg-bahadur':     { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+        'gobind':          { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'gobind-singh':    { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+      };
+
+      const evName = (event.name || '').toLowerCase();
+      const evId = (event.id || '').toLowerCase();
+      const searchStrings = [evName, evId];
+
+      for (const [key, info] of Object.entries(guruImageMap)) {
+        if (searchStrings.some(s => s.includes(key))) {
+          return info;
+        }
+      }
+
+      return null;
     },
 
     updateNaamCard() {

@@ -1706,7 +1706,9 @@ const EventHandlers = {
         // Back button
         DOM.get('backBtn').addEventListener('click', () => {
             Utils.hapticFeedback(DOM.get('backBtn'));
-            if (window.history.length > 1) {
+            if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else if (window.history.length > 1) {
                 window.history.back();
             } else {
                 window.location.href = '../index.html';

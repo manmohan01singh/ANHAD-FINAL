@@ -93,7 +93,6 @@ const State = {
     isLoading: false,
     keyboardText: '',
     theme: 'light',
-    searchHistory: [],
     favorites: [],
     sourceFilter: 'all', // 'all' | 'G' | 'D' | 'B' | 'N'
     allResults: [] // Store all results for client-side filtering
@@ -209,11 +208,19 @@ const Theme = {
     },
 
     toggle() {
+        // Disable all transitions for instant theme switch
+        document.documentElement.classList.add('no-transitions');
         const newTheme = State.theme === 'light' ? 'dark' : 'light';
         this.set(newTheme);
         // Sync to global theme key
         localStorage.setItem('anhad_theme', newTheme);
         haptic('medium');
+        // Re-enable transitions after paint
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('no-transitions');
+            });
+        });
     },
 
     set(theme) {
@@ -225,91 +232,6 @@ const Theme = {
         if (metaTheme) {
             metaTheme.content = theme === 'dark' ? '#0a0a0f' : '#f8f6f2';
         }
-    }
-};
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// SEARCH HISTORY
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const SearchHistory = {
-    MAX_ITEMS: 10,
-
-    load() {
-        const saved = localStorage.getItem('gurbaniSearchHistory');
-        State.searchHistory = saved ? JSON.parse(saved) : [];
-        this.render();
-    },
-
-    add(query) {
-        if (!query || query.length < 2) return;
-
-        // Remove if already exists
-        State.searchHistory = State.searchHistory.filter(h => h !== query);
-
-        // Add to beginning
-        State.searchHistory.unshift(query);
-
-        // Limit to max items
-        if (State.searchHistory.length > this.MAX_ITEMS) {
-            State.searchHistory = State.searchHistory.slice(0, this.MAX_ITEMS);
-        }
-
-        localStorage.setItem('gurbaniSearchHistory', JSON.stringify(State.searchHistory));
-        this.render();
-    },
-
-    remove(query) {
-        State.searchHistory = State.searchHistory.filter(h => h !== query);
-        localStorage.setItem('gurbaniSearchHistory', JSON.stringify(State.searchHistory));
-        this.render();
-    },
-
-    clear() {
-        State.searchHistory = [];
-        localStorage.removeItem('gurbaniSearchHistory');
-        this.render();
-    },
-
-    render() {
-        if (!DOM.historyList) return;
-
-        if (State.searchHistory.length === 0) {
-            if (DOM.historySection) DOM.historySection.style.display = 'none';
-            return;
-        }
-
-        if (DOM.historySection) DOM.historySection.style.display = 'block';
-
-        DOM.historyList.innerHTML = State.searchHistory.map(query => `
-            <button class="history-item" data-query="${encodeURIComponent(query)}">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12,6 12,12 16,14"/>
-                </svg>
-                <span>${query}</span>
-                <button class="history-remove" data-remove="${encodeURIComponent(query)}">×</button>
-            </button>
-        `).join('');
-
-        // Add click handlers
-        DOM.historyList.querySelectorAll('.history-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                // Check if clicked element or its parent is the remove button
-                const removeBtn = e.target.closest('.history-remove');
-                if (removeBtn) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    this.remove(decodeURIComponent(removeBtn.dataset.remove));
-                    haptic();
-                    return;
-                }
-                const query = decodeURIComponent(item.dataset.query);
-                DOM.searchInput.value = query;
-                performSearch();
-                haptic();
-            });
-        });
     }
 };
 
@@ -522,7 +444,6 @@ function showEmpty(message = 'Try searching with first letters') {
 function showWelcome() {
     hideAllViews();
     DOM.welcomeState?.classList.add('active');
-    SearchHistory.render();
 }
 
 function showResults() {
@@ -550,9 +471,6 @@ async function performSearch(append = false) {
         State.page = 1;
         DOM.resultsList.innerHTML = '';
         showLoading();
-
-        // Add to old history
-        SearchHistory.add(query);
     }
 
     try {
@@ -600,14 +518,16 @@ async function performSearch(append = false) {
             return;
         }
 
-        // Add to new history with gurmukhi text from first result
+        // Add to history with timestamp and result count
         if (!append && data.verses.length > 0) {
             const firstVerse = data.verses[0];
             const sourceName = firstVerse._source?.shortName || 'All Sources';
             History.add({
                 query: query,
-                gurmukhi: firstVerse.gurmukhi || query,
-                source: sourceName
+                gurmukhi: firstVerse.verse?.unicode || firstVerse.gurmukhi || query,
+                source: sourceName,
+                resultCount: data.verses.length,
+                timestamp: Date.now()
             });
         }
 
@@ -732,6 +652,21 @@ function displayResults(verses, append = false) {
             haptic();
             const shabadId = card.dataset.shabad;
             const verseId = card.dataset.verse;
+
+            // Save full search state to sessionStorage for back-navigation
+            try {
+                sessionStorage.setItem('gurbaniKhoj_state', JSON.stringify({
+                    query: State.query,
+                    inputValue: DOM.searchInput.value,
+                    allResults: State.allResults,
+                    sourceFilter: State.sourceFilter,
+                    scrollY: window.scrollY,
+                    page: State.page,
+                    totalPages: State.totalPages
+                }));
+            } catch (e) {
+                console.warn('Could not save search state:', e);
+            }
 
             // Navigate to full Shabad reader
             window.location.href = `shabad-reader.html?shabad=${shabadId}&verse=${verseId}`;
@@ -997,15 +932,9 @@ const History = {
     items: [],
 
     open() {
-        console.log('History.open() called, items:', this.items.length);
-        this.render();
-        if (DOM.historyOverlay) {
-            DOM.historyOverlay.classList.add('active');
-            console.log('History overlay activated');
-        } else {
-            console.error('History overlay element not found');
-        }
+        // Navigate to dedicated history page
         haptic();
+        window.location.href = 'search-history.html';
     },
 
     close() {
@@ -1013,10 +942,12 @@ const History = {
     },
 
     add(item) {
-        // Add to beginning, remove duplicates, keep max 20
+        // Ensure timestamp exists
+        if (!item.timestamp) item.timestamp = Date.now();
+        // Add to beginning, remove duplicates, keep max 50
         this.items = this.items.filter(i => i.query !== item.query);
         this.items.unshift(item);
-        if (this.items.length > 20) this.items.pop();
+        if (this.items.length > 50) this.items.pop();
         this.save();
     },
 
@@ -1264,12 +1195,72 @@ function init() {
 
 document.addEventListener('DOMContentLoaded', () => {
     Theme.init();
-    SearchHistory.load();
     History.load();
     Favorites.load();
     VoiceSearch.init();
     initEventListeners();
-    showWelcome();
+
+    // Try to restore full search state from sessionStorage (back-navigation)
+    let restored = false;
+    try {
+        // Check if coming from history page with a query
+        const historyQuery = sessionStorage.getItem('gurbaniKhoj_historyQuery');
+        if (historyQuery) {
+            sessionStorage.removeItem('gurbaniKhoj_historyQuery');
+            DOM.searchInput.value = historyQuery;
+            State.keyboardText = historyQuery;
+            performSearch();
+            restored = true;
+        }
+
+        if (!restored) {
+            const savedRaw = sessionStorage.getItem('gurbaniKhoj_state');
+            if (savedRaw) {
+                const saved = JSON.parse(savedRaw);
+                // Clear it so it only restores once
+                // Keep state in storage so it persists for multiple back/forth navigations
+                // sessionStorage.removeItem('gurbaniKhoj_state');
+
+                if (saved.allResults && saved.allResults.length > 0) {
+                    // Restore state
+                    State.query = saved.query || '';
+                    State.allResults = saved.allResults;
+                    State.sourceFilter = saved.sourceFilter || 'all';
+                    State.page = saved.page || 1;
+                    State.totalPages = saved.totalPages || 1;
+                    DOM.searchInput.value = saved.inputValue || saved.query || '';
+                    State.keyboardText = DOM.searchInput.value;
+
+                    // Restore active source chip
+                    document.querySelectorAll('.source-chip').forEach(c => {
+                        c.classList.toggle('active', c.dataset.source === State.sourceFilter);
+                    });
+
+                    // Display restored results
+                    const filteredResults = State.sourceFilter === 'all'
+                        ? State.allResults
+                        : filterResultsBySource(State.allResults, State.sourceFilter);
+                    displayResults(filteredResults, false);
+                    updateResultsCount(filteredResults.length, State.allResults.length);
+                    showResults();
+
+                    // Restore scroll position after render
+                    if (saved.scrollY) {
+                        setTimeout(() => window.scrollTo(0, saved.scrollY), 80);
+                    }
+
+                    restored = true;
+                    console.log('Restored search state with', State.allResults.length, 'results');
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Could not restore search state:', e);
+    }
+
+    if (!restored) {
+        showWelcome();
+    }
 
     console.log('Gurbani Khoj initialized');
 });

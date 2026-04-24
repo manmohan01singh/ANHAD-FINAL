@@ -49,6 +49,7 @@
     month: startOfMonth(new Date()),
     view: 'monthly',
     filterType: 'all',
+    nameFilter: 'all',
     query: '',
     events: [],
     selectedEvent: null,
@@ -97,67 +98,7 @@
    * Replaces internal CalendarThemeEngine with unified theme system
    */
   function bindThemeSettings() {
-    // Bind settings button
-    const btnSettings = qs('btnSettings');
-    if (btnSettings) {
-      btnSettings.addEventListener('click', () => openSettingsModal());
-    }
-
-    // Bind close button and backdrop
-    qs('settingsClose')?.addEventListener('click', () => closeSettingsModal());
-    qs('settingsBackdrop')?.addEventListener('click', () => closeSettingsModal());
-
-    // Bind theme options to use global AnhadTheme.set()
-    const themeGrid = qs('themeGrid');
-    if (themeGrid) {
-      themeGrid.querySelectorAll('[data-theme]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (window.AnhadTheme) {
-            window.AnhadTheme.set(btn.dataset.theme);
-          }
-        });
-      });
-    }
-
-    // Listen for theme changes to update active button state
-    document.addEventListener('anhad-theme-change', () => {
-      updateActiveThemeButton();
-    });
-
-    // Set initial active state
-    updateActiveThemeButton();
-  }
-
-  function openSettingsModal() {
-    const modal = qs('settingsModal');
-    const backdrop = qs('settingsBackdrop');
-    if (modal && backdrop) {
-      lockBodyScroll();
-      backdrop.classList.add('visible');
-      modal.classList.add('visible');
-      modal.setAttribute('aria-hidden', 'false');
-      backdrop.setAttribute('aria-hidden', 'false');
-      updateActiveThemeButton();
-    }
-  }
-
-  function closeSettingsModal() {
-    const modal = qs('settingsModal');
-    const backdrop = qs('settingsBackdrop');
-    if (modal && backdrop) {
-      backdrop.classList.remove('visible');
-      modal.classList.remove('visible');
-      modal.setAttribute('aria-hidden', 'true');
-      backdrop.setAttribute('aria-hidden', 'true');
-      unlockBodyScroll();
-    }
-  }
-
-  function updateActiveThemeButton() {
-    const currentTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'light';
-    document.querySelectorAll('[data-theme]').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.theme === currentTheme);
-    });
+    // Settings modal removed - no longer needed
   }
 
   function qs(id) {
@@ -308,6 +249,9 @@
   async function boot() {
     console.log('[Calendar] Booting...');
     updateTodayCard();
+
+    // Load name filter preference from localStorage
+    state.nameFilter = localStorage.getItem('gurpurab_name_filter') || 'all';
 
     // FIX: Cache-first loading - show cached data immediately, refresh in background
     const cached = localStorage.getItem(STORAGE.CACHE);
@@ -468,8 +412,10 @@
       return;
     }
 
-    // Default back navigation
-    if (window.history.length > 1) {
+    // Default back navigation — unified
+    if (window.anhadGoBack) {
+      window.anhadGoBack('../index.html');
+    } else if (window.history.length > 1) {
       window.history.back();
     } else {
       window.location.href = '../index.html';
@@ -526,6 +472,9 @@
     if (state.filterType !== 'all') {
       filtered = filtered.filter((e) => e.type === state.filterType);
     }
+
+    // Filter removed - calendar now shows all events
+    // Filter only affects home page card and greeting section
 
     const q = state.query.trim().toLowerCase();
     if (q) {

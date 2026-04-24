@@ -18,12 +18,17 @@
         rel="stylesheet">
     <!-- GurbaniDB — IndexedDB offline cache -->
     <script src="../lib/gurbani-db.js"></script>
-    <!-- Smart Back Navigation -->
-    <script src="../lib/smart-back.js"></script>
     
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+
 
     <style>
         :root {
@@ -203,6 +208,28 @@
         .pothi-bani-card .card-content { flex: 1; min-width: 0; z-index: 1; }
         .pothi-bani-card .card-name { font-family: var(--font-gurmukhi); font-size: 17px; font-weight: 600; margin-bottom: 2px; }
         .pothi-bani-card .card-english { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+        .pothi-bani-card .card-actions {
+            display: flex; align-items: center; gap: 8px; z-index: 1; flex-shrink: 0;
+        }
+        .card-read-btn, .card-complete-btn {
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px; cursor: pointer; transition: all 0.2s var(--ease-out);
+            color: var(--text-secondary); text-decoration: none;
+        }
+        .card-read-btn:hover, .card-complete-btn:hover {
+            background: rgba(255, 255, 255, 0.2); transform: scale(1.05);
+        }
+        .card-complete-btn {
+            background: rgba(52, 199, 89, 0.1); border-color: rgba(52, 199, 89, 0.2);
+            color: var(--ios-green);
+        }
+        .card-complete-btn.completed {
+            background: var(--ios-green); border-color: var(--ios-green);
+            color: #fff;
+        }
+        .card-complete-btn svg { width: 18px; height: 18px; }
+        .card-read-btn svg { width: 18px; height: 18px; }
         .pothi-bani-card .card-drag {
             width: 24px; display: flex; flex-direction: column; align-items: center; gap: 3px;
             z-index: 1; flex-shrink: 0; padding: 8px 0; cursor: grab;
@@ -303,9 +330,6 @@
         }
     </style>
 
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/dark-mode.css">
-    <script src="../lib/global-theme.js"></script>
 </head>
 
 <body>
@@ -315,11 +339,11 @@
     </div>
 
     <div class="app">
-        <header class="header">
-            <a href="index.html" class="back-btn">
+        <header>
+            <button class="back-btn" id="backBtn">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 2L2 10L10 18" /></svg>
                 Back
-            </a>
+            </button>
             <span class="header-title">ਮੇਰੀ ਪੋਥੀ</span>
             <button class="edit-btn" id="editBtn" title="Edit My Pothi">✏️</button>
         </header>
@@ -424,6 +448,108 @@
             } catch (e) { pothiOrder = []; }
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // COMPLETION TRACKING
+        // ═══════════════════════════════════════════════════════════════
+        function loadCompletedBanis() {
+            try {
+                const saved = localStorage.getItem('anhad_my_pothi_completed');
+                return saved ? JSON.parse(saved) : {};
+            } catch (e) { return {}; }
+        }
+
+        function saveCompletedBanis(completed) {
+            localStorage.setItem('anhad_my_pothi_completed', JSON.stringify(completed));
+        }
+
+        function isBaniCompleted(baniId) {
+            const completed = loadCompletedBanis();
+            const today = new Date().toLocaleDateString('en-CA');
+            return completed[today]?.includes(baniId) || false;
+        }
+
+        function toggleBaniCompletion(baniId, button) {
+            const completed = loadCompletedBanis();
+            const today = new Date().toLocaleDateString('en-CA');
+            
+            if (!completed[today]) {
+                completed[today] = [];
+            }
+
+            const index = completed[today].indexOf(baniId);
+            if (index > -1) {
+                // Remove completion
+                completed[today].splice(index, 1);
+                button.classList.remove('completed');
+                button.title = 'Mark complete';
+            } else {
+                // Add completion
+                completed[today].push(baniId);
+                button.classList.add('completed');
+                button.title = 'Mark incomplete';
+                
+                // Sync to Nitnem Tracker
+                syncCompletionToNitnemTracker(baniId, true);
+            }
+
+            saveCompletedBanis(completed);
+            
+            // Prevent event propagation
+            if (event) event.stopPropagation();
+        }
+
+        function syncCompletionToNitnemTracker(baniId, isComplete) {
+            try {
+                // Get bani info
+                const bani = ALL_BANIS.find(b => b.id === baniId);
+                if (!bani) return;
+
+                // Determine period for this bani
+                const period = getDefaultPeriod(baniId);
+                
+                // Load Nitnem Tracker selected banis to find the UID
+                const nitnemSelected = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
+                const periodBanis = nitnemSelected[period] || [];
+                const baniEntry = periodBanis.find(b => b.id === baniId);
+                
+                if (!baniEntry || !baniEntry.uid) {
+                    console.warn(`[My Pothi] Bani ${bani.name} not found in Nitnem Tracker or missing UID`);
+                    return;
+                }
+                
+                const uid = baniEntry.uid;
+                
+                // Load Nitnem Tracker log
+                const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+                const today = new Date().toLocaleDateString('en-CA');
+                
+                if (!nitnemLog[today]) {
+                    nitnemLog[today] = { completed: [] };
+                }
+
+                if (isComplete) {
+                    // Add to Nitnem Tracker using UID if not already there
+                    if (!nitnemLog[today].completed.includes(uid)) {
+                        nitnemLog[today].completed.push(uid);
+                    }
+                } else {
+                    // Remove from Nitnem Tracker using UID
+                    nitnemLog[today].completed = nitnemLog[today].completed.filter(id => id !== uid);
+                }
+
+                localStorage.setItem('nitnemTracker_nitnemLog', JSON.stringify(nitnemLog));
+                
+                // Dispatch event to notify Nitnem Tracker
+                window.dispatchEvent(new CustomEvent('nitnemCompletionUpdated', {
+                    detail: { baniId, uid, isComplete, period }
+                }));
+                
+                console.log(`[My Pothi] Synced completion for ${bani.name} to Nitnem Tracker (UID: ${uid})`);
+            } catch (e) {
+                console.error('[My Pothi] Error syncing completion:', e);
+            }
+        }
+
         function savePothi() {
             localStorage.setItem('anhad_my_pothi', JSON.stringify(pothiOrder));
 
@@ -497,8 +623,8 @@
                     const entry = {
                         id: bani.id,
                         uid: generateId(), // Generate unique ID like Nitnem Tracker
-                        nameGurmukhi: bani.name,
-                        nameEnglish: bani.english,
+                        nameGurmukhi: bani.name || bani.nameGurmukhi || 'Unknown',
+                        nameEnglish: bani.english || bani.nameEnglish || 'Unknown',
                         defaultPeriod: period
                     };
 
@@ -574,8 +700,9 @@
             pothiOrder.forEach((id, idx) => {
                 const bani = ALL_BANIS.find(b => b.id === id);
                 if (!bani) return;
+                const isCompleted = isBaniCompleted(bani.id);
                 html += `
-                    <a href="reader.html?id=${bani.id}&from=pothi" class="pothi-bani-card" data-id="${bani.id}" draggable="false">
+                    <div class="pothi-bani-card" data-id="${bani.id}" draggable="false">
                         <div class="card-glow"></div>
                         <div class="card-num">${idx + 1}</div>
                         <div class="card-icon">${bani.icon}</div>
@@ -583,10 +710,26 @@
                             <div class="card-name">${bani.name}</div>
                             <div class="card-english">${bani.english}</div>
                         </div>
+                        <div class="card-actions">
+                            <a href="reader.html?id=${bani.id}&from=pothi" class="card-read-btn" title="Read">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                </svg>
+                            </a>
+                            <button class="card-complete-btn ${isCompleted ? 'completed' : ''}" 
+                                    data-id="${bani.id}" 
+                                    title="${isCompleted ? 'Mark incomplete' : 'Mark complete'}"
+                                    onclick="toggleBaniCompletion(${bani.id}, this)">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="card-drag" title="Hold to reorder">
                             <span></span><span></span><span></span>
                         </div>
-                    </a>
+                    </div>
                 `;
             });
             list.innerHTML = html;

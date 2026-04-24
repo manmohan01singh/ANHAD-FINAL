@@ -27,10 +27,16 @@
     document.querySelectorAll(
       '.glass-nav__back, .glass-back-btn, [data-anhad-back]'
     ).forEach(function(btn) {
+      // Skip if already wired by smart-back.js v2
+      if (btn._anhadBackWired) return;
+
       btn.addEventListener('click', function(e) {
         e.preventDefault();
         haptic(8);
-        if (window.history.length > 1) {
+        // Delegate to unified smart-back navigation
+        if (window.anhadGoBack) {
+          window.anhadGoBack(fallback);
+        } else if (window.history.length > 1) {
           window.history.back();
         } else {
           window.location.href = fallback;

@@ -211,10 +211,19 @@ const Utils = {
             requestAnimationFrame(() => overlay.style.opacity = '1');
         }
 
-        // Navigate after brief delay for visual feedback
-        setTimeout(() => {
-            window.location.href = path;
-        }, 100);
+        // Use smooth-navigation if available, otherwise fallback to direct navigation
+        if (window.navigateTo && typeof window.navigateTo === 'function') {
+            // Save state before navigation
+            if (window.StatePreservation) {
+                StatePreservation.saveState();
+            }
+            window.navigateTo(path);
+        } else {
+            // Fallback to direct navigation
+            setTimeout(() => {
+                window.location.href = path;
+            }, 100);
+        }
     }
 };
 

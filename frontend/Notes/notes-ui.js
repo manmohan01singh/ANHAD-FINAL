@@ -203,6 +203,8 @@ class NotesUI {
     goBack() {
         if (this.isEditorOpen) {
             this.closeEditor();
+        } else if (window.anhadGoBack) {
+            window.anhadGoBack('../index.html');
         } else if (window.history.length > 1) {
             window.history.back();
         } else {

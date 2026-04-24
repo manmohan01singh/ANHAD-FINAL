@@ -131,6 +131,15 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Instant theme switching — kills all transitions temporarily */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+    transition: none !important;
+    animation-duration: 0s !important;
+}
+
 html,
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -140,7 +149,6 @@ body {
     min-height: 100dvh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    transition: background 0.5s ease, color 0.3s ease;
 
     /* ── Mobile Scaling Lock ── */
     -webkit-text-size-adjust: 100% !important;
@@ -318,15 +326,7 @@ body {
     50% { opacity: 1; }
 }
 
-/* 3D Tilt Effect on Result Cards */
-.result-card {
-    transform-style: preserve-3d;
-    perspective: 1000px;
-}
-
-.result-card:hover {
-    transform: translateY(-4px) rotateX(2deg) rotateY(2deg);
-}
+/* Result card hover is handled in the iOS-style results section below */
 
 /* Shimmer Effect for Loading */
 .shimmer {
@@ -447,7 +447,6 @@ body {
     justify-content: space-between;
     padding-left: 16px;
     padding-right: 16px;
-    transition: all 0.4s var(--spring-easing);
 }
 
 .nav-back {
@@ -1507,46 +1506,65 @@ body.keyboard-open .search-bar-thin {
 .results-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     padding: 0 16px;
 }
 
-/* Improved Result Cards with better design - iOS Notes style */
+/* iOS-style flat list results */
 .result-card {
-    background: var(--surface-solid);
+    background: transparent;
     border: none;
     border-radius: 0;
-    padding: 16px 0;
+    padding: 14px 4px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
     animation: resultFadeIn 0.3s ease backwards;
     border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-direction: column;
+    position: relative;
 }
 
 [data-theme="dark"] .result-card {
-    background: var(--surface-solid);
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .result-card:last-child {
     border-bottom: none;
 }
 
+/* Right chevron indicator */
+.result-card::after {
+    content: '\203A';
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text-tertiary);
+    opacity: 0.5;
+    line-height: 1;
+}
+
 .result-card:nth-child(1) { animation-delay: 0ms; }
 .result-card:nth-child(2) { animation-delay: 30ms; }
-.result-card:nth-child(3) { animation-delay: 60ms; }
-.result-card:nth-child(4) { animation-delay: 90ms; }
-.result-card:nth-child(5) { animation-delay: 120ms; }
-.result-card:nth-child(6) { animation-delay: 150ms; }
-.result-card:nth-child(7) { animation-delay: 180ms; }
-.result-card:nth-child(8) { animation-delay: 210ms; }
-.result-card:nth-child(9) { animation-delay: 240ms; }
-.result-card:nth-child(10) { animation-delay: 270ms; }
+.result-card:nth-child(3) { animation-delay: 50ms; }
+.result-card:nth-child(4) { animation-delay: 70ms; }
+.result-card:nth-child(5) { animation-delay: 90ms; }
+.result-card:nth-child(6) { animation-delay: 110ms; }
+.result-card:nth-child(7) { animation-delay: 130ms; }
+.result-card:nth-child(8) { animation-delay: 150ms; }
+.result-card:nth-child(9) { animation-delay: 170ms; }
+.result-card:nth-child(10) { animation-delay: 190ms; }
 
 @keyframes resultFadeIn {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(6px);
     }
     to {
         opacity: 1;
@@ -1555,63 +1573,62 @@ body.keyboard-open .search-bar-thin {
 }
 
 .result-card:hover {
-    background: var(--bg-soft);
+    background: rgba(0, 0, 0, 0.03);
 }
 
 [data-theme="dark"] .result-card:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .result-card:active {
-    background: var(--bg);
+    background: rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .result-card:active {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.07);
 }
 
-/* Improved meta with better spacing and badges */
+/* Meta row — source badge + ang, compact */
 .result-meta {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
+    margin-bottom: 6px;
 }
 
 .result-source-badge {
-    padding: 3px 8px;
-    border-radius: 8px;
+    padding: 2px 7px;
+    border-radius: 6px;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
 }
 
 .result-ang {
-    padding: 3px 8px;
+    padding: 2px 7px;
     background: var(--accent-light);
-    border-radius: 8px;
-    font-size: 11px;
+    border-radius: 6px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--accent);
 }
 
 .result-raag {
-    display: none; /* Hidden - minimal view */
+    display: none;
 }
 
+/* Gurmukhi text — large and clean */
 .result-gurmukhi {
     font-family: var(--font-gurmukhi);
-    font-size: 24px;
-    line-height: 1.8;
+    font-size: 22px;
+    line-height: 1.7;
     color: var(--text);
-    padding-right: 0;
-    font-weight: 500;
-    letter-spacing: 0.3px;
+    padding-right: 20px; /* space for chevron */
+    font-weight: 400;
+    letter-spacing: 0.2px;
 }
 
-/* Translation removed - minimal view */
 .result-translation {
     display: none;
 }

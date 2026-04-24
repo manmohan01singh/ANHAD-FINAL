@@ -656,7 +656,11 @@ class SehajPaathApp {
     // ═══════════════════════════════════════════════════════════════════════════
 
     goBack() {
-        window.location.href = '../index.html';
+        if (window.anhadGoBack) {
+            window.anhadGoBack('../index.html');
+        } else {
+            window.location.href = '../index.html';
+        }
     }
 
     openReader(ang = null) {

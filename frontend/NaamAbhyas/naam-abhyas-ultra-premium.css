@@ -130,9 +130,9 @@
 
 .app-header {
     position: fixed !important;
-    top: calc(max(env(safe-area-inset-top), 30px) + 12px) !important;
-    left: 16px !important;
-    right: 16px !important;
+    top: calc(max(env(safe-area-inset-top), 10px) + 8px) !important;
+    left: 8px !important;
+    right: 8px !important;
     z-index: 1000 !important;
     display: flex !important;
     align-items: center !important;

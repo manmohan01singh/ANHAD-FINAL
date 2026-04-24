@@ -562,3 +562,43 @@
 .install-banner:not(.hidden) ~ .app .pwa-update-section {
   margin-bottom: 80px;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   UNIVERSAL GURU IMAGE REFINEMENT — Premium Circular Framing
+────────────────────────────────────────────────────────────────────────────── */
+img[src*="guruimages/"] {
+  object-fit: cover !important;
+  object-position: center 25% !important; /* Premium face-centric cropping */
+  transform: scale(1.4) !important;       /* Increased zoom to focus on Guru's face */
+  border-radius: 50% !important;
+  transition: transform 0.3s var(--ac-spring) !important;
+}
+
+/* Specific adjustment for vertical/taller portraits */
+img[src*="gurutegbahadursahebji.jpeg"],
+img[src*="gurugobindsinghsahebji.jpeg"] {
+  object-position: center 20% !important;
+}
+
+/* Specific adjustment for Guru Hargobind Saheb Ji (to show swords) */
+img[src*="guruhargobindsahebji.jpeg"] {
+  transform: scale(1.2) !important;
+  object-position: center 20% !important;
+}
+
+/* Specific adjustment for landscape/wider images */
+img[src*="gurugranthsahebji.jpeg"] {
+  object-position: center 40% !important;
+  transform: scale(1.15) !important;
+}
+
+/* Ensure parent containers don't show the scaled overflow */
+.greeting__guru-portrait,
+.event-card__guru-img-wrapper,
+.bani-icon {
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+

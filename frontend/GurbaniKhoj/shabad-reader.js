@@ -95,11 +95,19 @@ const Theme = {
     },
 
     toggle() {
+        // Disable all transitions for instant theme switch
+        document.documentElement.classList.add('no-transitions');
         const newTheme = State.theme === 'light' ? 'dark' : 'light';
         this.set(newTheme);
         // Sync to global theme key
         localStorage.setItem('anhad_theme', newTheme);
         haptic('medium');
+        // Re-enable transitions after paint
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('no-transitions');
+            });
+        });
     },
 
     set(theme) {
@@ -436,17 +444,95 @@ function loadFontSize() {
 // FULLSCREEN
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Define toggleFullscreen immediately and make it global
-window.toggleFullscreen = function() {
+/**
+ * Toggle browser fullscreen and UI "immersive" mode
+ */
+window.toggleFullscreen = async function() {
     console.log('Toggle fullscreen called');
-    State.isFullscreen = !State.isFullscreen;
-    document.body.classList.toggle('fullscreen', State.isFullscreen);
-    if (DOM.fullscreenBtn) {
-        DOM.fullscreenBtn.classList.toggle('active', State.isFullscreen);
+    
+    try {
+        if (!document.fullscreenElement) {
+            // Enter Fullscreen
+            if (document.documentElement.requestFullscreen) {
+                await document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                await document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                await document.documentElement.msRequestFullscreen();
+            }
+            State.isFullscreen = true;
+        } else {
+            // Exit Fullscreen
+            if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                await document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                await document.msExitFullscreen();
+            }
+            State.isFullscreen = false;
+        }
+    } catch (err) {
+        console.warn('Fullscreen API failed, falling back to CSS-only mode', err);
+        // Fallback for browsers that don't support/allow Fullscreen API
+        State.isFullscreen = !State.isFullscreen;
+        updateFullscreenUI();
     }
+    
     haptic('medium');
-    console.log('Fullscreen state:', State.isFullscreen);
 };
+
+/**
+ * Sync UI classes and state with actual fullscreen status
+ */
+function updateFullscreenUI() {
+    const isActuallyFullscreen = !!document.fullscreenElement || State.isFullscreen;
+    
+    document.body.classList.toggle('fullscreen', isActuallyFullscreen);
+    if (DOM.fullscreenBtn) {
+        DOM.fullscreenBtn.classList.toggle('active', isActuallyFullscreen);
+    }
+    
+    // If entering fullscreen, show a brief hint
+    if (isActuallyFullscreen) {
+        document.body.classList.add('show-fs-hint');
+        setTimeout(() => {
+            document.body.classList.remove('show-fs-hint');
+        }, 3000);
+    }
+}
+
+// Listen for browser-level fullscreen changes (e.g. Esc key)
+document.addEventListener('fullscreenchange', () => {
+    State.isFullscreen = !!document.fullscreenElement;
+    updateFullscreenUI();
+});
+
+document.addEventListener('webkitfullscreenchange', () => {
+    State.isFullscreen = !!document.webkitFullscreenElement;
+    updateFullscreenUI();
+});
+
+// "Tap anywhere to exit" logic
+document.addEventListener('click', (e) => {
+    // If in fullscreen and NOT clicking a control/button, exit fullscreen
+    if ((document.fullscreenElement || State.isFullscreen) && 
+        !e.target.closest('.bottom-controls') && 
+        !e.target.closest('.ios-nav') && 
+        !e.target.closest('.settings-sheet') &&
+        !e.target.closest('.fullscreen-toggle')) {
+        
+        console.log('Exiting fullscreen via global click');
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        } else {
+            State.isFullscreen = false;
+            updateFullscreenUI();
+        }
+        haptic('light');
+    }
+});
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SHARE
@@ -475,9 +561,18 @@ function shareShabad() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function initEvents() {
-    // Navigation
-    DOM.navBack.addEventListener('click', () => {
-        window.location.href = 'gurbani-khoj.html';
+    // Navigation - Always return to Gurbani Khoj (Search) with state
+    DOM.navBack.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // If we came from Gurbani Khoj, use history.back() for instant state restoration (bfcache)
+        const referrer = document.referrer || '';
+        if (referrer.includes('gurbani-khoj.html')) {
+            history.back();
+        } else {
+            // Otherwise force go to Gurbani Khoj
+            window.location.href = 'gurbani-khoj.html';
+        }
     });
 
     // Theme

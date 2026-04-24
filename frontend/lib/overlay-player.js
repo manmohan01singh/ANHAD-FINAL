@@ -17,6 +17,8 @@
   let unsubscribeStateChange = null;
   let unsubscribeLoading = null;
   let unsubscribeTimeUpdate = null;
+  let retryCount = 0;
+  const MAX_RETRIES = 50; // 5 seconds max
 
   /**
    * Initialize the UI wrapper
@@ -26,6 +28,11 @@
 
     // Wait for singleton to be available
     if (!window.AnhadAudio) {
+      retryCount++;
+      if (retryCount >= MAX_RETRIES) {
+        console.error('[OverlayPlayerUI] AnhadAudio not available after retries, giving up');
+        return;
+      }
       console.warn('[OverlayPlayerUI] AnhadAudio not ready, retrying...');
       setTimeout(init, 100);
       return;

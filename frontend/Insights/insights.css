@@ -46,15 +46,10 @@
 
     /* ═══ EXTREME CLAYMORPHISM SHADOWS ═══ */
     /* Dark Theme Clay */
-    --clay-outer: 20px 20px 60px rgba(0, 0, 0, 0.6), 
-                   -20px -20px 60px rgba(255, 255, 255, 0.05),
-                   inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    --clay-inner: inset 6px 6px 12px rgba(0, 0, 0, 0.5), 
-                  inset -6px -6px 12px rgba(255, 255, 255, 0.08);
-    --clay-outer-sm: 10px 10px 30px rgba(0, 0, 0, 0.5), 
-                      -10px -10px 30px rgba(255, 255, 255, 0.05);
-    --clay-inner-sm: inset 4px 4px 8px rgba(0, 0, 0, 0.5), 
-                      inset -4px -4px 8px rgba(255, 255, 255, 0.08);
+    --clay-outer: 20px 20px 60px rgba(0, 0, 0, 0.6);
+    --clay-inner: inset 6px 6px 12px rgba(0, 0, 0, 0.5);
+    --clay-outer-sm: 10px 10px 30px rgba(0, 0, 0, 0.5);
+    --clay-inner-sm: inset 4px 4px 8px rgba(0, 0, 0, 0.5);
     
     /* Color-accented clay shadows */
     --clay-gold: 0 12px 40px rgba(232, 168, 56, 0.3), 
@@ -86,14 +81,11 @@ html:not(.dark-mode) {
 
     /* Light Theme Clay */
     --clay-outer: 12px 12px 30px rgba(0, 0, 0, 0.12), 
-                   -12px -12px 30px rgba(255, 255, 255, 0.95),
-                   inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-    --clay-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.08), 
-                  inset -4px -4px 8px rgba(255, 255, 255, 1);
+                   -12px -12px 30px rgba(255, 255, 255, 0.2);
+    --clay-inner: inset 4px 4px 8px rgba(0, 0, 0, 0.08);
     --clay-outer-sm: 6px 6px 16px rgba(0, 0, 0, 0.1), 
-                      -6px -6px 16px rgba(255, 255, 255, 0.95);
-    --clay-inner-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.08), 
-                      inset -3px -3px 6px rgba(255, 255, 255, 1);
+                      -6px -6px 16px rgba(255, 255, 255, 0.2);
+    --clay-inner-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* Dark Theme - needs [data-theme="dark"] */
@@ -209,7 +201,7 @@ html:not(.dark-mode) .insights-header.scrolled {
     transition: all 0.2s ease;
     /* Extreme Claymorphism */
     box-shadow: var(--clay-outer-sm);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     position: relative;
     z-index: 101;
     pointer-events: auto;
@@ -276,7 +268,7 @@ html:not(.dark-mode) .glass-card {
         0 20px 60px rgba(125, 211, 252, 0.3),
         0 8px 24px rgba(14, 165, 233, 0.15),
         /* Inner highlight for depth */
-        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        /* Inner highlight removed */
         inset 0 -1px 2px rgba(14, 165, 233, 0.1);
     position: relative;
     overflow: hidden;
@@ -409,7 +401,7 @@ html:not(.dark-mode) .glass-card {
 [data-theme="dark"] .inspiration-tag {
     color: #7DD3FC;
     background: rgba(14, 165, 233, 0.2);
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.05);
 }
 
 .refresh-btn {
@@ -595,7 +587,7 @@ html:not(.dark-mode) .wisdom-card:active {
     justify-content: center;
     margin-bottom: var(--spacing-md);
     /* Claymorphic orb */
-    box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    box-shadow: var(--clay-outer-sm);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 2;
@@ -700,8 +692,7 @@ html:not(.dark-mode) .wisdom-pankti {
     background: linear-gradient(135deg, rgba(212, 165, 116, 0.3) 0%, rgba(212, 165, 116, 0.1) 100%);
     box-shadow: 
         8px 8px 20px rgba(0, 0, 0, 0.15),
-        -8px -8px 20px rgba(255, 255, 255, 0.8),
-        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        -8px -8px 20px rgba(255, 255, 255, 0.05);
     pointer-events: none;
     z-index: 1;
     animation: clayOrbFloat1 8s ease-in-out infinite;
@@ -718,8 +709,7 @@ html:not(.dark-mode) .wisdom-pankti {
     background: linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(167, 139, 250, 0.08) 100%);
     box-shadow: 
         6px 6px 16px rgba(0, 0, 0, 0.12),
-        -6px -6px 16px rgba(255, 255, 255, 0.7),
-        inset 0 1px 2px rgba(255, 255, 255, 0.4);
+        -6px -6px 16px rgba(255, 255, 255, 0.05);
     animation: clayOrbFloat2 10s ease-in-out infinite;
 }
 
@@ -805,8 +795,7 @@ html:not(.dark-mode) .wisdom-pankti {
     background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.4) 100%);
     box-shadow: 
         2px 2px 6px rgba(0, 0, 0, 0.1),
-        -2px -2px 6px rgba(255, 255, 255, 0.8),
-        inset 0 1px 1px rgba(255, 255, 255, 1);
+        -2px -2px 6px rgba(255, 255, 255, 0.05);
 }
 
 .wisdom-particles span:nth-child(1) {
@@ -921,8 +910,8 @@ html:not(.dark-mode) .wisdom-pankti {
     border: 1px solid rgba(0, 0, 0, 0.06);
     background: linear-gradient(145deg, #FFFFFF 0%, #F8F8FA 100%);
     box-shadow:
-        inset 0 2px 4px rgba(255, 255, 255, 1),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.04);
+        0 4px 12px rgba(0, 0, 0, 0.05),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.02);
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -943,9 +932,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #E07A5F;
     box-shadow: 
         6px 6px 16px rgba(224, 122, 95, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(224, 122, 95, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(224, 122, 95, 0.15);
 }
 
@@ -958,9 +945,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #9B7AE8;
     box-shadow: 
         6px 6px 16px rgba(155, 122, 232, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(155, 122, 232, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(155, 122, 232, 0.15);
 }
 
@@ -973,9 +958,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #4ECB9C;
     box-shadow: 
         6px 6px 16px rgba(78, 203, 156, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(78, 203, 156, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(78, 203, 156, 0.15);
 }
 
@@ -988,9 +971,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #5A9CF5;
     box-shadow: 
         6px 6px 16px rgba(90, 156, 245, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(90, 156, 245, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(90, 156, 245, 0.15);
 }
 
@@ -1003,9 +984,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #E86B9A;
     box-shadow: 
         6px 6px 16px rgba(232, 107, 154, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(232, 107, 154, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(232, 107, 154, 0.15);
 }
 
@@ -1018,9 +997,7 @@ html:not(.dark-mode) .wisdom-pankti {
     color: #D4A34B;
     box-shadow: 
         6px 6px 16px rgba(212, 163, 75, 0.15),
-        -6px -6px 16px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 0.8),
-        inset 0 -1px 2px rgba(212, 163, 75, 0.05);
+        -6px -6px 16px rgba(255, 255, 255, 0.9);
     border: 1px solid rgba(212, 163, 75, 0.15);
 }
 
@@ -1229,7 +1206,7 @@ html:not(.dark-mode) .wisdom-pankti {
     justify-content: center;
     /* Claymorphic emoji container */
     box-shadow: var(--clay-outer-sm);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .topic-name {
@@ -1357,8 +1334,8 @@ html:not(.dark-mode) .quick-stat__divider {
     justify-content: center;
     font-size: 14px;
     /* Claymorphic orb */
-    box-shadow: var(--clay-outer-sm), 0 0 0 1px rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--clay-outer-sm);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     transition: all 0.2s ease;
 }
 
@@ -1522,7 +1499,7 @@ html:not(.dark-mode) .insight-modal__header {
     transition: all 0.2s ease;
     /* Claymorphic orb */
     box-shadow: var(--clay-outer-sm);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .insight-modal__close:hover {
@@ -1883,4 +1860,17 @@ a.topic-card svg {
   filter: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAV BAR HIDING ON MODAL OPEN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.modal-open .tab-bar,
+body.modal-open .bottom-nav {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translate(-50%, 50px) !important;
+    visibility: hidden !important;
+    transition: all 0.3s ease !important;
 }

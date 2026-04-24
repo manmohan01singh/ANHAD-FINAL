@@ -3415,11 +3415,14 @@ display: none;
    ───────────────────────────────────────────────────────────────────────────── */
 
 .tab-bar {
-    position: relative;
-    width: calc(100% - 32px);
-    margin: 24px auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
     z-index: var(--z-sticky);
-    padding-bottom: 20px;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
 }
 
 .tab-bar-blur {

@@ -125,6 +125,15 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Instant theme switching — kills all transitions temporarily */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+    transition: none !important;
+    animation-duration: 0s !important;
+}
+
 html,
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -133,7 +142,6 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    transition: background 0.5s ease, color 0.3s ease;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -244,6 +252,7 @@ body {
     justify-content: space-between;
     padding-left: 16px;
     padding-right: 16px;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
 }
 
 .nav-back {
@@ -335,6 +344,7 @@ body {
     border-top: none;
     border-left: none;
     border-right: none;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
 }
 
 .meta-left {
@@ -551,6 +561,7 @@ body {
     padding: 16px;
     padding-bottom: calc(16px + var(--safe-bottom));
     border-radius: 24px 24px 0 0;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.4s ease;
 }
 
 .control-btn {
@@ -814,9 +825,26 @@ body {
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 body.fullscreen .ios-nav {
-    transform: translateY(-100%);
-    opacity: 0;
+    background: transparent;
+    border-bottom: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: none;
+    display: flex;
+    justify-content: flex-end; /* Push icon to the right corner */
+    padding-top: max(16px, var(--safe-top));
+}
+
+body.fullscreen .ios-nav .nav-back,
+body.fullscreen .ios-nav .nav-title,
+body.fullscreen .ios-nav .theme-toggle,
+body.fullscreen .ios-nav .nav-settings {
+    display: none; /* Use display: none to remove from flow and ensure right alignment */
+}
+
+
+body.fullscreen .ios-nav .nav-actions {
+    pointer-events: auto;
 }
 
 body.fullscreen .shabad-meta {
@@ -837,18 +865,27 @@ body.fullscreen .bottom-controls {
     border: none;
     color: var(--text);
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: auto;
     z-index: 10;
     position: relative;
-    min-width: 36px;
-    min-height: 36px;
+    min-width: 44px;
+    min-height: 44px;
 }
+
+body.fullscreen .fullscreen-toggle {
+    background: var(--surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px var(--shadow);
+    color: var(--accent);
+}
+
 
 .fullscreen-toggle:active {
     transform: scale(0.92);
@@ -867,24 +904,43 @@ body.fullscreen .bottom-controls {
     display: block;
 }
 
-/* Show fullscreen hint when active */
+/* Show fullscreen hint when active - Beautiful iOS style toast */
 body.fullscreen::after {
     content: 'Tap anywhere to exit fullscreen';
     position: fixed;
-    top: 50%;
+    bottom: 40px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.7);
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: white;
     padding: 12px 24px;
-    border-radius: 20px;
+    border-radius: 24px;
     font-size: 14px;
+    font-weight: 500;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 50;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-body.fullscreen:hover::after {
+body.fullscreen.show-fs-hint::after {
     opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
+
+/* Ensure content fills screen in fullscreen */
+body.fullscreen .shabad-content {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.fullscreen .shabad-lines {
+    width: 100%;
+    max-width: 800px;
+}

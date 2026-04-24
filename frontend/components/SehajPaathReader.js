@@ -167,7 +167,7 @@ class SehajPaathReader {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') this.goToNextAng();
       if (e.key === 'ArrowLeft') this.goToPrevAng();
-      if (e.key === 'Escape') window.history.back();
+      if (e.key === 'Escape') { if (window.anhadGoBack) window.anhadGoBack('../SehajPaath/sehaj-paath.html'); else window.history.back(); }
     });
 
     document.addEventListener('click', (e) => {
@@ -471,7 +471,7 @@ class SehajPaathReader {
         this.settings?.focusMode ? 'focus-mode' : ''
       } ${this.focusedLineKey ? 'focus-active' : ''}" style="${styleStr}">
         <header class="reader-header">
-          <button class="back-button" onclick="window.history.back()">
+          <button class="back-button" onclick="if(window.anhadGoBack){window.anhadGoBack('../SehajPaath/sehaj-paath.html')}else{window.history.back()}">
             <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
               <path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>

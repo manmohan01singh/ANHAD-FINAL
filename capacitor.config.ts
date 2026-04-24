@@ -33,10 +33,6 @@ const config: CapacitorConfig = {
             sound: 'notification.wav'
         },
 
-        // Screen orientation lock
-        ScreenOrientation: {
-            default: 'portrait'
-        },
 
         // Splash screen configuration
         SplashScreen: {

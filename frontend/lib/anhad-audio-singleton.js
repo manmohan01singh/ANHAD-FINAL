@@ -530,6 +530,8 @@
     setVolume,
     getState: getPublicState,
     getAudio: () => audio,
+    isPlaying: () => isPlaying,
+    getCurrentStream: () => currentStream,
     on,
     off,
     STREAMS: Object.keys(STREAMS),

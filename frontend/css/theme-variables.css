@@ -212,3 +212,43 @@ hr,
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-primary);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL GURU IMAGE REFINEMENT — Premium Circular Framing
+────────────────────────────────────────────────────────────────────────────── */
+img[src*="guruimages/"] {
+  object-fit: cover !important;
+  object-position: center 25% !important; /* Premium face-centric cropping */
+  transform: scale(1.4) !important;       /* Increased zoom for maximum impact */
+  border-radius: 50% !important;
+}
+
+/* Vertical portrait optimization */
+img[src*="gurutegbahadursahebji.jpeg"],
+img[src*="gurugobindsinghsahebji.jpeg"] {
+  object-position: center 20% !important;
+}
+
+/* Specific adjustment for Guru Hargobind Saheb Ji (to show swords) */
+img[src*="guruhargobindsahebji.jpeg"] {
+  transform: scale(1.2) !important;
+  object-position: center 20% !important;
+}
+
+/* Landscape/wide image optimization */
+img[src*="gurugranthsahebji.jpeg"] {
+  object-position: center 40% !important;
+  transform: scale(1.15) !important;
+}
+
+/* Parent container safety: ensure circular clipping */
+.greeting__guru-portrait,
+.event-card__guru-img-wrapper,
+.bani-icon {
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+}
+

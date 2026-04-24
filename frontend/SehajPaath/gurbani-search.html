@@ -38,6 +38,12 @@
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
 </head>
 <body>
     <!-- 
@@ -51,11 +57,11 @@
             
             <!-- Header — Minimal, iOS Standard -->
             <header class="search-header">
-                <a href="../index.html" class="back-btn" aria-label="Back">
+                <button class="back-btn" id="backBtn" aria-label="Back">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
-                </a>
+                </button>
                 <span class="header-title">ਗੁਰਬਾਣੀ ਖੋਜ</span>
                 <button type="button" class="settings-btn" id="themeToggle" aria-label="Settings">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

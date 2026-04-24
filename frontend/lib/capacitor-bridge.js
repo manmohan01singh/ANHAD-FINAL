@@ -40,7 +40,12 @@ class CapacitorBridge {
             }
 
             if (canGoBack) {
-                window.history.back();
+                // Delegate to unified smart-back navigation
+                if (window.anhadGoBack) {
+                    window.anhadGoBack('../index.html');
+                } else {
+                    window.history.back();
+                }
             } else {
                 // Show exit confirmation
                 this.showExitConfirmation();

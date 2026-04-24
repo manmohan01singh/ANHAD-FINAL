@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-font="raavi">
+<head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f8f6f2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <title>Search History • ANHAD</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="search-history.css">
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/global-theme.js"></script>
+</head>
+<body>
+    <!-- iOS Blur Orbs Background -->
+    <div class="orbs-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- iOS Navigation -->
+    <nav class="ios-nav">
+        <button class="nav-back" id="backBtn" aria-label="Back">
+            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+                <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Search</span>
+        </button>
+        <h1 class="nav-title">History</h1>
+        <div class="nav-actions">
+            <button class="clear-all-btn" id="clearAllBtn" aria-label="Clear All">
+                Clear
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- History sections get injected here -->
+    </main>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+        <div class="empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12,6 12,12 16,14"/>
+            </svg>
+        </div>
+        <h3>No Search History</h3>
+        <p>Your recent Gurbani searches will appear here</p>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-backdrop"></div>
+        <div class="confirm-sheet">
+            <p class="confirm-text">Clear all search history?</p>
+            <button class="confirm-btn confirm-delete" id="confirmDelete">Clear All</button>
+            <button class="confirm-btn confirm-cancel" id="confirmCancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toastText"></span>
+    </div>
+
+    <script src="search-history.js"></script>
+</body>
+</html>

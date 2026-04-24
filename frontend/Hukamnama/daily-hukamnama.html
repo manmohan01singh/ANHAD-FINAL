@@ -44,6 +44,13 @@
         document.documentElement.setAttribute('data-global-theme', 'force');
     </script>
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     
     <!-- Preconnect -->
@@ -62,7 +69,7 @@
     <link rel="stylesheet" href="daily-hukamnama.css?v=2">
     <link rel="stylesheet" href="../css/global-mini-player.css?v=4">
     
-    <script src="../lib/anhad-core.js" defer></script>
+    <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
     <!-- ---------------------------------------------------------------
@@ -93,12 +100,12 @@
         <!-- Header -->
         <header class="header" id="header">
             <div class="header-inner">
-                <a href="../index.html" class="header-back glass-nav__back" aria-label="Back">
+                <button class="header-back glass-nav__back" id="backBtn" aria-label="Back">
                     <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M10 2L2 10L10 18"/>
                     </svg>
                     <span>Home</span>
-                </a>
+                </button>
                 
                 <div class="header-center">
                     <h1 class="header-title">ਹੁਕਮਨਾਮਾ</h1>
@@ -474,21 +481,74 @@
             getMehlaFromWriter(writer) {
                 const mehlaMap = {
                     'Guru Nanak Dev Ji': 1,
+                    'Guru Nanakdev Ji': 1,
                     'Guru Angad Dev Ji': 2,
+                    'Guru Angaddev Ji': 2,
                     'Guru Amar Daas Ji': 3,
                     'Guru Amar Das Ji': 3,
+                    'Guru Amardas Ji': 3,
+                    'Guru Amar Daas': 3,
+                    'Guru Amar Das': 3,
                     'Guru Ram Daas Ji': 4,
                     'Guru Ram Das Ji': 4,
+                    'Guru Ramdas Ji': 4,
+                    'Guru Ram Dass Ji': 4,
+                    'Guru Ramdaas Ji': 4,
                     'Guru Arjan Dev Ji': 5,
+                    'Guru Arjandev Ji': 5,
+                    'Guru Arjan Dev': 5,
                     'Guru Har Gobind Ji': 6,
+                    'Guru Hargobind Ji': 6,
+                    'Guru Har Gobind': 6,
                     'Guru Har Rai Ji': 7,
+                    'Guru Harrai Ji': 7,
+                    'Guru Har Rai': 7,
                     'Guru Har Krishan Ji': 8,
+                    'Guru Harkrishan Ji': 8,
+                    'Guru Har Krishan': 8,
                     'Guru Tegh Bahadur Ji': 9,
+                    'Guru Tegh Bahadur': 9,
+                    'Guru Tegbahadur Ji': 9,
                     'Guru Gobind Singh Ji': 10,
+                    'Guru Gobindsingh Ji': 10,
+                    'Guru Gobind Singh': 10,
                     'Bhai Gurdas Ji': 0,
-                    'Bhai Nand Lal Ji': 0
+                    'Bhai Nand Lal Ji': 0,
+                    'Bhagat Kabir Ji': 0,
+                    'Bhagat Farid Ji': 0,
+                    'Bhagat Namdev Ji': 0,
+                    'Bhagat Ravidas Ji': 0,
+                    'Sri Guru Granth Sahib Ji': 0
                 };
-                return mehlaMap[writer] || 0;
+                
+                // Try exact match first
+                if (mehlaMap[writer] !== undefined) {
+                    return mehlaMap[writer];
+                }
+                
+                // Try case-insensitive match
+                const normalizedWriter = writer.toLowerCase().replace(/\s+/g, '');
+                for (const [key, value] of Object.entries(mehlaMap)) {
+                    const normalizedKey = key.toLowerCase().replace(/\s+/g, '');
+                    if (normalizedKey === normalizedWriter) {
+                        return value;
+                    }
+                }
+                
+                // Try partial match for Guru names
+                if (writer.toLowerCase().includes('nanak')) return 1;
+                if (writer.toLowerCase().includes('angad')) return 2;
+                if (writer.toLowerCase().includes('amar') && !writer.toLowerCase().includes('singh')) return 3;
+                if (writer.toLowerCase().includes('ram') && !writer.toLowerCase().includes('singh') && !writer.toLowerCase().includes('rai')) return 4;
+                if (writer.toLowerCase().includes('arjan')) return 5;
+                if (writer.toLowerCase().includes('gobind')) return 6;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('gobind')) return 6;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('rai')) return 7;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('krishan')) return 8;
+                if (writer.toLowerCase().includes('teg') || writer.toLowerCase().includes('bahadur')) return 9;
+                if (writer.toLowerCase().includes('gobind') && writer.toLowerCase().includes('singh')) return 10;
+                
+                return 0;
             },
 
             // Get Guru image path based on Mehla number

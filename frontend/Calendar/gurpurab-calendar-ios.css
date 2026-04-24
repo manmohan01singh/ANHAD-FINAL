@@ -566,3 +566,145 @@ body {
 
 /* Noto Sans Gurmukhi for Punjabi text */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap');
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SETTINGS MODAL
+─────────────────────────────────────────────────────────────────────────── */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 500;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-normal), visibility var(--duration-normal);
+}
+
+.modal-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  z-index: 510;
+  transform: translateY(100%);
+  transition: transform var(--duration-normal) var(--ease-ios);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal.visible {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .modal {
+    bottom: auto;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 400px;
+    max-width: 90vw;
+    border-radius: var(--radius-xl);
+    opacity: 0;
+  }
+
+  .modal.visible {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 0.5px solid var(--separator-light);
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.modal-close:active {
+  background: var(--separator);
+}
+
+.modal-body {
+  padding: var(--space-lg);
+}
+
+.settings-section {
+  margin-bottom: var(--space-xl);
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.08px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.filter-option {
+  width: 100%;
+  border: none;
+  background: var(--bg-tertiary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+
+.filter-option:active {
+  transform: scale(0.98);
+}
+
+.filter-option.active {
+  border-color: var(--ios-blue);
+  background: rgba(0, 122, 255, 0.1);
+  font-weight: 600;
+}

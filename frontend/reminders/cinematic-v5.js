@@ -831,6 +831,7 @@
     E.backBtn.addEventListener('click', () => {
       stopPreview();
       if (typeof handleBack === 'function') handleBack();
+      else if (window.anhadGoBack) window.anhadGoBack('../index.html');
       else if (window.history.length > 1) window.history.back();
       else window.location.href = '../index.html';
     });

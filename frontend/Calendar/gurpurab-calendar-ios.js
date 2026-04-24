@@ -15,7 +15,8 @@
     today: startOfDay(new Date()),
     month: startOfMonth(new Date()),
     events: [],
-    expandedEvent: null
+    expandedEvent: null,
+    nameFilter: localStorage.getItem('gurpurab_name_filter') || 'all'
   };
 
   function qs(id) { return document.getElementById(id); }
@@ -203,7 +204,8 @@
       days.push(d);
     }
 
-    const eventsByISO = groupEventsByISO(state.events);
+    const filteredEvents = applyNameFilter(state.events);
+    const eventsByISO = groupEventsByISO(filteredEvents);
     const todayISO = formatISODate(state.today);
 
     grid.innerHTML = '';
@@ -273,7 +275,8 @@
     const end = new Date(today);
     end.setDate(end.getDate() + 90);
 
-    const upcoming = state.events
+    const filteredEvents = applyNameFilter(state.events);
+    const upcoming = filteredEvents
       .map(e => ({ ...e, _date: parseISODate(e.gregorian_date) }))
       .filter(e => e._date && e._date >= today && e._date <= end)
       .sort((a, b) => a._date - b._date)
@@ -290,6 +293,12 @@
       const row = createEventRow(e, false);
       list.appendChild(row);
     });
+  }
+
+  function applyNameFilter(events) {
+    // Filter removed - calendar now shows all events
+    // Filter only affects home page card and greeting section
+    return events;
   }
 
   function createEventRow(e, isDayView) {
@@ -349,7 +358,9 @@
 
   function bindUI() {
     qs('btnBack')?.addEventListener('click', () => {
-      if (window.history.length > 1) {
+      if (window.anhadGoBack) {
+        window.anhadGoBack('../index.html');
+      } else if (window.history.length > 1) {
         window.history.back();
       } else {
         window.location.href = '../index.html';

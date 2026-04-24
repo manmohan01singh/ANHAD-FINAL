@@ -274,8 +274,8 @@ class NaamAbhyas {
             // Phase 1: CRITICAL PATH - Must complete fast
             // These must happen before hiding loading screen
             try {
-                this.loadConfig();
-                this.loadHistory();
+                this.config = this.loadConfig();
+                this.history = this.loadHistory();
             } catch (e) {
                 console.error('❌ Config/History loading failed:', e);
             }
@@ -302,11 +302,41 @@ class NaamAbhyas {
                 console.error('❌ UI update failed:', e);
             }
 
+            // Load initial UI state (toggle, duration, theme, etc.)
+            try {
+                this.loadInitialState();
+            } catch (e) {
+                console.error('❌ Initial state loading failed:', e);
+            }
+
             // Bind event listeners IMMEDIATELY (Critical Phase 1)
             try {
                 this.bindEvents();
             } catch (e) {
                 console.error('❌ Event binding failed:', e);
+            }
+
+            // ═══ FIX BUG 5: Initialize NotificationEngine BEFORE scheduling ═══
+            // Must happen on critical path so it's available when enable() or
+            // scheduleUpcomingNotifications() is called
+            try {
+                if (typeof NotificationEngine !== 'undefined') {
+                    this.notificationEngine = new NotificationEngine();
+                    console.log('🔔 NotificationEngine initialized (critical path)');
+                }
+            } catch (e) {
+                console.error('❌ NotificationEngine critical init failed:', e);
+            }
+
+            // If already enabled, start countdown and schedule notifications
+            if (this.config.enabled) {
+                try {
+                    this.startCountdownUpdates();
+                    this.scheduleUpcomingNotifications();
+                    this.scheduleHourlyRefresh();
+                } catch (e) {
+                    console.error('❌ Failed to start enabled state features:', e);
+                }
             }
 
             this.hideLoadingScreen();
@@ -347,6 +377,15 @@ class NaamAbhyas {
                     this.setupServiceWorkerListener();
                 } catch (e) {
                     console.log('Service Worker listener not available:', e);
+                }
+
+                // Register periodic background sync if already enabled
+                if (this.config.enabled) {
+                    try {
+                        this.registerPeriodicBackgroundSync();
+                    } catch (e) {
+                        console.error('❌ Failed to register periodic sync:', e);
+                    }
                 }
 
                 // Check for action in URL
@@ -457,8 +496,9 @@ class NaamAbhyas {
             this.timerEngine = new TimerEngine();
         }
 
-        // Initialize Notification Engine
-        if (typeof NotificationEngine !== 'undefined') {
+        // NotificationEngine already initialized on critical path in init()
+        // Only create if not already done (safety fallback)
+        if (!this.notificationEngine && typeof NotificationEngine !== 'undefined') {
             this.notificationEngine = new NotificationEngine();
         }
 
@@ -566,6 +606,25 @@ class NaamAbhyas {
 
                 this.config.duration = parseInt(e.target.value);
                 this.saveConfig();
+
+                // ═══ FIX BUG 3: Force schedule regeneration on duration change ═══
+                // Don't use regenerateSchedule() — it has a 1/day refresh limit.
+                // Instead, delete today's cached schedule and call generateDailySchedule()
+                // which already has proper duration-change detection logic.
+                const today = this.getTodayString();
+                if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
+                    // Mark the old duration so generateDailySchedule detects the change
+                    this.history.scheduleHistory[today]._duration = -1; // Force mismatch
+                    this.saveHistory();
+                }
+                this.generateDailySchedule();
+
+                // Re-schedule notifications for the new times
+                if (this.config.enabled) {
+                    this.scheduleUpcomingNotifications();
+                }
+
+                this.updateUI();
                 this.showToast(`Duration set to ${this.config.duration} minutes`, 'success');
             });
         });
@@ -783,6 +842,18 @@ class NaamAbhyas {
         const toggle = document.getElementById('naamAbhyasToggle');
         if (toggle) {
             toggle.checked = this.config.enabled;
+        }
+
+        // ═══ FIX BUG 1: Sync UI state with persisted config.enabled ═══
+        // The HTML hardcodes "Currently disabled" and doesn't add/remove 
+        // the disabled-state class on body. Fix: sync on every load.
+        const statusText = document.getElementById('toggleStatusText');
+        if (this.config.enabled) {
+            document.body.classList.remove('disabled-state');
+            if (statusText) statusText.textContent = 'Active';
+        } else {
+            document.body.classList.add('disabled-state');
+            if (statusText) statusText.textContent = 'Currently disabled';
         }
 
         // Set theme radio
@@ -1393,12 +1464,15 @@ class NaamAbhyas {
             // Don't exceed end hour
             if (hour > endHour) break;
 
-            // Store session with duration metadata
+            // ═══ FIX BUG 2: Include `hour` property in each session object ═══
+            // Without this, getNextScheduledSession() returns sessions with
+            // undefined `hour`, causing NaN in calculateNextSession() → "NA NS" display
             schedule[hour] = {
+                hour: hour,
                 startMinute: minute,
                 endMinute: minute + duration,
-                startTime: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
-                endTime: `${hour.toString().padStart(2, '0')}:${(minute + duration).toString().padStart(2, '0')}`,
+                startTime: this.formatTime12h(hour, minute),
+                endTime: this.formatTime12h(hour, minute + duration),
                 duration: duration,
                 status: 'pending',
                 index: sessionIndex++
@@ -1553,6 +1627,16 @@ class NaamAbhyas {
             return tomorrow;
         }
 
+        // Safety: if hour/startMinute are missing (stale data), treat as no session
+        if (nextSession.hour === undefined || nextSession.startMinute === undefined) {
+            console.warn('[NaamAbhyas] calculateNextSession: session missing hour/startMinute, falling back to tomorrow');
+            const startHour = this.config.activeHours.start || 5;
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(startHour, 0, 0, 0);
+            return tomorrow;
+        }
+
         const nextTime = new Date();
         nextTime.setHours(nextSession.hour, nextSession.startMinute, 0, 0);
 
@@ -1623,21 +1707,29 @@ class NaamAbhyas {
             }
         }
 
-        // Update display
+        // Update display (with null-safety for DOM elements)
+        const timeEl = document.getElementById('nextSessionTime');
+        const countdownEl = document.getElementById('countdownValue');
+        const subtitleEl = document.getElementById('nextSessionSubtitle');
+
         if (nextSession) {
-            document.getElementById('nextSessionTime').textContent = nextSession.startTime;
-            document.getElementById('countdownValue').textContent = this.formatCountdown(diff);
-            document.getElementById('nextSessionSubtitle').textContent = `${nextSession.startTime} - ${nextSession.endTime}`;
+            if (timeEl) timeEl.textContent = nextSession.startTime || '--:--';
+            if (countdownEl) countdownEl.textContent = this.formatCountdown(diff);
+            if (subtitleEl) subtitleEl.textContent = `${nextSession.startTime} - ${nextSession.endTime}`;
         } else {
             // Tomorrow's session
             const startHour = this.config.activeHours.start || 5;
-            document.getElementById('nextSessionTime').textContent = this.formatTime12h(startHour, 0);
-            document.getElementById('countdownValue').textContent = this.formatCountdown(diff);
-            document.getElementById('nextSessionSubtitle').textContent = 'Starting fresh tomorrow morning';
+            if (timeEl) timeEl.textContent = this.formatTime12h(startHour, 0);
+            if (countdownEl) countdownEl.textContent = this.formatCountdown(diff);
+            if (subtitleEl) subtitleEl.textContent = 'Starting fresh tomorrow morning';
         }
     }
 
     formatCountdown(milliseconds) {
+        // Safety: handle NaN or negative values gracefully
+        if (!Number.isFinite(milliseconds) || milliseconds < 0) {
+            return '--';
+        }
         const totalSeconds = Math.floor(milliseconds / 1000);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -1682,6 +1774,13 @@ class NaamAbhyas {
         for (let hour = currentHour; hour <= endHour; hour++) {
             const session = this.currentSchedule[hour];
             if (session && session.status === 'pending') {
+                // ═══ FIX BUG 2 (safety): Ensure `hour` property always exists ═══
+                // Sessions from older schedules or generateDurationBasedSchedule()
+                // may not have the `hour` property. Inject it from the key.
+                if (session.hour === undefined) {
+                    session.hour = hour;
+                }
+
                 // For current hour, check if session hasn't started yet
                 if (hour === currentHour) {
                     // Session is valid if its start time is in the future
@@ -1799,6 +1898,18 @@ class NaamAbhyas {
                 timestamp: Date.now()
             }
         });
+
+        // ═══ FIX BUG 4: Respect autoStartTimer setting ═══
+        // If auto-start is enabled, skip the alert modal and start the session directly
+        if (this.config.autoStartTimer) {
+            console.log('[NaamAbhyas] ⚡ Auto-start enabled — starting meditation directly');
+            if (this.ritualEngine) {
+                this.ritualEngine.triggerScheduledSession(session, this.config.duration || 2);
+            } else {
+                this.startMeditation();
+            }
+            return;
+        }
 
         // 3. Show the SESSION ALERT MODAL (user must click to start timer)
         // Flow: Notification → Popup → User clicks "Start Now" → Timer starts

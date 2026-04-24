@@ -600,6 +600,7 @@
             if (S.sheet) closeSh();
             else if (S.audioSheet) closeAudioSh();
             else if (S.locSheet) closeLocSh();
+            else if (window.anhadGoBack) window.anhadGoBack('../index.html');
             else history.back();
         });
 

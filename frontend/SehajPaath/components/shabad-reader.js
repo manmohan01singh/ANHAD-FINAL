@@ -404,9 +404,11 @@
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Escape to close settings or go back
-            if (e.key === 'Escape') {
+                if (e.key === 'Escape') {
                 if (!elements.settingsOverlay.classList.contains('hidden')) {
                     closeSettings();
+                } else if (window.anhadGoBack) {
+                    window.anhadGoBack('../GurbaniKhoj/gurbani-khoj.html');
                 } else {
                     window.history.back();
                 }

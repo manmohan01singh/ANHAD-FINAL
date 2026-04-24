@@ -177,8 +177,8 @@ body {
 .app-header {
     position: fixed !important;
     top: var(--safe-top) !important;
-    left: var(--space-md) !important;
-    right: var(--space-md) !important;
+    left: 8px !important;
+    right: 8px !important;
     z-index: 100 !important;
     display: flex !important;
     align-items: center !important;

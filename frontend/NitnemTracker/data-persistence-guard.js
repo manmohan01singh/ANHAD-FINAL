@@ -217,7 +217,8 @@
             const allData = {};
             Object.entries(STORAGE_KEYS).forEach(([name, key]) => {
                 const data = safeLoad(key);
-                if (data !== null) {
+                // Only store non-Promise, non-null data
+                if (data !== null && !(data instanceof Promise)) {
                     allData[name] = data;
                 }
             });

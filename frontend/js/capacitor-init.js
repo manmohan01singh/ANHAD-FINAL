@@ -35,9 +35,13 @@
         // Add listener for hardware back button
         App.addListener('backButton', ({ canGoBack }) => {
             if (canGoBack) {
-                // Navigate back if history exists
-                window.history.back();
-                console.log('[CapacitorInit] Back button: navigating back');
+                // Delegate to unified smart-back navigation for state preservation
+                if (window.anhadGoBack) {
+                    window.anhadGoBack('../index.html');
+                } else {
+                    window.history.back();
+                }
+                console.log('[CapacitorInit] Back button: navigating back via anhadGoBack');
             } else {
                 // On root page, minimize app instead of exiting
                 if (App.minimizeApp) {

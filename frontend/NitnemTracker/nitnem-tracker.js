@@ -22,7 +22,7 @@ const CONFIG = {
         NITNEM_LOG: 'nitnemTracker_nitnemLog',
         MALA_LOG: 'nitnemTracker_malaLog',
         ALARM_LOG: 'nitnemTracker_alarmLog',
-        STREAK_DATA: 'nitnemTracker_streakData',
+        STREAK_DATA: 'anhad_streak_data',
         ACHIEVEMENTS: 'nitnemTracker_achievements',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
         THEME: 'nitnemTracker_theme'
@@ -53,7 +53,6 @@ const CONFIG = {
         hapticEnabled: true,
         soundEnabled: true,
         autoWakeDetect: true,
-        presentUntil: 7,
         beadsPerMala: 108,
         vibrationPattern: 'medium'
     },
@@ -1248,6 +1247,12 @@ const HeaderManager = {
         // Update streak in header
         this.updateStreakDisplay();
 
+        // Listen for global streak updates
+        window.addEventListener('streakUpdated', () => {
+            console.log('[HeaderManager] Global streak updated, refreshing display...');
+            this.updateStreakDisplay();
+        });
+
         // Fix header layout styles
         this.fixHeaderLayout();
 
@@ -2312,11 +2317,21 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // Logic to update streak count if element exists
-        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
-        if (this.elements.headerStreakCount) {
-            this.elements.headerStreakCount.textContent = streakData.current;
+        // SYNC: Use global AnhadStats if available for the most accurate streak
+        let currentStreak = 0;
+        
+        if (typeof AnhadStats !== 'undefined') {
+            const streakData = AnhadStats.getStreak();
+            currentStreak = streakData.currentStreak || 0;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
         }
+
+        if (this.elements.headerStreakCount) {
+            this.elements.headerStreakCount.textContent = currentStreak;
+        }
+        
         // Also update penalty state whenever streak display updates
         this.updatePenaltyState();
     },
@@ -2392,7 +2407,15 @@ const HeaderManager = {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const today = Utils.getTodayString();
         const todayMarked = !!amritvelaLog[today];
-        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+        
+        // SYNC: Use global streak data
+        let currentStreak = 0;
+        if (typeof AnhadStats !== 'undefined') {
+            currentStreak = AnhadStats.getStreak().currentStreak;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
+        }
 
         // Determine if streak is broken or at risk
         const hasPenalty = activePunishment && !activePunishment.completed;
@@ -2401,11 +2424,11 @@ const HeaderManager = {
         // Premium 10 Feature #6: Milestone Sparkles
         if (this.elements.streakFire) {
             const hasSparkles = this.elements.streakFire.querySelector('.milestone-sparkles');
-            if (streakData.current >= 30 && todayMarked && !hasSparkles) {
+            if (currentStreak >= 30 && todayMarked && !hasSparkles) {
                 const sparks = document.createElement('div');
                 sparks.className = 'milestone-sparkles';
                 this.elements.streakFire.appendChild(sparks);
-            } else if ((streakData.current < 30 || !todayMarked) && hasSparkles) {
+            } else if ((currentStreak < 30 || !todayMarked) && hasSparkles) {
                 hasSparkles.remove();
             }
         }
@@ -2832,12 +2855,44 @@ const AmritvelaManager = {
 
         // Check if present button should be disabled
         const settings = StorageManager.load(CONFIG.STORAGE_KEYS.SETTINGS, CONFIG.DEFAULT_SETTINGS);
-        const cutoffHour = settings.presentUntil || 7;
+        const cutoffHour = 6;
 
         if (hours >= cutoffHour && !this.todayMarked) {
             this.elements.presentBtn?.classList.add('disabled');
-            this.showMessage('⏰', `Present marking is available until ${cutoffHour}:00 AM`);
+            this.showMessage('⏰', 'Present marking is available until 6:00 AM');
+            
+            // Trigger streak penalty warning
+            this.triggerStreakPenalty();
         }
+    },
+
+    /**
+     * Trigger streak penalty when Amritvela not marked after 6 AM
+     */
+    triggerStreakPenalty() {
+        // Show warning badge on streak counter
+        const streakFire = document.querySelector('.streak-fire');
+        if (streakFire) {
+            streakFire.classList.add('penalty-active');
+        }
+
+        // Update penalty streak info
+        const penaltyStreakInfo = document.getElementById('penaltyStreakInfo');
+        if (penaltyStreakInfo) {
+            penaltyStreakInfo.style.display = 'flex';
+        }
+
+        // Show warning toast
+        Toast.warning('Streak at Risk', 'Amritvela not marked before 6 AM. Your streak may be affected!');
+
+        // Log penalty for streak calculation
+        const today = Utils.getTodayString();
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        if (!amritvelaLog[today]) {
+            amritvelaLog[today] = {};
+        }
+        amritvelaLog[today].penalty = true;
+        StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
     },
 
     /**
@@ -3028,24 +3083,6 @@ const AmritvelaManager = {
         // Update Header streak display
         HeaderManager.updateStreakDisplay();
 
-        // Update penalty state (fire color, badge, button)
-        HeaderManager.updatePenaltyState();
-
-        // Update Reports if initialized
-        if (typeof ReportsManager !== 'undefined' && ReportsManager.renderWeeklyReport) {
-            try {
-                ReportsManager.renderWeeklyReport();
-            } catch (e) {
-                console.log('Reports update deferred');
-            }
-        }
-
-        // Dispatch custom event for cross-component sync
-        window.dispatchEvent(new CustomEvent('attendanceMarked', {
-            detail: entry,
-            bubbles: true
-        }));
-
         // Sync to IndexedDB
         StorageManager.persistToIndexedDB();
     },
@@ -3063,7 +3100,7 @@ const AmritvelaManager = {
         // Update status badge
         if (this.elements.status) {
             const badge = this.elements.status.querySelector('.status-badge');
-            if (badge) {
+            if (badge && entry?.slot) {
                 badge.className = `status-badge ${entry.slot}`;
                 badge.textContent = entry.slot.charAt(0).toUpperCase() + entry.slot.slice(1);
             }
@@ -3118,8 +3155,13 @@ const AmritvelaManager = {
         const dates = Object.keys(log);
 
         // SYNC: Use global streak data to match header streak
-        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
-        const streak = streakData.current;
+        let streak = 0;
+        if (typeof AnhadStats !== 'undefined') {
+            streak = AnhadStats.getStreak().currentStreak;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            streak = streakData.currentStreak || streakData.current || 0;
+        }
 
         if (this.elements.streakDisplay) {
             Utils.animateNumber(this.elements.streakDisplay,
@@ -3143,7 +3185,8 @@ const AmritvelaManager = {
         // Average wake time
         if (dates.length > 0) {
             const times = dates.slice(-7).map(d => {
-                const time = log[d].time;
+                const time = log[d]?.time;
+                if (!time) return 0;
                 const [h, m] = time.split(':').map(Number);
                 return h * 60 + m;
             });
@@ -4223,7 +4266,6 @@ const SettingsManager = {
             hapticToggle: document.getElementById('hapticToggle'),
             soundToggle: document.getElementById('soundToggle'),
             autoWakeToggle: document.getElementById('autoWakeToggle'),
-            presentUntilSelect: document.getElementById('presentUntilSelect'),
             beadsPerMalaSelect: document.getElementById('beadsPerMalaSelect'),
             vibrationPatternSelect: document.getElementById('vibrationPatternSelect'),
             exportDataBtn: document.getElementById('exportDataBtn'),
@@ -4263,10 +4305,6 @@ const SettingsManager = {
         });
 
         // Selects
-        this.elements.presentUntilSelect?.addEventListener('change', (e) => {
-            this.updateSetting('presentUntil', parseInt(e.target.value));
-        });
-
         this.elements.beadsPerMalaSelect?.addEventListener('change', (e) => {
             this.updateSetting('beadsPerMala', parseInt(e.target.value));
             MalaManager.updateBeadCount(parseInt(e.target.value));
@@ -4302,9 +4340,6 @@ const SettingsManager = {
         }
         if (this.elements.autoWakeToggle) {
             this.elements.autoWakeToggle.checked = this.settings.autoWakeDetect;
-        }
-        if (this.elements.presentUntilSelect) {
-            this.elements.presentUntilSelect.value = this.settings.presentUntil;
         }
         if (this.elements.beadsPerMalaSelect) {
             this.elements.beadsPerMalaSelect.value = this.settings.beadsPerMala;
@@ -6432,8 +6467,8 @@ const AlarmManager = {
 const StreakManager = {
     elements: {},
     state: {
-        current: 0,
-        longest: 0,
+        currentStreak: 0,
+        longestStreak: 0,
         totalDays: 0,
         lastUpdated: null
     },
@@ -6469,7 +6504,11 @@ const StreakManager = {
         const saved = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, null);
 
         if (saved) {
-            this.state = { ...this.state, ...saved };
+            // Support both old (current) and new (currentStreak) keys during migration
+            this.state.currentStreak = saved.currentStreak || saved.current || 0;
+            this.state.longestStreak = saved.longestStreak || saved.longest || 0;
+            this.state.totalDays = saved.totalDays || 0;
+            this.state.lastUpdated = saved.lastUpdated || null;
         }
 
         // Recalculate to ensure accuracy
@@ -6519,10 +6558,10 @@ const StreakManager = {
         const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
 
         // Calculate current streak
-        this.state.current = Utils.calculateStreak(datesToUse);
+        this.state.currentStreak = Utils.calculateStreak(datesToUse);
 
         // Calculate longest streak
-        this.state.longest = Math.max(this.state.longest, this.state.current);
+        this.state.longestStreak = Math.max(this.state.longestStreak, this.state.currentStreak);
 
         // Total days
         this.state.totalDays = datesToUse.length;
@@ -6543,12 +6582,17 @@ const StreakManager = {
      * Check and update streak
      */
     checkAndUpdate() {
-        const previousStreak = this.state.current;
+        const previousStreak = this.state.currentStreak;
         this.recalculateStreak();
 
         // Check for streak milestones
-        if (this.state.current > previousStreak) {
-            this.checkMilestones(this.state.current);
+        if (this.state.currentStreak > previousStreak) {
+            this.checkMilestones(this.state.currentStreak);
+            
+            // SYNC with global AnhadStats
+            if (typeof AnhadStats !== 'undefined') {
+                AnhadStats.updateStreak();
+            }
         }
 
         // Update display
@@ -6585,19 +6629,19 @@ const StreakManager = {
             Utils.animateNumber(
                 this.elements.mainNumber,
                 parseInt(this.elements.mainNumber.textContent) || 0,
-                this.state.current,
+                this.state.currentStreak,
                 800
             );
         }
 
         // Current streak
         if (this.elements.currentStreak) {
-            this.elements.currentStreak.textContent = this.state.current;
+            this.elements.currentStreak.textContent = this.state.currentStreak;
         }
 
         // Longest streak
         if (this.elements.longestStreak) {
-            this.elements.longestStreak.textContent = this.state.longest;
+            this.elements.longestStreak.textContent = this.state.longestStreak;
         }
 
         // Total days
@@ -6616,7 +6660,7 @@ const StreakManager = {
         if (!this.elements.message) return;
 
         let message = '';
-        const streak = this.state.current;
+        const streak = this.state.currentStreak;
 
         if (streak === 0) {
             message = 'Start your spiritual journey today! 🙏';
@@ -6895,6 +6939,7 @@ const StreakSaverManager = {
 
         // Check if punishment Bani already exists in user's Nitnem
         const period = baniInfo.period;
+        if (!selectedBanis[period]) selectedBanis[period] = [];
         const existingIndex = selectedBanis[period].findIndex(b => b.id === baniInfo.id);
 
         if (existingIndex === -1) {
@@ -7777,7 +7822,7 @@ const ReportsManager = {
             else if (hasAmritvela || hasNitnem) dayClass = 'partial';
 
             // Track stats
-            if (hasAmritvela) {
+            if (hasAmritvela && amritvelaLog[dateString]?.time) {
                 const time = amritvelaLog[dateString].time;
                 const [h, m] = time.split(':').map(Number);
                 totalWakeMinutes += h * 60 + m;
@@ -10114,9 +10159,7 @@ if (typeof window !== 'undefined') {
         AINotificationSystem,
 
         // Integration
-        SmartRemindersIntegration,
-        ServiceWorkerComm,
-        PremiumUXManager
+        SmartRemindersIntegration
     };
 }
 

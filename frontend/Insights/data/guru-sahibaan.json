@@ -225,6 +225,24 @@
           "notableEvents": "Vaisakhi 1699 - Khalsa creation. Battle of Chamkaur (1704). Sirhind (1705) - martyrdom of younger Sahibzaade. 1708 - Declared SGGS Ji eternal Guru.",
           "notableEventsPa": "ਵਿਸਾਖੀ 1699 - ਖ਼ਾਲਸਾ ਸਾਜਨਾ। ਚਮਕੌਰ ਦੀ ਜੰਗ (1704)। ਸਰਹਿੰਦ (1705) - ਛੋਟੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਸ਼ਹਾਦਤ। 1708 - ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ।",
           "notableEventsHi": "वैसाखी 1699 - खालसा स्थापना। चमकौर की लड़ाई (1704)। सिरहिंद (1705) - छोटे साहिबज़ादों की शहादत। 1708 - श्री गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित।"
+        },
+        {
+          "id": 11,
+          "name": "Sri Guru Granth Sahib Ji",
+          "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+          "nameHindi": "श्री गुरु ग्रंथ साहिब जी",
+          "english": "Sri Guru Granth Sahib Ji",
+          "years": "1708–Present",
+          "gurgaddi": "1708",
+          "jotiJot": "Eternal",
+          "birthPlace": "Nanakana Sahib (Philosophy), Amritsar (Compilation)",
+          "majorContributions": "Eternal Living Guru for all Sikhs. Final sovereign authority. Contains hymns from Gurus, Bhagats, Bhatts, and Gursikhs.",
+          "majorContributionsPa": "ਸਿੱਖਾਂ ਦੇ ਸਦੀਵੀ ਗੁਰੂ। ਅੰਤਮ ਪ੍ਰਭੂਸੱਤਾ ਅਥਾਰਟੀ। ਗੁਰੂਆਂ, ਭਗਤਾਂ, ਭੱਟਾਂ ਅਤੇ ਗੁਰਸਿੱਖਾਂ ਦੀ ਬਾਣੀ ਸ਼ਾਮਲ ਹੈ।",
+          "majorContributionsHi": "सिखों के शाश्वत गुरु। अंतिम संप्रभु प्राधिकरण। गुरुओं, भक्तों, भट्टों और गुरुसिखों के भजनों को शामिल करता है।",
+          "keyTeachings": "Oneness of God, Service to Humanity, Divine Wisdom, Equality, and Justice.",
+          "keyTeachingsPa": "ਪਰਮਾਤਮਾ ਦੀ ਏਕਤਾ, ਮਨੁੱਖਤਾ ਦੀ ਸੇਵਾ, ਦੈਵੀ ਗਿਆਨ, ਬਰਾਬਰਤਾ ਅਤੇ ਨਿਆਂ।",
+          "keyTeachingsHi": "ईश्वर की एकता, मानवता की सेवा, दिव्य ज्ञान, समानता और न्याय।",
+          "notableEvents": "Compiled by Guru Arjan Dev Ji (1604), Finalized by Guru Gobind Singh Ji (1708)."
         }
       ]
     },

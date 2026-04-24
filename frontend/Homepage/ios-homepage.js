@@ -316,9 +316,14 @@
             } else {
                 document.body.classList.remove('audio-playing');
                 tracker.stop();
-                if (tapHint) tapHint.textContent = 'Tap anywhere to start live kirtan';
+                if (tapHint) tapHint.textContent = 'Tap to play kirtan';
             }
         });
+
+        // Auto-start kirtan on page load
+        setTimeout(() => {
+            window.AnhadAudio.play('darbar');
+        }, 500);
 
         // Handle visibility change - pause tracking when tab hidden
         document.addEventListener('visibilitychange', () => {

@@ -940,8 +940,10 @@ class SehajPaathReader {
     }
 
     goBack() {
-        // Use browser history if available, otherwise go to sehaj-paath.html
-        if (document.referrer && document.referrer.includes(window.location.origin)) {
+        // Use unified smart-back navigation with sehaj-paath.html as fallback
+        if (window.anhadGoBack) {
+            window.anhadGoBack('sehaj-paath.html');
+        } else if (document.referrer && document.referrer.includes(window.location.origin)) {
             window.history.back();
         } else {
             window.location.href = 'sehaj-paath.html';

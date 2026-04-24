@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light" data-bg="default" data-font="raavi">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -37,6 +37,13 @@
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
     <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
@@ -66,7 +73,7 @@
     
     <!-- iOS Navigation -->
     <nav class="ios-nav">
-        <button class="nav-back glass-nav__back" onclick="window.location.href='../index.html'" aria-label="Back">
+        <button class="nav-back glass-nav__back" id="backBtn" aria-label="Back">
             <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
                 <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -75,7 +82,7 @@
         <h1 class="nav-title">Gurbani Search</h1>
         <div class="nav-actions">
             <!-- History -->
-            <button class="nav-history" id="historyBtn" aria-label="Recent Searches" onclick="History.open()">
+            <button class="nav-history" id="historyBtn" aria-label="Recent Searches">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12,6 12,12 16,14"/>

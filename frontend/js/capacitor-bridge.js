@@ -243,7 +243,12 @@
             
             App.addListener('backButton', ({ canGoBack }) => {
                 if (canGoBack) {
-                    window.history.back();
+                    // Delegate to unified smart-back navigation
+                    if (window.anhadGoBack) {
+                        window.anhadGoBack('../index.html');
+                    } else {
+                        window.history.back();
+                    }
                 } else {
                     // At root - minimize or show exit confirmation
                     App.minimizeApp || App.exitApp || (() => {

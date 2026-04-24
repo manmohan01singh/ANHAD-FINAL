@@ -1,236 +1,37 @@
 {
   "version": 1,
-  "lastUpdated": "2026-04-20",
+  "lastUpdated": "2026-04-25",
   "raags": [
-    {
-      "id": 1,
-      "name": "Sri Raag",
-      "namePa": "ਸ੍ਰੀ ਰਾਗ",
-      "nameHi": "श्री राग",
-      "shabads": 158,
-      "timeOfDay": "Late afternoon to sunset",
-      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ",
-      "timeOfDayHi": "दोपहर से सूर्यास्त तक",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "The king of all Raags, Sri Raag evokes devotion and peace. It is considered the most important Raag in Gurbani.",
-        "pa": "ਸਾਰੇ ਰਾਗਾਂ ਦਾ ਰਾਜਾ, ਸ੍ਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਸ਼ਾਂਤੀ ਦਾ ਅਹਿਸਾਸ ਕਰਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਗੁਰਬਾਣੀ ਵਿੱਚ ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਰਾਗ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ।",
-        "hi": "सभी रागों का राजा, श्री राग भक्ति और शांति का अहसास कराता है। इसे गुरबाणी में सबसे महत्वपूर्ण राग माना जाता है।"
-      },
-      "notableShabads": {
-        "en": "Mitar Pyare Nu, Dukh Bhanjan Tera Naam",
-        "pa": "ਮਿਤਰ ਪਿਆਰੇ ਨੂੰ, ਦੁਖ ਭੰਜਨ ਤੇਰਾ ਨਾਮ",
-        "hi": "मित्र प्यारे नू, दुख भंजन तेरा नाम"
-      }
-    },
-    {
-      "id": 2,
-      "name": "Raag Maajh",
-      "namePa": "ਰਾਗ ਮਾਝ",
-      "nameHi": "राग माझ",
-      "shabads": 173,
-      "timeOfDay": "Late afternoon",
-      "timeOfDayPa": "ਦੁਪਹਿਰ ਦੇ ਅੰਤ",
-      "timeOfDayHi": "दोपहर के अंत",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Maajh Raag creates a mood of separation and longing for the Divine. It expresses the pain of being separated from the Beloved.",
-        "pa": "ਮਾਝ ਰਾਗ ਦੈਵੀ ਤੋਂ ਵੱਖ ਹੋਣ ਅਤੇ ਉਸਦੀ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਹ ਪਿਆਰੇ ਤੋਂ ਵੱਖ ਹੋਣ ਦਾ ਦਰਦ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ।",
-        "hi": "माझ राग दैवीय से वियोग और उसकी तान्हा का माहौल बनाता है। यह प्रिय से वियोग का दर्द व्यक्त करता है।"
-      },
-      "notableShabads": {
-        "en": "Jin Prem Kio Tin Hi Prabh Paayo",
-        "pa": "ਜਿਨ ਪ੍ਰੇਮ ਕਿਉ ਤਿਨ ਹੀ ਪ੍ਰਭ ਪਾਇਓ",
-        "hi": "जिन प्रेम किउ तिन ही प्रभ पाइओ"
-      }
-    },
-    {
-      "id": 3,
-      "name": "Raag Gauri",
-      "namePa": "ਰਾਗ ਗੌਰੀ",
-      "nameHi": "राग गौरी",
-      "shabads": 347,
-      "timeOfDay": "Late night to early morning",
-      "timeOfDayPa": "ਦੇਰ ਰਾਤ ਤੋਂ ਸਵੇਰੇ",
-      "timeOfDayHi": "देर रात से सुबह",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Gauri Raag has the most shabads in SGGS Ji. It represents purity, devotion, and the awakening of spiritual consciousness.",
-        "pa": "ਗੌਰੀ ਰਾਗ ਦੇ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚ ਸਭ ਤੋਂ ਵੱਧ ਸ਼ਬਦ ਹਨ। ਇਹ ਪਵਿੱਤਰਤਾ, ਭਗਤੀ, ਅਤੇ ਆਧਿਆਤਮਿਕ ਚੇਤਨਾ ਦੇ ਜਾਗਰਣ ਦਾ ਪ੍ਰਤੀਕ ਹੈ।",
-        "hi": "गौरी राग के श्री गुरु ग्रंथ साहिब जी में सबसे अधिक शबद हैं। यह पवित्रता, भक्ति, और आध्यात्मिक चेतना के जागरण का प्रतीक है।"
-      },
-      "notableShabads": {
-        "en": "Gauri Purakh Ki, Charan Kamal",
-        "pa": "ਗੌਰੀ ਪੁਰਖ ਕੀ, ਚਰਨ ਕਮਲ",
-        "hi": "गौरी पुरख की, चरण कमल"
-      }
-    },
-    {
-      "id": 4,
-      "name": "Raag Aasa",
-      "namePa": "ਰਾਗ ਆਸਾ",
-      "nameHi": "राग आसा",
-      "shabads": 435,
-      "timeOfDay": "Late afternoon",
-      "timeOfDayPa": "ਦੁਪਹਿਰ",
-      "timeOfDayHi": "दोपहर",
-      "season": "Rainy season",
-      "seasonPa": "ਬਾਰਿਸ਼ ਰੁੱਤ",
-      "seasonHi": "वर्षा ऋतु",
-      "description": {
-        "en": "Aasa Raag means 'hope' and creates a mood of expectation and longing for the Divine. It is sung during the rainy season.",
-        "pa": "ਆਸਾ ਰਾਗ ਦਾ ਮਤਲਬ 'ਉਮੀਦ' ਹੈ ਅਤੇ ਦੈਵੀ ਲਈ ਉਡੀਕ ਅਤੇ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਬਾਰਿਸ਼ ਰੁੱਤ ਵਿੱਚ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
-        "hi": "आसा राग का अर्थ 'आशा' है और दैवीय के लिए प्रत्याशा और तान्हा का माहौल बनाता है। इसे वर्षा ऋतु में गाया जाता है।"
-      },
-      "notableShabads": {
-        "en": "Aasa Kehi Vad Bhagat Purana",
-        "pa": "ਆਸਾ ਕੇਹੀ ਵਡ ਭਗਤ ਪੁਰਾਨਾ",
-        "hi": "आसा केही वड भगत पुराना"
-      }
-    },
-    {
-      "id": 5,
-      "name": "Raag Gujri",
-      "namePa": "ਰਾਗ ਗੁਜਰੀ",
-      "nameHi": "राग गुजरी",
-      "shabads": 78,
-      "timeOfDay": "Morning to midday",
-      "timeOfDayPa": "ਸਵੇਰੇ ਤੋਂ ਦੁਪਹਿਰ ਤੱਕ",
-      "timeOfDayHi": "सुबह से दोपहर तक",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Gujri Raag evokes feelings of peace, devotion, and deep meditation. It is associated with the rainy season and spiritual contemplation.",
-        "pa": "ਗੁਜਰੀ ਰਾਗ ਸ਼ਾਂਤੀ, ਭਗਤੀ, ਅਤੇ ਡੂੰਘੀ ਧਿਆਨ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਹ ਬਾਰਿਸ਼ ਰੁੱਤ ਅਤੇ ਆਧਿਆਤਮਿਕ ਚਿੰਤਨ ਨਾਲ ਜੁੜਿਆ ਹੈ।",
-        "hi": "गुजरी राग शांति, भक्ति, और गहरी ध्यान की भावनाओं को जागृत करता है। यह वर्षा ऋतु और आध्यात्मिक चिंतन से जुड़ा है।"
-      },
-      "notableShabads": {
-        "en": "Gujri Tera Khajaana",
-        "pa": "ਗੁਜਰੀ ਤੇਰਾ ਖਜ਼ਾਨਾ",
-        "hi": "गुजरी तेरा खज़ाना"
-      }
-    },
-    {
-      "id": 6,
-      "name": "Raag Devgandhari",
-      "namePa": "ਰਾਗ ਦੇਵਗੰਧਾਰੀ",
-      "nameHi": "राग देवगंधारी",
-      "shabads": 51,
-      "timeOfDay": "Late afternoon",
-      "timeOfDayPa": "ਦੁਪਹਿਰ",
-      "timeOfDayHi": "दोपहर",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Devgandhari Raag creates a mood of devotion and spiritual awakening. It is sung to invoke divine blessings.",
-        "pa": "ਦੇਵਗੰਧਾਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਆਧਿਆਤਮਿਕ ਜਾਗਰਣ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਦੈਵੀ ਆਸ਼ੀਰਵਾਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
-        "hi": "देवगंधारी राग भक्ति और आध्यात्मिक जागरण का माहौल बनाता है। इसे दैवी आशीर्वाद प्राप्त करने के लिए गाया जाता है।"
-      },
-      "notableShabads": {
-        "en": "Devgandhari Mahima",
-        "pa": "ਦੇਵਗੰਧਾਰੀ ਮਹਿਮਾ",
-        "hi": "देवगंधारी महिमा"
-      }
-    },
-    {
-      "id": 7,
-      "name": "Raag Bihagra",
-      "namePa": "ਰਾਗ ਬਿਹਾਗੜਾ",
-      "nameHi": "राग बिहागड़ा",
-      "shabads": 47,
-      "timeOfDay": "Late afternoon to evening",
-      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸ਼ਾਮ",
-      "timeOfDayHi": "दोपहर से शाम",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Bihagra Raag expresses the pain of separation and longing for union with the Divine. It creates a mood of deep emotional yearning.",
-        "pa": "ਬਿਹਾਗੜਾ ਰਾਗ ਦੈਵੀ ਨਾਲ ਇੱਕਮੁੱਕਤ ਹੋਣ ਦੀ ਤਾਂਘ ਅਤੇ ਵੱਖ ਹੋਣ ਦਾ ਦਰਦ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ। ਇਹ ਡੂੰਘੇ ਭਾਵਨਾਤਮਕ ਤਾਂਘ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ।",
-        "hi": "बिहागड़ा राग दैवीय के साथ एकीकरण की तान्हा और वियोग का दर्द व्यक्त करता है। यह गहरी भावनात्मक तान्हा का माहौल बनाता है।"
-      },
-      "notableShabads": {
-        "en": "Bihagra Bairaag",
-        "pa": "ਬਿਹਾਗੜਾ ਬੈਰਾਗ",
-        "hi": "बिहागड़ा बैराग"
-      }
-    },
-    {
-      "id": 8,
-      "name": "Raag Wadhans",
-      "namePa": "ਰਾਗ ਵਡਹੰਸ",
-      "nameHi": "राग वडहंस",
-      "shabads": 92,
-      "timeOfDay": "Morning",
-      "timeOfDayPa": "ਸਵੇਰੇ",
-      "timeOfDayHi": "सुबह",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Wadhans Raag evokes feelings of peace and contentment. It is associated with spiritual satisfaction and divine bliss.",
-        "pa": "ਵਡਹੰਸ ਰਾਗ ਸ਼ਾਂਤੀ ਅਤੇ ਸੰਤੋਖ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਹ ਆਧਿਆਤਮਿਕ ਸੰਤੁਸ਼ਟੀ ਅਤੇ ਦੈਵੀ ਆਨੰਦ ਨਾਲ ਜੁੜਿਆ ਹੈ।",
-        "hi": "वडहंस राग शांति और संतोष की भावनाओं को जागृत करता है। यह आध्यात्मिक संतुष्टि और दैवी आनंद से जुड़ा है।"
-      },
-      "notableShabads": {
-        "en": "Wadhans Dukh",
-        "pa": "ਵਡਹੰਸ ਦੁਖ",
-        "hi": "वडहंस दुख"
-      }
-    },
-    {
-      "id": 9,
-      "name": "Raag Sorath",
-      "namePa": "ਰਾਗ ਸੋਰਠ",
-      "nameHi": "राग सोरठ",
-      "shabads": 164,
-      "timeOfDay": "Late afternoon to evening",
-      "timeOfDayPa": "ਦੁਪਹਿਰ ਤੋਂ ਸ਼ਾਮ",
-      "timeOfDayHi": "दोपहर से शाम",
-      "season": "All seasons",
-      "seasonPa": "ਸਾਰੇ ਰੁੱਤ",
-      "seasonHi": "सभी मौसम",
-      "description": {
-        "en": "Sorath Raag creates a mood of spiritual strength and courage. It is sung to invoke divine protection and blessings.",
-        "pa": "ਸੋਰਠ ਰਾਗ ਆਧਿਆਤਮਿਕ ਤਾਕਤ ਅਤੇ ਬਹਾਦਰੀ ਦਾ ਮਾਹੌਲ ਬਣਾਉਂਦਾ ਹੈ। ਇਸਨੂੰ ਦੈਵੀ ਰੱਖਿਆ ਅਤੇ ਆਸ਼ੀਰਵਾਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
-        "hi": "सोरठ राग आध्यात्मिक शक्ति और साहस का माहौल बनाता है। इसे दैवी रक्षा और आशीर्वाद प्राप्त करने के लिए गाया जाता है।"
-      },
-      "notableShabads": {
-        "en": "Sorath Mahima",
-        "pa": "ਸੋਰਠ ਮਹਿਮਾ",
-        "hi": "सोरठ महिमा"
-      }
-    },
-    {
-      "id": 10,
-      "name": "Raag Dhanasri",
-      "namePa": "ਰਾਗ ਧਨਾਸਰੀ",
-      "nameHi": "राग धनासरी",
-      "shabads": 111,
-      "timeOfDay": "Late night to early morning",
-      "timeOfDayPa": "ਦੇਰ ਰਾਤ ਤੋਂ ਸਵੇਰੇ",
-      "timeOfDayHi": "देर रात से सुबह",
-      "season": "Rainy season",
-      "seasonPa": "ਬਾਰਿਸ਼ ਰੁੱਤ",
-      "seasonHi": "वर्षा ऋतु",
-      "description": {
-        "en": "Dhanasri Raag evokes feelings of devotion and spiritual joy. It is sung during the rainy season to celebrate divine blessings.",
-        "pa": "ਧਨਾਸਰੀ ਰਾਗ ਭਗਤੀ ਅਤੇ ਆਧਿਆਤਮਿਕ ਖੁਸ਼ੀ ਦੇ ਭਾਵਾਂ ਨੂੰ ਜਾਗ੍ਰਿਤ ਕਰਦਾ ਹੈ। ਇਸਨੂੰ ਬਾਰਿਸ਼ ਰੁੱਤ ਵਿੱਚ ਦੈਵੀ ਆਸ਼ੀਰਵਾਦ ਮਨਾਉਣ ਲਈ ਗਾਇਆ ਜਾਂਦਾ ਹੈ।",
-        "hi": "धनासरी राग भक्ति और आध्यात्मिक आनंद की भावनाओं को जागृत करता है। इसे वर्षा ऋतु में दैवी आशीर्वाद मनाने के लिए गाया जाता है।"
-      },
-      "notableShabads": {
-        "en": "Dhanasri Ke Prabhu",
-        "pa": "ਧਨਾਸਰੀ ਕੇ ਪ੍ਰਭੂ",
-        "hi": "धनासरी के प्रभु"
-      }
-    }
+    { "id": 1, "name": "Sri Raag", "namePa": "ਸ੍ਰੀ ਰਾਗ", "nameHi": "श्री राग", "shabads": 158, "timeOfDay": "Late afternoon to sunset", "description": { "en": "Satisfaction and balance; reflection on Maya and detachment.", "pa": "ਸੰਤੋਖ ਅਤੇ ਸੰਤੁਲਨ; ਮਾਇਆ ਅਤੇ ਵੈਰਾਗ 'ਤੇ ਚਿੰਤਨ।", "hi": "संतोष और संतुलन; माया और वैराग्य पर चिंतन।" } },
+    { "id": 2, "name": "Raag Maajh", "namePa": "ਰਾਗ ਮਾਝ", "nameHi": "राग माझ", "shabads": 173, "timeOfDay": "Late afternoon", "description": { "en": "Yearning to merge with the Divine; giving up negative values.", "pa": "ਪਰਮਾਤਮਾ ਨਾਲ ਇੱਕਮੁੱਕ ਹੋਣ ਦੀ ਤਾਂਘ; ਨਕਾਰਾਤਮਕ ਕਦਰਾਂ-ਕੀਮਤਾਂ ਦਾ ਤਿਆਗ।", "hi": "परमात्मा के साथ विलय की तड़प; नकारात्मक मूल्यों का त्याग।" } },
+    { "id": 3, "name": "Raag Gauri", "namePa": "ਰਾਗ ਗੌਰੀ", "nameHi": "राग गौरी", "shabads": 347, "timeOfDay": "Late night to early morning", "description": { "en": "Seriousness, thoughtfulness, composure, and principles.", "pa": "ਗੰਭੀਰਤਾ, ਵਿਚਾਰਸ਼ੀਲਤਾ, ਸਬਰ ਅਤੇ ਸਿਧਾਂਤ।", "hi": "गंभीरता, विचारशीलता, संयम और सिद्धांत।" } },
+    { "id": 4, "name": "Raag Aasa", "namePa": "ਰਾਗ ਆਸਾ", "nameHi": "राग आसा", "shabads": 435, "timeOfDay": "Morning (Amritvela)", "description": { "en": "Hope; the act of making effort. Associated with early morning.", "pa": "ਆਸ; ਉੱਦਮ ਕਰਨ ਦੀ ਭਾਵਨਾ। ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਨਾਲ ਸਬੰਧਤ।", "hi": "आशा; प्रयास करने की भावना। अमृतवेला से संबंधित।" } },
+    { "id": 5, "name": "Raag Gujri", "namePa": "ਰਾਗ ਗੁਜਰੀ", "nameHi": "राग गुजरी", "shabads": 78, "timeOfDay": "Morning to midday", "description": { "en": "Prayer; softness of heart, satisfaction, and humility.", "pa": "ਅਰਦਾਸ; ਕੋਮਲਤਾ, ਸੰਤੋਖ ਅਤੇ ਨਿਮਰਤਾ।", "hi": "प्रार्थना; कोमलता, संतोष और नम्रता।" } },
+    { "id": 6, "name": "Raag Devgandhari", "namePa": "ਰਾਗ ਦੇਵਗੰਧਾਰੀ", "nameHi": "राग देवगंधारी", "shabads": 51, "timeOfDay": "Morning", "description": { "en": "Self-realization; merging with the Divine Spouse; softness.", "pa": "ਆਤਮ-ਗਿਆਨ; ਪਰਮਾਤਮਾ ਨਾਲ ਮਿਲਾਪ; ਕੋਮਲਤਾ।", "hi": "आत्म-साक्षात्कार; परमात्मा के साथ मिलन; कोमलता।" } },
+    { "id": 7, "name": "Raag Bihagra", "namePa": "ਰਾਗ ਬਿਹਾਗੜਾ", "nameHi": "राग बिहागड़ा", "shabads": 47, "timeOfDay": "Late night", "description": { "en": "Yearning due to separation and the happiness of meeting the Divine.", "pa": "ਵਿਛੋੜੇ ਦੀ ਤਾਂਘ ਅਤੇ ਪਰਮਾਤਮਾ ਨੂੰ ਮਿਲਣ ਦੀ ਖੁਸ਼ੀ।", "hi": "विरह की तड़प और परमात्मा से मिलने की खुशी।" } },
+    { "id": 8, "name": "Raag Wadhans", "namePa": "ਰਾਗ ਵਡਹੰਸ", "nameHi": "राग वडहंस", "shabads": 92, "timeOfDay": "Midday", "description": { "en": "Bhakti (devotion) and Vairaag (detachment/yearning).", "pa": "ਭਗਤੀ ਅਤੇ ਵੈਰਾਗ (ਪਰਮਾਤਮਾ ਲਈ ਖਿੱਚ)।", "hi": "भक्ति और वैराग्य (परमात्मा के लिए खिंचाव)।" } },
+    { "id": 9, "name": "Raag Sorath", "namePa": "ਰਾਗ ਸੋਰਠ", "nameHi": "राग सोरठ", "shabads": 164, "timeOfDay": "Night", "description": { "en": "Motivation; praising the merits of God.", "pa": "ਉਤਸ਼ਾਹ; ਪਰਮਾਤਮਾ ਦੇ ਗੁਣਾਂ ਦੀ ਮਹਿਮਾ।", "hi": "उत्साह; परमात्मा के गुणों की महिमा।" } },
+    { "id": 10, "name": "Raag Dhanasri", "namePa": "ਰਾਗ ਧਨਾਸਰੀ", "nameHi": "राग धनासरी", "shabads": 111, "timeOfDay": "Late afternoon", "description": { "en": "Inspiration and motivation; mixed themes of devotion.", "pa": "ਪ੍ਰੇਰਣਾ ਅਤੇ ਉਤਸ਼ਾਹ; ਭਗਤੀ ਦੇ ਰਲਵੇਂ ਵਿਸ਼ੇ।", "hi": "प्रेरणा और उत्साह; भक्ति के मिश्रित विषय।" } },
+    { "id": 11, "name": "Raag Jaitsri", "namePa": "ਰਾਗ ਜੈਤਸਰੀ", "nameHi": "राग जैतसरी", "shabads": 48, "timeOfDay": "Evening", "description": { "en": "Stability, softness, satisfaction, and contemplation.", "pa": "ਸਥਿਰਤਾ, ਕੋਮਲਤਾ, ਸੰਤੋਖ ਅਤੇ ਚਿੰਤਨ।", "hi": "स्थिरता, कोमलता, संतोष और चिंतन।" } },
+    { "id": 12, "name": "Raag Todi", "namePa": "ਰਾਗ ਟੋਡੀ", "nameHi": "राग टोडी", "shabads": 43, "timeOfDay": "Morning", "description": { "en": "Maya and the pain of separation; a flexible, expressive Raag.", "pa": "ਮਾਇਆ ਅਤੇ ਵਿਛੋੜੇ ਦਾ ਦਰਦ; ਇੱਕ ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਰਾਗ।", "hi": "माया और विरह का दर्द; एक प्रभावशाली राग।" } },
+    { "id": 13, "name": "Raag Bairari", "namePa": "ਰਾਗ ਬੈਰਾੜੀ", "nameHi": "राग बैराड़ी", "shabads": 16, "timeOfDay": "Evening", "description": { "en": "Motivation to sing the praises of the Lord.", "pa": "ਪਰਮਾਤਮਾ ਦੀ ਮਹਿਮਾ ਗਾਉਣ ਲਈ ਉਤਸ਼ਾਹ।", "hi": "परमात्मा की महिमा गाने के लिए उत्साह।" } },
+    { "id": 14, "name": "Raag Tilang", "namePa": "ਰਾਗ ਤਿਲੰਗ", "nameHi": "राग तिलंग", "shabads": 38, "timeOfDay": "Midday", "description": { "en": "Sadness and beautification; often uses Persian vocabulary.", "pa": "ਉਦਾਸੀ ਅਤੇ ਸੁੰਦਰਤਾ; ਅਕਸਰ ਫਾਰਸੀ ਸ਼ਬਦਾਵਲੀ ਦੀ ਵਰਤੋਂ।", "hi": "उदासी और सुंदरता; अक्सर फारसी शब्दावली का उपयोग।" } },
+    { "id": 15, "name": "Raag Suhi", "namePa": "ਰਾਗ ਸੂਹੀ", "nameHi": "राग सूही", "shabads": 128, "timeOfDay": "Morning", "description": { "en": "Joy of union and the pain of separation.", "pa": "ਮਿਲਾਪ ਦੀ ਖੁਸ਼ੀ ਅਤੇ ਵਿਛੋੜੇ ਦਾ ਦਰਦ।", "hi": "मिलन की खुशी और विरह का दर्द।" } },
+    { "id": 16, "name": "Raag Bilawal", "namePa": "ਰਾਗ ਬਿਲਾਵਲ", "nameHi": "राग बिलावल", "shabads": 135, "timeOfDay": "Morning", "description": { "en": "Happiness, joy, and the beautification of the soul.", "pa": "ਖੁਸ਼ੀ, ਆਨੰਦ ਅਤੇ ਆਤਮਾ ਦੀ ਸੁੰਦਰਤਾ।", "hi": "खुशी, आनंद और आत्मा की सुंदरता।" } },
+    { "id": 17, "name": "Raag Gond", "namePa": "ਰਾਗ ਗੋਂਡ", "nameHi": "राग गोंड", "shabads": 60, "timeOfDay": "Midday", "description": { "en": "Strangeness, surprise, beauty, and devotion.", "pa": "ਹੈਰਾਨੀ, ਸੁੰਦਰਤਾ ਅਤੇ ਭਗਤੀ।", "hi": "आश्चर्य, सुंदरता और भक्ति।" } },
+    { "id": 18, "name": "Raag Ramkali", "namePa": "ਰਾਗ ਰਾਮਕਲੀ", "nameHi": "राग रामकली", "shabads": 120, "timeOfDay": "Morning", "description": { "en": "Guiding against ritualism; focus on Truth.", "pa": "ਕਰਮਕਾਂਡਾਂ ਵਿਰੁੱਧ ਮਾਰਗਦਰਸ਼ਨ; ਸੱਚ 'ਤੇ ਧਿਆਨ।", "hi": "कर्मकांडों के विरुद्ध मार्गदर्शन; सत्य पर ध्यान।" } },
+    { "id": 19, "name": "Raag Nat Narain", "namePa": "ਰਾਗ ਨਟ ਨਾਰਾਇਣ", "nameHi": "राग नट नारायण", "shabads": 44, "timeOfDay": "Evening", "description": { "en": "The joy of meeting the Beloved (Divine).", "pa": "ਪ੍ਰੀਤਮ (ਪਰਮਾਤਮਾ) ਨੂੰ ਮਿਲਣ ਦੀ ਖੁਸ਼ੀ।", "hi": "प्रियतम (परमात्मा) से मिलने की खुशी।" } },
+    { "id": 20, "name": "Raag Mali Gaura", "namePa": "ਰਾਗ ਮਾਲੀ ਗਉੜਾ", "nameHi": "राग माली गौड़ा", "shabads": 15, "timeOfDay": "Late afternoon", "description": { "en": "Happiness and devotion.", "pa": "ਖੁਸ਼ੀ ਅਤੇ ਭਗਤੀ।", "hi": "खुशी और भक्ति।" } },
+    { "id": 21, "name": "Raag Maru", "namePa": "ਰਾਗ ਮਾਰੂ", "nameHi": "राग मारू", "shabads": 175, "timeOfDay": "Midday", "description": { "en": "Bravery, strength, and overcoming the ego.", "pa": "ਬਹਾਦਰੀ, ਸ਼ਕਤੀ ਅਤੇ ਹਉਮੈ ਨੂੰ ਜਿੱਤਣਾ।", "hi": "वीरता, शक्ति और अहंकार पर विजय।" } },
+    { "id": 22, "name": "Raag Tukhari", "namePa": "ਰਾਗ ਤੁਖਾਰੀ", "nameHi": "राग तुखारी", "shabads": 21, "timeOfDay": "Morning", "description": { "en": "Deep yearning, separation, and eventual union.", "pa": "ਡੂੰਘੀ ਤਾਂਘ, ਵਿਛੋੜਾ ਅਤੇ ਅੰਤਮ ਮਿਲਾਪ।", "hi": "गहरी तड़प, विरह और अंतिम मिलन।" } },
+    { "id": 23, "name": "Raag Kedara", "namePa": "ਰਾਗ ਕੇਦਾਰਾ", "nameHi": "राग केदारा", "shabads": 19, "timeOfDay": "Evening", "description": { "en": "Intense love and devotion.", "pa": "ਡੂੰਘਾ ਪਿਆਰ ਅਤੇ ਭਗਤੀ।", "hi": "गहरा प्रेम और भक्ति।" } },
+    { "id": 24, "name": "Raag Bhairav", "namePa": "ਰਾਗ ਭੈਰਉ", "nameHi": "राग भैरव", "shabads": 27, "timeOfDay": "Early morning", "description": { "en": "Contemplation of the human condition and humility.", "pa": "ਮਨੁੱਖੀ ਹਾਲਤ 'ਤੇ ਚਿੰਤਨ ਅਤੇ ਨਿਮਰਤਾ।", "hi": "मानवीय स्थिति पर चिंतन और नम्रता।" } },
+    { "id": 25, "name": "Raag Basant", "namePa": "ਰਾਗ ਬਸੰਤ", "nameHi": "राग बसंत", "shabads": 43, "timeOfDay": "Night (Spring season)", "description": { "en": "Happiness, blossoming, and renewal.", "pa": "ਖੁਸ਼ੀ, ਖੇੜਾ ਅਤੇ ਨਵਾਂ ਜੀਵਨ।", "hi": "खुशी, उमंग और नया जीवन।" } },
+    { "id": 26, "name": "Raag Sarang", "namePa": "ਰਾਗ ਸਾਰੰਗ", "nameHi": "राग सारंग", "shabads": 78, "timeOfDay": "Midday", "description": { "en": "The thirst and longing to meet God.", "pa": "ਪਰਮਾਤਮਾ ਨੂੰ ਮਿਲਣ ਦੀ ਪਿਆਸ ਅਤੇ ਤਾਂਘ।", "hi": "परमात्मा से मिलने की प्यास और तड़प।" } },
+    { "id": 27, "name": "Raag Malhar", "namePa": "ਰਾਗ ਮਲਾਰ", "nameHi": "राग मलार", "shabads": 37, "timeOfDay": "Rainy season", "description": { "en": "The state of the soul associated with rains.", "pa": "ਵਰਖਾ ਰੁੱਤ ਨਾਲ ਸਬੰਧਤ ਆਤਮਾ ਦੀ ਅਵਸਥਾ।", "hi": "वर्षा ऋतु से संबंधित आत्मा की अवस्था।" } },
+    { "id": 28, "name": "Raag Kanra", "namePa": "ਰਾਗ ਕਾਨੜਾ", "nameHi": "राग कानड़ा", "shabads": 24, "timeOfDay": "Night", "description": { "en": "Devotion and contemplation.", "pa": "ਭਗਤੀ ਅਤੇ ਚਿੰਤਨ।", "hi": "भक्ति और चिंतन।" } },
+    { "id": 29, "name": "Raag Kalyan", "namePa": "ਰਾਗ ਕਲਿਆਨ", "nameHi": "राग कल्यान", "shabads": 28, "timeOfDay": "Night", "description": { "en": "Bhakti (devotion) and divine love.", "pa": "ਭਗਤੀ ਅਤੇ ਦੈਵੀ ਪਿਆਰ।", "hi": "भक्ति और दिव्य प्रेम।" } },
+    { "id": 30, "name": "Raag Prabhati", "namePa": "ਰਾਗ ਪ੍ਰਭਾਤੀ", "nameHi": "राग प्रभाती", "shabads": 54, "timeOfDay": "Early morning", "description": { "en": "Early morning awareness and devotion.", "pa": "ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਜਾਗਰੂਕਤਾ ਅਤੇ ਭਗਤੀ।", "hi": "अमृतवेला की जागरूकता और भक्ति।" } },
+    { "id": 31, "name": "Raag Jaijawanti", "namePa": "ਰਾਗ ਜੈਜਾਵੰਤੀ", "nameHi": "राग जैजवंती", "shabads": 4, "timeOfDay": "Late night", "description": { "en": "Vairaag (detachment) and deep spiritual longing.", "pa": "ਵੈਰਾਗ ਅਤੇ ਡੂੰਘੀ ਆਧਿਆਤਮਿਕ ਤਾਂਘ।", "hi": "वैराग्य और गहरी आध्यात्मिक तड़प।" } }
   ]
 }

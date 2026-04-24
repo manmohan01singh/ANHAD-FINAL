@@ -54,7 +54,7 @@
     html.dark-mode { --bg-primary: transparent !important; }
   </style>
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#F2F2F7">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -170,20 +170,119 @@
 
     /* CRITICAL: Navbar & Greeting Stability - Now using nav-glass.css */
 
+    /* ═══ GREETING SECTION — Premium Centered Hero Layout ═══ */
     .greeting__content {
-      display: grid;
-      grid-template-columns: 1fr 160px;
-      gap: 12px 16px;
-      align-items: center;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0 !important;
+      padding: 8px 0 0 !important;
     }
+    .greeting__portrait-wrapper {
+      position: relative !important;
+      width: 140px !important;
+      height: 140px !important;
+      margin-bottom: 20px !important; /* Spacing below image */
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    /* Ethereal Divine Glow Decoration — Subtle & Sacred */
+    .greeting__portrait-wrapper::before {
+      content: '' !important;
+      position: absolute !important;
+      inset: -45px !important;
+      background: 
+        radial-gradient(circle at 50% 50%, 
+          rgba(212, 148, 58, 0.15) 0%, 
+          rgba(255, 215, 0, 0.05) 45%, 
+          transparent 70%
+        ) !important;
+      filter: blur(20px) !important;
+      border-radius: 50% !important;
+      z-index: 0 !important;
+      animation: auraPulse 6s ease-in-out infinite !important;
+    }
+    /* Ethereal Divine Glow Decoration — Subtle & Sacred */
+    .greeting__portrait-wrapper::before {
+      content: '' !important;
+      position: absolute !important;
+      inset: -50px !important;
+      background: 
+        radial-gradient(circle at 50% 50%, 
+          rgba(212, 148, 58, 0.2) 0%, 
+          rgba(255, 215, 0, 0.08) 50%, 
+          transparent 75%
+        ) !important;
+      filter: blur(25px) !important;
+      border-radius: 50% !important;
+      z-index: 0 !important;
+      animation: auraPulse 8s ease-in-out infinite !important;
+    }
+    /* Rays removed as requested */
+    .greeting__portrait-wrapper::after {
+      display: none !important;
+    }
+    @keyframes auraPulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    
     .greeting__guru-portrait {
-      grid-column: 2 / 3;
-      grid-row: 1;
-      width: 160px;
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 140px !important;
+      height: 140px !important;
+      min-width: 140px !important;
+      min-height: 140px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      overflow: hidden !important;
+      position: relative !important;
+      flex-shrink: 0 !important;
+      z-index: 1 !important;
+      /* Ultra-premium glass border */
+      box-shadow: 
+        0 15px 45px rgba(0,0,0,0.18), 
+        inset 0 0 0 1.5px rgba(255,255,255,0.3) !important;
+    }
+    .greeting__guru-img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      object-position: center 25% !important;
+      transform: scale(1.4) !important;
+      border-radius: 50% !important;
+      display: block !important;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+    .greeting__text {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center !important;
+      width: 100% !important;
+      padding: 0 !important;
+    }
+    #greetingSalutation {
+      text-align: center !important;
+      padding: 0 16px !important;
+      box-sizing: border-box !important;
+      font-size: 1.4rem !important;
+      font-weight: 800 !important;
+      color: #D4943A !important;
+      line-height: 1.2 !important;
+      margin-bottom: 8px !important;
+      letter-spacing: -0.3px !important;
+    }
+    #greetingGurbani {
+      text-align: center !important;
+      padding: 0 16px !important;
+      margin-top: 0 !important;
+      font-size: 1.5rem !important;
+    }
+    #guruPortraitWrapper {
+      /* Order removed, relying on HTML order */
     }
 
     .event-card__title {
@@ -250,43 +349,27 @@
       aspect-ratio: 1 / 1 !important;
       flex-shrink: 0 !important;
       margin-right: -5px !important;
-    }
-    .greeting__content {
-      grid-template-columns: 1fr auto !important;
-      grid-template-rows: auto auto !important;
-      gap: 16px 20px !important;
-      align-items: center !important;
-    }
-    .greeting__text {
-      padding-left: 20px !important;
-      grid-column: 1 !important;
-      grid-row: 1 !important;
-    }
-    #greetingSalutation {
-      padding-right: 10px !important;
-      box-sizing: border-box !important;
-    }
-    #greetingGurbani {
-      grid-column: 1 / -1 !important;
-      grid-row: 2 !important;
-      text-align: center !important;
-      padding: 0 20px !important;
-      margin-top: 8px !important;
-    }
-    #guruPortraitWrapper {
-      grid-column: 2 !important;
-      grid-row: 1 !important;
-      justify-self: center !important;
+      overflow: hidden !important;
     }
     .header {
       margin-bottom: 16px !important;
       background: transparent !important;
     }
-    body.dark-mode .header {
-      background: #1A1A1F !important;
+    body.dark-mode .header,
+    html.dark-mode .header,
+    [data-theme="dark"] .header,
+    .dark-mode .header {
+      background: transparent !important;
     }
-    body:not(.dark-mode) .header {
-      background: #F1F3F6 !important;
+    body:not(.dark-mode) .header,
+    html:not(.dark-mode) .header,
+    [data-theme="light"] .header,
+    :not(.dark-mode) .header {
+      background: transparent !important;
+    }
+    header.header,
+    header.header[role="banner"] {
+      background: transparent !important;
     }
     .progress-inline {
       display: flex !important;
@@ -319,6 +402,12 @@
       color: #D4943A !important;
     }
     
+    /* Specific adjustment for Guru Hargobind Saheb Ji (to show swords) */
+    img[src*="guruhargobindsahebji.jpeg"] {
+      transform: scale(1.32) !important;
+      object-position: center 20% !important;
+    }
+    
     .event-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -336,8 +425,14 @@
     }
 
     /* FOUC-free: show content immediately, animate children */
-    .app { opacity: 1; padding-bottom: 100px; }
+    .app { opacity: 1; }
     .app > * { animation: anhad-enter 0.5s cubic-bezier(0.19, 1, 0.22, 1) backwards; }
+
+    /* Ensure nav bar stays fixed — prevent transforms on root from breaking position:fixed */
+    html, body {
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
 
     /* Live Hukamnama Caption Overlay */
     .live-caption-overlay { display: none !important; }
@@ -544,40 +639,37 @@
     /* Guru image - iOS-style premium frame */
     .event-card__guru-img-wrapper {
       position: relative;
-      padding: 6px;
+      padding: 4px;
       background: linear-gradient(145deg, #F5E6C8 0%, #D4A84B 50%, #B8860B 100%);
       border-radius: 50%;
+      overflow: hidden;
       box-shadow: 
-        0 0 0 3px rgba(255, 255, 255, 0.95),
-        0 0 0 5px rgba(212, 168, 83, 0.4),
+        0 0 0 2px rgba(255, 255, 255, 0.95),
+        0 0 0 4px rgba(212, 168, 83, 0.35),
         0 8px 24px rgba(0, 0, 0, 0.12),
-        0 0 20px rgba(212, 168, 83, 0.3),
-        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        0 0 16px rgba(212, 168, 83, 0.25);
       animation: subtlePulse 4s ease-in-out infinite;
       margin-right: -10px !important;
     }
     
     @keyframes subtlePulse {
-      0%, 100% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.95), 0 0 0 5px rgba(212, 168, 83, 0.4), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 20px rgba(212, 168, 83, 0.3); }
-      50% { box-shadow: 0 0 0 3px rgba(255, 255, 255, 1), 0 0 0 5px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 28px rgba(212, 168, 83, 0.45); }
+      0%, 100% { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95), 0 0 0 4px rgba(212, 168, 83, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 16px rgba(212, 168, 83, 0.25); }
+      50% { box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 0 4px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(212, 168, 83, 0.4); }
     }
     
     .event-card__guru-img {
       width: 100% !important;
       height: 100% !important;
       aspect-ratio: 1 / 1 !important;
-      object-fit: cover;
-      object-position: center 10%;
+      object-fit: cover !important;
+      object-position: center 25% !important;
+      transform: scale(1.4) !important;
       border-radius: 50%;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+      transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      border: none;
     }
     .event-card__guru-img.loaded {
       opacity: 1;
-    }
-    .event-card__guru-img-wrapper:hover .event-card__guru-img {
-      transform: scale(1.05);
     }
     
     /* EXTREME: White progress bar with dark gold cracker animation */
@@ -805,11 +897,11 @@
       /* Header background fix for desktop */
       html body.dark-mode .app .header,
       body.dark-mode .app .header {
-        background: #1A1A1F !important;
+        background: transparent !important;
       }
       html body:not(.dark-mode) .app .header,
       body:not(.dark-mode) .app .header {
-        background: #F1F3F6 !important;
+        background: transparent !important;
       }
       
       /* ═══════════════════════════════════════════════════════════════════════════
@@ -1195,29 +1287,26 @@
       body.dark-mode main.app header.header[role="banner"],
       html.dark-mode main.app header.header[role="banner"],
       [data-theme="dark"] main.app header.header[role="banner"] {
-        background: #1A1A1F !important;
+        background: transparent !important;
       }
       html body:not(.dark-mode) main.app header.header[role="banner"],
       body:not(.dark-mode) main.app header.header[role="banner"],
       html:not(.dark-mode) main.app header.header[role="banner"],
       [data-theme="light"] main.app header.header[role="banner"] {
-        background: #F1F3F6 !important;
+        background: transparent !important;
       }
     }
     html body.dark-mode main.app header.header[role="banner"],
     body.dark-mode main.app header.header[role="banner"],
     html.dark-mode main.app header.header[role="banner"],
     [data-theme="dark"] main.app header.header[role="banner"] {
-      background: #1A1A1F !important;
+      background: transparent !important;
     }
     html body:not(.dark-mode) main.app header.header[role="banner"],
     body:not(.dark-mode) main.app header.header[role="banner"],
     html:not(.dark-mode) main.app header.header[role="banner"],
     [data-theme="light"] main.app header.header[role="banner"] {
-      background: #F1F3F6 !important;
-    }
-  </style>
-
+      background: transparent !important;
     }
   </style>
 </head>
@@ -1315,7 +1404,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
-    <header class="header" role="banner" style="background: #F1F3F6 !important;">
+    <header class="header" role="banner" style="background: transparent !important;">
       <div class="header__left">
         <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" aria-label="Go Back">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1341,12 +1430,17 @@
     ════════════════════════════════════════════════════════════════════ -->
     <section class="greeting ios-animate-in" aria-label="Personal Greeting">
       <div class="greeting__content">
+        <!-- Portrait First for clear layout -->
+        <div class="greeting__portrait-wrapper">
+          <div class="greeting__guru-portrait" id="guruPortraitWrapper">
+            <img class="greeting__guru-img" id="guruPortraitImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="140" height="140" loading="eager">
+          </div>
+        </div>
+        
+        <!-- Text clearly below the image -->
         <div class="greeting__text">
           <div class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</div>
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ</div>
-        </div>
-        <div class="greeting__guru-portrait" id="guruPortraitWrapper">
-          <img class="greeting__guru-img" id="guruPortraitImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="160" height="160" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
         </div>
       </div>
     </section>
@@ -1371,7 +1465,7 @@
 
       <div class="hero-carousel__track" id="heroTrack" role="region" aria-roledescription="carousel">
         <!-- Card 1: Darbar Sahib Live -->
-        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html'">
+        <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/darbar-sahib-day.webp" type="image/webp">
@@ -1394,7 +1488,7 @@
         </article>
 
         <!-- Card 2: Amritvela Kirtan -->
-        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide" onclick="window.location.href='GurbaniRadio/gurbani-radio.html?stream=amritvela'">
+        <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
@@ -1640,6 +1734,8 @@
     <button class="sheet__cancel ios-haptic" id="radioSheetCancel">Cancel</button>
   </div>
 
+  </main>
+
   <!-- ════════════════════════════════════════════════════════════════════════
        INSTALL BANNER — Smart App Banner
   ════════════════════════════════════════════════════════════════════════ -->
@@ -1658,8 +1754,6 @@
       </button>
     </div>
   </div>
-
-  </main>
 
   <!-- ════════════════════════════════════════════════════════════════════════
        SCRIPTS — Critical path first, non-critical lazy-loaded
@@ -1866,7 +1960,7 @@
           // Update header background
           const header = document.querySelector('.header');
           if (header) {
-            header.style.background = '#1A1A1F';
+            header.style.background = 'transparent';
           }
           body.style.color = '';
           
@@ -1899,7 +1993,7 @@
       // Set initial header background based on theme
       const header = document.querySelector('.header');
       if (header) {
-        header.style.background = savedTheme === 'dark' ? '#1A1A1F' : '#F1F3F6';
+        header.style.background = 'transparent';
       }
 
       // Add click handler
@@ -1913,7 +2007,8 @@
     })();
   </script>
 
-  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+  <!-- Floating Tab Bar — Same as Dashboard -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
     <a href="index.html" class="tab-item active">
       <span class="tab-icon">🏠</span>
       <span class="tab-label">Home</span>
@@ -1931,5 +2026,6 @@
       <span class="tab-label">Dashboard</span>
     </a>
   </nav>
+
 </body>
 </html>

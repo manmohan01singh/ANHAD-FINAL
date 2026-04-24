@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
   <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.9">
+  <link rel="stylesheet" href="../css/theme-variables.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ਨਿਤਨੇਮ — Sacred Gurbani Library. PURE iOS Experience.">
@@ -22,9 +23,6 @@
     
     <!-- AUTO CACHE BUST - Forces reload when app updates -->
     
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/theme-variables.css">
-    <script src="../lib/global-theme.js"></script>
     
     <script>
         (function() {
@@ -70,8 +68,6 @@
     <link rel="prefetch" href="category/dasam.html">
     <link rel="prefetch" href="reader.html">
     
-    <!-- Global Theme System -->
-    <script src="../lib/global-theme.js?v=2"></script>
     <script src="../js/anhad-core.js?v=2" defer></script>
     
     <!-- BaniDB API - CHUNKED OFFLINE VERSION -->
@@ -82,6 +78,15 @@
     
     <!-- Hub App with cache bust -->
     <script src="js/hub-app.js?v=5"></script>
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
     
     <!-- Custom Gurmukhi Fonts -->
     <style>
@@ -155,7 +160,12 @@
             min-height: 100dvh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            padding-bottom: 100px;
+            padding-bottom: 32px;
+        }
+
+        html, body {
+            height: auto;
+            min-height: 100vh;
         }
 
         /* Dark Mode Body Override */
@@ -258,6 +268,10 @@
             min-height: 100vh;
             opacity: 1;
         }
+
+        .app, main, .app-container, #dashboardApp, #profileApp {
+            padding-bottom: 0px !important;
+        }
         
         /* ═══════════════════════════════════════════════════════════════
            HEADER - iOS Style with Theme Toggle
@@ -337,14 +351,14 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .hero {
-            padding: 32px 20px 24px;
+            padding: 20px 20px 16px;
             text-align: center;
         }
         
         .hero-ikonkar {
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 16px;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 12px;
             filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 100px rgba(255, 165, 0, 0.3));
             border-radius: 50%;
             padding: 10px;
@@ -416,7 +430,7 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .search-section {
-            padding: 0 20px 28px;
+            padding: 0 20px 16px;
         }
         
         .search-trigger {
@@ -472,7 +486,7 @@
         
         .main { padding: 0 16px; }
         
-        .section { margin-bottom: 32px; }
+        .section { margin-bottom: 20px; }
         
         .section-title {
             display: flex;
@@ -748,7 +762,7 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .footer {
-            padding: 40px 20px 20px;
+            padding: 12px 20px 8px;
             text-align: center;
         }
         
@@ -757,7 +771,7 @@
             align-items: center;
             justify-content: center;
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
         
         .footer-divider .line {
@@ -781,7 +795,7 @@
         }
         
         .footer-version {
-            margin-top: 16px;
+            margin-top: 8px;
             font-size: 12px;
             color: var(--text-tertiary);
             opacity: 0.4;

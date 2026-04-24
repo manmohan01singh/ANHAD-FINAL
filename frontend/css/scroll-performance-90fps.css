@@ -13,11 +13,9 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ─── FORCE GPU ACCELERATION ON SCROLL CONTAINERS ─── */
-html, body {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: transform;
-}
+/* NOTE: Do NOT apply transform to html/body — it creates a new containing block
+   that breaks position:fixed on the tab-bar navbar (makes it scroll with content
+   instead of staying fixed at the viewport bottom). */
 
 /* All scrollable containers */
 .main-content,

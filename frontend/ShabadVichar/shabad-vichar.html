@@ -37,6 +37,12 @@
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
 </head>
 <body>
   
@@ -44,11 +50,11 @@
        MINIMAL IOS HEADER
   ═══════════════════════════════════════════════════════════════ -->
   <header class="app-header">
-    <a href="../index.html" class="header-back">
+    <button class="header-back" id="backBtn" aria-label="Back">
       <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
         <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-    </a>
+    </button>
     <h1 class="header-title">ਸ਼ਬਦ ਵਿਚਾਰ</h1>
     <div class="header-actions">
       <button class="header-action" id="infoBtn" aria-label="About Shabad Vichar">

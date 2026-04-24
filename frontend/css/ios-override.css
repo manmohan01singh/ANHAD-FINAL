@@ -105,11 +105,7 @@ body {
   overflow-x: hidden;
 }
 
-body:has(.mini-player--visible),
-body:has(.gmp--visible) {
-  /* When mini player is visible, add padding to ensure content clears mini player */
-  padding-bottom: calc(var(--mini-player-height, 68px) + env(safe-area-inset-bottom, 34px) + var(--space-4)) !important;
-}
+/* Mini player padding handled by nav-glass.css .app padding-bottom */
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    § 4. AMBIENT LIGHT ORBS — Apple-Style Background Magic
@@ -294,7 +290,7 @@ body.dark-mode .ios-glass {
 /* ── App Container — Ensure it sits above orbs ── */
 .app {
   position: relative;
-  z-index: 1;
+  z-index: auto;
 }
 
 /* ── Header ── */
@@ -302,22 +298,22 @@ body.dark-mode .ios-glass {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #F1F3F6 !important;
+  background: transparent !important;
 }
 
 body.dark-mode .header {
-  background: #1A1A1F !important;
+  background: transparent !important;
 }
 
 .header--compact {
-  background: #F1F3F6 !important;
+  background: transparent !important;
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: none;
 }
 
 body.dark-mode .header--compact {
-  background: #1A1A1F !important;
+  background: transparent !important;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -454,16 +450,7 @@ body.dark-mode .header--compact {
     inset -8px -8px 16px rgba(255, 255, 255, 0.9) !important;
 }
 
-/* Notes card (last quick card) - ensure proper spacing from nav bar */
-.quick-card:last-child {
-  margin-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 20px);
-}
-
-/* When mini player is visible, add more margin to notes card */
-body:has(.mini-player--visible) .quick-card:last-child,
-body:has(.gmp--visible) .quick-card:last-child {
-  margin-bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 34px) + 100px);
-}
+/* Bottom spacing for last card — handled by .app padding-bottom in nav-glass.css */
 
 /* Light mode colored card backgrounds */
 .quick-card--green {
