@@ -1428,7 +1428,7 @@ const HeaderManager = {
             
             /* Main Content Padding - clear the layout */
             .main-content {
-                padding-top: 140px; 
+                padding-top: 145px !important; 
             }
 
             /* Animation */
@@ -7369,6 +7369,20 @@ const StreakSaverManager = {
 
     /**
      * Get active punishment data
+     */
+    getActivePunishment() {
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn('[StreakSaver] Could not parse punishment data:', e);
+            return null;
+        }
+    },
+
+    /**
+     * Save punishment data
      */
     savePunishmentData(data) {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));

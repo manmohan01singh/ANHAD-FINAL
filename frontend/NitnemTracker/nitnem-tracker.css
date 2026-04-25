@@ -193,7 +193,7 @@
     --safe-right: env(safe-area-inset-right, 0px);
 
     /* ═══ Layout ═══ */
-    --header-height: 110px;
+    --header-height: 145px;
     --tab-bar-height: 83px;
     --content-max-width: 428px;
     --card-padding: var(--space-5);
