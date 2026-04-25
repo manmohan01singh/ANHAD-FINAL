@@ -6783,11 +6783,11 @@ const StreakManager = {
 const StreakSaverManager = {
     // Enhanced punishment tiers with Mathila-specific tracking
     PUNISHMENT_TIERS: [
-        { min: 1, max: 7, count: 1, options: ['japji'], severity: 'low' },
-        { min: 7, max: 14, count: 2, options: ['japji'], severity: 'medium' },
-        { min: 14, max: 21, count: 3, options: ['japji'], severity: 'high' },
-        { min: 21, max: 28, count: 4, options: ['japji', 'jaap_sahib'], severity: 'very_high' },
-        { min: 28, max: Infinity, count: 5, options: ['japji', 'sukhmani', 'jaap_sahib'], severity: 'critical' }
+        { min: 1, max: 7, count: 1, options: ['japji', 'chaupai'], severity: 'low' },
+        { min: 7, max: 14, count: 2, options: ['japji', 'chaupai', 'tav_prasad'], severity: 'medium' },
+        { min: 14, max: 21, count: 3, options: ['japji', 'chaupai', 'tav_prasad', 'jaap_sahib'], severity: 'high' },
+        { min: 21, max: 28, count: 4, options: ['japji', 'chaupai', 'tav_prasad', 'jaap_sahib', 'anand_sahib'], severity: 'very_high' },
+        { min: 28, max: Infinity, count: 5, options: ['japji', 'sukhmani', 'jaap_sahib', 'chaupai', 'tav_prasad'], severity: 'critical' }
     ],
 
     // Enhanced punishment Banis with Mathila-specific options
@@ -6795,7 +6795,12 @@ const StreakSaverManager = {
     PUNISHMENT_BANIS: {
         japji: { id: 2, name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
         sukhmani: { id: 31, name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        jaap_sahib: { id: 4, name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' }
+        jaap_sahib: { id: 4, name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' },
+        chaupai: { id: 7, name: 'Chaupai Sahib', namePunjabi: 'ਚੌਪਈ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        tav_prasad: { id: 8, name: 'Tav-Prasad Savaiye', namePunjabi: 'ਤਵ-ਪ੍ਰਸਾਦ ਸਵਈਯੇ', period: 'amritvela', type: 'morning' },
+        anand_sahib: { id: 9, name: 'Anand Sahib', namePunjabi: 'ਆਨੰਦ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        rehras: { id: 10, name: 'Rehras Sahib', namePunjabi: 'ਰਹਰਾਸ ਸਾਹਿਬ', period: 'rehras', type: 'evening' },
+        kirtan_sohila: { id: 11, name: 'Kirtan Sohila', namePunjabi: 'ਕੀਰਤਨ ਸੋਹਿਲਾ', period: 'sohila', type: 'night' }
     },
 
     // Mathila-specific penalty configuration
@@ -7016,7 +7021,7 @@ const StreakSaverManager = {
     },
 
     /**
-     * Generate punishment based on streak tier
+     * Generate punishment based on streak tier with random Bani selection
      */
     generatePunishment(brokenStreak) {
         // Find appropriate tier
@@ -7026,17 +7031,17 @@ const StreakSaverManager = {
             return { type: 'japji', count: 1 };
         }
 
-        // For high tiers (28+), give option between multiple Japji or Sukhmani
-        if (tier.options.includes('sukhmani')) {
-            // 50% chance: either 5 Japji OR 1 Sukhmani
-            const useSukhmani = Math.random() < 0.5;
-            if (useSukhmani) {
-                return { type: 'sukhmani', count: 1 };
-            }
+        // Randomly select a Bani type from tier options
+        const randomIndex = Math.floor(Math.random() * tier.options.length);
+        const selectedType = tier.options[randomIndex];
+
+        // For longer Banis (sukhmani), use count 1, otherwise use tier count
+        if (selectedType === 'sukhmani' || selectedType === 'rehras') {
+            return { type: selectedType, count: 1 };
         }
 
-        // Default: Japji Sahib with tier count
-        return { type: 'japji', count: tier.count };
+        // For other Banis, use tier count
+        return { type: selectedType, count: tier.count };
     },
 
     /**
@@ -7237,7 +7242,7 @@ const StreakSaverManager = {
         }
 
         const modalHTML = `
-            <div class="modal-overlay active" id="streakSaverModal">
+            <div class="modal-overlay active" id="streakSaverModal" style="pointer-events: auto;">
                 <div class="modal-container streak-saver-modal">
                     <div class="modal-header">
                         <div class="streak-saver-icon">⚡</div>
@@ -7254,12 +7259,16 @@ const StreakSaverManager = {
                             </div>
                         </div>
                         <div class="punishment-explanation">
-                            <p>💡 The punishment Bani has been added to your Nitnem. Complete it to restore your streak!</p>
+                            <p>💡 Complete the punishment Bani to restore your ${saverData.brokenStreak}-day streak!</p>
+                            <p class="punishment-warning">⚠️ If you decline, your streak will be reset to 0.</p>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="modal-btn primary" onclick="document.getElementById('streakSaverModal').remove()">
-                            I Understand
+                        <button class="modal-btn secondary" onclick="StreakSaverManager.declineStreakSaver()">
+                            Decline (Lose Streak)
+                        </button>
+                        <button class="modal-btn primary" onclick="StreakSaverManager.acceptStreakSaver()">
+                            Accept Punishment
                         </button>
                     </div>
                 </div>
@@ -7267,6 +7276,34 @@ const StreakSaverManager = {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+    },
+
+    /**
+     * Accept streak saver punishment
+     */
+    acceptStreakSaver() {
+        document.getElementById('streakSaverModal').remove();
+        Toast.success('✅ Punishment Accepted', 'Complete the Bani to save your streak!');
+    },
+
+    /**
+     * Decline streak saver (lose streak)
+     */
+    declineStreakSaver() {
+        const saverData = this.getActivePunishment();
+        if (saverData) {
+            // Remove punishment Banis
+            this.removePunishmentFromNitnem();
+            // Clear streak saver data
+            localStorage.removeItem(this.STORAGE_KEY);
+            // Reset streak
+            StreakManager.state.currentStreak = 0;
+            StreakManager.saveStreakData();
+        }
+        document.getElementById('streakSaverModal').remove();
+        Toast.info('📉 Streak Lost', 'Your streak has been reset. Start fresh today!');
+        this.renderPunishmentUI();
+        HeaderManager.updateStreakDisplay();
     },
 
     /**
@@ -7296,7 +7333,7 @@ const StreakSaverManager = {
         }
 
         const bannerHTML = `
-            <div id="streakSaverBanner" class="streak-saver-banner">
+            <div id="streakSaverBanner" class="streak-saver-banner" onclick="StreakSaverManager.showStreakSaverDetails()">
                 <div class="banner-content">
                     <span class="banner-icon">⚡</span>
                     <div class="banner-text">
@@ -7318,6 +7355,16 @@ const StreakSaverManager = {
                 nitnemSection.insertAdjacentHTML('afterbegin', bannerHTML);
             }
         }
+    },
+
+    /**
+     * Show streak saver details (called when banner is clicked)
+     */
+    showStreakSaverDetails() {
+        const saverData = this.getActivePunishment();
+        if (!saverData || saverData.completed) return;
+        
+        this.showStreakSaverModal(saverData);
     },
 
     /**
