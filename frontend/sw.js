@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.1.5';
+const CACHE_VERSION = 'anhad-v5.1.6';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -169,7 +169,7 @@ const STATIC_FILES = [
   '/Hukamnama/optical-glass-physics.js',
 
   // Reminders
-  '/reminders/smart-reminders.html',
+  '/reminders/smart-reminders-v7.html',
   '/reminders/smart-reminders-v6.css',
   '/reminders/smart-reminders-v6.js',
   '/reminders/smart-reminders-ui.js',
@@ -725,7 +725,7 @@ async function checkAndFireScheduledNotifications() {
             url: notif.id === 'hukamnama' ? '/Hukamnama/daily-hukamnama.html'
                : notif.id === 'kirtan' ? '/index.html'
                : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? '/NitnemTracker/nitnem-tracker.html'
-               : '/reminders/smart-reminders.html',
+               : '/reminders/smart-reminders-v7.html',
             id: notif.id,
             timestamp: now
           },
