@@ -9965,9 +9965,6 @@ const initializeFullApp = async () => {
         // Initialize storage first (syncs from IndexedDB)
         await safeInit('StorageManager', () => StorageManager.init());
 
-        // Perform Mid-night Check immediately after storage is ready
-        DailyResetManager.checkReset();
-
         // Initialize core systems (from Part 1)
         await safeInit('HapticManager', () => HapticManager.init());
         await safeInit('SoundManager', () => SoundManager.init());
@@ -10003,6 +10000,9 @@ const initializeFullApp = async () => {
 
         // Add SVG gradient definitions for score circle
         try { addSVGDefinitions(); } catch (e) { console.error(e); }
+
+        // Perform Mid-night Check after all systems (including Toast and StreakSaverManager) are initialized
+        DailyResetManager.checkReset();
 
         // Hide loading screen
         const loadingScreen = document.getElementById('appLoading');

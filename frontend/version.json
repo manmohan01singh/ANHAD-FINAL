@@ -1,6 +1,6 @@
 {
-  "version": "5.1.6",
-  "build": "20260425.9",
-  "timestamp": "2026-04-25T12:55:00Z",
-  "commit": "fix: initialization crashes and streak logic in nitnem tracker"
+  "version": "5.1.7",
+  "build": "20260425.10",
+  "timestamp": "2026-04-25T13:16:00Z",
+  "commit": "fix: toast initialization crash during daily reset check"
 }
