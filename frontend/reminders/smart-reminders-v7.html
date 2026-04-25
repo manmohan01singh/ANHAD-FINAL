@@ -426,7 +426,15 @@
   <script src="smart-reminders-v7.js"></script>
   
   <!-- Background Alarm System -->
-  <script src="js/bg-alarm.js"></script>
+  <script src="../lib/capacitor-notifications.js"></script>
+  <script src="../lib/native-notifications.js"></script>
+  <script>
+    // Only load bg-alarm.js on web (not on Capacitor native platform)
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+      document.write('<script src="js/bg-alarm.js"><\/script>');
+      document.write('<script src="../lib/global-alarm-system.js"><\/script>');
+    }
+  </script>
   <script src="js/nitnem-sync.js"></script>
   
   <!-- Service Worker -->

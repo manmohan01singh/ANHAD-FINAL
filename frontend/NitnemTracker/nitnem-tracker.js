@@ -349,8 +349,8 @@ class NitnemTrackerThemeEngine {
         const globalTheme = localStorage.getItem('anhad_theme') || 'light';
         this.currentTheme = this.themes.includes(globalTheme) ? globalTheme : 'light';
         
-        // Save synced theme to Nitnem storage
-        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, this.currentTheme);
+        // Save synced theme to Nitnem storage (JSON encoded to prevent persistence guard warnings)
+        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, JSON.stringify(this.currentTheme));
         
         this.init();
     }
@@ -406,8 +406,8 @@ class NitnemTrackerThemeEngine {
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(`theme-${themeName}`);
 
-        // Save to both local and global storage
-        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, themeName);
+        // Save to both local and global storage (local JSON encoded for guard)
+        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, JSON.stringify(themeName));
         localStorage.setItem('anhad_theme', themeName);
 
         // Update UI if it exists
@@ -2822,7 +2822,7 @@ const AmritvelaManager = {
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const today = Utils.getTodayString();
 
-        if (log[today] && !log[today].penalty) {
+        if (log[today]) {
             this.todayMarked = true;
             this.showMarkedState(log[today]);
         }
@@ -2867,16 +2867,13 @@ const AmritvelaManager = {
         const settings = StorageManager.load(CONFIG.STORAGE_KEYS.SETTINGS, CONFIG.DEFAULT_SETTINGS);
         const cutoffHour = 6;
 
-        if (hours >= cutoffHour && !this.todayMarked) {
+        if (hours >= cutoffHour && !this.todayMarked && !this._penaltyTriggeredToday) {
+            this._penaltyTriggeredToday = true;
             this.elements.presentBtn?.classList.add('disabled');
             this.showMessage('⏰', 'Present marking is available until 6:00 AM');
             
-            // Trigger streak penalty warning only once per day
-            const today = Utils.getTodayString();
-            const penaltyLog = StorageManager.load('nitnemTracker_amritvelaPenalties', {});
-            if (!penaltyLog[today]) {
-                this.triggerStreakPenalty();
-            }
+            // Trigger streak penalty warning
+            this.triggerStreakPenalty();
         }
     },
 
@@ -2899,11 +2896,11 @@ const AmritvelaManager = {
         // Show warning toast
         Toast.warning('Streak at Risk', 'Amritvela not marked before 6 AM. Your streak may be affected!');
 
-        // Log penalty for streak calculation
+        // Log penalty for streak calculation (using separate key to avoid corrupting attendance log)
         const today = Utils.getTodayString();
-        const penaltyLog = StorageManager.load('nitnemTracker_amritvelaPenalties', {});
-        penaltyLog[today] = true;
-        StorageManager.save('nitnemTracker_amritvelaPenalties', penaltyLog);
+        const penalties = StorageManager.load('nitnemTracker_amritvelaPenalties', {});
+        penalties[today] = true;
+        StorageManager.save('nitnemTracker_amritvelaPenalties', penalties);
     },
 
     /**
@@ -3647,40 +3644,29 @@ const NitnemManager = {
      * Remove one instance of a group
      */
     removeGroupInstance(baniId, period) {
-        // Find all instances
-        const instances = this.selectedBanis[period].filter(b => b.id === baniId);
-        if (instances.length === 0) return;
-
-        // Prefer removing uncompleted instances
-        const completedUIDs = this.completedToday[period];
-        const uncompleted = instances.filter(b => !completedUIDs.includes(b.uid));
-        
-        let targetUid = null;
-        if (uncompleted.length > 0) {
-            targetUid = uncompleted[uncompleted.length - 1].uid;
-        } else {
-            targetUid = instances[instances.length - 1].uid;
+        // Find last instance (LIFO). Prefer uncompleted.
+        let index = -1;
+        for (let i = this.selectedBanis[period].length - 1; i >= 0; i--) {
+            if (this.selectedBanis[period][i].id === baniId) {
+                if (!this.completedToday[period].includes(this.selectedBanis[period][i].uid)) {
+                    index = i;
+                    break;
+                }
+                if (index === -1) index = i;
+            }
         }
-
-        const index = this.selectedBanis[period].findIndex(b => b.uid === targetUid);
         if (index === -1) return;
 
         const bani = this.selectedBanis[period][index];
+        const uid = bani.uid;
 
         // Remove from selected
         this.selectedBanis[period].splice(index, 1);
 
         // Remove from completed if present
-        const completedIndex = this.completedToday[period].indexOf(targetUid);
+        const completedIndex = this.completedToday[period].indexOf(uid);
         if (completedIndex > -1) {
             this.completedToday[period].splice(completedIndex, 1);
-            
-            // Sync with Dashboard
-            if (window.UnifiedProgressTracker) {
-                window.UnifiedProgressTracker.trackNitnemCompletion(-1);
-            } else if (window.AnhadStats) {
-                window.AnhadStats.addNitnemCompleted(-1);
-            }
             this.saveTodayProgress();
         }
 
@@ -3714,33 +3700,18 @@ const NitnemManager = {
             HapticManager.light();
             this.renderBaniList(this.activePeriod);
         } else {
-            // Animate completion one by one
+            // Animate completion for visual elements
             const listElement = this.elements[`${this.activePeriod}BaniList`];
-            let newCompletions = 0;
-            const animationPromises = [];
+            const items = listElement ? Array.from(listElement.querySelectorAll('.bani-item:not(.completed)')) : [];
 
-            for (let i = 0; i < banis.length; i++) {
-                if (!this.completedToday[this.activePeriod].includes(banis[i].uid)) {
-                    this.completedToday[this.activePeriod].push(banis[i].uid);
-                    
-                    const item = listElement?.querySelector(`.bani-item[data-bani-id="${banis[i].id}"]:not(.completed):not(.checking)`);
-                    if (item) {
-                        item.classList.add('checking'); // prevent re-selection
-                        animationPromises.push(this.animateBaniCheck(item, newCompletions * 80));
-                    }
-                    newCompletions++;
+            banis.forEach(b => {
+                if (!this.completedToday[this.activePeriod].includes(b.uid)) {
+                    this.completedToday[this.activePeriod].push(b.uid);
                 }
-            }
+            });
 
-            await Promise.all(animationPromises);
-            
-            // Sync with Dashboard
-            if (newCompletions > 0) {
-                if (window.UnifiedProgressTracker) {
-                    window.UnifiedProgressTracker.trackNitnemCompletion(newCompletions);
-                } else if (window.AnhadStats) {
-                    window.AnhadStats.addNitnemCompleted(newCompletions);
-                }
+            for (let i = 0; i < items.length; i++) {
+                await this.animateBaniCheck(items[i], i * 80);
             }
 
             // Play celebration after all complete
@@ -3963,7 +3934,7 @@ const NitnemManager = {
                 const goals = window.AnhadStats.getGoals();
                 // Set completeNitnem goal to 1 (full day done)
                 goals.completeNitnem.current = 1;
-                StorageManager.save('anhad_daily_goals', goals);
+                localStorage.setItem('anhad_daily_goals', JSON.stringify(goals));
                 window.dispatchEvent(new CustomEvent('goalsUpdated', { detail: goals }));
             }
             
@@ -4563,8 +4534,13 @@ const NitnemTrackerApp = {
    SECTION 17: EVENT LISTENERS & STARTUP
    ───────────────────────────────────────────────────────────────────────────── */
 
-// Initialization is handled by initializeFullApp() at the end of the file.
-// Removed legacy NitnemTrackerApp.init() call to prevent dual initialization.
+// Initialize when DOM is ready
+// REMOVED: Duplicate initialization. initializeFullApp() is the only startup point now.
+// if (document.readyState === 'loading') {
+//     document.addEventListener('DOMContentLoaded', () => NitnemTrackerApp.init());
+// } else {
+//     NitnemTrackerApp.init();
+// }
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
@@ -4831,7 +4807,23 @@ const MalaManager = {
         });
 
         // Load custom mala options
-        this.renderCustomMalaOptions();
+        if (typeof this.renderCustomMalaOptions === 'function') {
+            this.renderCustomMalaOptions();
+        }
+    },
+
+    /**
+     * Stub for missing custom mala rendering
+     */
+    renderCustomMalaOptions() {
+        // Safe stub for missing method
+    },
+
+    /**
+     * Stub for missing custom mala adding
+     */
+    addCustomMala() {
+        Toast.info('Coming Soon', 'Custom Naam Jap options will be available in next update.');
     },
 
     /**
@@ -6572,22 +6564,23 @@ const StreakManager = {
         const amritvelaDates = Object.keys(amritvelaLog);
         const nitnemDates = Object.keys(nitnemLog);
 
-        // Pre-load selected banis to avoid loops
-        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
-            amritvela: [], rehras: [], sohila: []
-        });
-
-        // Add all Amritvela dates (ignore penalties)
+        // Add all Amritvela dates
         amritvelaDates.forEach(date => {
-            if (!amritvelaLog[date].penalty) {
-                completeDates.add(date);
-            }
+            completeDates.add(date);
         });
 
         // Add all Nitnem completion dates
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
+            amritvela: [],
+            rehras: [],
+            sohila: []
+        });
+
         nitnemDates.forEach(date => {
             const nitnemData = nitnemLog[date];
             if (nitnemData) {
+                // Check if any banis were completed
+
                 let anyComplete = false;
                 Object.keys(selectedBanis).forEach(period => {
                     const selected = selectedBanis[period];
@@ -6626,17 +6619,13 @@ const StreakManager = {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        const completeDatesSet = new Set();
+        const completeDates = [];
         const amritvelaDates = Object.keys(amritvelaLog);
         const nitnemDates = Object.keys(nitnemLog);
 
         const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
 
         amritvelaDates.forEach(date => {
-            if (!amritvelaLog[date].penalty) completeDatesSet.add(date);
-        });
-
-        nitnemDates.forEach(date => {
             const nitnemData = nitnemLog[date];
             if (nitnemData) {
                 let anyComplete = false;
@@ -6647,11 +6636,11 @@ const StreakManager = {
                         anyComplete = true;
                     }
                 });
-                if (anyComplete) completeDatesSet.add(date);
+                if (anyComplete) completeDates.push(date);
             }
         });
 
-        const datesToUse = Array.from(completeDatesSet);
+        const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
         
         if (!datesToUse.includes(targetDateStr)) return 0;
 

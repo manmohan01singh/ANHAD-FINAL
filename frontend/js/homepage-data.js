@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
     calendarCard: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
-    remindersCard: 'reminders/smart-reminders.html',
+    remindersCard: 'reminders/smart-reminders-v7.html',
     notesCard: 'Notes/notes.html'
   };
 
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
     notifBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      window.location.href = 'reminders/smart-reminders.html';
+      window.location.href = 'reminders/smart-reminders-v7.html';
     });
   }
 

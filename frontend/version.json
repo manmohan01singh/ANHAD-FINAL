@@ -1,6 +1,6 @@
 {
   "version": "5.1.6",
   "build": "20260425.9",
-  "timestamp": "2026-04-25T12:45:00Z",
-  "commit": "fix: Deep audit of nitnem-tracker bugs"
+  "timestamp": "2026-04-25T12:55:00Z",
+  "commit": "fix: initialization crashes and streak logic in nitnem tracker"
 }

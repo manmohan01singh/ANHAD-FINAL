@@ -22,7 +22,7 @@ const PathValidator = {
             'nitnem-tracker': './NitnemTracker/nitnem-tracker.html',
             'sehaj-paath': './SehajPaath/sehaj-paath.html',
             'calendar': './Calendar/GurpurabCalendar-ios.html',
-            'reminders': './reminders/smart-reminders.html',
+            'reminders': './reminders/smart-reminders-v7.html',
             'naam-abhyas': './NaamAbhyas/naam-abhyas.html',
             'gurbani-khoj': './GurbaniKhoj/gurbani-khoj.html'
         },
@@ -36,7 +36,7 @@ const PathValidator = {
             'nitnem-tracker': '../NitnemTracker/nitnem-tracker.html',
             'sehaj-paath': '../SehajPaath/sehaj-paath.html',
             'calendar': '../Calendar/GurpurabCalendar-ios.html',
-            'reminders': '../reminders/smart-reminders.html',
+            'reminders': '../reminders/smart-reminders-v7.html',
             'naam-abhyas': '../NaamAbhyas/naam-abhyas.html',
             'gurbani-khoj': '../GurbaniKhoj/gurbani-khoj.html'
         }
@@ -296,7 +296,7 @@ class AppIntegrityChecker {
             { path: './GurbaniKhoj/gurbani-khoj.html', name: 'Gurbani Search' },
             { path: './Calendar/Gurupurab-Calendar.html', name: 'Calendar' },
             { path: './Hukamnama/daily-hukamnama.html', name: 'Hukamnama' },
-            { path: './reminders/smart-reminders.html', name: 'Reminders' },
+            { path: './reminders/smart-reminders-v7.html', name: 'Reminders' },
             { path: './Notes/notes.html', name: 'Notes' }
         ];
     }

@@ -336,7 +336,7 @@ class GurbaniRadioEnhancements {
   }
 
   openReminders() {
-    window.location.href = './reminders/smart-reminders.html';
+    window.location.href = './reminders/smart-reminders-v7.html';
   }
 
   openNitnemTracker() {
@@ -676,7 +676,7 @@ class GurbaniRadioEnhancements {
   }
 
   showRemindersModal() {
-    window.location.href = '../reminders/smart-reminders.html';
+    window.location.href = '../reminders/smart-reminders-v7.html';
   }
 
   showNitnemTrackerModal() {

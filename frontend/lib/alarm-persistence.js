@@ -457,7 +457,7 @@
                             id: alarm.id,
                             title: `⏰ Missed: ${alarm.title || alarm.label}`,
                             body: `You missed your ${alarm.time} reminder`,
-                            url: alarm.url || '/reminders/smart-reminders.html'
+                            url: alarm.url || '/reminders/smart-reminders-v7.html'
                         });
 
                         // Mark as fired

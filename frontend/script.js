@@ -42,7 +42,7 @@ const NAV_PATHS = {
     gurbaniKhoj: './GurbaniKhoj/gurbani-khoj.html',
     calendar: './Calendar/GurpurabCalendar-ios.html',
     notes: './Notes/notes.html',
-    reminders: './reminders/smart-reminders.html'
+    reminders: './reminders/smart-reminders-v7.html'
 };
 
 

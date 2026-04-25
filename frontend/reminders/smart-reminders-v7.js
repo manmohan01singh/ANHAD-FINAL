@@ -567,6 +567,12 @@
       // Check for pending alarms that triggered while app was closed
       this.checkPendingAlarms();
 
+      // Schedule all alarms with Capacitor for background support
+      this.scheduleAllWithCapacitor();
+
+      // Set up Capacitor notification listener
+      this.setupCapacitorListener();
+
       // Check when page becomes visible
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
@@ -579,6 +585,81 @@
       window.addEventListener('focus', () => {
         this.checkAlarms();
         this.checkMissedAlarms();
+      });
+    },
+
+    async scheduleAllWithCapacitor() {
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform() || !window.Capacitor.Plugins.LocalNotifications) {
+        return;
+      }
+
+      try {
+        // Cancel all existing notifications
+        await window.Capacitor.Plugins.LocalNotifications.cancel({ notifications: [] });
+
+        // Get all enabled alarms
+        const allReminders = [
+          ...Object.values(State.reminders.core),
+          ...State.reminders.custom
+        ].filter(r => r.enabled);
+
+        const notifications = [];
+        const now = new Date();
+
+        allReminders.forEach(alarm => {
+          const nextTime = Utils.getNextOccurrence(alarm.time, alarm.days);
+          const delay = nextTime - now;
+
+          // Only schedule if in the next 24 hours
+          if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+            notifications.push({
+              id: this.hashString(alarm.id),
+              title: alarm.label || alarm.title || 'Reminder',
+              body: 'Time for your spiritual practice',
+              schedule: {
+                at: nextTime,
+                allowWhileIdle: true,
+                repeats: false
+              },
+              sound: 'default',
+              smallIcon: 'ic_stat_notify',
+              extra: {
+                alarmId: alarm.id,
+                url: window.location.href
+              }
+            });
+          }
+        });
+
+        if (notifications.length > 0) {
+          await window.Capacitor.Plugins.LocalNotifications.schedule({
+            notifications
+          });
+          console.log('[AlarmScheduler] Scheduled', notifications.length, 'alarms with Capacitor');
+        }
+      } catch (error) {
+        console.error('[AlarmScheduler] Failed to schedule all alarms with Capacitor:', error);
+      }
+    },
+
+    setupCapacitorListener() {
+      if (!window.Capacitor || !window.Capacitor.Plugins.LocalNotifications) {
+        return;
+      }
+
+      window.Capacitor.Plugins.LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
+        console.log('[AlarmScheduler] Notification action performed:', notification);
+        const alarmId = notification.notification.extra?.alarmId;
+        if (alarmId) {
+          const alarm = this.findAlarmById(alarmId);
+          if (alarm) {
+            // Navigate to reminders page and trigger alarm
+            window.location.href = 'smart-reminders-v7.html';
+            setTimeout(() => {
+              this.triggerAlarm(alarm);
+            }, 1000);
+          }
+        }
       });
     },
 
@@ -734,12 +815,53 @@
       // Update hero card
       UI.updateHeroCard(next.alarm, next.nextTime);
 
-      // Schedule trigger
+      // Schedule trigger with Capacitor for background support
+      if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins.LocalNotifications) {
+        this.scheduleWithCapacitor(next.alarm, next.nextTime);
+      }
+
+      // Also schedule with setTimeout for in-app triggering
       State.nextAlarmTimeout = setTimeout(() => {
         this.triggerAlarm(next.alarm);
       }, delay);
 
       console.log('[AlarmScheduler] Next alarm:', next.alarm.label, 'in', Math.round(delay / 60000), 'min');
+    },
+
+    async scheduleWithCapacitor(alarm, scheduledTime) {
+      try {
+        await window.Capacitor.Plugins.LocalNotifications.schedule({
+          notifications: [{
+            id: this.hashString(alarm.id),
+            title: alarm.label || alarm.title || 'Reminder',
+            body: 'Time for your spiritual practice',
+            schedule: {
+              at: new Date(scheduledTime),
+              allowWhileIdle: true,
+              repeats: false
+            },
+            sound: 'default',
+            smallIcon: 'ic_stat_notify',
+            extra: {
+              alarmId: alarm.id,
+              url: window.location.href
+            }
+          }]
+        });
+        console.log('[AlarmScheduler] Scheduled with Capacitor:', alarm.label, 'at', new Date(scheduledTime).toLocaleString());
+      } catch (error) {
+        console.error('[AlarmScheduler] Capacitor scheduling failed:', error);
+      }
+    },
+
+    hashString(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash);
     },
 
     findNextAlarm() {
@@ -775,6 +897,32 @@
       const alarm = this.findAlarmById(alarmId);
       if (!alarm) return;
 
+      const snoozeTime = Date.now() + (minutes * 60000);
+
+      // Schedule with Capacitor for background support
+      if (window.Capacitor && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins.LocalNotifications) {
+        window.Capacitor.Plugins.LocalNotifications.schedule({
+          notifications: [{
+            id: this.hashString('snooze_' + alarmId + '_' + snoozeTime),
+            title: 'Snoozed: ' + (alarm.label || alarm.title || 'Reminder'),
+            body: 'Your snoozed alarm is ringing!',
+            schedule: {
+              at: new Date(snoozeTime),
+              allowWhileIdle: true,
+              repeats: false
+            },
+            sound: 'default',
+            smallIcon: 'ic_stat_notify',
+            extra: {
+              alarmId: alarmId,
+              isSnooze: true,
+              url: window.location.href
+            }
+          }]
+        }).catch(err => console.error('[AlarmScheduler] Capacitor snooze failed:', err));
+      }
+
+      // Also schedule with setTimeout for in-app triggering
       setTimeout(() => {
         this.triggerAlarm(alarm);
       }, minutes * 60000);
@@ -996,6 +1144,7 @@
       this.renderCustomAlarms();
       this.updateStats();
       AlarmScheduler.scheduleNext();
+      AlarmScheduler.scheduleAllWithCapacitor();
       
       // Hide loading
       setTimeout(() => {
@@ -1056,6 +1205,7 @@
             Storage.set(CONFIG.storage.reminders, State.reminders);
             e.target.closest('.alarm-card').classList.toggle('active', e.target.checked);
             AlarmScheduler.scheduleNext();
+            AlarmScheduler.scheduleAllWithCapacitor();
           }
         });
       });
@@ -1123,6 +1273,7 @@
             Storage.set(CONFIG.storage.reminders, State.reminders);
             e.target.closest('.alarm-card').classList.toggle('active', e.target.checked);
             AlarmScheduler.scheduleNext();
+            AlarmScheduler.scheduleAllWithCapacitor();
           }
         });
       });
@@ -1428,6 +1579,7 @@
       
       // Schedule next alarm
       AlarmScheduler.scheduleNext();
+      AlarmScheduler.scheduleAllWithCapacitor();
     }
   };
 
