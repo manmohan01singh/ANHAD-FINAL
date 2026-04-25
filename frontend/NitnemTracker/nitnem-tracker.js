@@ -187,7 +187,7 @@ const Utils = {
         for (let i = 0; i < sortedDates.length - 1; i++) {
             const current = new Date(sortedDates[i]);
             const next = new Date(sortedDates[i + 1]);
-            const diffDays = (current - next) / (1000 * 60 * 60 * 24);
+            const diffDays = Math.round((current - next) / (1000 * 60 * 60 * 24));
 
             // Consecutive days have exactly 1 day difference
             if (diffDays === 1) {
@@ -2402,6 +2402,7 @@ const HeaderManager = {
 
     /**
      * Update penalty state in header UI (fire icon color, badge, button visibility)
+     * ENHANCED: Blue fire when punishment active, red fire when completed/healthy
      */
     updatePenaltyState() {
         const activePunishment = StreakSaverManager.getActivePunishment();
@@ -2435,14 +2436,22 @@ const HeaderManager = {
         }
 
         // === 1. Fire Icon Color ===
+        // ═══ ENHANCED: Blue when punishment active, Red when completed/healthy ═══
         if (this.elements.streakFire) {
-            if (hasPenalty || (streakAtRisk && new Date().getHours() >= 6)) {
+            if (hasPenalty) {
+                // ACTIVE PUNISHMENT: Blue fire
                 this.elements.streakFire.classList.add('streak-broken');
                 this.elements.streakFire.classList.remove('streak-healthy');
-            } else if (todayMarked) {
+            } else if (streakAtRisk && new Date().getHours() >= 6) {
+                // AT RISK (past 6 AM, not marked): Blue fire
+                this.elements.streakFire.classList.add('streak-broken');
+                this.elements.streakFire.classList.remove('streak-healthy');
+            } else if (todayMarked || (activePunishment && activePunishment.completed)) {
+                // MARKED or PUNISHMENT COMPLETED: Red fire (healthy)
                 this.elements.streakFire.classList.remove('streak-broken');
                 this.elements.streakFire.classList.add('streak-healthy');
             } else {
+                // Normal state: No special class
                 this.elements.streakFire.classList.remove('streak-broken', 'streak-healthy');
             }
         }
@@ -3073,16 +3082,19 @@ const AmritvelaManager = {
 
     /**
      * Broadcast attendance update to all sections
+     * ENHANCED: Ensure streak updates immediately with new Amritvela entry
      */
     broadcastAttendanceUpdate(entry) {
-        // Update Streak Manager
-        StreakManager.checkAndUpdate();
+        // ═══ ENHANCED: Force immediate streak recalculation ═══
+        // Use setTimeout to ensure log is fully saved before recalculation
+        setTimeout(() => {
+            StreakManager.recalculateStreak();
+            StreakManager.updateDisplay();
+            HeaderManager.updateStreakDisplay();
+        }, 50);
 
         // Update Achievement Manager
         AchievementManager.checkAmritvela(entry);
-
-        // Update Header streak display
-        HeaderManager.updateStreakDisplay();
 
         // Sync to IndexedDB
         StorageManager.persistToIndexedDB();
@@ -6518,45 +6530,51 @@ const StreakManager = {
 
     /**
      * Recalculate streak from logs
+     * ENHANCED: More lenient - counts days with EITHER Amritvela OR Nitnem completion
      */
     recalculateStreak() {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        // A day is "complete" if both Amritvela and Nitnem are done
-        const completeDates = [];
+        // A day is "complete" if EITHER Amritvela OR Nitnem is done (more lenient)
+        const completeDates = new Set();
 
         const amritvelaDates = Object.keys(amritvelaLog);
         const nitnemDates = Object.keys(nitnemLog);
 
+        // Add all Amritvela dates
         amritvelaDates.forEach(date => {
-            // Check if nitnem was completed on this date
+            completeDates.add(date);
+        });
+
+        // Add all Nitnem completion dates
+        nitnemDates.forEach(date => {
             const nitnemData = nitnemLog[date];
             if (nitnemData) {
-                // Check if all banis were completed
+                // Check if any banis were completed
                 const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
                     amritvela: [],
                     rehras: [],
                     sohila: []
                 });
 
-                let allComplete = true;
+                let anyComplete = false;
                 Object.keys(selectedBanis).forEach(period => {
                     const selected = selectedBanis[period];
                     const completed = nitnemData[period] || [];
-                    if (selected.length > 0 && completed.length < selected.length) {
-                        allComplete = false;
+                    if (selected.length > 0 && completed.length > 0) {
+                        anyComplete = true;
                     }
                 });
 
-                if (allComplete) {
-                    completeDates.push(date);
+                if (anyComplete) {
+                    completeDates.add(date);
                 }
             }
         });
 
-        // If no complete dates, just use Amritvela dates for streak
-        const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
+        // Convert Set to Array for calculation
+        const datesToUse = Array.from(completeDates);
 
         // Calculate current streak
         this.state.currentStreak = Utils.calculateStreak(datesToUse);
@@ -6572,11 +6590,63 @@ const StreakManager = {
     },
 
     /**
+     * Calculate what the streak was up to a specific historical date
+     */
+    calculateHistoricalStreak(targetDateStr) {
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+
+        const completeDates = [];
+        const amritvelaDates = Object.keys(amritvelaLog);
+        const nitnemDates = Object.keys(nitnemLog);
+
+        amritvelaDates.forEach(date => {
+            const nitnemData = nitnemLog[date];
+            if (nitnemData) {
+                const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
+                let allComplete = true;
+                Object.keys(selectedBanis).forEach(period => {
+                    const selected = selectedBanis[period];
+                    const completed = nitnemData[period] || [];
+                    if (selected.length > 0 && completed.length < selected.length) {
+                        allComplete = false;
+                    }
+                });
+                if (allComplete) completeDates.push(date);
+            }
+        });
+
+        const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
+        
+        if (!datesToUse.includes(targetDateStr)) return 0;
+
+        const sortedDates = datesToUse.sort((a, b) => new Date(b) - new Date(a));
+        const startIndex = sortedDates.indexOf(targetDateStr);
+
+        let streak = 1;
+        for (let i = startIndex; i < sortedDates.length - 1; i++) {
+            const current = new Date(sortedDates[i]);
+            const next = new Date(sortedDates[i + 1]);
+            const diffDays = Math.round((current - next) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) streak++;
+            else break;
+        }
+
+        return streak;
+    },
+
+    /**
      * Save streak data
      */
     saveStreakData() {
         this.state.lastUpdated = new Date().toISOString();
-        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, this.state);
+        
+        // SYNC: Preserve global AnhadStats fields to avoid data corruption
+        const existingData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {});
+        const mergedData = { ...existingData, ...this.state };
+        
+        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, mergedData);
     },
 
     /**
@@ -6737,6 +6807,7 @@ const StreakSaverManager = {
 
     STORAGE_KEY: 'nitnemTracker_streakSaver',
     ATTENDANCE_KEY: 'nitnemTracker_weakAttendance',
+    continuousCheckInterval: null,
 
     /**
      * Initialize Streak Saver
@@ -6745,6 +6816,38 @@ const StreakSaverManager = {
         this.checkAndCleanupExpired();
         this.checkStreakBreak();
         this.renderPunishmentUI();
+        
+        // ═══ ENHANCED: Add continuous check every minute for 6 AM threshold ═══
+        // This ensures streak saver activates even if user stays on page past 6 AM
+        this.startContinuousCheck();
+    },
+
+    /**
+     * Start continuous streak saver check (runs every minute)
+     */
+    startContinuousCheck() {
+        // Clear any existing interval
+        if (this.continuousCheckInterval) {
+            clearInterval(this.continuousCheckInterval);
+        }
+
+        // Check every minute
+        this.continuousCheckInterval = setInterval(() => {
+            this.checkStreakBreak();
+        }, 60 * 1000); // 1 minute
+
+        console.log('[StreakSaver] Continuous check started (every minute)');
+    },
+
+    /**
+     * Stop continuous check (call when page unloads)
+     */
+    stopContinuousCheck() {
+        if (this.continuousCheckInterval) {
+            clearInterval(this.continuousCheckInterval);
+            this.continuousCheckInterval = null;
+            console.log('[StreakSaver] Continuous check stopped');
+        }
     },
 
     /**
@@ -6793,25 +6896,35 @@ const StreakSaverManager = {
         // Check for weak attendance pattern
         const weakAttendance = this.checkWeakAttendance();
 
-        if (missedYesterday && hasStreak) {
-            // Calculate effective streak for punishment tier
-            let effectiveStreak = StreakManager.state.currentStreak;
+        if (missedYesterday) {
+            // Find what the streak was before yesterday was missed
+            const dayBeforeYesterday = new Date();
+            dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
+            const dbyString = dayBeforeYesterday.toLocaleDateString('en-CA');
+            
+            const previousStreak = StreakManager.calculateHistoricalStreak(dbyString);
+            const hadStreak = previousStreak > 0;
 
-            // Increase penalty for missed Mathila
-            if (missedMathila) {
-                effectiveStreak = Math.floor(effectiveStreak * this.MATHILA_CONFIG.penaltyMultiplier);
+            if (hadStreak) {
+                // Calculate effective streak for punishment tier
+                let effectiveStreak = previousStreak;
+
+                // Increase penalty for missed Mathila
+                if (missedMathila) {
+                    effectiveStreak = Math.floor(effectiveStreak * this.MATHILA_CONFIG.penaltyMultiplier);
+                }
+
+                // Store attendance info for punishment context
+                this.saveAttendanceData({
+                    missedAmritvela: true,
+                    missedMathila: missedMathila,
+                    weakAttendance: weakAttendance,
+                    date: yesterdayString
+                });
+
+                // Offer saver with potentially increased punishment
+                this.offerStreakSaver(effectiveStreak, { missedMathila, weakAttendance });
             }
-
-            // Store attendance info for punishment context
-            this.saveAttendanceData({
-                missedAmritvela: true,
-                missedMathila: missedMathila,
-                weakAttendance: weakAttendance,
-                date: yesterdayString
-            });
-
-            // Offer saver with potentially increased punishment
-            this.offerStreakSaver(effectiveStreak, { missedMathila, weakAttendance });
         }
     },
 
@@ -7035,6 +7148,7 @@ const StreakSaverManager = {
 
     /**
      * Complete punishment and save streak
+     * ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state
      */
     completePunishment() {
         const saverData = this.getActivePunishment();
@@ -7051,6 +7165,9 @@ const StreakSaverManager = {
         const restoredStreak = saverData.brokenStreak;
         StreakManager.state.currentStreak = restoredStreak;
         StreakManager.saveStreakData();
+
+        // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
+        localStorage.removeItem(this.ATTENDANCE_KEY);
 
         // Show celebration
         Toast.success('🎉 Streak Saved!', `Your ${restoredStreak}-day streak is restored!`);
@@ -7205,14 +7322,6 @@ const StreakSaverManager = {
 
     /**
      * Get active punishment data
-     */
-    getActivePunishment() {
-        const data = localStorage.getItem(this.STORAGE_KEY);
-        return data ? JSON.parse(data) : null;
-    },
-
-    /**
-     * Save punishment data
      */
     savePunishmentData(data) {
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
@@ -10080,8 +10189,14 @@ document.addEventListener('visibilitychange', () => {
         MalaManager.loadTodayData();
         MalaManager.updateDisplay();
         AlarmManager.syncFromSmartReminders();
+        
+        // ═══ ENHANCED: Full streak update on visibility change ═══
         StreakManager.recalculateStreak();
-        HeaderManager.updatePenaltyState();
+        StreakManager.updateDisplay();
+        HeaderManager.updateStreakDisplay();
+        
+        // Check for streak saver activation
+        StreakSaverManager.checkStreakBreak();
         StreakSaverManager.checkAndCleanupExpired();
         ReportsManager.renderWeeklyReport();
 

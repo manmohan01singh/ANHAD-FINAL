@@ -426,9 +426,16 @@ function shareShabad() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function initEvents() {
-    // Navigation
+    // Navigation - Use history.back() to preserve all opened shabads in browser history
     DOM.navBack.addEventListener('click', () => {
-        window.location.href = 'gurbani-khoj.html';
+        // Always use history.back() to preserve browser history chain
+        // This allows users to navigate back through all shabads they opened
+        if (history.length > 1) {
+            history.back();
+        } else {
+            // Fallback to Gurbani Khoj if no history
+            window.location.href = 'gurbani-khoj.html';
+        }
     });
 
     // Theme

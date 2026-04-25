@@ -184,6 +184,8 @@
     selectors.forEach(function(sel) {
       var elements = document.querySelectorAll(sel);
       elements.forEach(function(el) {
+        // Skip if marked to skip auto-wiring
+        if (el.hasAttribute('data-anhad-skip-back')) return;
         // Prevent double-binding
         if (el._anhadBackWired || wired.has(el)) return;
         el._anhadBackWired = true;

@@ -11,6 +11,9 @@ class NotificationEngine {
         this.permission = 'default';
         this.scheduledNotifications = [];
         this.serviceWorkerReady = false;
+        this.notificationHistory = [];
+        this.maxRetries = 3;
+        this.retryDelay = 5000; // 5 seconds
 
         this.init();
     }
@@ -62,12 +65,13 @@ class NotificationEngine {
     }
 
     /**
-     * Show immediate notification
+     * Show immediate notification with retry logic
      * @param {string} title - Notification title
      * @param {object} options - Notification options
+     * @param {number} retryCount - Current retry attempt
      * @returns {Notification|null}
      */
-    show(title, options = {}) {
+    show(title, options = {}, retryCount = 0) {
         if (this.permission !== 'granted') {
             console.log('Notifications not permitted');
             return null;
@@ -96,11 +100,55 @@ class NotificationEngine {
                 }
             };
 
+            // Log to history
+            this.addToHistory({
+                title,
+                timestamp: Date.now(),
+                success: true
+            });
+
             return notification;
         } catch (e) {
             console.error('Failed to show notification:', e);
+            
+            // Retry logic
+            if (retryCount < this.maxRetries) {
+                console.log(`Retrying notification (${retryCount + 1}/${this.maxRetries}) in ${this.retryDelay}ms`);
+                setTimeout(() => {
+                    this.show(title, options, retryCount + 1);
+                }, this.retryDelay);
+            } else {
+                console.error('Max retries reached for notification:', title);
+                this.addToHistory({
+                    title,
+                    timestamp: Date.now(),
+                    success: false,
+                    error: e.message
+                });
+            }
+            
             return null;
         }
+    }
+
+    /**
+     * Add notification to history for debugging
+     * @param {object} entry - History entry
+     */
+    addToHistory(entry) {
+        this.notificationHistory.push(entry);
+        // Keep only last 100 entries
+        if (this.notificationHistory.length > 100) {
+            this.notificationHistory.shift();
+        }
+    }
+
+    /**
+     * Get notification history
+     * @returns {Array} Notification history
+     */
+    getHistory() {
+        return this.notificationHistory;
     }
 
     /**

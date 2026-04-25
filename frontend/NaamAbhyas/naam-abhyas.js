@@ -391,6 +391,9 @@ class NaamAbhyas {
                 // Check for action in URL
                 this.checkAutoStart();
 
+                // ═══ ENHANCED: Check for missed sessions while app was closed ═══
+                this.checkForMissedSessions();
+
                 console.log('✅ Deferred initialization complete');
             };
 
@@ -1042,6 +1045,7 @@ class NaamAbhyas {
 
     /**
      * Register periodic background sync to wake Service Worker for alarm checks
+     * ENHANCED: Multiple wake strategies for maximum reliability
      * This is critical for background alarm reliability when app is closed
      */
     async registerPeriodicBackgroundSync() {
@@ -1053,19 +1057,153 @@ class NaamAbhyas {
         try {
             const registration = await navigator.serviceWorker.ready;
 
-            // Check if periodicSync is supported
+            // ═══ STRATEGY 1: PeriodicSync API (Chrome/Edge) ═══
             if ('periodicSync' in registration) {
-                // Register for Naam Abhyas alarm checks every minute minimum
-                await registration.periodicSync.register('anhad-notification-check', {
-                    minInterval: 60 * 1000 // 1 minute minimum
-                });
-                console.log('[NaamAbhyas] ✅ Periodic background sync registered (alarms will fire even when closed!)');
+                try {
+                    // Register for Naam Abhyas alarm checks every minute minimum
+                    await registration.periodicSync.register('anhad-notification-check', {
+                        minInterval: 60 * 1000 // 1 minute minimum
+                    });
+                    console.log('[NaamAbhyas] ✅ Periodic background sync registered (alarms will fire even when closed!)');
+                } catch (syncErr) {
+                    console.warn('[NaamAbhyas] PeriodicSync registration failed:', syncErr);
+                }
             } else {
-                console.log('[NaamAbhyas] Periodic sync not supported, relying on IndexedDB + SW wake events');
+                console.log('[NaamAbhyas] Periodic sync not supported, using fallback strategies');
             }
+
+            // ═══ STRATEGY 2: Store alarms in IndexedDB for SW to check on wake ═══
+            await this.saveAlarmsToIndexedDB();
+
+            // ═══ STRATEGY 3: Send wake-up interval to SW ═══
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'SET_ALARM_CHECK_INTERVAL',
+                    interval: 60000 // Check every minute
+                });
+                console.log('[NaamAbhyas] ✅ Sent alarm check interval to Service Worker');
+            }
+
         } catch (err) {
             console.warn('[NaamAbhyas] Failed to register periodic sync:', err);
             // Continue - alarms will still work via IndexedDB when SW wakes for other reasons
+        }
+    }
+
+    /**
+     * Save current alarm schedule to IndexedDB for Service Worker access
+     * This allows SW to check alarms even when app is closed
+     */
+    async saveAlarmsToIndexedDB() {
+        try {
+            if (!('indexedDB' in window)) {
+                console.log('[NaamAbhyas] IndexedDB not supported');
+                return;
+            }
+
+            const dbName = 'NaamAbhyasDB';
+            const storeName = 'alarms';
+            
+            // Open or create database
+            const request = indexedDB.open(dbName, 1);
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains(storeName)) {
+                    db.createObjectStore(storeName, { keyPath: 'id' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+
+                // Clear old alarms
+                store.clear();
+
+                // Add current schedule alarms
+                const now = new Date();
+                const today = now.toDateString();
+                const currentHour = now.getHours();
+
+                Object.entries(this.currentSchedule).forEach(([hour, session]) => {
+                    const hourNum = parseInt(hour);
+                    const scheduledTime = new Date();
+                    scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
+
+                    // Only schedule future alarms
+                    if (scheduledTime > now) {
+                        store.put({
+                            id: `naam_${hour}_${session.startMinute}`,
+                            hour: hourNum,
+                            startMinute: session.startMinute,
+                            scheduledTime: scheduledTime.getTime(),
+                            title: '🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ',
+                            body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
+                            status: session.status,
+                            date: today
+                        });
+                    }
+                });
+
+                console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB for SW access');
+            };
+
+            request.onerror = (event) => {
+                console.error('[NaamAbhyas] IndexedDB error:', event.target.error);
+            };
+        } catch (err) {
+            console.warn('[NaamAbhyas] Failed to save alarms to IndexedDB:', err);
+        }
+    }
+
+    /**
+     * Check for missed sessions while app was closed
+     * Shows notification for any sessions that were missed
+     */
+    checkForMissedSessions() {
+        if (!this.config.enabled) return;
+
+        const now = new Date();
+        const today = now.toDateString();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+
+        let missedCount = 0;
+        const missedSessions = [];
+
+        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
+            const hourNum = parseInt(hour);
+            const sessionEndMinute = session.endMinute || session.startMinute + (this.config.duration || 2);
+
+            // Check if session has ended and is still pending
+            const isPastSession = hourNum < currentHour || (hourNum === currentHour && currentMinute >= sessionEndMinute);
+            
+            if (isPastSession && session.status === 'pending') {
+                missedCount++;
+                missedSessions.push({
+                    hour: hourNum,
+                    startTime: session.startTime
+                });
+            }
+        });
+
+        if (missedCount > 0) {
+            console.log(`[NaamAbhyas] Detected ${missedCount} missed sessions while app was closed`);
+            
+            // Show notification about missed sessions
+            const message = missedCount === 1 
+                ? `You missed 1 Naam Abhyas session at ${missedSessions[0].startTime}`
+                : `You missed ${missedCount} Naam Abhyas sessions today`;
+            
+            this.showToast(message, 'warning');
+            
+            // Update streak (mark as missed)
+            if (this.history && this.history.statistics) {
+                this.history.currentStreak = 0;
+                this.saveHistory();
+            }
         }
     }
 
@@ -1153,7 +1291,25 @@ class NaamAbhyas {
             };
 
             // 1. NATIVE MOBILE (Capacitor) - Works when app is completely closed!
-            if (window.NativeNotifications?.isNativePlatform()) {
+            // ═══ ENHANCED: Use CapacitorNotifications wrapper for better reliability ═══
+            if (window.CapacitorNotifications?.isCapacitorAvailable?.()) {
+                window.CapacitorNotifications.scheduleNotification({
+                    id: notificationId,
+                    title: title,
+                    body: body,
+                    scheduledTime: scheduledTime,
+                    icon: '/assets/icons/icon-192x192.png',
+                    badge: '/assets/icons/icon-72x72.png',
+                    tag: notificationPayload.tag,
+                    requireInteraction: true,
+                    data: notificationPayload.data
+                }).then(() => {
+                    console.log(`[NaamAbhyas] ✅ CAPACITOR notification scheduled for ${session.startTime} (works when closed!)`);
+                }).catch(err => {
+                    console.warn('[NaamAbhyas] Capacitor notification failed:', err);
+                });
+            } else if (window.NativeNotifications?.isNativePlatform?.()) {
+                // Fallback to old NativeNotifications API
                 window.NativeNotifications.schedule({
                     id: notificationId,
                     title: title,

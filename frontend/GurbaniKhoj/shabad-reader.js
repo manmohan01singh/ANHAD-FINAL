@@ -561,16 +561,16 @@ function shareShabad() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function initEvents() {
-    // Navigation - Always return to Gurbani Khoj (Search) with state
+    // Navigation - Use history.back() to preserve all opened shabads in browser history
     DOM.navBack.addEventListener('click', (e) => {
         e.preventDefault();
         
-        // If we came from Gurbani Khoj, use history.back() for instant state restoration (bfcache)
-        const referrer = document.referrer || '';
-        if (referrer.includes('gurbani-khoj.html')) {
+        // Always use history.back() to preserve browser history chain
+        // This allows users to navigate back through all shabads they opened
+        if (history.length > 1) {
             history.back();
         } else {
-            // Otherwise force go to Gurbani Khoj
+            // Fallback to Gurbani Khoj if no history
             window.location.href = 'gurbani-khoj.html';
         }
     });
