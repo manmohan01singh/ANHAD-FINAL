@@ -218,10 +218,10 @@ class PWAManager {
     // Initial check (delayed slightly to let page settle)
     setTimeout(() => this.checkVersionAndUpdate(), 3000);
 
-    // Poll every 60 seconds
+    // Poll every 10 seconds for instant updates
     this.versionCheckInterval = setInterval(() => {
       this.checkVersionAndUpdate();
-    }, 60 * 1000);
+    }, 10 * 1000);
   }
 
   async checkVersionAndUpdate() {
