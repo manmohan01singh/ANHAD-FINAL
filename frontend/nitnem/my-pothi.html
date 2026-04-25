@@ -96,23 +96,27 @@
         .header {
             position: sticky; top: 0; z-index: 100;
             padding: calc(var(--safe-top) + 8px) 20px 12px;
-            display: flex; align-items: center;
+            display: flex; align-items: center; justify-content: space-between;
             background: var(--glass-bg);
             backdrop-filter: var(--blur-thick); -webkit-backdrop-filter: var(--blur-thick);
             border-bottom: 1px solid var(--separator);
         }
-        .back-btn { display: flex; align-items: center; gap: 6px; color: var(--ios-blue); text-decoration: none; font-size: 17px; }
+        .back-btn { display: flex; align-items: center; gap: 6px; color: var(--ios-blue); text-decoration: none; font-size: 17px; background: transparent; border: none; padding: 0; outline: none; cursor: pointer; }
         .back-btn svg { width: 12px; height: 20px; }
         .header-title {
             font-family: var(--font-gurmukhi); font-size: 18px; font-weight: 600;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
             -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .edit-btn {
             width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
             background: var(--card-bg); border: 1px solid var(--card-border);
             border-radius: 50%; cursor: pointer; font-size: 16px;
             transition: transform 0.3s var(--spring);
+            margin-left: auto;
         }
         .edit-btn:active { transform: scale(0.9); }
         .edit-btn.active { background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron)); border-color: var(--sacred-gold); }
@@ -133,7 +137,6 @@
             color: #000; font-weight: 700; font-size: 16px;
             border: none; border-radius: 14px; cursor: pointer;
             box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
-            float: right;
         }
         
         /* Floating Add Button - hidden */
@@ -345,7 +348,7 @@
     </div>
 
     <div class="app">
-        <header>
+        <header class="header">
             <button class="back-btn" id="backBtn">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 2L2 10L10 18" /></svg>
                 Back

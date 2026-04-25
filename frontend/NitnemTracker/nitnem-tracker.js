@@ -1358,10 +1358,11 @@ const HeaderManager = {
                 display: none;
             }
 
-            /* 4. Buttons (Back & Actions) - Lowered to align with Box */
+            /* 4. Buttons (Back & Actions) - Vertically centered with Box */
             .back-btn, .header-actions {
                 position: absolute;
-                top: 55px; /* Aligned with the White Box */
+                top: 50%; /* Center vertically with the header-content */
+                transform: translateY(-50%);
                 pointer-events: auto;
                 z-index: 30;
             }
@@ -2347,8 +2348,8 @@ const HeaderManager = {
                 const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
                 const today = Utils.getTodayString();
                 const todayMarked = !!amritvelaLog[today];
-                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
-                const streakAtRisk = !todayMarked && streakData.current > 0;
+                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+                const streakAtRisk = !todayMarked && (streakData.currentStreak || streakData.current || 0) > 0;
 
                 if (activePunishment && !activePunishment.completed) {
                     // Punishment mode - show penalty modal
@@ -2419,7 +2420,7 @@ const HeaderManager = {
 
         // Determine if streak is broken or at risk
         const hasPenalty = activePunishment && !activePunishment.completed;
-        const streakAtRisk = !todayMarked && streakData.current > 0;
+        const streakAtRisk = !todayMarked && currentStreak > 0;
 
         // Premium 10 Feature #6: Milestone Sparkles
         if (this.elements.streakFire) {
@@ -2435,7 +2436,7 @@ const HeaderManager = {
 
         // === 1. Fire Icon Color ===
         if (this.elements.streakFire) {
-            if (hasPenalty || (streakAtRisk && new Date().getHours() >= 7)) {
+            if (hasPenalty || (streakAtRisk && new Date().getHours() >= 6)) {
                 this.elements.streakFire.classList.add('streak-broken');
                 this.elements.streakFire.classList.remove('streak-healthy');
             } else if (todayMarked) {
@@ -2649,7 +2650,7 @@ const HeaderManager = {
                             <div class="penalty-streak-info">
                                 <div class="penalty-streak-number">
                                     <span class="penalty-streak-fire">🔥</span>
-                                    <span class="penalty-streak-count">${streakData.current}</span>
+                                    <span class="penalty-streak-count">${streakData.currentStreak || streakData.current || 0}</span>
                                     <span class="penalty-streak-label">Day Streak</span>
                                 </div>
                             </div>
@@ -5812,8 +5813,8 @@ const AlarmManager = {
         });
 
         try {
-            // Try multiple storage keys for compatibility
-            const keys = ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
+            // Try multiple storage keys for compatibility (including v7)
+            const keys = ['sr_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
             let rawData = null;
             let foundKey = null;
 
@@ -6447,7 +6448,7 @@ const AlarmManager = {
      * Open Smart Reminders page
      */
     openSmartReminders() {
-        window.location.href = '../reminders/smart-reminders.html';
+        window.location.href = '../reminders/smart-reminders-v7.html';
     },
 
     /**
@@ -6689,7 +6690,7 @@ const StreakManager = {
     updateFlameAnimation() {
         if (!this.elements.section) return;
 
-        if (this.state.current > 0) {
+        if (this.state.currentStreak > 0) {
             this.elements.section.classList.add('active');
         } else {
             this.elements.section.classList.remove('active');
@@ -6758,21 +6759,21 @@ const StreakSaverManager = {
         const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
         const currentHour = new Date().getHours();
-        const hasStreak = StreakManager.state.current > 0;
+        const hasStreak = StreakManager.state.currentStreak > 0;
 
         // ═══════════════════════════════════════════════════════════════
         // PROACTIVE CHECK: Amritvela not marked by 7 AM today
         // ═══════════════════════════════════════════════════════════════
         const todayNotMarked = !amritvelaLog[today];
-        const past7AM = currentHour >= 7;
+        const past6AM = currentHour >= 6;
 
         // If it's past 7 AM and Amritvela not marked today, activate Streak Saver warning
-        if (todayNotMarked && past7AM && hasStreak) {
+        if (todayNotMarked && past6AM && hasStreak) {
             // Check if we already have an active punishment for today
             const existing = this.getActivePunishment();
             if (!existing) {
                 // Offer streak saver as a warning (lighter punishment since it's same day)
-                this.offerStreakSaver(StreakManager.state.current, {
+                this.offerStreakSaver(StreakManager.state.currentStreak, {
                     type: 'same_day_warning',
                     missedAmritvela: false,
                     warning: 'Amritvela not marked by 7 AM'
@@ -6794,7 +6795,7 @@ const StreakSaverManager = {
 
         if (missedYesterday && hasStreak) {
             // Calculate effective streak for punishment tier
-            let effectiveStreak = StreakManager.state.current;
+            let effectiveStreak = StreakManager.state.currentStreak;
 
             // Increase penalty for missed Mathila
             if (missedMathila) {
@@ -7048,7 +7049,7 @@ const StreakSaverManager = {
 
         // Restore the streak (minus 1 since yesterday was missed)
         const restoredStreak = saverData.brokenStreak;
-        StreakManager.state.current = restoredStreak;
+        StreakManager.state.currentStreak = restoredStreak;
         StreakManager.saveStreakData();
 
         // Show celebration
@@ -8176,19 +8177,19 @@ const InsightsEngine = {
         // Generate personalized insights
 
         // 1. Streak Insight
-        if (streakData.current > 0) {
-            if (streakData.current >= 7) {
+        if ((streakData.currentStreak || streakData.current || 0) > 0) {
+            if ((streakData.currentStreak || streakData.current || 0) >= 7) {
                 insights.push({
                     icon: '🔥',
                     title: 'Amazing Streak!',
-                    description: `You're on a ${streakData.current}-day streak! Your commitment to Sikhi is inspiring.`,
+                    description: `You're on a ${streakData.currentStreak || streakData.current}-day streak! Your commitment to Sikhi is inspiring.`,
                     type: 'success'
                 });
             } else {
                 insights.push({
                     icon: '📈',
                     title: 'Building Momentum',
-                    description: `${streakData.current} days and counting! Keep going to reach 7 days for a special milestone.`,
+                    description: `${streakData.currentStreak || streakData.current} days and counting! Keep going to reach 7 days for a special milestone.`,
                     type: 'progress'
                 });
             }
@@ -9650,7 +9651,7 @@ const StatisticsModal = {
 
         // Calculate overall score
         const factors = [
-            Math.min(streakData.current / 30, 1) * 25, // Streak (25%)
+            Math.min((streakData.currentStreak || streakData.current || 0) / 30, 1) * 25, // Streak (25%)
             Math.min(amritvelaDates.length / 30, 1) * 25, // Amritvela (25%)
             Math.min(completeDays / 14, 1) * 25, // Nitnem (25%)
             Math.min(achievements.length / 6, 1) * 25 // Achievements (25%)
@@ -10039,8 +10040,12 @@ if (document.readyState === 'loading') {
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                HapticManager.light();
-                window.location.href = '../index.html';
+                if (typeof HapticManager !== 'undefined') HapticManager.light();
+                if (typeof window.anhadGoBack === 'function') {
+                    window.anhadGoBack();
+                } else {
+                    window.location.href = '../index.html';
+                }
             });
         }
     });
@@ -10049,6 +10054,19 @@ if (document.readyState === 'loading') {
     SmartRemindersIntegration.init();
     ServiceWorkerComm.init();
     KeyboardShortcuts.init();
+
+    // Back button navigation
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            if (typeof HapticManager !== 'undefined') HapticManager.light();
+            if (typeof window.anhadGoBack === 'function') {
+                window.anhadGoBack();
+            } else {
+                window.location.href = '../index.html';
+            }
+        });
+    }
 }
 
 // Handle app visibility changes

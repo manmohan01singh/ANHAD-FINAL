@@ -1,6 +1,6 @@
 {
-  "version": "5.0.1",
-  "build": "20260425.2",
-  "timestamp": "2026-04-25T02:00:00Z",
-  "commit": "fix-infinite-refresh-loop"
+  "version": "5.1.0",
+  "build": "20260425.3",
+  "timestamp": "2026-04-25T03:30:00Z",
+  "commit": "kirpa-kalgiyan-wale-di"
 }

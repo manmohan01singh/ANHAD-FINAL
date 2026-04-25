@@ -74,7 +74,7 @@
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',
     calendar: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTracker: 'NitnemTracker/nitnem-tracker.html',
-    reminders: 'reminders/smart-reminders.html',
+    reminders: 'reminders/smart-reminders-v7.html',
     notes: 'Notes/notes.html',
     insights: 'Insights/insights.html',
     favorites: 'Favorites/favorites.html',

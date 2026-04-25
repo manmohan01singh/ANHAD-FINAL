@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.0.1';
+const CACHE_VERSION = 'anhad-v5.1.0';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -423,7 +423,11 @@ async function staleWhileRevalidate(request) {
   // Always fetch fresh in background
   const networkPromise = fetch(request).then(response => {
     if (response && response.ok) {
-      cache.put(request, response.clone());
+      try {
+        cache.put(request, response.clone());
+      } catch (e) {
+        // Silently handle clone errors for already-consumed response bodies
+      }
     }
     return response;
   }).catch(() => null);

@@ -261,7 +261,7 @@
 
 .hero-section {
     text-align: center !important;
-    padding: var(--space-4xl) 0 var(--space-3xl) !important;
+    padding: var(--space-lg) 0 var(--space-3xl) !important;
     position: relative !important;
     overflow: visible !important;
 }
@@ -821,8 +821,8 @@
 .main-content {
     position: relative !important;
     z-index: 1 !important;
-    padding: calc(100px + var(--safe-top, 20px)) var(--space-md) calc(var(--safe-bottom, 34px) + 40px) !important;
-    max-width: 500px !important;
+    padding: calc(50px + var(--safe-top, 20px)) var(--space-md) calc(var(--safe-bottom, 34px) + 40px) !important;
+    max-width: 350px !important;
     margin: 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
