@@ -822,7 +822,7 @@
     position: relative !important;
     z-index: 1 !important;
     padding: calc(50px + var(--safe-top, 20px)) var(--space-md) calc(var(--safe-bottom, 34px) + 40px) !important;
-    max-width: 350px !important;
+    max-width: 450px !important;
     margin: 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
