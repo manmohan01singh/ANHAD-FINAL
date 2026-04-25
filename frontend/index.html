@@ -2027,214 +2027,47 @@
     </a>
   </nav>
 
-  <!-- Service Worker Registration with Auto-Update -->
+  <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->
   <script>
+    /**
+     * SILENT AUTO-UPDATE SYSTEM
+     * =========================
+     * The primary auto-update logic lives in pwa-register.js (loaded above).
+     * This script registers service-worker.js as a backward-compat passthrough
+     * and ensures any waiting workers are activated immediately.
+     * 
+     * pwa-register.js polls version.json every 30 seconds.
+     * When a version change is detected → auto SW update → auto reload.
+     * No user interaction required. Updates propagate within seconds.
+     */
     if ('serviceWorker' in navigator) {
-      let registration;
-      let isUpdating = false;
-      let notificationShown = false;
-      
-      // Check if we just updated (prevent loop)
-      const lastUpdateTime = localStorage.getItem('anhad_last_update');
-      const now = Date.now();
-      const UPDATE_COOLDOWN = 5 * 60 * 1000; // 5 minutes cooldown
-      
-      if (lastUpdateTime && (now - lastUpdateTime) < UPDATE_COOLDOWN) {
-        console.log('[Service Worker] Update cooldown active, skipping update check');
-        isUpdating = true;
-      }
-      
-      // Register service worker immediately
+      // Register the legacy service-worker.js as a passthrough
+      // (The main SW is sw.js, registered by pwa-register.js)
       navigator.serviceWorker.register('./service-worker.js')
         .then((reg) => {
-          registration = reg;
-          console.log('[Service Worker] Registered successfully:', reg.scope);
-          console.log('[Service Worker] State:', reg.active ? 'active' : 'not active');
-          console.log('[Service Worker] Installing:', reg.installing ? 'yes' : 'no');
-          console.log('[Service Worker] Waiting:', reg.waiting ? 'yes' : 'no');
-
-          // Only check for updates if not in cooldown
-          if (!isUpdating) {
-            // Force update check immediately
-            reg.update().then(() => {
-              console.log('[Service Worker] Initial update check complete');
-            });
+          console.log('[SW-Legacy] Registered passthrough service-worker.js');
+          
+          // If this SW has a waiting worker, activate it immediately
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
           }
-
-          // Auto-update check every 30 minutes (reduced frequency to prevent loop)
-          setInterval(() => {
-            if (!isUpdating && !notificationShown) {
-              console.log('[Service Worker] Checking for updates...');
-              reg.update();
-            }
-          }, 30 * 60 * 1000);
-
-          // Check for updates when page becomes visible (with cooldown check)
-          document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && !isUpdating && !notificationShown) {
-              const lastCheck = localStorage.getItem('anhad_last_visibility_check');
-              const visibilityCooldown = 60 * 1000; // 1 minute cooldown
-              
-              if (!lastCheck || (now - parseInt(lastCheck)) > visibilityCooldown) {
-                console.log('[Service Worker] Page visible, checking for updates...');
-                localStorage.setItem('anhad_last_visibility_check', now.toString());
-                reg.update();
-              }
-            }
-          });
-
-          // Check for updates when app comes to foreground (with cooldown check)
-          window.addEventListener('focus', () => {
-            if (!isUpdating && !notificationShown) {
-              const lastFocusCheck = localStorage.getItem('anhad_last_focus_check');
-              const focusCooldown = 60 * 1000; // 1 minute cooldown
-              
-              if (!lastFocusCheck || (now - parseInt(lastFocusCheck)) > focusCooldown) {
-                console.log('[Service Worker] App focused, checking for updates...');
-                localStorage.setItem('anhad_last_focus_check', now.toString());
-                reg.update();
-              }
-            }
-          });
-
-          // Listen for updates
+          
+          // Listen for updates on the legacy SW
           reg.addEventListener('updatefound', () => {
-            console.log('[Service Worker] Update found!');
             const newWorker = reg.installing;
-            
-            newWorker.addEventListener('statechange', () => {
-              console.log('[Service Worker] New worker state:', newWorker.state);
-              
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New version available
-                if (!notificationShown && !isUpdating) {
-                  console.log('[Service Worker] New version available, showing notification');
-                  notificationShown = true;
-                  showUpdateNotification(newWorker);
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // Auto-activate — no user prompt
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
                 }
-              } else if (newWorker.state === 'activated') {
-                console.log('[Service Worker] New worker activated');
-                localStorage.setItem('anhad_last_update', Date.now().toString());
-                isUpdating = true;
-              }
-            });
+              });
+            }
           });
-
-          // If there's already a waiting worker, notify user (only if not in cooldown)
-          if (reg.waiting && !isUpdating && !notificationShown) {
-            console.log('[Service Worker] Waiting worker found on registration');
-            notificationShown = true;
-            showUpdateNotification(reg.waiting);
-          }
         })
         .catch((error) => {
-          console.error('[Service Worker] Registration failed:', error);
+          console.warn('[SW-Legacy] Registration failed (expected if sw.js handles it):', error.message);
         });
-
-      // Handle controller change (when new worker activates)
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[Service Worker] Controller changed, reloading page');
-        localStorage.setItem('anhad_last_update', Date.now().toString());
-        window.location.reload();
-      });
-
-      // Handle messages from service worker
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        console.log('[Service Worker] Message received:', event.data);
-        if (event.data && event.data.type === 'SKIP_WAITING') {
-          if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-          }
-        }
-      });
-    }
-
-    // Custom update notification function
-    function showUpdateNotification(newWorker) {
-      // Remove existing notification if any
-      const existingNotification = document.getElementById('pwa-update-notification');
-      if (existingNotification) {
-        existingNotification.remove();
-      }
-
-      // Create notification element
-      const notification = document.createElement('div');
-      notification.id = 'pwa-update-notification';
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
-        color: white;
-        padding: 16px 24px;
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        z-index: 999999;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        text-align: center;
-        max-width: 90%;
-        animation: slideDown 0.3s ease-out;
-      `;
-
-      notification.innerHTML = `
-        <div style="margin-bottom: 12px;">🔄 New version available!</div>
-        <div style="display: flex; gap: 8px; justify-content: center;">
-          <button id="update-now-btn" style="
-            background: white;
-            color: #D4943A;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 13px;
-          ">Update Now</button>
-          <button id="update-later-btn" style="
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 13px;
-          ">Later</button>
-        </div>
-      `;
-
-      // Add animation keyframes
-      const style = document.createElement('style');
-      style.textContent = `
-        @keyframes slideDown {
-          from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
-          to { transform: translateX(-50%) translateY(0); opacity: 1; }
-        }
-      `;
-      document.head.appendChild(style);
-
-      document.body.appendChild(notification);
-
-      // Handle button clicks
-      document.getElementById('update-now-btn').addEventListener('click', () => {
-        console.log('[Service Worker] User clicked Update Now');
-        newWorker.postMessage({ type: 'SKIP_WAITING' });
-        notification.remove();
-      });
-
-      document.getElementById('update-later-btn').addEventListener('click', () => {
-        console.log('[Service Worker] User clicked Later');
-        notification.remove();
-        // Don't auto-update after clicking later - let user decide
-        // Reset notification flag after 10 minutes
-        setTimeout(() => {
-          window.notificationShown = false;
-        }, 10 * 60 * 1000);
-      });
-
-      // Removed auto-update timeout to prevent loop
     }
   </script>
 

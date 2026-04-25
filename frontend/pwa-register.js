@@ -1,15 +1,24 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * PWA MANAGER v3.0 - Silent Auto-Update with Sensitive Page Protection
+ * PWA MANAGER v4.0 - AGGRESSIVE AUTO-UPDATE (Updates within seconds)
  * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * STRATEGY FOR INSTANT AUTO-UPDATES ON ALL DEVICES:
+ * ─────────────────────────────────────────────────
+ * 1. Polls version.json every 30 seconds (cache-busted)
+ * 2. If server version differs from local, triggers SW update
+ * 3. New SW installs → skipWaiting → claims clients → auto-reload
+ * 4. No user interaction needed — completely silent
+ * 5. On visibility change (app opens from background), checks immediately
  * 
  * Features:
  * ✅ PWA Installation Detection (appinstalled event)
  * ✅ Automatic Alarm Registration on Install
  * ✅ PeriodicSync Setup for Background Notifications
  * ✅ Naam Abhyas Schedule Persistence for Service Worker
- * ✅ SILENT AUTO-UPDATE - No user interaction required
- * ✅ Sensitive Page Protection - Won't interrupt during Nitnem/reading
+ * ✅ INSTANT SILENT AUTO-UPDATE — No user interaction required
+ * ✅ version.json polling every 30 seconds
+ * ✅ Auto-reload on update
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -20,6 +29,9 @@ class PWAManager {
     this.deferredPrompt = null;
     this.isInstalled = this.checkIfInstalled();
     this.pendingUpdateKey = 'pwa_pending_update';
+    this.currentVersion = null;
+    this.versionCheckInterval = null;
+    this.isReloading = false;
     this.init();
   }
 
@@ -129,40 +141,189 @@ class PWAManager {
       }
 
       // ═══════════════════════════════════════════════════════════════════════
-      // AUTOMATIC UPDATE MANAGEMENT
+      // AGGRESSIVE AUTO-UPDATE SYSTEM
+      // The PWA will auto-update within seconds of a new deployment
       // ═══════════════════════════════════════════════════════════════════════
 
-      // Check for waiting worker on initial load
+      // 1. Check for waiting worker on initial load — apply immediately
       if (this.registration.waiting) {
-        console.log('[PWA] Update detected on load - applying automatically');
+        console.log('[PWA] Update waiting on load — applying immediately');
         this.applyUpdateSilently();
       }
 
-      // Check for updates every hour
-      this.checkForUpdates();
-      setInterval(() => this.checkForUpdates(), 15 * 60 * 1000);
-
-      // Listen for new service worker installation
+      // 2. Listen for new service worker installation
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration.installing;
-        console.log('[PWA] New service worker found');
+        console.log('[PWA] New service worker found — monitoring');
         
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('[PWA] New service worker installed - applying update automatically');
+            console.log('[PWA] New SW installed — applying update silently');
             this.applyUpdateSilently();
           }
         });
       });
 
-      // Handle controller change (when new SW takes control)
+      // 3. Handle controller change (when new SW takes control) → reload
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        console.log('[PWA] Service worker controller changed - reloading page');
-        window.location.reload();
+        if (!this.isReloading) {
+          console.log('[PWA] Controller changed — reloading for fresh content');
+          this.isReloading = true;
+          window.location.reload();
+        }
       });
+
+      // 4. Start aggressive version polling (every 30 seconds)
+      this.startVersionPolling();
+
+      // 5. Check immediately when app comes to foreground
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          console.log('[PWA] App became visible — checking for updates');
+          this.checkVersionAndUpdate();
+          this.checkForSWUpdate();
+        }
+      });
+
+      // 6. Also check on focus
+      window.addEventListener('focus', () => {
+        this.checkVersionAndUpdate();
+      });
+
+      // 7. Force an SW update check right now
+      this.checkForSWUpdate();
 
     } catch (error) {
       console.error('SW registration failed:', error);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VERSION POLLING — Polls version.json every 30 seconds
+  // This is the KEY mechanism for instant updates across all devices
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  startVersionPolling() {
+    // Get current version from localStorage or fetch it
+    this.currentVersion = localStorage.getItem('anhad_app_version') || null;
+
+    // Initial check
+    this.checkVersionAndUpdate();
+
+    // Poll every 30 seconds
+    this.versionCheckInterval = setInterval(() => {
+      this.checkVersionAndUpdate();
+    }, 30 * 1000); // 30 seconds
+  }
+
+  async checkVersionAndUpdate() {
+    try {
+      // Cache-bust the version.json request
+      const response = await fetch(`./version.json?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const serverVersion = data.version;
+
+      console.log(`[PWA] Version check: local=${this.currentVersion} server=${serverVersion}`);
+
+      if (!this.currentVersion) {
+        // First load — just record the version
+        this.currentVersion = serverVersion;
+        localStorage.setItem('anhad_app_version', serverVersion);
+        return;
+      }
+
+      if (serverVersion !== this.currentVersion) {
+        console.log(`[PWA] 🔄 VERSION CHANGED: ${this.currentVersion} → ${serverVersion}`);
+        console.log('[PWA] Triggering auto-update...');
+        
+        // Update stored version
+        this.currentVersion = serverVersion;
+        localStorage.setItem('anhad_app_version', serverVersion);
+
+        // Force SW to check for update
+        await this.checkForSWUpdate();
+
+        // If there's a waiting worker, activate it immediately
+        if (this.registration?.waiting) {
+          this.applyUpdateSilently();
+        } else {
+          // No waiting worker yet — force clear caches and reload
+          // This handles the case where the SW itself is identical
+          // but app files have changed
+          await this.forceClearAndReload();
+        }
+      }
+    } catch (error) {
+      // Offline or network error — silently ignore
+      console.log('[PWA] Version check failed (offline?):', error.message);
+    }
+  }
+
+  /**
+   * Force the service worker to check for updates
+   */
+  async checkForSWUpdate() {
+    if (this.registration) {
+      try {
+        await this.registration.update();
+      } catch (e) {
+        console.log('[PWA] SW update check failed:', e.message);
+      }
+    }
+  }
+
+  /**
+   * Force clear all caches and reload — nuclear option for when files change
+   * but the service worker hash hasn't
+   */
+  async forceClearAndReload() {
+    if (this.isReloading) return;
+    
+    console.log('[PWA] Force clearing caches and reloading...');
+
+    // Tell the SW to clear all caches
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'FORCE_CACHE_CLEAR'
+      });
+    }
+
+    // Also clear caches from the client side
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      await Promise.all(cacheNames.map(name => caches.delete(name)));
+    }
+
+    // Wait a moment for cache clearing, then reload
+    this.isReloading = true;
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+
+  /**
+   * Apply update silently without user interaction
+   */
+  applyUpdateSilently() {
+    if (this.isReloading) return;
+    
+    console.log('[PWA] Applying update silently — no user action needed');
+    
+    // Remove any existing update notification banners
+    const existingBanner = document.querySelector('.pwa-update-banner');
+    if (existingBanner) existingBanner.remove();
+    const existingNotif = document.getElementById('pwa-update-notification');
+    if (existingNotif) existingNotif.remove();
+    
+    // Tell the waiting service worker to skip waiting and become active
+    if (this.registration?.waiting) {
+      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
   }
 
@@ -413,23 +574,12 @@ class PWAManager {
     return { outcome };
   }
 
-  checkForUpdates() {
-    if (this.registration) {
-      this.registration.update().catch(console.error);
-    }
-  }
-
   /**
-   * Get the current app version from service worker
+   * Get the current app version
    * @returns {string} Current version or 'unknown'
    */
   getCurrentVersion() {
-    // Read from the service worker cache version
-    const swCode = localStorage.getItem('sw_cache_version');
-    if (swCode) return swCode;
-    
-    // Fallback: try to extract from sw.js if cached
-    return '3.7.0'; // Default version
+    return this.currentVersion || localStorage.getItem('anhad_app_version') || 'unknown';
   }
 
   /**
@@ -437,93 +587,9 @@ class PWAManager {
    * @returns {Promise<boolean>} Whether update is available
    */
   async forceUpdateCheck() {
-    if (!this.registration) return false;
-    
-    try {
-      await this.registration.update();
-      
-      // Wait for detection
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return !!this.registration.waiting || !!this.registration.installing;
-    } catch (error) {
-      console.error('Force update check failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Get last update check time
-   * @returns {number|null} Timestamp or null
-   */
-  getLastUpdateCheck() {
-    try {
-      const last = localStorage.getItem('pwa_last_update_check');
-      return last ? parseInt(last) : null;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /**
-  applyPendingUpdateIfSafe() {
-    try {
-      const hasPending = localStorage.getItem(this.pendingUpdateKey);
-      if (hasPending && !this.isSensitivePage()) {
-        console.log('[PWA] Applying pending update now that page is safe');
-        localStorage.removeItem(this.pendingUpdateKey);
-        
-        if (this.registration?.waiting) {
-          this.applyUpdateImmediately();
-        }
-      }
-    } catch (e) {
-      console.error('[PWA] Failed to apply pending update:', e);
-    }
-  }
-
-  /**
-   * Setup listener for navigation away from sensitive pages
-   */
-  setupNavigationListener() {
-    // Listen for URL changes (SPA navigation)
-    let lastUrl = location.href;
-    new MutationObserver(() => {
-      const url = location.href;
-      if (url !== lastUrl) {
-        lastUrl = url;
-        // URL changed - check if we can now apply update
-        if (!this.isSensitivePage()) {
-          this.applyPendingUpdateIfSafe();
-        }
-      }
-    }).observe(document, { subtree: true, childList: true });
-    
-    // Also listen for popstate (back/forward navigation)
-    window.addEventListener('popstate', () => {
-      if (!this.isSensitivePage()) {
-        this.applyPendingUpdateIfSafe();
-      }
-    });
-  }
-
-  /**
-   * Apply update silently without user interaction
-   */
-  applyUpdateSilently() {
-    console.log('[PWA] Applying update silently');
-    
-    // Clear any existing update notification
-    const existingBanner = document.querySelector('.pwa-update-banner');
-    if (existingBanner) {
-      existingBanner.remove();
-    }
-    
-    // Tell the waiting service worker to skip waiting and become active
-    if (this.registration?.waiting) {
-      console.log('[PWA] Applying update now...');
-      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
+    await this.checkVersionAndUpdate();
+    await this.checkForSWUpdate();
+    return !!this.registration?.waiting || !!this.registration?.installing;
   }
 
   /**

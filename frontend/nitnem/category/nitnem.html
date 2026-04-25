@@ -2,7 +2,7 @@
 <html lang="pa" dir="ltr">
 
 <head>
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -21,6 +21,19 @@
 
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../../css/theme-variables.css">
+    <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
+    
+    <!-- Apply theme immediately to prevent FOUC -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('anhad_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark', 'dark-mode');
+                document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
     <script src="../../lib/global-theme.js"></script>
     
     <!-- Navigation Libraries -->
@@ -46,15 +59,6 @@
             --ios-purple: #AF52DE;
             --sacred-gold: #D4AF37;
             --sacred-saffron: #FF8C00;
-
-            --bg-gradient: linear-gradient(180deg, #000000 0%, #0a0a12 50%, #1a1a2e 100%);
-            --card-bg: rgba(28, 28, 30, 0.8);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-tertiary: rgba(255, 255, 255, 0.5);
-            --glass-blur: blur(40px);
-
             --safe-top: env(safe-area-inset-top, 20px);
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
@@ -62,15 +66,7 @@
             --font-hastlikhat: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif;
             --ease-out: cubic-bezier(0.19, 1, 0.22, 1);
             --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        [data-theme="light"] {
-            --bg-gradient: linear-gradient(180deg, #FFF8F0 0%, #FFFFFF 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-border: rgba(0, 0, 0, 0.08);
-            --text-primary: #1D1D1F;
-            --text-secondary: rgba(0, 0, 0, 0.6);
-            --text-tertiary: rgba(0, 0, 0, 0.4);
+            --glass-blur: blur(40px);
         }
 
         * {
@@ -82,19 +78,22 @@
 
         body {
             font-family: var(--font-primary);
-            background: var(--bg-gradient);
-            background-attachment: fixed;
+            background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Background Orbs */
-        .bg-effects {
+        /* Background Orbs - only in light mode */
+        [data-theme="light"] .bg-effects {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
+        }
+
+        [data-theme="dark"] .bg-effects {
+            display: none;
         }
 
         .orb {
@@ -123,12 +122,9 @@
         }
 
         @keyframes float {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translate(0, 0) rotate(0deg);
             }
-
             50% {
                 transform: translate(20px, -20px) rotate(180deg);
             }
@@ -151,14 +147,10 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0, 0, 0, 0.6);
+            background: var(--bg-secondary);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        [data-theme="light"] .header {
-            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .back-btn {
@@ -182,6 +174,7 @@
             text-align: center;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -195,47 +188,21 @@
             height: 40px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(145deg, #FFFFFF 0%, #F5F5F7 100%);
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
             color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-size: 18px;
-            box-shadow:
-                8px 8px 25px rgba(0, 0, 0, 0.3),
-                4px 4px 12px rgba(0, 0, 0, 0.2),
-                -4px -4px 12px rgba(255, 255, 255, 0.95),
-                -2px -2px 6px rgba(255, 255, 255, 0.8),
-                0 0 0 2px rgba(255, 255, 255, 0.7),
-                inset 0 2px 3px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.08);
+            box-shadow: var(--shadow-color);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
-        
-        html.dark-mode .theme-toggle {
-            background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow:
-                8px 8px 25px rgba(0, 0, 0, 0.55),
-                4px 4px 12px rgba(0, 0, 0, 0.4),
-                -4px -4px 12px rgba(255, 255, 255, 0.15),
-                -2px -2px 6px rgba(255, 255, 255, 0.05),
-                0 0 0 2px rgba(255, 255, 255, 0.2),
-                inset 0 2px 3px rgba(255, 255, 255, 0.1),
-                inset 0 -1px 2px rgba(0, 0, 0, 0.25);
-        }
-        
+
         .theme-toggle:active {
             transform: scale(0.9);
-            box-shadow:
-                inset 4px 4px 10px rgba(0, 0, 0, 0.35),
-                inset 2px 2px 5px rgba(0, 0, 0, 0.2),
-                inset -2px -2px 6px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                2px 2px 6px rgba(0, 0, 0, 0.25);
         }
 
         /* Hero */
@@ -262,6 +229,7 @@
             font-size: 32px;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
@@ -294,6 +262,7 @@
         .section-header h3 {
             font-size: 20px;
             font-weight: 700;
+            color: var(--text-primary);
         }
 
         .section-icon {
@@ -321,96 +290,28 @@
             gap: 12px;
         }
 
-        /* Ultimate Claymorphism - Puffy Cushion Bani Cards */
         .bani-card {
             display: flex;
             align-items: center;
             gap: 14px;
             padding: 20px;
-            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
-            border: 4px solid rgba(255, 255, 255, 0.8);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
             border-radius: 28px;
             text-decoration: none;
-            color: inherit;
-            box-shadow:
-                18px 18px 50px rgba(100, 70, 40, 0.22),
-                12px 12px 30px rgba(100, 70, 40, 0.16),
-                6px 6px 15px rgba(100, 70, 40, 0.10),
-                -8px -8px 25px rgba(255, 255, 255, 0.98),
-                -4px -4px 12px rgba(255, 255, 255, 0.90),
-                0 0 0 3px rgba(255, 255, 255, 0.7),
-                inset 0 3px 6px rgba(255, 255, 255, 1),
-                inset 0 -2px 4px rgba(100, 70, 40, 0.08),
-                inset 0 1px 1px rgba(255, 255, 255, 0.8);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(0) scale(1);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-color);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(0);
         }
-        
+
         .bani-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow:
-                22px 22px 60px rgba(100, 70, 40, 0.25),
-                14px 14px 35px rgba(100, 70, 40, 0.18),
-                8px 8px 20px rgba(100, 70, 40, 0.12),
-                -8px -8px 25px rgba(255, 255, 255, 0.98),
-                -4px -4px 12px rgba(255, 255, 255, 0.90),
-                0 0 0 3px rgba(255, 255, 255, 0.7),
-                inset 0 3px 6px rgba(255, 255, 255, 1),
-                inset 0 -2px 4px rgba(100, 70, 40, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--shadow-color);
         }
-        
+
         .bani-card:active {
-            transform: scale(0.96) translateY(4px);
-            box-shadow:
-                inset 8px 8px 20px rgba(100, 70, 40, 0.25),
-                inset 4px 4px 10px rgba(100, 70, 40, 0.15),
-                inset -6px -6px 15px rgba(255, 255, 255, 0.7),
-                inset -3px -3px 8px rgba(255, 255, 255, 0.5),
-                0 0 0 2px rgba(255, 255, 255, 0.5),
-                4px 4px 12px rgba(100, 70, 40, 0.12);
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-        
-        [data-theme="light"] .bani-card {
-            background: linear-gradient(165deg, #FFFFFF 0%, #FAFAFC 35%, #F5F5FA 65%, #F0F0F5 100%);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
-        
-        html.dark-mode .bani-card {
-            background: linear-gradient(165deg, #3C3C3E 0%, #323234 35%, #2A2A2C 65%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow:
-                18px 18px 50px rgba(40, 30, 20, 0.50),
-                12px 12px 30px rgba(40, 30, 20, 0.38),
-                6px 6px 15px rgba(40, 30, 20, 0.26),
-                -8px -8px 25px rgba(255, 255, 255, 0.10),
-                -4px -4px 12px rgba(255, 255, 255, 0.05),
-                0 0 0 3px rgba(255, 255, 255, 0.18),
-                inset 0 3px 6px rgba(255, 255, 255, 0.10),
-                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
-        }
-        
-        html.dark-mode .bani-card:hover {
-            box-shadow:
-                22px 22px 60px rgba(40, 30, 20, 0.55),
-                14px 14px 35px rgba(40, 30, 20, 0.42),
-                8px 8px 20px rgba(40, 30, 20, 0.30),
-                -8px -8px 25px rgba(255, 255, 255, 0.10),
-                -4px -4px 12px rgba(255, 255, 255, 0.05),
-                0 0 0 3px rgba(255, 255, 255, 0.18),
-                inset 0 3px 6px rgba(255, 255, 255, 0.10),
-                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
-        }
-        
-        html.dark-mode .bani-card:active {
-            box-shadow:
-                inset 8px 8px 20px rgba(40, 30, 20, 0.48),
-                inset 4px 4px 10px rgba(40, 30, 20, 0.32),
-                inset -6px -6px 15px rgba(255, 255, 255, 0.08),
-                inset -3px -3px 8px rgba(255, 255, 255, 0.04),
-                0 0 0 2px rgba(255, 255, 255, 0.15),
-                4px 4px 12px rgba(40, 30, 20, 0.32);
-            border-color: rgba(255, 255, 255, 0.12);
+            transform: scale(0.98);
         }
 
         .bani-icon {
@@ -420,7 +321,7 @@
             align-items: center;
             justify-content: center;
             font-size: 26px;
-            background: rgba(255, 255, 255, 0.06);
+            background: var(--bg-tertiary);
             border-radius: 50%;
             flex-shrink: 0;
             overflow: hidden;
@@ -443,6 +344,7 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 3px;
+            color: var(--text-primary);
         }
 
         .bani-english {
@@ -456,7 +358,7 @@
             align-items: center;
             gap: 10px;
             font-size: 12px;
-            color: var(--text-tertiary);
+            color: var(--text-secondary);
         }
 
         .bani-meta span {
@@ -468,65 +370,21 @@
         .bani-arrow {
             width: 20px;
             height: 20px;
-            color: var(--text-tertiary);
+            color: var(--text-secondary);
         }
 
-        /* Puffy Info Card */
+        /* Info Card */
         .info-card {
             display: flex;
             gap: 14px;
             padding: 24px;
-            background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E0 35%, #FFE8D8 65%, #FFE0D0 100%);
-            border: 4px solid rgba(212, 175, 55, 0.5);
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
             border-radius: 30px;
             margin-bottom: 28px;
-            box-shadow:
-                20px 20px 60px rgba(180, 140, 50, 0.28),
-                10px 10px 30px rgba(100, 70, 40, 0.18),
-                -8px -8px 25px rgba(255, 255, 255, 0.98),
-                -4px -4px 12px rgba(255, 255, 255, 0.90),
-                0 0 0 3px rgba(212, 175, 55, 0.35),
-                inset 0 3px 6px rgba(255, 255, 255, 1),
-                inset 0 -2px 4px rgba(180, 140, 50, 0.12);
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform: translateY(0);
-        }
-        
-        html.dark-mode .info-card {
-            background: linear-gradient(165deg, #4D4028 0%, #3D3020 35%, #2D2418 65%, #1D1808 100%);
-            border-color: rgba(212, 175, 55, 0.35);
-            box-shadow:
-                20px 20px 60px rgba(40, 30, 20, 0.45),
-                10px 10px 30px rgba(40, 30, 20, 0.32),
-                -8px -8px 25px rgba(255, 255, 255, 0.08),
-                -4px -4px 12px rgba(255, 255, 255, 0.03),
-                0 0 0 3px rgba(212, 175, 55, 0.25),
-                inset 0 3px 6px rgba(255, 255, 255, 0.10),
-                inset 0 -2px 4px rgba(40, 30, 20, 0.30);
-        }
-
-        html.dark-mode .bani-card {
-            background: #0D0D0F !important;
-            box-shadow: 
-                25px 25px 50px rgba(0, 0, 0, 0.7),
-                15px 15px 30px rgba(0, 0, 0, 0.5),
-                -8px -8px 25px rgba(255, 255, 255, 0.04),
-                inset 10px 10px 25px rgba(255, 255, 255, 0.08),
-                inset 5px 5px 12px rgba(255, 255, 255, 0.05),
-                inset -10px -10px 25px rgba(0, 0, 0, 0.6),
-                inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
-            border: none !important;
-            transform: translateY(-2px);
+            box-shadow: var(--shadow-color);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        html.dark-mode .bani-card:active {
-            box-shadow: 
-                inset 15px 15px 35px rgba(0, 0, 0, 0.7),
-                inset -8px -8px 20px rgba(255, 255, 255, 0.06),
-                inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
-            background: #0A0A0C !important;
-            transform: translateY(0) scale(0.98);
+            transform: translateY(0);
         }
 
         .info-card-icon {
@@ -537,6 +395,7 @@
             font-family: var(--font-hastlikhat);
             font-size: 18px;
             margin-bottom: 4px;
+            color: var(--text-primary);
         }
 
         .info-card p {
@@ -561,7 +420,7 @@
         .footer p {
             font-family: var(--font-gurmukhi);
             font-size: 14px;
-            color: var(--text-tertiary);
+            color: var(--text-secondary);
         }
 
         @media (min-width: 768px) {

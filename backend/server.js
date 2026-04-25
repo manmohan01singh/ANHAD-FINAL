@@ -883,9 +883,31 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(CONFIG.MAIN_UI, 'index.html'));
 });
 
-// Service Worker - serve from frontend root
+// Service Worker - serve from frontend root (no-cache for instant updates)
 app.get('/sw.js', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'sw.js'));
+});
+
+// Service Worker (legacy) - no-cache
+app.get('/service-worker.js', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Content-Type', 'application/javascript');
+    res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'service-worker.js'));
+});
+
+// Version.json - CRITICAL: Must never be cached for instant PWA updates
+app.get('/version.json', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'version.json'));
 });
 
 // Manifest

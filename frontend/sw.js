@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD - SERVICE WORKER v4.1.2
+ * ANHAD - SERVICE WORKER v5.0.0 — Aggressive Auto-Update
  * iOS/Android Optimized with Persistent Background Notifications
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v4.1.9';
+const CACHE_VERSION = 'anhad-v5.0.0';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -299,7 +299,8 @@ self.addEventListener('activate', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FETCH EVENT - Network first for API, Cache first for static
+// FETCH EVENT - Stale-While-Revalidate for app shell, Network-first for API
+// This ensures updates propagate to all devices within SECONDS
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
@@ -310,16 +311,21 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http
   if (!url.protocol.startsWith('http')) return;
 
+  // NEVER cache version.json — always go to network for instant update detection
+  if (url.pathname.endsWith('/version.json')) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  // NEVER cache sw.js or service-worker.js — browser handles this
+  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
+    return;
+  }
+
   // API requests - Network first
   if (url.hostname.includes('api.banidb.com') ||
     url.hostname.includes('api.gurbaninow.com')) {
     event.respondWith(networkFirst(event.request));
-    return;
-  }
-
-  // Audio files - Cache but don't wait
-  if (event.request.url.includes('/Audio/')) {
-    event.respondWith(cacheFirst(event.request));
     return;
   }
 
@@ -329,7 +335,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets - Cache first
+  // Audio files & images - Cache first (large assets, rarely change)
+  if (event.request.url.includes('/Audio/') ||
+      url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
+    event.respondWith(cacheFirst(event.request));
+    return;
+  }
+
+  // HTML, JS, CSS files — STALE-WHILE-REVALIDATE
+  // Serve cached version instantly, but fetch fresh in background
+  // Next load will have the new version
+  if (url.pathname.match(/\.(html|js|css|json)$/) || event.request.mode === 'navigate') {
+    event.respondWith(staleWhileRevalidate(event.request));
+    return;
+  }
+
+  // Everything else — cache first
   event.respondWith(cacheFirst(event.request));
 });
 
@@ -386,6 +407,49 @@ async function networkFirst(request) {
   }
 }
 
+/**
+ * STALE-WHILE-REVALIDATE strategy
+ * Returns cached version immediately (fast), but updates cache in background.
+ * This is the KEY strategy for instant auto-updates in PWAs:
+ * - User gets instant page load from cache
+ * - Fresh version is fetched in background and stored
+ * - Next page load serves the updated version
+ * - Combined with version.json polling, the page auto-reloads within seconds
+ */
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cached = await cache.match(request);
+
+  // Always fetch fresh in background
+  const networkPromise = fetch(request).then(response => {
+    if (response && response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  }).catch(() => null);
+
+  // If we have a cached version, return it immediately
+  // The background fetch will update the cache for next time
+  if (cached) {
+    // Don't await — let it update in background
+    networkPromise;
+    return cached;
+  }
+
+  // No cache — must wait for network
+  const networkResponse = await networkPromise;
+  if (networkResponse) return networkResponse;
+
+  // Last resort fallback
+  if (request.mode === 'navigate') {
+    const offlinePage = await caches.match('/offline.html');
+    if (offlinePage) return offlinePage;
+    const fallback = await caches.match('/index.html');
+    if (fallback) return fallback;
+  }
+  return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MESSAGE HANDLER - For skip waiting and other commands
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -393,6 +457,15 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
     console.log('[SW] SKIP_WAITING received - activating new service worker');
     self.skipWaiting();
+  }
+
+  // VERSION_CHECK: Client polls this to detect if SW version changed
+  if (event.data?.type === 'VERSION_CHECK') {
+    event.ports?.[0]?.postMessage({
+      type: 'VERSION_RESPONSE',
+      version: CACHE_VERSION,
+      timestamp: Date.now()
+    });
   }
   
   if (event.data?.type === 'FORCE_CACHE_CLEAR') {
