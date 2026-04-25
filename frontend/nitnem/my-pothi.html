@@ -96,7 +96,7 @@
         .header {
             position: sticky; top: 0; z-index: 100;
             padding: calc(var(--safe-top) + 8px) 20px 12px;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center;
             background: var(--glass-bg);
             backdrop-filter: var(--blur-thick); -webkit-backdrop-filter: var(--blur-thick);
             border-bottom: 1px solid var(--separator);
@@ -133,6 +133,12 @@
             color: #000; font-weight: 700; font-size: 16px;
             border: none; border-radius: 14px; cursor: pointer;
             box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+            float: right;
+        }
+        
+        /* Floating Add Button - hidden */
+        .fab-add {
+            display: none;
         }
 
         .pothi-hero { text-align: center; padding: 24px 20px 8px; }
@@ -353,9 +359,12 @@
             <div class="empty-state" id="emptyState" style="display:none;">
                 <div class="icon">📖</div>
                 <h2>ਮੇਰੀ ਪੋਥੀ ਖਾਲੀ ਹੈ</h2>
-                <p>Your Pothi is empty. Tap the ✏️ edit button to select Banis for your daily reading.</p>
+                <p>Your Pothi is empty. Tap the + button to select Banis for your daily reading.</p>
                 <button class="start-btn" onclick="enterEditMode()">✏️ Add Banis</button>
             </div>
+            
+            <!-- Floating Add Button -->
+            <button class="fab-add" id="fabAdd" onclick="enterEditMode()" style="display:none;">+</button>
 
             <div id="pothiReading" style="display:none;">
                 <div class="pothi-hero">
