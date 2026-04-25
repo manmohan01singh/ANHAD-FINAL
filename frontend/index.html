@@ -2031,6 +2031,18 @@
   <script>
     if ('serviceWorker' in navigator) {
       let registration;
+      let isUpdating = false;
+      let notificationShown = false;
+      
+      // Check if we just updated (prevent loop)
+      const lastUpdateTime = localStorage.getItem('anhad_last_update');
+      const now = Date.now();
+      const UPDATE_COOLDOWN = 5 * 60 * 1000; // 5 minutes cooldown
+      
+      if (lastUpdateTime && (now - lastUpdateTime) < UPDATE_COOLDOWN) {
+        console.log('[Service Worker] Update cooldown active, skipping update check');
+        isUpdating = true;
+      }
       
       // Register service worker immediately
       navigator.serviceWorker.register('./service-worker.js')
@@ -2041,29 +2053,48 @@
           console.log('[Service Worker] Installing:', reg.installing ? 'yes' : 'no');
           console.log('[Service Worker] Waiting:', reg.waiting ? 'yes' : 'no');
 
-          // Force update check immediately
-          reg.update().then(() => {
-            console.log('[Service Worker] Initial update check complete');
-          });
+          // Only check for updates if not in cooldown
+          if (!isUpdating) {
+            // Force update check immediately
+            reg.update().then(() => {
+              console.log('[Service Worker] Initial update check complete');
+            });
+          }
 
-          // Auto-update check every 5 minutes (more aggressive for PWA)
+          // Auto-update check every 30 minutes (reduced frequency to prevent loop)
           setInterval(() => {
-            console.log('[Service Worker] Checking for updates...');
-            reg.update();
-          }, 5 * 60 * 1000);
-
-          // Check for updates when page becomes visible (mobile optimization)
-          document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-              console.log('[Service Worker] Page visible, checking for updates...');
+            if (!isUpdating && !notificationShown) {
+              console.log('[Service Worker] Checking for updates...');
               reg.update();
+            }
+          }, 30 * 60 * 1000);
+
+          // Check for updates when page becomes visible (with cooldown check)
+          document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !isUpdating && !notificationShown) {
+              const lastCheck = localStorage.getItem('anhad_last_visibility_check');
+              const visibilityCooldown = 60 * 1000; // 1 minute cooldown
+              
+              if (!lastCheck || (now - parseInt(lastCheck)) > visibilityCooldown) {
+                console.log('[Service Worker] Page visible, checking for updates...');
+                localStorage.setItem('anhad_last_visibility_check', now.toString());
+                reg.update();
+              }
             }
           });
 
-          // Check for updates when app comes to foreground (PWA specific)
+          // Check for updates when app comes to foreground (with cooldown check)
           window.addEventListener('focus', () => {
-            console.log('[Service Worker] App focused, checking for updates...');
-            reg.update();
+            if (!isUpdating && !notificationShown) {
+              const lastFocusCheck = localStorage.getItem('anhad_last_focus_check');
+              const focusCooldown = 60 * 1000; // 1 minute cooldown
+              
+              if (!lastFocusCheck || (now - parseInt(lastFocusCheck)) > focusCooldown) {
+                console.log('[Service Worker] App focused, checking for updates...');
+                localStorage.setItem('anhad_last_focus_check', now.toString());
+                reg.update();
+              }
+            }
           });
 
           // Listen for updates
@@ -2076,19 +2107,23 @@
               
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 // New version available
-                console.log('[Service Worker] New version available, showing notification');
-                
-                // Create custom update notification
-                showUpdateNotification(newWorker);
+                if (!notificationShown && !isUpdating) {
+                  console.log('[Service Worker] New version available, showing notification');
+                  notificationShown = true;
+                  showUpdateNotification(newWorker);
+                }
               } else if (newWorker.state === 'activated') {
                 console.log('[Service Worker] New worker activated');
+                localStorage.setItem('anhad_last_update', Date.now().toString());
+                isUpdating = true;
               }
             });
           });
 
-          // If there's already a waiting worker, notify user
-          if (reg.waiting) {
+          // If there's already a waiting worker, notify user (only if not in cooldown)
+          if (reg.waiting && !isUpdating && !notificationShown) {
             console.log('[Service Worker] Waiting worker found on registration');
+            notificationShown = true;
             showUpdateNotification(reg.waiting);
           }
         })
@@ -2099,6 +2134,7 @@
       // Handle controller change (when new worker activates)
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         console.log('[Service Worker] Controller changed, reloading page');
+        localStorage.setItem('anhad_last_update', Date.now().toString());
         window.location.reload();
       });
 
@@ -2191,23 +2227,14 @@
       document.getElementById('update-later-btn').addEventListener('click', () => {
         console.log('[Service Worker] User clicked Later');
         notification.remove();
-        // Auto-update after 2 minutes if user clicks later (shorter for PWA)
+        // Don't auto-update after clicking later - let user decide
+        // Reset notification flag after 10 minutes
         setTimeout(() => {
-          if (navigator.serviceWorker.controller) {
-            console.log('[Service Worker] Auto-updating after Later click');
-            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-          }
-        }, 2 * 60 * 1000);
+          window.notificationShown = false;
+        }, 10 * 60 * 1000);
       });
 
-      // Auto-update after 15 seconds if no interaction (shorter for PWA)
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          console.log('[Service Worker] Auto-updating after timeout');
-          newWorker.postMessage({ type: 'SKIP_WAITING' });
-          notification.remove();
-        }
-      }, 15 * 1000);
+      // Removed auto-update timeout to prevent loop
     }
   </script>
 
