@@ -187,6 +187,8 @@
       const t0 = Date.now();
       const apiEndpoint = STREAMS[currentStream]?.liveApi || '/api/radio/live';
       const url = `${API_BASE}${apiEndpoint}?t=${Date.now()}&r=${Math.random()}`;
+      console.log(`[AnhadAudio] Fetching live position from: ${url}`);
+      
       const resp = await fetch(url, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
@@ -196,7 +198,7 @@
       const data = await resp.json();
       const latency = (t1 - t0) / 2000;
 
-      console.log(`[AnhadAudio] Server sync: Track ${data.trackIndex + 1} at ${Math.floor(data.trackPosition)}s`);
+      console.log(`[AnhadAudio] ✅ Server sync: Track ${data.trackIndex + 1} at ${Math.floor(data.trackPosition)}s (latency: ${latency.toFixed(2)}s)`);
       return {
         trackIndex: data.trackIndex,
         position: data.trackPosition + latency,
@@ -205,7 +207,8 @@
         listeners: data.listenersCount
       };
     } catch (e) {
-      console.warn('[AnhadAudio] Server sync failed, using local fallback:', e.message);
+      console.warn('[AnhadAudio] ❌ Server sync failed, using local fallback:', e.message);
+      console.log(`[AnhadAudio] API_BASE: ${API_BASE}, Stream: ${currentStream}`);
       return getLocalLivePosition();
     }
   }
@@ -390,10 +393,13 @@
     audio.src = stream.getTrackUrl(currentTrackIndex);
     audio.load();
 
-    console.log(`[AnhadAudio] Virtual live: ${streamName} track ${currentTrackIndex + 1} at ${Math.floor(requestedPosition)}s`);
+    console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (depth: ${depth})`);
 
     const seekAndPlay = () => {
-      if (requestId !== playRequestId || currentStream !== streamName) return;
+      if (requestId !== playRequestId || currentStream !== streamName) {
+        console.log(`[AnhadAudio] ⚠️ Request mismatch: expected ${requestId}, got ${playRequestId}`);
+        return;
+      }
 
       const loadedDuration = Number(audio.duration);
       const duration = Number.isFinite(loadedDuration) && loadedDuration > 60
@@ -402,22 +408,33 @@
 
       rememberTrackDuration(streamName, currentTrackIndex, duration);
 
+      console.log(`[AnhadAudio] 📊 Track duration: ${duration}s, requested: ${requestedPosition}s`);
+
       if (requestedPosition >= duration - 3 && depth < stream.totalTracks) {
         const nextPosition = Math.max(0, requestedPosition - duration);
         const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
-        console.log(`[AnhadAudio] Live position crossed track end, rolling to track ${nextIndex + 1}`);
+        console.log(`[AnhadAudio] 🔄 Live position crossed track end, rolling to track ${nextIndex + 1}`);
         loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
         return;
       }
 
       const seekPos = Math.min(requestedPosition, Math.max(0, duration - 5));
-      if (seekPos > 2 && Number.isFinite(audio.duration)) {
+      
+      // Always seek to the live position, even if it's close to start
+      if (Number.isFinite(audio.duration)) {
         audio.currentTime = seekPos;
-        console.log(`[AnhadAudio] Seeked to ${Math.floor(seekPos)}s`);
+        console.log(`[AnhadAudio] ⏩ Seeked to ${Math.floor(seekPos)}s (requested: ${Math.floor(requestedPosition)}s)`);
+      } else {
+        console.warn(`[AnhadAudio] ⚠️ Cannot seek - audio duration not available`);
       }
 
-      audio.play().catch(e => {
-        console.warn('[AnhadAudio] Play failed:', e.message);
+      audio.play().then(() => {
+        console.log(`[AnhadAudio] ▶️ Playing ${streamName} at live position`);
+        isPlaying = true;
+        isLoading = false;
+        emit('statechange', getPublicState());
+      }).catch(e => {
+        console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         isPlaying = false;
         isLoading = false;
         emit('statechange', getPublicState());
@@ -425,8 +442,10 @@
     };
 
     if (audio.readyState >= 2) {
+      console.log(`[AnhadAudio] 🚀 Audio ready, seeking immediately`);
       seekAndPlay();
     } else {
+      console.log(`[AnhadAudio] ⏳ Waiting for audio to load (readyState: ${audio.readyState})`);
       audio.addEventListener('canplay', seekAndPlay, { once: true });
     }
   }
