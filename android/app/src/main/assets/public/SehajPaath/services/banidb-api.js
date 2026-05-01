@@ -22,7 +22,37 @@ class BaniDBAPI {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-            const response = await fetch(url, {
+            // In Capacitor native apps, use @capacitor/http if available to bypass CORS
+            let response;
+            if (window.Capacitor?.Plugins?.Http) {
+                try {
+                    const { Http } = window.Capacitor.Plugins;
+                    const result = await Http.get({
+                        url: url,
+                        headers: {
+                            'Accept': 'application/json',
+                            ...options.headers
+                        },
+                        connectTimeout: 15000
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (result.status >= 400) {
+                        throw new Error(`API Error: ${result.status}`);
+                    }
+                    
+                    const data = JSON.parse(result.data);
+                    console.log('✅ BaniDB Response received via Capacitor HTTP');
+                    return data;
+                } catch (capError) {
+                    console.warn('Capacitor HTTP failed, falling back to fetch:', capError.message);
+                    // Fall through to regular fetch
+                }
+            }
+
+            // Regular fetch with CORS
+            response = await fetch(url, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

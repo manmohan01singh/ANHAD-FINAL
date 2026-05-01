@@ -7,8 +7,9 @@
 		"cleartext": false
 	},
 	"android": {
-		"allowMixedContent": false,
-		"webContentsDebuggingEnabled": false
+		"allowMixedContent": true,
+		"webContentsDebuggingEnabled": true,
+		"backgroundColor": "#000000"
 	},
 	"plugins": {
 		"LocalNotifications": {
@@ -16,15 +17,19 @@
 			"iconColor": "#f7c634",
 			"sound": "notification.wav"
 		},
-		"ScreenOrientation": {
-			"default": "portrait"
-		},
+		"StreakSaverPlugin": {},
 		"SplashScreen": {
 			"launchShowDuration": 2000,
-			"backgroundColor": "#000000",
+			"backgroundColor": "#FFFFFF",
 			"showSpinner": false,
 			"androidSpinnerStyle": "small",
-			"spinnerColor": "#f7c634"
+			"spinnerColor": "#f7c634",
+			"androidSplashResourceName": "splash",
+			"androidScaleType": "CENTER_CROP"
+		},
+		"WidgetDataBridge": {
+			"updateInterval": 15,
+			"debug": false
 		}
 	}
 }

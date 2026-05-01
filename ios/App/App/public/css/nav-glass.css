@@ -1,0 +1,111 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD - DEFINITIVE FLOATING PILL NAVIGATION
+ * Standardized across all pages: Index, Nitnem, Insights, Dashboard, Profile
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+.tab-bar {
+  position: fixed !important;
+  bottom: 32px !important; /* Raised higher for better "float" effect */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 40px) !important;
+  max-width: 420px !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 8px 12px !important;
+  padding-bottom: 8px !important;
+  border-radius: 35px !important;
+  
+  /* PREMIUM DARK GLASS (Default for maximum float contrast) */
+  background: rgba(18, 18, 20, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(18px) saturate(600%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(600%) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+  
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  pointer-events: all !important;
+  margin: 0 !important;
+  animation: navSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes navSlideUp {
+  0% { transform: translate(-50%, 100px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* Light Theme Overrides - High Contrast Glass */
+[data-theme="light"] .tab-bar,
+html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
+}
+
+/* Tab Item Styles - Unified */
+.tab-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 8px 18px !important;
+  border-radius: 20px !important;
+  text-decoration: none !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  flex: 1 !important;
+  min-width: 60px !important;
+}
+
+[data-theme="light"] .tab-item,
+html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.tab-item.active {
+  color: #FF3B30 !important; /* iOS Red */
+  background: rgba(255, 59, 48, 0.1) !important;
+}
+
+.tab-item.active .tab-icon {
+  transform: scale(1.1) translateY(-2px) !important;
+  filter: drop-shadow(0 2px 8px rgba(255, 59, 48, 0.4)) !important;
+}
+
+.tab-icon {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.tab-label {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px !important;
+  text-transform: uppercase !important;
+}
+
+/* Hover/Active effects */
+.tab-item:active {
+  transform: scale(0.9) !important;
+}
+
+/* Prevent content overlap across the app */
+.app, 
+main, 
+.app-container, 
+#dashboardApp, 
+#profileApp {
+  padding-bottom: 160px !important;
+}

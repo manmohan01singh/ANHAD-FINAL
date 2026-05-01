@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.gurbaniradio.app.MainActivity;
@@ -29,6 +30,11 @@ public abstract class BaseWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        updateWidget(context, appWidgetManager, appWidgetId);
+    }
+
     protected abstract void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId);
 
     protected JSONObject getWidgetData(Context context, String widgetType) {
@@ -45,7 +51,10 @@ public abstract class BaseWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("route", route);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(context, 0, intent,
+        // CRITICAL: Each route must have a unique requestCode, otherwise
+        // Android reuses the same PendingIntent for all widgets
+        int requestCode = route != null ? route.hashCode() & 0x7FFFFFFF : 0;
+        return PendingIntent.getActivity(context, requestCode, intent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 

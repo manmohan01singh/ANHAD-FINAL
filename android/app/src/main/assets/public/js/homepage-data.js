@@ -5,20 +5,135 @@
    ═══════════════════════════════════════════════════════════════════ */
 'use strict';
 
+// ═══════════════════════════════════════════════════════════════════
+// GURU IMAGE MAPPING — Maps events to their corresponding Guru images
+// ═══════════════════════════════════════════════════════════════════
+const GURU_IMAGE_MAP = {
+  // Guru numbers 1-10 for the ten Gurus
+  1: 'assets/icons/guru-nanak-dev-ji.png',
+  2: 'assets/icons/guru-angad-dev-ji.png',
+  3: 'assets/icons/guru-amar-das-ji.png',
+  4: 'assets/icons/guru-ramdas-ji.png',
+  5: 'assets/icons/guru-arjan-dev-ji.png',
+  6: 'assets/icons/guru-hargobind-ji.png',
+  7: 'assets/icons/guru-har-rai-ji.png',
+  8: 'assets/icons/guru-har-krishan-ji.png',
+  9: 'assets/icons/guru-tegh-bahadur-ji.png',
+  10: 'assets/icons/guru-gobind-singh-ji.png',
+  // Special mappings for Guru Granth Sahib and Sahibzade
+  'guru-granth-sahib': 'assets/icons/guru-granth-sahib-ji.png',
+  'sahibzade': 'assets/icons/sahibzade.png'
+};
+
+// Maps event names/patterns to their corresponding guru
+const EVENT_TO_GURU_MAP = {
+  // Vaisakhi / Khalsa Sajna → Guru Gobind Singh Ji
+  'vaisakhi': 10,
+  'khalsa': 10,
+  
+  // Sangrand → Guru Granth Sahib Ji
+  'sangrand': 'guru-granth-sahib',
+  
+  // Bandi Chhor Divas → Guru Hargobind Sahib Ji
+  'bandi-chor': 6,
+  'bandi-chhor': 6,
+  
+  // Hola Mohalla → Guru Gobind Singh Ji
+  'hola-mohalla': 10,
+  
+  // Miri Piri Diwas → Guru Hargobind Sahib Ji
+  'miri-piri': 6,
+  
+  // Guru Granth Sahib events
+  'guru-granth': 'guru-granth-sahib',
+  'sampuranta': 'guru-granth-sahib',
+  'first-parkash': 'guru-granth-sahib',
+  'gurgaddi-sggs': 'guru-granth-sahib',
+  
+  // Sahibzade events
+  'sahibzada': 'sahibzade',
+  'vade-sahibzade': 'sahibzade',
+  'chhote-sahibzade': 'sahibzade',
+  
+  // Historical events without specific guru → Guru Granth Sahib Ji
+  'sikh-dastar': 'guru-granth-sahib',
+  'darbar-khalsa': 'guru-granth-sahib',
+  'nanakshahi-newyear': 'guru-granth-sahib'
+};
+
+// Helper function to get guru image for an event
+function getGuruImageForEvent(eventName, guruNumber) {
+  const nameLower = String(eventName || '').toLowerCase();
+  
+  // First check if event name matches a pattern in EVENT_TO_GURU_MAP
+  for (const [pattern, guruId] of Object.entries(EVENT_TO_GURU_MAP)) {
+    if (nameLower.includes(pattern)) {
+      return GURU_IMAGE_MAP[guruId] || GURU_IMAGE_MAP['guru-granth-sahib'];
+    }
+  }
+  
+  // If guru_number is provided, use that
+  if (guruNumber && GURU_IMAGE_MAP[guruNumber]) {
+    return GURU_IMAGE_MAP[guruNumber];
+  }
+  
+  // Default to Guru Granth Sahib Ji
+  return GURU_IMAGE_MAP['guru-granth-sahib'];
+}
+
+// Helper function to get guru name for display
+function getGuruNameForEvent(eventName, guruNumber) {
+  const nameLower = String(eventName || '').toLowerCase();
+  
+  // Special cases
+  if (nameLower.includes('vaisakhi') || nameLower.includes('khalsa')) {
+    return 'Sri Guru Gobind Singh Sahib Ji';
+  }
+  if (nameLower.includes('sangrand')) {
+    return 'Sri Guru Granth Sahib Ji';
+  }
+  if (nameLower.includes('bandi-chor') || nameLower.includes('bandi-chhor')) {
+    return 'Sri Guru Hargobind Sahib Ji';
+  }
+  if (nameLower.includes('hola-mohalla')) {
+    return 'Sri Guru Gobind Singh Sahib Ji';
+  }
+  if (nameLower.includes('miri-piri')) {
+    return 'Sri Guru Hargobind Sahib Ji';
+  }
+  if (nameLower.includes('guru-granth') || nameLower.includes('sampuranta') || 
+      nameLower.includes('first-parkash') || nameLower.includes('gurgaddi-sggs')) {
+    return 'Sri Guru Granth Sahib Ji';
+  }
+  if (nameLower.includes('sahibzada')) {
+    return 'Sahibzade';
+  }
+  
+  // Extract guru name from event name if it contains "Guru"
+  const guruMatch = nameLower.match(/guru\s+(\w+)/);
+  if (guruMatch) {
+    const guruName = guruMatch[1].charAt(0).toUpperCase() + guruMatch[1].slice(1);
+    return `Sri Guru ${guruName} Sahib Ji`;
+  }
+  
+  // Default
+  return 'Sri Guru Granth Sahib Ji';
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
   // ━━━ NAVIGATION PATHS ━━━
   const NAV_PATHS = {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
-    randomShabadCard: 'RandomShabad/random-shabad.html',
+    shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
     nitnemCard: 'nitnem/indexbani.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
-    calendarCard: 'Calendar/Gurupurab-Calendar.html',
+    calendarCard: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
-    remindersCard: 'reminders/smart-reminders.html',
+    remindersCard: 'reminders/smart-reminders-v7.html',
     notesCard: 'Notes/notes.html'
   };
 
@@ -80,60 +195,76 @@ document.addEventListener('DOMContentLoaded', function () {
     const subtitleEl = document.getElementById('nextGurpurab');
     const dateEl = document.getElementById('gurpurabDate');
     const calendarCard = document.getElementById('calendarCard');
+    
+    // Guru image updates are now handled by trendora-app.js to avoid conflicts
+    // This function only updates the text and calendar card styling
+    
     if (!subtitleEl || !dateEl) return;
     try {
       const response = await fetch('data/gurpurab-events-2026.json');
       const data = await response.json();
       const events2026 = data.years['2026'] || [];
-      const gurpurabs = events2026.map(e => ({ name: e.name_en, date: new Date(e.gregorian_date), type: e.type })).sort((a, b) => a.date - b.date);
+      const gurpurabs = events2026.map(e => ({ 
+        name: e.name_en, 
+        id: e.id,
+        date: new Date(e.gregorian_date), 
+        type: e.type 
+      })).sort((a, b) => a.date - b.date);
       const now = new Date();
       const todayStr = now.toLocaleDateString('en-CA');
       const todayEvent = gurpurabs.find(g => g.date.toLocaleDateString('en-CA') === todayStr);
       
-      // FIX: Add event type classes to calendar card for ring lights
-      if (calendarCard) {
-        calendarCard.classList.remove('celebration', 'memorial');
-        if (todayEvent) {
+      // Determine which event to display (today's event or next upcoming)
+      const displayEvent = todayEvent || gurpurabs.find(g => g.date >= now);
+      
+      if (displayEvent) {
+        // FIX: Add event type classes to calendar card for ring lights
+        if (calendarCard) {
+          calendarCard.classList.remove('celebration', 'memorial');
           const memorialTypes = ['shaheedi', 'historical'];
           const celebrationTypes = ['prakash', 'gurgaddi'];
-          if (memorialTypes.includes(todayEvent.type)) {
+          if (memorialTypes.includes(displayEvent.type)) {
             calendarCard.classList.add('memorial');
-          } else if (celebrationTypes.includes(todayEvent.type)) {
+          } else if (celebrationTypes.includes(displayEvent.type)) {
             calendarCard.classList.add('celebration');
           }
         }
-      }
-      
-      if (todayEvent) { 
-        // FIX: Different text for memorial vs celebration
-        const memorialTypes = ['shaheedi', 'historical'];
-        if (memorialTypes.includes(todayEvent.type)) {
-          subtitleEl.textContent = `🕯️ Remembrance: ${todayEvent.name}`;
-          dateEl.textContent = '🙏 Today';
-        } else {
-          subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`;
-          dateEl.textContent = '🎉 Celebrate!';
+        
+        if (todayEvent) { 
+          // FIX: Different text for memorial vs celebration
+          const memorialTypes = ['shaheedi', 'historical'];
+          if (memorialTypes.includes(todayEvent.type)) {
+            subtitleEl.textContent = `🕯️ Remembrance: ${todayEvent.name}`;
+            dateEl.textContent = '🙏 Today';
+          } else {
+            subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`;
+            dateEl.textContent = '🎉 Celebrate!';
+          }
+          return; 
         }
-        return; 
-      }
-      
-      const upcoming = gurpurabs.find(g => g.date >= now);
-      if (upcoming) {
-        const daysLeft = Math.ceil((upcoming.date - now) / 86400000);
-        const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        // It's an upcoming event
+        const daysLeft = Math.ceil((displayEvent.date - now) / 86400000);
+        const dateStr = displayEvent.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         
         // FIX: Add celebration class for upcoming celebration events
         if (calendarCard) {
           const celebrationTypes = ['prakash', 'gurgaddi'];
-          if (celebrationTypes.includes(upcoming.type)) {
+          if (celebrationTypes.includes(displayEvent.type)) {
             calendarCard.classList.add('celebration');
           }
         }
         
-        subtitleEl.textContent = `Up Next: ${upcoming.name}`;
+        subtitleEl.textContent = `Up Next: ${displayEvent.name}`;
         dateEl.textContent = daysLeft === 0 ? '🎊 Today!' : daysLeft === 1 ? '🎊 Tomorrow!' : `${daysLeft} days • ${dateStr}`;
-      } else { subtitleEl.textContent = 'View all events for 2026'; dateEl.textContent = '📅 Calendar'; }
-    } catch (e) { subtitleEl.textContent = 'View Gurpurab Calendar'; dateEl.textContent = '📅 Open'; }
+      } else { 
+        subtitleEl.textContent = 'View all events for 2026'; 
+        dateEl.textContent = '📅 Calendar'; 
+      }
+    } catch (e) { 
+      subtitleEl.textContent = 'View Gurpurab Calendar'; 
+      dateEl.textContent = '📅 Open'; 
+    }
   }
 
   // ━━━ NAAM ABHYAS ━━━
@@ -260,7 +391,34 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ━━━ NOTIFICATION CLICK ━━━
-  document.querySelector('[aria-label="Notifications"]')?.addEventListener('click', () => { window.location.href = 'reminders/smart-reminders.html'; });
+  const notifBtn = document.getElementById('notifBtn');
+  if (notifBtn) {
+    notifBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href = 'reminders/smart-reminders-v7.html';
+    });
+  }
+
+  // ━━━ BACK BUTTON CLICK ━━━
+  const backBtn = document.querySelector('.header__btn[href*="ios-homepage"]') || document.querySelector('.header__btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // CRITICAL: Don't redirect to ios-homepage in Capacitor — causes redirect loop
+      if (typeof window.Capacitor !== 'undefined') {
+        // In native mode, just go back in history or stay
+        if (window.anhadGoBack) {
+          window.anhadGoBack('./index.html');
+        } else {
+          window.history.back();
+        }
+        return;
+      }
+      window.location.href = 'Homepage/ios-homepage.html';
+    });
+  }
 
   // ━━━ PROFILE DROPDOWN ━━━
   const profileBtn = document.getElementById('profileBtn');
@@ -324,21 +482,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ━━━ INSTALL BANNER ━━━
-  let deferredInstallPrompt = null;
-  const iosInstallBanner = document.getElementById('iosInstallBanner'), installBtn = document.getElementById('installBtn'), installDismiss = document.getElementById('installDismiss'), headerInstallBtn = document.getElementById('headerInstallBtn');
-  function isStandalone() { try { return window.matchMedia?.('(display-mode: standalone)')?.matches || navigator.standalone || localStorage.getItem('pwaInstalled') === 'true'; } catch (e) { return false; } }
-  function showInstallUI() { if (isStandalone()) return; headerInstallBtn?.classList.add('visible'); try { const d = localStorage.getItem('installBannerDismissed'); if (d && (Date.now() - parseInt(d)) < 86400000) return; } catch (e) {} iosInstallBanner?.classList.add('visible'); }
-  function hideInstallUI() { iosInstallBanner?.classList.remove('visible'); headerInstallBtn?.classList.remove('visible'); }
-  async function triggerInstall() {
-    if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); const { outcome } = await deferredInstallPrompt.userChoice; if (outcome === 'accepted') { try { localStorage.setItem('pwaInstalled', 'true'); } catch (e) {} hideInstallUI(); } deferredInstallPrompt = null; }
-    else { const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent); alert(isIOS ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to confirm' : 'Use your browser\'s menu to install this app.'); }
-  }
-  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstallPrompt = e; setTimeout(showInstallUI, 1500); });
-  if (!isStandalone()) headerInstallBtn?.classList.add('visible');
-  installBtn?.addEventListener('click', triggerInstall);
-  headerInstallBtn?.addEventListener('click', triggerInstall);
-  installDismiss?.addEventListener('click', () => { try { localStorage.setItem('installBannerDismissed', Date.now().toString()); } catch (e) {} iosInstallBanner?.classList.remove('visible'); });
-  window.addEventListener('appinstalled', () => { try { localStorage.setItem('pwaInstalled', 'true'); } catch (e) {} hideInstallUI(); });
+  // Handled centrally in trendora-app.js (InstallController)
+  // to prevent ID conflicts and double-firing logic.
 
   // ━━━ RADIO MENU ━━━
   const radioMenu = document.getElementById('radioMenu'), radioMenuCancel = document.getElementById('radioMenuCancel'), gurbaniRadioCard = document.getElementById('gurbaniRadioCard');
@@ -378,19 +523,22 @@ document.addEventListener('DOMContentLoaded', function () {
       islandDefault.style.pointerEvents = 'none';
       
       islandPlaying.style.opacity = '1';
-      島Playing.style.pointerEvents = 'auto'; // Oh wait, typo in my thought, fixed here:
       islandPlaying.style.pointerEvents = 'auto';
       islandWaveform.classList.remove('paused');
       
       islandStreamName.textContent = streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan';
       islandActionBtn.innerHTML = '<i class="fas fa-pause"></i>';
       
-      if (navigator.mediaSession) {
+      if (!window.Capacitor && navigator.mediaSession) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan',
           artist: 'Sri Harmandir Sahib Ji',
           album: 'ANHAD Audio Engine',
-          artwork: [{ src: 'assets/icon-512.png', sizes: '512x512', type: 'image/png' }]
+          artwork: [
+            { src: 'assets/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { src: 'assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
+          ]
         });
       }
     } else {
@@ -417,16 +565,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const stream = e.detail.stream || 'darbar';
       
       // Update Hero Cards visually
-      if (stream === 'darbar') { 
-        if (playIcon1) playIcon1.className = isPlaying ? 'fas fa-pause' : 'fas fa-play'; 
-        if (card1) card1.classList.toggle('playing', isPlaying); 
-        if (playIcon2) playIcon2.className = 'fas fa-play'; 
-        if (card2) card2.classList.remove('playing'); 
-      } else if (stream === 'amritvela') { 
-        if (playIcon2) playIcon2.className = isPlaying ? 'fas fa-pause' : 'fas fa-play'; 
-        if (card2) card2.classList.toggle('playing', isPlaying); 
-        if (playIcon1) playIcon1.className = 'fas fa-play'; 
-        if (card1) card1.classList.remove('playing'); 
+      if (stream === 'darbar') {
+        if (playIcon1) playIcon1.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
+        if (card1) card1.classList.toggle('playing', isPlaying);
+        if (playIcon2) playIcon2.setAttribute('class', 'fas fa-play');
+        if (card2) card2.classList.remove('playing');
+      } else if (stream === 'amritvela') {
+        if (playIcon2) playIcon2.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
+        if (card2) card2.classList.toggle('playing', isPlaying);
+        if (playIcon1) playIcon1.setAttribute('class', 'fas fa-play');
+        if (card1) card1.classList.remove('playing');
       }
 
       setIslandState(isPlaying, stream);
@@ -450,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dynamic Island Interactions
     islandActionBtn?.addEventListener('click', (e) => {
       e.stopPropagation(); // Don't trigger island click
-      if (window.AnhadAudio) window.AnhadAudio.togglePlay();
+      if (window.AnhadAudio) window.AnhadAudio.toggle();
     });
     
     // Clicking island while playing routes to full player
@@ -462,7 +610,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // MediaSession OS Controls (Lockscreen/Control Center)
-    if (navigator.mediaSession) {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (!window.Capacitor && navigator.mediaSession) {
       navigator.mediaSession.setActionHandler('play', () => { if (window.AnhadAudio) window.AnhadAudio.play(); });
       navigator.mediaSession.setActionHandler('pause', () => { if (window.AnhadAudio) window.AnhadAudio.pause(); });
     }

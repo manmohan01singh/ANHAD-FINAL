@@ -1,0 +1,334 @@
+/* Category Page Styles */
+
+.header-title {
+    text-align: center;
+}
+
+.header-english {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+}
+
+.category-main {
+    flex: 1;
+    padding: var(--space-lg) var(--space-md) var(--space-2xl);
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Time Section */
+.time-section {
+    margin-bottom: var(--space-2xl);
+}
+
+.time-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border);
+}
+
+.time-icon {
+    font-size: 1.75rem;
+}
+
+.time-info {
+    flex: 1;
+}
+
+.time-title {
+    font-family: var(--font-gurmukhi);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.time-subtitle {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Bani List */
+.bani-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+}
+
+.bani-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-secondary);
+    transition: all 0.2s var(--ease);
+}
+
+.bani-item:hover {
+    background: var(--bg-card-hover);
+}
+
+.bani-item:active {
+    background: var(--bg-card);
+}
+
+.bani-icon {
+    font-size: 1.25rem;
+    width: 36px;
+    text-align: center;
+}
+
+.bani-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.bani-name {
+    font-family: var(--font-gurmukhi);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.bani-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.bani-arrow {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.bani-item:hover .bani-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+}
+
+/* Start Full Button */
+.start-full-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--accent);
+    color: #000;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border-radius: var(--radius-lg);
+    transition: all 0.2s;
+}
+
+.start-full-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.start-full-btn:active {
+    transform: scale(0.98);
+}
+
+/* All Banis Section */
+.all-section {
+    margin-top: var(--space-2xl);
+}
+
+.all-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.all-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.all-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+}
+
+/* Popular Grid */
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.popular-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s;
+}
+
+.popular-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent);
+}
+
+.popular-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.popular-name {
+    font-family: var(--font-gurmukhi);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.popular-meta {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+/* Alphabetical List */
+.alpha-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.alpha-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.alpha-item:last-child {
+    border-bottom: none;
+}
+
+.alpha-item:hover {
+    padding-left: var(--space-sm);
+}
+
+.alpha-item:hover .alpha-name {
+    color: var(--accent);
+}
+
+.alpha-bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.alpha-name {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+
+/* Browse Options */
+.browse-options {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.browse-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+
+.browse-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.browse-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Info Card */
+.info-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.info-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.info-content h3 {
+    font-family: var(--font-gurmukhi);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.info-content p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .popular-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .browse-options {
+        flex-direction: column;
+    }
+}

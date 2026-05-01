@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-20",
+  "themes": [
+    {
+      "id": 1,
+      "title": "Humility",
+      "titlePa": "ਨਿਮਰਤਾ",
+      "titleHi": "नम्रता",
+      "emoji": "🪷",
+      "description": {
+        "en": "The foundation of all virtues. True greatness lies in serving others and recognizing the Divine in all beings. Humility opens the door to spiritual growth.",
+        "pa": "ਸਾਰੀਆਂ ਗੁਣਾਂ ਦੀ ਨੀਂਹ। ਸੱਚੀ ਮਹਾਨਤਾ ਦੂਜਿਆਂ ਦੀ ਸੇਵਾ ਕਰਨ ਅਤੇ ਸਾਰੇ ਜੀਵਾਂ ਵਿੱਚ ਦੈਵੀ ਨੂੰ ਮਾਨਤਾ ਦੇਣ ਵਿੱਚ ਹੈ। ਨਿਮਰਤਾ ਆਧਿਆਤਮਿਕ ਵਿਕਾਸ ਦਾ ਦਰਵਾਜ਼ਾ ਖੋਲਦੀ ਹੈ।",
+        "hi": "सभी गुणों की नींव। सच्ची महानता दूसरों की सेवा करने और सभी जीवों में दैवी को पहचानने में है। नम्रता आध्यात्मिक विकास का द्वार खोलती है।"
+      },
+      "pankti": "ਨਾਨਕ ਨੀਚਾ ਕਹੁ ਸਭ ਕੋਈ",
+      "translation": "Nanak says, I am lowly among all",
+      "ang": 733,
+      "source": "Guru Nanak Dev Ji",
+      "practicalApplication": {
+        "en": "Serve without ego, listen to others, accept guidance, recognize everyone's worth regardless of status.",
+        "pa": "ਅਹਿੰਕਾਰ ਤੋਂ ਬਿਨਾਂ ਸੇਵਾ ਕਰੋ, ਦੂਜਿਆਂ ਨੂੰ ਸੁਣੋ, ਮਾਰਗਦਰਸ਼ਨ ਸਵੀਕਾਰ ਕਰੋ, ਹਰ ਕਿਸੇ ਦੀ ਕੀਮਤ ਨੂੰ ਪਛਾਣੋ।",
+        "hi": "अहंकार के बिना सेवा करो, दूसरों को सुनो, मार्गदर्शन स्वीकार करो, हर किसी की कीमत को पहचानो।"
+      }
+    },
+    {
+      "id": 2,
+      "title": "Contentment",
+      "titlePa": "ਸੰਤੋਖ",
+      "titleHi": "संतोष",
+      "emoji": "💎",
+      "description": {
+        "en": "True peace comes from accepting Waheguru's will. Freedom from greed and desire leads to lasting happiness. Contentment is the highest wealth.",
+        "pa": "ਸੱਚੀ ਸ਼ਾਂਤੀ ਵਾਹਿਗੁਰੂ ਦੀ ਮਰਜ਼ੀ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਆਉਂਦੀ ਹੈ। ਲਾਲਚ ਅਤੇ ਇੱਛਾਵਾਂ ਤੋਂ ਆਜ਼ਾਦੀ ਸਥਾਈ ਖੁਸ਼ੀ ਲਿਆਉਂਦੀ ਹੈ। ਸੰਤੋਖ ਸਭ ਤੋਂ ਉੱਚ ਧਨ ਹੈ।",
+        "hi": "सच्ची शांति वाहिगुरु की मर्ज़ी को स्वीकार करने से आती है। लालच और इच्छाओं से आज़ादी स्थायी खुशी लाती है। संतोष सर्वोच्च धन है।"
+      },
+      "pankti": "ਸੰਤੋਖੀ ਸਦਾ ਸੁਖੀਐ",
+      "translation": "The content one is always happy",
+      "ang": 634,
+      "source": "Guru Arjan Dev Ji",
+      "practicalApplication": {
+        "en": "Appreciate what you have, avoid constant comparison, practice gratitude, find joy in simple things.",
+        "pa": "ਜੋ ਤੁਹਾਡੇ ਕੋਲ ਹੈ ਉਸਦੀ ਕਦਰ ਕਰੋ, ਲਗਾਤਾਰ ਤੁਲਨਾ ਤੋਂ ਬਚੋ, ਧੰਨਵਾਦ ਦੀ ਪ੍ਰਥਾ ਕਰੋ, ਸਧਾਰਨ ਚੀਜ਼ਾਂ ਵਿੱਚ ਖੁਸ਼ੀ ਲੱਭੋ।",
+        "hi": "जो तुम्हारे पास है उसकी कद्र करो, लगातार तुलना से बचो, कृतज्ञता का अभ्यास करो, साधारण चीज़ों में खुशी खोजो।"
+      }
+    },
+    {
+      "id": 3,
+      "title": "Compassion",
+      "titlePa": "ਦਇਆ",
+      "titleHi": "दया",
+      "emoji": "🕊️",
+      "description": {
+        "en": "See the light of Waheguru in every heart. True spirituality is showing kindness to all creation. Compassion connects us to the Divine.",
+        "pa": "ਹਰ ਦਿਲ ਵਿੱਚ ਵਾਹਿਗੁਰੂ ਦੀ ਰੌਸ਼ਨੀ ਵੇਖੋ। ਸੱਚੀ ਆਧਿਆਤਮਿਕਤਾ ਸਾਰੀ ਸਿਰਜਣਾ ਪ੍ਰਤੀ ਦਰਦ ਦਿਖਾਉਣਾ ਹੈ। ਦਇਆ ਸਾਡੀ ਦੈਵੀ ਨਾਲ ਜੋੜਦੀ ਹੈ।",
+        "hi": "हर दिल में वाहिगुरु की रोशनी देखो। सच्ची आध्यात्मिकता सभी सृष्टि के प्रति दया दिखाना है। दया हमें दैवी से जोड़ती है।"
+      },
+      "pankti": "ਦਇਆ ਕਪਾਹ ਸੰਤੋਖੁ ਸੂਤੁ",
+      "translation": "Compassion is cotton, contentment is the thread",
+      "ang": 463,
+      "source": "Guru Nanak Dev Ji",
+      "practicalApplication": {
+        "en": "Help those in need, speak kindly, forgive others, practice empathy daily.",
+        "pa": "ਜ਼ਰੂਰਤਮੰਦਾਂ ਦੀ ਮਦਦ ਕਰੋ, ਨਿਰਮਲ ਬੋਲੋ, ਦੂਜਿਆਂ ਨੂੰ ਮਾਫ਼ ਕਰੋ, ਰੋਜ਼ਾਨਾ ਸਹਿਮਤਾ ਦਾ ਅਭਿਆਸ ਕਰੋ।",
+        "hi": "ज़रूरतमंदों की मदद करो, नरम बोलो, दूसरों को माफ़ करो, रोज़ाना सहानुभूति का अभ्यास करो।"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Truth",
+      "titlePa": "ਸੱਚ",
+      "titleHi": "सत्य",
+      "emoji": "✨",
+      "description": {
+        "en": "Living truthfully in thought, word, and deed is the highest path. Truth is the ultimate virtue and the foundation of righteousness.",
+        "pa": "ਵਿਚਾਰ, ਸ਼ਬਦ, ਅਤੇ ਕਰਮ ਵਿੱਚ ਸੱਚ ਨਾਲ ਜੀਵਣ ਸਭ ਤੋਂ ਉੱਚ ਮਾਰਗ ਹੈ। ਸੱਚ ਸਭ ਤੋਂ ਉੱਚ ਗੁਣ ਹੈ ਅਤੇ ਧਰਮ ਦੀ ਨੀਂਹ ਹੈ।",
+        "hi": "विचार, शब्द, और कर्म में सत्य के साथ जीना सर्वोच्च मार्ग है। सत्य सर्वोच्च गुण है और धर्म की नींव है।"
+      },
+      "pankti": "ਸਚਹੁ ਓਰੈ ਸਭੁ ਕੋ ਉਪਰਿ ਸਚੁ ਆਚਾਰ",
+      "translation": "Truth is higher than all, but higher still is truthful living",
+      "ang": 62,
+      "source": "Guru Nanak Dev Ji",
+      "practicalApplication": {
+        "en": "Be honest in all dealings, keep your word, avoid deception, live with integrity.",
+        "pa": "ਸਾਰੇ ਮਾਮਲਿਆਂ ਵਿੱਚ ਇਮਾਨਦਾਰ ਰਹੋ, ਆਪਣਾ ਵਚਨ ਨਿਭਾਓ, ਧੋਖੇ ਤੋਂ ਬਚੋ, ਸ਼ਲੀਲਤਾ ਨਾਲ ਜਿਉ।",
+        "hi": "सभी मामलों में ईमानदार रहो, अपना वचन निभाओ, धोखे से बचो, ईमानदारी से जियो।"
+      }
+    },
+    {
+      "id": 5,
+      "title": "Divine Love",
+      "titlePa": "ਪ੍ਰੇਮ",
+      "titleHi": "दिव्य प्रेम",
+      "emoji": "💕",
+      "description": {
+        "en": "The soul longs for union with Waheguru. Through Naam and love, the soul finds its eternal home. Divine love transforms the heart.",
+        "pa": "ਆਤਮਾ ਵਾਹਿਗੁਰੂ ਨਾਲ ਇੱਕਮੁੱਕਤਾ ਲਈ ਤਾਂਘਦਾ ਹੈ। ਨਾਮ ਅਤੇ ਪਿਆਰ ਰਾਹੀਂ, ਆਤਮਾ ਆਪਣਾ ਸਦੀਵੀ ਘਰ ਲੱਭਦਾ ਹੈ। ਦੈਵੀ ਪਿਆਰ ਦਿਲ ਬਦਲ ਦਿੰਦਾ ਹੈ।",
+        "hi": "आत्मा वाहिगुरु के साथ एकता के लिए तान्हा करता है। नाम और प्यार के माध्यम से, आत्मा अपना सदीवी घर खोजता है। दिव्य प्रेम दिल को बदल देता है।"
+      },
+      "pankti": "ਹਉ ਵਾਰੀ ਜੀਉ ਵਾਰੀ ਹਰਿ ਹਰਿ ਨਾਮੁ ਸੁਣੰਦਿਆ",
+      "translation": "I am a sacrifice, again and again, to those who listen to the Lord's Name",
+      "ang": 1013,
+      "source": "Guru Ram Das Ji",
+      "practicalApplication": {
+        "en": "Chant Naam daily, meditate on Divine qualities, see God in everyone, love unconditionally.",
+        "pa": "ਰੋਜ਼ਾਨਾ ਨਾਮ ਜਪੋ, ਦੈਵੀ ਗੁਣਾਂ 'ਤੇ ਧਿਆਨ ਕਰੋ, ਹਰ ਕਿਸੇ ਵਿੱਚ ਪਰਮਾਤਮਾ ਵੇਖੋ, ਬਿਨਾਂ ਸ਼ਰਤ ਪਿਆਰ ਕਰੋ।",
+        "hi": "रोज़ाना नाम जपो, दैवी गुणों पर ध्यान करो, हर किसी में ईश्वर को देखो, बिना शर्त प्यार करो।"
+      }
+    },
+    {
+      "id": 6,
+      "title": "Devotion",
+      "titlePa": "ਭਗਤੀ",
+      "titleHi": "भक्ति",
+      "emoji": "🙏",
+      "description": {
+        "en": "Remembering Waheguru with every breath. True worship is unbroken remembrance. Devotion purifies the mind and connects with the Divine.",
+        "pa": "ਹਰ ਸਾਹ ਨਾਲ ਵਾਹਿਗੁਰੂ ਨੂੰ ਯਾਦ ਰੱਖਣਾ। ਸੱਚੀ ਪੂਜਾ ਅਟੁੱਟ ਯਾਦ ਹੈ। ਭਗਤੀ ਮਨ ਨੂੰ ਸ਼ੁੱਧ ਕਰਦੀ ਹੈ ਅਤੇ ਦੈਵੀ ਨਾਲ ਜੋੜਦੀ ਹੈ।",
+        "hi": "हर सांस के साथ वाहिगुरु को याद रखना। सच्ची पूजा अटूट स्मरण है। भक्ति मन को शुद्ध करती है और दैवी से जोड़ती है।"
+      },
+      "pankti": "ਸਿਮਰਿ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਹੁ",
+      "translation": "Meditate, meditate, meditate, and you shall find peace",
+      "ang": 262,
+      "source": "Guru Arjan Dev Ji",
+      "practicalApplication": {
+        "en": "Set daily prayer time, recite Gurbani, visit Gurdwara regularly, keep Waheguru in mind always.",
+        "pa": "ਰੋਜ਼ਾਨਾ ਪ੍ਰਾਰਥਨ ਦਾ ਸਮਾਂ ਤੈਅ ਕਰੋ, ਗੁਰਬਾਣੀ ਦਾ ਪਾਠ ਕਰੋ, ਨਿਯਮਿਤ ਗੁਰਦੁਆਰੇ ਜਾਓ, ਹਮੇਸ਼ਾ ਵਾਹਿਗੁਰੂ ਨੂੰ ਯਾਦ ਰੱਖੋ।",
+        "hi": "रोज़ाना प्रार्थना का समय तय करो, गुरबाणी का पाठ करो, नियमित गुरुद्वारे जाओ, हमेशा वाहिगुरु को याद रखो।"
+      }
+    },
+    {
+      "id": 7,
+      "title": "Courage",
+      "titlePa": "ਬੀਰਤਾ",
+      "titleHi": "बीरता",
+      "emoji": "⚔️",
+      "description": {
+        "en": "Stand up for truth and justice. A Sikh is a warrior-saint who fights oppression with righteous courage. Courage protects the weak.",
+        "pa": "ਸੱਚ ਅਤੇ ਨਿਆਂ ਲਈ ਖੜ੍ਹੋ। ਇੱਕ ਸਿੱਖ ਇੱਕ ਯੋਧੀ-ਸੰਤ ਹੈ ਜੋ ਧਾਰਮਿਕ ਬਹਾਦਰੀ ਨਾਲ ਜ਼ੁਲਮ ਦਾ ਮੁਕਾਬਲਾ ਕਰਦਾ ਹੈ। ਬਹਾਦਰੀ ਕਮਜ਼ੋਰਾਂ ਦੀ ਰੱਖਿਆ ਕਰਦੀ ਹੈ।",
+        "hi": "सत्य और न्याय के लिए खड़े हो। एक सिख योद्धा-संत है जो धार्मिक साहस से ज़ुल्म का मुकाबला करता है। साहस कमज़ोरों की रक्षा करता है।"
+      },
+      "pankti": "ਦੇਹ ਸ਼ਿਵਾ ਬਰ ਮੋਹਿ ਇਹੈ ਸ਼ੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋ",
+      "translation": "O Lord, give me this boon that I may never shirk from righteous deeds",
+      "ang": 33,
+      "source": "Guru Gobind Singh Ji",
+      "practicalApplication": {
+        "en": "Speak against injustice, help the oppressed, stand by principles, face fears with faith.",
+        "pa": "ਬੇਇਨਸਾਫ਼ੀ ਖਿਲਾਫ਼ ਬੋਲੋ, ਦਮਿਤਾਂ ਦੀ ਮਦਦ ਕਰੋ, ਸਿਧਾਂਤਾਂ ਦਾ ਸਾਥ ਦਿਓ, ਵਿਸ਼ਵਾਸ ਨਾਲ ਡਰ ਦਾ ਸਾਹਮਣਾ ਕਰੋ।",
+        "hi": "अन्याय के खिलाफ़ बोलो, दमितों की मदद करो, सिद्धांतों का साथ दो, विश्वास के साथ डर का सामना करो।"
+      }
+    },
+    {
+      "id": 8,
+      "title": "Service",
+      "titlePa": "ਸੇਵਾ",
+      "titleHi": "सेवा",
+      "emoji": "🤲",
+      "description": {
+        "en": "Selfless service (Seva) is the highest devotion. Serving others without expectation of reward brings divine blessings. Service purifies the soul.",
+        "pa": "ਬੇਰਹਿਮ ਸੇਵਾ ਸਭ ਤੋਂ ਉੱਚ ਭਗਤੀ ਹੈ। ਬਿਨਾਂ ਇਨਾਮ ਦੂਜਿਆਂ ਦੀ ਸੇਵਾ ਕਰਨ ਨਾਲ ਦੈਵੀ ਆਸ਼ੀਰਵਾਦ ਮਿਲਦੇ ਹਨ। ਸੇਵਾ ਆਤਮਾ ਨੂੰ ਸ਼ੁੱਧ ਕਰਦੀ ਹੈ।",
+        "hi": "निस्वार्थ सेवा सर्वोच्च भक्ति है। बिना प्रतिफल के दूसरों की सेवा करने से दैवी आशीर्वाद मिलते हैं। सेवा आत्मा को शुद्ध करती है।"
+      },
+      "pankti": "ਸੇਵਾ ਸੁਧਾਰੁ ਸਾਧੁ ਹੈ",
+      "translation": "Service is the truest of all dharmas",
+      "ang": 1106,
+      "source": "Guru Amar Das Ji",
+      "practicalApplication": {
+        "en": "Volunteer at Gurdwara, help the needy, do community service, serve without ego.",
+        "pa": "ਗੁਰਦੁਆਰੇ ਸਵੈਲੰਟੀਅਰ ਬਣੋ, ਜ਼ਰੂਰਤਮੰਦਾਂ ਦੀ ਮਦਦ ਕਰੋ, ਭਾਈਚਾਰਾ ਦੀ ਸੇਵਾ ਕਰੋ, ਅਹਿੰਕਾਰ ਤੋਂ ਬਿਨਾਂ ਸੇਵਾ ਕਰੋ।",
+        "hi": "गुरुद्वारे में स्वयंसेवक बनो, ज़रूरतमंदों की मदद करो, सामुदायिक सेवा करो, अहंकार के बिना सेवा करो।"
+      }
+    },
+    {
+      "id": 9,
+      "title": "Wisdom",
+      "titlePa": "ਗਿਆਨ",
+      "titleHi": "ज्ञान",
+      "emoji": "📖",
+      "description": {
+        "en": "True wisdom comes from the Guru's teachings. Knowledge without wisdom is meaningless. Divine wisdom guides the soul to liberation.",
+        "pa": "ਸੱਚਾ ਗਿਆਨ ਗੁਰੂ ਦੀਆਂ ਸਿਖਿਆਵਾਂ ਤੋਂ ਆਉਂਦਾ ਹੈ। ਬਿਨਾਂ ਗਿਆਨ ਦੇ ਗਿਆਨ ਬੇਅਰਥ ਹੈ। ਦੈਵੀ ਗਿਆਨ ਆਤਮਾ ਨੂੰ ਮੁਕਤੀ ਵੱਲ ਲੈ ਜਾਂਦਾ ਹੈ।",
+        "hi": "सच्चा ज्ञान गुरु की शिक्षाओं से आता है। बुद्धि के बिना ज्ञान बेअर्थ है। दैवी ज्ञान आत्मा को मुक्ति की ओर ले जाता है।"
+      },
+      "pankti": "ਗਿਆਨ ਵਿਚਿਆਪਿਆ ਗੁਰਿ ਪਰਸਾਦਿ",
+      "translation": "Wisdom is obtained through the Guru's grace",
+      "ang": 862,
+      "source": "Guru Amar Das Ji",
+      "practicalApplication": {
+        "en": "Study Gurbani, seek Guru's guidance, reflect on teachings, apply wisdom in daily life.",
+        "pa": "ਗੁਰਬਾਣੀ ਦਾ ਅਧਿਐਨ ਕਰੋ, ਗੁਰੂ ਦੀ ਮਾਰਗਦਰਸ਼ਨ ਮੰਗੋ, ਸਿਖਿਆਵਾਂ 'ਤੇ ਚਿੰਤਨ ਕਰੋ, ਰੋਜ਼ਾਨਾ ਜੀਵਨ ਵਿੱਚ ਗਿਆਨ ਲਾਗੂ ਕਰੋ।",
+        "hi": "गुरबाणी का अध्ययन करो, गुरु का मार्गदर्शन मांगो, शिक्षाओं पर चिंतन करो, रोज़ाना जीवन में ज्ञान लागू करो।"
+      }
+    },
+    {
+      "id": 10,
+      "title": "Unity",
+      "titlePa": "ਏਕਤਾ",
+      "titleHi": "एकता",
+      "emoji": "🌍",
+      "description": {
+        "en": "All humanity is one family under the One Creator. Recognizing the Divine in all beings breaks down barriers of caste, creed, and race.",
+        "pa": "ਸਾਰੀ ਮਨੁੱਖਤਾ ਇੱਕ ਰੱਬ ਹੇਠ ਇੱਕ ਪਰਿਵਾਰ ਹਨ। ਸਾਰੇ ਜੀਵਾਂ ਵਿੱਚ ਦੈਵੀ ਨੂੰ ਮਾਨਤਾ ਦੇਣ ਨਾਲ ਜਾਤ, ਧਰਮ, ਅਤੇ ਨਸਲ ਦੀਆਂ ਰੁਕਾਵਟਾਂ ਟੁੱਟਦੀਆਂ ਹਨ।",
+        "hi": "सारी मानवता एक परमात्मा के अंतर्गत एक परिवार है। सभी जीवों में दैवी को पहचानने से जाति, धर्म, और नस्ल की बाधाएं टूटती हैं।"
+      },
+      "pankti": "ਏਕ ਨੂਰ ਤੇ ਏਕ ਸਭਨਾ",
+      "translation": "The One Lord and the One Father of all",
+      "ang": 456,
+      "source": "Guru Arjan Dev Ji",
+      "practicalApplication": {
+        "en": "Treat all equally, respect all faiths, work for harmony, break down prejudices.",
+        "pa": "ਸਾਰਿਆਂ ਨਾਲ ਬਰਾਬਰ ਵਿਹਾਰ ਕਰੋ, ਸਾਰੇ ਧਰਮਾਂ ਦਾ ਸਤਿਕਾਰ ਕਰੋ, ਏਕਤਾ ਲਈ ਕੰਮ ਕਰੋ, ਪੱਖਪਾਤ ਤੋੜੋ।",
+        "hi": "सबके साथ बराबर व्यवहार करो, सभी धर्मों का सम्मान करो, एकता के लिए काम करो, पूर्वाग्रह तोड़ो।"
+      }
+    }
+  ]
+}

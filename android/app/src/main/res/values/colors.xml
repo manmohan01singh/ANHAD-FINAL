@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget Theme Colors -->
+    <color name="widget_background_start">#1E1E2E</color>
+    <color name="widget_background_center">#181825</color>
+    <color name="widget_background_end">#11111B</color>
+    <color name="widget_border">#22FFFFFF</color>
+    
+    <!-- Text Colors -->
+    <color name="widget_text_primary">#FFFFFF</color>
+    <color name="widget_text_secondary">#B3FFFFFF</color>
+    <color name="widget_text_tertiary">#66FFFFFF</color>
+    
+    <!-- Accent Colors -->
+    <color name="widget_accent_orange">#FF9500</color>
+    <color name="widget_accent_green">#30D158</color>
+    <color name="widget_accent_red">#FF3B30</color>
+    <color name="widget_accent_gold">#E8A838</color>
+    <color name="widget_accent_gold_light">#F5D47A</color>
+    
+    <!-- Kirtan Widget Colors -->
+    <color name="kirtan_widget_start">#1A1A2E</color>
+    <color name="kirtan_widget_center">#16213E</color>
+    <color name="kirtan_widget_end">#0F3460</color>
+    <color name="kirtan_widget_border">#33E8A838</color>
+    
+    <!-- Amritvela Widget Colors -->
+    <color name="amritvela_widget_start">#1A1A2E</color>
+    <color name="amritvela_widget_center">#16213E</color>
+    <color name="amritvela_widget_end">#0F3460</color>
+    <color name="amritvela_widget_border">#33FF6B35</color>
+    <color name="amritvela_accent">#FF6B35</color>
+    <color name="amritvela_accent_light">#FFA564</color>
+</resources>

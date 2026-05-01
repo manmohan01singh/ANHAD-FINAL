@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-20",
+  "sections": {
+    "guruSahibaan": {
+      "en": {
+        "title": "The Eleven Guru Sahibaan",
+        "intro": "The ten Sikh Gurus established the foundation of Sikhism over a period of 239 years (1469-1708). Each Guru contributed unique teachings, established institutions, and guided the Sikh community through different historical challenges. In 1708, Guru Gobind Singh Ji declared Sri Guru Granth Sahib Ji as the eternal living Guru, completing the lineage of eleven Guru Sahibaan.",
+        "gurus": [
+          {
+            "name": "Guru Nanak Dev Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+            "nameHindi": "श्री गुरु नानक देव जी",
+            "years": "1469–1539",
+            "birthPlace": "Rai Bhoi Di Talwandi (Nankana Sahib), Pakistan",
+            "birthPlacePa": "ਰਾਇ ਭੋਈ ਦੀ ਤਲਵੰਡੀ (ਨਨਕਾਣਾ ਸਾਹਿਬ)",
+            "birthPlaceHi": "राइ भोई दी तलवंडी (ननकाना साहिब)",
+            "contributions": "Founded Sikhism on Ik Onkar (One God). Established three pillars: Naam Japna, Kirat Karna, Vand Chakna. Created Langar—free community kitchen for equality. Composed 974 shabads in SGGS Ji. Challenged caste system and ritualism.",
+            "contributionsPa": "ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਇੱਕ ਪਰਮਾਤਮਾ 'ਇੱਕ ਓਅੰਕਾਰ' 'ਤੇ ਰੱਖੀ। ਤਿੰਨ ਥੰਮ੍ਹ: ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨਾ, ਵੰਡ ਛਕਣਾ। ਲੰਗਰ ਦੀ ਸਥਾਪਨਾ। 974 ਸ਼ਬਦ ਰਚੇ।",
+            "contributionsHi": "सिख धर्म की नींव एक परमात्मा 'इक ओंकार' पर रखी। तीन स्तंभ: नाम जपना, किरत करना, वंड छकना। लंगर की स्थापना। 974 शबद रचे।",
+            "keyEvents": "Four Udasis across India, Tibet, Arabia, Sri Lanka covering 28,000 km. Established Kartarpur Sahib. Appointed Bhai Lehna as Guru Angad Dev Ji.",
+            "keyEventsPa": "ਚਾਰ ਉਦਾਸੀਆਂ 28,000 ਕਿਲੋਮੀਟਰ ਦੀ ਯਾਤਰਾ। ਕਾਰਤਾਰਪੁਰ ਸਾਹਿਬ ਦੀ ਸਥਾਪਨਾ।",
+            "keyEventsHi": "चार उदासियाँ 28,000 किलोमीटर की यात्रा। कारतारपुर साहिब की स्थापना।",
+            "teachings": "Truth is higher than everything, but higher still is truthful living. One God, whose name is Truth. See Divine in all beings. Women and men equal before God.",
+            "teachingsPa": "ਸੱਚ ਸਭ ਤੋਂ ਉੱਚਾ ਹੈ, ਪਰ ਸੱਚ ਜੀਵਨ ਜਿਉਣਾ ਹੋਰ ਵੀ ਉੱਚਾ ਹੈ। ਇੱਕ ਹੀ ਪਰਮਾਤਮਾ ਹੈ।",
+            "teachingsHi": "सत्य सबसे ऊँचा है, पर सच्चा जीवन जीना और भी ऊँचा है। एक ही परमात्मा है।"
+          },
+          {
+            "name": "Guru Angad Dev Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+            "nameHindi": "श्री गुरु अंगद देव जी",
+            "years": "1504–1552",
+            "birthPlace": "Mate Ki Sarai (Punjab)",
+            "birthPlacePa": "ਮਤੇ ਦੀ ਸਰਾਂ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "मते की सराय (पंजाब)",
+            "contributions": "Standardized Gurmukhi script, making education accessible. Established schools and promoted physical fitness through Mall Akhara. Expanded Langar system. Composed 62 shabads in SGGS Ji.",
+            "contributionsPa": "ਗੁਰਮੁਖੀ ਲਿਪੀ ਮਾਨਕੀਕ੍ਰਿਤ ਕੀਤੀ। ਸਕੂਲ ਸਥਾਪਿਤ ਕੀਤੇ ਅਤੇ ਮੱਲ ਅਖਾੜੇ ਨਾਲ ਫਿਟਨੈਸ ਉਤਸ਼ਾਹਿਤ। 62 ਸ਼ਬਦ ਰਚੇ।",
+            "contributionsHi": "गुरुमुखी लिपि मानकीकृत की। स्कूल स्थापित किए और मल अखाड़े से फिटनेस बढ़ावा। 62 शबद रचे।",
+            "keyEvents": "Served Guru Nanak Dev Ji for 12 years before becoming Guru. Established Goindwal Sahib as major Sikh center. Appointed Guru Amar Das Ji.",
+            "keyEventsPa": "ਗੁਰੂ ਬਣਨ ਤੋਂ ਪਹਿਲਾਂ 12 ਸਾਲ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੀ ਸੇਵਾ। ਗੋਇੰਦਵਾਲ ਸਾਹਿਬ ਸਥਾਪਿਤ।",
+            "keyEventsHi": "गुरु बनने से पहले 12 वर्ष गुरु नानक देव जी की सेवा। गोइंदवाल साहिब स्थापित।",
+            "teachings": "Knowledge without devotion is like a flower without fragrance. Body is temple of God—keep it pure and strong. Education is right of every person.",
+            "teachingsPa": "ਭਗਤੀ ਤੋਂ ਬਿਨਾਂ ਗਿਆਨ ਖੁਸ਼ਬੂ ਤੋਂ ਬਿਨਾਂ ਫੁੱਲ ਵਾਂਗ ਹੈ। ਸਰੀਰ ਪਰਮਾਤਮਾ ਦਾ ਮੰਦਰ ਹੈ।",
+            "teachingsHi": "भक्ति के बिना ज्ञान सुगंध रहित फूल के समान है। शरीर परमात्मा का मंदिर है।"
+          },
+          {
+            "name": "Guru Amar Das Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+            "nameHindi": "श्री गुरु अमर दास जी",
+            "years": "1479–1574",
+            "birthPlace": "Basarke (Punjab)",
+            "birthPlacePa": "ਬਸਾਰਕੇ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "बसारके (पंजाब)",
+            "contributions": "Established Manji system—22 regional centers. Abolished Sati (widow burning) and advocated women's rights. Instituted Anand Karaj. Built Baoli at Goindwal with 84 steps. Composed 907 shabads.",
+            "contributionsPa": "ਮੰਜੀ ਪ੍ਰਣਾਲੀ—22 ਖੇਤਰੀ ਕੇਂਦਰ। ਸਤੀ ਪ੍ਰਥਾ ਖਤਮ ਕੀਤੀ। ਅਨੰਦ ਕਾਰਜ ਸ਼ੁਰੂ। 84 ਪੌੜੀਆਂ ਵਾਲਾ ਬਾਊਲੀ। 907 ਸ਼ਬਦ।",
+            "contributionsHi": "मंजी प्रणाली—22 क्षेत्रीय केंद्र। सती प्रथा समाप्त। आनंद कारज शुरू। 84 सीढ़ियाँ वाला बावली। 907 शबद।",
+            "keyEvents": "Served Guru Angad Dev Ji for 12 years before Guruship at age 73. Established Piri tradition. Appointed Guru Ram Das Ji.",
+            "keyEventsPa": "73 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਗੁਰੂ ਬਣਨ ਤੋਂ ਪਹਿਲਾਂ 12 ਸਾਲ ਸੇਵਾ। ਪੀਰੀ ਦੀ ਪਰੰਪਰਾ।",
+            "keyEventsHi": "73 वर्ष की आयु में गुरु बनने से पहले 12 वर्ष सेवा। पीरी की परंपरा।",
+            "teachings": "True devotion through selfless service. Women equal to men. Guru's door open to all. Humility key to spiritual progress.",
+            "teachingsPa": "ਸੱਚੀ ਭਗਤੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਰਾਹੀਂ। ਔਰਤਾਂ ਮਰਦਾਂ ਬਰਾਬਰ। ਗੁਰੂ ਦਾ ਦਰ ਸਾਰਿਆਂ ਲਈ ਖੁੱਲ੍ਹਾ।",
+            "teachingsHi": "सच्ची भक्ति निस्वार्थ सेवा से। महिलाएं पुरुषों बराबर। गुरु का द्वार सभी के लिए खुला।"
+          },
+          {
+            "name": "Guru Ram Das Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+            "nameHindi": "श्री गुरु राम दास जी",
+            "years": "1534–1581",
+            "birthPlace": "Chuna Mandi (Lahore, Pakistan)",
+            "birthPlacePa": "ਚੂਨਾ ਮੰਡੀ (ਲਾਹੌਰ)",
+            "birthPlaceHi": "चूना मंडी (लाहौर)",
+            "contributions": "Founded Amritsar and began Harmandir Sahib construction. Composed Laavan for Anand Karaj. Expanded Langar. Organized Masand system. Composed 679 shabads.",
+            "contributionsPa": "ਅੰਮ੍ਰਿਤਸਰ ਦੀ ਨੀਂਹ ਅਤੇ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਨਿਰਮਾਣ ਸ਼ੁਰੂ। ਅਨੰਦ ਕਾਰਜ ਲਈ ਲਾਵਾਂ। ਲੰਗਰ ਵਿਸਤਾਰ। 679 ਸ਼ਬਦ।",
+            "contributionsHi": "अमृतसर की नींव और हरिमंदिर साहिब निर्माण शुरू। आनंद कारज के लिए लावां। लंगर विस्तार। 679 शबद।",
+            "keyEvents": "Served Guru Amar Das Ji for years. Purchased Amritsar land, excavated sacred Sarovar. Completed Harmandir Sahib foundation. Appointed Guru Arjan Dev Ji.",
+            "keyEventsPa": "ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ ਦੀ ਸੇਵਾ। ਅੰਮ੍ਰਿਤਸਰ ਜ਼ਮੀਨ, ਸਰੋਵਰ ਖੁਦਾਈ।",
+            "keyEventsHi": "गुरु अमर दास जी की सेवा। अमृतसर भूमि, सरोवर खुदाई।",
+            "teachings": "Marriage is spiritual union of two souls. Guru is ship carrying us across worldly ocean. Service to Guru is highest devotion.",
+            "teachingsPa": "ਵਿਆਹ ਦੋ ਆਤਮਾਵਾਂ ਦਾ ਆਧਿਆਤਮਿਕ ਮਿਲਾਪ। ਗੁਰੂ ਜਹਾਜ਼ ਹੈ।",
+            "teachingsHi": "विवाह दो आत्माओं का आध्यात्मिक मिलन। गुरु जहाज है।"
+          },
+          {
+            "name": "Guru Arjan Dev Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+            "nameHindi": "श्री गुरु अर्जन देव जी",
+            "years": "1563–1606",
+            "birthPlace": "Goindwal (Punjab)",
+            "birthPlacePa": "ਗੋਇੰਦਵਾਲ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "गोइंदवाल (पंजाब)",
+            "contributions": "Compiled Adi Granth with hymns of first five Gurus, 15 Bhagats, saints. Completed Harmandir Sahib and installed Adi Granth. Founded Tarn Taran Sahib. Composed 2,218 shabads—most among Gurus. First Sikh martyr.",
+            "contributionsPa": "ਆਦਿ ਗ੍ਰੰਥ ਸੰਕਲਨ—ਪੰਜ ਗੁਰੂ, 15 ਭਗਤ, ਸੰਤ। ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਪੂਰਾ। ਤਰਨ ਤਾਰਨ ਸਾਹਿਬ। 2,218 ਸ਼ਬਦ—ਸਭ ਤੋਂ ਵੱਧ।",
+            "contributionsHi": "आदि ग्रंथ संकलन—पांच गुरु, 15 भगत, संत। हरिमंदिर साहिब पूरा। तरन तारन साहिब। 2,218 शबद—सबसे अधिक।",
+            "keyEvents": "Completed Harmandir Sahib 1601 with four doors for all. Compiled Adi Granth 1604. Martyred 1606 by Emperor Jahangir for refusing Islam conversion.",
+            "keyEventsPa": "1601 ਵਿੱਚ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਪੂਰਾ। 1604 ਵਿੱਚ ਆਦਿ ਗ੍ਰੰਥ। 1606 ਵਿੱਚ ਸ਼ਹੀਦ।",
+            "keyEventsHi": "1601 में हरिमंदिर साहिब पूरा। 1604 में आदि ग्रंथ। 1606 में शहीद।",
+            "teachings": "True Emperor is Waheguru, not worldly ruler. Pain and suffering are blessings for righteousness. Scripture is Guru—follow its teachings.",
+            "teachingsPa": "ਸੱਚਾ ਬਾਦਸ਼ਾਹ ਵਾਹਿਗੁਰੂ ਹੈ। ਦਰਦ ਰੱਬੀ ਦਾਨ ਹਨ ਜੇਕਰ ਧਰਮ ਲਈ।",
+            "teachingsHi": "सच्चा बादशाह वाहिगुरु है। दर्द रब्बी दान हैं यदि धर्म के लिए।"
+          },
+          {
+            "name": "Guru Hargobind Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु हरगोबिंद साहिब जी",
+            "years": "1595–1644",
+            "birthPlace": "Wadali (Punjab)",
+            "birthPlacePa": "ਵਡਾਲੀ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "वडाली (पंजाब)",
+            "contributions": "Introduced Miri-Piri—temporal and spiritual authority with two swords. Established Akal Takht opposite Harmandir Sahib. Built first Sikh fort Lohgarh. Organized standing army. Trained Sikhs in martial arts. Freed 52 princes from Gwalior.",
+            "contributionsPa": "ਮਿਰੀ-ਪੀਰੀ—ਦੋ ਤਲਵਾਰਾਂ ਨਾਲ ਸੰਸਾਰਿਕ ਅਤੇ ਆਧਿਆਤਮਿਕ ਅਧਿਕਾਰ। ਅਕਾਲ ਤਖ਼ਤ ਸਥਾਪਨਾ। ਲੋਹਗੜ੍ਹ ਕਿਲ੍ਹਾ। 52 ਰਾਜਪੂਤ ਆਜ਼ਾਦ।",
+            "contributionsHi": "मीरी-पीरी—दो तलवारों से सांसारिक और आध्यात्मिक अधिकार। अकाल तख़्त स्थापना। लोहगढ़ किला। 52 राजपूत मुक्त।",
+            "keyEvents": "Wore two swords at coronation—Miri and Piri. Fought four battles against Mughals. Built Akal Takht 1606. Freed 52 princes from Gwalior. Established Kiratpur Sahib.",
+            "keyEventsPa": "ਤਾਜਪੋਸ਼ੀ 'ਤੇ ਦੋ ਤਲਵਾਰਾਂ—ਮਿਰੀ ਅਤੇ ਪੀਰੀ। ਮੁਗ਼ਲਾਂ ਵਿਰੁੱਧ ਚਾਰ ਲੜਾਈਆਂ। ਕੀਰਤਪੁਰ ਸਾਹਿਬ।",
+            "keyEventsHi": "ताजपोशी पर दो तलवारें—मीरी और पीरी। मुग़लों के खिलाफ चार लड़ाइयाँ। कीरतपुर साहिब।",
+            "teachings": "Sikh must be saint-soldier—spiritual within, warrior without. Defend weak and oppressed. Political power for righteous purposes.",
+            "teachingsPa": "ਸਿੱਖ ਨੂੰ ਸੰਤ-ਸਿਪਾਹੀ ਹੋਣਾ ਚਾਹੀਦਾ—ਅੰਦਰੋਂ ਆਧਿਆਤਮਿਕ, ਬਾਹਰੋਂ ਯੋਧਾ।",
+            "teachingsHi": "सिख को संत-सिपाही होना चाहिए—भीतर से आध्यात्मिक, बाहर से योद्धा।"
+          },
+          {
+            "name": "Guru Har Rai Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਰਾਇ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु हर राय साहिब जी",
+            "years": "1630–1661",
+            "birthPlace": "Kiratpur (Punjab)",
+            "birthPlacePa": "ਕੀਰਤਪੁਰ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "कीरतपुर (पंजाब)",
+            "contributions": "Known for compassion and healing. Maintained 2,200 horsemen cavalry for protection while emphasizing peace. Established free medical clinics and hospitals. Promoted agriculture and environmental conservation. Continued missionary work.",
+            "contributionsPa": "ਦਇਆ ਅਤੇ ਇਲਾਜ ਲਈ ਜਾਣੇ। 2,200 ਘੋੜਸਵਾਰ ਫੌਜ। ਮੁਫ਼ਤ ਮੈਡੀਕਲ ਕਲੀਨਿਕ। ਖੇਤੀਬਾੜੀ ਅਤੇ ਵਾਤਾਵਰਣ।",
+            "contributionsHi": "दया और इलाज के लिए जाने जाते। 2,200 घुड़सवार सेना। मुफ्त चिकित्सा क्लिनिक। खेती और पर्यावरण।",
+            "keyEvents": "Served as Guru 17 years maintaining peace. Refused to meet Emperor Aurangzeb, sent son Ram Rai instead. Appointed younger son Har Krishan as successor.",
+            "keyEventsPa": "17 ਸਾਲ ਗੁਰੂ ਵਜੋਂ ਸੇਵਾ। ਬਾਦਸ਼ਾਹ ਔਰੰਗਜ਼ੇਬ ਨੂੰ ਮਿਲਣ ਤੋਂ ਇਨਕਾਰ।",
+            "keyEventsHi": "17 वर्ष गुरु के रूप में सेवा। बादशाह औरंगजेब से मिलने से इनकार।",
+            "teachings": "Compassion is highest virtue. Protect nature and all living beings. Maintain spiritual discipline while engaging with world.",
+            "teachingsPa": "ਦਇਆ ਸਭ ਤੋਂ ਉੱਚੀ ਗੁਣ। ਕੁਦਰਤ ਅਤੇ ਸਾਰੇ ਜੀਵਾਂ ਦੀ ਰਾਖਾ।",
+            "teachingsHi": "दया सबसे उच्च गुण। प्रकृति और सभी जीवों की रक्षा।"
+          },
+          {
+            "name": "Guru Har Krishan Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु हर कृष्ण साहिब जी",
+            "years": "1656–1664",
+            "birthPlace": "Kiratpur (Punjab)",
+            "birthPlacePa": "ਕੀਰਤਪੁਰ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "कीरतपुर (पंजाब)",
+            "contributions": "Youngest Guru, became Guru at age 5. Known as 'Bal Guru'. During smallpox epidemic in Delhi, served sick and dying with compassion regardless of caste or religion. Healed many through divine presence. His service during epidemic is legendary.",
+            "contributionsPa": "ਸਭ ਤੋਂ ਛੋਟੇ ਗੁਰੂ, 5 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਗੁਰੂ। 'ਬਾਲ ਗੁਰੂ'। ਦਿੱਲੀ ਵਿੱਚ ਚੇਚਕ ਮਹਾਂਮਾਰੀ ਦੌਰਾਨ ਬਿਮਾਰਾਂ ਦੀ ਸੇਵਾ।",
+            "contributionsHi": "सबसे कम उम्र के गुरु, 5 वर्ष की आयु में गुरु। 'बाल गुरु'। दिल्ली में चेचक महामारी के दौरान बीमारों की सेवा।",
+            "keyEvents": "Became Guru at 5 after Guru Har Rai Ji. Summoned to Delhi by Emperor Aurangzeb. Served sick during smallpox epidemic. Contracted smallpox and passed away at 8. Indicated Guru Tegh Bahadur as next Guru.",
+            "keyEventsPa": "5 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਗੁਰੂ। ਦਿੱਲੀ ਬੁਲਾਇਆ। ਚੇਚਕ ਮਹਾਂਮਾਰੀ ਦੌਰਾਨ ਸੇਵਾ। 8 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਜੋਤੀ ਜੋਤ ਸਮਾਏ।",
+            "keyEventsHi": "5 वर्ष की आयु में गुरु। दिल्ली बुलाया। चेचक महामारी के दौरान सेवा। 8 वर्ष की आयु में जोति जोत समाए।",
+            "teachings": "Service to humanity is highest worship. Even a child can embody divine wisdom. Compassion transcends age. Guru's presence heals all.",
+            "teachingsPa": "ਮਨੁੱਖਤਾ ਦੀ ਸੇਵਾ ਸਭ ਤੋਂ ਉੱਚੀ ਪੂਜਾ। ਬੱਚਾ ਵੀ ਦੈਵੀ ਗਿਆਨ ਦਾ ਪ੍ਰਤੀਕ ਹੋ ਸਕਦਾ।",
+            "teachingsHi": "मानवता की सेवा सर्वोच्च पूजा। बच्चा भी दैवी ज्ञान का प्रतीक हो सकता।"
+          },
+          {
+            "name": "Guru Tegh Bahadur Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु तेग बहादुर साहिब जी",
+            "years": "1621–1675",
+            "birthPlace": "Amritsar (Punjab)",
+            "birthPlacePa": "ਅੰਮ੍ਰਿਤਸਰ (ਪੰਜਾਬ)",
+            "birthPlaceHi": "अमृतसर (पंजाब)",
+            "contributions": "Known as 'Hind Di Chadar' (Shield of India). Gave life to protect religious freedom for Hindus facing forced conversion by Aurangzeb. Traveled extensively spreading Guru Nanak's message. Composed 116 shabads. Martyred in Delhi at Chandni Chowk.",
+            "contributionsPa": "'ਹਿੰਦ ਦੀ ਚਾਦਰ'। ਔਰੰਗਜ਼ੇਬ ਵੱਲੋਂ ਜ਼ਬਰੀ ਧਰਮ ਬਦਲਣ ਦਾ ਸਾਹਮਣਾ ਕਰਨ ਲਈ ਹਿੰਦੂਆਂ ਦੀ ਰਾਖਾ। 116 ਸ਼ਬਦ।",
+            "contributionsHi": "'हिंद दी चादर'। औरंगजेब द्वारा जबरदस्ती धर्म परिवर्तन का विरोध करने के लिए हिंदुओं की रक्षा। 116 शबद।",
+            "keyEvents": "Traveled across India spreading Sikh teachings. When Kashmiri Pandits sought help against forced conversion, agreed to protect them. Arrested in Agra, brought to Delhi, tortured, beheaded at Chandni Chowk 1675.",
+            "keyEventsPa": "ਭਾਰਤ ਵਿੱਚ ਯਾਤਰਾ। ਕਸ਼ਮੀਰੀ ਪੰਡਿਤਾਂ ਦੀ ਮਦਦ। ਆਗਰਾ ਵਿੱਚ ਗ੍ਰਿਫ਼ਤਾਰ, ਦਿੱਲੀ ਲਿਆਇਆ, 1675 ਵਿੱਚ ਚਾਂਦਨੀ ਚੌਕ 'ਤੇ ਸ਼ਹੀਦ।",
+            "keyEventsHi": "भारत में यात्रा। कश्मीरी पंडितों की मदद। आगरा में गिरफ्तार, दिल्ली लाया, 1675 में चांदनी चौक पर शहीद।",
+            "teachings": "Protect religious freedom of all, even at cost of own life. True Sikh defends helpless. Supreme sacrifice for righteousness, not personal gain.",
+            "teachingsPa": "ਸਾਰਿਆਂ ਦੀ ਧਾਰਮਿਕ ਆਜ਼ਾਦੀ ਦੀ ਰਾਖਾ, ਆਪਣੀ ਜਾਨ ਦੀ ਕੀਮਤ ਉੱਤੇ।",
+            "teachingsHi": "सभी की धार्मिक स्वतंत्रता की रक्षा, अपनी जान की कीमत पर।"
+          },
+          {
+            "name": "Guru Gobind Singh Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु गोबिंद सिंह साहिब जी",
+            "years": "1666–1708",
+            "birthPlace": "Patna Sahib (Bihar)",
+            "birthPlacePa": "ਪਟਨਾ ਸਾਹਿਬ (ਬਿਹਾਰ)",
+            "birthPlaceHi": "पटना साहिब (बिहार)",
+            "contributions": "Created Khalsa Panth in 1699 at Vaisakhi, baptizing Sikhs with Amrit, giving surname 'Singh' for men and 'Kaur' for women. Finalized SGGS Ji as eternal living Guru. Established Saint-Soldier concept. Composed Dasam Granth. Father, mother, four sons martyred for Sikh faith.",
+            "contributionsPa": "1699 ਵਿੱਚ ਵਿਸਾਖੀ 'ਤੇ ਖ਼ਾਲਸਾ ਪੰਥ, ਅੰਮ੍ਰਿਤ ਨਾਲ ਸਿੱਖਾਂ ਨੂੰ ਅੰਮ੍ਰਿਤ। SGGS ਜੀ ਸਦੀਵੀ ਗੁਰੂ। ਦਸਮ ਗ੍ਰੰਥ।",
+            "contributionsHi": "1699 में वैसाखी पर खालसा पंथ, अमृत से सिखों को अमृत। SGGS जी सदीवी गुरु। दसम ग्रंथ।",
+            "keyEvents": "Born in Patna, childhood in Anandpur Sahib. Lost father Guru Tegh Bahadur at 9. Created Khalsa at Vaisakhi 1699 with Panj Pyare. Fought battles defending Sikh rights. Four sons martyred—two at Chamkaur, two bricked at Sirhind. 1708 declared SGGS Ji eternal Guru.",
+            "keyEventsPa": "ਪਟਨਾ ਵਿੱਚ ਜੰਮੇ, ਅਨੰਦਪੁਰ ਵਿੱਚ ਬਚਪਨ। 9 ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਪਿਤਾ ਦੀ ਸ਼ਹਾਦਤ। 1699 ਵਿੱਚ ਖ਼ਾਲਸਾ। ਚਾਰੇ ਪੁੱਤਰ ਸ਼ਹੀਦ। 1708 SGGS ਜੀ ਸਦੀਵੀ।",
+            "keyEventsHi": "पटना में जन्मे, आनंदपुर में बचपन। 9 वर्ष की आयु में पिता की शहादत। 1699 में खालसा। चारे पुत्र शहीद। 1708 SGGS जी सदीवी।",
+            "teachings": "When all other means fail, it is righteous to raise the sword. Khalsa must be saint-soldier. Recognize all humanity as one. Guru Granth Sahib is your eternal Guru.",
+            "teachingsPa": "ਜਦੋਂ ਸਾਰੇ ਹੋਰ ਸਾਧਨ ਅਸਫਲ, ਤਾਂ ਤਲਵਾਰ ਚੁੱਕਣਾ ਧਾਰਮਿਕ। ਖ਼ਾਲਸਾ ਸੰਤ-ਸਿਪਾਹੀ।",
+            "teachingsHi": "जब सभी अन्य साधन विफल, तब तलवार उठाना धार्मिक। खालसा संत-सिपाही।"
+          },
+          {
+            "name": "Sri Guru Granth Sahib Ji",
+            "namePunjabi": "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+            "nameHindi": "श्री गुरु ग्रंथ साहिब जी",
+            "years": "1708–Eternal",
+            "birthPlace": "Nanded (Maharashtra) - Declared Eternal Guru",
+            "birthPlacePa": "ਨਾਂਦੇਦ (ਮਹਾਰਾਸ਼ਟਰ) - ਸਦੀਵੀ ਗੁਰੂ",
+            "birthPlaceHi": "नांदेद (महाराष्ट्र) - सदीवी गुरु",
+            "contributions": "The eternal living Guru of Sikhs, declared by Guru Gobind Singh Ji in 1708. Contains 1,430 pages (Angs) with hymns of six Sikh Gurus, 15 Bhagats, 11 Bhatts, saints. Written in Gurmukhi, organized by 31 Raags. Supreme spiritual authority guiding all aspects of life. Embodies divine wisdom of Waheguru.",
+            "contributionsPa": "ਸਿੱਖਾਂ ਦਾ ਸਦੀਵੀ ਜੀਵਤ ਗੁਰੂ, 1708 ਵਿੱਚ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਵੱਲੋਂ। 1,430 ਪੰਨਿਆਂ ਵਿੱਚ ਛੇ ਗੁਰੂ, 15 ਭਗਤ, 11 ਭੱਟ, ਸੰਤ। 31 ਰਾਗਾਂ ਅਨੁਸਾਰ।",
+            "contributionsHi": "सिखों का सदीवी जीवत गुरु, 1708 में गुरु गोबिंद सिंह जी द्वारा। 1,430 पृष्ठों में छह गुरु, 15 भगत, 11 भट्ट, संत। 31 रागों के अनुसार।",
+            "keyEvents": "Declared eternal Guru by Guru Gobind Singh Ji at Nanded in 1708 before his passing. Installed at Harmandir Sahib and all Gurdwaras worldwide. Recited daily by Sikhs. Guided Sikh Panth for over 300 years.",
+            "keyEventsPa": "1708 ਵਿੱਚ ਨਾਂਦੇਦ ਵਿਖੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਵੱਲੋਂ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ। ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਅਤੇ ਸਾਰੇ ਗੁਰਦੁਆਰਿਆਂ ਵਿੱਚ ਸਥਾਪਿਤ।",
+            "keyEventsHi": "1708 में नांदेद में गुरु गोबिंद सिंह जी द्वारा सदीवी गुरु घोषित। हरिमंदिर साहिब और सभी गुरुद्वारों में स्थापित।",
+            "teachings": "The Guru Granth Sahib is the embodiment of the Gurus. Its teachings are eternal truth. Meditate on Naam, live honestly, serve others. Recognize the Divine in all.",
+            "teachingsPa": "ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਗੁਰੂਆਂ ਦਾ ਰੂਪ ਹੈ। ਇਸਦੀਆਂ ਸਿਖਿਆਵਾਂ ਸਦੀਵੀ ਸੱਚ ਹਨ। ਨਾਮ ਸਿਮਰਨ, ਸੱਚ ਜੀਵਨ, ਸੇਵਾ।",
+            "teachingsHi": "गुरु ग्रंथ साहिब गुरुओं का रूप है। इसकी शिक्षाएं सदीवी सत्य हैं। नाम सिमरण, सच्चा जीवन, सेवा।"
+          }
+        ]
+      },
+      "pa": {
+        "title": "ਗਿਆਰਾਂ ਗੁਰੂ ਸਾਹਿਬਾਨ",
+        "intro": "ਦਸ ਸਿੱਖ ਗੁਰੂਆਂ ਨੇ 239 ਸਾਲਾਂ (1469-1708) ਦੌਰਾਨ ਸਿੱਖ ਧਰਮ ਦੀ ਨੀਂਹ ਰੱਖੀ। ਹਰ ਗੁਰੂ ਨੇ ਵਿਲੱਖਣ ਸਿਖਿਆਵਾਂ ਦਿੱਤੀਆਂ, ਸੰਸਥਾਵਾਂ ਸਥਾਪਿਤ ਕੀਤੀਆਂ, ਅਤੇ ਸਿੱਖ ਸਮਾਜ ਦੀ ਅਗਵਾਈ ਕੀਤੀ। 1708 ਵਿੱਚ, ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੇ ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਜੀਵਤ ਗੁਰੂ ਘੋਸ਼ਿਤ ਕੀਤਾ, ਗਿਆਰਾਂ ਗੁਰੂ ਸਾਹਿਬਾਨ ਦੀ ਲੜੀ ਪੂਰੀ ਕੀਤੀ।"
+      },
+      "hi": {
+        "title": "ग्यारह गुरु साहिबान",
+        "intro": "दस सिख गुरुओं ने 239 वर्षों (1469-1708) के दौरान सिख धर्म की नींव रखी। हर गुरु ने अद्वितीय शिक्षाएं दीं, संस्थाएं स्थापित कीं, और सिख समुदाय का मार्गदर्शन किया। 1708 में, गुरु गोबिंद सिंह जी ने श्री गुरु ग्रंथ साहिब जी को सदीवी जीवत गुरु घोषित किया, ग्यारह गुरु साहिबान की शृंखला पूरी की।"
+      }
+    },
+    "majorEvents": {
+      "en": {
+        "title": "Major Historical Events",
+        "events": [
+          {
+            "year": "1469",
+            "event": "Birth of Guru Nanak Dev Ji",
+            "eventPa": "ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਜਨਮ",
+            "eventHi": "गुरु नानक देव जी का जन्म",
+            "description": "Founder of Sikhism born at Rai Bhoi Di Talwandi"
+          },
+          {
+            "year": "1604",
+            "event": "Compilation of Adi Granth",
+            "eventPa": "ਆਦਿ ਗ੍ਰੰਥ ਦਾ ਸੰਕਲਨ",
+            "eventHi": "आदि ग्रंथ का संकलन",
+            "description": "Guru Arjan Dev Ji compiled the first version of SGGS Ji"
+          },
+          {
+            "year": "1606",
+            "event": "Martyrdom of Guru Arjan Dev Ji",
+            "eventPa": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੀ ਸ਼ਹੀਦੀ",
+            "eventHi": "गुरु अर्जन देव जी की शहीदी",
+            "description": "First Sikh Guru martyred for protecting faith"
+          },
+          {
+            "year": "1606",
+            "event": "Akal Takht Established",
+            "eventPa": "ਅਕਾਲ ਤਖ਼ਤ ਦੀ ਸਥਾਪਨਾ",
+            "eventHi": "अकाल तख़्त की स्थापना",
+            "description": "Guru Hargobind Sahib Ji established the Throne of the Immortal"
+          },
+          {
+            "year": "1699",
+            "event": "Creation of Khalsa",
+            "eventPa": "ਖ਼ਾਲਸਾ ਦੀ ਸਾਜਨਾ",
+            "eventHi": "खालसा की स्थापना",
+            "description": "Guru Gobind Singh Ji created the Khalsa Panth at Vaisakhi"
+          },
+          {
+            "year": "1708",
+            "event": "Guru Granth Sahib Ji Declared Eternal Guru",
+            "eventPa": "ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸਦੀਵੀ ਗੁਰੂ ਘੋਸ਼ਿਤ",
+            "eventHi": "गुरु ग्रंथ साहिब जी को सदीवी गुरु घोषित",
+            "description": "Guru Gobind Singh Ji declared SGGS Ji as eternal Guru"
+          },
+          {
+            "year": "1710",
+            "event": "Sikh Rule Established",
+            "eventPa": "ਸਿੱਖ ਰਾਜ ਦੀ ਸਥਾਪਨਾ",
+            "eventHi": "सिख राज की स्थापना",
+            "description": "Banda Singh Bahadur established Sikh rule at Sirhind"
+          },
+          {
+            "year": "1799",
+            "event": "Sikh Empire under Maharaja Ranjit Singh",
+            "eventPa": "ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਹੇਠ ਸਿੱਖ ਸਾਮਰਾਜ",
+            "eventHi": "महाराजा रणजीत सिंह के अंतर्गत सिख साम्राज्य",
+            "description": "Sikh Empire established covering Punjab, Kashmir, Ladakh"
+          },
+          {
+            "year": "1849",
+            "event": "Annexation of Sikh Empire",
+            "eventPa": "ਸਿੱਖ ਸਾਮਰਾਜ ਦਾ ਗੈਰ-ਕਬੂ",
+            "eventHi": "सिख साम्राज्य का विलयन",
+            "description": "British annexed the Sikh Empire after Anglo-Sikh wars"
+          },
+          {
+            "year": "1984",
+            "event": "Operation Blue Star",
+            "eventPa": "ਆਪਰੇਸ਼ਨ ਬਲੂ ਸਟਾਰ",
+            "eventHi": "ऑपरेशन ब्लू स्टार",
+            "description": "Indian Army attacked Sri Darbar Sahib, significant tragedy"
+          }
+        ]
+      }
+    },
+    "sikhEmpire": {
+      "en": {
+        "title": "Sikh Empire (1799-1849)",
+        "intro": "The Sikh Empire was a major power in the Indian subcontinent, founded by Maharaja Ranjit Singh. It was known for its secular governance, military strength, and administrative reforms.",
+        "sections": [
+          {
+            "title": "Maharaja Ranjit Singh",
+            "content": "Known as the 'Lion of Punjab', he unified the Sikh misls and established the empire. He modernized the army with European training, created a secular administration, and built the Harmandir Sahib with marble and gold."
+          },
+          {
+            "title": "Military Achievements",
+            "content": "The Sikh army (Fauj-i-Khas) was one of the most disciplined in Asia. Conquered Kashmir, Ladakh, and Peshawar. Defeated Afghan invasions multiple times."
+          },
+          {
+            "title": "Administration",
+            "content": "Secular governance with equal representation of Hindus, Muslims, and Sikhs. Established a fair judicial system and promoted trade and commerce."
+          },
+          {
+            "title": "Fall of the Empire",
+            "content": "After Ranjit Singh's death in 1839, internal conflicts led to the Anglo-Sikh Wars (1845-1849). The empire was annexed by the British in 1849."
+          }
+        ]
+      },
+      "pa": {
+        "title": "ਸਿੱਖ ਸਾਮਰਾਜ (1799-1849)",
+        "intro": "ਸਿੱਖ ਸਾਮਰਾਜ ਭਾਰਤੀ ਉਪਮਹਾਦੀਪ ਦੀ ਇੱਕ ਪ੍ਰਮੁਖ ਸ਼ਕਤੀ ਸੀ, ਜਿਸਦੀ ਸਥਾਪਨਾ ਮਹਾਰਾਜਾ ਰਣਜੀਤ ਸਿੰਘ ਨੇ ਕੀਤੀ।"
+      },
+      "hi": {
+        "title": "सिख साम्राज्य (1799-1849)",
+        "intro": "सिख साम्राज्य भारतीय उपमहाद्वीप की एक प्रमुख शक्ति था, जिसकी स्थापना महाराजा रणजीत सिंह ने की।"
+      }
+    },
+    "modernHistory": {
+      "en": {
+        "title": "Modern Sikh History",
+        "sections": [
+          {
+            "title": "Singh Sabha Movement (1870s-1920s)",
+            "content": "Reform movement to restore Sikh principles, remove Hindu rituals, and promote education. Led to establishment of Khalsa College, Gurdwara reform movement."
+          },
+          {
+            "title": "Gurdwara Reform Movement (1920-1925)",
+            "content": "Sikhs fought to free Gurdwaras from Mahant control. Resulted in the Gurdwara Act of 1925, establishing Shiromani Gurdwara Parbandhak Committee (SGPC)."
+          },
+          {
+            "title": "1947 Partition",
+            "content": "Division of Punjab caused massive migration and violence. Sikhs lost holy sites in West Punjab. Refugee crisis led to rebuilding of East Punjab."
+          },
+          {
+            "title": "1984 Tragedy",
+            "content": "Operation Blue Star (June 1984) attack on Darbar Sahib. Assassination of Indira Gandhi (October 1984). Anti-Sikh riots in November 1984."
+          },
+          {
+            "title": "Global Sikh Diaspora",
+            "content": "Sikhs now live in over 100 countries. Major communities in Canada, UK, USA, Australia, Europe. Maintain Gurdwaras, schools, and cultural institutions."
+          }
+        ]
+      }
+    },
+    "sikhExpansion": {
+      "en": {
+        "title": "Global Sikh Expansion",
+        "sections": [
+          {
+            "title": "Early Migration",
+            "content": "Sikhs first migrated as soldiers in British Army (19th century). Worked in police, railways across British Empire."
+          },
+          {
+            "title": "20th Century Migration",
+            "content": "Post-WWII migration to UK, Canada, East Africa. 1970s-80s migration due to economic opportunities and political instability."
+          },
+          {
+            "title": "Current Global Presence",
+            "content": "Over 30 million Sikhs worldwide. Largest populations: India (28 million), Canada (800,000), UK (500,000), USA (700,000)."
+          },
+          {
+            "title": "Institutions Abroad",
+            "content": "Over 1,000 Gurdwaras outside India. Sikh schools, universities, cultural centers, media organizations maintaining Sikh identity globally."
+          }
+        ]
+      }
+    }
+  }
+}

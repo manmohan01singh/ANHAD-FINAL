@@ -2940,7 +2940,8 @@ const AmritvelaManager = {
             date: today,
             time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
             slot: slotInfo.label.toLowerCase(),
-            timestamp: now.toISOString()
+            timestamp: now.toISOString(),
+            woke: true  // FIXED: Set woke flag for streak calculation
         };
 
         // ═══ ENHANCED: Play time-based animation FIRST ═══
@@ -3494,6 +3495,7 @@ const NitnemManager = {
 
     /**
      * Render bani list for a period
+     * ENHANCED: Handle punishment banis with special styling
      */
     renderBaniList(period) {
         const listElement = this.elements[`${period}BaniList`];
@@ -3522,6 +3524,19 @@ const NitnemManager = {
             return;
         }
 
+        // FIXED: Check if there are punishment banis and add a header
+        const hasPunishmentBanis = banis.some(b => b.isPunishment);
+        let html = '';
+        
+        if (hasPunishmentBanis) {
+            html += `
+                <div class="punishment-section-header">
+                    <span class="punishment-icon">⚡</span>
+                    <span class="punishment-title">Streak Saver Task</span>
+                </div>
+            `;
+        }
+
         // Group banis by ID
         const groups = {};
         banis.forEach(bani => {
@@ -3534,36 +3549,42 @@ const NitnemManager = {
             }
         });
 
-        listElement.innerHTML = Object.values(groups).map(group => {
+        html += Object.values(groups).map(group => {
             const total = group.instances.length;
             const done = group.completedCount;
             const isFullyCompleted = done === total && total > 0;
             const isGroup = total > 1;
+            const isPunishment = group.isPunishment;
 
             let badgeHtml = '';
             if (isGroup) {
                 badgeHtml = `<span class="bani-badge">${done}/${total}</span>`;
             }
 
+            const punishmentClass = isPunishment ? 'punishment-bani' : '';
+            const punishmentIcon = isPunishment ? '<span class="punishment-indicator">⚡</span>' : '';
+
             return `
-            <div class="bani-item ${isFullyCompleted ? 'completed' : ''}" 
+            <div class="bani-item ${isFullyCompleted ? 'completed' : ''} ${punishmentClass}" 
                  data-bani-id="${group.id}" data-period="${period}"
                  data-is-group="${isGroup}">
                 <div class="bani-checkbox">
                     ${isFullyCompleted ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>` : ''}
                 </div>
                 <div class="bani-info">
-                    <span class="bani-name">${group.nameGurmukhi} ${badgeHtml}</span>
+                    <span class="bani-name">${group.nameGurmukhi} ${badgeHtml} ${punishmentIcon}</span>
                     <span class="bani-name-english">${group.nameEnglish}</span>
                 </div>
                 <span class="bani-duration">${group.duration}</span>
-                <button class="bani-remove-btn" data-bani-id="${group.id}" aria-label="Remove">
+                ${!isPunishment ? `<button class="bani-remove-btn" data-bani-id="${group.id}" aria-label="Remove">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
-                </button>
+                </button>` : ''}
             </div>
         `}).join('');
+
+        listElement.innerHTML = html;
 
         // Attach event listeners
         listElement.querySelectorAll('.bani-item').forEach(item => {
@@ -3583,7 +3604,7 @@ const NitnemManager = {
     },
 
     /**
-     * Toggle group completion (Sequential)
+     * Toggle completion of a bani group
      */
     toggleGroupCompletion(baniId, period) {
         const instances = this.selectedBanis[period].filter(b => b.id === baniId);
@@ -5847,8 +5868,8 @@ const AlarmManager = {
         });
 
         try {
-            // Try multiple storage keys for compatibility (including v7)
-            const keys = ['sr_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
+            // Try multiple storage keys — sr_reminders_v7 is the PRIMARY key (smart-reminders-v7.js line 23)
+            const keys = ['sr_reminders_v7', 'anhad_smart_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
             let rawData = null;
             let foundKey = null;
 
@@ -6619,13 +6640,19 @@ const StreakManager = {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        const completeDates = [];
+        const completeDates = new Set();
         const amritvelaDates = Object.keys(amritvelaLog);
         const nitnemDates = Object.keys(nitnemLog);
 
         const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
 
+        // Add all Amritvela dates
         amritvelaDates.forEach(date => {
+            completeDates.add(date);
+        });
+
+        // Add all Nitnem completion dates
+        nitnemDates.forEach(date => {
             const nitnemData = nitnemLog[date];
             if (nitnemData) {
                 let anyComplete = false;
@@ -6636,11 +6663,11 @@ const StreakManager = {
                         anyComplete = true;
                     }
                 });
-                if (anyComplete) completeDates.push(date);
+                if (anyComplete) completeDates.add(date);
             }
         });
 
-        const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
+        const datesToUse = Array.from(completeDates);
         
         if (!datesToUse.includes(targetDateStr)) return 0;
 
@@ -6815,16 +6842,17 @@ const StreakSaverManager = {
     ],
 
     // Enhanced punishment Banis with Mathila-specific options
-    // NOTE: id must match actual bani IDs from the database (numeric)
+    // NOTE: id must match actual bani IDs from BaniDB (numeric)
+    // Reference: japji=2, jaap=4, shabadHazare10=5, tavPrasad=6, tavPrasadDeenan=7, chaupai=9, anand=10, rehras=21, sohila=23, sukhmani=31
     PUNISHMENT_BANIS: {
         japji: { id: 2, name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
         sukhmani: { id: 31, name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
         jaap_sahib: { id: 4, name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' },
-        chaupai: { id: 7, name: 'Chaupai Sahib', namePunjabi: 'ਚੌਪਈ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        tav_prasad: { id: 8, name: 'Tav-Prasad Savaiye', namePunjabi: 'ਤਵ-ਪ੍ਰਸਾਦ ਸਵਈਯੇ', period: 'amritvela', type: 'morning' },
-        anand_sahib: { id: 9, name: 'Anand Sahib', namePunjabi: 'ਆਨੰਦ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        rehras: { id: 10, name: 'Rehras Sahib', namePunjabi: 'ਰਹਰਾਸ ਸਾਹਿਬ', period: 'rehras', type: 'evening' },
-        kirtan_sohila: { id: 11, name: 'Kirtan Sohila', namePunjabi: 'ਕੀਰਤਨ ਸੋਹਿਲਾ', period: 'sohila', type: 'night' }
+        chaupai: { id: 9, name: 'Chaupai Sahib', namePunjabi: 'ਚੌਪਈ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        tav_prasad: { id: 6, name: 'Tav-Prasad Savaiye', namePunjabi: 'ਤਵ-ਪ੍ਰਸਾਦ ਸਵਈਯੇ', period: 'amritvela', type: 'morning' },
+        anand_sahib: { id: 10, name: 'Anand Sahib', namePunjabi: 'ਆਨੰਦ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        rehras: { id: 21, name: 'Rehras Sahib', namePunjabi: 'ਰਹਰਾਸ ਸਾਹਿਬ', period: 'rehras', type: 'evening' },
+        kirtan_sohila: { id: 23, name: 'Kirtan Sohila', namePunjabi: 'ਕੀਰਤਨ ਸੋਹਿਲਾ', period: 'sohila', type: 'night' }
     },
 
     // Mathila-specific penalty configuration
@@ -6846,13 +6874,14 @@ const StreakSaverManager = {
         this.checkStreakBreak();
         this.renderPunishmentUI();
         
-        // ═══ ENHANCED: Add continuous check every minute for 6 AM threshold ═══
+        // ═══ ENHANCED: Add continuous check every 5 minutes for 6 AM threshold ═══
         // This ensures streak saver activates even if user stays on page past 6 AM
         this.startContinuousCheck();
     },
 
     /**
-     * Start continuous streak saver check (runs every minute)
+     * Start continuous streak saver check (runs every 5 minutes)
+     * FIXED: Reduced frequency to prevent performance issues
      */
     startContinuousCheck() {
         // Clear any existing interval
@@ -6860,12 +6889,12 @@ const StreakSaverManager = {
             clearInterval(this.continuousCheckInterval);
         }
 
-        // Check every minute
+        // Check every 5 minutes instead of every minute to reduce performance impact
         this.continuousCheckInterval = setInterval(() => {
             this.checkStreakBreak();
-        }, 60 * 1000); // 1 minute
+        }, 5 * 60 * 1000); // 5 minutes
 
-        console.log('[StreakSaver] Continuous check started (every minute)');
+        console.log('[StreakSaver] Continuous check started (every 5 minutes)');
     },
 
     /**
@@ -6891,24 +6920,31 @@ const StreakSaverManager = {
         const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
         const currentHour = new Date().getHours();
+        const currentMinute = new Date().getMinutes();
         const hasStreak = StreakManager.state.currentStreak > 0;
 
         // ═══════════════════════════════════════════════════════════════
-        // PROACTIVE CHECK: Amritvela not marked by 7 AM today
+        // PROACTIVE CHECK: Amritvela not marked by 6:00 AM today
+        // If it's past 6 AM and no Amritvela marked, activate Streak Saver
         // ═══════════════════════════════════════════════════════════════
         const todayNotMarked = !amritvelaLog[today];
         const past6AM = currentHour >= 6;
 
-        // If it's past 7 AM and Amritvela not marked today, activate Streak Saver warning
+        // Check if user already dismissed the streak saver this session
+        const dismissedKey = 'streakSaverDismissed_' + today;
+        if (sessionStorage.getItem(dismissedKey) === 'true') return;
+
+        // If it's past 6 AM and Amritvela not marked today, activate Streak Saver warning
         if (todayNotMarked && past6AM && hasStreak) {
             // Check if we already have an active punishment for today
             const existing = this.getActivePunishment();
             if (!existing) {
-                // Offer streak saver as a warning (lighter punishment since it's same day)
+                // Offer streak saver as a warning
                 this.offerStreakSaver(StreakManager.state.currentStreak, {
                     type: 'same_day_warning',
                     missedAmritvela: false,
-                    warning: 'Amritvela not marked by 7 AM'
+                    warning: 'Amritvela not marked by 6:00 AM',
+                    missedDate: today
                 });
             }
             return; // Don't proceed to yesterday check if today is the issue
@@ -6952,7 +6988,11 @@ const StreakSaverManager = {
                 });
 
                 // Offer saver with potentially increased punishment
-                this.offerStreakSaver(effectiveStreak, { missedMathila, weakAttendance });
+                this.offerStreakSaver(effectiveStreak, { 
+                    missedMathila, 
+                    weakAttendance,
+                    missedDate: yesterdayString
+                });
             }
         }
     },
@@ -7190,10 +7230,26 @@ const StreakSaverManager = {
         // Remove punishment Banis from Nitnem
         this.removePunishmentFromNitnem();
 
-        // Restore the streak (minus 1 since yesterday was missed)
+        // Patch the missed date so the streak doesn't break on reload!
+        const missedDate = saverData.context ? saverData.context.missedDate : null;
+        if (missedDate) {
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            if (!amritvelaLog[missedDate]) {
+                amritvelaLog[missedDate] = {
+                    timestamp: new Date().toISOString(),
+                    isStreakSaverPatch: true
+                };
+                StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
+            }
+        }
+
+        // Restore the streak
         const restoredStreak = saverData.brokenStreak;
         StreakManager.state.currentStreak = restoredStreak;
         StreakManager.saveStreakData();
+
+        // Re-calculate to ensure logs are synced
+        StreakManager.recalculateStreak();
 
         // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
         localStorage.removeItem(this.ATTENDANCE_KEY);
@@ -7236,10 +7292,10 @@ const StreakSaverManager = {
         const count = punishment.count;
 
         let message = '';
-        if (punishment.type === 'sukhmani') {
-            message = `Complete 1 Sukhmani Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+        if (count === 1) {
+            message = `Complete 1 ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         } else {
-            message = `Complete ${count} Japji Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+            message = `Complete ${count}× ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         }
 
         // Show toast notification
@@ -7259,10 +7315,10 @@ const StreakSaverManager = {
         const timeRemaining = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60));
 
         let punishmentText = '';
-        if (punishment.type === 'sukhmani') {
-            punishmentText = 'Complete Sukhmani Sahib × 1';
+        if (baniInfo) {
+            punishmentText = `Complete ${baniInfo.name} × ${punishment.count}`;
         } else {
-            punishmentText = `Complete Japji Sahib × ${punishment.count}`;
+            punishmentText = `Complete ${punishment.type} × ${punishment.count}`;
         }
 
         const modalHTML = `
@@ -9073,7 +9129,7 @@ const CarryForwardSystem = {
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Nitnem Carry-Forward', {
                 body: `${count} bani${count > 1 ? 's' : ''} incomplete from ${dayText}: ${baniNames}${extra}`,
-                icon: '/frontend/assets/icons/icon-192.png',
+                icon: '/assets/icon-192x192.png',
                 tag: 'carry-forward'
             });
         }
@@ -9662,7 +9718,7 @@ const AINotificationSystem = {
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Nitnem Tracker', {
                 body: message,
-                icon: '/frontend/assets/icons/icon-192.png',
+                icon: '/assets/icon-192x192.png',
                 tag: `reminder-${type}`
             });
         }
@@ -10019,7 +10075,6 @@ const initializeFullApp = async () => {
 
     } catch (error) {
         console.error('❌ Initialization error:', error);
-        Toast.error('Error', 'Failed to initialize app. Please refresh.');
     }
 };
 
@@ -10232,6 +10287,22 @@ if (document.readyState === 'loading') {
         ServiceWorkerComm.init();
         KeyboardShortcuts.init();
 
+        // Check for streak saver activation from notification
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('streakSaver') === 'activate') {
+            setTimeout(() => {
+                if (typeof StreakSaverManager !== 'undefined') {
+                    // First run check to activate streak saver if needed
+                    StreakSaverManager.checkStreakBreak();
+                    // Then show modal
+                    const saverData = StreakSaverManager.getActivePunishment();
+                    if (saverData) {
+                        StreakSaverManager.showStreakSaverModal(saverData);
+                    }
+                }
+            }, 1500); // Wait for app to fully initialize
+        }
+
         // Back button navigation
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
@@ -10250,6 +10321,22 @@ if (document.readyState === 'loading') {
     SmartRemindersIntegration.init();
     ServiceWorkerComm.init();
     KeyboardShortcuts.init();
+
+    // Check for streak saver activation from notification
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('streakSaver') === 'activate') {
+        setTimeout(() => {
+            if (typeof StreakSaverManager !== 'undefined') {
+                // First run check to activate streak saver if needed
+                StreakSaverManager.checkStreakBreak();
+                // Then show modal
+                const saverData = StreakSaverManager.getActivePunishment();
+                if (saverData) {
+                    StreakSaverManager.showStreakSaverModal(saverData);
+                }
+            }
+        }, 1500); // Wait for app to fully initialize
+    }
 
     // Back button navigation
     const backBtn = document.getElementById('backBtn');

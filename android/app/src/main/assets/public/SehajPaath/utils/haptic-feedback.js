@@ -1,5 +1,7 @@
 /**
  * Haptic Feedback Utility
+ * Uses Capacitor Haptics plugin when available (native iOS/Android)
+ * Falls back to navigator.vibrate for web testing
  */
 
 class HapticFeedback {
@@ -18,10 +20,10 @@ class HapticFeedback {
     }
 
     /**
-     * Check if vibration API is supported
+     * Check if haptics are supported
      */
     isSupported() {
-        return 'vibrate' in navigator;
+        return window.CapacitorHaptics?.isCapacitorAvailable() || 'vibrate' in navigator;
     }
 
     /**
@@ -29,7 +31,11 @@ class HapticFeedback {
      */
     light() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate(10);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact('light');
+        } else {
+            navigator.vibrate(10);
+        }
     }
 
     /**
@@ -37,7 +43,11 @@ class HapticFeedback {
      */
     medium() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate(20);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact('medium');
+        } else {
+            navigator.vibrate(20);
+        }
     }
 
     /**
@@ -45,7 +55,11 @@ class HapticFeedback {
      */
     heavy() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate(30);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact('heavy');
+        } else {
+            navigator.vibrate(30);
+        }
     }
 
     /**
@@ -53,7 +67,11 @@ class HapticFeedback {
      */
     selection() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate([5, 5, 5]);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.selection();
+        } else {
+            navigator.vibrate([5, 5, 5]);
+        }
     }
 
     /**
@@ -61,7 +79,11 @@ class HapticFeedback {
      */
     success() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate([10, 50, 20]);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.notification('success');
+        } else {
+            navigator.vibrate([10, 50, 20]);
+        }
     }
 
     /**
@@ -69,7 +91,11 @@ class HapticFeedback {
      */
     error() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate([50, 30, 50, 30, 50]);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.notification('error');
+        } else {
+            navigator.vibrate([50, 30, 50, 30, 50]);
+        }
     }
 
     /**
@@ -77,7 +103,11 @@ class HapticFeedback {
      */
     achievement() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate([20, 100, 10, 100, 30, 100, 50]);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.notification('success');
+        } else {
+            navigator.vibrate([20, 100, 10, 100, 30, 100, 50]);
+        }
     }
 
     /**
@@ -85,7 +115,11 @@ class HapticFeedback {
      */
     pageTurn() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate(8);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.selection();
+        } else {
+            navigator.vibrate(8);
+        }
     }
 
     /**
@@ -93,7 +127,11 @@ class HapticFeedback {
      */
     bookmark() {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate([15, 30, 15]);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact('light');
+        } else {
+            navigator.vibrate([15, 30, 15]);
+        }
     }
 
     /**
@@ -101,7 +139,11 @@ class HapticFeedback {
      */
     pattern(pattern) {
         if (!this.enabled || !this.isSupported()) return;
-        navigator.vibrate(pattern);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.vibrate(pattern);
+        } else {
+            navigator.vibrate(pattern);
+        }
     }
 
     /**

@@ -31,17 +31,15 @@ const STATIC_FILES = [
   '/lib/global-alarm-system.js',
 
   // Assets - Icons (CRITICAL: All manifest icons must be listed for cache bust)
-  '/assets/icons/icon-72x72.png',
-  '/assets/icons/icon-152x152.png',
-  '/assets/icons/icon-192x192.png',
-  '/assets/icons/icon-512x512.png',
-  '/assets/icons/icon-1024x1024.png',
-  '/assets/app-logo-96.png',
-  '/assets/app-logo-128.png',
-  '/assets/app-logo-144.png',
-  '/assets/app-logo-384.png',
-  '/assets/pwa-icon-192.png',
-  '/assets/pwa-icon-512.png',
+  '/assets/icon-72x72.png',
+  '/assets/icon-96x96.png',
+  '/assets/icon-128x128.png',
+  '/assets/icon-144x144.png',
+  '/assets/icon-152x152.png',
+  '/assets/icon-192x192.png',
+  '/assets/icon-384x384.png',
+  '/assets/icon-512x512.png',
+  '/assets/icon-1024x1024.png',
   '/assets/apple-touch-icon.png',
   '/assets/favicon-16x16.png',
   '/assets/favicon-32x32.png',
@@ -614,6 +612,30 @@ self.addEventListener('periodicsync', (event) => {
 async function checkAndFireScheduledNotifications() {
   console.log('[SW] Checking scheduled notifications...');
 
+  // In Capacitor native apps, notifications are handled by the native plugin
+  // Service worker notifications are unreliable in native mode
+  // This function is kept for PWA/web builds only
+  const clients = await self.clients.matchAll();
+  
+  // Check if running in Capacitor native mode
+  for (const client of clients) {
+    try {
+      const response = await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => resolve(e.data);
+        client.postMessage({ type: 'CHECK_CAPACITOR_MODE' }, [channel.port2]);
+        setTimeout(() => resolve({ isCapacitor: false }), 100);
+      });
+      
+      if (response.isCapacitor) {
+        console.log('[SW] Running in Capacitor mode - skipping service worker notifications');
+        return; // Let Capacitor handle notifications
+      }
+    } catch (e) {
+      // Continue with service worker notifications
+    }
+  }
+
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
 
@@ -625,7 +647,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ॥ Wake up for Amrit Vela meditation',
       hour: 4,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'hukamnama',
@@ -633,7 +655,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Read today\'s sacred command from Sri Guru Granth Sahib Ji',
       hour: 6,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'rehras',
@@ -641,7 +663,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Time for evening prayers - ਸੰਝ ਦੀ ਬੰਦਗੀ ਦਾ ਸਮਾਂ',
       hour: 18,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'nitnem_morning',
@@ -649,7 +671,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਸਵੇਰ ਦੀ ਬਾਣੀ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ — Start your morning Nitnem',
       hour: 4,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'kirtan',
@@ -657,7 +679,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
       hour: 17,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'sohila',
@@ -665,7 +687,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Time for night prayers before sleep - ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ',
       hour: 21,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'nitnem_pending',
@@ -673,7 +695,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਅਜੇ ਬਾਕੀ ਹੈ — Complete your Nitnem before the day ends',
       hour: 19,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     }
   ];
 
@@ -691,7 +713,6 @@ async function checkAndFireScheduledNotifications() {
     // Fire if within 0-15 minute window and not already shown today
     if (timeDiff >= 0 && timeDiff <= 15) {
       // Use a simple check via indexed clients
-      const clients = await self.clients.matchAll();
       let alreadyShown = false;
 
       // Check with clients if notification was shown
@@ -715,8 +736,8 @@ async function checkAndFireScheduledNotifications() {
       if (!alreadyShown) {
         await self.registration.showNotification(notif.title, {
           body: notif.body,
-          icon: notif.icon || '/assets/icons/icon-192x192.png',
-          badge: '/assets/icons/icon-72x72.png',
+          icon: notif.icon || '/assets/icon-192x192.png',
+          badge: '/assets/icon-72x72.png',
           tag: `anhad-${notif.id}`,
           renotify: true,
           requireInteraction: true,
@@ -872,14 +893,14 @@ async function checkAndFireAlarmsFromDB(today, currentHour, currentMinute) {
 async function fireNaamNotification(session, today) {
   await self.registration.showNotification('🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas', {
     body: `Leave all work. Remember Vaheguru for ${session.duration || 2} minutes.`,
-    icon: '/assets/icons/icon-192x192.png',
-    badge: '/assets/icons/icon-72x72.png',
+    icon: '/assets/icon-192x192.png',
+    badge: '/assets/icon-72x72.png',
     tag: `naam-abhyas-${today}-${session.hour}`,
     renotify: true,
     requireInteraction: true,
     vibrate: [300, 100, 300, 100, 500],
     data: {
-      url: '/NaamAbhyas/naam-abhyas.html?autoStart=true',
+      url: 'NaamAbhyas/naam-abhyas.html?autoStart=true',
       type: 'naamAbhyas',
       hour: session.hour,
       startMinute: session.startMinute
@@ -901,8 +922,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || 'Time for your spiritual practice',
-    icon: '/assets/icons/icon-192x192.png',
-    badge: '/assets/icons/icon-72x72.png',
+    icon: '/assets/icon-192x192.png',
+    badge: '/assets/icon-72x72.png',
     vibrate: [200, 100, 200],
     tag: data.tag || 'gurbani-reminder',
     renotify: true,
@@ -945,8 +966,8 @@ self.addEventListener('notificationclick', (event) => {
         // Notify user
         await self.registration.showNotification('Snoozed for 5 minutes', {
           body: `${notification.title} will remind you again`,
-          icon: '/assets/icons/icon-192x192.png',
-          badge: '/assets/icons/icon-72x72.png',
+          icon: '/assets/icon-192x192.png',
+          badge: '/assets/icon-72x72.png',
           tag: 'snooze-confirmation',
           silent: true
         });
@@ -1056,8 +1077,8 @@ async function showNotification(entry) {
     await self.registration.showNotification(entry.title || 'Gurbani Radio', {
       body: entry.body || '',
       tag: entry.tag || entry.id,
-      icon: entry.icon || '/assets/icons/icon-192x192.png',
-      badge: entry.badge || '/assets/icons/icon-72x72.png',
+      icon: entry.icon || '/assets/icon-192x192.png',
+      badge: entry.badge || '/assets/icon-72x72.png',
       requireInteraction: !!entry.requireInteraction,
       vibrate: [200, 100, 200, 100, 200],
       data: entry.data || {},
@@ -1150,8 +1171,8 @@ async function triggerAlarm(alarm) {
   try {
     await self.registration.showNotification(title, {
       body,
-      icon: '/assets/icons/icon-192x192.png',
-      badge: '/assets/icons/icon-72x72.png',
+      icon: '/assets/icon-192x192.png',
+      badge: '/assets/icon-72x72.png',
       tag: `alarm-${alarm.id}`,
       requireInteraction: true,
       renotify: true,

@@ -347,8 +347,8 @@
 
             const notification = new Notification(title, {
                 body: body,
-                icon: '../assets/favicon-32x32.png',
-                badge: '../assets/favicon-32x32.png',
+                icon: '../assets/icon-192x192.png',
+                badge: '../assets/icon-72x72.png',
                 tag: `alarm-${reminder.id}`,
                 requireInteraction: true,
                 vibrate: [500, 200, 500],

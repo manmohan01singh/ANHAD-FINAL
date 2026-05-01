@@ -99,6 +99,7 @@ class StreakEngine {
     /**
      * Check if Nitnem is complete for a day
      * ENHANCED: Cache selected Banis to avoid repeated localStorage reads
+     * FIXED: Return true when no banis selected - user can maintain streak with just Amritvela
      */
     isNitnemComplete(dayLog) {
         if (!dayLog) return false;
@@ -117,7 +118,8 @@ class StreakEngine {
             (this._selectedBanis.rehras?.length || 0) +
             (this._selectedBanis.sohila?.length || 0);
 
-        if (totalRequired === 0) return true; // No banis selected means technically complete
+        // FIXED: If no banis selected, return true - user can maintain streak with just Amritvela
+        if (totalRequired === 0) return true;
 
         const completed = dayLog.completed || [];
         return completed.length >= totalRequired;

@@ -468,17 +468,57 @@
         }
     });
 
+    // CRITICAL: Flush partial listening time when app goes to background or closes
+    // Without this, force-closing mid-kirtan loses all time since last 1-minute tick
+    function flushPartialListeningTime() {
+        if (!listeningInterval) return; // Not listening
+        const stats = getStats();
+        if (!stats.sessionStartTime) return;
+
+        const elapsedMs = Date.now() - stats.sessionStartTime;
+        const elapsedMinutes = Math.floor(elapsedMs / 60000);
+        if (elapsedMinutes > stats.sessionListeningMinutes) {
+            const newMinutes = elapsedMinutes - stats.sessionListeningMinutes;
+            if (newMinutes > 0) {
+                addListeningTime(newMinutes);
+                console.log(`[UserStats] Flushed ${newMinutes} min of partial listening time`);
+            }
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            flushPartialListeningTime();
+        }
+    });
+
+    window.addEventListener('pagehide', flushPartialListeningTime);
+
     // ═══════════════════════════════════════════════════════════════════════════
-    // INITIALIZATION
+    // INITIALIZATION - DEFERRED FOR PERFORMANCE
     // ═══════════════════════════════════════════════════════════════════════════
 
-    // Check daily reset on load
-    checkAndResetDaily();
+    // Defer heavy operations to not block page load
+    function deferredInit() {
+        // Check daily reset
+        checkAndResetDaily();
+        // Track page visit as activity (but don't block)
+        try {
+            updateStreak();
+        } catch (e) {
+            console.warn('[UserStats] Streak update deferred');
+        }
+    }
 
-    // Track page visit as activity
-    updateStreak();
+    // Use requestIdleCallback if available, otherwise setTimeout
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(deferredInit, { timeout: 1000 });
+    } else {
+        // For Safari, defer with setTimeout
+        setTimeout(deferredInit, 50);
+    }
 
-    // Expose global API
+    // Expose global API immediately (doesn't depend on deferred init)
     window.AnhadStats = {
         // Get data
         getStats,

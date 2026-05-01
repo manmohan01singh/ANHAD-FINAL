@@ -63,8 +63,8 @@ async function sendReminderNotification(currentAng) {
 
   const notification = new Notification('ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ', {
     body: randomMessage,
-    icon: '/assets/favicon.svg',
-    badge: '/assets/favicon.svg',
+    icon: '/assets/icon-192x192.png',
+    badge: '/assets/icon-192x192.png',
     tag: 'sehaj-paath-reminder',
     vibrate: [100, 50, 100],
     data: { url: '/sehaj-paath', angNumber: currentAng },

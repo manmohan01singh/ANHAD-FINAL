@@ -40,9 +40,17 @@
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="../css/global-mini-player.css?v=4">
   
   <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
   
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -118,12 +126,6 @@
       <span>Back</span>
     </button>
     <div class="nav-title">Gurpurab Calendar</div>
-    <button class="nav-btn settings-btn" id="btnSettings" type="button" aria-label="Settings">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-      </svg>
-    </button>
   </header>
 
   <main class="page">
@@ -321,57 +323,6 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="ios-backdrop" id="settingsBackdrop" aria-hidden="true"></div>
-  <div class="ios-modal settings-modal" id="settingsModal" aria-hidden="true">
-    <div class="modal-header">
-      <button class="modal-cancel" id="settingsClose" type="button">Done</button>
-      <h2>Settings</h2>
-      <div style="width: 60px;"></div>
-    </div>
-
-    <div class="modal-body">
-      <div class="settings-section">
-        <div class="settings-section-title">APPEARANCE</div>
-        <div class="theme-grid" id="themeGrid">
-          <button class="theme-option" data-theme="light">
-            <div class="theme-preview theme-preview--light">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-card"></div>
-            </div>
-            <span>Light</span>
-          </button>
-          <button class="theme-option" data-theme="dark">
-            <div class="theme-preview theme-preview--dark">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-card"></div>
-            </div>
-            <span>Dark</span>
-          </button>
-          <button class="theme-option" data-theme="divineGold">
-            <div class="theme-preview theme-preview--gold">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-card"></div>
-            </div>
-            <span>Divine Gold</span>
-          </button>
-          <button class="theme-option" data-theme="sepia">
-            <div class="theme-preview theme-preview--sepia">
-              <div class="theme-preview-bar"></div>
-              <div class="theme-preview-card"></div>
-            </div>
-            <span>Sepia</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="settings-info">
-        <div class="info-icon">🎨</div>
-        <div class="info-text">Theme preference is automatically saved and will be remembered on your next visit.</div>
-      </div>
-    </div>
-  </div>
-
   <script src="../lib/unified-storage.js"></script>
   <script src="../Hukamnama/optical-glass-physics.js"></script>
   <script src="nanakshahi-calendar.js"></script>
@@ -381,8 +332,13 @@
   <script src="../lib/global-alarm-system.js" defer></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/native-audio-bridge.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/global-mini-player.js" defer></script>
+  <script src="../lib/global-mini-player.js"></script>
+  <script src="../lib/mini-player-extreme.js"></script>
+  
+    <!-- Global Engine -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

@@ -93,7 +93,7 @@
 
         <!-- Bottom -->
         <footer id="bottom-ui">
-            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1">
+            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1" onclick="sessionStorage.setItem('anhad_welcomed','1');">
                 <span class="enter-btn-main">Enter ANHAD</span>
             </a>
             <p id="tap-hint" class="card-fade-in delay-4">Tap anywhere to start live kirtan</p>
@@ -107,6 +107,10 @@
     <script src="../lib/anhad-audio-singleton.js"></script>
     <!-- REMOVED: mini-player-extreme.js - replaced by singleton -->
     <script src="ios-homepage.js"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

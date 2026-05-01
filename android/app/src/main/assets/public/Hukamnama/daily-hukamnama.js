@@ -424,7 +424,12 @@ const BaniDBService = {
     // Fetch today's Hukamnama
     async fetchTodayHukamnama() {
         try {
-            const response = await fetch(`${CONFIG.API.BASE_URL}${CONFIG.API.HUKAMNAMA_TODAY}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch(`${CONFIG.API.BASE_URL}${CONFIG.API.HUKAMNAMA_TODAY}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -433,6 +438,10 @@ const BaniDBService = {
             const data = await response.json();
             return this.parseHukamnamaResponse(data);
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.error('Hukamnama fetch timed out after 15s');
+                throw new Error('Request timed out. Please check your internet connection.');
+            }
             console.error('Error fetching today\'s Hukamnama:', error);
             throw error;
         }
@@ -446,7 +455,10 @@ const BaniDBService = {
                 .replace('{month}', String(month).padStart(2, '0'))
                 .replace('{day}', String(day).padStart(2, '0'));
 
-            const response = await fetch(url);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 if (response.status === 404) {
@@ -458,6 +470,10 @@ const BaniDBService = {
             const data = await response.json();
             return this.parseHukamnamaResponse(data);
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.error('Hukamnama fetch timed out after 15s');
+                throw new Error('Request timed out. Please check your internet connection.');
+            }
             console.error('Error fetching Hukamnama by date:', error);
             throw error;
         }
@@ -1295,6 +1311,14 @@ const HukamnamaController = {
             // Store current Hukamnama
             State.currentHukamnama = hukamnama;
 
+            // Cache first pankti for notification system
+            if (hukamnama && hukamnama.verses && hukamnama.verses.length > 0) {
+                const firstPankti = hukamnama.verses[0].gurmukhi || '';
+                if (firstPankti && window.SpiritualNotifications) {
+                    window.SpiritualNotifications.cacheHukamnamaPankti(firstPankti);
+                }
+            }
+
             State.addToHistory(hukamnama, State.selectedDate);
 
             // Update UI
@@ -1706,7 +1730,9 @@ const EventHandlers = {
         // Back button
         DOM.get('backBtn').addEventListener('click', () => {
             Utils.hapticFeedback(DOM.get('backBtn'));
-            if (window.history.length > 1) {
+            if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else if (window.history.length > 1) {
                 window.history.back();
             } else {
                 window.location.href = '../index.html';

@@ -1,0 +1,84 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NITNEM TRACKER - PERFORMANCE OPTIMIZATION
+   Reduces animation lag by optimizing transitions
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Optimize button transitions - only animate necessary properties */
+.bani-item,
+.period-tab,
+.add-bani-btn,
+.complete-all-btn,
+.modal-btn,
+.bani-select-item,
+.category-header,
+.date-nav-btn,
+.header-action {
+    transition: transform 0.15s ease-out, opacity 0.15s ease-out !important;
+}
+
+/* Remove transition from frequently updated elements */
+.progress-ring,
+.progress-percent,
+.bani-count,
+.streak-number,
+.mala-count {
+    transition: none !important;
+}
+
+/* Optimize checkbox animations */
+.bani-select-checkbox svg {
+    transition: opacity 0.2s ease-out, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Optimize modal animations */
+.modal-container {
+    transition: transform 0.3s cubic-bezier(0.19, 1, 0.22, 1) !important;
+}
+
+.modal-overlay {
+    transition: opacity 0.25s ease-out, visibility 0.25s !important;
+}
+
+/* Optimize category expansion */
+.bani-category .category-banis {
+    transition: max-height 0.3s ease-out, opacity 0.2s ease-out !important;
+}
+
+/* Use GPU acceleration for better performance */
+.bani-item,
+.period-tab,
+.modal-container,
+.add-bani-btn,
+.complete-all-btn {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Optimize active/hover states - instant feedback */
+.bani-item:active,
+.period-tab:active,
+.add-bani-btn:active,
+.complete-all-btn:active,
+.modal-btn:active,
+.bani-select-item:active {
+    transform: scale(0.97);
+    transition: transform 0.05s ease-out !important;
+}
+
+/* Remove unnecessary transitions from static elements */
+.card,
+.hero,
+.header,
+.main {
+    transition: none !important;
+}

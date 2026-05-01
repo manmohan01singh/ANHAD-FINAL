@@ -67,14 +67,14 @@
     gurbaniRadio: 'GurbaniRadio/gurbani-radio.html',
     gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
-    randomShabad: 'RandomShabad/random-shabad.html',
+    shabadVichar: 'ShabadVichar/shabad-vichar.html',
     nitnem: 'nitnem/indexbani.html',
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',
-    calendar: 'Calendar/Gurupurab-Calendar.html',
+    calendar: 'Calendar/GurpurabCalendar-ios.html',
     nitnemTracker: 'NitnemTracker/nitnem-tracker.html',
-    reminders: 'reminders/smart-reminders.html',
+    reminders: 'reminders/smart-reminders-v7.html',
     notes: 'Notes/notes.html',
     insights: 'Insights/insights.html',
     favorites: 'Favorites/favorites.html',
@@ -90,26 +90,17 @@
     _safetyTimer: null,
 
     navigateTo(path) {
-      // Clear any pending timers first
-      this._clearTimers();
-      
+      // Use the shell's smooth navigation if available
+      if (window.navigateTo) {
+        window.navigateTo(path);
+        return;
+      }
+
+      // Fallback for standalone pages
       const app = document.querySelector('.app');
       if (app) {
         app.classList.add('app--exiting');
-        // Navigate after exit animation
         this._exitTimer = setTimeout(() => { window.location.href = path; }, 180);
-        // SAFETY: If navigation doesn't happen within 600ms (e.g. browser blocks it),
-        // remove the exit class so the page isn't stuck invisible
-        this._safetyTimer = setTimeout(() => {
-          if (app.classList.contains('app--exiting')) {
-            app.classList.remove('app--exiting');
-            app.style.opacity = '';
-            app.style.transform = '';
-            app.style.filter = '';
-            console.warn('[Navigation] Safety: removed stuck app--exiting');
-          }
-          this._clearTimers();
-        }, 600);
       } else {
         window.location.href = path;
       }
@@ -347,8 +338,11 @@
 
     async getNextGurpurab() {
       try {
-        // Check sessionStorage cache first (1-hour TTL)
-        const cacheKey = 'gurpurab_cache';
+        // Get filter preference from localStorage first (default to guru-sahib)
+        const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
+        
+        // Check sessionStorage cache first (1-hour TTL) - include filter in cache key
+        const cacheKey = 'gurpurab_cache_' + nameFilter;
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
           try {
@@ -360,9 +354,44 @@
         const response = await fetch('data/gurpurab-events-2026.json');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
+        
+        // List of the 10 Gurus' names to match (include variations)
+        const guruNames = [
+          'guru nanak', 'ਗੁਰੂ ਨਾਨਕ',
+          'guru angad', 'ਗੁਰੂ ਅੰਗਦ',
+          'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ',
+          'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ',
+          'guru arjan', 'ਗੁਰੂ ਅਰਜਨ',
+          'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ',
+          'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ',
+          'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ',
+          'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ',
+          'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ',
+          'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ',
+          'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'
+        ];
+        
         const events = (data.years['2026'] || [])
+          .filter(e => {
+            // Filter out dastar events
+            if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) {
+              return false;
+            }
+            
+            // Apply name filter if set to guru-sahib
+            if (nameFilter === 'guru-sahib') {
+              const name = String(e.name_en || '').toLowerCase();
+              const namePa = String(e.name_pa || '').toLowerCase();
+              return guruNames.some(guruName => 
+                name.includes(guruName) || namePa.includes(guruName)
+              );
+            }
+            
+            return true;
+          })
           .map(e => ({
             name: e.name_en,
+            name_pa: e.name_pa,
             id: e.id,
             date: new Date(e.gregorian_date),
             type: e.type,
@@ -680,7 +709,7 @@
     },
 
     async updateEventCard() {
-      const data = await DataManager.getNextGurpurab();
+      console.log('[EventCard] Starting update...');
       const titleEl = document.getElementById('eventTitle');
       const dateEl = document.getElementById('eventDate');
       const countEl = document.getElementById('eventCountdown');
@@ -688,233 +717,402 @@
       const eyebrowEl = document.querySelector('.event-card__eyebrow');
       const card = document.getElementById('eventCard');
 
-      if (!data || !data.events || data.events.length === 0) {
-        if (card) card.style.display = 'none';
-        return;
-      }
+      try {
+        const data = await DataManager.getNextGurpurab();
+        console.log('[EventCard] Data received:', data);
 
-      // Clear any existing rotation interval
-      if (card._rotationInterval) {
-        clearInterval(card._rotationInterval);
-        card._rotationInterval = null;
-      }
-
-      const events = data.events;
-      let currentIndex = 0;
-
-      // Function to update display for current event
-      const updateEventDisplay = (event) => {
-        if (titleEl) {
-          titleEl.textContent = event.name;
-          titleEl.classList.remove('skeleton');
+        if (!data || !data.events || data.events.length === 0) {
+          console.log('[EventCard] No events found, hiding card');
+          if (card) card.style.display = 'none';
+          return;
         }
 
-        // Apply event category styling
-        if (card) {
-          card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
-          
-          if (event.eventCategory === 'remembrance') {
-            card.classList.add('event-remembrance');
-          } else if (event.eventCategory === 'celebration') {
-            card.classList.add('event-celebration');
-          } else {
-            card.classList.add('event-neutral');
-          }
-          
-          if (event.isToday) {
-            card.classList.add('event-today');
-          }
+        // Clear any existing rotation interval
+        if (card._rotationInterval) {
+          clearInterval(card._rotationInterval);
+          card._rotationInterval = null;
         }
 
-        // Update eyebrow text
-        if (eyebrowEl) {
-          eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
-        }
+        const events = data.events;
+        let currentIndex = 0;
 
-        // Update date/countdown display
-        if (event.isToday) {
-          if (event.eventCategory === 'remembrance') {
-            if (dateEl) dateEl.textContent = '🕯️ In remembrance';
-            if (countEl) countEl.textContent = '🙏';
-            if (labelEl) labelEl.textContent = 'Today';
-          } else if (event.eventCategory === 'celebration') {
-            if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
-            if (countEl) countEl.textContent = '✨';
-            if (labelEl) labelEl.textContent = 'Today';
-          } else {
-            if (dateEl) dateEl.textContent = 'Today';
-            if (countEl) countEl.textContent = '🙏';
-            if (labelEl) labelEl.textContent = 'Today';
-          }
-        } else {
-          if (dateEl) dateEl.textContent = event.dateStr;
-          if (countEl) countEl.textContent = event.daysLeft;
-          if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
-        }
-
-        // Update Guru image
-        this._updateGuruImage(event);
-      };
-
-      // Display first event
-      updateEventDisplay(events[0]);
-
-      // ═══════════════════════════════════════════════════════════════════
-      // GURPURAB SPECIAL MODE — Activate divine visual effects
-      // ═══════════════════════════════════════════════════════════════════
-      if (data.isToday && events.length > 0) {
-        const firstEvent = events[0];
-        const isCelebration = firstEvent.eventCategory === 'celebration' || 
-                              ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
-        
-        // Add appropriate mode class to body
-        document.body.classList.add(
-          isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
-        );
-        
-        console.log(`🙏 Gurpurab Special Mode activated: ${isCelebration ? 'Celebration' : 'Remembrance'}`);
-      } else {
-        // Remove any existing Gurpurab mode classes
-        document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
-      }
-
-      // Setup auto-rotation for multiple events with smooth spring physics
-      if (data.isMultiple && events.length > 1) {
-        // Add smooth transition styles to card and title
-        if (card) {
-          card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
-        }
-        if (titleEl) {
-          titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        }
-        
-        card._rotationInterval = setInterval(() => {
-          currentIndex = (currentIndex + 1) % events.length;
-          
-          // Dramatic exit: fade out, lift card, and scale down slightly
+        // Function to update display for current event
+        const updateEventDisplay = (event) => {
+          console.log('[EventCard] Updating display for:', event.name);
           if (titleEl) {
-            titleEl.style.opacity = '0';
-            titleEl.style.transform = 'translateY(-10px)';
+            titleEl.textContent = event.name;
+            titleEl.classList.remove('skeleton');
+            titleEl.style.fontSize = '';  // Reset any inline styles
+            titleEl.style.lineHeight = '';
+            titleEl.style.letterSpacing = '';
           }
+
+          // Apply event category styling
           if (card) {
-            card.style.transform = 'scale(0.96) translateY(-4px)';
-            card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
+            card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
+            
+            if (event.eventCategory === 'remembrance') {
+              card.classList.add('event-remembrance');
+            } else if (event.eventCategory === 'celebration') {
+              card.classList.add('event-celebration');
+            } else {
+              card.classList.add('event-neutral');
+            }
+            
+            if (event.isToday) {
+              card.classList.add('event-today');
+            }
+          }
+
+          // Update eyebrow text
+          if (eyebrowEl) {
+            eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
+          }
+
+          // Update date/countdown display
+          if (event.isToday) {
+            if (event.eventCategory === 'remembrance') {
+              if (dateEl) dateEl.textContent = '🕯️ In remembrance';
+              if (countEl) countEl.textContent = '🙏';
+              if (labelEl) labelEl.textContent = 'Today';
+            } else if (event.eventCategory === 'celebration') {
+              if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
+              if (countEl) countEl.textContent = '✨';
+              if (labelEl) labelEl.textContent = 'Today';
+            } else {
+              if (dateEl) dateEl.textContent = 'Today';
+              if (countEl) countEl.textContent = '🙏';
+              if (labelEl) labelEl.textContent = 'Today';
+            }
+          } else {
+            if (dateEl) dateEl.textContent = event.dateStr;
+            if (countEl) countEl.textContent = event.daysLeft;
+            if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+          }
+
+          // Update Guru image
+          this._updateGuruImage(event);
+          
+          // Update greeting section with Guru Sahib info if filter is active
+          this._updateGreetingForGuruSahib(event);
+        };
+
+        // Display first event
+        updateEventDisplay(events[0]);
+        
+        // Apply progressive decoration based on days until event (5-day buildup)
+        this._applyProgressiveDecoration(events[0]);
+
+        // ═══════════════════════════════════════════════════════════════════
+        // GURPURAB SPECIAL MODE — Activate divine visual effects
+        // ═══════════════════════════════════════════════════════════════════
+        if (data.isToday && events.length > 0) {
+          const firstEvent = events[0];
+          const isCelebration = firstEvent.eventCategory === 'celebration' || 
+                                ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
+          
+          // Add appropriate mode class to body
+          document.body.classList.add(
+            isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
+          );
+          
+          console.log(`🙏 Gurpurab Special Mode activated: ${isCelebration ? 'Celebration' : 'Remembrance'}`);
+        } else {
+          // Remove any existing Gurpurab mode classes
+          document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
+        }
+
+        // Setup auto-rotation for multiple events with smooth spring physics
+        if (data.isMultiple && events.length > 1) {
+          // Add smooth transition styles to card and title
+          if (card) {
+            card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
+          }
+          if (titleEl) {
+            titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
           }
           
-          // Wait for exit animation then update and enter
-          setTimeout(() => {
-            updateEventDisplay(events[currentIndex]);
+          card._rotationInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % events.length;
             
-            // Dramatic entrance: fade in with spring bounce
+            // Dramatic exit: fade out, lift card, and scale down slightly
             if (titleEl) {
-              titleEl.style.opacity = '1';
-              titleEl.style.transform = 'translateY(0)';
+              titleEl.style.opacity = '0';
+              titleEl.style.transform = 'translateY(-10px)';
             }
             if (card) {
-              card.style.transform = 'scale(1) translateY(0)';
-              card.style.boxShadow = '';
+              card.style.transform = 'scale(0.96) translateY(-4px)';
+              card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
             }
-          }, 500); // 500ms for smooth exit before content change
-        }, 6000); // 6 seconds for dramatic effect
+            
+            // Wait for exit animation then update and enter
+            setTimeout(() => {
+              updateEventDisplay(events[currentIndex]);
+              
+              // Dramatic entrance: fade in with spring bounce
+              if (titleEl) {
+                titleEl.style.opacity = '1';
+                titleEl.style.transform = 'translateY(0)';
+              }
+              if (card) {
+                card.style.transform = 'scale(1) translateY(0)';
+                card.style.boxShadow = '';
+              }
+            }, 500); // 500ms for smooth exit before content change
+          }, 6000); // 6 seconds for dramatic effect
+        }
+      } catch (error) {
+        console.error('[EventCard] Error loading event data:', error);
+        if (card) card.style.display = 'none';
+      }
+    },
+
+    _applyProgressiveDecoration(event) {
+      const card = document.getElementById('eventCard');
+      const container = document.getElementById('gurpurabContainer');
+      if (!card || !event) return;
+      
+      const daysLeft = event.daysLeft || 0;
+      const isToday = event.isToday || daysLeft === 0;
+      
+      // Remove existing decoration classes
+      card.classList.remove('gurpurab-decor-day-5', 'gurpurab-decor-day-4', 'gurpurab-decor-day-3', 'gurpurab-decor-day-2', 'gurpurab-decor-day-1', 'gurpurab-decor-today');
+      
+      // Apply progressive decoration based on days remaining
+      if (isToday) {
+        card.classList.add('gurpurab-decor-today');
+        if (container) container.classList.add('gurpurab-mode--celebration');
+      } else if (daysLeft <= 5) {
+        card.classList.add(`gurpurab-decor-day-${daysLeft}`);
+        // Show container for 3+ days
+        if (daysLeft <= 3 && container) {
+          container.classList.add('gurpurab-mode--celebration');
+        }
       }
     },
 
     _updateGuruImage(event) {
+      console.log('[GuruImage] Updating for event:', event.name, event.id);
+      
       // ── Guru Image Mapping ──
-      // New guruimages folder with updated filenames (jpeg format)
+      // Using guruimages/ folder with .jpeg files as requested
       const guruImageMap = {
-        'guru-nanak':      'gurunanakdevsahebji.jpeg',
-        'guru-angad':      'guruangaddevsahebji.jpeg',
-        'guru-amar-das':   'guruamardasji.jpeg',
-        'guru-ram-das':    'gururamdassahebji.jpeg',
-        'guru-arjan':      'guruarjanddevsahebji.jpeg',
-        'guru-hargobind':  'guruhargobindsahebji.jpeg',
-        'guru-har-rai':    'guruharraisahebji.jpeg',
-        'guru-harkrishan':  'guruharkrishansahebji.jpeg',
-        'guru-har-krishan': 'guruharkrishansahebji.jpeg',
-        'guru-tegh-bahadur': 'gurutegbahadursahebji.jpeg',
-        'guru-teg-bahadur': 'gurutegbahadursahebji.jpeg',
-        'guru-gobind':     'gurugobindsinghsahebji.jpeg',
-        'sggs':            'gurugranthsahebji.jpeg',
-        'guru-granth':     'gurugranthsahebji.jpeg',
-        'sahibzad':        'gurugobindsinghsahebji.jpeg',
-        'vaisakhi':        'gurugobindsinghsahebji.jpeg',
-        'khalsa':          'gurugobindsinghsahebji.jpeg',
-        'bandi-chhor':     'guruhargobindsahebji.jpeg',
-        'miri-piri':       'guruhargobindsahebji.jpeg',
+        // Primary patterns
+        'guru-nanak':      'guruimages/gurunanakdevsahebji.jpeg',
+        'guru-angad':      'guruimages/guruangaddevsahebji.jpeg',
+        'guru-amar-das':   'guruimages/guruamardasji.jpeg',
+        'guru-ram-das':    'guruimages/gururamdassahebji.jpeg',
+        'guru-arjan':      'guruimages/guruarjanddevsahebji.jpeg',
+        'guru-hargobind':  'guruimages/guruhargobindsahebji.jpeg',
+        'guru-har-rai':    'guruimages/guruharraisahebji.jpeg',
+        'guru-harkrishan':  'guruimages/guruharkrishansahebji.jpeg',
+        'guru-har-krishan': 'guruimages/guruharkrishansahebji.jpeg',
+        'guru-teg-bahadur': 'guruimages/gurutegbahadursahebji.jpeg',
+        'guru-gobind':     'guruimages/gurugobindsinghsahebji.jpeg',
+        'sggs':            'guruimages/gurugranthsahebji.jpeg',
+        'guru-granth':     'guruimages/gurugranthsahebji.jpeg',
+        'sahibzad':        'guruimages/gurugobindsinghsahebji.jpeg',
+        'vaisakhi':        'guruimages/gurugobindsinghsahebji.jpeg',
+        'khalsa':          'guruimages/gurugobindsinghsahebji.jpeg',
+        'bandi-chhor':     'guruimages/guruhargobindsahebji.jpeg',
+        'miri-piri':       'guruimages/guruhargobindsahebji.jpeg',
+        // Additional patterns for better matching
+        'nanak':           'guruimages/gurunanakdevsahebji.jpeg',
+        'angad':           'guruimages/guruangaddevsahebji.jpeg',
+        'amar-das':        'guruimages/guruamardasji.jpeg',
+        'ram-das':         'guruimages/gururamdassahebji.jpeg',
+        'arjan':           'guruimages/guruarjanddevsahebji.jpeg',
+        'hargobind':       'guruimages/guruhargobindsahebji.jpeg',
+        'har-rai':         'guruimages/guruharraisahebji.jpeg',
+        'harkrishan':      'guruimages/guruharkrishansahebji.jpeg',
+        'har-krishan':     'guruimages/guruharkrishansahebji.jpeg',
+        'teg-bahadur':     'guruimages/gurutegbahadursahebji.jpeg',
+        'gobind':          'guruimages/gurugobindsinghsahebji.jpeg',
+        'gobind-singh':    'guruimages/gurugobindsinghsahebji.jpeg',
       };
 
-      // Match event ID to Guru image
+      // Match event name to Guru image (use name instead of ID for better matching)
       let guruImg = null;
       let guruName = null;
+      const evName = (event.name || '').toLowerCase();
       const evId = (event.id || '').toLowerCase();
       
-      // Get standard icon for all sections
+      // Check both name and ID for patterns
+      const searchStrings = [evName, evId];
+      
+      console.log('[GuruImage] Search strings:', searchStrings);
+      
       for (const [key, filename] of Object.entries(guruImageMap)) {
-        if (evId.includes(key)) {
-          guruImg = '../guruimages/' + filename;
-          // Extract a readable Guru name
+        if (searchStrings.some(s => s.includes(key))) {
+          guruImg = filename; // Full path from map
           const nameMap = {
             'guru-nanak': 'Sri Guru Nanak Dev Sahib Ji',
             'guru-angad': 'Sri Guru Angad Dev Sahib Ji',
             'guru-amar-das': 'Sri Guru Amar Das Sahib Ji',
             'guru-ram-das': 'Sri Guru Ram Das Sahib Ji',
             'guru-arjan': 'Sri Guru Arjan Dev Sahib Ji',
-            'guru-hargobind': 'Sri Guru Hargobind Ji',
+            'guru-hargobind': 'Sri Guru Hargobind Sahib Ji',
             'guru-har-rai': 'Sri Guru Har Rai Sahib Ji',
             'guru-harkrishan': 'Sri Guru Har Krishan Sahib Ji',
             'guru-har-krishan': 'Sri Guru Har Krishan Sahib Ji',
-            'guru-tegh-bahadur': 'Sri Guru Tegh Bahadur Sahib Ji',
             'guru-teg-bahadur': 'Sri Guru Tegh Bahadur Sahib Ji',
             'guru-gobind': 'Sri Guru Gobind Singh Sahib Ji',
             'sggs': 'Sri Guru Granth Sahib Ji',
             'guru-granth': 'Sri Guru Granth Sahib Ji',
             'sahibzad': 'Chaar Sahib Jizade',
-            'vaisakhi': 'Khalsa Panth',
-            'khalsa': 'Khalsa Panth',
-            'bandi-chhor': 'Sri Guru Hargobind Ji',
-            'miri-piri': 'Sri Guru Hargobind Ji',
+            'vaisakhi': 'DHAN GURU GOBIND SINGH SAHIB JI',
+            'khalsa': 'DHAN GURU GOBIND SINGH SAHIB JI',
+            'bandi-chhor': 'Sri Guru Hargobind Sahib Ji',
+            'miri-piri': 'Sri Guru Hargobind Sahib Ji',
+            'nanak': 'Sri Guru Nanak Dev Sahib Ji',
+            'angad': 'Sri Guru Angad Dev Sahib Ji',
+            'amar-das': 'Sri Guru Amar Das Sahib Ji',
+            'ram-das': 'Sri Guru Ram Das Sahib Ji',
+            'arjan': 'Sri Guru Arjan Dev Sahib Ji',
+            'hargobind': 'Sri Guru Hargobind Sahib Ji',
+            'har-rai': 'Sri Guru Har Rai Sahib Ji',
+            'harkrishan': 'Sri Guru Har Krishan Sahib Ji',
+            'har-krishan': 'Sri Guru Har Krishan Sahib Ji',
+            'teg-bahadur': 'Sri Guru Tegh Bahadur Sahib Ji',
+            'gobind': 'Sri Guru Gobind Singh Sahib Ji',
+            'gobind-singh': 'Sri Guru Gobind Singh Sahib Ji',
           };
           guruName = nameMap[key] || event.name;
+          console.log('[GuruImage] Matched pattern:', key, '->', guruName, guruImg);
           break;
         }
       }
 
-      // Default to Guru Granth Sahib Ji for events without specific Guru association
-      // (e.g., Sikh Diwas, historical events, sangrand, puranmashi, etc.)
-      const defaultImg = '../guruimages/gurugranthsahebji.jpeg';
+      const defaultImg = 'guruimages/gurugranthsahebji.jpeg';
       const finalImg = guruImg || defaultImg;
       const finalName = guruName || 'Sri Guru Granth Sahib Ji';
 
-      // Update event card image
-      const eventGuruImg = document.getElementById('eventGuruImg');
-      if (eventGuruImg) {
-        // Set onload before setting src to ensure it fires
-        eventGuruImg.onload = () => {
-          eventGuruImg.classList.add('loaded');
+      console.log('[GuruImage] Final image:', finalImg, 'Final name:', finalName);
+
+      /**
+       * Helper to perform optimized image update
+       */
+      const updateImg = (el, src, alt, classToApply = 'loaded') => {
+        if (!el) {
+          console.log('[GuruImage] Element not found for:', src);
+          return;
+        }
+        if (el.getAttribute('src') === src) {
+          console.log('[GuruImage] Image already set to:', src);
+          return;
+        }
+
+        console.log('[GuruImage] Updating image to:', src, 'alt:', alt);
+        
+        // Reset visibility for fresh loading
+        el.style.opacity = '0';
+        el.classList.remove(classToApply);
+
+        // Define load handler
+        const onLoad = () => {
+          el.style.opacity = '1';
+          el.classList.add(classToApply);
+          el.removeEventListener('load', onLoad);
+          console.log('[GuruImage] Image loaded successfully:', src);
         };
-        eventGuruImg.src = finalImg;
-        eventGuruImg.alt = finalName;
-        // If already cached, add class immediately
-        if (eventGuruImg.complete && eventGuruImg.naturalWidth > 0) {
-          eventGuruImg.classList.add('loaded');
+        el.addEventListener('load', onLoad);
+        
+        // Execute update
+        el.src = src;
+        el.alt = alt;
+
+        // Instant check if already cached
+        if (el.complete && el.naturalWidth > 0) {
+          onLoad();
+        }
+      };
+
+      // 1. Update event card image
+      const eventImgEl = document.getElementById('eventGuruImg');
+      updateImg(eventImgEl, finalImg, finalName);
+
+      // 2. Update greeting portrait
+      const portraitImgEl = document.getElementById('guruPortraitImg');
+      updateImg(portraitImgEl, finalImg, finalName);
+      
+      // 3. Update salutation text
+      const salEl = document.getElementById('greetingSalutation');
+      if (salEl) {
+        console.log('[GuruImage] Updating salutation to:', finalName);
+        salEl.textContent = finalName;
+      } else {
+        console.log('[GuruImage] Salutation element not found');
+      }
+    },
+
+    _updateGreetingForGuruSahib(event) {
+      // Only update greeting if filter is set to guru-sahib
+      const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'all';
+      
+      if (nameFilter !== 'guru-sahib') {
+        console.log('[Greeting] Filter not set to guru-sahib, skipping greeting update');
+        return;
+      }
+
+      console.log('[Greeting] Updating greeting for Guru Sahib event:', event.name);
+      
+      // Get Guru image and name
+      const guruInfo = this._getGuruInfoFromEvent(event);
+      
+      if (guruInfo) {
+        // Update greeting portrait
+        const portraitImgEl = document.getElementById('guruPortraitImg');
+        if (portraitImgEl) {
+          portraitImgEl.src = guruInfo.image;
+          portraitImgEl.alt = guruInfo.name;
+        }
+        
+        // Update salutation text
+        const salEl = document.getElementById('greetingSalutation');
+        if (salEl) {
+          salEl.textContent = guruInfo.name;
+        }
+      }
+    },
+
+    _getGuruInfoFromEvent(event) {
+      const guruImageMap = {
+        'guru-nanak':      { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'guru-angad':      { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'guru-amar-das':   { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'guru-ram-das':    { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'guru-arjan':      { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'guru-hargobind':  { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'guru-har-rai':    { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'guru-harkrishan':  { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'guru-har-krishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'guru-teg-bahadur': { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+        'guru-gobind':     { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'nanak':           { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'angad':           { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'amar-das':        { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'ram-das':         { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'arjan':           { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'hargobind':       { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'har-rai':         { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'harkrishan':      { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'har-krishan':     { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'teg-bahadur':     { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+        'gobind':          { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'gobind-singh':    { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+      };
+
+      const evName = (event.name || '').toLowerCase();
+      const evId = (event.id || '').toLowerCase();
+      const searchStrings = [evName, evId];
+
+      for (const [key, info] of Object.entries(guruImageMap)) {
+        if (searchStrings.some(s => s.includes(key))) {
+          return info;
         }
       }
 
-      // Update greeting portrait & salutation
-      const greetingImg = document.getElementById('guruPortraitImg');
-      const salEl = document.getElementById('greetingSalutation');
-      if (greetingImg) {
-        greetingImg.src = finalImg;
-        greetingImg.alt = finalName;
-        greetingImg.style.opacity = '0';
-        greetingImg.onload = () => {
-          greetingImg.style.opacity = '1';
-        };
-      }
-      if (salEl) {
-        salEl.textContent = finalName;
-      }
+      return null;
     },
 
     updateNaamCard() {
@@ -1007,7 +1205,7 @@
           try {
             const n = new Notification('Tomorrow is ' + event.name, {
               body: 'A special holy day is arriving tomorrow. Tap to view the Gurpurab calendar.',
-              icon: 'assets/favicon-32x32.png',
+              icon: 'assets/icon-192x192.png',
               requireInteraction: true
             });
             n.onclick = () => {
@@ -1030,6 +1228,12 @@
     updateGreetingName() {
       const salEl = document.getElementById('greetingSalutation');
       if (!salEl) return;
+      
+      // Don't overwrite if there's a guru name displayed (from gurpurab event)
+      const currentText = salEl.textContent || '';
+      const hasGuruName = currentText.includes('Guru') || currentText.includes('SAHIB');
+      if (hasGuruName) return;
+      
       const name = DataManager.getUserName();
       const sal = Greeting.getSalutation();
       salEl.textContent = name ? `${sal}, ${name}` : sal;
@@ -1244,13 +1448,14 @@
           e.stopPropagation();
           e.preventDefault();
           const stream = btn.dataset.stream;
-          
-          // Use GlobalMiniPlayer API properly with Toggle logic
-          if (window.GlobalMiniPlayer) {
-            if (window.GlobalMiniPlayer.isPlaying() && window.GlobalMiniPlayer.getStream() === stream) {
-              window.GlobalMiniPlayer.pause();
+
+          // Use AnhadAudio singleton directly
+          if (window.AnhadAudio) {
+            const state = window.AnhadAudio.getState();
+            if (state.isPlaying && state.currentStream === stream) {
+              window.AnhadAudio.pause();
             } else {
-              window.GlobalMiniPlayer.play(stream);
+              window.AnhadAudio.play(stream);
             }
           } else {
             // If the audio engine is still lazy-loading, dispatch an event for when it finishes
@@ -1262,19 +1467,28 @@
         });
       });
 
-      // Mini player
+      // Mini player - use AnhadAudio singleton
       document.getElementById('miniPlayerPlayBtn')?.addEventListener('click', (e) => {
         e.stopPropagation();
+        e.preventDefault();
         if (window.AnhadAudio) {
-          window.AnhadAudio.isPlaying() ? window.AnhadAudio.pause() : window.AnhadAudio.play();
+          window.AnhadAudio.toggle();
         }
       });
 
       window.addEventListener('anhadAudioStateChange', (e) => this._sync(e.detail));
 
+      // Check initial state using AnhadAudio singleton
       setTimeout(() => {
-        if (window.AnhadAudio && window.AnhadAudio.isPlaying()) {
-          this._sync({ isPlaying: true, stream: window.AnhadAudio.getCurrentStream() || 'darbar' });
+        if (window.AnhadAudio) {
+          const state = window.AnhadAudio.getState();
+          if (state.isPlaying) {
+            this._sync({ isPlaying: true, stream: state.currentStream || 'darbar' });
+          }
+        } else if (window.AnhadMiniPlayer && window.AnhadMiniPlayer.isPlaying()) {
+          this._sync({ isPlaying: true, stream: window.AnhadMiniPlayer.getStream() || 'darbar' });
+        } else if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.isPlaying()) {
+          this._sync({ isPlaying: true, stream: window.GlobalMiniPlayer.getStream() || 'darbar' });
         }
       }, 800);
     },
@@ -1293,9 +1507,36 @@
         if (icon) icon.innerHTML = isThis ? pauseIcon : playIcon;
       });
 
-      // Mini player
+      // Mini player (legacy element in index.html)
       const miniPlayer = document.getElementById('miniPlayer');
-      if (miniPlayer) miniPlayer.classList.toggle('mini-player--visible', isPlaying);
+      if (miniPlayer) {
+        if (isPlaying) {
+          miniPlayer.style.display = 'flex';
+          // Small delay to allow display:flex to take effect before transition
+          requestAnimationFrame(() => {
+            miniPlayer.classList.add('mini-player--visible');
+          });
+        } else {
+          miniPlayer.classList.remove('mini-player--visible');
+          // Wait for transition then hide
+          setTimeout(() => {
+            if (!miniPlayer.classList.contains('mini-player--visible')) {
+              miniPlayer.style.display = 'none';
+            }
+          }, 500);
+        }
+      }
+
+      // Also update the Global Mini Player (gmp) element if it exists
+      const gmp = document.getElementById('gmp');
+      if (gmp && window.GlobalMiniPlayer) {
+        // The global mini player manages its own visibility through its own API
+        // Just ensure it's synced by calling show/hide as needed
+        if (isPlaying) {
+          window.GlobalMiniPlayer.show();
+        }
+        // Note: we don't auto-hide gmp on pause - user must click close button
+      }
 
       const info = this._info[stream] || this._info.darbar;
       const miniTitle = document.getElementById('miniTitle');
@@ -1320,33 +1561,69 @@
     _deferredPrompt: null,
 
     init() {
-      const installBtn = document.getElementById('installAppBtn');
+      const banner = document.getElementById('installBanner');
+      const installCta = document.getElementById('installCta');
+      const dismissBtn = document.getElementById('installDismiss');
       
+      if (!banner) return;
+
+      console.log('[PWA] Initializing InstallController...');
+
       if (this._isStandalone()) {
-        if (installBtn) installBtn.style.display = 'none';
+        console.log('[PWA] App is already standalone, hiding banner');
+        banner.style.display = 'none';
         return;
       }
 
+      // Check for persistent dismissal (24h cooldown)
+      const dismissedTime = Store.get(KEYS.INSTALL_DISMISSED);
+      if (dismissedTime && (Date.now() - parseInt(dismissedTime)) < 86400000) {
+        console.log('[PWA] Banner dismissed recently, waiting for cooldown');
+        banner.style.display = 'none';
+        return;
+      }
+
+      // Capture native prompt (Android/Chrome)
       window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('[PWA] Native beforeinstallprompt event fired');
         e.preventDefault();
         this._deferredPrompt = e;
-        console.log('[PWA] Install prompt captured');
-        setTimeout(() => this._showButton(), 2000);
+        this._showBanner();
       });
 
+      // Handle successful install
       window.addEventListener('appinstalled', () => {
-        console.log('[PWA] App installed');
+        console.log('[PWA] App installed successfully');
         Store.set(KEYS.PWA_INSTALLED, true);
-        this._hideButton();
+        this._hideBanner();
       });
 
-      // Fallback: Show button after 3 seconds if not standalone (for testing)
+      // Bind actions
+      if (installCta) {
+        installCta.onclick = () => {
+          console.log('[PWA] Install CTA clicked');
+          this._triggerInstall();
+        };
+      }
+
+      if (dismissBtn) {
+        dismissBtn.onclick = () => {
+          console.log('[PWA] User dismissed install banner');
+          Store.set(KEYS.INSTALL_DISMISSED, Date.now().toString());
+          this._hideBanner();
+        };
+      }
+
+      // Fallback for iOS/Safari: show after delay if not dismissed and no prompt yet
       setTimeout(() => {
-        if (!this._isStandalone() && installBtn && installBtn.style.display === 'none') {
-          console.log('[PWA] Showing install button (fallback)');
-          this._showButton();
+        if (!this._isStandalone() && !this._deferredPrompt) {
+          const dismissed = Store.get(KEYS.INSTALL_DISMISSED);
+          if (!dismissed || (Date.now() - parseInt(dismissed)) > 86400000) {
+            console.log('[PWA] Showing install banner (Fallback/iOS)');
+            this._showBanner();
+          }
         }
-      }, 3000);
+      }, 5000); // 5s delay for stability
     },
 
     _isStandalone() {
@@ -1357,53 +1634,89 @@
       } catch (e) { return false; }
     },
 
-    _showButton() {
-      const installBtn = document.getElementById('installAppBtn');
-      if (!installBtn) {
-        console.log('[PWA] Install button not found in DOM');
-        return;
-      }
-
-      console.log('[PWA] Showing install button');
-      installBtn.style.display = 'flex';
+    _showBanner() {
+      const banner = document.getElementById('installBanner');
+      if (!banner) return;
       
-      // Add entrance animation
+      console.log('[PWA] Displaying install banner');
+      banner.style.display = 'block';
+      // Force reflow
+      banner.offsetHeight;
+      
       requestAnimationFrame(() => {
-        installBtn.classList.add('visible');
-      });
-
-      // Remove old listeners by cloning
-      const newBtn = installBtn.cloneNode(true);
-      installBtn.parentNode.replaceChild(newBtn, installBtn);
-
-      newBtn.addEventListener('click', async () => {
-        console.log('[PWA] Install button clicked');
-        if (this._deferredPrompt) {
-          this._deferredPrompt.prompt();
-          const { outcome } = await this._deferredPrompt.userChoice;
-          console.log('[PWA] User choice:', outcome);
-          if (outcome === 'accepted') {
-            Store.set(KEYS.PWA_INSTALLED, true);
-            this._hideButton();
-          }
-          this._deferredPrompt = null;
-        } else {
-          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-          alert(isIOS
-            ? 'To install ANHAD:\n\n1. Tap the Share button (📤)\n2. Tap "Add to Home Screen"\n3. Tap "Add"'
-            : 'Use your browser\'s menu to install this app.');
-        }
+        banner.classList.add('install-banner--visible');
+        banner.style.opacity = '1';
+        banner.style.transform = 'translateY(0)';
       });
     },
 
-    _hideButton() {
-      const installBtn = document.getElementById('installAppBtn');
-      if (installBtn) {
-        console.log('[PWA] Hiding install button');
-        installBtn.classList.remove('visible');
-        setTimeout(() => {
-          installBtn.style.display = 'none';
-        }, 400);
+    _hideBanner() {
+      const banner = document.getElementById('installBanner');
+      if (!banner) return;
+      
+      console.log('[PWA] Hiding install banner');
+      banner.classList.remove('install-banner--visible');
+      banner.style.transform = 'translateY(100%)';
+      banner.style.opacity = '0';
+      setTimeout(() => {
+        if (!banner.classList.contains('install-banner--visible')) {
+          banner.style.display = 'none';
+        }
+      }, 500);
+    },
+
+    _triggerInstall() {
+      if (this._deferredPrompt) {
+        console.log('[PWA] Triggering native install prompt');
+        this._deferredPrompt.prompt();
+        this._deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('[PWA] User accepted install');
+            Store.set(KEYS.PWA_INSTALLED, true);
+          }
+          this._deferredPrompt = null;
+          this._hideBanner();
+        });
+      } else {
+        // Detect platform for best install path
+        const ua = navigator.userAgent || '';
+        const isAndroid = /android/i.test(ua);
+        const isIOS = /iPad|iPhone|iPod/.test(ua);
+
+        if (isAndroid) {
+          // Offer APK download for Android users via Chrome
+          console.log('[PWA] Android detected — offering APK download');
+          const apkUrl = 'https://github.com/user/anhad-app/releases/latest/download/anhad.apk';
+          const confirmed = confirm(
+            '📲 Install ANHAD App\n\n' +
+            'Get the full native experience with:\n' +
+            '• Background kirtan playback\n' +
+            '• Home screen widgets\n' +
+            '• Naam Abhyas reminders\n\n' +
+            'Download the Android APK now?'
+          );
+          if (confirmed) {
+            window.open(apkUrl, '_blank');
+          }
+        } else if (isIOS) {
+          // iOS-specific instructions
+          console.log('[PWA] iOS detected — showing Add to Home Screen instructions');
+          alert(
+            '📲 Install ANHAD\n\n' +
+            '1. Tap the Share button  ⎙\n' +
+            '2. Scroll down and tap "Add to Home Screen"\n' +
+            '3. Tap "Add" to confirm\n\n' +
+            'The app icon will appear on your Home Screen!'
+          );
+        } else {
+          // Desktop / other browsers
+          console.log('[PWA] Desktop/other — showing generic instructions');
+          alert(
+            '📲 Install ANHAD\n\n' +
+            'Click the install icon in your browser\'s address bar,\n' +
+            'or use your browser menu → "Install App".'
+          );
+        }
       }
     }
   };
@@ -1417,7 +1730,7 @@
 
     init() {
       // Only 2 timers. Not 6.
-      this._add(() => Greeting.update(), 3600000);  // Greeting: 1 hour (changes ~2x/day)
+      // Greeting.update() removed - now handled by gurpurab event system
       this._add(() => UIController.updateNotificationBadge(), 300000); // Notifs: 5 min
 
       // Pause when tab hidden
@@ -1427,7 +1740,7 @@
           // Refresh all data when user returns
           Store.clearCache();
           UIController.refreshAll();
-          Greeting.update();
+          // Greeting.update() removed - now handled by gurpurab event system
         }
       });
 
@@ -1451,7 +1764,7 @@
         if (e.persisted) {
           Store.clearCache();
           UIController.refreshAll();
-          Greeting.update();
+          // Greeting.update() removed - now handled by gurpurab event system
           console.log('[Scheduler] ✅ Recovered from bfcache');
         }
       });
@@ -1538,7 +1851,7 @@
     init() {
       ThemeController.init();
       CarouselController.init();
-      Greeting.update();
+      // Greeting.update() removed - now handled by gurpurab event system
       this._bindNavigation();
 
       // PERF: Batch all DOM updates into a single rAF
@@ -1597,7 +1910,7 @@
       // Quick access cards
       Navigation.bindCard('nitnemTrackerCard', NAV_PATHS.nitnemTracker);
       Navigation.bindCard('naamCard', NAV_PATHS.naamAbhyas);
-      Navigation.bindCard('shabadCard', NAV_PATHS.randomShabad);
+      Navigation.bindCard('shabadVicharCard', NAV_PATHS.shabadVichar);
       Navigation.bindCard('searchCard', NAV_PATHS.gurbaniKhoj);
       Navigation.bindCard('eventCard', NAV_PATHS.calendar);
 
@@ -1633,10 +1946,71 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // BOOT
   // ═══════════════════════════════════════════════════════════════════════════
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => App.init());
-  } else {
+  const boot = () => {
     App.init();
+    console.log('[Trendora] App Initialized');
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DESKTOP: Remove hero card dark overlays
+  // ═══════════════════════════════════════════════════════════════════════════
+  if (window.innerWidth >= 1024) {
+    const removeOverlays = () => {
+      // Inject CSS
+      const style = document.createElement('style');
+      style.id = 'hero-overlay-remover';
+      style.textContent = `
+        .hero-card__image-wrapper::before,
+        .hero-card__image-wrapper::after {
+          display: none !important;
+          content: none !important;
+          background: none !important;
+          opacity: 0 !important;
+        }
+        .hero-card__image {
+          mask-image: none !important;
+          -webkit-mask-image: none !important;
+          filter: none !important;
+        }
+        .hero-card__overlay {
+          background: transparent !important;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Directly modify elements
+      document.querySelectorAll('.hero-card__image-wrapper').forEach(el => {
+        el.style.cssText += '; position: relative; overflow: hidden; border-radius: 16px;';
+      });
+      document.querySelectorAll('.hero-card__image').forEach(el => {
+        el.style.cssText += '; mask-image: none; -webkit-mask-image: none; filter: none;';
+      });
+      document.querySelectorAll('.hero-card__overlay').forEach(el => {
+        el.style.cssText += '; background: transparent;';
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', removeOverlays);
+    } else {
+      removeOverlays();
+    }
+
+    // Also run after a short delay to catch any dynamically added elements
+    setTimeout(removeOverlays, 500);
+    setTimeout(removeOverlays, 1000);
+  }
+
+  // Handle SPA page changes from the shell
+  window.addEventListener('anhad_page_changed', () => {
+    console.log('[Trendora] Page change detected, re-initializing UI...');
+    App.init();
+  });
 
 })();

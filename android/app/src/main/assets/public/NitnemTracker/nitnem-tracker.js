@@ -22,7 +22,7 @@ const CONFIG = {
         NITNEM_LOG: 'nitnemTracker_nitnemLog',
         MALA_LOG: 'nitnemTracker_malaLog',
         ALARM_LOG: 'nitnemTracker_alarmLog',
-        STREAK_DATA: 'nitnemTracker_streakData',
+        STREAK_DATA: 'anhad_streak_data',
         ACHIEVEMENTS: 'nitnemTracker_achievements',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
         THEME: 'nitnemTracker_theme'
@@ -53,7 +53,6 @@ const CONFIG = {
         hapticEnabled: true,
         soundEnabled: true,
         autoWakeDetect: true,
-        presentUntil: 7,
         beadsPerMala: 108,
         vibrationPattern: 'medium'
     },
@@ -188,7 +187,7 @@ const Utils = {
         for (let i = 0; i < sortedDates.length - 1; i++) {
             const current = new Date(sortedDates[i]);
             const next = new Date(sortedDates[i + 1]);
-            const diffDays = (current - next) / (1000 * 60 * 60 * 24);
+            const diffDays = Math.round((current - next) / (1000 * 60 * 60 * 24));
 
             // Consecutive days have exactly 1 day difference
             if (diffDays === 1) {
@@ -350,8 +349,8 @@ class NitnemTrackerThemeEngine {
         const globalTheme = localStorage.getItem('anhad_theme') || 'light';
         this.currentTheme = this.themes.includes(globalTheme) ? globalTheme : 'light';
         
-        // Save synced theme to Nitnem storage
-        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, this.currentTheme);
+        // Save synced theme to Nitnem storage (JSON encoded to prevent persistence guard warnings)
+        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, JSON.stringify(this.currentTheme));
         
         this.init();
     }
@@ -407,8 +406,8 @@ class NitnemTrackerThemeEngine {
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(`theme-${themeName}`);
 
-        // Save to both local and global storage
-        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, themeName);
+        // Save to both local and global storage (local JSON encoded for guard)
+        localStorage.setItem(CONFIG.STORAGE_KEYS.THEME, JSON.stringify(themeName));
         localStorage.setItem('anhad_theme', themeName);
 
         // Update UI if it exists
@@ -1230,7 +1229,13 @@ const HeaderManager = {
             headerSubtitle: document.getElementById('headerSubtitle'),
             currentHour: document.getElementById('currentHour'),
             currentMinute: document.getElementById('currentMinute'),
-            timePeriod: document.getElementById('timePeriod')
+            timePeriod: document.getElementById('timePeriod'),
+            // Penalty system elements
+            penaltyBtn: document.getElementById('penaltyBtn'),
+            penaltyBadge: document.getElementById('penaltyBadge'),
+            streakAlertBadge: document.getElementById('streakAlertBadge'),
+            fireEmoji: document.getElementById('fireEmoji'),
+            streakFire: document.getElementById('streakFire')
         };
 
         // Start clock
@@ -1242,8 +1247,23 @@ const HeaderManager = {
         // Update streak in header
         this.updateStreakDisplay();
 
+        // Listen for global streak updates
+        window.addEventListener('streakUpdated', () => {
+            console.log('[HeaderManager] Global streak updated, refreshing display...');
+            this.updateStreakDisplay();
+        });
+
         // Fix header layout styles
         this.fixHeaderLayout();
+
+        // Setup penalty system
+        this.setupPenaltyListeners();
+        this.updatePenaltyState();
+
+        // Periodic penalty state check (every minute)
+        setInterval(() => {
+            this.updatePenaltyState();
+        }, 60000);
     },
 
     /**
@@ -1338,10 +1358,11 @@ const HeaderManager = {
                 display: none;
             }
 
-            /* 4. Buttons (Back & Actions) - Lowered to align with Box */
+            /* 4. Buttons (Back & Actions) - Vertically centered with Box */
             .back-btn, .header-actions {
                 position: absolute;
-                top: 55px; /* Aligned with the White Box */
+                top: 50%; /* Center vertically with the header-content */
+                transform: translateY(-50%);
                 pointer-events: auto;
                 z-index: 30;
             }
@@ -1407,7 +1428,7 @@ const HeaderManager = {
             
             /* Main Content Padding - clear the layout */
             .main-content {
-                padding-top: 140px; 
+                padding-top: 145px !important; 
             }
 
             /* Animation */
@@ -1457,6 +1478,730 @@ const HeaderManager = {
             .bani-item.completed .bani-badge {
                 background: #fff;
                 color: var(--ios-green);
+            }
+
+            /* ═══════════════════════════════════════════════════════════════
+               PENALTY SYSTEM STYLES - Extreme iOS Aesthetics
+               ═══════════════════════════════════════════════════════════════ */
+
+            /* ── 1. FIRE ICON - Broken State (Blue) ── */
+            .streak-fire {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            .streak-fire.streak-broken .fire-emoji {
+                filter: hue-rotate(180deg) saturate(2.5) brightness(1.3);
+                animation: fireBreatheBroken 2s ease-in-out infinite;
+            }
+
+            .streak-fire.streak-broken .streak-count {
+                color: #5AC8FA !important;
+                text-shadow: 0 0 8px rgba(90, 200, 250, 0.5);
+            }
+
+            .streak-fire.streak-healthy .fire-emoji {
+                filter: none;
+                animation: fireBreathHealth 3s ease-in-out infinite;
+            }
+
+            @keyframes fireBreatheBroken {
+                0%, 100% { transform: scale(1); opacity: 0.8; }
+                50% { transform: scale(1.15); opacity: 1; }
+            }
+
+            @keyframes fireBreathHealth {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.08); }
+            }
+
+            /* ── 2. STREAK ALERT BADGE (Red Exclamation) ── */
+            .streak-alert-badge {
+                position: absolute;
+                top: -6px;
+                right: -10px;
+                width: 16px;
+                height: 16px;
+                background: linear-gradient(135deg, #FF3B30, #FF6B6B);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 8px;
+                font-weight: 900;
+                border: 2px solid rgba(0, 0, 0, 0.85);
+                z-index: 10;
+                box-shadow: 0 2px 8px rgba(255, 59, 48, 0.6);
+            }
+
+            .streak-alert-badge svg {
+                width: 8px;
+                height: 8px;
+                fill: #fff;
+            }
+
+            .streak-alert-badge.pulse-alert {
+                animation: pulseAlert 1.5s ease-in-out infinite;
+            }
+
+            @keyframes pulseAlert {
+                0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(255, 59, 48, 0.6); }
+                50% { transform: scale(1.2); box-shadow: 0 2px 16px rgba(255, 59, 48, 0.9); }
+            }
+
+            /* ── 3. PENALTY HEADER BUTTON ── */
+            .penalty-header-btn {
+                position: relative;
+                background: linear-gradient(135deg, #FF9500, #FF3B30) !important;
+                border-radius: 12px !important;
+                color: #fff !important;
+                border: none !important;
+                box-shadow: 0 4px 16px rgba(255, 149, 0, 0.5);
+                overflow: visible !important;
+            }
+
+            .penalty-header-btn .header-icon {
+                stroke: #fff !important;
+                filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+            }
+
+            .penalty-header-btn.penalty-active {
+                animation: penaltyPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+
+            @keyframes penaltyPulse {
+                0%, 100% { 
+                    box-shadow: 0 4px 16px rgba(255, 149, 0, 0.5);
+                    transform: scale(1);
+                }
+                50% { 
+                    box-shadow: 0 6px 24px rgba(255, 59, 48, 0.7), 0 0 40px rgba(255, 149, 0, 0.3);
+                    transform: scale(1.08);
+                }
+            }
+
+            .penalty-badge {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                width: 18px;
+                height: 18px;
+                background: #FF3B30;
+                color: #fff;
+                font-size: 11px;
+                font-weight: 800;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 2px solid #fff;
+                box-shadow: 0 2px 6px rgba(255, 59, 48, 0.5);
+                animation: badgeBounce 2s ease-in-out infinite;
+                z-index: 5;
+            }
+
+            [data-theme="dark"] .penalty-badge {
+                border-color: #1c1c1e;
+            }
+
+            @keyframes badgeBounce {
+                0%, 100% { transform: scale(1); }
+                25% { transform: scale(1.15); }
+                50% { transform: scale(0.95); }
+                75% { transform: scale(1.1); }
+            }
+
+            /* ── 4. PENALTY MODAL (iOS Bottom Sheet) ── */
+            .penalty-modal-container {
+                max-height: 85vh !important;
+                border-top-left-radius: 28px !important;
+                border-top-right-radius: 28px !important;
+                overflow: hidden;
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(40px) saturate(200%);
+                -webkit-backdrop-filter: blur(40px) saturate(200%);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.15), 
+                            0 -2px 20px rgba(0, 0, 0, 0.08);
+            }
+
+            [data-theme="dark"] .penalty-modal-container {
+                background: rgba(28, 28, 30, 0.97) !important;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.6),
+                            0 -2px 20px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Modal Header */
+            .penalty-modal-header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 24px 12px;
+                position: relative;
+                text-align: center;
+            }
+
+            .penalty-modal-header .modal-close-btn {
+                position: absolute;
+                top: 16px;
+                right: 16px;
+            }
+
+            .penalty-modal-icon-wrap {
+                position: relative;
+                width: 64px;
+                height: 64px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 12px;
+            }
+
+            .penalty-modal-icon-glow {
+                position: absolute;
+                inset: -8px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(255, 149, 0, 0.3) 0%, transparent 70%);
+                animation: iconGlowPulse 2.5s ease-in-out infinite;
+            }
+
+            @keyframes iconGlowPulse {
+                0%, 100% { opacity: 0.6; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.15); }
+            }
+
+            .penalty-modal-icon {
+                font-size: 40px;
+                z-index: 2;
+                position: relative;
+                animation: iconFloat 3s ease-in-out infinite;
+            }
+
+            @keyframes iconFloat {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-4px); }
+            }
+
+            .penalty-modal-title {
+                font-size: 22px;
+                font-weight: 800;
+                color: #1d1d1f;
+                margin: 0 0 4px;
+                letter-spacing: -0.3px;
+            }
+
+            [data-theme="dark"] .penalty-modal-title {
+                color: #fff;
+            }
+
+            .penalty-modal-subtitle {
+                font-size: 14px;
+                color: #86868b;
+                margin: 0;
+                font-weight: 500;
+            }
+
+            [data-theme="dark"] .penalty-modal-subtitle {
+                color: rgba(235, 235, 245, 0.6);
+            }
+
+            /* Modal Body */
+            .penalty-modal-body {
+                padding: 0 20px 16px;
+                overflow-y: auto;
+                max-height: 55vh;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* ── 5. STREAK INFO CARD ── */
+            .penalty-streak-info {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: linear-gradient(135deg, rgba(255, 149, 0, 0.12) 0%, rgba(255, 59, 48, 0.08) 100%);
+                border-radius: 16px;
+                padding: 16px 20px;
+                margin-bottom: 20px;
+                border: 1px solid rgba(255, 149, 0, 0.15);
+            }
+
+            [data-theme="dark"] .penalty-streak-info {
+                background: linear-gradient(135deg, rgba(255, 149, 0, 0.15) 0%, rgba(255, 59, 48, 0.1) 100%);
+                border: 1px solid rgba(255, 149, 0, 0.2);
+            }
+
+            .penalty-streak-number {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .penalty-streak-fire {
+                font-size: 28px;
+                filter: hue-rotate(180deg) saturate(2) brightness(1.2);
+                animation: fireBreatheBroken 2s ease-in-out infinite;
+            }
+
+            .penalty-streak-count {
+                font-size: 32px;
+                font-weight: 800;
+                color: #FF9500;
+                letter-spacing: -1px;
+            }
+
+            .penalty-streak-label {
+                font-size: 12px;
+                color: #86868b;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .penalty-timer {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(255, 59, 48, 0.12);
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #FF3B30;
+            }
+
+            .penalty-timer svg {
+                stroke: #FF3B30;
+            }
+
+            /* ── 6. TASK CARDS ── */
+            .penalty-tasks-section {
+                margin-bottom: 16px;
+            }
+
+            .penalty-tasks-title {
+                font-size: 15px;
+                font-weight: 700;
+                color: #1d1d1f;
+                margin: 0 0 12px 4px;
+                letter-spacing: -0.2px;
+            }
+
+            [data-theme="dark"] .penalty-tasks-title {
+                color: #fff;
+            }
+
+            .penalty-task-card {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                background: rgba(0, 0, 0, 0.03);
+                border-radius: 16px;
+                padding: 16px;
+                margin-bottom: 10px;
+                border: 1px solid rgba(0, 0, 0, 0.06);
+                transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative;
+                overflow: hidden;
+            }
+
+            [data-theme="dark"] .penalty-task-card {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .penalty-task-card::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(135deg, rgba(52, 199, 89, 0.15) 0%, rgba(52, 199, 89, 0.05) 100%);
+                opacity: 0;
+                transition: opacity 0.5s ease;
+                border-radius: 16px;
+            }
+
+            .penalty-task-card.completed::before {
+                opacity: 1;
+            }
+
+            .penalty-task-card.completed {
+                border-color: rgba(52, 199, 89, 0.3);
+                transform: scale(0.98);
+            }
+
+            .penalty-task-icon {
+                width: 44px;
+                height: 44px;
+                background: linear-gradient(135deg, #FF9500, #FF6B00);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                flex-shrink: 0;
+                box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+                transition: all 0.5s ease;
+            }
+
+            .penalty-task-card.completed .penalty-task-icon {
+                background: linear-gradient(135deg, #34C759, #30B350);
+                box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+            }
+
+            .penalty-task-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .penalty-task-name {
+                font-family: 'Noto Sans Gurmukhi', sans-serif;
+                font-size: 16px;
+                font-weight: 700;
+                color: #1d1d1f;
+                margin: 0 0 2px;
+                line-height: 1.3;
+            }
+
+            [data-theme="dark"] .penalty-task-name {
+                color: #fff;
+            }
+
+            .penalty-task-english {
+                font-size: 13px;
+                color: #86868b;
+                margin: 0 0 2px;
+                font-weight: 500;
+            }
+
+            .penalty-task-desc {
+                font-size: 11px;
+                color: #aeaeb2;
+                margin: 0;
+                font-weight: 400;
+            }
+
+            .penalty-task-card.completed .penalty-task-name,
+            .penalty-task-card.completed .penalty-task-english {
+                color: #34C759 !important;
+            }
+
+            /* ── 7. CHECKMARK BUTTON ── */
+            .penalty-task-check {
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border: 2.5px solid rgba(0, 0, 0, 0.15);
+                background: transparent;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                flex-shrink: 0;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                padding: 0;
+            }
+
+            [data-theme="dark"] .penalty-task-check {
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+
+            .penalty-task-check svg {
+                width: 18px;
+                height: 18px;
+                opacity: 0;
+                transform: scale(0.5);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                stroke: #fff;
+            }
+
+            .penalty-task-check.checked {
+                background: linear-gradient(135deg, #34C759, #30B350);
+                border-color: #34C759;
+                box-shadow: 0 4px 16px rgba(52, 199, 89, 0.4);
+                animation: checkBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+
+            .penalty-task-check.checked svg {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            @keyframes checkBounce {
+                0% { transform: scale(0.8); }
+                40% { transform: scale(1.25); }
+                60% { transform: scale(0.95); }
+                80% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+
+            /* ── 8. MOTIVATION SECTION ── */
+            .penalty-motivation {
+                text-align: center;
+                padding: 16px;
+                background: linear-gradient(135deg, rgba(88, 86, 214, 0.08) 0%, rgba(175, 82, 222, 0.06) 100%);
+                border-radius: 16px;
+                border: 1px solid rgba(88, 86, 214, 0.1);
+            }
+
+            [data-theme="dark"] .penalty-motivation {
+                background: linear-gradient(135deg, rgba(88, 86, 214, 0.15) 0%, rgba(175, 82, 222, 0.1) 100%);
+                border: 1px solid rgba(88, 86, 214, 0.15);
+            }
+
+            .penalty-motivation-icon {
+                font-size: 28px;
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .penalty-motivation-text {
+                font-family: 'Noto Sans Gurmukhi', sans-serif;
+                font-size: 14px;
+                font-weight: 600;
+                color: #5856D6;
+                margin: 0 0 4px;
+                line-height: 1.5;
+            }
+
+            .penalty-motivation-english {
+                font-size: 12px;
+                color: #86868b;
+                margin: 0;
+                font-weight: 500;
+                font-style: italic;
+            }
+
+            /* ── 9. COMPLETE ALL BUTTON ── */
+            .penalty-modal-footer {
+                padding: 12px 20px 24px !important;
+                background: transparent !important;
+            }
+
+            .penalty-complete-all-btn {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                padding: 16px 24px;
+                background: linear-gradient(135deg, #34C759, #30B350);
+                color: #fff;
+                border: none;
+                border-radius: 16px;
+                font-size: 16px;
+                font-weight: 700;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 6px 20px rgba(52, 199, 89, 0.4);
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                letter-spacing: -0.2px;
+            }
+
+            .penalty-complete-all-btn:active {
+                transform: scale(0.96);
+                box-shadow: 0 3px 12px rgba(52, 199, 89, 0.3);
+            }
+
+            .penalty-complete-all-btn::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 60%);
+                pointer-events: none;
+            }
+
+            .penalty-complete-all-btn svg {
+                stroke: #fff;
+                filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+            }
+
+            /* ── 10. STREAK SAVER BANNER (Enhanced) ── */
+            .streak-saver-banner {
+                background: linear-gradient(135deg, rgba(255, 149, 0, 0.1) 0%, rgba(255, 59, 48, 0.08) 100%) !important;
+                border: 1px solid rgba(255, 149, 0, 0.2) !important;
+                border-radius: 16px !important;
+                padding: 14px 16px !important;
+                margin: 8px 0 16px !important;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .streak-saver-banner:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 16px rgba(255, 149, 0, 0.2);
+            }
+
+            .banner-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 8px;
+            }
+
+            .banner-icon {
+                font-size: 20px;
+                animation: iconFloat 3s ease-in-out infinite;
+            }
+
+            .banner-text {
+                flex: 1;
+            }
+
+            .banner-text strong {
+                display: block;
+                font-size: 14px;
+                color: #FF9500;
+                margin-bottom: 2px;
+            }
+
+            .banner-text span {
+                font-size: 12px;
+                color: #86868b;
+            }
+
+            .banner-progress {
+                height: 4px;
+                background: rgba(0,0,0,0.06);
+                border-radius: 2px;
+                overflow: hidden;
+            }
+
+            .banner-progress-bar {
+                height: 100%;
+                background: linear-gradient(90deg, #FF9500, #FF3B30);
+                border-radius: 2px;
+                transform: width 0.5s ease;
+            }
+
+            /* ═══════════════════════════════════════════════════════════════
+               PREMIUM UX SYSTEM STYLES (10 Features)
+               ═══════════════════════════════════════════════════════════════ */
+
+            /* ── FEATURE 2: Ambient Aura Background ── */
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                z-index: -2;
+                background: radial-gradient(circle at 50% 0%, var(--aura-color, rgba(255, 149, 0, 0.15)) 0%, transparent 60%);
+                transition: background 3s ease;
+                pointer-events: none;
+            }
+
+            /* ── FEATURE 3: Mala Ripple Effect ── */
+            .mala-ripple {
+                position: absolute;
+                border-radius: 50%;
+                transform: scale(0);
+                animation: malaRippleAnim 0.6s linear;
+                background-color: rgba(255, 255, 255, 0.4);
+                pointer-events: none;
+            }
+            .mala-tap-recoil {
+                animation: malaRecoil 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            @keyframes malaRippleAnim {
+                to { transform: scale(4); opacity: 0; }
+            }
+            @keyframes malaRecoil {
+                0% { transform: scale(1); }
+                50% { transform: scale(0.95); }
+                100% { transform: scale(1); }
+            }
+
+            /* ── FEATURE 4: Active Bani Breathing Focus ── */
+            .active-bani-focus {
+                animation: breatheFocus 4s ease-in-out infinite;
+                border: 1px solid rgba(255, 149, 0, 0.3);
+            }
+            @keyframes breatheFocus {
+                0%, 100% { box-shadow: 0 0 0px rgba(255, 149, 0, 0); }
+                50% { box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15); }
+            }
+
+            /* ── FEATURE 5: SVG Smooth Draw ── */
+            .progress-ring-circle, .time-ring-circle {
+                transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            /* ── FEATURE 6: Milestone Sparkles ── */
+            .milestone-sparkles {
+                position: absolute;
+                inset: -10px;
+                background-image: 
+                    radial-gradient(circle, #FFA200 10%, transparent 10%),
+                    radial-gradient(circle, #FFA200 10%, transparent 10%);
+                background-size: 4px 4px;
+                background-position: 0 0, 10px 10px;
+                background-repeat: no-repeat;
+                animation: sparkEmitter 3s infinite linear;
+                opacity: 0.6;
+                pointer-events: none;
+            }
+            @keyframes sparkEmitter {
+                0% { transform: rotate(0deg) scale(0.8); opacity: 0; }
+                50% { opacity: 0.6; }
+                100% { transform: rotate(180deg) scale(1.2); opacity: 0; }
+            }
+
+            /* ── FEATURE 7: Native Tab Slide ── */
+            .app-section {
+                animation: slideTabIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            }
+            @keyframes slideTabIn {
+                from { opacity: 0; transform: translateX(20px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+
+            /* ── FEATURE 9: Skeleton Shimmer ── */
+            .skeleton-shimmer {
+                background: linear-gradient(90deg, rgba(200,200,200,0.1) 25%, rgba(200,200,200,0.2) 50%, rgba(200,200,200,0.1) 75%);
+                background-size: 200% 100%;
+                animation: shimmer 1.5s infinite;
+                border-radius: 8px;
+                color: transparent !important;
+            }
+            * > .skeleton-shimmer * {
+                visibility: hidden;
+            }
+            @keyframes shimmer {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+            }
+
+            /* ── FEATURE 10: Motivational Marquee ── */
+            .motivation-marquee-wrapper {
+                overflow: hidden;
+                white-space: nowrap;
+                background: linear-gradient(90deg, transparent, rgba(100,100,100,0.05) 20%, rgba(100,100,100,0.05) 80%, transparent);
+                padding: 4px 0;
+                margin-top: -8px;
+                margin-bottom: 8px;
+                font-size: 11px;
+                color: #8E8E93;
+                position: relative;
+                display: flex;
+            }
+            [data-theme="dark"] .motivation-marquee-wrapper {
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03) 20%, rgba(255,255,255,0.03) 80%, transparent);
+            }
+            .motivation-marquee {
+                display: inline-flex;
+                animation: marqueeScroll 30s linear infinite;
+            }
+            .marquee-text {
+                padding-right: 50px;
+                font-style: italic;
+                letter-spacing: 0.3px;
+            }
+            @keyframes marqueeScroll {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-50%); }
             }
         `;
         document.head.appendChild(style);
@@ -1573,11 +2318,376 @@ const HeaderManager = {
      * Update streak display in header
      */
     updateStreakDisplay() {
-        // Logic to update streak count if element exists
-        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
-        if (this.elements.headerStreakCount) {
-            this.elements.headerStreakCount.textContent = streakData.current;
+        // SYNC: Use global AnhadStats if available for the most accurate streak
+        let currentStreak = 0;
+        
+        if (typeof AnhadStats !== 'undefined') {
+            const streakData = AnhadStats.getStreak();
+            currentStreak = streakData.currentStreak || 0;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
         }
+
+        if (this.elements.headerStreakCount) {
+            this.elements.headerStreakCount.textContent = currentStreak;
+        }
+        
+        // Also update penalty state whenever streak display updates
+        this.updatePenaltyState();
+    },
+
+    /**
+     * Setup penalty button click listeners
+     */
+    setupPenaltyListeners() {
+        // Penalty header button click
+        if (this.elements.penaltyBtn) {
+            this.elements.penaltyBtn.addEventListener('click', () => {
+                const activePunishment = StreakSaverManager.getActivePunishment();
+                const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+                const today = Utils.getTodayString();
+                const todayMarked = !!amritvelaLog[today];
+                const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+                const streakAtRisk = !todayMarked && (streakData.currentStreak || streakData.current || 0) > 0;
+
+                if (activePunishment && !activePunishment.completed) {
+                    // Punishment mode - show penalty modal
+                    HapticManager.medium();
+                    this.showPenaltyModal();
+                } else if (streakAtRisk) {
+                    // Preventive mode - show streak risk warning
+                    HapticManager.warning();
+                    this.showStreakRiskModal();
+                } else {
+                    // Safe mode - show info modal
+                    HapticManager.light();
+                    ModalManager.open('penaltyInfoModal');
+                }
+            });
+        }
+
+        // Penalty modal close buttons
+        const penaltyModal = document.getElementById('penaltyModal');
+        if (penaltyModal) {
+            penaltyModal.querySelectorAll('[data-close-modal]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if (e.target === el || el.hasAttribute('data-close-modal')) {
+                        ModalManager.close('penaltyModal');
+                    }
+                });
+            });
+        }
+
+        // Info modal close buttons
+        const infoModal = document.getElementById('penaltyInfoModal');
+        if (infoModal) {
+            infoModal.querySelectorAll('[data-close-modal]').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if (e.target === el || el.hasAttribute('data-close-modal')) {
+                        ModalManager.close('penaltyInfoModal');
+                    }
+                });
+            });
+        }
+
+        // Complete all button
+        const completeAllBtn = document.getElementById('penaltyCompleteAllBtn');
+        if (completeAllBtn) {
+            completeAllBtn.addEventListener('click', () => {
+                this.completePenaltyTask();
+            });
+        }
+    },
+
+    /**
+     * Update penalty state in header UI (fire icon color, badge, button visibility)
+     * ENHANCED: Blue fire when punishment active, red fire when completed/healthy
+     */
+    updatePenaltyState() {
+        const activePunishment = StreakSaverManager.getActivePunishment();
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const today = Utils.getTodayString();
+        const todayMarked = !!amritvelaLog[today];
+        
+        // SYNC: Use global streak data
+        let currentStreak = 0;
+        if (typeof AnhadStats !== 'undefined') {
+            currentStreak = AnhadStats.getStreak().currentStreak;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            currentStreak = streakData.currentStreak || streakData.current || 0;
+        }
+
+        // Determine if streak is broken or at risk
+        const hasPenalty = activePunishment && !activePunishment.completed;
+        const streakAtRisk = !todayMarked && currentStreak > 0;
+
+        // Premium 10 Feature #6: Milestone Sparkles
+        if (this.elements.streakFire) {
+            const hasSparkles = this.elements.streakFire.querySelector('.milestone-sparkles');
+            if (currentStreak >= 30 && todayMarked && !hasSparkles) {
+                const sparks = document.createElement('div');
+                sparks.className = 'milestone-sparkles';
+                this.elements.streakFire.appendChild(sparks);
+            } else if ((currentStreak < 30 || !todayMarked) && hasSparkles) {
+                hasSparkles.remove();
+            }
+        }
+
+        // === 1. Fire Icon Color ===
+        // ═══ ENHANCED: Blue when punishment active, Red when completed/healthy ═══
+        if (this.elements.streakFire) {
+            if (hasPenalty) {
+                // ACTIVE PUNISHMENT: Blue fire
+                this.elements.streakFire.classList.add('streak-broken');
+                this.elements.streakFire.classList.remove('streak-healthy');
+            } else if (streakAtRisk && new Date().getHours() >= 6) {
+                // AT RISK (past 6 AM, not marked): Blue fire
+                this.elements.streakFire.classList.add('streak-broken');
+                this.elements.streakFire.classList.remove('streak-healthy');
+            } else if (todayMarked || (activePunishment && activePunishment.completed)) {
+                // MARKED or PUNISHMENT COMPLETED: Red fire (healthy)
+                this.elements.streakFire.classList.remove('streak-broken');
+                this.elements.streakFire.classList.add('streak-healthy');
+            } else {
+                // Normal state: No special class
+                this.elements.streakFire.classList.remove('streak-broken', 'streak-healthy');
+            }
+        }
+
+        // === 2. Red Alert Badge ===
+        if (this.elements.streakAlertBadge) {
+            if (hasPenalty) {
+                this.elements.streakAlertBadge.style.display = 'flex';
+                this.elements.streakAlertBadge.classList.add('pulse-alert');
+            } else {
+                this.elements.streakAlertBadge.style.display = 'none';
+                this.elements.streakAlertBadge.classList.remove('pulse-alert');
+            }
+        }
+
+        // === 3. Penalty Button ===
+        if (this.elements.penaltyBtn) {
+            // Activate if: has active punishment OR streak at risk (today not marked + streak > 0)
+            const shouldActivate = hasPenalty || streakAtRisk;
+            
+            if (shouldActivate) {
+                this.elements.penaltyBtn.classList.add('penalty-active');
+                // Show badge if at risk or has penalty
+                if (this.elements.penaltyBadge) {
+                    this.elements.penaltyBadge.style.display = 'flex';
+                }
+            } else {
+                this.elements.penaltyBtn.classList.remove('penalty-active');
+                if (this.elements.penaltyBadge) {
+                    this.elements.penaltyBadge.style.display = 'none';
+                }
+            }
+        }
+    },
+
+    /**
+     * Show penalty modal with iOS bottom sheet style
+     */
+    showPenaltyModal() {
+        const activePunishment = StreakSaverManager.getActivePunishment();
+        if (!activePunishment || activePunishment.completed) {
+            Toast.info('No Penalty', 'Your streak is safe! Keep going!');
+            return;
+        }
+
+        // Update modal content
+        const subtitle = document.getElementById('penaltyModalSubtitle');
+        const streakCount = document.getElementById('penaltyStreakCount');
+        const timeRemaining = document.getElementById('penaltyTimeRemaining');
+
+        if (streakCount) {
+            streakCount.textContent = activePunishment.brokenStreak;
+        }
+
+        if (subtitle) {
+            subtitle.textContent = `Save your ${activePunishment.brokenStreak}-day streak!`;
+        }
+
+        // Calculate time remaining
+        if (timeRemaining) {
+            const expiresAt = new Date(activePunishment.expiresAt);
+            const now = new Date();
+            const hoursLeft = Math.max(0, Math.ceil((expiresAt - now) / (1000 * 60 * 60)));
+            const minsLeft = Math.max(0, Math.ceil((expiresAt - now) / (1000 * 60)) % 60);
+            timeRemaining.textContent = hoursLeft > 0 ? `${hoursLeft}h ${minsLeft}m remaining` : 'Expiring soon!';
+        }
+
+        // Render tasks
+        this.renderPenaltyTasks(activePunishment);
+
+        // Open modal
+        ModalManager.open('penaltyModal');
+        HapticManager.warning();
+    },
+
+    /**
+     * Render penalty tasks inside the modal
+     */
+    renderPenaltyTasks(punishmentData) {
+        const tasksList = document.getElementById('penaltyTasksList');
+        if (!tasksList) return;
+
+        const punishment = punishmentData.punishment;
+        const baniInfo = StreakSaverManager.PUNISHMENT_BANIS[punishment.type];
+
+        let tasksHTML = '';
+
+        if (punishment.type === 'sukhmani') {
+            tasksHTML = `
+                <div class="penalty-task-card" data-task-id="sukhmani-0">
+                    <div class="penalty-task-icon">
+                        <span>📖</span>
+                    </div>
+                    <div class="penalty-task-info">
+                        <h4 class="penalty-task-name">${baniInfo.namePunjabi}</h4>
+                        <p class="penalty-task-english">${baniInfo.name}</p>
+                        <p class="penalty-task-desc">Complete 1 full paath of Sukhmani Sahib</p>
+                    </div>
+                    <button class="penalty-task-check" data-task="sukhmani-0" aria-label="Mark complete">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        } else {
+            for (let i = 0; i < punishment.count; i++) {
+                tasksHTML += `
+                    <div class="penalty-task-card" data-task-id="japji-${i}">
+                        <div class="penalty-task-icon">
+                            <span>📖</span>
+                        </div>
+                        <div class="penalty-task-info">
+                            <h4 class="penalty-task-name">${baniInfo.namePunjabi}</h4>
+                            <p class="penalty-task-english">${baniInfo.name} ${punishment.count > 1 ? `(${i + 1}/${punishment.count})` : ''}</p>
+                            <p class="penalty-task-desc">Complete full paath</p>
+                        </div>
+                        <button class="penalty-task-check" data-task="japji-${i}" aria-label="Mark complete">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        tasksList.innerHTML = tasksHTML;
+
+        // Add click listeners to individual checkmarks
+        tasksList.querySelectorAll('.penalty-task-check').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const taskCard = btn.closest('.penalty-task-card');
+                if (taskCard && !taskCard.classList.contains('completed')) {
+                    taskCard.classList.add('completed');
+                    btn.classList.add('checked');
+                    HapticManager.success();
+                    SoundManager.success();
+                }
+            });
+        });
+    },
+
+    /**
+     * Complete penalty task — restore the streak
+     */
+    completePenaltyTask() {
+        const activePunishment = StreakSaverManager.getActivePunishment();
+        if (!activePunishment || activePunishment.completed) return;
+
+        // Mark all task cards as completed visually
+        const taskCards = document.querySelectorAll('.penalty-task-card');
+        taskCards.forEach(card => {
+            card.classList.add('completed');
+            const checkBtn = card.querySelector('.penalty-task-check');
+            if (checkBtn) checkBtn.classList.add('checked');
+        });
+
+        // Haptic + Sound
+        HapticManager.heavy();
+        SoundManager.malaComplete();
+
+        // Call the StreakSaverManager to complete the punishment
+        StreakSaverManager.completePunishment();
+
+        // Close modal after a short celebration delay
+        setTimeout(() => {
+            ModalManager.close('penaltyModal');
+
+            // Update UI
+            this.updatePenaltyState();
+            this.updateStreakDisplay();
+
+            // Celebration
+            Toast.success('🎉 Streak Saved!', `Your ${activePunishment.brokenStreak}-day streak is restored!`);
+            if (typeof CelebrationManager !== 'undefined') {
+                CelebrationManager.show('streakSaved');
+            }
+        }, 800);
+    },
+
+    /**
+     * Show streak risk warning modal (preventive mode)
+     */
+    showStreakRiskModal() {
+        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
+        const hours = new Date().getHours();
+
+        // Check if modal already exists
+        let modal = document.getElementById('streakRiskModal');
+        if (!modal) {
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="streakRiskModal">
+                    <div class="modal-container penalty-modal-container">
+                        <div class="penalty-modal-header">
+                            <div class="penalty-modal-icon-wrap">
+                                <div class="penalty-modal-icon-glow"></div>
+                                <span class="penalty-modal-icon">⚠️</span>
+                            </div>
+                            <h2 class="penalty-modal-title">Streak at Risk!</h2>
+                            <p class="penalty-modal-subtitle">Mark Amritvela to save your streak</p>
+                        </div>
+                        <div class="modal-body penalty-modal-body">
+                            <div class="penalty-streak-info">
+                                <div class="penalty-streak-number">
+                                    <span class="penalty-streak-fire">🔥</span>
+                                    <span class="penalty-streak-count">${streakData.currentStreak || streakData.current || 0}</span>
+                                    <span class="penalty-streak-label">Day Streak</span>
+                                </div>
+                            </div>
+                            <div class="penalty-motivation">
+                                <span class="penalty-motivation-icon">🙏</span>
+                                <p class="penalty-motivation-text">ਅੱਜ ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਮਾਰੋ!</p>
+                                <p class="penalty-motivation-english">Mark Amritvela today to keep your streak alive!</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer penalty-modal-footer">
+                            <button class="penalty-complete-all-btn" data-close-modal>
+                                I'll Mark It Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            // Add close listener
+            modal = document.getElementById('streakRiskModal');
+            modal.querySelector('[data-close-modal]').addEventListener('click', () => {
+                ModalManager.close('streakRiskModal');
+            });
+        }
+
+        ModalManager.open('streakRiskModal');
+        HapticManager.warning();
     },
 
     /**
@@ -1755,12 +2865,42 @@ const AmritvelaManager = {
 
         // Check if present button should be disabled
         const settings = StorageManager.load(CONFIG.STORAGE_KEYS.SETTINGS, CONFIG.DEFAULT_SETTINGS);
-        const cutoffHour = settings.presentUntil || 7;
+        const cutoffHour = 6;
 
-        if (hours >= cutoffHour && !this.todayMarked) {
+        if (hours >= cutoffHour && !this.todayMarked && !this._penaltyTriggeredToday) {
+            this._penaltyTriggeredToday = true;
             this.elements.presentBtn?.classList.add('disabled');
-            this.showMessage('⏰', `Present marking is available until ${cutoffHour}:00 AM`);
+            this.showMessage('⏰', 'Present marking is available until 6:00 AM');
+            
+            // Trigger streak penalty warning
+            this.triggerStreakPenalty();
         }
+    },
+
+    /**
+     * Trigger streak penalty when Amritvela not marked after 6 AM
+     */
+    triggerStreakPenalty() {
+        // Show warning badge on streak counter
+        const streakFire = document.querySelector('.streak-fire');
+        if (streakFire) {
+            streakFire.classList.add('penalty-active');
+        }
+
+        // Update penalty streak info
+        const penaltyStreakInfo = document.getElementById('penaltyStreakInfo');
+        if (penaltyStreakInfo) {
+            penaltyStreakInfo.style.display = 'flex';
+        }
+
+        // Show warning toast
+        Toast.warning('Streak at Risk', 'Amritvela not marked before 6 AM. Your streak may be affected!');
+
+        // Log penalty for streak calculation (using separate key to avoid corrupting attendance log)
+        const today = Utils.getTodayString();
+        const penalties = StorageManager.load('nitnemTracker_amritvelaPenalties', {});
+        penalties[today] = true;
+        StorageManager.save('nitnemTracker_amritvelaPenalties', penalties);
     },
 
     /**
@@ -1800,7 +2940,8 @@ const AmritvelaManager = {
             date: today,
             time: `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
             slot: slotInfo.label.toLowerCase(),
-            timestamp: now.toISOString()
+            timestamp: now.toISOString(),
+            woke: true  // FIXED: Set woke flag for streak calculation
         };
 
         // ═══ ENHANCED: Play time-based animation FIRST ═══
@@ -1940,31 +3081,19 @@ const AmritvelaManager = {
 
     /**
      * Broadcast attendance update to all sections
+     * ENHANCED: Ensure streak updates immediately with new Amritvela entry
      */
     broadcastAttendanceUpdate(entry) {
-        // Update Streak Manager
-        StreakManager.checkAndUpdate();
+        // ═══ ENHANCED: Force immediate streak recalculation ═══
+        // Use setTimeout to ensure log is fully saved before recalculation
+        setTimeout(() => {
+            StreakManager.recalculateStreak();
+            StreakManager.updateDisplay();
+            HeaderManager.updateStreakDisplay();
+        }, 50);
 
         // Update Achievement Manager
         AchievementManager.checkAmritvela(entry);
-
-        // Update Header streak display
-        HeaderManager.updateStreakDisplay();
-
-        // Update Reports if initialized
-        if (typeof ReportsManager !== 'undefined' && ReportsManager.renderWeeklyReport) {
-            try {
-                ReportsManager.renderWeeklyReport();
-            } catch (e) {
-                console.log('Reports update deferred');
-            }
-        }
-
-        // Dispatch custom event for cross-component sync
-        window.dispatchEvent(new CustomEvent('attendanceMarked', {
-            detail: entry,
-            bubbles: true
-        }));
 
         // Sync to IndexedDB
         StorageManager.persistToIndexedDB();
@@ -1983,7 +3112,7 @@ const AmritvelaManager = {
         // Update status badge
         if (this.elements.status) {
             const badge = this.elements.status.querySelector('.status-badge');
-            if (badge) {
+            if (badge && entry?.slot) {
                 badge.className = `status-badge ${entry.slot}`;
                 badge.textContent = entry.slot.charAt(0).toUpperCase() + entry.slot.slice(1);
             }
@@ -2037,8 +3166,15 @@ const AmritvelaManager = {
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const dates = Object.keys(log);
 
-        // Calculate streak
-        const streak = Utils.calculateStreak(dates);
+        // SYNC: Use global streak data to match header streak
+        let streak = 0;
+        if (typeof AnhadStats !== 'undefined') {
+            streak = AnhadStats.getStreak().currentStreak;
+        } else {
+            const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { currentStreak: 0 });
+            streak = streakData.currentStreak || streakData.current || 0;
+        }
+
         if (this.elements.streakDisplay) {
             Utils.animateNumber(this.elements.streakDisplay,
                 parseInt(this.elements.streakDisplay.textContent) || 0,
@@ -2061,7 +3197,8 @@ const AmritvelaManager = {
         // Average wake time
         if (dates.length > 0) {
             const times = dates.slice(-7).map(d => {
-                const time = log[d].time;
+                const time = log[d]?.time;
+                if (!time) return 0;
                 const [h, m] = time.split(':').map(Number);
                 return h * 60 + m;
             });
@@ -2358,6 +3495,7 @@ const NitnemManager = {
 
     /**
      * Render bani list for a period
+     * ENHANCED: Handle punishment banis with special styling
      */
     renderBaniList(period) {
         const listElement = this.elements[`${period}BaniList`];
@@ -2386,6 +3524,19 @@ const NitnemManager = {
             return;
         }
 
+        // FIXED: Check if there are punishment banis and add a header
+        const hasPunishmentBanis = banis.some(b => b.isPunishment);
+        let html = '';
+        
+        if (hasPunishmentBanis) {
+            html += `
+                <div class="punishment-section-header">
+                    <span class="punishment-icon">⚡</span>
+                    <span class="punishment-title">Streak Saver Task</span>
+                </div>
+            `;
+        }
+
         // Group banis by ID
         const groups = {};
         banis.forEach(bani => {
@@ -2398,36 +3549,42 @@ const NitnemManager = {
             }
         });
 
-        listElement.innerHTML = Object.values(groups).map(group => {
+        html += Object.values(groups).map(group => {
             const total = group.instances.length;
             const done = group.completedCount;
             const isFullyCompleted = done === total && total > 0;
             const isGroup = total > 1;
+            const isPunishment = group.isPunishment;
 
             let badgeHtml = '';
             if (isGroup) {
                 badgeHtml = `<span class="bani-badge">${done}/${total}</span>`;
             }
 
+            const punishmentClass = isPunishment ? 'punishment-bani' : '';
+            const punishmentIcon = isPunishment ? '<span class="punishment-indicator">⚡</span>' : '';
+
             return `
-            <div class="bani-item ${isFullyCompleted ? 'completed' : ''}" 
+            <div class="bani-item ${isFullyCompleted ? 'completed' : ''} ${punishmentClass}" 
                  data-bani-id="${group.id}" data-period="${period}"
                  data-is-group="${isGroup}">
                 <div class="bani-checkbox">
                     ${isFullyCompleted ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>` : ''}
                 </div>
                 <div class="bani-info">
-                    <span class="bani-name">${group.nameGurmukhi} ${badgeHtml}</span>
+                    <span class="bani-name">${group.nameGurmukhi} ${badgeHtml} ${punishmentIcon}</span>
                     <span class="bani-name-english">${group.nameEnglish}</span>
                 </div>
                 <span class="bani-duration">${group.duration}</span>
-                <button class="bani-remove-btn" data-bani-id="${group.id}" aria-label="Remove">
+                ${!isPunishment ? `<button class="bani-remove-btn" data-bani-id="${group.id}" aria-label="Remove">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
-                </button>
+                </button>` : ''}
             </div>
         `}).join('');
+
+        listElement.innerHTML = html;
 
         // Attach event listeners
         listElement.querySelectorAll('.bani-item').forEach(item => {
@@ -2447,7 +3604,7 @@ const NitnemManager = {
     },
 
     /**
-     * Toggle group completion (Sequential)
+     * Toggle completion of a bani group
      */
     toggleGroupCompletion(baniId, period) {
         const instances = this.selectedBanis[period].filter(b => b.id === baniId);
@@ -2508,8 +3665,17 @@ const NitnemManager = {
      * Remove one instance of a group
      */
     removeGroupInstance(baniId, period) {
-        // Find last instance (LIFO for removal feels natural, or specific uid if we had it)
-        const index = this.selectedBanis[period].findIndex(b => b.id === baniId);
+        // Find last instance (LIFO). Prefer uncompleted.
+        let index = -1;
+        for (let i = this.selectedBanis[period].length - 1; i >= 0; i--) {
+            if (this.selectedBanis[period][i].id === baniId) {
+                if (!this.completedToday[period].includes(this.selectedBanis[period][i].uid)) {
+                    index = i;
+                    break;
+                }
+                if (index === -1) index = i;
+            }
+        }
         if (index === -1) return;
 
         const bani = this.selectedBanis[period][index];
@@ -2555,20 +3721,18 @@ const NitnemManager = {
             HapticManager.light();
             this.renderBaniList(this.activePeriod);
         } else {
-            // Animate completion one by one
+            // Animate completion for visual elements
             const listElement = this.elements[`${this.activePeriod}BaniList`];
-            const items = listElement?.querySelectorAll('.bani-item:not(.completed)');
+            const items = listElement ? Array.from(listElement.querySelectorAll('.bani-item:not(.completed)')) : [];
 
-            for (let i = 0; i < banis.length; i++) {
-                if (!this.completedToday[this.activePeriod].includes(banis[i].uid)) {
-                    this.completedToday[this.activePeriod].push(banis[i].uid);
-
-                    // Animate the corresponding item
-                    const item = items ? items[i] : null;
-                    if (item) {
-                        await this.animateBaniCheck(item, i * 80);
-                    }
+            banis.forEach(b => {
+                if (!this.completedToday[this.activePeriod].includes(b.uid)) {
+                    this.completedToday[this.activePeriod].push(b.uid);
                 }
+            });
+
+            for (let i = 0; i < items.length; i++) {
+                await this.animateBaniCheck(items[i], i * 80);
             }
 
             // Play celebration after all complete
@@ -3141,7 +4305,6 @@ const SettingsManager = {
             hapticToggle: document.getElementById('hapticToggle'),
             soundToggle: document.getElementById('soundToggle'),
             autoWakeToggle: document.getElementById('autoWakeToggle'),
-            presentUntilSelect: document.getElementById('presentUntilSelect'),
             beadsPerMalaSelect: document.getElementById('beadsPerMalaSelect'),
             vibrationPatternSelect: document.getElementById('vibrationPatternSelect'),
             exportDataBtn: document.getElementById('exportDataBtn'),
@@ -3181,10 +4344,6 @@ const SettingsManager = {
         });
 
         // Selects
-        this.elements.presentUntilSelect?.addEventListener('change', (e) => {
-            this.updateSetting('presentUntil', parseInt(e.target.value));
-        });
-
         this.elements.beadsPerMalaSelect?.addEventListener('change', (e) => {
             this.updateSetting('beadsPerMala', parseInt(e.target.value));
             MalaManager.updateBeadCount(parseInt(e.target.value));
@@ -3220,9 +4379,6 @@ const SettingsManager = {
         }
         if (this.elements.autoWakeToggle) {
             this.elements.autoWakeToggle.checked = this.settings.autoWakeDetect;
-        }
-        if (this.elements.presentUntilSelect) {
-            this.elements.presentUntilSelect.value = this.settings.presentUntil;
         }
         if (this.elements.beadsPerMalaSelect) {
             this.elements.beadsPerMalaSelect.value = this.settings.beadsPerMala;
@@ -3400,11 +4556,12 @@ const NitnemTrackerApp = {
    ───────────────────────────────────────────────────────────────────────────── */
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => NitnemTrackerApp.init());
-} else {
-    NitnemTrackerApp.init();
-}
+// REMOVED: Duplicate initialization. initializeFullApp() is the only startup point now.
+// if (document.readyState === 'loading') {
+//     document.addEventListener('DOMContentLoaded', () => NitnemTrackerApp.init());
+// } else {
+//     NitnemTrackerApp.init();
+// }
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
@@ -3671,7 +4828,23 @@ const MalaManager = {
         });
 
         // Load custom mala options
-        this.renderCustomMalaOptions();
+        if (typeof this.renderCustomMalaOptions === 'function') {
+            this.renderCustomMalaOptions();
+        }
+    },
+
+    /**
+     * Stub for missing custom mala rendering
+     */
+    renderCustomMalaOptions() {
+        // Safe stub for missing method
+    },
+
+    /**
+     * Stub for missing custom mala adding
+     */
+    addCustomMala() {
+        Toast.info('Coming Soon', 'Custom Naam Jap options will be available in next update.');
     },
 
     /**
@@ -4695,8 +5868,8 @@ const AlarmManager = {
         });
 
         try {
-            // Try multiple storage keys for compatibility
-            const keys = ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
+            // Try multiple storage keys — sr_reminders_v7 is the PRIMARY key (smart-reminders-v7.js line 23)
+            const keys = ['sr_reminders_v7', 'anhad_smart_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
             let rawData = null;
             let foundKey = null;
 
@@ -4983,6 +6156,10 @@ const AlarmManager = {
         }
 
         this.elements.weekDays.innerHTML = daysHTML;
+        
+        // Ensure stats update for the viewed week
+        this.calculateStats();
+        this.updateStats();
     },
 
     /**
@@ -5274,7 +6451,9 @@ const AlarmManager = {
      * Calculate stats
      */
     calculateStats() {
-        const { start, end } = Utils.getWeekRange();
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + ((this.state.weekOffset || 0) * 7));
+        const { start, end } = Utils.getWeekRange(targetDate);
 
         let responded = 0;
         let snoozed = 0;
@@ -5324,7 +6503,7 @@ const AlarmManager = {
      * Open Smart Reminders page
      */
     openSmartReminders() {
-        window.location.href = '../reminders/smart-reminders.html';
+        window.location.href = '../reminders/smart-reminders-v7.html';
     },
 
     /**
@@ -5344,8 +6523,8 @@ const AlarmManager = {
 const StreakManager = {
     elements: {},
     state: {
-        current: 0,
-        longest: 0,
+        currentStreak: 0,
+        longestStreak: 0,
         totalDays: 0,
         lastUpdated: null
     },
@@ -5381,7 +6560,11 @@ const StreakManager = {
         const saved = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, null);
 
         if (saved) {
-            this.state = { ...this.state, ...saved };
+            // Support both old (current) and new (currentStreak) keys during migration
+            this.state.currentStreak = saved.currentStreak || saved.current || 0;
+            this.state.longestStreak = saved.longestStreak || saved.longest || 0;
+            this.state.totalDays = saved.totalDays || 0;
+            this.state.lastUpdated = saved.lastUpdated || null;
         }
 
         // Recalculate to ensure accuracy
@@ -5390,51 +6573,58 @@ const StreakManager = {
 
     /**
      * Recalculate streak from logs
+     * ENHANCED: More lenient - counts days with EITHER Amritvela OR Nitnem completion
      */
     recalculateStreak() {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        // A day is "complete" if both Amritvela and Nitnem are done
-        const completeDates = [];
+        // A day is "complete" if EITHER Amritvela OR Nitnem is done (more lenient)
+        const completeDates = new Set();
 
         const amritvelaDates = Object.keys(amritvelaLog);
         const nitnemDates = Object.keys(nitnemLog);
 
+        // Add all Amritvela dates
         amritvelaDates.forEach(date => {
-            // Check if nitnem was completed on this date
+            completeDates.add(date);
+        });
+
+        // Add all Nitnem completion dates
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
+            amritvela: [],
+            rehras: [],
+            sohila: []
+        });
+
+        nitnemDates.forEach(date => {
             const nitnemData = nitnemLog[date];
             if (nitnemData) {
-                // Check if all banis were completed
-                const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
-                    amritvela: [],
-                    rehras: [],
-                    sohila: []
-                });
+                // Check if any banis were completed
 
-                let allComplete = true;
+                let anyComplete = false;
                 Object.keys(selectedBanis).forEach(period => {
                     const selected = selectedBanis[period];
                     const completed = nitnemData[period] || [];
-                    if (selected.length > 0 && completed.length < selected.length) {
-                        allComplete = false;
+                    if (selected.length > 0 && completed.length > 0) {
+                        anyComplete = true;
                     }
                 });
 
-                if (allComplete) {
-                    completeDates.push(date);
+                if (anyComplete) {
+                    completeDates.add(date);
                 }
             }
         });
 
-        // If no complete dates, just use Amritvela dates for streak
-        const datesToUse = completeDates.length > 0 ? completeDates : amritvelaDates;
+        // Convert Set to Array for calculation
+        const datesToUse = Array.from(completeDates);
 
         // Calculate current streak
-        this.state.current = Utils.calculateStreak(datesToUse);
+        this.state.currentStreak = Utils.calculateStreak(datesToUse);
 
         // Calculate longest streak
-        this.state.longest = Math.max(this.state.longest, this.state.current);
+        this.state.longestStreak = Math.max(this.state.longestStreak, this.state.currentStreak);
 
         // Total days
         this.state.totalDays = datesToUse.length;
@@ -5444,23 +6634,87 @@ const StreakManager = {
     },
 
     /**
+     * Calculate what the streak was up to a specific historical date
+     */
+    calculateHistoricalStreak(targetDateStr) {
+        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
+
+        const completeDates = new Set();
+        const amritvelaDates = Object.keys(amritvelaLog);
+        const nitnemDates = Object.keys(nitnemLog);
+
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
+
+        // Add all Amritvela dates
+        amritvelaDates.forEach(date => {
+            completeDates.add(date);
+        });
+
+        // Add all Nitnem completion dates
+        nitnemDates.forEach(date => {
+            const nitnemData = nitnemLog[date];
+            if (nitnemData) {
+                let anyComplete = false;
+                Object.keys(selectedBanis).forEach(period => {
+                    const selected = selectedBanis[period];
+                    const completed = nitnemData[period] || [];
+                    if (selected.length > 0 && completed.length > 0) {
+                        anyComplete = true;
+                    }
+                });
+                if (anyComplete) completeDates.add(date);
+            }
+        });
+
+        const datesToUse = Array.from(completeDates);
+        
+        if (!datesToUse.includes(targetDateStr)) return 0;
+
+        const sortedDates = datesToUse.sort((a, b) => new Date(b) - new Date(a));
+        const startIndex = sortedDates.indexOf(targetDateStr);
+
+        let streak = 1;
+        for (let i = startIndex; i < sortedDates.length - 1; i++) {
+            const current = new Date(sortedDates[i]);
+            const next = new Date(sortedDates[i + 1]);
+            const diffDays = Math.round((current - next) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) streak++;
+            else break;
+        }
+
+        return streak;
+    },
+
+    /**
      * Save streak data
      */
     saveStreakData() {
         this.state.lastUpdated = new Date().toISOString();
-        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, this.state);
+        
+        // SYNC: Preserve global AnhadStats fields to avoid data corruption
+        const existingData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {});
+        const mergedData = { ...existingData, ...this.state };
+        
+        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, mergedData);
     },
 
     /**
      * Check and update streak
      */
     checkAndUpdate() {
-        const previousStreak = this.state.current;
+        const previousStreak = this.state.currentStreak;
         this.recalculateStreak();
 
         // Check for streak milestones
-        if (this.state.current > previousStreak) {
-            this.checkMilestones(this.state.current);
+        if (this.state.currentStreak > previousStreak) {
+            this.checkMilestones(this.state.currentStreak);
+            
+            // SYNC with global AnhadStats
+            if (typeof AnhadStats !== 'undefined') {
+                AnhadStats.updateStreak();
+            }
         }
 
         // Update display
@@ -5497,19 +6751,19 @@ const StreakManager = {
             Utils.animateNumber(
                 this.elements.mainNumber,
                 parseInt(this.elements.mainNumber.textContent) || 0,
-                this.state.current,
+                this.state.currentStreak,
                 800
             );
         }
 
         // Current streak
         if (this.elements.currentStreak) {
-            this.elements.currentStreak.textContent = this.state.current;
+            this.elements.currentStreak.textContent = this.state.currentStreak;
         }
 
         // Longest streak
         if (this.elements.longestStreak) {
-            this.elements.longestStreak.textContent = this.state.longest;
+            this.elements.longestStreak.textContent = this.state.longestStreak;
         }
 
         // Total days
@@ -5528,7 +6782,7 @@ const StreakManager = {
         if (!this.elements.message) return;
 
         let message = '';
-        const streak = this.state.current;
+        const streak = this.state.currentStreak;
 
         if (streak === 0) {
             message = 'Start your spiritual journey today! 🙏';
@@ -5557,7 +6811,7 @@ const StreakManager = {
     updateFlameAnimation() {
         if (!this.elements.section) return;
 
-        if (this.state.current > 0) {
+        if (this.state.currentStreak > 0) {
             this.elements.section.classList.add('active');
         } else {
             this.elements.section.classList.remove('active');
@@ -5580,18 +6834,25 @@ const StreakManager = {
 const StreakSaverManager = {
     // Enhanced punishment tiers with Mathila-specific tracking
     PUNISHMENT_TIERS: [
-        { min: 1, max: 7, count: 1, options: ['japji'], severity: 'low' },
-        { min: 7, max: 14, count: 2, options: ['japji'], severity: 'medium' },
-        { min: 14, max: 21, count: 3, options: ['japji'], severity: 'high' },
-        { min: 21, max: 28, count: 4, options: ['japji', 'jaap_sahib'], severity: 'very_high' },
-        { min: 28, max: Infinity, count: 5, options: ['japji', 'sukhmani', 'jaap_sahib'], severity: 'critical' }
+        { min: 1, max: 7, count: 1, options: ['japji', 'chaupai'], severity: 'low' },
+        { min: 7, max: 14, count: 2, options: ['japji', 'chaupai', 'tav_prasad'], severity: 'medium' },
+        { min: 14, max: 21, count: 3, options: ['japji', 'chaupai', 'tav_prasad', 'jaap_sahib'], severity: 'high' },
+        { min: 21, max: 28, count: 4, options: ['japji', 'chaupai', 'tav_prasad', 'jaap_sahib', 'anand_sahib'], severity: 'very_high' },
+        { min: 28, max: Infinity, count: 5, options: ['japji', 'sukhmani', 'jaap_sahib', 'chaupai', 'tav_prasad'], severity: 'critical' }
     ],
 
     // Enhanced punishment Banis with Mathila-specific options
+    // NOTE: id must match actual bani IDs from BaniDB (numeric)
+    // Reference: japji=2, jaap=4, shabadHazare10=5, tavPrasad=6, tavPrasadDeenan=7, chaupai=9, anand=10, rehras=21, sohila=23, sukhmani=31
     PUNISHMENT_BANIS: {
-        japji: { id: 'japji_sahib', name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        sukhmani: { id: 'sukhmani_sahib', name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
-        jaap_sahib: { id: 'jaap_sahib', name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' }
+        japji: { id: 2, name: 'Japji Sahib', namePunjabi: 'ਜਪੁਜੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        sukhmani: { id: 31, name: 'Sukhmani Sahib', namePunjabi: 'ਸੁਖਮਨੀ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        jaap_sahib: { id: 4, name: 'Jaap Sahib', namePunjabi: 'ਜਾਪੁ ਸਾਹਿਬ', period: 'amritvela', type: 'mathila' },
+        chaupai: { id: 9, name: 'Chaupai Sahib', namePunjabi: 'ਚੌਪਈ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        tav_prasad: { id: 6, name: 'Tav-Prasad Savaiye', namePunjabi: 'ਤਵ-ਪ੍ਰਸਾਦ ਸਵਈਯੇ', period: 'amritvela', type: 'morning' },
+        anand_sahib: { id: 10, name: 'Anand Sahib', namePunjabi: 'ਆਨੰਦ ਸਾਹਿਬ', period: 'amritvela', type: 'morning' },
+        rehras: { id: 21, name: 'Rehras Sahib', namePunjabi: 'ਰਹਰਾਸ ਸਾਹਿਬ', period: 'rehras', type: 'evening' },
+        kirtan_sohila: { id: 23, name: 'Kirtan Sohila', namePunjabi: 'ਕੀਰਤਨ ਸੋਹਿਲਾ', period: 'sohila', type: 'night' }
     },
 
     // Mathila-specific penalty configuration
@@ -5603,13 +6864,48 @@ const StreakSaverManager = {
 
     STORAGE_KEY: 'nitnemTracker_streakSaver',
     ATTENDANCE_KEY: 'nitnemTracker_weakAttendance',
+    continuousCheckInterval: null,
 
     /**
      * Initialize Streak Saver
      */
     init() {
         this.checkAndCleanupExpired();
+        this.checkStreakBreak();
         this.renderPunishmentUI();
+        
+        // ═══ ENHANCED: Add continuous check every 5 minutes for 6 AM threshold ═══
+        // This ensures streak saver activates even if user stays on page past 6 AM
+        this.startContinuousCheck();
+    },
+
+    /**
+     * Start continuous streak saver check (runs every 5 minutes)
+     * FIXED: Reduced frequency to prevent performance issues
+     */
+    startContinuousCheck() {
+        // Clear any existing interval
+        if (this.continuousCheckInterval) {
+            clearInterval(this.continuousCheckInterval);
+        }
+
+        // Check every 5 minutes instead of every minute to reduce performance impact
+        this.continuousCheckInterval = setInterval(() => {
+            this.checkStreakBreak();
+        }, 5 * 60 * 1000); // 5 minutes
+
+        console.log('[StreakSaver] Continuous check started (every 5 minutes)');
+    },
+
+    /**
+     * Stop continuous check (call when page unloads)
+     */
+    stopContinuousCheck() {
+        if (this.continuousCheckInterval) {
+            clearInterval(this.continuousCheckInterval);
+            this.continuousCheckInterval = null;
+            console.log('[StreakSaver] Continuous check stopped');
+        }
     },
 
     /**
@@ -5623,9 +6919,41 @@ const StreakSaverManager = {
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayString = yesterday.toLocaleDateString('en-CA');
 
-        // Check if user missed yesterday's Amritvela
+        const currentHour = new Date().getHours();
+        const currentMinute = new Date().getMinutes();
+        const hasStreak = StreakManager.state.currentStreak > 0;
+
+        // ═══════════════════════════════════════════════════════════════
+        // PROACTIVE CHECK: Amritvela not marked by 6:00 AM today
+        // If it's past 6 AM and no Amritvela marked, activate Streak Saver
+        // ═══════════════════════════════════════════════════════════════
+        const todayNotMarked = !amritvelaLog[today];
+        const past6AM = currentHour >= 6;
+
+        // Check if user already dismissed the streak saver this session
+        const dismissedKey = 'streakSaverDismissed_' + today;
+        if (sessionStorage.getItem(dismissedKey) === 'true') return;
+
+        // If it's past 6 AM and Amritvela not marked today, activate Streak Saver warning
+        if (todayNotMarked && past6AM && hasStreak) {
+            // Check if we already have an active punishment for today
+            const existing = this.getActivePunishment();
+            if (!existing) {
+                // Offer streak saver as a warning
+                this.offerStreakSaver(StreakManager.state.currentStreak, {
+                    type: 'same_day_warning',
+                    missedAmritvela: false,
+                    warning: 'Amritvela not marked by 6:00 AM',
+                    missedDate: today
+                });
+            }
+            return; // Don't proceed to yesterday check if today is the issue
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // RETROACTIVE CHECK: User missed yesterday's Amritvela
+        // ═══════════════════════════════════════════════════════════════
         const missedYesterday = !amritvelaLog[yesterdayString];
-        const hasStreak = StreakManager.state.current > 0;
 
         // Check for missed Mathila (Mala Jap during Amritvela)
         const missedMathila = this.checkMissedMathila(yesterdayString);
@@ -5633,25 +6961,39 @@ const StreakSaverManager = {
         // Check for weak attendance pattern
         const weakAttendance = this.checkWeakAttendance();
 
-        if (missedYesterday && hasStreak) {
-            // Calculate effective streak for punishment tier
-            let effectiveStreak = StreakManager.state.current;
+        if (missedYesterday) {
+            // Find what the streak was before yesterday was missed
+            const dayBeforeYesterday = new Date();
+            dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2);
+            const dbyString = dayBeforeYesterday.toLocaleDateString('en-CA');
+            
+            const previousStreak = StreakManager.calculateHistoricalStreak(dbyString);
+            const hadStreak = previousStreak > 0;
 
-            // Increase penalty for missed Mathila
-            if (missedMathila) {
-                effectiveStreak = Math.floor(effectiveStreak * this.MATHILA_CONFIG.penaltyMultiplier);
+            if (hadStreak) {
+                // Calculate effective streak for punishment tier
+                let effectiveStreak = previousStreak;
+
+                // Increase penalty for missed Mathila
+                if (missedMathila) {
+                    effectiveStreak = Math.floor(effectiveStreak * this.MATHILA_CONFIG.penaltyMultiplier);
+                }
+
+                // Store attendance info for punishment context
+                this.saveAttendanceData({
+                    missedAmritvela: true,
+                    missedMathila: missedMathila,
+                    weakAttendance: weakAttendance,
+                    date: yesterdayString
+                });
+
+                // Offer saver with potentially increased punishment
+                this.offerStreakSaver(effectiveStreak, { 
+                    missedMathila, 
+                    weakAttendance,
+                    missedDate: yesterdayString
+                });
             }
-
-            // Store attendance info for punishment context
-            this.saveAttendanceData({
-                missedAmritvela: true,
-                missedMathila: missedMathila,
-                weakAttendance: weakAttendance,
-                date: yesterdayString
-            });
-
-            // Offer saver with potentially increased punishment
-            this.offerStreakSaver(effectiveStreak, { missedMathila, weakAttendance });
         }
     },
 
@@ -5737,10 +7079,13 @@ const StreakSaverManager = {
 
         // Render UI
         this.renderPunishmentUI();
+
+        // Update header penalty state (button, fire color, badge)
+        HeaderManager.updatePenaltyState();
     },
 
     /**
-     * Generate punishment based on streak tier
+     * Generate punishment based on streak tier with random Bani selection
      */
     generatePunishment(brokenStreak) {
         // Find appropriate tier
@@ -5750,17 +7095,17 @@ const StreakSaverManager = {
             return { type: 'japji', count: 1 };
         }
 
-        // For high tiers (28+), give option between multiple Japji or Sukhmani
-        if (tier.options.includes('sukhmani')) {
-            // 50% chance: either 5 Japji OR 1 Sukhmani
-            const useSukhmani = Math.random() < 0.5;
-            if (useSukhmani) {
-                return { type: 'sukhmani', count: 1 };
-            }
+        // Randomly select a Bani type from tier options
+        const randomIndex = Math.floor(Math.random() * tier.options.length);
+        const selectedType = tier.options[randomIndex];
+
+        // For longer Banis (sukhmani), use count 1, otherwise use tier count
+        if (selectedType === 'sukhmani' || selectedType === 'rehras') {
+            return { type: selectedType, count: 1 };
         }
 
-        // Default: Japji Sahib with tier count
-        return { type: 'japji', count: tier.count };
+        // For other Banis, use tier count
+        return { type: selectedType, count: tier.count };
     },
 
     /**
@@ -5777,13 +7122,15 @@ const StreakSaverManager = {
 
         // Check if punishment Bani already exists in user's Nitnem
         const period = baniInfo.period;
+        if (!selectedBanis[period]) selectedBanis[period] = [];
         const existingIndex = selectedBanis[period].findIndex(b => b.id === baniInfo.id);
 
         if (existingIndex === -1) {
-            // Add punishment Bani temporarily
+            // Add punishment Bani temporarily with proper UIDs
             for (let i = 0; i < punishment.count; i++) {
                 selectedBanis[period].push({
                     ...baniInfo,
+                    uid: `punishment_${baniInfo.id}_${i}_${Date.now()}`,
                     isPunishment: true,
                     punishmentIndex: i
                 });
@@ -5845,12 +7192,20 @@ const StreakSaverManager = {
         const period = baniInfo.period;
         const periodCompleted = todayData[period] || [];
 
+        // Load selected banis to find punishment bani UIDs
+        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {});
+        const periodBanis = selectedBanis[period] || [];
+
+        // Find all punishment banis for this type
+        const punishmentBanis = periodBanis.filter(b =>
+            b.isPunishment && b.id === baniInfo.id
+        );
+
         // Check if all required punishment Banis are completed
         let completedCount = 0;
-        for (let i = 0; i < saverData.punishment.count; i++) {
-            const punishmentBaniId = `${baniInfo.id}_punishment_${i}`;
-            if (periodCompleted.includes(punishmentBaniId) ||
-                periodCompleted.includes(baniInfo.id)) {
+        for (const punishmentBani of punishmentBanis) {
+            // Check if this punishment bani's UID is in the completed list
+            if (periodCompleted.includes(punishmentBani.uid)) {
                 completedCount++;
             }
         }
@@ -5862,6 +7217,7 @@ const StreakSaverManager = {
 
     /**
      * Complete punishment and save streak
+     * ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state
      */
     completePunishment() {
         const saverData = this.getActivePunishment();
@@ -5874,16 +7230,39 @@ const StreakSaverManager = {
         // Remove punishment Banis from Nitnem
         this.removePunishmentFromNitnem();
 
-        // Restore the streak (minus 1 since yesterday was missed)
+        // Patch the missed date so the streak doesn't break on reload!
+        const missedDate = saverData.context ? saverData.context.missedDate : null;
+        if (missedDate) {
+            const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            if (!amritvelaLog[missedDate]) {
+                amritvelaLog[missedDate] = {
+                    timestamp: new Date().toISOString(),
+                    isStreakSaverPatch: true
+                };
+                StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, amritvelaLog);
+            }
+        }
+
+        // Restore the streak
         const restoredStreak = saverData.brokenStreak;
-        StreakManager.state.current = restoredStreak;
+        StreakManager.state.currentStreak = restoredStreak;
         StreakManager.saveStreakData();
+
+        // Re-calculate to ensure logs are synced
+        StreakManager.recalculateStreak();
+
+        // ═══ ENHANCED: Clean up ATTENDANCE_KEY to prevent stale state ═══
+        localStorage.removeItem(this.ATTENDANCE_KEY);
 
         // Show celebration
         Toast.success('🎉 Streak Saved!', `Your ${restoredStreak}-day streak is restored!`);
         CelebrationManager.show('streakSaved');
 
         this.renderPunishmentUI();
+
+        // Update header UI (remove blue fire, hide penalty button, update streak count)
+        HeaderManager.updatePenaltyState();
+        HeaderManager.updateStreakDisplay();
     },
 
     /**
@@ -5913,10 +7292,10 @@ const StreakSaverManager = {
         const count = punishment.count;
 
         let message = '';
-        if (punishment.type === 'sukhmani') {
-            message = `Complete 1 Sukhmani Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+        if (count === 1) {
+            message = `Complete 1 ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         } else {
-            message = `Complete ${count} Japji Sahib within 24h to save your ${saverData.brokenStreak}-day streak!`;
+            message = `Complete ${count}× ${baniName} within 24h to save your ${saverData.brokenStreak}-day streak!`;
         }
 
         // Show toast notification
@@ -5936,14 +7315,14 @@ const StreakSaverManager = {
         const timeRemaining = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60));
 
         let punishmentText = '';
-        if (punishment.type === 'sukhmani') {
-            punishmentText = 'Complete Sukhmani Sahib × 1';
+        if (baniInfo) {
+            punishmentText = `Complete ${baniInfo.name} × ${punishment.count}`;
         } else {
-            punishmentText = `Complete Japji Sahib × ${punishment.count}`;
+            punishmentText = `Complete ${punishment.type} × ${punishment.count}`;
         }
 
         const modalHTML = `
-            <div class="modal-overlay active" id="streakSaverModal">
+            <div class="modal-overlay active" id="streakSaverModal" style="pointer-events: auto;">
                 <div class="modal-container streak-saver-modal">
                     <div class="modal-header">
                         <div class="streak-saver-icon">⚡</div>
@@ -5960,12 +7339,16 @@ const StreakSaverManager = {
                             </div>
                         </div>
                         <div class="punishment-explanation">
-                            <p>💡 The punishment Bani has been added to your Nitnem. Complete it to restore your streak!</p>
+                            <p>💡 Complete the punishment Bani to restore your ${saverData.brokenStreak}-day streak!</p>
+                            <p class="punishment-warning">⚠️ If you decline, your streak will be reset to 0.</p>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="modal-btn primary" onclick="document.getElementById('streakSaverModal').remove()">
-                            I Understand
+                        <button class="modal-btn secondary" onclick="StreakSaverManager.declineStreakSaver()">
+                            Decline (Lose Streak)
+                        </button>
+                        <button class="modal-btn primary" onclick="StreakSaverManager.acceptStreakSaver()">
+                            Accept Punishment
                         </button>
                     </div>
                 </div>
@@ -5973,6 +7356,34 @@ const StreakSaverManager = {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+    },
+
+    /**
+     * Accept streak saver punishment
+     */
+    acceptStreakSaver() {
+        document.getElementById('streakSaverModal').remove();
+        Toast.success('✅ Punishment Accepted', 'Complete the Bani to save your streak!');
+    },
+
+    /**
+     * Decline streak saver (lose streak)
+     */
+    declineStreakSaver() {
+        const saverData = this.getActivePunishment();
+        if (saverData) {
+            // Remove punishment Banis
+            this.removePunishmentFromNitnem();
+            // Clear streak saver data
+            localStorage.removeItem(this.STORAGE_KEY);
+            // Reset streak
+            StreakManager.state.currentStreak = 0;
+            StreakManager.saveStreakData();
+        }
+        document.getElementById('streakSaverModal').remove();
+        Toast.info('📉 Streak Lost', 'Your streak has been reset. Start fresh today!');
+        this.renderPunishmentUI();
+        HeaderManager.updateStreakDisplay();
     },
 
     /**
@@ -6002,7 +7413,7 @@ const StreakSaverManager = {
         }
 
         const bannerHTML = `
-            <div id="streakSaverBanner" class="streak-saver-banner">
+            <div id="streakSaverBanner" class="streak-saver-banner" onclick="StreakSaverManager.showStreakSaverDetails()">
                 <div class="banner-content">
                     <span class="banner-icon">⚡</span>
                     <div class="banner-text">
@@ -6027,11 +7438,27 @@ const StreakSaverManager = {
     },
 
     /**
+     * Show streak saver details (called when banner is clicked)
+     */
+    showStreakSaverDetails() {
+        const saverData = this.getActivePunishment();
+        if (!saverData || saverData.completed) return;
+        
+        this.showStreakSaverModal(saverData);
+    },
+
+    /**
      * Get active punishment data
      */
     getActivePunishment() {
-        const data = localStorage.getItem(this.STORAGE_KEY);
-        return data ? JSON.parse(data) : null;
+        try {
+            const raw = localStorage.getItem(this.STORAGE_KEY);
+            if (!raw) return null;
+            return JSON.parse(raw);
+        } catch (e) {
+            console.warn('[StreakSaver] Could not parse punishment data:', e);
+            return null;
+        }
     },
 
     /**
@@ -6646,7 +8073,7 @@ const ReportsManager = {
             else if (hasAmritvela || hasNitnem) dayClass = 'partial';
 
             // Track stats
-            if (hasAmritvela) {
+            if (hasAmritvela && amritvelaLog[dateString]?.time) {
                 const time = amritvelaLog[dateString].time;
                 const [h, m] = time.split(':').map(Number);
                 totalWakeMinutes += h * 60 + m;
@@ -7000,19 +8427,19 @@ const InsightsEngine = {
         // Generate personalized insights
 
         // 1. Streak Insight
-        if (streakData.current > 0) {
-            if (streakData.current >= 7) {
+        if ((streakData.currentStreak || streakData.current || 0) > 0) {
+            if ((streakData.currentStreak || streakData.current || 0) >= 7) {
                 insights.push({
                     icon: '🔥',
                     title: 'Amazing Streak!',
-                    description: `You're on a ${streakData.current}-day streak! Your commitment to Sikhi is inspiring.`,
+                    description: `You're on a ${streakData.currentStreak || streakData.current}-day streak! Your commitment to Sikhi is inspiring.`,
                     type: 'success'
                 });
             } else {
                 insights.push({
                     icon: '📈',
                     title: 'Building Momentum',
-                    description: `${streakData.current} days and counting! Keep going to reach 7 days for a special milestone.`,
+                    description: `${streakData.currentStreak || streakData.current} days and counting! Keep going to reach 7 days for a special milestone.`,
                     type: 'progress'
                 });
             }
@@ -7379,15 +8806,28 @@ const DateHistoryView = {
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
         const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const totalPerDay = (selectedBanis.amritvela?.length || 0) + (selectedBanis.rehras?.length || 0) + (selectedBanis.sohila?.length || 0);
         let chipsHTML = '';
         for (let i = 29; i >= 1; i--) {
-            const d = new Date(); d.setDate(d.getDate() - i);
+            const d = new Date();
+            d.setDate(d.getDate() - i);
             const dateStr = d.toLocaleDateString('en-CA');
             const dayData = nitnemLog[dateStr];
+            
+            let effectiveTotal = 0;
+            const targetEndMs = new Date(dateStr);
+            targetEndMs.setHours(23, 59, 59, 999);
+            const targetTime = targetEndMs.getTime();
+            ['amritvela', 'rehras', 'sohila'].forEach(period => {
+                (selectedBanis[period] || []).forEach(b => {
+                    let addedMs = 0;
+                    if (b.uid && b.uid.includes('-')) addedMs = parseInt(b.uid.split('-')[0]);
+                    if (!addedMs || addedMs <= targetTime) effectiveTotal++;
+                });
+            });
+
             let completed = 0;
             if (dayData) { completed = (dayData.amritvela?.length || 0) + (dayData.rehras?.length || 0) + (dayData.sohila?.length || 0); }
-            const dotClass = !dayData ? 'none' : (completed >= totalPerDay && totalPerDay > 0 ? '' : 'incomplete');
+            const dotClass = !dayData ? 'none' : (completed >= effectiveTotal && effectiveTotal > 0 ? '' : 'incomplete');
             chipsHTML += '<div class="date-chip" data-date="' + dateStr + '" onclick="DateHistoryView.showDayDetail(\'' + dateStr + '\')"><span class="chip-day">' + dayNames[d.getDay()] + '</span><span class="chip-num">' + d.getDate() + '</span><span class="chip-dot ' + dotClass + '"></span></div>';
         }
         const overlay = document.createElement('div');
@@ -7415,6 +8855,15 @@ const DateHistoryView = {
             var completedUids = dayNitnem[period] || [];
 
             periodBanis.forEach(function(bani) {
+                let addedMs = 0;
+                if (bani.uid && bani.uid.includes('-')) addedMs = parseInt(bani.uid.split('-')[0]);
+                const viewDate = new Date(dateStr);
+                viewDate.setHours(23, 59, 59, 999);
+                if (addedMs && addedMs > viewDate.getTime()) {
+                    var doneCheck = completedUids.includes(bani.uid);
+                    if (!doneCheck) return;
+                }
+
                 totalBanis++;
                 var done = completedUids.includes(bani.uid);
                 if (done) completedBanis++;
@@ -7487,13 +8936,22 @@ const DateHistoryView = {
             const dateStr = chip.dataset.date;
             if (!dateStr) return;
 
+            let effectiveTotal = 0;
+            const targetEndMs = new Date(dateStr);
+            targetEndMs.setHours(23, 59, 59, 999);
+            const targetTime = targetEndMs.getTime();
+            ['amritvela', 'rehras', 'sohila'].forEach(period => {
+                (selectedBanis[period] || []).forEach(b => {
+                    let addedMs = 0;
+                    if (b.uid && b.uid.includes('-')) addedMs = parseInt(b.uid.split('-')[0]);
+                    if (!addedMs || addedMs <= targetTime) effectiveTotal++;
+                });
+            });
+
             const dayData = nitnemLog[dateStr];
             let completed = 0;
-            if (dayData) {
-                completed = (dayData.amritvela?.length || 0) + (dayData.rehras?.length || 0) + (dayData.sohila?.length || 0);
-            }
-
-            const dotClass = !dayData ? 'none' : (completed >= totalPerDay && totalPerDay > 0 ? '' : 'incomplete');
+            if (dayData) { completed = (dayData.amritvela?.length || 0) + (dayData.rehras?.length || 0) + (dayData.sohila?.length || 0); }
+            const dotClass = !dayData ? 'none' : (completed >= effectiveTotal && effectiveTotal > 0 ? '' : 'incomplete');
             const dot = chip.querySelector('.chip-dot');
             if (dot) {
                 dot.className = 'chip-dot ' + dotClass;
@@ -7671,7 +9129,7 @@ const CarryForwardSystem = {
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Nitnem Carry-Forward', {
                 body: `${count} bani${count > 1 ? 's' : ''} incomplete from ${dayText}: ${baniNames}${extra}`,
-                icon: '/frontend/assets/icons/icon-192.png',
+                icon: '/assets/icon-192x192.png',
                 tag: 'carry-forward'
             });
         }
@@ -8084,7 +9542,6 @@ const AlarmHistoryView = {
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
-        HapticManager.light();
     },
 
     /**
@@ -8261,7 +9718,7 @@ const AINotificationSystem = {
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Nitnem Tracker', {
                 body: message,
-                icon: '/frontend/assets/icons/icon-192.png',
+                icon: '/assets/icon-192x192.png',
                 tag: `reminder-${type}`
             });
         }
@@ -8425,7 +9882,9 @@ const StatisticsModal = {
         let completeDays = 0;
         let totalBanis = 0;
         Object.values(nitnemLog).forEach(day => {
-            const dayTotal = (day.amritvela?.length || 0) + (day.rehras?.length || 0) + (day.sohila?.length || 0);
+            const dayTotal = (day.amritvela?.length || 0) +
+                (day.rehras?.length || 0) +
+                (day.sohila?.length || 0);
             totalBanis += dayTotal;
             if (ReportsManager.isNitnemComplete(day)) {
                 completeDays++;
@@ -8442,7 +9901,7 @@ const StatisticsModal = {
 
         // Calculate overall score
         const factors = [
-            Math.min(streakData.current / 30, 1) * 25, // Streak (25%)
+            Math.min((streakData.currentStreak || streakData.current || 0) / 30, 1) * 25, // Streak (25%)
             Math.min(amritvelaDates.length / 30, 1) * 25, // Amritvela (25%)
             Math.min(completeDays / 14, 1) * 25, // Nitnem (25%)
             Math.min(achievements.length / 6, 1) * 25 // Achievements (25%)
@@ -8474,44 +9933,38 @@ const StatisticsModal = {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 25: APP INITIALIZATION (UPDATED)
-   ───────────────────────────────────────────────────────────────────────────── */
-
-// Update the NitnemTrackerApp initialization to include all managers
-/* ─────────────────────────────────────────────────────────────────────────────
-   SECTION 24.5: DAILY RESET MANAGER (NEW)
+   SECTION 24.5: DAILY RESET MANAGER (Japtab)
+   Handles midnight reset and streak break detection
    ───────────────────────────────────────────────────────────────────────────── */
 
 const DailyResetManager = {
+    STORAGE_KEY: 'nt_last_processed_date',
+
+    /**
+     * Check if a new day has started and handle reset
+     */
     checkReset() {
-        const lastActive = localStorage.getItem('lastActiveDate');
+        const lastProcessed = StorageManager.load(this.STORAGE_KEY, '');
         const today = Utils.getTodayString();
 
-        if (lastActive !== today) {
-            console.log('[DailyReset] New day detected:', today);
-            this.performMidnightReset(lastActive, today);
-            localStorage.setItem('lastActiveDate', today);
+        if (lastProcessed !== today) {
+            this.handleNewDay(lastProcessed, today);
         }
     },
 
-    performMidnightReset(yesterday, today) {
+    /**
+     * Handle new day logic - streak check and reset
+     */
+    handleNewDay(lastProcessed, today) {
         // 1. Finalize Yesterday's Data
-        if (yesterday) {
-            this.finalizeDay(yesterday);
+        if (lastProcessed) {
+            this.finalizeDay(lastProcessed);
         }
 
-        // 2. Check for streak break and offer streak saver
-        const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-        const missedYesterday = yesterday && !amritvelaLog[yesterday];
-        const streakData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, { current: 0 });
-
-        if (missedYesterday && streakData.current > 0) {
-            // Streak is breaking - trigger streak saver
-            StreakSaverManager.offerStreakSaver(streakData.current);
-        }
+        // 2. Check for streak break using StreakSaverManager (includes Mathila detection)
+        StreakSaverManager.checkStreakBreak();
 
         // 3. Reset Today's Temporary State
-        // Clear any non-date-keyed temporary flags
         localStorage.removeItem('temp_amritvela_state');
         localStorage.removeItem('temp_mala_count');
 
@@ -8520,22 +9973,28 @@ const DailyResetManager = {
         if (!nitnemLog[today]) {
             nitnemLog[today] = {
                 amritvela: [],
+                rehras: [],
+                sohila: [],
                 completed: false,
                 progress: 0
             };
             StorageManager.save(CONFIG.STORAGE_KEYS.NITNEM_LOG, nitnemLog);
         }
 
+        // 5. Save that we processed today
+        StorageManager.save(this.STORAGE_KEY, today);
+
         Toast.info('New Day', 'Daily stats have been reset for today.');
     },
 
+    /**
+     * Finalize a day's data
+     */
     finalizeDay(date) {
-        // Calculate and freeze stats for the passed date
         const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
         const dayData = nitnemLog[date];
 
         if (dayData) {
-            // Check if full nitnem was done
             const isComplete = ReportsManager.isNitnemComplete(dayData);
             dayData.finalStatus = isComplete ? 'completed' : 'incomplete';
             StorageManager.save(CONFIG.STORAGE_KEYS.NITNEM_LOG, nitnemLog);
@@ -8547,10 +10006,7 @@ const DailyResetManager = {
    SECTION 25: APP INITIALIZATION (UPDATED)
    ───────────────────────────────────────────────────────────────────────────── */
 
-// Update the NitnemTrackerApp initialization to include all managers
 const initializeFullApp = async () => {
-    console.log(`🙏 Initializing ${CONFIG.APP_NAME} v${CONFIG.APP_VERSION} - Full Version`);
-
     const safeInit = async (name, fn) => {
         try {
             await fn();
@@ -8564,9 +10020,6 @@ const initializeFullApp = async () => {
     try {
         // Initialize storage first (syncs from IndexedDB)
         await safeInit('StorageManager', () => StorageManager.init());
-
-        // Perform Mid-night Check immediately after storage is ready
-        DailyResetManager.checkReset();
 
         // Initialize core systems (from Part 1)
         await safeInit('HapticManager', () => HapticManager.init());
@@ -8595,11 +10048,17 @@ const initializeFullApp = async () => {
             await safeInit('CelebrationManager', () => CelebrationManager.init());
             await safeInit('StatisticsModal', () => StatisticsModal.init());
 
-        // Initialize settings (from Part 1)
+        // Initialize settings
         await safeInit('SettingsManager', () => SettingsManager.init());
+
+        // Initialize Premium UX (10 Features)
+        await safeInit('PremiumUXManager', () => PremiumUXManager.init());
 
         // Add SVG gradient definitions for score circle
         try { addSVGDefinitions(); } catch (e) { console.error(e); }
+
+        // Perform Mid-night Check after all systems (including Toast and StreakSaverManager) are initialized
+        DailyResetManager.checkReset();
 
         // Hide loading screen
         const loadingScreen = document.getElementById('appLoading');
@@ -8616,7 +10075,6 @@ const initializeFullApp = async () => {
 
     } catch (error) {
         console.error('❌ Initialization error:', error);
-        Toast.error('Error', 'Failed to initialize app. Please refresh.');
     }
 };
 
@@ -8829,12 +10287,32 @@ if (document.readyState === 'loading') {
         ServiceWorkerComm.init();
         KeyboardShortcuts.init();
 
+        // Check for streak saver activation from notification
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('streakSaver') === 'activate') {
+            setTimeout(() => {
+                if (typeof StreakSaverManager !== 'undefined') {
+                    // First run check to activate streak saver if needed
+                    StreakSaverManager.checkStreakBreak();
+                    // Then show modal
+                    const saverData = StreakSaverManager.getActivePunishment();
+                    if (saverData) {
+                        StreakSaverManager.showStreakSaverModal(saverData);
+                    }
+                }
+            }, 1500); // Wait for app to fully initialize
+        }
+
         // Back button navigation
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                HapticManager.light();
-                window.location.href = '../index.html';
+                if (typeof HapticManager !== 'undefined') HapticManager.light();
+                if (typeof window.anhadGoBack === 'function') {
+                    window.anhadGoBack();
+                } else {
+                    window.location.href = '../index.html';
+                }
             });
         }
     });
@@ -8843,6 +10321,35 @@ if (document.readyState === 'loading') {
     SmartRemindersIntegration.init();
     ServiceWorkerComm.init();
     KeyboardShortcuts.init();
+
+    // Check for streak saver activation from notification
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('streakSaver') === 'activate') {
+        setTimeout(() => {
+            if (typeof StreakSaverManager !== 'undefined') {
+                // First run check to activate streak saver if needed
+                StreakSaverManager.checkStreakBreak();
+                // Then show modal
+                const saverData = StreakSaverManager.getActivePunishment();
+                if (saverData) {
+                    StreakSaverManager.showStreakSaverModal(saverData);
+                }
+            }
+        }, 1500); // Wait for app to fully initialize
+    }
+
+    // Back button navigation
+    const backBtn = document.getElementById('backBtn');
+    if (backBtn) {
+        backBtn.addEventListener('click', () => {
+            if (typeof HapticManager !== 'undefined') HapticManager.light();
+            if (typeof window.anhadGoBack === 'function') {
+                window.anhadGoBack();
+            } else {
+                window.location.href = '../index.html';
+            }
+        });
+    }
 }
 
 // Handle app visibility changes
@@ -8856,7 +10363,15 @@ document.addEventListener('visibilitychange', () => {
         MalaManager.loadTodayData();
         MalaManager.updateDisplay();
         AlarmManager.syncFromSmartReminders();
+        
+        // ═══ ENHANCED: Full streak update on visibility change ═══
         StreakManager.recalculateStreak();
+        StreakManager.updateDisplay();
+        HeaderManager.updateStreakDisplay();
+        
+        // Check for streak saver activation
+        StreakSaverManager.checkStreakBreak();
+        StreakSaverManager.checkAndCleanupExpired();
         ReportsManager.renderWeeklyReport();
 
         // Update insights
@@ -8951,10 +10466,108 @@ if (typeof window !== 'undefined') {
         AINotificationSystem,
 
         // Integration
-        SmartRemindersIntegration,
-        ServiceWorkerComm
+        SmartRemindersIntegration
     };
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PREMIUM UX MANAGER
+   Runs the 10 supreme dynamic UI updates.
+   ───────────────────────────────────────────────────────────────────────────── */
+const PremiumUXManager = {
+    init() {
+        this.setupDoubleTapPresent();
+        this.setupMalaRipple();
+        this.updateAmbientAura();
+        setInterval(() => this.updateAmbientAura(), 60000 * 5); // Check aura every 5 mins
+        this.startMarquee();
+    },
+
+    setupDoubleTapPresent() {
+        // FEATURE 8: Double-Tap to Mark Present
+        const presentBtn = document.getElementById('presentBtn');
+        if (!presentBtn) return;
+        
+        let lastTap = 0;
+        presentBtn.addEventListener('click', (e) => {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 500 && tapLength > 0) {
+                // Double tap detected! Quick submit with heavy haptic
+                HapticManager.heavy();
+                if (typeof AmritvelaManager !== 'undefined' && !AmritvelaManager.todayMarked) {
+                    AmritvelaManager.markPresent();
+                    Toast.success('Fast Present', 'Double-tap registered successfully! ⚡');
+                }
+            }
+            lastTap = currentTime;
+        });
+    },
+
+    setupMalaRipple() {
+        // FEATURE 3: Mala Ripple & Recoil
+        const tapZone = document.getElementById('malaTapZone');
+        if (!tapZone) return;
+
+        tapZone.addEventListener('mousedown', (e) => {
+            tapZone.classList.add('mala-tap-recoil');
+            
+            // Create ripple
+            const ripple = document.createElement('span');
+            ripple.classList.add('mala-ripple');
+            
+            const rect = tapZone.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            
+            const x = e.clientX ? e.clientX - rect.left - size/2 : 0;
+            const y = e.clientY ? e.clientY - rect.top - size/2 : 0;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            tapZone.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+                tapZone.classList.remove('mala-tap-recoil');
+            }, 600);
+        });
+    },
+
+    updateAmbientAura() {
+        // FEATURE 2: Ambient Background Glow
+        const hour = new Date().getHours();
+        let auraColor = 'rgba(255, 149, 0, 0.05)';
+        
+        if (hour >= 2 && hour < 6) auraColor = 'rgba(255, 149, 0, 0.15)'; // Golden Amritvela
+        else if (hour >= 6 && hour < 12) auraColor = 'rgba(52, 199, 89, 0.08)'; // Morning Green
+        else if (hour >= 18 && hour < 21) auraColor = 'rgba(255, 59, 48, 0.08)'; // Evening Red
+        else if (hour >= 21 || hour < 2) auraColor = 'rgba(88, 86, 214, 0.12)'; // Night Deep Blue
+
+        document.documentElement.style.setProperty('--aura-color', auraColor);
+    },
+
+    startMarquee() {
+        // FEATURE 10: Motivational Sequence
+        const quotes = [
+            "Jo Mange Thakur Apne Te Soi Soi Deve...",
+            "Arise, awake, for Amritvela is the time of nectar.",
+            "Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh 🙏",
+            "Nanak Naam Chardi Kala, Tere Bhane Sarbat Da Bhala."
+        ];
+        
+        const txt = document.getElementById('marqueeText');
+        const clone = document.getElementById('marqueeTextClone');
+        if(txt && clone) {
+            let quoteIdx = 0;
+            setInterval(() => {
+                quoteIdx = (quoteIdx + 1) % quotes.length;
+                txt.textContent = quotes[quoteIdx] + "   •   ";
+                clone.textContent = quotes[quoteIdx] + "   •   ";
+            }, 30000); // Change text when it loops approximately
+        }
+    }
+};
 
 /* ─────────────────────────────────────────────────────────────────────────────
    END OF NITNEM TRACKER APPLICATION

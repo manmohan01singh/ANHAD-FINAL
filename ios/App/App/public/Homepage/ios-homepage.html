@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0e1a">
+    <meta name="description" content="ANHAD — Immersive Gurbani experience with live Darbar Sahib Kirtan">
+    <title>ANHAD — Sri Harmandir Sahib</title>
+
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Sacramento&family=Great+Vibes&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="ios-homepage.css">
+</head>
+
+<body>
+
+    <!-- L0: Entry overlay (Removed) -->
+
+    <!-- L1: Full-screen Darbar Sahib Background — Day image -->
+    <div id="scene-bg"></div>
+
+    <!-- L2: Color-grading overlay (time-of-day tint) -->
+    <div id="color-grade"></div>
+
+    <!-- L3: Vignette -->
+    <div id="vignette"></div>
+
+    <!-- L4: Soft celestial light source (sun glow / moon glow) -->
+    <div id="light-source"></div>
+
+    <!-- L5: Stars canvas (night only) -->
+    <canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+    <!-- Fireworks Particle Canvas -->
+    <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
+
+    <!-- L6: Ambient golden haze near the temple -->
+    <div id="temple-glow"></div>
+
+    <!-- Live Kirtan Audio -->
+    <audio id="kirtan-audio" preload="none">
+        <source src="https://live.sgpc.net:8443/;nocache=889869" type="audio/mpeg">
+    </audio>
+
+    <!-- L7: UI Layer -->
+    <div id="ui">
+
+        <!-- Handwritten "Anhad" SVG Animation (Removed) -->
+
+        <!-- Top -->
+        <header id="top-ui">
+            <div id="live-badge" class="card-fade-in delay-0">
+                <span class="dot"></span>
+                <span class="label">LIVE KIRTAN</span>
+            </div>
+        </header>
+
+        <!-- Center UI Removed for unobstructed Darbar Sahib view -->
+
+
+
+        <!-- Bottom -->
+        <footer id="bottom-ui">
+            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1">
+                <span class="enter-btn-main">Enter ANHAD</span>
+            </a>
+            <p id="tap-hint" class="card-fade-in delay-4">Tap anywhere to start live kirtan</p>
+        </footer>
+
+    </div>
+
+    <!-- Unified Stats for Kirtan Tracking -->
+    <script src="../lib/unified-stats.js"></script>
+    <!-- UNIFIED AUDIO SINGLETON -->
+    <script src="../lib/anhad-audio-singleton.js"></script>
+    <!-- REMOVED: mini-player-extreme.js - replaced by singleton -->
+    <script src="ios-homepage.js"></script>
+</body>
+
+</html>

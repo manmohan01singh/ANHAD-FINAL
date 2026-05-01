@@ -9,8 +9,8 @@ import com.gurbaniradio.app.R;
 import org.json.JSONObject;
 
 /**
- * Live Kirtan Home Screen Widget
- * Shows currently playing track info
+ * Live Kirtan Home Screen Widget (Spotify-style redesign)
+ * Shows currently playing track info with cover photo in horizontal layout
  */
 public class KirtanWidgetProvider extends BaseWidgetProvider {
 
@@ -19,20 +19,14 @@ public class KirtanWidgetProvider extends BaseWidgetProvider {
         JSONObject data = getWidgetData(context, "kirtan");
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kirtan_widget);
 
-        // Extract data
-        String trackName = getSafeString(data, "trackName", "Not Playing");
-        String stationName = getSafeString(data, "stationName", "Select Station");
+        // Extract data with safe defaults
+        String trackName = getSafeString(data, "trackName", "Darbar Sahib Live");
+        String stationName = getSafeString(data, "stationName", "Sri Harmandir Sahib Ji");
         boolean isPlaying = getSafeBoolean(data, "isPlaying", false);
         String duration = getSafeString(data, "duration", "");
-        boolean isDark = getSafeBoolean(data, "isDark", false);
-
-        // Theme colors
-        int textColor = getThemeTextColor(isDark);
-        int secondaryTextColor = getThemeSecondaryTextColor(isDark);
 
         // Track info
         views.setTextViewText(R.id.kirtan_track, trackName);
-        views.setTextColor(R.id.kirtan_track, textColor);
 
         // Station info
         String stationText = stationName;
@@ -40,24 +34,28 @@ public class KirtanWidgetProvider extends BaseWidgetProvider {
             stationText += " • " + duration;
         }
         views.setTextViewText(R.id.kirtan_station, stationText);
-        views.setTextColor(R.id.kirtan_station, secondaryTextColor);
 
-        // Playing indicator
+        // Live badge + equalizer visibility
         if (isPlaying) {
-            views.setTextViewText(R.id.kirtan_status, "▶ Playing");
-            views.setTextColor(R.id.kirtan_status, 0xFF30D158); // Green
+            views.setViewVisibility(R.id.kirtan_live_badge, 0); // Visible
+            views.setViewVisibility(R.id.kirtan_equalizer, 0); // Visible
+            views.setTextViewText(R.id.kirtan_status, "● Now Playing");
         } else {
-            views.setTextViewText(R.id.kirtan_status, "⏸ Paused");
-            views.setTextColor(R.id.kirtan_status, 0xFFFF9500); // Orange
+            views.setViewVisibility(R.id.kirtan_live_badge, 8); // Gone
+            views.setViewVisibility(R.id.kirtan_equalizer, 8); // Gone
+            views.setTextViewText(R.id.kirtan_status, "Tap to play");
         }
 
-        // Click to open Radio
+        // Play button icon
+        views.setTextViewText(R.id.kirtan_play_icon, isPlaying ? "⏸" : "▶");
+
+        // Click on entire widget opens the Radio page
         views.setOnClickPendingIntent(R.id.kirtan_widget_container,
             createOpenAppIntent(context, "/live-kirtan"));
 
-        // Apply theme
-        views.setInt(R.id.kirtan_widget_container, "setBackgroundColor",
-            getThemeBackground(isDark));
+        // Click on play button also opens the Radio page (native widget can't control WebView audio directly)
+        views.setOnClickPendingIntent(R.id.kirtan_play_button,
+            createOpenAppIntent(context, "/live-kirtan"));
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

@@ -875,7 +875,9 @@
     // ═══════════════════════════════════════════════════════════════════════════
 
     function vibrate(duration = 10) {
-        if (navigator.vibrate) {
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.vibrate(duration);
+        } else if (navigator.vibrate) {
             navigator.vibrate(duration);
         }
     }

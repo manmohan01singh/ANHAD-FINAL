@@ -78,10 +78,6 @@ public class CalendarWidgetProvider extends BaseWidgetProvider {
         views.setOnClickPendingIntent(R.id.calendar_widget_container,
             createOpenAppIntent(context, "/calendar"));
 
-        // Apply theme
-        views.setInt(R.id.calendar_widget_container, "setBackgroundColor",
-            getThemeBackground(isDark));
-
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 }

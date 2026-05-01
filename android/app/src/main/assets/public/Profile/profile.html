@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -40,10 +40,20 @@
   
   <!-- Profile Styles -->
   <link rel="stylesheet" href="profile.css">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.9">
   
   <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
   <script src="../js/anhad-core.js" defer></script>
+  
+  <style>
+
+    /* Tab bar styles now handled by shared css/nav-glass.css */
+    
+    /* Hide old bottom nav */
+    .bottom-nav { display: none !important; }
+  </style>
 </head>
 
 <body>
@@ -63,7 +73,7 @@
     <div class="glass-nav__action"></div>
   </nav>
 
-  <main class="profile-app page-enter" style="padding-top: calc(var(--safe-top) + 64px);">
+  <main class="profile-app page-enter" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
     <!-- User Card -->
     <section class="user-card glass-card">
       <div class="user-card__avatar">
@@ -77,9 +87,6 @@
         <i class="fas fa-fire"></i>
         <span id="currentStreak">0</span>
       </div>
-      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle Theme" style="margin-left: 8px;">
-        <i class="fas fa-moon" id="themeIcon"></i>
-      </button>
     </section>
 
     <!-- Quick Stats Grid -->
@@ -119,7 +126,7 @@
 
     <!-- Today vs Yesterday -->
     <section class="comparison-section">
-      <h3 class="section-title">📊 Today vs Yesterday</h3>
+      <h3 class="section-title">🎯 Today vs Yesterday</h3>
       <div class="comparison-card glass-card">
         <div class="comparison-row">
           <span class="comparison-label">Listening</span>
@@ -174,7 +181,7 @@
             </div>
             <div class="streak-info__item">
               <span class="streak-info__label">Freezes Available</span>
-              <span class="streak-info__value" id="freezesAvailable">0 ❄️</span>
+              <span class="streak-info__value" id="freezesAvailable">0</span>
             </div>
           </div>
         </div>
@@ -192,7 +199,7 @@
 
     <!-- Amritvela Analytics -->
     <section class="amritvela-section">
-      <h3 class="section-title">🌅 Amritvela Analytics</h3>
+      <h3 class="section-title">☀️ Amritvela Analytics</h3>
       <div class="amritvela-card glass-card">
         <div class="amritvela-stats">
           <div class="amritvela-stat">
@@ -225,7 +232,7 @@
 
     <!-- Naam Abhyas -->
     <section class="naam-section">
-      <h3 class="section-title">🙏 Naam Abhyas</h3>
+      <h3 class="section-title">📋 Naam Abhyas</h3>
       <div class="naam-card glass-card">
         <div class="naam-stats">
           <div class="naam-stat">
@@ -317,7 +324,7 @@
 
     <!-- Weekly Activity -->
     <section class="weekly-section">
-      <h3 class="section-title">📅 This Week</h3>
+      <h3 class="section-title">📊 This Week</h3>
       <div class="weekly-card glass-card">
         <div class="weekly-chart" id="weeklyChart">
           <!-- Week bars will be populated by JS -->
@@ -333,29 +340,42 @@
     <div style="height: 100px;"></div>
   </main>
 
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <div class="bottom-nav__container">
-      <a href="../index.html" class="nav-item" aria-label="Home"><i class="fas fa-house"></i></a>
-      <a href="../Insights/insights.html" class="nav-item" aria-label="Insights"><i class="fas fa-lightbulb"></i></a>
-      <a href="../Favorites/favorites.html" class="nav-item" aria-label="Favorites"><i class="fas fa-heart"></i></a>
-      <button class="nav-item nav-item--active" aria-label="Profile"><i class="fas fa-user"></i></button>
-    </div>
-  </nav>
-
   <!-- Global Theme -->
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/native-audio-bridge.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/global-mini-player.js" defer></script>
+  
   
   <!-- User Stats Library -->
   <script src="../lib/user-stats.js"></script>
   
   <!-- Profile Scripts -->
   <script src="profile.js"></script>
+
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="../Insights/insights.html" class="tab-item">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
+  </nav>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

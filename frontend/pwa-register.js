@@ -132,6 +132,17 @@ class PWAManager {
       return;
     }
 
+    // CRITICAL: Skip ALL service worker logic in Capacitor native apps
+    // SW registration + controllerchange + version polling cause infinite reload loops
+    // inside the Android/iOS WebView where content is served from bundled assets
+    const isCapacitor = typeof window.Capacitor !== 'undefined' ||
+                        navigator.userAgent.includes('Capacitor');
+    if (isCapacitor) {
+      console.log('[PWA] Running in Capacitor — skipping SW registration & version polling');
+      this.lockOrientation();
+      return;
+    }
+
     this.lockOrientation();
 
     try {
@@ -492,8 +503,8 @@ class PWAManager {
       const registration = await navigator.serviceWorker.ready;
       await registration.showNotification('🙏 ANHAD Installed!', {
         body: 'You will now receive daily reminders for Nitnem, Rehras, and Naam Abhyas',
-        icon: './assets/icons/icon-192x192.png',
-        badge: './assets/icons/icon-72x72.png',
+        icon: './assets/icon-192x192.png',
+        badge: './assets/icon-72x72.png',
         tag: 'pwa-install-confirmation',
         requireInteraction: false,
         vibrate: [200, 100, 200]

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light" data-bg="default" data-font="raavi">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -25,7 +25,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     
-    <title>Gurbani Search • ANHAD</title>
+    <title>Gurbani Search � ANHAD</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,15 @@
     <link rel="stylesheet" href="gurbani-khoj.css">
     
     <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
     <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
@@ -46,10 +54,26 @@
         <div class="orb orb-3"></div>
         <div class="orb orb-4"></div>
     </div>
+
+    <!-- Extreme Visual Effects -->
+    <div class="particles-container">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="light-leak light-leak-1"></div>
+    <div class="light-leak light-leak-2"></div>
+    <div class="noise-overlay"></div>
     
     <!-- iOS Navigation -->
     <nav class="ios-nav">
-        <button class="nav-back glass-nav__back" onclick="window.location.href='../index.html'" aria-label="Back">
+        <button class="nav-back glass-nav__back" id="backBtn" aria-label="Back">
             <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
                 <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -57,6 +81,13 @@
         </button>
         <h1 class="nav-title">Gurbani Search</h1>
         <div class="nav-actions">
+            <!-- History -->
+            <button class="nav-history" id="historyBtn" aria-label="Recent Searches">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12,6 12,12 16,14"/>
+                </svg>
+            </button>
             <!-- Theme Toggle -->
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                 <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -67,88 +98,101 @@
                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
                 </svg>
             </button>
-            <!-- Settings -->
-            <button class="nav-settings" id="settingsBtn">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
-            </button>
         </div>
     </nav>
 
+    <!-- Search Section (Outside main-content to stay above blur) -->
+    <section class="search-section" id="searchSection">
+        <!-- Thin Search Bar with Mic -->
+        <div class="search-bar-thin" id="searchBar">
+            <svg class="search-icon-thin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" class="search-input-thin" id="searchInput" placeholder="Search Gurbani..." autocomplete="off" spellcheck="false" readonly>
+            <button type="button" class="keyboard-btn-thin" id="keyboardBtn" title="Punjabi Keyboard">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <line x1="6" y1="8" x2="6" y2="8"/>
+                    <line x1="10" y1="8" x2="10" y2="8"/>
+                    <line x1="14" y1="8" x2="14" y2="8"/>
+                    <line x1="18" y1="8" x2="18" y2="8"/>
+                    <line x1="6" y1="12" x2="6" y2="12"/>
+                    <line x1="10" y1="12" x2="10" y2="12"/>
+                    <line x1="14" y1="12" x2="14" y2="12"/>
+                    <line x1="18" y1="12" x2="18" y2="12"/>
+                    <line x1="7" y1="16" x2="17" y2="16"/>
+                </svg>
+            </button>
+            <button type="button" class="mic-btn-thin" id="micBtn" title="Voice Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </button>
+        </div>
+        <!-- Source Filter Chips -->
+        <div class="source-filters" id="sourceFilters">
+            <button class="source-chip active" data-source="all">All Sources</button>
+            <button class="source-chip" data-source="G" style="--chip-color: #b8860b">SGGS</button>
+            <button class="source-chip" data-source="D" style="--chip-color: #007aff">Dasam</button>
+            <button class="source-chip" data-source="B" style="--chip-color: #34c759">Bhai Gurdas</button>
+            <button class="source-chip" data-source="N" style="--chip-color: #ff9500">Bhai Nand Lal</button>
+        </div>
+    </section>
+
+    <!-- Voice Search Panel - Premium iOS Style -->
+    <div class="voice-panel" id="voicePanel">
+        <div class="voice-backdrop"></div>
+        <div class="voice-content">
+            <!-- Waveform Visualizer -->
+            <div class="voice-visualizer">
+                <div class="wave-bar" style="--delay: 0ms"></div>
+                <div class="wave-bar" style="--delay: 50ms"></div>
+                <div class="wave-bar" style="--delay: 100ms"></div>
+                <div class="wave-bar" style="--delay: 150ms"></div>
+                <div class="wave-bar" style="--delay: 200ms"></div>
+                <div class="wave-bar" style="--delay: 250ms"></div>
+                <div class="wave-bar" style="--delay: 300ms"></div>
+                <div class="wave-bar" style="--delay: 350ms"></div>
+                <div class="wave-bar" style="--delay: 400ms"></div>
+                <div class="wave-bar" style="--delay: 450ms"></div>
+                <div class="wave-bar" style="--delay: 500ms"></div>
+                <div class="wave-bar" style="--delay: 550ms"></div>
+            </div>
+
+            <!-- Pulsing Mic Icon -->
+            <div class="voice-mic-container">
+                <div class="voice-mic-pulse"></div>
+                <div class="voice-mic">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Status Text -->
+            <p class="voice-status" id="voiceStatus">Listening...</p>
+            <p class="voice-hint" id="voiceHint">Speak a Gurbani line</p>
+
+            <!-- Live Transcript Preview -->
+            <div class="voice-transcript-preview" id="voiceTranscriptPreview"></div>
+
+            <!-- Cancel Button -->
+            <button class="voice-cancel" id="voiceCancel">
+                <span class="cancel-icon">✕</span>
+                <span>Cancel</span>
+            </button>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Search Section -->
-        <section class="search-section">
-            <!-- Premium Search Bar -->
-            <div class="search-bar glass" id="searchBar">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.5"/>
-                    <path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                </svg>
-                <input 
-                    type="text" 
-                    class="search-input" 
-                    id="searchInput"
-                    placeholder="Search Gurbani..."
-                    autocomplete="off"
-                    autocorrect="off"
-                    spellcheck="false"
-                >
-                <button class="search-btn clear-btn" id="clearBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2"/>
-                        <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
-                <button class="search-btn mic-btn" id="micBtn">
-                    <div class="mic-waves" id="micWaves">
-                        <span></span><span></span><span></span>
-                    </div>
-                    <svg class="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none">
-                        <rect x="9" y="2" width="6" height="11" rx="3" stroke="currentColor" stroke-width="2"/>
-                        <path d="M5 10v1a7 7 0 0014 0v-1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M12 19v3M9 22h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                </button>
-                <button class="search-btn keyboard-btn" id="keyboardBtn">
-                    <span class="gurmukhi-letter">ੳ</span>
-                </button>
-            </div>
-
-            <!-- Voice Indicator -->
-            <div class="voice-panel glass" id="voicePanel">
-                <div class="voice-visual">
-                    <div class="voice-ring"></div>
-                    <div class="voice-ring"></div>
-                    <div class="voice-ring"></div>
-                    <svg class="voice-mic" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="9" y="2" width="6" height="11" rx="3"/>
-                        <path d="M5 10v1a7 7 0 0014 0v-1" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-                        <path d="M12 19v3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-                    </svg>
-                </div>
-                <p class="voice-status">Listening...</p>
-                <p class="voice-hint">Speak your Shabad line</p>
-                <button class="voice-cancel" id="voiceCancel">Cancel</button>
-            </div>
-
-            <!-- Search Filters -->
-            <div class="search-filters">
-                <button class="filter-pill active" data-type="1">Gurmukhi</button>
-            </div>
-
-            <!-- Live Kirtan Tracker Card -->
-            <div class="live-kirtan-card" id="liveKirtanCard">
-                <div class="live-kirtan-icon">🎙️</div>
-                <div class="live-kirtan-text">
-                    <h3>Live Kirtan Tracker</h3>
-                    <p>ਸ਼ਬਦ ਸੁਣੋ ਅਤੇ ਟਰੈਕ ਕਰੋ</p>
-                </div>
-                <span class="live-kirtan-arrow">→</span>
-            </div>
-        </section>
 
         <!-- Results View -->
         <section class="results-view" id="resultsView">
@@ -163,45 +207,34 @@
         <div class="loading-state" id="loadingState">
             <div class="loader">
                 <div class="loader-ring"></div>
-                <span class="loader-icon">☬</span>
+                <span class="loader-icon">&#x262c;</span>
             </div>
             <p>Searching Gurbani...</p>
         </div>
 
         <!-- Empty State -->
         <div class="empty-state" id="emptyState">
-            <div class="empty-icon">🔍</div>
+            <div class="empty-icon">&#x1F50D;</div>
             <h3>No Results</h3>
             <p id="emptyMessage">Try searching with first letters</p>
         </div>
 
         <!-- Welcome State -->
         <div class="welcome-state active" id="welcomeState">
-            <div class="welcome-icon">☬</div>
+            <div class="welcome-icon">&#x262c;</div>
             <h2 class="welcome-title">Gurbani Khoj</h2>
             <p class="welcome-desc">Search the sacred scriptures</p>
             <div class="welcome-tips">
                 <div class="tip">
-                    <span class="tip-icon">🎤</span>
+                    <span class="tip-icon">&#x2328;</span>
                     <span>Sing or speak a line</span>
                 </div>
                 <div class="tip">
-                    <span class="tip-icon">⌨️</span>
-                    <span>Type first letters: ਤਮਮਪ</span>
+                    <span class="tip-icon">&#x2328;</span>
+                    <span>Type first letters</span>
                 </div>
             </div>
             
-            <!-- Search History -->
-            <section class="history-section" id="historySection" style="display: none;">
-                <h3 class="history-title">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12,6 12,12 16,14"/>
-                    </svg>
-                    Recent Searches
-                </h3>
-                <div class="history-list" id="historyList"></div>
-            </section>
         </div>
     </main>
 
@@ -216,7 +249,7 @@
                     <span class="mic-pulse" id="micPulse"></span>
                     <span class="mic-text" id="micText">Ready</span>
                 </div>
-                <button class="live-kirtan-close" id="liveKirtanClose">✕</button>
+                <button class="live-kirtan-close" id="liveKirtanClose">?</button>
             </div>
             
             <!-- Middle Zone - Live Transcript -->
@@ -230,7 +263,7 @@
                 <!-- Searching State -->
                 <div class="searching-state" id="searchingState">
                     <div class="shimmer-loader"></div>
-                    <p>ਸ਼ਬਦ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...</p>
+                    <p>🔍 ਸ਼ਬਦ ਲੱਭ ਰਿਹਾ ਹਾਂ...</p>
                 </div>
                 
                 <!-- Locked State -->
@@ -243,8 +276,8 @@
             <!-- Controls -->
             <div class="tracker-controls" id="trackerControls">
                 <button class="control-btn" id="unlockBtn">🔓 Unlock</button>
-                <button class="control-btn" id="pauseBtn">⏸ Pause</button>
-                <button class="control-btn active" id="autoScrollBtn">📜 Auto-scroll</button>
+                <button class="control-btn" id="pauseBtn">? Pause</button>
+                <button class="control-btn active" id="autoScrollBtn">⏬ Auto-scroll</button>
             </div>
         </div>
     </div>
@@ -253,87 +286,68 @@
     <div class="keyboard-overlay" id="keyboardOverlay">
         <div class="keyboard-backdrop"></div>
         <div class="keyboard-sheet glass">
-            <div class="sheet-handle"></div>
             <div class="keyboard-header">
-                <span class="keyboard-lang">ਪੰਜਾਬੀ</span>
-                <button class="keyboard-done" id="keyboardDone">Done</button>
+                <span class="keyboard-preview-area" id="keyboardPreview"></span>
             </div>
-            <div class="keyboard-preview" id="keyboardPreview">
-                <span class="preview-text"></span>
-                <span class="preview-cursor"></span>
-            </div>
-            <div class="keyboard-body">
+                        <div class="keyboard-body" id="keyboardBody">
                 <div class="kb-row">
-                    <button class="kb-key">ੳ</button>
-                    <button class="kb-key">ਅ</button>
-                    <button class="kb-key">ੲ</button>
-                    <button class="kb-key">ਸ</button>
-                    <button class="kb-key">ਹ</button>
-                    <button class="kb-key">ਕ</button>
-                    <button class="kb-key">ਖ</button>
-                    <button class="kb-key">ਗ</button>
-                    <button class="kb-key">ਘ</button>
-                    <button class="kb-key">ਙ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ੳ')">ੳ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਅ')">ਅ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ੲ')">ੲ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਸ')">ਸ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਹ')">ਹ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਕ')">ਕ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਖ')">ਖ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਗ')">ਗ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਘ')">ਘ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਙ')">ਙ</button>
                 </div>
                 <div class="kb-row">
-                    <button class="kb-key">ਚ</button>
-                    <button class="kb-key">ਛ</button>
-                    <button class="kb-key">ਜ</button>
-                    <button class="kb-key">ਝ</button>
-                    <button class="kb-key">ਞ</button>
-                    <button class="kb-key">ਟ</button>
-                    <button class="kb-key">ਠ</button>
-                    <button class="kb-key">ਡ</button>
-                    <button class="kb-key">ਢ</button>
-                    <button class="kb-key">ਣ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਚ')">ਚ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਛ')">ਛ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਜ')">ਜ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਝ')">ਝ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਞ')">ਞ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਟ')">ਟ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਠ')">ਠ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਡ')">ਡ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਢ')">ਢ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਣ')">ਣ</button>
                 </div>
                 <div class="kb-row">
-                    <button class="kb-key">ਤ</button>
-                    <button class="kb-key">ਥ</button>
-                    <button class="kb-key">ਦ</button>
-                    <button class="kb-key">ਧ</button>
-                    <button class="kb-key">ਨ</button>
-                    <button class="kb-key">ਪ</button>
-                    <button class="kb-key">ਫ</button>
-                    <button class="kb-key">ਬ</button>
-                    <button class="kb-key">ਭ</button>
-                    <button class="kb-key">ਮ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਤ')">ਤ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਥ')">ਥ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਦ')">ਦ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਧ')">ਧ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਨ')">ਨ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਪ')">ਪ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਫ')">ਫ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਬ')">ਬ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਭ')">ਭ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਮ')">ਮ</button>
                 </div>
                 <div class="kb-row">
-                    <button class="kb-key">ਯ</button>
-                    <button class="kb-key">ਰ</button>
-                    <button class="kb-key">ਲ</button>
-                    <button class="kb-key">ਵ</button>
-                    <button class="kb-key">ੜ</button>
-                    <button class="kb-key">ਸ਼</button>
-                    <button class="kb-key">ਖ਼</button>
-                    <button class="kb-key">ਗ਼</button>
-                    <button class="kb-key">ਜ਼</button>
-                    <button class="kb-key">ਫ਼</button>
-                </div>
-                <div class="kb-row matras">
-                    <button class="kb-key matra">ਾ</button>
-                    <button class="kb-key matra">ਿ</button>
-                    <button class="kb-key matra">ੀ</button>
-                    <button class="kb-key matra">ੁ</button>
-                    <button class="kb-key matra">ੂ</button>
-                    <button class="kb-key matra">ੇ</button>
-                    <button class="kb-key matra">ੈ</button>
-                    <button class="kb-key matra">ੋ</button>
-                    <button class="kb-key matra">ੌ</button>
-                    <button class="kb-key matra">ੰ</button>
-                    <button class="kb-key matra">ੱ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਯ')">ਯ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਰ')">ਰ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਲ')">ਲ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਵ')">ਵ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ੜ')">ੜ</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਸ਼')">ਸ਼</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਖ਼')">ਖ਼</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਗ਼')">ਗ਼</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਜ਼')">ਜ਼</button>
+                    <button class="kb-key" onclick="Keyboard.addChar('ਫ਼')">ਫ਼</button>
                 </div>
                 <div class="kb-row actions">
-                    <button class="kb-key action" data-action="backspace">
+                    <button class="kb-key action backspace-key" data-action="backspace" onclick="Keyboard.backspace()">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/>
                             <line x1="18" y1="9" x2="12" y2="15"/>
                             <line x1="12" y1="9" x2="18" y2="15"/>
                         </svg>
                     </button>
-                    <button class="kb-key space" data-action="space">Space</button>
-                    <button class="kb-key action search-action" data-action="search">
+                    <button class="kb-key space-key" data-action="space" onclick="Keyboard.addChar(' ')">Space</button>
+                    <button class="kb-key action search-action" data-action="search" onclick="Keyboard.search()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <circle cx="11" cy="11" r="7"/>
                             <path d="M20 20L16.5 16.5" stroke-linecap="round"/>
@@ -341,44 +355,32 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Settings Sheet -->
-    <div class="settings-overlay" id="settingsOverlay">
-        <div class="settings-backdrop"></div>
-        <div class="settings-sheet glass">
+    <!-- History Modal -->
+    <div class="history-overlay" id="historyOverlay">
+        <div class="history-backdrop"></div>
+        <div class="history-sheet glass">
             <div class="sheet-handle"></div>
-            <h2 class="settings-title">Settings</h2>
-            
-            <div class="setting-group">
-                <label class="setting-label">Gurmukhi Font</label>
-                <div class="setting-options font-options">
-                    <button class="setting-opt active" data-font="raavi">Raavi</button>
-                    <button class="setting-opt" data-font="noto">Noto Sans</button>
-                    <button class="setting-opt" data-font="mukta">Mukta</button>
-                </div>
+            <div class="history-header">
+                <h2 class="history-title-modal">Recent Searches</h2>
+                <button class="history-close" id="historyClose">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
             </div>
-            
-            <div class="setting-group">
-                <label class="setting-label">Background</label>
-                <div class="setting-options bg-options">
-                    <button class="setting-opt active" data-bg="default">
-                        <span class="bg-preview default"></span>
-                        <span>Default</span>
-                    </button>
-                    <button class="setting-opt" data-bg="paper">
-                        <span class="bg-preview paper"></span>
-                        <span>Paper</span>
-                    </button>
-                    <button class="setting-opt" data-bg="marble">
-                        <span class="bg-preview marble"></span>
-                        <span>Marble</span>
-                    </button>
+            <div class="history-content" id="historyContent">
+                <div class="history-empty" id="historyEmpty">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    <p>No recent searches</p>
                 </div>
+                <div class="history-list-modal" id="historyListModal"></div>
             </div>
-            
-            <button class="settings-done" id="settingsDone">Done</button>
+            <button class="history-clear-all" id="historyClearAll">Clear All History</button>
         </div>
     </div>
 
@@ -387,12 +389,16 @@
         <span id="toastText"></span>
     </div>
 
-    <script src="gurbani-khoj.js"></script>
+    <script src="gurbani-cache.js"></script>
+    <script src="gurbani-khoj.js?v=5"></script>
     <script src="live-kirtan-tracker.js"></script>
     <script src="../lib/audio-preload.js"></script>
     <script src="../lib/audio-coordinator.js"></script>
-    <script src="../lib/native-audio-bridge.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/global-mini-player.js" defer></script>
+    
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

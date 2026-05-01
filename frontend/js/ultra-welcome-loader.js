@@ -23,7 +23,9 @@ const UltraWelcomeLoader = {
     const loaderHTML = `
       <div class="ultra-loader">
         <div class="ultra-loader__logo">
-          <img src="assets/app-logo-384.png" alt="ANHAD">
+          <div class="ultra-welcome-loader__ring"></div>
+          <div class="ultra-welcome-loader__ring ultra-welcome-loader__ring--2"></div>
+          <img src="assets/icon-512x512.png" alt="ANHAD">
           <div class="ultra-loader__orbit">
             <div class="ultra-loader__particle"></div>
             <div class="ultra-loader__particle"></div>
@@ -35,6 +37,7 @@ const UltraWelcomeLoader = {
         <div class="ultra-loader__progress">
           <div class="ultra-loader__progress-fill"></div>
         </div>
+        <div class="ultra-welcome-loader__gurmukhi">ੴ ਸਤਿ ਨਾਮੁ</div>
       </div>
     `;
 
@@ -97,7 +100,7 @@ const UltraWelcomeLoader = {
     const criticalImages = [
       'assets/darbar-sahib-day.webp',
       'assets/Darbar-sahib-AMRITVELA.webp',
-      'assets/app-logo-384.png'
+      'assets/icon-512x512.png'
     ];
 
     const imagePromises = criticalImages.map(src => {

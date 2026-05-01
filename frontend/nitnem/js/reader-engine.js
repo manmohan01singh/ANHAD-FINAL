@@ -324,8 +324,12 @@
 
             state.baniData = data;
 
+            if (!data) {
+                throw new Error(`Bani ${state.baniId} could not be loaded. Please check your connection and try again.`);
+            }
+
             if (!data.verses || data.verses.length === 0) {
-                throw new Error('No verses found');
+                throw new Error('No verses found for this Bani');
             }
 
             updateHeader(data);

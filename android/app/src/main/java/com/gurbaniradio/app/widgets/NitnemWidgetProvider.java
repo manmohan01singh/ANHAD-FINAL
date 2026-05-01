@@ -66,10 +66,6 @@ public class NitnemWidgetProvider extends BaseWidgetProvider {
         views.setOnClickPendingIntent(R.id.nitnem_widget_container,
             createOpenAppIntent(context, "/nitnem-tracker"));
 
-        // Apply theme background
-        views.setInt(R.id.nitnem_widget_container, "setBackgroundColor",
-            getThemeBackground(isDark));
-
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 }

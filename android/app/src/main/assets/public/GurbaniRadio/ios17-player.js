@@ -28,10 +28,18 @@ class iOS17Player {
         // Streams
         this.streams = [
             {
-                title: 'Live Kirtan',
-                artist: 'Live Kirtan from Amritvela Smagam',
+                title: 'Darbar Sahib Live',
+                artist: 'Sri Harmandir Sahib Ji',
                 url: 'https://live.sgpc.net:8443/;nocache=889869',
-                art: '../assets/icons/image.png'
+                art: '../assets/darbar-sahib-day.webp',
+                type: 'darbar'
+            },
+            {
+                title: 'Amritvela Kirtan',
+                artist: '24/7 Divine Kirtan',
+                url: 'https://live.sgpc.net:8443/;nocache=889869',
+                art: '../assets/Darbar-sahib-AMRITVELA.webp',
+                type: 'amritvela'
             }
         ];
         this.currentIndex = 0;

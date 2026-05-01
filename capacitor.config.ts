@@ -15,10 +15,12 @@ const config: CapacitorConfig = {
 
     // Android-specific configuration
     android: {
-        // Disable mixed content in production
-        allowMixedContent: false,
-        // PRODUCTION: Disable WebView debugging
-        webContentsDebuggingEnabled: false
+        // Allow mixed content for live streaming (SGPC)
+        allowMixedContent: true,
+        // Enable WebView debugging during development
+        webContentsDebuggingEnabled: true,
+        // Background audio config
+        backgroundColor: '#000000'
     },
 
     // Plugin configurations
@@ -33,14 +35,20 @@ const config: CapacitorConfig = {
             sound: 'notification.wav'
         },
 
+        // Streak Saver Plugin (custom plugin for boot flag)
+        StreakSaverPlugin: {
+            // No config needed
+        },
 
         // Splash screen configuration
         SplashScreen: {
             launchShowDuration: 2000,
-            backgroundColor: '#000000',
+            backgroundColor: '#FFFFFF',
             showSpinner: false,
             androidSpinnerStyle: 'small',
-            spinnerColor: '#f7c634'
+            spinnerColor: '#f7c634',
+            androidSplashResourceName: 'splash',
+            androidScaleType: 'CENTER_CROP'
         },
 
         // Widget Data Bridge Plugin

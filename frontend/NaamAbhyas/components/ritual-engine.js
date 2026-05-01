@@ -894,10 +894,11 @@ class RitualEngine {
         }
 
         // Resume background animations
-        const canvas = document.getElementById('cosmosCanvas');
-        if (canvas) canvas.style.display = '';
-        const starsField = document.getElementById('starsField');
-        if (starsField) starsField.style.animationPlayState = '';
+        // FIXED: Don't resume background animations since we're not hiding them
+        // const canvas = document.getElementById('cosmosCanvas');
+        // if (canvas) canvas.style.display = '';
+        // const starsField = document.getElementById('starsField');
+        // if (starsField) starsField.style.animationPlayState = '';
     }
 
     /**

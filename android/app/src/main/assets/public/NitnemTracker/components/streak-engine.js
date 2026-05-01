@@ -12,6 +12,7 @@ class StreakEngine {
         this.STORAGE_KEY = 'nitnemTracker_streakData';
         this.AMRITVELA_KEY = 'nitnemTracker_amritvelaLog';
         this.NITNEM_KEY = 'nitnemTracker_nitnemLog';
+        this._selectedBanis = null; // Cache for selected Banis to avoid repeated localStorage reads
     }
 
     /**
@@ -97,24 +98,38 @@ class StreakEngine {
 
     /**
      * Check if Nitnem is complete for a day
+     * ENHANCED: Cache selected Banis to avoid repeated localStorage reads
+     * FIXED: Return true when no banis selected - user can maintain streak with just Amritvela
      */
     isNitnemComplete(dayLog) {
         if (!dayLog) return false;
 
-        try {
-            const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
-            const totalRequired =
-                (selectedBanis.amritvela?.length || 0) +
-                (selectedBanis.rehras?.length || 0) +
-                (selectedBanis.sohila?.length || 0);
-
-            if (totalRequired === 0) return true; // No banis selected means technically complete
-
-            const completed = dayLog.completed || [];
-            return completed.length >= totalRequired;
-        } catch (e) {
-            return false;
+        // Load selected Banis from cache if available, otherwise from localStorage
+        if (!this._selectedBanis) {
+            try {
+                this._selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}');
+            } catch (e) {
+                this._selectedBanis = {};
+            }
         }
+
+        const totalRequired =
+            (this._selectedBanis.amritvela?.length || 0) +
+            (this._selectedBanis.rehras?.length || 0) +
+            (this._selectedBanis.sohila?.length || 0);
+
+        // FIXED: If no banis selected, return true - user can maintain streak with just Amritvela
+        if (totalRequired === 0) return true;
+
+        const completed = dayLog.completed || [];
+        return completed.length >= totalRequired;
+    }
+
+    /**
+     * Invalidate cached selected Banis (call when user changes selection)
+     */
+    invalidateCache() {
+        this._selectedBanis = null;
     }
 
     /**

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-global-theme="force">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -27,16 +27,16 @@
   <meta name="theme-color" content="#FAF8F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   
-  <title>Favorites • ANHAD</title>
+  <title>Favorites � ANHAD</title>
   
   <!-- Global Theme -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/native-audio-bridge.js"></script>
   <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/global-mini-player.js" defer></script>
+  
   <script src="../js/anhad-core.js" defer></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,6 +44,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.9">
   
   <style>
     :root {
@@ -79,7 +80,7 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
-      padding-bottom: calc(100px + var(--safe-bottom));
+      padding-bottom: calc(83px + var(--safe-bottom) + 20px);
       -webkit-font-smoothing: antialiased;
     }
     
@@ -95,9 +96,15 @@
     /* Header */
     .header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       margin-bottom: 20px;
+      position: relative;
+    }
+
+    .header__back {
+      position: absolute;
+      left: 0;
     }
     
     .header__back {
@@ -550,7 +557,7 @@
       letter-spacing: 1px;
     }
     
-    /* Old bottom-nav styles removed — unified emoji navbar CSS is below */
+    /* Old bottom-nav styles removed � unified emoji navbar CSS is below */
     
     /* Animations */
     @keyframes slideUp {
@@ -576,7 +583,7 @@
     .tab-content--active {
       display: block;
     }
-    /* ═══ Favorites Dark Mode ═══ */
+    /* --- Favorites Dark Mode --- */
     html.dark-mode body { background: #0D0D0F !important; color: #F5F5F7; }
     
     /* Header buttons dark mode - subtle charcoal */
@@ -776,90 +783,6 @@
     html.dark-mode .section-divider__line { background: rgba(255,255,255,0.06); }
     html.dark-mode .section-divider__text { color: #666; }
 
-    /* ═══ Unified iOS Floating Pill Navbar ═══ */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 900;
-      display: flex; justify-content: center;
-      padding: 0 24px; padding-bottom: calc(12px + var(--safe-bottom));
-      pointer-events: none;
-    }
-    .bottom-nav__glass {
-      pointer-events: all; width: 100%; max-width: 320px;
-      display: flex; align-items: center; justify-content: space-around;
-      padding: 8px 8px; height: 64px;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(80px) saturate(260%) brightness(1.08);
-      -webkit-backdrop-filter: blur(80px) saturate(260%) brightness(1.08);
-      border-radius: 9999px;
-      border: 0.5px solid rgba(255, 255, 255, 0.65);
-      box-shadow: 0 6px 32px rgba(0, 0, 0, 0.10), 0 2px 10px rgba(0, 0, 0, 0.05),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.8), inset 0 -0.5px 0 rgba(0, 0, 0, 0.02);
-      position: relative; overflow: hidden;
-    }
-    .bottom-nav__glass::before {
-      content: ''; position: absolute; top: 0; left: 12px; right: 12px; height: 0.5px;
-      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,1) 50%, rgba(255,255,255,0.9) 70%, rgba(255,255,255,0) 100%);
-      pointer-events: none;
-    }
-    .bottom-nav__glass::after {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(165deg, rgba(255,255,255,0.2) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.1) 100%);
-      pointer-events: none;
-    }
-    html.dark-mode .bottom-nav__glass {
-      background: rgba(28, 28, 30, 0.65) !important;
-      backdrop-filter: blur(40px) saturate(200%) !important;
-      -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
-      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: 
-        0 6px 32px rgba(0, 0, 0, 0.40),
-        0 2px 10px rgba(0, 0, 0, 0.20),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        inset 0 -0.5px 0 rgba(0, 0, 0, 0.2) !important;
-    }
-    html.dark-mode .bottom-nav__glass::before {
-      background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.10) 30%,
-        rgba(255, 255, 255, 0.15) 50%,
-        rgba(255, 255, 255, 0.10) 70%,
-        transparent 100%
-      ) !important;
-    }
-    html.dark-mode .bottom-nav__glass::after {
-      display: none !important;
-    }
-    .nav-tab {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 4px; padding: 6px 12px; border-radius: 22px; border: none;
-      background: transparent; text-decoration: none; color: rgba(0, 0, 0, 0.32);
-      cursor: pointer; transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      -webkit-tap-highlight-color: transparent; min-width: 56px;
-      position: relative; z-index: 1;
-    }
-    html.dark-mode .nav-tab { color: rgba(255, 255, 255, 0.38); }
-    .nav-tab:active { transform: scale(0.85); }
-    .ios-emoji--nav { font-size: 22px; line-height: 1; transition: opacity 0.2s, transform 0.2s; }
-    .nav-tab__label { font-size: 10px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
-    .nav-tab--active { color: #000000 !important; background: transparent; }
-    html.dark-mode .nav-tab--active { color: #FFFFFF !important; background: transparent !important; box-shadow: none; }
-    .nav-tab--active .nav-tab__label { font-weight: 700; color: #000000; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    html.dark-mode .nav-tab--active .nav-tab__label { 
-      color: #FFFFFF !important; 
-      font-weight: 800;
-      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-      transform: translateY(-2px);
-    }
-    .nav-tab--active .ios-emoji--nav { 
-      opacity: 1 !important; 
-      background: transparent !important;
-      transform: scale(1.35) translateY(-3px); 
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    html.dark-mode .nav-tab--active .ios-emoji--nav {
-      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)) drop-shadow(0 6px 10px rgba(0,0,0,0.6)) !important;
-    }
   </style>
 </head>
 <body>
@@ -870,9 +793,6 @@
         <i class="fas fa-chevron-left"></i>
       </a>
       <h1 class="header__title">Favorites</h1>
-      <button class="header__btn" onclick="AnhadTheme.toggle()">
-        <i class="fas fa-sun" id="themeIcon"></i>
-      </button>
     </header>
     
     <!-- Tabs -->
@@ -920,28 +840,6 @@
       <i class="fas fa-plus"></i>
     </button>
   </div>
-  
-  <!-- Bottom Navigation — Unified Emoji Navbar -->
-  <nav class="bottom-nav" aria-label="Main Navigation">
-    <div class="bottom-nav__glass">
-      <a href="../index.html" class="nav-tab" aria-label="Home" data-index="0">
-        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="home">🏠</span>
-        <span class="nav-tab__label">Home</span>
-      </a>
-      <a href="../Insights/insights.html" class="nav-tab" aria-label="Learning" data-index="1">
-        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="learning">📚</span>
-        <span class="nav-tab__label">Learning</span>
-      </a>
-      <button class="nav-tab nav-tab--active" aria-label="Favorites" aria-current="page" data-index="2">
-        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="favorites">❤️</span>
-        <span class="nav-tab__label">Favorites</span>
-      </button>
-      <a href="../Dashboard/dashboard.html" class="nav-tab" aria-label="Dashboard" data-index="3">
-        <span class="ios-emoji ios-emoji--nav" role="img" aria-label="dashboard">📊</span>
-        <span class="nav-tab__label">Dashboard</span>
-      </a>
-    </div>
-  </nav>
   
   <!-- Scripts -->
   <script src="../lib/share-card.js"></script>
@@ -1022,7 +920,7 @@
               <div class="fav-card__translation">${shabad.translation || shabad.english || ''}</div>
               <div class="fav-card__meta">
                 <span class="fav-card__meta-item">
-                  <i class="fas fa-book"></i> Ang ${shabad.ang || '—'}
+                  <i class="fas fa-book"></i> Ang ${shabad.ang || '�'}
                 </span>
                 <span class="fav-card__meta-item">
                   <i class="fas fa-clock"></i> ${formatDate(shabad.savedAt)}
@@ -1035,7 +933,7 @@
           `).join('');
         } catch (e) {
           console.error('Error loading shabads:', e);
-          container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">❌</div><h3 class="empty-state__title">Error loading</h3></div>';
+          container.innerHTML = '<div class="empty-state"><div class="empty-state__icon">?</div><h3 class="empty-state__title">Error loading</h3></div>';
         }
       }
       
@@ -1236,5 +1134,30 @@
       window.addEventListener('themechange', updateThemeIcon);
     })();
   </script>
+
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="../Insights/insights.html" class="tab-item">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="favorites.html" class="tab-item active">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
+  </nav>
+
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

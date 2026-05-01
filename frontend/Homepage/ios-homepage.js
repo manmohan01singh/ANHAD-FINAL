@@ -30,11 +30,8 @@
     const isCapacitor = typeof window.Capacitor !== 'undefined' ||
                         navigator.userAgent.includes('Capacitor');
 
-    // If native Capacitor app, skip welcome and go straight to main app
-    if (isCapacitor) {
-        window.location.replace('../index.html');
-        return;
-    }
+    // NOTE: DO NOT skip welcome screen for Capacitor — user must see it on cold start
+    // The sessionStorage flag 'anhad_welcomed' in index.html prevents redirect loops
 
     // ═══════════════════════════════════════════════════════════════════
     // TIME-OF-DAY SYSTEM
@@ -394,7 +391,10 @@
         enterBtn.addEventListener('click', (e) => {
             e.preventDefault();
 
-            // Set flags based on mode
+            // Set the CORRECT flag that index.html checks
+            sessionStorage.setItem('anhad_welcomed', '1');
+
+            // Also set legacy flags for compatibility
             if (isPWA) {
                 sessionStorage.setItem(SESSION_KEY, 'true');
             } else {
@@ -404,7 +404,7 @@
             // Haptic feedback
             if ('vibrate' in navigator) navigator.vibrate(15);
 
-            window.location.href = '../index.html';
+            window.location.replace('../index.html');
         });
     }
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
@@ -31,7 +31,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <!-- SEO -->
-    <title>ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Daily Hukamnama — ANHAD</title>
+    <title>ਪਰਮ ਆਦੇਸ | Daily Hukamnama | ANHAD</title>
     <meta name="description" content="Today's Hukamnama from Sri Darbar Sahib, Amritsar. Start your day with divine guidance from Guru Granth Sahib Ji.">
     
     <!-- Favicons -->
@@ -39,10 +39,18 @@
     <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
     
     <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
     <script>
         document.documentElement.setAttribute('data-global-theme', 'force');
     </script>
     <script src="../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     
     <!-- Preconnect -->
@@ -59,15 +67,14 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">
     <link rel="stylesheet" href="daily-hukamnama.css?v=2">
+    <link rel="stylesheet" href="../css/global-mini-player.css?v=4">
     
-    <!-- Global Theme System -->
-    <script src="../lib/global-theme.js"></script>
     <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          SKELETON LOADING
-         ═══════════════════════════════════════════════════════════════ -->
+         --------------------------------------------------------------- -->
     <div class="skeleton-container" id="skeletonLoader">
         <div class="skeleton skeleton-header"></div>
         <div class="skeleton skeleton-hero"></div>
@@ -75,9 +82,9 @@
         <div class="skeleton skeleton-content"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          AMBIENT BACKGROUND
-         ═══════════════════════════════════════════════════════════════ -->
+         --------------------------------------------------------------- -->
     <div class="ambient-bg">
         <div class="ambient-orb orb-1"></div>
         <div class="ambient-orb orb-2"></div>
@@ -85,20 +92,20 @@
         <div class="noise-overlay"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          APP CONTAINER
-         ═══════════════════════════════════════════════════════════════ -->
+         --------------------------------------------------------------- -->
     <div class="app" id="app">
         
         <!-- Header -->
         <header class="header" id="header">
             <div class="header-inner">
-                <a href="../index.html" class="header-back glass-nav__back" aria-label="Back">
+                <button class="header-back glass-nav__back" id="backBtn" aria-label="Back">
                     <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M10 2L2 10L10 18"/>
                     </svg>
                     <span>Home</span>
-                </a>
+                </button>
                 
                 <div class="header-center">
                     <h1 class="header-title">ਹੁਕਮਨਾਮਾ</h1>
@@ -128,7 +135,7 @@
                 
                 <!-- Hero Section -->
                 <section class="hero">
-                    <div class="hero-symbol">☬</div>
+                    <div class="hero-symbol">🙏</div>
                     
                     <div class="date-cards">
                         <div class="date-card">
@@ -136,8 +143,8 @@
                             <p class="date-value" id="englishDate">Loading...</p>
                         </div>
                         <div class="date-card">
-                            <p class="date-label">ਨਾਨਕਸ਼ਾਹੀ</p>
-                            <p class="date-value gurmukhi" id="nanakshahiDate">—</p>
+                            <p class="date-label">ਨਾਨਕਸ਼ਾਹੀ ਮਿਤੀ</p>
+                            <p class="date-value gurmukhi" id="nanakshahiDate">Loading...</p>
                         </div>
                     </div>
                     
@@ -167,15 +174,15 @@
                     <div class="hukamnama-meta" id="hukamnamaMeta">
                         <div class="meta-item">
                             <p class="meta-label">ਅੰਗ</p>
-                            <p class="meta-value" id="metaAng">—</p>
+                            <p class="meta-value" id="metaAng">Loading...</p>
                         </div>
                         <div class="meta-item">
                             <p class="meta-label">Raag</p>
-                            <p class="meta-value" id="metaRaag">—</p>
+                            <p class="meta-value" id="metaRaag">Loading...</p>
                         </div>
                         <div class="meta-item">
                             <p class="meta-label">Writer</p>
-                            <p class="meta-value" id="metaWriter">—</p>
+                            <p class="meta-value" id="metaWriter">Loading...</p>
                         </div>
                     </div>
                     
@@ -186,7 +193,7 @@
                         <div class="loading-state" id="loadingState">
                             <div class="loading-spinner"></div>
                             <p class="loading-text">Loading Hukamnama...</p>
-                            <p class="loading-subtext">ਹੁਕਮ ਪ੍ਰਾਪਤ ਕਰ ਰਿਹਾ ਹੈ...</p>
+                            <p class="loading-subtext">ਹੁਕਮਨਾਮਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...</p>
                         </div>
                         
                         <!-- Error State -->
@@ -247,9 +254,9 @@
         
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          SETTINGS SHEET
-         ═══════════════════════════════════════════════════════════════ -->
+         --------------------------------------------------------------- -->
     <div class="sheet-overlay" id="settingsOverlay">
         <aside class="settings-sheet" id="settingsSheet">
             <div class="sheet-handle"></div>
@@ -282,7 +289,7 @@
                 <div class="setting-row">
                     <span class="setting-label">Gurmukhi Size</span>
                     <div class="font-stepper">
-                        <button class="stepper-btn" id="fontDecrease">−</button>
+                        <button class="stepper-btn" id="fontDecrease">-</button>
                         <span class="stepper-value" id="fontValue">22</span>
                         <button class="stepper-btn" id="fontIncrease">+</button>
                     </div>
@@ -315,25 +322,40 @@
     <!-- Persistent Audio for Cross-Page Playback -->
     <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-    <script src="../lib/persistent-audio.js"></script>
-    <script src="../lib/background-audio-loader.js"></script>
-    <script src="../lib/native-audio-bridge.js"></script>
+    <script src="../lib/overlay-player.js"></script>
+    
     <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/global-mini-player.js" defer></script>
+    
+    <!-- CRITICAL: Global Mini Player - Persistent audio across pages -->
+    <script src="../lib/global-mini-player.js"></script>
+    
+    <!-- DEBUG: Check GMP status -->
+    <script>
+    setTimeout(() => {
+        const gmp = document.getElementById('gmp');
+        const gmpCss = document.getElementById('gmp-css');
+        console.log('[DEBUG] GMP element:', gmp);
+        console.log('[DEBUG] GMP CSS loaded:', gmpCss);
+        console.log('[DEBUG] GMP classes:', gmp?.className);
+        console.log('[DEBUG] GlobalMiniPlayer API:', window.GlobalMiniPlayer);
+        console.log('[DEBUG] has gmp--visible:', gmp?.classList.contains('gmp--visible'));
+    }, 1000);
+    </script>
+    
     
     <!-- Offline-First Hukamnama Cache -->
     <script src="../lib/hukamnama-cache.js"></script>
     
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          SCRIPTS
-         ═══════════════════════════════════════════════════════════════ -->
+         --------------------------------------------------------------- -->
     <script>
     (function() {
         'use strict';
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // CONFIGURATION
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const CONFIG = {
             API_BASE: 'https://api.banidb.com/v2',
@@ -355,9 +377,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // STATE
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const State = {
             currentDate: new Date(),
@@ -371,9 +393,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // DOM ELEMENTS
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const DOM = {
             // Skeleton & App
@@ -393,6 +415,7 @@
             dateYesterday: document.getElementById('dateYesterday'),
             datePicker: document.getElementById('datePicker'),
             dateInput: document.getElementById('dateInput'),
+            heroSymbol: document.querySelector('.hero-symbol'),
             
             // Hukamnama
             hukamnamaCard: document.getElementById('hukamnamaCard'),
@@ -429,13 +452,13 @@
             toast: document.getElementById('toast')
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // UTILITIES
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const Utils = {
             // Nanakshahi Calendar Months
-            NANAKSHAHI_MONTHS: ['ਚੇਤ', 'ਵੈਸਾਖ', 'ਜੇਠ', 'ਹਾੜ', 'ਸਾਵਣ', 'ਭਾਦੋਂ', 'ਅੱਸੂ', 'ਕੱਤਕ', 'ਮੱਘਰ', 'ਪੋਹ', 'ਮਾਘ', 'ਫੱਗਣ'],
+            NANAKSHAHI_MONTHS: ['ਚੇਤ', 'ਵੈਸਾਖ', 'ਜੇਠ', 'ਹਾੜ', 'ਸਾਵਣ', 'ਭਾਦੋਂ', 'ਅੱਸੂ', 'ਕਾਤਕ', 'ਮੱਘਰ', 'ਪੋਹ', 'ਮਾਘ', 'ਫੱਗਣ'],
             
             formatDate(date, format = 'full') {
                 const options = format === 'full' 
@@ -452,6 +475,97 @@
             toGurmukhiNumerals(num) {
                 const gurmukhiDigits = ['੦', '੧', '੨', '੩', '੪', '੫', '੬', '੭', '੮', '੯'];
                 return num.toString().split('').map(d => gurmukhiDigits[parseInt(d)] || d).join('');
+            },
+
+            // Extract Mehla number from writer name
+            getMehlaFromWriter(writer) {
+                const mehlaMap = {
+                    'Guru Nanak Dev Ji': 1,
+                    'Guru Nanakdev Ji': 1,
+                    'Guru Angad Dev Ji': 2,
+                    'Guru Angaddev Ji': 2,
+                    'Guru Amar Daas Ji': 3,
+                    'Guru Amar Das Ji': 3,
+                    'Guru Amardas Ji': 3,
+                    'Guru Amar Daas': 3,
+                    'Guru Amar Das': 3,
+                    'Guru Ram Daas Ji': 4,
+                    'Guru Ram Das Ji': 4,
+                    'Guru Ramdas Ji': 4,
+                    'Guru Ram Dass Ji': 4,
+                    'Guru Ramdaas Ji': 4,
+                    'Guru Arjan Dev Ji': 5,
+                    'Guru Arjandev Ji': 5,
+                    'Guru Arjan Dev': 5,
+                    'Guru Har Gobind Ji': 6,
+                    'Guru Hargobind Ji': 6,
+                    'Guru Har Gobind': 6,
+                    'Guru Har Rai Ji': 7,
+                    'Guru Harrai Ji': 7,
+                    'Guru Har Rai': 7,
+                    'Guru Har Krishan Ji': 8,
+                    'Guru Harkrishan Ji': 8,
+                    'Guru Har Krishan': 8,
+                    'Guru Tegh Bahadur Ji': 9,
+                    'Guru Tegh Bahadur': 9,
+                    'Guru Tegbahadur Ji': 9,
+                    'Guru Gobind Singh Ji': 10,
+                    'Guru Gobindsingh Ji': 10,
+                    'Guru Gobind Singh': 10,
+                    'Bhai Gurdas Ji': 0,
+                    'Bhai Nand Lal Ji': 0,
+                    'Bhagat Kabir Ji': 0,
+                    'Bhagat Farid Ji': 0,
+                    'Bhagat Namdev Ji': 0,
+                    'Bhagat Ravidas Ji': 0,
+                    'Sri Guru Granth Sahib Ji': 0
+                };
+                
+                // Try exact match first
+                if (mehlaMap[writer] !== undefined) {
+                    return mehlaMap[writer];
+                }
+                
+                // Try case-insensitive match
+                const normalizedWriter = writer.toLowerCase().replace(/\s+/g, '');
+                for (const [key, value] of Object.entries(mehlaMap)) {
+                    const normalizedKey = key.toLowerCase().replace(/\s+/g, '');
+                    if (normalizedKey === normalizedWriter) {
+                        return value;
+                    }
+                }
+                
+                // Try partial match for Guru names
+                if (writer.toLowerCase().includes('nanak')) return 1;
+                if (writer.toLowerCase().includes('angad')) return 2;
+                if (writer.toLowerCase().includes('amar') && !writer.toLowerCase().includes('singh')) return 3;
+                if (writer.toLowerCase().includes('ram') && !writer.toLowerCase().includes('singh') && !writer.toLowerCase().includes('rai')) return 4;
+                if (writer.toLowerCase().includes('arjan')) return 5;
+                if (writer.toLowerCase().includes('gobind')) return 6;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('gobind')) return 6;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('rai')) return 7;
+                if (writer.toLowerCase().includes('har') && writer.toLowerCase().includes('krishan')) return 8;
+                if (writer.toLowerCase().includes('teg') || writer.toLowerCase().includes('bahadur')) return 9;
+                if (writer.toLowerCase().includes('gobind') && writer.toLowerCase().includes('singh')) return 10;
+                
+                return 0;
+            },
+
+            // Get Guru image path based on Mehla number
+            getGuruImage(mehla) {
+                const guruImages = {
+                    1: '../guruimages/gurunanakdevsahebji.jpeg',
+                    2: '../guruimages/guruangaddevsahebji.jpeg',
+                    3: '../guruimages/guruamardasji.jpeg',
+                    4: '../guruimages/gururamdassahebji.jpeg',
+                    5: '../guruimages/guruarjanddevsahebji.jpeg',
+                    6: '../guruimages/guruhargobindsahebji.jpeg',
+                    7: '../guruimages/guruharraisahebji.jpeg',
+                    8: '../guruimages/guruharkrishansahebji.jpeg',
+                    9: '../guruimages/gurutegbahadursahebji.jpeg',
+                    10: '../guruimages/gurugobindsinghsahebji.jpeg'
+                };
+                return guruImages[mehla] || '../guruimages/gurugranthsahebji.jpeg';
             },
             
             // Calculate Nanakshahi date (approximation)
@@ -534,9 +648,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // API SERVICE
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const API = {
             async fetchHukamnama(date = null) {
@@ -572,9 +686,9 @@
                 
                 return {
                     date: data.date,
-                    pageNo: shabad.shabadInfo?.pageNo || '—',
-                    raag: shabad.shabadInfo?.raag?.english || '—',
-                    writer: shabad.shabadInfo?.writer?.english || '—',
+                    pageNo: shabad.shabadInfo?.pageNo || 'N/A',
+                    raag: shabad.shabadInfo?.raag?.english || 'N/A',
+                    writer: shabad.shabadInfo?.writer?.english || 'N/A',
                     source: shabad.shabadInfo?.source?.english || 'Sri Guru Granth Sahib Ji',
                     verses: shabad.verses.map(v => ({
                         gurmukhi: v.verse?.unicode || '',
@@ -587,9 +701,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // UI CONTROLLER
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const UI = {
             showLoading() {
@@ -632,11 +746,11 @@
                         const gurmukhiYear = Utils.toGurmukhiNumerals(nanakshahi.year);
                         DOM.nanakshahiDate.textContent = `${gurmukhiDay} ${nanakshahi.month} ${gurmukhiYear}`;
                     } else {
-                        DOM.nanakshahiDate.textContent = '—';
+                        DOM.nanakshahiDate.textContent = 'N/A';
                     }
                 } catch (e) {
                     console.error('[Hukamnama] Error calculating Nanakshahi date:', e);
-                    DOM.nanakshahiDate.textContent = '—';
+                    DOM.nanakshahiDate.textContent = 'N/A';
                 }
             },
             
@@ -644,6 +758,13 @@
                 DOM.metaAng.textContent = hukamnama.pageNo;
                 DOM.metaRaag.textContent = hukamnama.raag;
                 DOM.metaWriter.textContent = hukamnama.writer;
+
+                // Update hero symbol with Guru image based on writer
+                const mehla = Utils.getMehlaFromWriter(hukamnama.writer);
+                const guruImage = Utils.getGuruImage(mehla);
+                if (DOM.heroSymbol) {
+                    DOM.heroSymbol.innerHTML = `<img src="${guruImage}" alt="${hukamnama.writer}" class="guru-image" />`;
+                }
             },
             
             renderVerses(hukamnama) {
@@ -699,9 +820,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // SETTINGS CONTROLLER
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const Settings = {
             save(key, value) {
@@ -738,9 +859,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // MAIN CONTROLLER
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         const App = {
             async loadHukamnama(date = null) {
@@ -762,7 +883,7 @@
                     
                     // Show offline fallback notice if using yesterday's
                     if (cached.offlineFallback) {
-                        UI.showToast('Showing cached Hukamnama — connect to internet for today\'s');
+                        UI.showToast('Showing cached Hukamnama - connect to internet for today\'s');
                     }
                     
                     // Still try to fetch fresh if online
@@ -832,7 +953,7 @@
                 try {
                     await navigator.share({
                         title: "Today's Hukamnama",
-                        text: text + '\n\n— Sri Guru Granth Sahib Ji',
+                        text: text + '\n\n🙏 Sri Guru Granth Sahib Ji',
                         url: window.location.href
                     });
                 } catch (error) {
@@ -933,9 +1054,9 @@
             }
         };
 
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         // INITIALIZE
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
         
         console.log('[Hukamnama] v2.1 - Nanakshahi date fix loaded');
         
@@ -945,18 +1066,18 @@
             App.init();
         }
         
-        // ═══════════════════════════════════════════════════════════════
+        // ---------------------------------------------------------------
     // BACKUP: Force update Nanakshahi date after load
-    // ═══════════════════════════════════════════════════════════════
+    // ---------------------------------------------------------------
     
     window.addEventListener('load', () => {
         setTimeout(() => {
             const nanakshahiEl = document.getElementById('nanakshahiDate');
-            if (nanakshahiEl && nanakshahiEl.textContent === '—') {
+            if (nanakshahiEl && nanakshahiEl.textContent === 'Loading...') {
                 console.log('[Backup] Forcing Nanakshahi date update...');
                 try {
                     const today = new Date();
-                    const months = ['ਚੇਤ', 'ਵੈਸਾਖ', 'ਜੇਠ', 'ਹਾੜ', 'ਸਾਵਣ', 'ਭਾਦੋਂ', 'ਅੱਸੂ', 'ਕੱਤਕ', 'ਮੱਘਰ', 'ਪੋਹ', 'ਮਾਘ', 'ਫੱਗਣ'];
+                    const months = ['ਚੇਤ', 'ਵੈਸਾਖ', 'ਜੇਠ', 'ਹਾੜ', 'ਸਾਵਣ', 'ਭਾਦੋਂ', 'ਅੱਸੂ', 'ਕਾਤਕ', 'ਮੱਘਰ', 'ਪੋਹ', 'ਮਾਘ', 'ਫੱਗਣ'];
                     const gurmukhiDigits = ['੦', '੧', '੨', '੩', '੪', '੫', '੬', '੭', '੮', '੯'];
                     
                     const toGurmukhi = (num) => num.toString().split('').map(d => gurmukhiDigits[parseInt(d)] || d).join('');
@@ -1008,5 +1129,9 @@
     
 })();
     </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

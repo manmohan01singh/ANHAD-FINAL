@@ -279,26 +279,42 @@
     enabled: true,
 
     tap() {
-      if (this.enabled && navigator.vibrate) {
-        navigator.vibrate(10);
+      if (this.enabled) {
+        if (window.CapacitorHaptics) {
+          window.CapacitorHaptics.impact('light');
+        } else if (navigator.vibrate) {
+          navigator.vibrate(10);
+        }
       }
     },
 
     success() {
-      if (this.enabled && navigator.vibrate) {
-        navigator.vibrate([10, 50, 20]);
+      if (this.enabled) {
+        if (window.CapacitorHaptics) {
+          window.CapacitorHaptics.notification('success');
+        } else if (navigator.vibrate) {
+          navigator.vibrate([10, 50, 20]);
+        }
       }
     },
 
     warning() {
-      if (this.enabled && navigator.vibrate) {
-        navigator.vibrate([30, 30, 30]);
+      if (this.enabled) {
+        if (window.CapacitorHaptics) {
+          window.CapacitorHaptics.notification('warning');
+        } else if (navigator.vibrate) {
+          navigator.vibrate([30, 30, 30]);
+        }
       }
     },
 
     alarm() {
-      if (this.enabled && navigator.vibrate) {
-        navigator.vibrate([500, 200, 500, 200, 1000]);
+      if (this.enabled) {
+        if (window.CapacitorHaptics) {
+          window.CapacitorHaptics.notification('error');
+        } else if (navigator.vibrate) {
+          navigator.vibrate([500, 200, 500, 200, 1000]);
+        }
       }
     }
   };
@@ -554,7 +570,14 @@
     scheduled: new Map(),
     checkInterval: null,
 
-    init() {
+    async init() {
+      // CRITICAL: Request notification permission on Android 13+ first
+      await this.requestNotificationPermission();
+      await this.requestAlarmReliability();
+      
+      // CRITICAL: Create notification channel (required Android 8+)
+      await this.createNotificationChannel();
+
       // Check alarms every 10 seconds (more reliable)
       this.checkInterval = setInterval(() => this.checkAlarms(), 10000);
       
@@ -573,11 +596,12 @@
       // Set up Capacitor notification listener
       this.setupCapacitorListener();
 
-      // Check when page becomes visible
+      // Check when page becomes visible — reschedule to ensure nothing was lost
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
           this.checkAlarms();
           this.checkMissedAlarms();
+          this.scheduleAllWithCapacitor(); // Reschedule on every app foreground
         }
       });
       
@@ -588,14 +612,68 @@
       });
     },
 
+    async requestNotificationPermission() {
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+      if (!window.Capacitor.Plugins.LocalNotifications) return;
+      try {
+        const perms = await window.Capacitor.Plugins.LocalNotifications.checkPermissions();
+        if (perms.display !== 'granted') {
+          await window.Capacitor.Plugins.LocalNotifications.requestPermissions();
+        }
+      } catch (e) {
+        console.warn('[AlarmScheduler] Permission request failed:', e);
+      }
+    },
+
+    async requestAlarmReliability() {
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+      const plugin = window.Capacitor.Plugins.AlarmReliability;
+      if (!plugin) return;
+      try {
+        const status = await plugin.getStatus();
+        if (!status || status.exactAlarm !== true) {
+          await plugin.requestExactAlarmPermission();
+        }
+        if (status && status.batteryOptimized === true) {
+          await plugin.requestIgnoreBatteryOptimizations();
+        }
+      } catch (e) {
+        console.warn('[AlarmScheduler] Alarm reliability permission check failed:', e);
+      }
+    },
+
+    async createNotificationChannel() {
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+      if (!window.Capacitor.Plugins.LocalNotifications) return;
+      try {
+        await window.Capacitor.Plugins.LocalNotifications.createChannel({
+          id: 'anhad_reminders',
+          name: 'ANHAD Reminders',
+          description: 'Nitnem and spiritual practice reminders',
+          importance: 5, // MAX importance — shows heads-up notification
+          visibility: 1, // PUBLIC
+          sound: 'default',
+          vibration: true,
+          lights: true
+        });
+        console.log('[AlarmScheduler] Notification channel created');
+      } catch (e) {
+        console.warn('[AlarmScheduler] Channel creation failed:', e);
+      }
+    },
+
     async scheduleAllWithCapacitor() {
       if (!window.Capacitor || !window.Capacitor.isNativePlatform() || !window.Capacitor.Plugins.LocalNotifications) {
         return;
       }
 
       try {
-        // Cancel all existing notifications
-        await window.Capacitor.Plugins.LocalNotifications.cancel({ notifications: [] });
+        const previousIds = Storage.get('sr_native_notification_ids_v7', []);
+        if (Array.isArray(previousIds) && previousIds.length > 0) {
+          await window.Capacitor.Plugins.LocalNotifications.cancel({
+            notifications: previousIds.map(id => ({ id: Number(id) }))
+          });
+        }
 
         // Get all enabled alarms
         const allReminders = [
@@ -606,25 +684,42 @@
         const notifications = [];
         const now = new Date();
 
+        // Schedule for next 7 days to survive longer without reschedule
         allReminders.forEach(alarm => {
-          const nextTime = Utils.getNextOccurrence(alarm.time, alarm.days);
-          const delay = nextTime - now;
-
-          // Only schedule if in the next 24 hours
-          if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+          for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+            const checkDate = new Date(now);
+            checkDate.setDate(checkDate.getDate() + dayOffset);
+            const dayOfWeek = checkDate.getDay();
+            
+            // Only schedule if this day is in the alarm's active days
+            if (!alarm.days.includes(dayOfWeek)) continue;
+            
+            const [h, m] = alarm.time.split(':').map(Number);
+            const scheduleTime = new Date(checkDate);
+            scheduleTime.setHours(h, m, 0, 0);
+            
+            // Skip if time has already passed
+            if (scheduleTime <= now) continue;
+            
             notifications.push({
-              id: this.hashString(alarm.id),
+              id: this.hashString(alarm.id + '_d' + dayOffset),
               title: alarm.label || alarm.title || 'Reminder',
-              body: 'Time for your spiritual practice',
+              body: 'Time for your spiritual practice 🙏',
               schedule: {
-                at: nextTime,
+                at: scheduleTime,
                 allowWhileIdle: true,
-                repeats: false
+                exact: true // CRITICAL: Without this, Android batches and delays
               },
+              channelId: 'anhad_reminders',
               sound: 'default',
               smallIcon: 'ic_stat_notify',
               extra: {
+                action: 'show_alarm',
                 alarmId: alarm.id,
+                alarmLabel: alarm.label || alarm.title || 'Alarm',
+                alarmTime: alarm.time || '',
+                alarmIcon: alarm.icon || 'ðŸ””',
+                alarmTone: alarm.tone || 'audio1',
                 url: window.location.href
               }
             });
@@ -635,7 +730,10 @@
           await window.Capacitor.Plugins.LocalNotifications.schedule({
             notifications
           });
-          console.log('[AlarmScheduler] Scheduled', notifications.length, 'alarms with Capacitor');
+          Storage.set('sr_native_notification_ids_v7', notifications.map(n => n.id));
+          console.log('[AlarmScheduler] Scheduled', notifications.length, 'alarms for next 7 days');
+        } else {
+          Storage.set('sr_native_notification_ids_v7', []);
         }
       } catch (error) {
         console.error('[AlarmScheduler] Failed to schedule all alarms with Capacitor:', error);
@@ -834,12 +932,13 @@
           notifications: [{
             id: this.hashString(alarm.id),
             title: alarm.label || alarm.title || 'Reminder',
-            body: 'Time for your spiritual practice',
+            body: 'Time for your spiritual practice 🙏',
             schedule: {
               at: new Date(scheduledTime),
               allowWhileIdle: true,
-              repeats: false
+              exact: true // CRITICAL: Exact timing for alarm-like behavior
             },
+            channelId: 'anhad_reminders',
             sound: 'default',
             smallIcon: 'ic_stat_notify',
             extra: {
@@ -909,8 +1008,9 @@
             schedule: {
               at: new Date(snoozeTime),
               allowWhileIdle: true,
-              repeats: false
+              exact: true
             },
+            channelId: 'anhad_reminders',
             sound: 'default',
             smallIcon: 'ic_stat_notify',
             extra: {

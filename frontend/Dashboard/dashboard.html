@@ -514,6 +514,16 @@
       
       // Listen for Nitnem updates
       window.addEventListener('nitnemUpdated', renderNitnemProgressChart);
+
+      // CRITICAL: Refresh stats when user returns to dashboard (e.g., from kirtan or background)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          setTimeout(() => {
+            updateDashboard();
+            renderNitnemProgressChart();
+          }, 100);
+        }
+      });
       
       // TEST: Manual kirtan tracking test - press K to add 1 minute
       window.addEventListener('keydown', (e) => {
@@ -585,6 +595,10 @@
     </a>
   </nav>
 
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>
 

@@ -40,9 +40,9 @@ const NAV_PATHS = {
     nitnemTracker: './NitnemTracker/nitnem-tracker.html',
     sehajPaath: './SehajPaath/sehaj-paath.html',
     gurbaniKhoj: './GurbaniKhoj/gurbani-khoj.html',
-    calendar: './Calendar/Gurupurab-Calendar.html',
+    calendar: './Calendar/GurpurabCalendar-ios.html',
     notes: './Notes/notes.html',
-    reminders: './reminders/smart-reminders.html'
+    reminders: './reminders/smart-reminders-v7.html'
 };
 
 
@@ -114,7 +114,9 @@ const Utils = {
     },
 
     haptic(style = 'light') {
-        if ('vibrate' in navigator) {
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact(style);
+        } else if ('vibrate' in navigator) {
             const patterns = {
                 light: [10],
                 medium: [20],
@@ -211,10 +213,19 @@ const Utils = {
             requestAnimationFrame(() => overlay.style.opacity = '1');
         }
 
-        // Navigate after brief delay for visual feedback
-        setTimeout(() => {
-            window.location.href = path;
-        }, 100);
+        // Use smooth-navigation if available, otherwise fallback to direct navigation
+        if (window.navigateTo && typeof window.navigateTo === 'function') {
+            // Save state before navigation
+            if (window.StatePreservation) {
+                StatePreservation.saveState();
+            }
+            window.navigateTo(path);
+        } else {
+            // Fallback to direct navigation
+            setTimeout(() => {
+                window.location.href = path;
+            }, 100);
+        }
     }
 };
 
@@ -1327,7 +1338,7 @@ class UIController extends EventEmitter {
             'notesConfirmOverlay', 'confirmSaveBtn', 'confirmDiscardBtn', 'confirmCancelBtn',
             'notesToast', 'notesToastMessage',
             // Shabad
-            'randomShabadCard', 'shabadOverlay', 'shabadClose',
+            'shabadVicharCard', 'shabadOverlay', 'shabadClose',
             'shabadContainer', 'shabadLoading', 'shabadContent', 'shabadError',
             'savedShabadsModal', 'savedShabadsList', 'savedShabadsClose', 'shabadMenuBtn',
             'shabadAngNumber', 'shabadGurmukhi',
@@ -1824,9 +1835,9 @@ class UIController extends EventEmitter {
         // RANDOM SHABAD MODAL
         // ═══════════════════════════════════════════════════════════════
 
-        this.addClickHandler('randomShabadCard', () => {
-            console.log('[UI] ✅ Random Shabad card clicked');
-            this.openShabadModal();
+        this.addClickHandler('shabadVicharCard', () => {
+            console.log('[UI] ✅ Shabad Vichar card clicked');
+            window.location.href = 'ShabadVichar/shabad-vichar.html';
         });
 
         this.addClickHandler('shabadClose', () => this.closeShabadModal());
@@ -3328,7 +3339,8 @@ document.addEventListener('visibilitychange', () => {
                 }
 
                 // Haptic feedback
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -3336,7 +3348,8 @@ document.addEventListener('visibilitychange', () => {
         if (volumeMaxBtn) {
             volumeMaxBtn.addEventListener('click', () => {
                 setVolume(1);
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -3373,7 +3386,8 @@ document.addEventListener('visibilitychange', () => {
                 lyricsBtn.classList.toggle('active');
                 // Could integrate with a lyrics display feature
                 console.log('[iOS Controls] Lyrics toggled');
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -3408,7 +3422,8 @@ document.addEventListener('visibilitychange', () => {
                 }
 
                 console.log('[iOS Controls] Repeat mode:', repeatMode);
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -3427,7 +3442,8 @@ document.addEventListener('visibilitychange', () => {
                 }
 
                 console.log('[iOS Controls] AirPlay/Share clicked');
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 
@@ -3447,7 +3463,8 @@ document.addEventListener('visibilitychange', () => {
                 }
 
                 console.log('[iOS Controls] Queue clicked');
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (window.CapacitorHaptics) window.CapacitorHaptics.impact('light');
+                else if (navigator.vibrate) navigator.vibrate(10);
             });
         }
 

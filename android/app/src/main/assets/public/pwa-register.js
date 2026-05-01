@@ -1,13 +1,23 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * PWA MANAGER v2.0 - Enhanced with Background Alarm Registration
+ * PWA MANAGER v4.1 - SAFE AUTO-UPDATE (No infinite refresh loops)
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
- * Features:
- * ✅ PWA Installation Detection (appinstalled event)
- * ✅ Automatic Alarm Registration on Install
- * ✅ PeriodicSync Setup for Background Notifications
- * ✅ Naam Abhyas Schedule Persistence for Service Worker
+ * STRATEGY FOR AUTO-UPDATES ON ALL DEVICES:
+ * ──────────────────────────────────────────
+ * 1. Polls version.json every 60 seconds (cache-busted)
+ * 2. If server version differs from local, triggers SW update check
+ * 3. New SW installs → skipWaiting → claims clients → ONE reload
+ * 4. Uses sessionStorage cooldown to prevent infinite refresh loops
+ * 5. On visibility change (app opens from background), checks immediately
+ * 
+ * ANTI-LOOP PROTECTION:
+ * ─────────────────────
+ * - sessionStorage tracks reload timestamps to prevent loops
+ * - 30-second cooldown after any reload
+ * - controllerchange only reloads ONCE per session
+ * - Never clears caches from client side (let SW handle it)
+ * 
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -15,22 +25,62 @@ class PWAManager {
   constructor() {
     this.registration = null;
     this.updateAvailable = false;
-    this.updateDismissKey = 'pwaUpdateDismissedAt';
-    this.updateDismissTtlMs = 6 * 60 * 60 * 1000;
     this.deferredPrompt = null;
     this.isInstalled = this.checkIfInstalled();
+    this.currentVersion = null;
+    this.versionCheckInterval = null;
+    this._hasReloaded = false; // in-memory guard
     this.init();
+  }
+
+  /**
+   * ANTI-LOOP: Check if we recently reloaded for an update.
+   * Uses sessionStorage so it persists across the reload but not across sessions.
+   */
+  _isInReloadCooldown() {
+    try {
+      const lastReload = sessionStorage.getItem('pwa_reload_at');
+      if (lastReload) {
+        const elapsed = Date.now() - parseInt(lastReload, 10);
+        // 30 second cooldown — if we reloaded within 30s, don't reload again
+        if (elapsed < 30000) {
+          console.log(`[PWA] Reload cooldown active (${Math.round(elapsed/1000)}s ago)`);
+          return true;
+        }
+      }
+    } catch (e) { /* sessionStorage not available */ }
+    return false;
+  }
+
+  /**
+   * ANTI-LOOP: Mark that we're about to reload.
+   */
+  _markReload() {
+    try {
+      sessionStorage.setItem('pwa_reload_at', Date.now().toString());
+    } catch (e) { /* ignore */ }
+    this._hasReloaded = true;
+  }
+
+  /**
+   * Safe reload — only reloads if not in cooldown
+   */
+  _safeReload(reason) {
+    if (this._hasReloaded || this._isInReloadCooldown()) {
+      console.log(`[PWA] Skipping reload (${reason}) — cooldown active`);
+      return;
+    }
+    console.log(`[PWA] Reloading: ${reason}`);
+    this._markReload();
+    window.location.reload();
   }
 
   /**
    * Check if app is already installed as PWA
    */
   checkIfInstalled() {
-    // Check display-mode
     if (window.matchMedia('(display-mode: standalone)').matches) return true;
-    // iOS Safari standalone
     if (window.navigator.standalone === true) return true;
-    // Check if launched from installed PWA
     if (document.referrer.includes('android-app://')) return true;
     return false;
   }
@@ -39,12 +89,8 @@ class PWAManager {
    * Lock screen orientation to portrait for mobile devices
    */
   async lockOrientation() {
-    // Only attempt on mobile/tablet sized screens
-    if (window.innerWidth > 1024) {
-      return; // Desktop — don't lock
-    }
+    if (window.innerWidth > 1024) return;
 
-    // Method 1: Screen Orientation API (Chrome/Android)
     if ('screen' in window && 'orientation' in window.screen && 'lock' in window.screen.orientation) {
       try {
         await window.screen.orientation.lock('portrait-primary');
@@ -55,12 +101,9 @@ class PWAManager {
       }
     }
 
-    // Method 2: Capacitor ScreenOrientation plugin (if in native app)
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.ScreenOrientation) {
       try {
-        await window.Capacitor.Plugins.ScreenOrientation.lock({
-          orientation: 'portrait'
-        });
+        await window.Capacitor.Plugins.ScreenOrientation.lock({ orientation: 'portrait' });
         console.log('🔒 Capacitor orientation locked to portrait');
         return;
       } catch (err) {
@@ -68,8 +111,6 @@ class PWAManager {
       }
     }
 
-    // Method 3: CSS-based orientation lock (fallback)
-    // Add viewport meta tag to prevent rotation issues
     const viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
       const content = viewport.getAttribute('content');
@@ -78,10 +119,8 @@ class PWAManager {
       }
     }
 
-    // Method 4: Listen for orientation changes and warn user
     window.addEventListener('orientationchange', () => {
       if (window.innerWidth > window.innerHeight && window.innerWidth <= 1024) {
-        // Landscape mode detected on mobile/tablet
         console.warn('⚠️ Please rotate your device to portrait mode for the best experience');
       }
     });
@@ -93,9 +132,17 @@ class PWAManager {
       return;
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // SCREEN ORIENTATION LOCK (Portrait Only)
-    // ═══════════════════════════════════════════════════════════════════════
+    // CRITICAL: Skip ALL service worker logic in Capacitor native apps
+    // SW registration + controllerchange + version polling cause infinite reload loops
+    // inside the Android/iOS WebView where content is served from bundled assets
+    const isCapacitor = typeof window.Capacitor !== 'undefined' ||
+                        navigator.userAgent.includes('Capacitor');
+    if (isCapacitor) {
+      console.log('[PWA] Running in Capacitor — skipping SW registration & version polling');
+      this.lockOrientation();
+      return;
+    }
+
     this.lockOrientation();
 
     try {
@@ -109,61 +156,164 @@ class PWAManager {
       // PWA INSTALLATION DETECTION
       // ═══════════════════════════════════════════════════════════════════════
 
-      // Capture install prompt for later use
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        this.deferredPrompt = e;
-        console.log('📲 PWA install prompt captured');
-        // Dispatch event for UI components to show install button
-        window.dispatchEvent(new CustomEvent('pwaInstallAvailable', { detail: { prompt: e } }));
-      });
-
-      // Handle successful installation
       window.addEventListener('appinstalled', () => {
         console.log('✅ PWA Installed - registering alarms and notifications');
         this.deferredPrompt = null;
         this.isInstalled = true;
         localStorage.setItem('pwa_installed', 'true');
         localStorage.setItem('pwa_installed_at', new Date().toISOString());
-
-        // Trigger alarm and notification registration
         this.onPWAInstalled();
       });
 
-      // If already installed, ensure alarms are registered
       if (this.isInstalled) {
         console.log('📱 Running as installed PWA - ensuring alarms are registered');
         await this.ensureAlarmsRegistered();
       }
 
       // ═══════════════════════════════════════════════════════════════════════
-      // UPDATE MANAGEMENT
+      // SAFE AUTO-UPDATE SYSTEM (with anti-loop protection)
       // ═══════════════════════════════════════════════════════════════════════
 
+      // 1. If there's a waiting worker on load, activate it (will trigger controllerchange → reload)
       if (this.registration.waiting) {
-        this.showUpdateNotification();
+        console.log('[PWA] Update waiting on load — activating');
+        this.applyUpdateSilently();
       }
 
-      this.checkForUpdates();
-      setInterval(() => this.checkForUpdates(), 60 * 60 * 1000);
-
+      // 2. Listen for new service worker installation
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration.installing;
+        console.log('[PWA] New service worker installing...');
+        
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            this.showUpdateNotification();
+            console.log('[PWA] New SW ready — activating silently');
+            this.applyUpdateSilently();
           }
         });
       });
 
+      // 3. Handle controller change → reload ONCE (with cooldown guard)
+      let controllerChangeHandled = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (this.userInitiatedUpdate) {
-          window.location.reload();
+        if (controllerChangeHandled) return;
+        controllerChangeHandled = true;
+        this._safeReload('controllerchange');
+      });
+
+      // 4. Start version polling (every 60 seconds)
+      this.startVersionPolling();
+
+      // 5. Check when app comes to foreground
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          this.checkVersionAndUpdate();
         }
       });
 
+      // 6. Force an SW update check right now
+      this.checkForSWUpdate();
+
     } catch (error) {
       console.error('SW registration failed:', error);
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VERSION POLLING — Polls version.json every 60 seconds
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  startVersionPolling() {
+    this.currentVersion = localStorage.getItem('anhad_app_version') || null;
+
+    // Initial check (delayed slightly to let page settle)
+    setTimeout(() => this.checkVersionAndUpdate(), 3000);
+
+    // Poll every 10 seconds for instant updates
+    this.versionCheckInterval = setInterval(() => {
+      this.checkVersionAndUpdate();
+    }, 10 * 1000);
+  }
+
+  async checkVersionAndUpdate() {
+    // Don't check if we're in a reload cooldown
+    if (this._hasReloaded || this._isInReloadCooldown()) return;
+
+    try {
+      const response = await fetch(`./version.json?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' }
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const serverVersion = data.version;
+
+      if (!this.currentVersion) {
+        // First load — just record the version, don't trigger anything
+        this.currentVersion = serverVersion;
+        localStorage.setItem('anhad_app_version', serverVersion);
+        console.log(`[PWA] Version initialized: ${serverVersion}`);
+        return;
+      }
+
+      if (serverVersion !== this.currentVersion) {
+        console.log(`[PWA] 🔄 VERSION CHANGED: ${this.currentVersion} → ${serverVersion}`);
+        
+        // Update stored version FIRST (so after reload it won't re-trigger)
+        this.currentVersion = serverVersion;
+        localStorage.setItem('anhad_app_version', serverVersion);
+
+        // Stop polling — we found a change, no need to keep checking
+        if (this.versionCheckInterval) {
+          clearInterval(this.versionCheckInterval);
+          this.versionCheckInterval = null;
+        }
+
+        // Trigger SW update check — this will find the new sw.js
+        await this.checkForSWUpdate();
+
+        // If there's a waiting worker, activate it (will trigger controllerchange → reload)
+        if (this.registration?.waiting) {
+          this.applyUpdateSilently();
+        } else {
+          // SW hasn't changed but app files have — just reload once to get fresh content
+          // The stale-while-revalidate strategy means the SW already cached fresh files
+          // in the background, so a simple reload will serve them
+          this._safeReload('version changed — refreshing for new content');
+        }
+      }
+    } catch (error) {
+      // Offline — silently ignore
+    }
+  }
+
+  async checkForSWUpdate() {
+    if (this.registration) {
+      try {
+        await this.registration.update();
+      } catch (e) {
+        console.log('[PWA] SW update check failed:', e.message);
+      }
+    }
+  }
+
+  /**
+   * Apply update silently — tell waiting SW to skip waiting.
+   * This will trigger 'controllerchange' which calls _safeReload().
+   */
+  applyUpdateSilently() {
+    console.log('[PWA] Telling waiting SW to skip waiting');
+    
+    // Remove any existing update notification banners
+    const existingBanner = document.querySelector('.pwa-update-banner');
+    if (existingBanner) existingBanner.remove();
+    const existingNotif = document.getElementById('pwa-update-notification');
+    if (existingNotif) existingNotif.remove();
+    
+    if (this.registration?.waiting) {
+      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
   }
 
@@ -172,19 +322,14 @@ class PWAManager {
    */
   async onPWAInstalled() {
     try {
-      // 1. Request notification permission
       if ('Notification' in window && Notification.permission === 'default') {
         const permission = await Notification.requestPermission();
         console.log('🔔 Notification permission:', permission);
       }
 
-      // 2. Register all scheduled alarms with service worker
       await this.registerAlarmsWithSW();
-
-      // 3. Setup periodic background sync
       await this.setupPeriodicSync();
 
-      // 4. Notify service worker that PWA was installed
       if (navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           type: 'PWA_INSTALLED',
@@ -192,7 +337,6 @@ class PWAManager {
         });
       }
 
-      // 5. Show confirmation notification
       if (Notification.permission === 'granted') {
         this.showInstallConfirmation();
       }
@@ -203,14 +347,10 @@ class PWAManager {
     }
   }
 
-  /**
-   * Ensure alarms are registered (for already-installed PWA)
-   */
   async ensureAlarmsRegistered() {
     const lastRegistration = localStorage.getItem('pwa_alarms_registered_at');
     const today = new Date().toDateString();
 
-    // Re-register once per day to keep alarms fresh
     if (lastRegistration !== today) {
       await this.registerAlarmsWithSW();
       await this.setupPeriodicSync();
@@ -218,12 +358,8 @@ class PWAManager {
     }
   }
 
-  /**
-   * Register all user alarms with the service worker
-   */
   async registerAlarmsWithSW() {
     if (!navigator.serviceWorker.controller) {
-      // Wait for SW to be ready
       await navigator.serviceWorker.ready;
     }
 
@@ -233,10 +369,8 @@ class PWAManager {
       return;
     }
 
-    // Persist alarms to localStorage for SW access
     localStorage.setItem('pwa_scheduled_alarms', JSON.stringify(alarms));
 
-    // Send to service worker
     navigator.serviceWorker.controller?.postMessage({
       type: 'SET_ALARMS',
       alarms: alarms
@@ -245,9 +379,6 @@ class PWAManager {
     console.log(`⏰ Registered ${alarms.length} alarms with Service Worker`);
   }
 
-  /**
-   * Collect all alarms from various sources
-   */
   collectAllAlarms() {
     const alarms = [];
     const now = new Date();
@@ -280,7 +411,6 @@ class PWAManager {
 
     // 2. Naam Abhyas Schedule
     try {
-      // CRITICAL: Use correct storage keys matching naam-abhyas.js
       const naamConfig = localStorage.getItem('naam_abhyas_config');
       if (naamConfig) {
         const config = JSON.parse(naamConfig);
@@ -335,29 +465,23 @@ class PWAManager {
     return alarms;
   }
 
-  /**
-   * Setup periodic background sync for notifications
-   */
   async setupPeriodicSync() {
     if (!this.registration) return;
 
     try {
-      // Check if periodic sync is supported
       if ('periodicSync' in this.registration) {
         const status = await navigator.permissions.query({
           name: 'periodic-background-sync',
         });
 
         if (status.state === 'granted') {
-          // Register for notification checks every 15 minutes
           await this.registration.periodicSync.register('anhad-notification-check', {
-            minInterval: 15 * 60 * 1000 // 15 minutes
+            minInterval: 15 * 60 * 1000
           });
           console.log('✅ Periodic background sync registered (15 min interval)');
 
-          // Register daily reminder sync
           await this.registration.periodicSync.register('anhad-daily-reminders', {
-            minInterval: 60 * 60 * 1000 // 1 hour (for daily reminder checks)
+            minInterval: 60 * 60 * 1000
           });
           console.log('✅ Daily reminder sync registered');
         } else {
@@ -365,7 +489,6 @@ class PWAManager {
         }
       }
 
-      // Also register one-time background sync as fallback
       if ('sync' in this.registration) {
         await this.registration.sync.register('anhad-alarm-sync');
         console.log('✅ One-time background sync registered');
@@ -375,16 +498,13 @@ class PWAManager {
     }
   }
 
-  /**
-   * Show install confirmation notification
-   */
   async showInstallConfirmation() {
     try {
       const registration = await navigator.serviceWorker.ready;
       await registration.showNotification('🙏 ANHAD Installed!', {
         body: 'You will now receive daily reminders for Nitnem, Rehras, and Naam Abhyas',
-        icon: './assets/icons/icon-192x192.png',
-        badge: './assets/icons/icon-72x72.png',
+        icon: './assets/icon-192x192.png',
+        badge: './assets/icon-72x72.png',
         tag: 'pwa-install-confirmation',
         requireInteraction: false,
         vibrate: [200, 100, 200]
@@ -394,9 +514,6 @@ class PWAManager {
     }
   }
 
-  /**
-   * Trigger PWA install prompt (for install buttons)
-   */
   async promptInstall() {
     if (!this.deferredPrompt) {
       console.log('Install prompt not available');
@@ -414,110 +531,23 @@ class PWAManager {
     return { outcome };
   }
 
-  checkForUpdates() {
-    if (this.registration) {
-      this.registration.update().catch(console.error);
-    }
-  }
-
-  /**
-   * Get the current app version from service worker
-   * @returns {string} Current version or 'unknown'
-   */
   getCurrentVersion() {
-    // Read from the service worker cache version
-    const swCode = localStorage.getItem('sw_cache_version');
-    if (swCode) return swCode;
-    
-    // Fallback: try to extract from sw.js if cached
-    return '3.7.0'; // Default version
+    return this.currentVersion || localStorage.getItem('anhad_app_version') || 'unknown';
   }
 
-  /**
-   * Force a manual update check
-   * @returns {Promise<boolean>} Whether update is available
-   */
   async forceUpdateCheck() {
-    if (!this.registration) return false;
-    
-    try {
-      await this.registration.update();
-      
-      // Wait for detection
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      return !!this.registration.waiting || !!this.registration.installing;
-    } catch (error) {
-      console.error('Force update check failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Get last update check time
-   * @returns {number|null} Timestamp or null
-   */
-  getLastUpdateCheck() {
-    try {
-      const last = localStorage.getItem('pwa_last_update_check');
-      return last ? parseInt(last) : null;
-    } catch (e) {
-      return null;
-    }
+    await this.checkVersionAndUpdate();
+    await this.checkForSWUpdate();
+    return !!this.registration?.waiting || !!this.registration?.installing;
   }
 
   showUpdateNotification() {
-    if (document.querySelector('.pwa-update-banner')) return;
-
-    try {
-      const dismissedAt = Number(localStorage.getItem(this.updateDismissKey) || '0');
-      if (dismissedAt && (Date.now() - dismissedAt) < this.updateDismissTtlMs) {
-        return;
-      }
-    } catch (e) { }
-
-    this.updateAvailable = true;
-
-    const banner = document.createElement('div');
-    banner.className = 'pwa-update-banner';
-    banner.innerHTML = `
-      <div class="update-content">
-        <span class="update-icon">✨</span>
-        <span class="update-text">Update available</span>
-      </div>
-      <div class="update-actions">
-        <button class="btn-update-now" id="pwaUpdateBtn">Update</button>
-        <button class="btn-update-later" id="pwaLaterBtn">Later</button>
-      </div>
-    `;
-
-    document.body.appendChild(banner);
-
-    requestAnimationFrame(() => {
-      banner.classList.add('visible');
-    });
-
-    document.getElementById('pwaUpdateBtn').addEventListener('click', () => {
-      try {
-        localStorage.removeItem(this.updateDismissKey);
-      } catch (e) { }
-      this.applyUpdate();
-    });
-
-    document.getElementById('pwaLaterBtn').addEventListener('click', () => {
-      try {
-        localStorage.setItem(this.updateDismissKey, String(Date.now()));
-      } catch (e) { }
-      banner.classList.remove('visible');
-      setTimeout(() => banner.remove(), 300);
-    });
+    console.log('[PWA] Update available - applying automatically');
+    this.applyUpdateSilently();
   }
 
   applyUpdate() {
-    this.userInitiatedUpdate = true;
-    if (this.registration?.waiting) {
-      this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
+    this.applyUpdateSilently();
   }
 }
 

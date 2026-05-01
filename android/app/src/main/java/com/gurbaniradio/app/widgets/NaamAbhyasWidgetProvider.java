@@ -69,10 +69,6 @@ public class NaamAbhyasWidgetProvider extends BaseWidgetProvider {
         views.setOnClickPendingIntent(R.id.naam_widget_container,
             createOpenAppIntent(context, "/naam-abhyas"));
 
-        // Apply theme
-        views.setInt(R.id.naam_widget_container, "setBackgroundColor",
-            getThemeBackground(isDark));
-
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 }

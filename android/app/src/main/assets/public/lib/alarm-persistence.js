@@ -353,8 +353,8 @@
 
             const options = {
                 body: alarmData.body || `Time for ${alarmData.title}`,
-                icon: '/assets/icons/icon-192x192.png',
-                badge: '/assets/icons/icon-72x72.png',
+                icon: '/assets/icon-192x192.png',
+                badge: '/assets/icon-72x72.png',
                 tag: `anhad-alarm-${alarmData.id}`, // Use tag to update existing notifications
                 renotify: true,
                 requireInteraction: true, // Keep notification visible until user interacts
@@ -457,7 +457,7 @@
                             id: alarm.id,
                             title: `⏰ Missed: ${alarm.title || alarm.label}`,
                             body: `You missed your ${alarm.time} reminder`,
-                            url: alarm.url || '/reminders/smart-reminders.html'
+                            url: alarm.url || '/reminders/smart-reminders-v7.html'
                         });
 
                         // Mark as fired

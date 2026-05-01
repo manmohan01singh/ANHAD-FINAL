@@ -25,6 +25,9 @@ class CapacitorBridge {
 
         // Setup deep links
         this.setupDeepLinks();
+
+        // Setup app state listeners
+        this.setupAppState();
     }
 
     setupBackButton() {
@@ -40,7 +43,12 @@ class CapacitorBridge {
             }
 
             if (canGoBack) {
-                window.history.back();
+                // Delegate to unified smart-back navigation
+                if (window.anhadGoBack) {
+                    window.anhadGoBack('../index.html');
+                } else {
+                    window.history.back();
+                }
             } else {
                 // Show exit confirmation
                 this.showExitConfirmation();
@@ -55,10 +63,14 @@ class CapacitorBridge {
     }
 
     async setupStatusBar() {
-        if (window.Capacitor.Plugins.StatusBar) {
-            const { StatusBar } = window.Capacitor.Plugins;
-            await StatusBar.setBackgroundColor({ color: '#0a0a0f' });
-            await StatusBar.setStyle({ style: 'DARK' });
+        try {
+            if (window.Capacitor.Plugins.StatusBar) {
+                const { StatusBar } = window.Capacitor.Plugins;
+                await StatusBar.setBackgroundColor({ color: '#0a0a0f' });
+                await StatusBar.setStyle({ style: 'DARK' });
+            }
+        } catch (e) {
+            console.warn('[CapacitorBridge] StatusBar setup failed:', e.message);
         }
     }
 
@@ -101,6 +113,30 @@ class CapacitorBridge {
         });
     }
 
+    setupAppState() {
+        const { App } = window.Capacitor.Plugins;
+
+        // Handle app state changes (foreground/background)
+        App.addListener('appStateChange', ({ isActive }) => {
+            if (isActive) {
+                // App came to foreground
+                console.log('[CapacitorBridge] App is now active');
+                document.body.classList.remove('app-in-background');
+                
+                // Resume audio if it was playing
+                if (window.gurbaniRadio?.audioEngine) {
+                    window.gurbaniRadio.audioEngine.resume?.();
+                }
+            } else {
+                // App went to background
+                console.log('[CapacitorBridge] App is now in background');
+                document.body.classList.add('app-in-background');
+            }
+        });
+
+        // NOTE: appUrlOpen is handled in setupDeepLinks() — do not duplicate here
+    }
+
     // Local notifications for Android
     async scheduleNotification(options) {
         if (this.isNative && window.Capacitor.Plugins.LocalNotifications) {
@@ -120,25 +156,10 @@ class CapacitorBridge {
         }
     }
 
-    // Haptic feedback
+    // Haptic feedback - use unified wrapper
     vibrate(pattern = 'light') {
-        if (this.isNative && window.Capacitor.Plugins.Haptics) {
-            const { Haptics, ImpactStyle } = window.Capacitor.Plugins;
-
-            switch (pattern) {
-                case 'light':
-                    Haptics.impact({ style: ImpactStyle.Light });
-                    break;
-                case 'medium':
-                    Haptics.impact({ style: ImpactStyle.Medium });
-                    break;
-                case 'heavy':
-                    Haptics.impact({ style: ImpactStyle.Heavy });
-                    break;
-                case 'success':
-                    Haptics.notification({ type: 'SUCCESS' });
-                    break;
-            }
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact(pattern);
         } else if (navigator.vibrate) {
             navigator.vibrate(50);
         }

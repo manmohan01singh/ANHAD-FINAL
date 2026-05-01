@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD - SERVICE WORKER v3.0.0
+ * ANHAD - SERVICE WORKER v5.0.0 — Aggressive Auto-Update
  * iOS/Android Optimized with Persistent Background Notifications
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v3.8.0';
+const CACHE_VERSION = 'anhad-v5.1.7';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -23,13 +23,26 @@ const STATIC_FILES = [
   '/style.css',
   '/script.js',
   '/manifest.json',
+  '/version.json',
+  '/css/nav-glass.css',
   '/pwa-register.js',
   '/enhanced-functionality.js',
   '/js/audio-core.js',
   '/lib/global-alarm-system.js',
 
-  // Assets
-  // Removed missing SVG files: favicon.svg, khanda-authentic.svg
+  // Assets - Icons (CRITICAL: All manifest icons must be listed for cache bust)
+  '/assets/icon-72x72.png',
+  '/assets/icon-96x96.png',
+  '/assets/icon-128x128.png',
+  '/assets/icon-144x144.png',
+  '/assets/icon-152x152.png',
+  '/assets/icon-192x192.png',
+  '/assets/icon-384x384.png',
+  '/assets/icon-512x512.png',
+  '/assets/icon-1024x1024.png',
+  '/assets/apple-touch-icon.png',
+  '/assets/favicon-16x16.png',
+  '/assets/favicon-32x32.png',
 
   // Audio files for alarms
   '/Audio/audio1.mp3',
@@ -40,10 +53,8 @@ const STATIC_FILES = [
   '/Audio/audio6.mpeg',
 
   // CSS
-  '/css/ios-glass.css',
-  '/css/unified-glass-system.css',
-  '/css/anhad-install.css',
-  '/css/ios-liquid-glass.css',
+  '/css/nav-glass.css',
+  '/css/install-button.css',
   '/css/anhad-core.css',
   '/js/anhad-core.js',
   '/offline.html',
@@ -57,7 +68,6 @@ const STATIC_FILES = [
   '/lib/ios-android-notifications.js',
   '/lib/alarm-persistence.js',
   '/lib/keep-alive-worker.js',
-  '/lib/global-theme.js',
   '/lib/user-stats.js',
   '/lib/share-card.js',
   '/lib/smart-back.js',
@@ -144,9 +154,9 @@ const STATIC_FILES = [
   '/SehajPaath/sehaj-paath.js',
 
   // Calendar
-  '/Calendar/Gurupurab-Calendar.html',
-  '/Calendar/gurpurab-calendar.css',
-  '/Calendar/gurpurab-calendar.js',
+  '/Calendar/GurpurabCalendar-ios.html',
+  '/Calendar/gurpurab-calendar-ios.css',
+  '/Calendar/gurpurab-calendar-ios.js',
   '/Calendar/gurupurab-reminders.js',
   '/Calendar/nanakshahi-calendar.js',
 
@@ -157,7 +167,7 @@ const STATIC_FILES = [
   '/Hukamnama/optical-glass-physics.js',
 
   // Reminders
-  '/reminders/smart-reminders.html',
+  '/reminders/smart-reminders-v7.html',
   '/reminders/smart-reminders-v6.css',
   '/reminders/smart-reminders-v6.js',
   '/reminders/smart-reminders-ui.js',
@@ -234,8 +244,8 @@ self.addEventListener('install', (event) => {
         });
       })
       .then(() => {
-        console.log('[SW] Installation complete');
-        // DON'T call skipWaiting() here - let user control when to update
+        console.log('[SW] Pre-caching complete - skipping waiting');
+        return self.skipWaiting();
       })
       .catch(err => {
         console.error('[SW] Installation failed:', err);
@@ -244,32 +254,51 @@ self.addEventListener('install', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ACTIVATE EVENT - Clean old caches and claim clients
+// ACTIVATE EVENT - Clean ALL caches and claim clients for automatic updates
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
+  console.log('[SW] Activating - clearing all caches for fresh update...');
 
   event.waitUntil(
     caches.keys()
       .then(keys => {
+        const expectedCaches = [STATIC_CACHE, DYNAMIC_CACHE, DATA_CACHE];
+        
         return Promise.all(
-          keys
-            .filter(key => key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key !== DATA_CACHE)
-            .map(key => {
-              console.log('[SW] Deleting old cache:', key);
+          keys.map(key => {
+            if (!expectedCaches.includes(key)) {
+              console.log(`[SW] Deleting old cache: ${key}`);
               return caches.delete(key);
-            })
+            }
+          })
         );
       })
       .then(() => {
-        console.log('[SW] Claiming clients');
+        console.log('[SW] All caches cleared, claiming clients');
         return self.clients.claim();
+      })
+      .then(() => {
+        console.log('[SW] Notifying all clients about update completion');
+        // Notify all clients that update is complete
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'SW_UPDATE_COMPLETE',
+              version: CACHE_VERSION,
+              timestamp: Date.now()
+            });
+          });
+        });
+      })
+      .catch(err => {
+        console.error('[SW] Activation failed:', err);
       })
   );
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FETCH EVENT - Network first for API, Cache first for static
+// FETCH EVENT - Stale-While-Revalidate for app shell, Network-first for API
+// This ensures updates propagate to all devices within SECONDS
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
@@ -280,16 +309,21 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http
   if (!url.protocol.startsWith('http')) return;
 
+  // NEVER cache version.json — always go to network for instant update detection
+  if (url.pathname.endsWith('/version.json')) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  // NEVER cache sw.js or service-worker.js — browser handles this
+  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
+    return;
+  }
+
   // API requests - Network first
   if (url.hostname.includes('api.banidb.com') ||
     url.hostname.includes('api.gurbaninow.com')) {
     event.respondWith(networkFirst(event.request));
-    return;
-  }
-
-  // Audio files - Cache but don't wait
-  if (event.request.url.includes('/Audio/')) {
-    event.respondWith(cacheFirst(event.request));
     return;
   }
 
@@ -299,7 +333,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets - Cache first
+  // Audio files & images - Cache first (large assets, rarely change)
+  if (event.request.url.includes('/Audio/') ||
+      url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
+    event.respondWith(cacheFirst(event.request));
+    return;
+  }
+
+  // HTML, JS, CSS files — STALE-WHILE-REVALIDATE
+  // Serve cached version instantly, but fetch fresh in background
+  // Next load will have the new version
+  if (url.pathname.match(/\.(html|js|css|json)$/) || event.request.mode === 'navigate') {
+    event.respondWith(staleWhileRevalidate(event.request));
+    return;
+  }
+
+  // Everything else — cache first
   event.respondWith(cacheFirst(event.request));
 });
 
@@ -356,12 +405,81 @@ async function networkFirst(request) {
   }
 }
 
+/**
+ * STALE-WHILE-REVALIDATE strategy
+ * Returns cached version immediately (fast), but updates cache in background.
+ * This is the KEY strategy for instant auto-updates in PWAs:
+ * - User gets instant page load from cache
+ * - Fresh version is fetched in background and stored
+ * - Next page load serves the updated version
+ * - Combined with version.json polling, the page auto-reloads within seconds
+ */
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cached = await cache.match(request);
+
+  // Always fetch fresh in background
+  const networkPromise = fetch(request).then(response => {
+    if (response && response.ok) {
+      try {
+        cache.put(request, response.clone());
+      } catch (e) {
+        // Silently handle clone errors for already-consumed response bodies
+      }
+    }
+    return response;
+  }).catch(() => null);
+
+  // If we have a cached version, return it immediately
+  // The background fetch will update the cache for next time
+  if (cached) {
+    // Don't await — let it update in background
+    networkPromise;
+    return cached;
+  }
+
+  // No cache — must wait for network
+  const networkResponse = await networkPromise;
+  if (networkResponse) return networkResponse;
+
+  // Last resort fallback
+  if (request.mode === 'navigate') {
+    const offlinePage = await caches.match('/offline.html');
+    if (offlinePage) return offlinePage;
+    const fallback = await caches.match('/index.html');
+    if (fallback) return fallback;
+  }
+  return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // MESSAGE HANDLER - For skip waiting and other commands
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') {
+    console.log('[SW] SKIP_WAITING received - activating new service worker');
     self.skipWaiting();
+  }
+
+  // VERSION_CHECK: Client polls this to detect if SW version changed
+  if (event.data?.type === 'VERSION_CHECK') {
+    event.ports?.[0]?.postMessage({
+      type: 'VERSION_RESPONSE',
+      version: CACHE_VERSION,
+      timestamp: Date.now()
+    });
+  }
+  
+  if (event.data?.type === 'FORCE_CACHE_CLEAR') {
+    console.log('[SW] FORCE_CACHE_CLEAR received - clearing all caches');
+    event.waitUntil(
+      caches.keys().then(keys => {
+        return Promise.all(keys.map(key => {
+          console.log(`[SW] Force deleting cache: ${key}`);
+          return caches.delete(key);
+        }));
+      })
+    );
   }
 
   if (event.data?.type === 'SCHEDULE_NOTIFICATION' && event.data.payload) {
@@ -494,6 +612,30 @@ self.addEventListener('periodicsync', (event) => {
 async function checkAndFireScheduledNotifications() {
   console.log('[SW] Checking scheduled notifications...');
 
+  // In Capacitor native apps, notifications are handled by the native plugin
+  // Service worker notifications are unreliable in native mode
+  // This function is kept for PWA/web builds only
+  const clients = await self.clients.matchAll();
+  
+  // Check if running in Capacitor native mode
+  for (const client of clients) {
+    try {
+      const response = await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => resolve(e.data);
+        client.postMessage({ type: 'CHECK_CAPACITOR_MODE' }, [channel.port2]);
+        setTimeout(() => resolve({ isCapacitor: false }), 100);
+      });
+      
+      if (response.isCapacitor) {
+        console.log('[SW] Running in Capacitor mode - skipping service worker notifications');
+        return; // Let Capacitor handle notifications
+      }
+    } catch (e) {
+      // Continue with service worker notifications
+    }
+  }
+
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
 
@@ -505,7 +647,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ॥ Wake up for Amrit Vela meditation',
       hour: 4,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'hukamnama',
@@ -513,7 +655,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Read today\'s sacred command from Sri Guru Granth Sahib Ji',
       hour: 6,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'rehras',
@@ -521,7 +663,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Time for evening prayers - ਸੰਝ ਦੀ ਬੰਦਗੀ ਦਾ ਸਮਾਂ',
       hour: 18,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'nitnem_morning',
@@ -529,7 +671,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਸਵੇਰ ਦੀ ਬਾਣੀ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ — Start your morning Nitnem',
       hour: 4,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'kirtan',
@@ -537,7 +679,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
       hour: 17,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'sohila',
@@ -545,7 +687,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'Time for night prayers before sleep - ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ',
       hour: 21,
       minute: 30,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     },
     {
       id: 'nitnem_pending',
@@ -553,7 +695,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਅਜੇ ਬਾਕੀ ਹੈ — Complete your Nitnem before the day ends',
       hour: 19,
       minute: 0,
-      icon: '/assets/icons/icon-192x192.png'
+      icon: '/assets/icon-192x192.png'
     }
   ];
 
@@ -571,7 +713,6 @@ async function checkAndFireScheduledNotifications() {
     // Fire if within 0-15 minute window and not already shown today
     if (timeDiff >= 0 && timeDiff <= 15) {
       // Use a simple check via indexed clients
-      const clients = await self.clients.matchAll();
       let alreadyShown = false;
 
       // Check with clients if notification was shown
@@ -595,8 +736,8 @@ async function checkAndFireScheduledNotifications() {
       if (!alreadyShown) {
         await self.registration.showNotification(notif.title, {
           body: notif.body,
-          icon: notif.icon || '/assets/icons/icon-192x192.png',
-          badge: '/assets/icons/icon-72x72.png',
+          icon: notif.icon || '/assets/icon-192x192.png',
+          badge: '/assets/icon-72x72.png',
           tag: `anhad-${notif.id}`,
           renotify: true,
           requireInteraction: true,
@@ -605,7 +746,7 @@ async function checkAndFireScheduledNotifications() {
             url: notif.id === 'hukamnama' ? '/Hukamnama/daily-hukamnama.html'
                : notif.id === 'kirtan' ? '/index.html'
                : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? '/NitnemTracker/nitnem-tracker.html'
-               : '/reminders/smart-reminders.html',
+               : '/reminders/smart-reminders-v7.html',
             id: notif.id,
             timestamp: now
           },
@@ -752,14 +893,14 @@ async function checkAndFireAlarmsFromDB(today, currentHour, currentMinute) {
 async function fireNaamNotification(session, today) {
   await self.registration.showNotification('🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas', {
     body: `Leave all work. Remember Vaheguru for ${session.duration || 2} minutes.`,
-    icon: '/assets/icons/icon-192x192.png',
-    badge: '/assets/icons/icon-72x72.png',
+    icon: '/assets/icon-192x192.png',
+    badge: '/assets/icon-72x72.png',
     tag: `naam-abhyas-${today}-${session.hour}`,
     renotify: true,
     requireInteraction: true,
     vibrate: [300, 100, 300, 100, 500],
     data: {
-      url: '/NaamAbhyas/naam-abhyas.html?autoStart=true',
+      url: 'NaamAbhyas/naam-abhyas.html?autoStart=true',
       type: 'naamAbhyas',
       hour: session.hour,
       startMinute: session.startMinute
@@ -781,8 +922,8 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body || 'Time for your spiritual practice',
-    icon: '/assets/favicon.svg',
-    badge: '/assets/favicon.svg',
+    icon: '/assets/icon-192x192.png',
+    badge: '/assets/icon-72x72.png',
     vibrate: [200, 100, 200],
     tag: data.tag || 'gurbani-reminder',
     renotify: true,
@@ -825,8 +966,8 @@ self.addEventListener('notificationclick', (event) => {
         // Notify user
         await self.registration.showNotification('Snoozed for 5 minutes', {
           body: `${notification.title} will remind you again`,
-          icon: '/assets/icons/icon-192x192.png',
-          badge: '/assets/icons/icon-72x72.png',
+          icon: '/assets/icon-192x192.png',
+          badge: '/assets/icon-72x72.png',
           tag: 'snooze-confirmation',
           silent: true
         });
@@ -936,8 +1077,8 @@ async function showNotification(entry) {
     await self.registration.showNotification(entry.title || 'Gurbani Radio', {
       body: entry.body || '',
       tag: entry.tag || entry.id,
-      icon: entry.icon || '/assets/icons/icon-192x192.png',
-      badge: entry.badge || '/assets/icons/icon-72x72.png',
+      icon: entry.icon || '/assets/icon-192x192.png',
+      badge: entry.badge || '/assets/icon-72x72.png',
       requireInteraction: !!entry.requireInteraction,
       vibrate: [200, 100, 200, 100, 200],
       data: entry.data || {},
@@ -1030,8 +1171,8 @@ async function triggerAlarm(alarm) {
   try {
     await self.registration.showNotification(title, {
       body,
-      icon: '/assets/alarm-icon.png',
-      badge: '/assets/badge.png',
+      icon: '/assets/icon-192x192.png',
+      badge: '/assets/icon-72x72.png',
       tag: `alarm-${alarm.id}`,
       requireInteraction: true,
       renotify: true,

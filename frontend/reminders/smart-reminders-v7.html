@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="smart-reminders-v7.css">
   
   <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
   <link rel="manifest" href="../manifest.json">
 </head>
 <body>
@@ -443,5 +443,9 @@
       navigator.serviceWorker.register('../sw.js', { scope: '/' }).catch(() => {});
     }
   </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

@@ -28,8 +28,8 @@
     const CONFIG = {
         // Notification Settings
         APP_NAME: 'ANHAD',
-        APP_ICON: '/assets/apple-touch-icon.png',
-        APP_BADGE: '/assets/favicon-32x32.png',
+        APP_ICON: '/assets/icon-192x192.png',
+        APP_BADGE: '/assets/icon-72x72.png',
 
         // Storage Keys
         NOTIFICATION_PERMISSION_KEY: 'anhad_notification_permission',
@@ -382,6 +382,27 @@
                 if (!result.success) return;
             }
 
+            // Use Capacitor notifications when available (native iOS/Android)
+            if (window.CapacitorNotifications?.isCapacitorAvailable()) {
+                try {
+                    await window.CapacitorNotifications.scheduleNotification({
+                        id: options.id || Date.now(),
+                        title: title,
+                        body: body,
+                        icon: options.icon || CONFIG.APP_ICON,
+                        badge: CONFIG.APP_BADGE,
+                        tag: options.tag || `anhad-${Date.now()}`,
+                        requireInteraction: options.requireInteraction || false,
+                        actions: options.actions || [],
+                        data: options.data || { url: '/' }
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Capacitor notification error:', error);
+                }
+            }
+
+            // Fallback to service worker for PWA/web
             try {
                 const registration = await navigator.serviceWorker.ready;
 
@@ -398,9 +419,9 @@
 
                 return true;
             } catch (error) {
-                console.error('Show notification error:', error);
+                console.error('Service worker notification error:', error);
 
-                // Fallback to basic notification
+                // Final fallback to basic notification
                 try {
                     new Notification(title, {
                         body: body,
@@ -529,291 +550,6 @@
 
         console.log('✅ Claymorphism styles loaded');
     };
-                to { opacity: 1; transform: translateX(0) scale(1); }
-            }
-
-            .ios-step {
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                padding: 16px 0;
-                border-bottom: 1px solid rgba(255,255,255,0.08);
-                opacity: 0;
-                animation: slideInStep 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            }
-
-            .ios-step:last-child {
-                border-bottom: none;
-                padding-bottom: 0;
-            }
-
-            .ios-step:first-child {
-                padding-top: 0;
-            }
-
-            /* Step numbers - clay bubbles */
-            .ios-step-num {
-                width: 38px;
-                height: 38px;
-                border-radius: 50%;
-                background: linear-gradient(145deg, #FFD93D, #FFC93D, #E6B800);
-                color: #2a2a2a;
-                font-size: 16px;
-                font-weight: 900;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-                /* Extreme clay effect */
-                box-shadow:
-                    /* Outer lift */
-                    0 6px 16px rgba(255, 193, 7, 0.4),
-                    0 3px 8px rgba(0,0,0,0.2),
-                    /* Top highlight */
-                    inset 0 2px 3px rgba(255,255,255,0.8),
-                    /* Left highlight */
-                    inset 2px 0 2px rgba(255,255,255,0.4),
-                    /* Bottom shadow */
-                    inset 0 -2px 2px rgba(0,0,0,0.15);
-                text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-            }
-
-            .ios-step-content {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            .ios-step-content p {
-                margin: 0;
-                font-size: 15px;
-                font-weight: 500;
-                color: rgba(255,255,255,0.95);
-                line-height: 1.4;
-            }
-
-            .ios-step-content strong {
-                color: #FFD93D;
-                font-weight: 700;
-                text-shadow: 0 2px 4px rgba(255,193,7,0.3);
-            }
-
-            /* Icon containers - clay style */
-            .ios-share-icon, .ios-add-icon {
-                width: 40px;
-                height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #4FC3F7;
-                background: linear-gradient(145deg,
-                    rgba(79,195,247,0.15) 0%,
-                    rgba(79,195,247,0.08) 100%);
-                border-radius: 12px;
-                box-shadow:
-                    0 4px 12px rgba(0,0,0,0.15),
-                    inset 0 1px 1px rgba(255,255,255,0.3),
-                    inset 0 -1px 1px rgba(0,0,0,0.1);
-            }
-
-            /* ============================================
-               BENEFITS - Clay Pills
-               ============================================ */
-            .ios-prompt-benefits {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-bottom: 24px;
-                justify-content: center;
-            }
-
-            .ios-benefit {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 10px 16px;
-                background: linear-gradient(145deg,
-                    rgba(255,217,61,0.15) 0%,
-                    rgba(255,193,7,0.08) 100%);
-                border-radius: 24px;
-                font-size: 13px;
-                font-weight: 600;
-                color: rgba(255,255,255,0.9);
-                border: 1px solid rgba(255,217,61,0.2);
-                box-shadow:
-                    0 4px 12px rgba(0,0,0,0.15),
-                    inset 0 1px 1px rgba(255,255,255,0.25),
-                    inset 0 -1px 1px rgba(0,0,0,0.05);
-            }
-
-            .ios-benefit-icon {
-                font-size: 16px;
-                filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
-            }
-
-            /* ============================================
-               DISMISS BUTTON - Clay Button
-               ============================================ */
-            .ios-prompt-dismiss {
-                width: 100%;
-                padding: 18px 24px;
-                background: linear-gradient(145deg,
-                    rgba(255,255,255,0.15) 0%,
-                    rgba(255,255,255,0.08) 50%,
-                    rgba(0,0,0,0.05) 100%);
-                border: 1px solid rgba(255,255,255,0.2);
-                border-radius: 20px;
-                color: rgba(255,255,255,0.95);
-                font-size: 17px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-                box-shadow:
-                    /* Outer soft lift */
-                    0 8px 24px rgba(0,0,0,0.2),
-                    0 4px 8px rgba(0,0,0,0.15),
-                    /* Inner top highlight */
-                    inset 0 2px 2px rgba(255,255,255,0.25),
-                    /* Inner bottom shadow */
-                    inset 0 -2px 2px rgba(0,0,0,0.1);
-            }
-
-            .ios-prompt-dismiss:hover {
-                background: linear-gradient(145deg,
-                    rgba(255,255,255,0.2) 0%,
-                    rgba(255,255,255,0.12) 50%);
-                transform: translateY(-2px);
-                box-shadow:
-                    0 12px 28px rgba(0,0,0,0.25),
-                    0 6px 12px rgba(0,0,0,0.2),
-                    inset 0 2px 2px rgba(255,255,255,0.3),
-                    inset 0 -2px 2px rgba(0,0,0,0.1);
-            }
-
-            .ios-prompt-dismiss:active {
-                transform: translateY(1px) scale(0.98);
-                background: linear-gradient(145deg,
-                    rgba(255,255,255,0.1) 0%,
-                    rgba(255,255,255,0.05) 50%);
-                box-shadow:
-                    /* Pressed in shadow */
-                    0 4px 12px rgba(0,0,0,0.15),
-                    inset 0 3px 6px rgba(0,0,0,0.2),
-                    inset 0 -1px 1px rgba(255,255,255,0.1);
-            }
-
-            /* ============================================
-               NOTIFICATION BANNER - Clay Style
-               ============================================ */
-            .notification-permission-banner {
-                position: fixed;
-                bottom: 20px;
-                left: 16px;
-                right: 16px;
-                padding: 20px;
-                padding-bottom: max(20px, env(safe-area-inset-bottom));
-                background: linear-gradient(145deg,
-                    rgba(255,217,61,0.95) 0%,
-                    rgba(255,193,7,0.95) 100%);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                z-index: 99999;
-                border-radius: 24px;
-                transform: translateY(calc(100% + 40px));
-                transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-                box-shadow:
-                    0 20px 50px rgba(255,193,7,0.4),
-                    0 8px 20px rgba(0,0,0,0.2),
-                    inset 0 2px 2px rgba(255,255,255,0.5),
-                    inset 0 -2px 2px rgba(0,0,0,0.1);
-                border: 1px solid rgba(255,255,255,0.3);
-            }
-
-            .notification-permission-banner.visible {
-                transform: translateY(0);
-            }
-
-            .notification-banner-content {
-                display: flex;
-                align-items: center;
-                gap: 14px;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-
-            .notification-banner-icon {
-                font-size: 32px;
-                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            }
-
-            .notification-banner-text {
-                flex: 1;
-            }
-
-            .notification-banner-text h4 {
-                margin: 0 0 4px;
-                font-size: 17px;
-                font-weight: 800;
-                color: #2a2a2a;
-            }
-
-            .notification-banner-text p {
-                margin: 0;
-                font-size: 14px;
-                color: rgba(0,0,0,0.7);
-                font-weight: 500;
-            }
-
-            .notification-banner-btn {
-                padding: 12px 22px;
-                background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-                border: none;
-                border-radius: 20px;
-                color: #FFD93D;
-                font-size: 14px;
-                font-weight: 700;
-                cursor: pointer;
-                box-shadow:
-                    0 6px 16px rgba(0,0,0,0.3),
-                    inset 0 1px 1px rgba(255,255,255,0.1);
-                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            }
-
-            .notification-banner-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-            }
-
-            .notification-banner-btn:active {
-                transform: translateY(1px) scale(0.98);
-            }
-
-            .notification-banner-close {
-                width: 32px;
-                height: 32px;
-                background: rgba(0,0,0,0.1);
-                border: none;
-                border-radius: 50%;
-                color: rgba(0,0,0,0.6);
-                font-size: 20px;
-                font-weight: 300;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow:
-                    inset 0 1px 2px rgba(0,0,0,0.1),
-                    0 2px 4px rgba(255,255,255,0.5);
-                transition: all 0.2s ease;
-            }
-
-            .notification-banner-close:hover {
-                background: rgba(0,0,0,0.15);
-            }
-        `;
-        document.head.appendChild(style);
-    };
 
     // ══════════════════════════════════════════════════════════════════════════
     // NOTIFICATION PERMISSION BANNER
@@ -866,8 +602,7 @@
         console.log(`   PWA: ${DeviceInfo.isPWA}`);
         console.log(`   Push Support: ${DeviceInfo.canReceivePush()}`);
 
-        // Inject CSS
-        injectStyles();
+        // CSS injection disabled - install popup removed (Capacitor/Play Store distribution)
 
         // Initialize notification manager
         await NotificationManager.init();
@@ -878,17 +613,7 @@
         // Initialize visibility handler
         VisibilityHandler.init();
 
-        // Show install prompt 1 second after load, instead of waiting 30 seconds
-        if (!DeviceInfo.isPWA) {
-            setTimeout(() => IOSInstallPrompt.show(), 1000);
-        }
-
-        // Show notification permission banner after 10 seconds (skip if prompt is shown)
-        setTimeout(() => {
-            if (!document.querySelector('.ios-install-prompt.visible')) {
-                PermissionBanner.show();
-            }
-        }, 10000);
+        // Install prompt disabled - app distributed via Capacitor/Play Store
 
         console.log('✅ iOS/Android Notification System ready');
     }

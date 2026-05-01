@@ -26,22 +26,29 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <!-- Global Theme System -->
-    <script src="../lib/global-theme.js"></script>
+    <link rel="stylesheet" href="../css/nav-glass.css">
+
+  <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
+  
+    <!-- REMOVED: global-mini-player.js and mini-player-extreme.js - using overlay-player.js instead -->
     <link rel="stylesheet" href="../css/responsive-fix.css">
     <link rel="icon" type="image/png" href="../favicon.ico">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/anhad-clay.css?v=1">
-    <link rel="stylesheet" href="gurbani-radio-fix.css?v=2.0.1">
-    <script src="../js/anhad-popup.js" defer></script>
-    <script src="gurbani-radio-fix.js?v=2.0.1"></script>
-    
+    <!-- REMOVED: global-mini-player.css - using overlay-player styles instead -->
+
     <style>
     /* ═══════════════════════════════════════════════════════════════════════════════
        EXTREME CLAYMORPHISM GURBANI RADIO
@@ -1086,18 +1093,6 @@
             <i class="fas fa-volume-high volume-icon"></i>
         </section>
 
-        <!-- FOOTER -->
-        <section class="footer-actions">
-            <button class="footer-btn" id="favBtn" aria-label="Favorite">
-                <i class="far fa-heart"></i>
-            </button>
-            <button class="footer-btn" id="shareBtn" aria-label="Share">
-                <i class="fas fa-share-nodes"></i>
-            </button>
-            <button class="footer-btn" id="playlistBtn" aria-label="Playlist">
-                <i class="fas fa-list"></i>
-            </button>
-        </section>
 
     </main>
 
@@ -1127,11 +1122,9 @@
         </div>
     </div>
 
-    <!-- AUDIO ELEMENTS -->
-    <audio id="audioDarbar" preload="auto">
-        <source src="https://live.sgpc.net:8443/;nocache=1" type="audio/mpeg">
-    </audio>
-    <audio id="audioAmritvela" preload="auto"></audio>
+    <!-- UNIFIED AUDIO SINGLETON -->
+    <script src="../lib/anhad-audio-singleton.js"></script>
+    <!-- REMOVED: Inline audio elements - singleton handles audio -->
 
     <script>
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -1186,9 +1179,8 @@
     // DOM Elements
     const dom = {
         player: document.getElementById('player'),
-        audioDarbar: document.getElementById('audioDarbar'),
-        audioAmritvela: document.getElementById('audioAmritvela'),
-        
+        // REMOVED: audioDarbar, audioAmritvela - singleton handles audio
+
         // Stream switcher
         streamPill: document.getElementById('streamPill'),
         btnDarbar: document.getElementById('btnDarbar'),
@@ -1240,9 +1232,9 @@
         themeIcon: document.getElementById('themeIcon')
     };
 
-    // Get current audio element
+    // Get singleton audio element
     function getAudio() {
-        return STATE.currentStream === 'darbar' ? dom.audioDarbar : dom.audioAmritvela;
+        return window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -1251,32 +1243,23 @@
     
     async function switchStream(streamType) {
         if (STATE.currentStream === streamType || STATE.isConnecting) return;
-        
+
         const prevStream = STATE.currentStream;
         STATE.currentStream = streamType;
         const wasPlaying = STATE.isPlaying;
-        
-        // Pause current
-        if (wasPlaying) {
-            getAudio().pause();
-            STATE.isPlaying = false;
-        }
-        
+
         // Update UI
         updateStreamUI(streamType);
-        
-        // If switching to Amritvela, fetch live position first
-        if (streamType === 'amritvela') {
-            await syncAmritvelaPosition();
-        }
-        
-        // Resume if was playing
+
+        // Use singleton to switch streams
         if (wasPlaying) {
-            play();
+            await window.AnhadAudio.play(streamType);
+            STATE.isPlaying = true;
         } else {
+            // Just update state, don't auto-play
             updateUI();
         }
-        
+
         saveState();
         hapticFeedback();
     }
@@ -1331,114 +1314,10 @@
         return Math.floor(Math.random() * STATE.totalTracks);
     }
     
+    // REMOVED: syncAmritvelaPosition - singleton handles server sync
     async function syncAmritvelaPosition() {
-        try {
-            showStatus('Syncing with server...');
-            const resp = await fetch(STREAMS.amritvela.syncUrl, { 
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache' }
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            
-            const data = await resp.json();
-            // Use server position if available, otherwise random shuffle
-            STATE.currentTrackIndex = data.trackIndex ?? getRandomTrackIndex();
-            
-            // Set audio source from Cloudflare R2 with cache buster
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
-            const currentSrc = dom.audioAmritvela.src.split('?')[0]; // Remove query params
-            const isSameTrack = currentSrc.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
-            
-            if (isSameTrack && dom.audioAmritvela.readyState >= 1) {
-                // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-                // If audio is ahead of server position, let it keep playing
-                // Only jump forward when resuming after pause (catch up to live)
-                const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
-                const position = Math.min(data.trackPosition || 0, safeDur - 5);
-                const oldTime = dom.audioAmritvela.currentTime;
-                const drift = position - oldTime;
-                
-                // ONLY jump if server is AHEAD of current position (need to catch up)
-                // NEVER jump backward - that causes stuttering
-                if (position > oldTime + 2) { // 2 second threshold to avoid micro-jumps
-                    console.log(`[GR] 🔴 FORWARD JUMP TO LIVE: ${oldTime.toFixed(1)}s → ${position.toFixed(1)}s (+${drift.toFixed(1)}s)`);
-                    dom.audioAmritvela.currentTime = position;
-                } else if (position < oldTime - 5) {
-                    // We're ahead of server - this is fine, just log it
-                    console.log(`[GR] ✓ AHEAD OF LIVE: ${oldTime.toFixed(1)}s vs ${position.toFixed(1)}s (${(-drift).toFixed(1)}s ahead) - continuing playback`);
-                } else {
-                    // Within acceptable range - in sync
-                    console.log(`[GR] ✓ IN SYNC: ${oldTime.toFixed(1)}s ≈ ${position.toFixed(1)}s`);
-                }
-            } else {
-                console.log('[GR] 🔴 Loading new track:', trackUrl, 'at position:', data.trackPosition);
-                dom.audioAmritvela.src = trackUrl;
-                dom.audioAmritvela.load(); // Force reload to avoid cache
-                
-                // Seek to position if metadata loaded
-                dom.audioAmritvela.addEventListener('loadedmetadata', function seek() {
-                    dom.audioAmritvela.removeEventListener('loadedmetadata', seek);
-                    const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
-                    const position = Math.min(data.trackPosition || 0, safeDur - 10);
-                    if (position > 0) dom.audioAmritvela.currentTime = position;
-                    console.log(`[GR] ✅ Seeked to ${position.toFixed(1)}s`);
-                }, { once: true });
-            }
-            
-            // Track update info
-            dom.trackTitle.textContent = data.trackTitle || `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
-            dom.trackArtist.textContent = data.trackArtist || 'ANHAD Gurbani Radio';
-            
-            // Show listener count
-            if (data.listeners !== undefined && dom.liveBadge) {
-                dom.liveBadge.innerHTML = `<i class="fas fa-users" style="font-size: 10px; margin-right: 4px;"></i> ${data.listeners}`;
-            }
-            
-            hideStatus();
-            return true;
-        } catch (err) {
-            // Silently fall back instead of spamming 503/Fetch errors in the console
-            // Server unavailable (e.g. 503) - use deterministic offline time simulation
-            const fallback = getLocalLivePosition();
-            STATE.currentTrackIndex = fallback.trackIndex;
-            
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
-            const currentSrc = dom.audioAmritvela.src.split('?')[0]; // Remove query params
-            const isSameTrack = currentSrc.endsWith(`/day-${STATE.currentTrackIndex + 1}.webm`);
-            
-            if (isSameTrack && dom.audioAmritvela.readyState >= 1) {
-                // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-                const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
-                const position = Math.min(fallback.position || 0, safeDur - 5);
-                const oldTime = dom.audioAmritvela.currentTime;
-                const drift = position - oldTime;
-                
-                // ONLY jump if we need to catch up (server ahead of us)
-                if (position > oldTime + 2) {
-                    console.log(`[GR] 🔴 OFFLINE FORWARD JUMP: ${oldTime.toFixed(1)}s → ${position.toFixed(1)}s (+${drift.toFixed(1)}s)`);
-                    dom.audioAmritvela.currentTime = position;
-                } else {
-                    console.log(`[GR] ✓ OFFLINE: ${oldTime.toFixed(1)}s vs ${position.toFixed(1)}s - continuing playback`);
-                }
-            } else {
-                console.log('[GR] 🔴 Offline Sync mode, loading:', trackUrl);
-                dom.audioAmritvela.src = trackUrl;
-                dom.audioAmritvela.load(); // Force reload
-                dom.audioAmritvela.addEventListener('loadedmetadata', function seek() {
-                    dom.audioAmritvela.removeEventListener('loadedmetadata', seek);
-                    const safeDur = isFinite(dom.audioAmritvela.duration) ? dom.audioAmritvela.duration : 3600;
-                    const position = Math.min(fallback.position || 0, safeDur - 5);
-                    if (position > 0) dom.audioAmritvela.currentTime = position;
-                    console.log(`[GR] ✅ Offline seeked to ${position.toFixed(1)}s`);
-                }, { once: true });
-            }
-            
-            dom.trackTitle.textContent = `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
-            dom.trackArtist.textContent = 'ANHAD Gurbani Radio';
-            
-            showStatus('Offline Virtual Live • Day ' + (STATE.currentTrackIndex + 1));
-            return true;
-        }
+        // Singleton handles all server sync logic
+        return true;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -1446,61 +1325,35 @@
     // ═══════════════════════════════════════════════════════════════════════════════
     
     async function play() {
-        if (STATE.isConnecting) return;
-        
+        if (!window.AnhadAudio) return;
+
         STATE.isConnecting = true;
-        const audio = getAudio();
-        
-        // Show connecting state - only button spinner, no fullscreen overlay
         dom.playBtn.classList.add('loading');
-        
+
         try {
-            // CRITICAL FIX: Always sync to live position
-            if (STATE.currentStream === 'amritvela') {
-                // Virtual Live effect: Always sync when playing Amritvela
-                // So if you paused for 1 minute, it skips ahead 1 minute!
-                await syncAmritvelaPosition();
-            } else if (STATE.currentStream === 'darbar') {
-                // CRITICAL FIX: For live stream, always reconnect with fresh URL
-                const baseUrl = STREAMS.darbar.url;
-                const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
-                console.log('[GR] 🔴 DARBAR LIVE: Reconnecting with fresh URL');
-                dom.audioDarbar.src = freshUrl;
-                dom.audioDarbar.load(); // Force reload
-            }
-            
-            await audio.play();
-            
+            await window.AnhadAudio.play(STATE.currentStream);
             STATE.isPlaying = true;
             STATE.isConnecting = false;
             STATE.retryCount = 0;
-            
             updateUI();
-            showStatus(`Connected • ${STREAMS[STATE.currentStream].name}`);
-            hideError();
-            
-            // Haptic success
-            hapticFeedback([50, 50]);
-            
+            saveState();
+            hapticFeedback(50);
         } catch (err) {
-            console.error('Play failed:', err);
+            console.error('[GR] Play error:', err);
             STATE.isConnecting = false;
-            STATE.isPlaying = false;
-            
-            handlePlaybackError(err);
+            handleAudioError(err);
         } finally {
             dom.playBtn.classList.remove('loading');
         }
-        
+
         saveState();
     }
 
     function pause() {
-        const audio = getAudio();
-        audio.pause();
+        if (!window.AnhadAudio) return;
+        window.AnhadAudio.pause();
         STATE.isPlaying = false;
         STATE.isConnecting = false;
-        
         updateUI();
         saveState();
         hapticFeedback(30);
@@ -1511,27 +1364,22 @@
     }
 
     function nextTrack() {
+        if (!window.AnhadAudio) return;
         if (STATE.currentStream === 'darbar') {
-            // For live, just re-sync
-            play();
+            window.AnhadAudio.jumpToLive();
         } else {
-            // Amritvela playlist
-            STATE.currentTrackIndex = (STATE.currentTrackIndex + 1) % STATE.totalTracks;
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm`;
-            dom.audioAmritvela.src = trackUrl;
-            if (STATE.isPlaying) play();
+            window.AnhadAudio.playNextTrack();
         }
         hapticFeedback(40);
     }
 
     function prevTrack() {
+        if (!window.AnhadAudio) return;
         if (STATE.currentStream === 'darbar') {
-            play();
+            window.AnhadAudio.jumpToLive();
         } else {
-            STATE.currentTrackIndex = (STATE.currentTrackIndex - 1 + STATE.totalTracks) % STATE.totalTracks;
-            const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm`;
-            dom.audioAmritvela.src = trackUrl;
-            if (STATE.isPlaying) play();
+            // For Amritvela, just re-sync to live (singleton handles track navigation)
+            window.AnhadAudio.jumpToLive();
         }
         hapticFeedback(40);
     }
@@ -1886,6 +1734,55 @@
         loadState();
         initTheme();
         initEventListeners();
+
+        // REMOVED: AudioCoordinator registration - singleton handles coordination
+
+        // Subscribe to singleton events for UI sync
+        if (window.AnhadAudio) {
+            window.AnhadAudio.on('statechange', (audioState) => {
+                STATE.isPlaying = audioState.isPlaying;
+                STATE.currentStream = audioState.currentStream;
+                STATE.currentTrackIndex = audioState.currentTrackIndex;
+                updateUI();
+            });
+
+            window.AnhadAudio.on('loading', (data) => {
+                STATE.isConnecting = data.isLoading;
+                if (dom.playBtn) {
+                    dom.playBtn.classList.toggle('loading', data.isLoading);
+                }
+            });
+
+            window.AnhadAudio.on('timeupdate', (data) => {
+                if (data && data.currentTime !== undefined) {
+                    const mins = Math.floor(data.currentTime / 60);
+                    const secs = Math.floor(data.currentTime % 60);
+                    dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+            });
+
+            console.log('[Gurbani Radio] Subscribed to AnhadAudio events');
+        }
+        
+        // Force show mini player on this page
+        setTimeout(() => {
+            const gmpElement = document.getElementById('gmp');
+            console.log('[Gurbani Radio] Mini player element exists:', !!gmpElement);
+            if (gmpElement) {
+                console.log('[Gurbani Radio] Mini player classes:', gmpElement.className);
+                gmpElement.classList.add('gmp--visible');
+                console.log('[Gurbani Radio] Forced mini player to show');
+            } else {
+                console.log('[Gurbani Radio] Mini player element not found in DOM');
+            }
+            
+            if (window.GlobalMiniPlayer) {
+                console.log('[Gurbani Radio] GlobalMiniPlayer available, stream:', window.GlobalMiniPlayer.getStream());
+                window.GlobalMiniPlayer.show();
+            } else {
+                console.log('[Gurbani Radio] GlobalMiniPlayer not available');
+            }
+        }, 1500);
         
         // Continuous polling - only check for track changes, not position
         // Position only jumps when user explicitly plays (pure virtual live)
@@ -1928,5 +1825,9 @@
     <script src="../lib/user-stats.js?v=1.0"></script>
     <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
     <script src="../lib/kirtan-listening-tracker.js?v=1.0"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

@@ -413,24 +413,7 @@ class SehajPaathReader {
             this.saveSettings();
         });
 
-        // Auto-hide header
-        document.getElementById('autoHideHeader')?.addEventListener('change', (e) => {
-            this.settings.autoHideHeader = e.target.checked;
-            this.saveSettings();
-        });
-
-        // Haptic feedback
-        document.getElementById('hapticFeedback')?.addEventListener('change', (e) => {
-            this.settings.hapticFeedback = e.target.checked;
-            this.saveSettings();
-        });
-
-        // Show line numbers
-        document.getElementById('showLineNumbers')?.addEventListener('change', (e) => {
-            this.settings.showLineNumbers = e.target.checked;
-            this.applyLineNumbersVisibility();
-            this.saveSettings();
-        });
+        // Auto-hide header is always enabled for immersive reading
 
         // Continuous Reading toggle
         document.getElementById('continuousReading')?.addEventListener('change', (e) => {
@@ -957,8 +940,10 @@ class SehajPaathReader {
     }
 
     goBack() {
-        // Use browser history if available, otherwise go to sehaj-paath.html
-        if (document.referrer && document.referrer.includes(window.location.origin)) {
+        // Use unified smart-back navigation with sehaj-paath.html as fallback
+        if (window.anhadGoBack) {
+            window.anhadGoBack('sehaj-paath.html');
+        } else if (document.referrer && document.referrer.includes(window.location.origin)) {
             window.history.back();
         } else {
             window.location.href = 'sehaj-paath.html';
@@ -1135,11 +1120,8 @@ class SehajPaathReader {
         if (transLang) transLang.value = this.settings.translationLang;
 
         // Other settings
-        const autoHide = document.getElementById('autoHideHeader');
-        if (autoHide) autoHide.checked = this.settings.autoHideHeader;
-
-        const haptic = document.getElementById('hapticFeedback');
-        if (haptic) haptic.checked = this.settings.hapticFeedback;
+        // Auto-hide header is always enabled for immersive reading
+        this.settings.autoHideHeader = true;
     }
 
     openSettings() {
@@ -1389,7 +1371,9 @@ class SehajPaathReader {
     haptic(type = 'light') {
         if (!this.settings.hapticFeedback) return;
 
-        if ('vibrate' in navigator) {
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact(type);
+        } else if ('vibrate' in navigator) {
             const patterns = {
                 light: [10],
                 medium: [20],

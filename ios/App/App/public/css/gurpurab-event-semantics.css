@@ -1,0 +1,282 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   GURPURAB EVENT SEMANTICS — Respectful & Celebratory Styling
+   Implements context-sensitive UI for different event types
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REMEMBRANCE EVENTS (Jyoti Jyot Divas)
+   Tone: Respectful, calm, remembrance
+   NO celebration effects, soft glow only
+───────────────────────────────────────────────────────────────────────────── */
+
+.event-card.event-remembrance {
+  background: linear-gradient(160deg, 
+    rgba(60, 60, 67, 0.03) 0%, 
+    rgba(60, 60, 67, 0.01) 100%);
+  border-color: rgba(60, 60, 67, 0.08);
+}
+
+.event-card.event-remembrance.event-today {
+  position: relative;
+  background: linear-gradient(160deg, 
+    rgba(60, 60, 67, 0.05) 0%, 
+    rgba(60, 60, 67, 0.02) 100%);
+  border-left: 3px solid rgba(60, 60, 67, 0.25);
+  padding-left: calc(var(--space-5, 20px) - 3px);
+}
+
+/* Soft subtle glow for remembrance — NO flashy effects */
+.event-card.event-remembrance.event-today::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, 
+    rgba(60, 60, 67, 0.08) 0%, 
+    transparent 70%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.event-card.event-remembrance .event-card__eyebrow {
+  color: rgba(60, 60, 67, 0.7);
+}
+
+.event-card.event-remembrance .event-card__title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.event-card.event-remembrance .event-card__date {
+  color: rgba(60, 60, 67, 0.6);
+}
+
+.event-card.event-remembrance .event-card__countdown {
+  color: rgba(60, 60, 67, 0.8);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CELEBRATION EVENTS (Prakash, Gurgaddi, Vaisakhi)
+   Tone: Festive, joyful, premium
+   Ring light effects, animated glow
+───────────────────────────────────────────────────────────────────────────── */
+
+.event-card.event-celebration {
+  background: linear-gradient(160deg, 
+    rgba(212, 148, 58, 0.06) 0%, 
+    rgba(212, 148, 58, 0.03) 100%);
+  border-color: rgba(212, 148, 58, 0.15);
+}
+
+.event-card.event-celebration.event-today {
+  position: relative;
+  overflow: visible;
+  background: linear-gradient(160deg, 
+    rgba(212, 148, 58, 0.12) 0%, 
+    rgba(255, 215, 0, 0.08) 50%,
+    rgba(212, 148, 58, 0.06) 100%);
+  border-color: rgba(212, 148, 58, 0.25);
+}
+
+/* Animated ring light border for celebration events */
+.event-card.event-celebration.event-today::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: calc(var(--radius-xl, 20px) + 3px);
+  background: linear-gradient(90deg, 
+    #FF6B00 0%, 
+    #FFD700 25%, 
+    #FFA500 50%, 
+    #FFD700 75%, 
+    #FF6B00 100%);
+  background-size: 300% 100%;
+  animation: ringLightFlow 3s linear infinite;
+  opacity: 0.65;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Soft inner glow */
+.event-card.event-celebration.event-today::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, 
+    rgba(255, 215, 0, 0.15) 0%, 
+    transparent 70%);
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+  animation: celebrationPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ringLightFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+@keyframes celebrationPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+.event-card.event-celebration .event-card__eyebrow {
+  color: #D4943A;
+  font-weight: 700;
+}
+
+.event-card.event-celebration .event-card__title {
+  color: var(--text-primary);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.event-card.event-celebration .event-card__date {
+  color: #D4943A;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.event-card.event-celebration .event-card__countdown {
+  color: #D4943A;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   NEUTRAL EVENTS — Standard styling
+───────────────────────────────────────────────────────────────────────────── */
+
+.event-card.event-neutral {
+  /* Uses default event-card styling from trendora-premium.css */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK MODE ADJUSTMENTS
+───────────────────────────────────────────────────────────────────────────── */
+
+html.dark-mode .event-card.event-remembrance,
+body.dark-mode .event-card.event-remembrance {
+  background: linear-gradient(160deg, 
+    rgba(60, 60, 67, 0.15) 0%, 
+    rgba(60, 60, 67, 0.08) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark-mode .event-card.event-remembrance.event-today,
+body.dark-mode .event-card.event-remembrance.event-today {
+  background: linear-gradient(160deg, 
+    rgba(60, 60, 67, 0.25) 0%, 
+    rgba(60, 60, 67, 0.15) 100%);
+  border-left-color: rgba(255, 255, 255, 0.2);
+}
+
+html.dark-mode .event-card.event-remembrance .event-card__eyebrow,
+body.dark-mode .event-card.event-remembrance .event-card__eyebrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+html.dark-mode .event-card.event-remembrance .event-card__title,
+body.dark-mode .event-card.event-remembrance .event-card__title {
+  color: #F5F5F7;
+}
+
+html.dark-mode .event-card.event-remembrance .event-card__date,
+body.dark-mode .event-card.event-remembrance .event-card__date {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+html.dark-mode .event-card.event-celebration,
+body.dark-mode .event-card.event-celebration {
+  background: linear-gradient(160deg, 
+    rgba(212, 148, 58, 0.12) 0%, 
+    rgba(212, 148, 58, 0.06) 100%);
+  border-color: rgba(212, 148, 58, 0.2);
+}
+
+html.dark-mode .event-card.event-celebration.event-today,
+body.dark-mode .event-card.event-celebration.event-today {
+  background: linear-gradient(160deg, 
+    rgba(212, 148, 58, 0.18) 0%, 
+    rgba(255, 215, 0, 0.12) 50%,
+    rgba(212, 148, 58, 0.10) 100%);
+}
+
+html.dark-mode .event-card.event-celebration .event-card__eyebrow,
+body.dark-mode .event-card.event-celebration .event-card__eyebrow {
+  color: #E8B84A;
+}
+
+html.dark-mode .event-card.event-celebration .event-card__title,
+body.dark-mode .event-card.event-celebration .event-card__title {
+  color: #F5F5F7;
+}
+
+html.dark-mode .event-card.event-celebration .event-card__date,
+body.dark-mode .event-card.event-celebration .event-card__date {
+  color: #E8B84A;
+}
+
+html.dark-mode .event-card.event-celebration .event-card__countdown,
+body.dark-mode .event-card.event-celebration .event-card__countdown {
+  color: #E8B84A;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   AUTO-ROTATION TRANSITIONS (Multiple Gurpurabs on same day)
+   Smooth fade and scale transitions when cycling through events
+───────────────────────────────────────────────────────────────────────────── */
+
+.event-card {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.event-card__title {
+  transition: opacity 0.2s ease-out;
+}
+
+.event-card__guru-img {
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PERFORMANCE OPTIMIZATIONS
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .event-card.event-celebration.event-today::before {
+    animation: none;
+    opacity: 0.4;
+  }
+  
+  .event-card.event-celebration.event-today::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Ensure smooth rendering */
+.event-card.event-remembrance,
+.event-card.event-celebration,
+.event-card.event-neutral {
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

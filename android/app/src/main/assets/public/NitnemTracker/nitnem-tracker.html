@@ -1,43 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="../css/mobile-lock.css">
-    <link rel="stylesheet" href="../css/responsive-fix.css">
-    <link rel="stylesheet" href="../css/anhad-core.css">
-  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
-    <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#1c1c1e">
-    <meta name="description"
-        content="Nitnem Tracker - Track your spiritual journey with Amritvela, Nitnem Banis, and maintain your spiritual streaks">
-
-    <title>ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ | Nitnem Tracker</title>
-
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="nitnem-tracker.css?v=2.3">
-    <link rel="stylesheet" href="nitnem-performance-fix.css?v=1.0">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
-    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="../manifest.json">
-
     <!-- CRITICAL: Theme blocker - MUST run before paint -->
     <script>
 (function() {
@@ -56,16 +20,55 @@
   } catch (e) {}
 })();
     </script>
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="stylesheet" href="../css/responsive-fix.css">
+    <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1c1c1e">
+    <meta name="description"
+        content="Nitnem Tracker - Track your spiritual journey with Amritvela, Nitnem Banis, and maintain your spiritual streaks">
+
+    <title>ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ | Nitnem Tracker</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="nitnem-tracker.css?v=2.4">
+    <link rel="stylesheet" href="nitnem-performance-fix.css?v=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
 
     <!-- Scroll Fix + Extreme Claymorphism Override -->
     <link rel="stylesheet" href="nitnem-tracker-fixes.css?v=3.0">
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/global-theme.js"></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-    <script src="../lib/native-audio-bridge.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/global-mini-player.js" defer></script>
+    
     <script src="../js/anhad-core.js" defer></script>
 
     <!-- Inline Critical CSS for Instant Load -->
@@ -258,8 +261,14 @@
                 <div class="status-pill" id="statusPill">
                     <div class="status-pill-content">
                         <div class="streak-fire" id="streakFire">
-                            <span class="fire-emoji">🔥</span>
+                            <span class="fire-emoji" id="fireEmoji">🔥</span>
                             <span class="streak-count" id="headerStreakCount">0</span>
+                            <!-- Streak Alert Badge -->
+                            <span class="streak-alert-badge" id="streakAlertBadge" style="display:none;">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10">
+                                    <path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+                                </svg>
+                            </span>
                         </div>
                         <div class="status-divider"></div>
                         <div class="current-time" id="currentTime">00:00</div>
@@ -272,15 +281,17 @@
                         <span class="gurmukhi-title">ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ</span>
                         <span class="english-title">Nitnem Tracker</span>
                     </h1>
-                    <p class="header-subtitle" id="headerSubtitle">Your Spiritual Journey</p>
+                    <p class="header-subtitle" id="headerSubtitle">Amritvela Di Daat</p>
                 </div>
 
                 <!-- Header Actions -->
                 <div class="header-actions">
-                    <button class="header-btn" id="statsBtn" aria-label="Statistics">
+                    <!-- Penalty / Info Button (Always visible now) -->
+                    <button class="header-btn penalty-header-btn" id="penaltyBtn" aria-label="Streak System">
                         <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 20V10M12 20V4M6 20v-6" />
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                         </svg>
+                        <span class="penalty-badge" id="penaltyBadge" style="display:none;">!</span>
                     </button>
                     <button class="header-btn" id="settingsBtn" aria-label="Settings">
                         <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1205,15 +1216,6 @@
                             </label>
                         </div>
 
-                        <div class="setting-item">
-                            <span class="setting-label">Present Button Available Until</span>
-                            <select class="setting-select" id="presentUntilSelect">
-                                <option value="6">6:00 AM</option>
-                                <option value="7" selected>7:00 AM</option>
-                                <option value="8">8:00 AM</option>
-                                <option value="9">9:00 AM</option>
-                            </select>
-                        </div>
                     </div>
 
                     <!-- Mala Settings -->
@@ -1328,6 +1330,123 @@
             <div class="confetti-container" id="confettiContainer"></div>
         </div>
 
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             PENALTY MODAL - iOS Bottom Sheet Style
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="modal-overlay" id="penaltyModal">
+            <div class="modal-backdrop" data-close-modal></div>
+            <div class="modal-container penalty-modal-container">
+                <div class="modal-handle"></div>
+                <div class="penalty-modal-header">
+                    <div class="penalty-modal-icon-wrap">
+                        <div class="penalty-modal-icon-glow"></div>
+                        <span class="penalty-modal-icon">⚡</span>
+                    </div>
+                    <h2 class="penalty-modal-title">Streak at Risk!</h2>
+                    <p class="penalty-modal-subtitle" id="penaltyModalSubtitle">Your streak can still be saved</p>
+                    <button class="modal-close-btn" data-close-modal aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body penalty-modal-body">
+                    <!-- Streak Info Card -->
+                    <div class="penalty-streak-info" id="penaltyStreakInfo">
+                        <div class="penalty-streak-number">
+                            <span class="penalty-streak-fire">🔥</span>
+                            <span class="penalty-streak-count" id="penaltyStreakCount">0</span>
+                            <span class="penalty-streak-label">Day Streak</span>
+                        </div>
+                        <div class="penalty-timer" id="penaltyTimer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                            </svg>
+                            <span id="penaltyTimeRemaining">24h remaining</span>
+                        </div>
+                    </div>
+
+                    <!-- Task Cards -->
+                    <div class="penalty-tasks-section">
+                        <h3 class="penalty-tasks-title">Complete to Save Streak</h3>
+                        <div class="penalty-tasks-list" id="penaltyTasksList">
+                            <!-- Tasks will be dynamically injected -->
+                        </div>
+                    </div>
+
+                    <!-- Motivation -->
+                    <div class="penalty-motivation">
+                        <span class="penalty-motivation-icon">🙏</span>
+                        <p class="penalty-motivation-text">ਗੁਰੂ ਸਾਹਿਬ ਦੀ ਕਿਰਪਾ ਨਾਲ, ਤੁਸੀਂ ਇਹ ਕਰ ਸਕਦੇ ਹੋ!</p>
+                        <p class="penalty-motivation-english">With Guru Sahib's grace, you can do this!</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer penalty-modal-footer">
+                    <button class="penalty-complete-all-btn" id="penaltyCompleteAllBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                        <span>Mark All Complete</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════════
+             PENALTY INFO MODAL - Empty Popup explaining system
+        ═══════════════════════════════════════════════════════════════════════ -->
+        <div class="modal-overlay" id="penaltyInfoModal">
+            <div class="modal-backdrop" data-close-modal></div>
+            <div class="modal-container penalty-modal-container info-mode">
+                <div class="modal-handle"></div>
+                <div class="penalty-modal-header">
+                    <div class="penalty-modal-icon-wrap info-wrap">
+                        <span class="penalty-modal-icon">🛡️</span>
+                    </div>
+                    <h2 class="penalty-modal-title">Streak Saver System</h2>
+                    <p class="penalty-modal-subtitle">What does it do?</p>
+                    <button class="modal-close-btn" data-close-modal aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="modal-body penalty-modal-body">
+                    <div class="info-content-card">
+                        <div class="info-row">
+                            <span class="info-row-icon">🔥</span>
+                            <div>
+                                <h4>Maintains Your Streak</h4>
+                                <p>If you miss an Amritvela, your streak doesn't reset instantly. You get a 24-hour grace period to save it.</p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row-icon">📖</span>
+                            <div>
+                                <h4>Spiritual Penalty</h4>
+                                <p>To restore your streak, you'll be assigned "Punishment Banis" like Japji Sahib or Sukhmani Sahib based on your streak length.</p>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-row-icon">⚡</span>
+                            <div>
+                                <h4>Active Alerts</h4>
+                                <p>When your streak is at risk, this button will pulse red. Complete the task before the timer ends!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="penalty-motivation safe-mode">
+                        <span class="penalty-motivation-icon">🌟</span>
+                        <p class="penalty-motivation-text">Your streak is currently safe!</p>
+                        <p class="penalty-motivation-english">Keep up the daily devotion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Toast Notifications -->
         <div class="toast-container" id="toastContainer"></div>
 
@@ -1356,7 +1475,7 @@
     <script src="data-persistence-guard.js?v=1.0"></script>
     <script src="auto-alarm-sync.js?v=1.0"></script>
     
-    <script src="nitnem-tracker.js?v=2.4"></script>
+    <script src="nitnem-tracker.js?v=2.5"></script>
     <script src="../lib/alarm-coordinator.js?v=1.0" defer></script>
     <script src="../lib/global-alarm-system.js?v=1.0" defer></script>
 
@@ -1381,6 +1500,10 @@
                 .catch(err => console.log('SW registration failed:', err));
         }
     </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

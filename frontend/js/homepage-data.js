@@ -406,6 +406,16 @@ document.addEventListener('DOMContentLoaded', function () {
     backBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
+      // CRITICAL: Don't redirect to ios-homepage in Capacitor — causes redirect loop
+      if (typeof window.Capacitor !== 'undefined') {
+        // In native mode, just go back in history or stay
+        if (window.anhadGoBack) {
+          window.anhadGoBack('./index.html');
+        } else {
+          window.history.back();
+        }
+        return;
+      }
       window.location.href = 'Homepage/ios-homepage.html';
     });
   }
@@ -513,19 +523,22 @@ document.addEventListener('DOMContentLoaded', function () {
       islandDefault.style.pointerEvents = 'none';
       
       islandPlaying.style.opacity = '1';
-      島Playing.style.pointerEvents = 'auto'; // Oh wait, typo in my thought, fixed here:
       islandPlaying.style.pointerEvents = 'auto';
       islandWaveform.classList.remove('paused');
       
       islandStreamName.textContent = streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan';
       islandActionBtn.innerHTML = '<i class="fas fa-pause"></i>';
       
-      if (navigator.mediaSession) {
+      if (!window.Capacitor && navigator.mediaSession) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan',
           artist: 'Sri Harmandir Sahib Ji',
           album: 'ANHAD Audio Engine',
-          artwork: [{ src: 'assets/icon-512.png', sizes: '512x512', type: 'image/png' }]
+          artwork: [
+            { src: 'assets/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { src: 'assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
+          ]
         });
       }
     } else {
@@ -585,7 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dynamic Island Interactions
     islandActionBtn?.addEventListener('click', (e) => {
       e.stopPropagation(); // Don't trigger island click
-      if (window.AnhadAudio) window.AnhadAudio.togglePlay();
+      if (window.AnhadAudio) window.AnhadAudio.toggle();
     });
     
     // Clicking island while playing routes to full player
@@ -597,7 +610,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // MediaSession OS Controls (Lockscreen/Control Center)
-    if (navigator.mediaSession) {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (!window.Capacitor && navigator.mediaSession) {
       navigator.mediaSession.setActionHandler('play', () => { if (window.AnhadAudio) window.AnhadAudio.play(); });
       navigator.mediaSession.setActionHandler('pause', () => { if (window.AnhadAudio) window.AnhadAudio.pause(); });
     }

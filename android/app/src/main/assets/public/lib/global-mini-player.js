@@ -172,10 +172,11 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   const currentPath = window.location.pathname.toLowerCase();
+  // Hide mini player on Gurbani Radio page (it has its own full player)
   const isPlayerPage = currentPath.includes('gurbani-radio');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AUDIO ENGINE — Uses NativeAudioBridge for gapless native playback
+  // AUDIO ENGINE
   // ═══════════════════════════════════════════════════════════════════════════
 
   let audio = null;
@@ -184,25 +185,9 @@
   let isPlaying = false;
   let miniPlayerEl = null;
   let isInitialPageLoad = true; // Track if this is the first page load
-  let useNativeAudio = false; // Will be set based on NativeAudioBridge availability
-
-  // Check if NativeAudioBridge is available (for gapless native audio)
-  function checkNativeAudio() {
-    if (window.NativeAudioBridge) {
-      useNativeAudio = true;
-      console.log('[GMP] ✅ Using NativeAudioBridge for gapless playback');
-      return true;
-    }
-    console.log('[GMP] ℹ️ NativeAudioBridge not available, using HTML5 Audio');
-    return false;
-  }
+  let pendingUIUpdate = null; // Queue for UI updates before mini player is ready
 
   function createAudio() {
-    // If NativeAudioBridge is available, we don't need to create HTML5 audio
-    if (checkNativeAudio()) {
-      return null;
-    }
-
     // CRITICAL FIX: Always create NEW audio element to avoid cache
     if (audio) {
       // Save current position before destroying
@@ -297,26 +282,37 @@
   }
 
   async function playStream(streamName) {
-    // Check if NativeAudioBridge is available for gapless playback
-    if (checkNativeAudio()) {
-      console.log('[GMP] 🎵 Using NativeAudioBridge for gapless playback');
-      currentStream = streamName;
-      await window.NativeAudioBridge.play(streamName);
-      isPlaying = window.NativeAudioBridge.isPlaying();
-      updateMiniPlayerUI();
-      updateMediaSession();
-      return;
-    }
+    // CRITICAL: Show mini player immediately with loading state
+    // This prevents the "disappearing" feeling when user clicks play
+    currentStream = streamName;
+    isPlaying = true; // Optimistically set to true for UI
+    updateMiniPlayerUI(true); // Force show immediately
+    setLoadingState(true); // Show loading spinner
 
     // CRITICAL: Create fresh audio element EVERY time to avoid cache
     createAudio();
-    
+
+    // Add loading event listeners
+    audio.addEventListener('waiting', () => {
+      console.log('[GMP] ⏳ Audio loading...');
+      setLoadingState(true);
+    });
+
+    audio.addEventListener('playing', () => {
+      console.log('[GMP] ▶ Audio playing');
+      setLoadingState(false);
+    });
+
+    audio.addEventListener('canplay', () => {
+      console.log('[GMP] ✓ Audio can play');
+      // Don't hide loading yet - wait for actual playing
+    });
+
     // Notify AudioCoordinator BEFORE playing to pause other players
     if (window.AudioCoordinator) {
       window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
     }
-    
-    currentStream = streamName;
+
     const stream = STREAMS[streamName];
 
     if (stream.type === 'live') {
@@ -325,7 +321,15 @@
       console.log('[GMP] 🔴 LIVE: Loading fresh stream:', freshUrl);
       audio.src = freshUrl;
       audio.load(); // Force reload
-      try { await audio.play(); } catch (e) { console.warn('[GMP] Autoplay blocked'); }
+      try {
+        await audio.play();
+        setLoadingState(false); // Hide loading once playing
+      } catch (e) {
+        console.warn('[GMP] Autoplay blocked');
+        setLoadingState(false);
+        isPlaying = false;
+        updateMiniPlayerUI();
+      }
     } else if (stream.type === 'playlist') {
       // CRITICAL FIX: ALWAYS fetch fresh server position
       try {
@@ -466,30 +470,34 @@
   }
 
   async function togglePlayPause() {
-    // Check if NativeAudioBridge is available
-    if (useNativeAudio && window.NativeAudioBridge) {
-      await window.NativeAudioBridge.toggle(currentStream);
-      isPlaying = window.NativeAudioBridge.isPlaying();
-      updateMiniPlayerUI();
-      updateMediaSession();
-      return;
-    }
-
-    // Fallback to HTML5 audio
     if (!audio || !audio.src || audio.src === window.location.href) {
       // Nothing loaded — start darbar by default
       playStream(currentStream);
       return;
     }
     if (audio.paused) {
-      // CRITICAL FIX: ALWAYS recreate audio and jump to live - NO CACHE
+      // CRITICAL FIX: ALWAYS jump to live position on resume
       if (STREAMS[currentStream].type === 'playlist') {
         console.log('[GMP] 🔴 RECREATING AUDIO FOR LIVE PLAYBACK');
         playStream(currentStream); // This will fetch fresh position and create new audio
       } else {
-        // Live stream - RECREATE audio element to force fresh connection
-        console.log('[GMP] 🔴 RECREATING AUDIO FOR LIVE STREAM');
-        playStream(currentStream); // This will create fresh audio with cache buster
+        // Live stream - Force reconnect to current live position
+        console.log('[GMP] 🔴 LIVE STREAM: Forcing reconnect to current live position');
+        // Add cache buster to force fresh connection
+        const stream = STREAMS[currentStream];
+        const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
+        audio.src = freshUrl;
+        audio.load();
+        // CRITICAL: Set currentTime to a very high value to force seek to live edge
+        // This makes the browser drop the old buffer and reconnect at current live position
+        audio.currentTime = 999999;
+        console.log('[GMP] 🔴 LIVE STREAM: Set currentTime to 999999 to force live edge seek');
+        // Now play
+        try {
+          await audio.play();
+        } catch (e) {
+          console.warn('[GMP] Autoplay blocked');
+        }
       }
     } else {
       audio.pause();
@@ -497,17 +505,6 @@
   }
 
   function stopAudio() {
-    // Check if NativeAudioBridge is available
-    if (useNativeAudio && window.NativeAudioBridge) {
-      window.NativeAudioBridge.stop();
-      isPlaying = false;
-      currentStream = null;
-      saveState({ isPlaying: false, stream: null, trackIndex: 0, volume: 0.8, currentTime: 0 });
-      updateMiniPlayerUI();
-      return;
-    }
-
-    // Fallback to HTML5 audio
     if (audio) {
       audio.pause();
       audio.removeAttribute('src');
@@ -549,6 +546,10 @@
 
     const stream = STREAMS[currentStream];
     if (!stream) return;
+
+    // Show loading state immediately while resuming
+    setLoadingState(true);
+    updateMiniPlayerUI(true);
 
     if (stream.type === 'live') {
       // CRITICAL FIX: Add multiple cache busters to force fresh live connection
@@ -669,20 +670,42 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function updateMediaSession() {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (window.Capacitor) return;
     if (!('mediaSession' in navigator)) return;
     const stream = STREAMS[currentStream];
     if (!stream) return;
+
+    // Multiple artwork sizes for best OS rendering — logo fallback
+    const primaryArt = stream.artwork || '../assets/icons/icon-1024x1024.png';
+    const artworkList = [
+      { src: '../assets/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+      { src: '../assets/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { src: '../assets/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { src: '../assets/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
+    ];
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: stream.name,
       artist: stream.subtitle,
       album: 'ANHAD',
-      artwork: [{ src: stream.artwork, sizes: '512x512', type: 'image/webp' }]
+      artwork: artworkList
     });
 
-    navigator.mediaSession.setActionHandler('play', () => audio?.play());
+    // CRITICAL: Instant resume from lock screen — just audio.play()
+    navigator.mediaSession.setActionHandler('play', () => {
+      if (audio && audio.src && audio.src !== window.location.href) {
+        audio.play().catch(() => playStream(currentStream));
+      } else {
+        playStream(currentStream);
+      }
+    });
     navigator.mediaSession.setActionHandler('pause', () => audio?.pause());
     navigator.mediaSession.setActionHandler('stop', () => stopAudio());
+    navigator.mediaSession.setActionHandler('previoustrack', () => playStream(currentStream));
+
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -700,7 +723,13 @@
   }
 
   function injectMiniPlayer() {
-    if (document.getElementById('gmp') || isPlayerPage) return;
+    console.log('[GMP] injectMiniPlayer called - checking conditions...');
+    const hasExisting = document.getElementById('gmp');
+    console.log('[GMP] hasExisting:', hasExisting, 'isPlayerPage:', isPlayerPage);
+    if (hasExisting || isPlayerPage) {
+      console.log('[GMP] injectMiniPlayer - returning early (element exists or is player page)');
+      return;
+    }
 
     const el = document.createElement('aside');
     el.id = 'gmp';
@@ -715,6 +744,9 @@
     el.innerHTML = `
       <div class="gmp__art">
         <img src="" alt="" width="46" height="46" id="gmpArt">
+        <div class="gmp__loading-overlay" id="gmpLoading">
+          <div class="gmp__spinner"></div>
+        </div>
       </div>
       <div class="gmp__info" id="gmpTap">
         <div class="gmp__title">
@@ -725,7 +757,8 @@
       </div>
       <div class="gmp__controls">
         <button class="gmp__btn gmp__btn--play" id="gmpPlay" aria-label="Play/Pause">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" id="gmpPlayIcon"><path d="M8 5v14l11-7z"/></svg>
+          <div class="gmp__btn-spinner" id="gmpBtnSpinner"></div>
         </button>
         <button class="gmp__btn gmp__btn--close" id="gmpClose" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -738,6 +771,18 @@
 
     document.body.appendChild(el);
     miniPlayerEl = el;
+
+    // Create Spotify-style background element
+    createBackgroundElement();
+
+    // Apply any pending UI update that was queued before injection
+    if (pendingUIUpdate !== null) {
+      console.log('[GMP] Applying pending UI update after injection. forceVisible:', pendingUIUpdate);
+      const forceVisible = pendingUIUpdate;
+      pendingUIUpdate = null;
+      // Use setTimeout to ensure DOM is ready
+      setTimeout(() => updateMiniPlayerUI(forceVisible), 0);
+    }
 
     // Event handlers
     document.getElementById('gmpPlay')?.addEventListener('click', (e) => {
@@ -769,17 +814,102 @@
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPOTIFY-STYLE BACKGROUND
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  let backgroundEl = null;
+
+  function createBackgroundElement() {
+    if (document.getElementById('gmp-background')) return;
+
+    const bg = document.createElement('div');
+    bg.id = 'gmp-background';
+    bg.className = 'gmp-background';
+    bg.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bg);
+    backgroundEl = bg;
+  }
+
+  function updateBackground(artworkUrl) {
+    if (!backgroundEl) createBackgroundElement();
+    
+    if (artworkUrl && isPlaying) {
+      backgroundEl.style.backgroundImage = `url('${artworkUrl}')`;
+      backgroundEl.classList.add('gmp-background--visible');
+    } else {
+      backgroundEl.classList.remove('gmp-background--visible');
+    }
+  }
+
+  // Loading state management
+  let isLoading = false;
+
+  function setLoadingState(loading) {
+    isLoading = loading;
+
+    // Update artwork loading overlay
+    const loadingOverlay = document.getElementById('gmpLoading');
+    if (loadingOverlay) {
+      loadingOverlay.style.display = loading ? 'flex' : 'none';
+    }
+
+    // Update play button spinner
+    const playIcon = document.getElementById('gmpPlayIcon');
+    const btnSpinner = document.getElementById('gmpBtnSpinner');
+    if (playIcon && btnSpinner) {
+      if (loading) {
+        playIcon.style.display = 'none';
+        btnSpinner.style.display = 'block';
+      } else {
+        playIcon.style.display = 'block';
+        btnSpinner.style.display = 'none';
+      }
+    }
+
+    // Also update the main play/pause icon when not loading
+    if (!loading) {
+      updatePlayPauseIcon();
+    }
+  }
+
+  function updatePlayPauseIcon() {
+    const playIcon = document.getElementById('gmpPlayIcon');
+    if (playIcon && !isLoading) {
+      playIcon.style.opacity = '0';
+      setTimeout(() => {
+        playIcon.innerHTML = isPlaying
+      // Hide background
+      updateBackground(null);
+          ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+          : '<path d="M8 5v14l11-7z"/>';
+        playIcon.style.opacity = '1';
+      }, 150);
+    }
+  }
+
   function updateMiniPlayerUI(forceVisible) {
-    if (!miniPlayerEl) return;
+    if (!miniPlayerEl) {
+      // Queue the update for when mini player is ready
+      pendingUSpotify-style background
+    if (stream?.artwork) updateBackground(stream.artwork);
+
+    // Update IUpdate = forceVisible;
+      console.log('[GMP] updateMiniPlayerUI: miniPlayerEl is null, queuing update. forceVisible:', forceVisible);
+      return;
+    }
 
     const stream = STREAMS[currentStream];
 
     // Determine if we should actually show the mini player
-    // Only show when: explicitly forced, or audio is actually playing with valid source
+    // Show when: explicitly forced, OR audio is playing/loading with valid stream
+    const hasActiveStream = currentStream && stream;
     const actuallyPlaying = isPlaying && audio && audio.src && audio.src !== window.location.href;
-    const shouldShow = forceVisible || actuallyPlaying;
+    const isActive = isLoading || actuallyPlaying || forceVisible;
+    // MODIFIED: Show when forceVisible is true even without active stream
+    const shouldShow = (isActive && hasActiveStream) || forceVisible;
 
-    if (!shouldShow || !stream) {
+    if (!shouldShow) {
       // Hide mini player - CSS has display:none by default
       miniPlayerEl.classList.remove('gmp--visible');
       // Clear artwork to prevent broken image flash
@@ -793,33 +923,28 @@
 
     // Update artwork only when showing
     const artImg = document.getElementById('gmpArt');
-    if (artImg && stream.artwork) artImg.src = stream.artwork;
+    if (artImg && stream?.artwork) artImg.src = stream.artwork;
 
     // Update title/subtitle
     const titleEl = document.getElementById('gmpTitle');
     const subEl = document.getElementById('gmpSub');
-    if (titleEl) titleEl.textContent = stream.name;
-    if (subEl) subEl.textContent = stream.subtitle;
+    if (titleEl) titleEl.textContent = stream?.name || '';
+    if (subEl) subEl.textContent = stream?.subtitle || '';
 
     // Show/hide live dot
     const liveDot = document.getElementById('gmpLiveDot');
-    if (liveDot) liveDot.style.display = stream.type === 'live' ? '' : 'none';
+    if (liveDot) liveDot.style.display = stream?.type === 'live' ? '' : 'none';
 
-    // Update play/pause icon with smooth transition
-    const playBtn = document.getElementById('gmpPlay');
-    if (playBtn) {
-      const svg = playBtn.querySelector('svg');
-      if (svg) {
-        svg.style.opacity = '0';
-        setTimeout(() => {
-          svg.innerHTML = isPlaying
-            ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
-            : '<path d="M8 5v14l11-7z"/>';
-          svg.style.opacity = '1';
-        }, 150);
-      }
-    }
+    // Update loading state visual
+    setLoadingState(isLoading);
   }
+
+  // Expose setLoadingState globally for external use
+  window.GlobalMiniPlayer = {
+    ...window.GlobalMiniPlayer,
+    setLoading: setLoadingState,
+    isLoading: () => isLoading
+  };
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SAVE STATE BEFORE PAGE UNLOADS (critical for persistence)
@@ -915,8 +1040,10 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function init() {
+    console.log('[GMP] init() called');
     injectCSS();
     injectMiniPlayer();
+    console.log('[GMP] after injectMiniPlayer, miniPlayerEl:', miniPlayerEl);
 
     // CRITICAL: Check if we should show mini player immediately
     // This prevents the "gap" when navigating between pages

@@ -1205,7 +1205,7 @@
           try {
             const n = new Notification('Tomorrow is ' + event.name, {
               body: 'A special holy day is arriving tomorrow. Tap to view the Gurpurab calendar.',
-              icon: 'assets/favicon-32x32.png',
+              icon: 'assets/icon-192x192.png',
               requireInteraction: true
             });
             n.onclick = () => {
@@ -1678,9 +1678,45 @@
           this._hideBanner();
         });
       } else {
-        // iOS or non-supported browser fallback
-        console.log('[PWA] Native prompt unavailable, showing manual instructions');
-        alert('To install ANHAD:\n\n1. Tap the Share button ⎙\n2. Select "Add to Home Screen" ⊞');
+        // Detect platform for best install path
+        const ua = navigator.userAgent || '';
+        const isAndroid = /android/i.test(ua);
+        const isIOS = /iPad|iPhone|iPod/.test(ua);
+
+        if (isAndroid) {
+          // Offer APK download for Android users via Chrome
+          console.log('[PWA] Android detected — offering APK download');
+          const apkUrl = 'https://github.com/user/anhad-app/releases/latest/download/anhad.apk';
+          const confirmed = confirm(
+            '📲 Install ANHAD App\n\n' +
+            'Get the full native experience with:\n' +
+            '• Background kirtan playback\n' +
+            '• Home screen widgets\n' +
+            '• Naam Abhyas reminders\n\n' +
+            'Download the Android APK now?'
+          );
+          if (confirmed) {
+            window.open(apkUrl, '_blank');
+          }
+        } else if (isIOS) {
+          // iOS-specific instructions
+          console.log('[PWA] iOS detected — showing Add to Home Screen instructions');
+          alert(
+            '📲 Install ANHAD\n\n' +
+            '1. Tap the Share button  ⎙\n' +
+            '2. Scroll down and tap "Add to Home Screen"\n' +
+            '3. Tap "Add" to confirm\n\n' +
+            'The app icon will appear on your Home Screen!'
+          );
+        } else {
+          // Desktop / other browsers
+          console.log('[PWA] Desktop/other — showing generic instructions');
+          alert(
+            '📲 Install ANHAD\n\n' +
+            'Click the install icon in your browser\'s address bar,\n' +
+            'or use your browser menu → "Install App".'
+          );
+        }
       }
     }
   };

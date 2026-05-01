@@ -78,8 +78,8 @@ class NotificationEngine {
         }
 
         const defaultOptions = {
-            icon: '../assets/favicon.svg',
-            badge: '../assets/favicon.svg',
+            icon: '../assets/icon-192x192.png',
+            badge: '../assets/icon-72x72.png',
             vibrate: [200, 100, 200],
             tag: 'naam-abhyas',
             renotify: true,
@@ -323,6 +323,176 @@ class NotificationEngine {
      */
     isPermitted() {
         return this.permission === 'granted';
+    }
+
+    /**
+     * CAPACITOR-NATIVE: Schedule 24 hours of Naam Abhyas notifications in advance.
+     * These persist even when the app is completely closed.
+     * @param {object} config - { startHour, endHour, enabled, currentSchedule }
+     */
+    /**
+     * Schedule Capacitor-native notifications for Naam Abhyas.
+     * ═══ OVERHAULED: Fixes BUG 3 (importance), BUG 4 (no channel delete), BUG 5 (no priority field) ═══
+     * Also persists schedule to dedicated localStorage key for cross-page sync.
+     */
+    async scheduleCapacitorHourlyBatch(config) {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+        if (!config || !config.enabled) return;
+
+        try {
+            const LN = window.Capacitor.Plugins.LocalNotifications;
+
+            // Request permission first
+            const perms = await LN.checkPermissions();
+            if (perms.display !== 'granted') {
+                await LN.requestPermissions();
+            }
+
+            if (window.Capacitor.Plugins.AlarmReliability) {
+                try {
+                    const status = await window.Capacitor.Plugins.AlarmReliability.getStatus();
+                    if (!status || status.exactAlarm !== true) {
+                        await window.Capacitor.Plugins.AlarmReliability.requestExactAlarmPermission();
+                    }
+                    if (status && status.batteryOptimized === true) {
+                        await window.Capacitor.Plugins.AlarmReliability.requestIgnoreBatteryOptimizations();
+                    }
+                } catch (e) {
+                    console.warn('[NaamAbhyas] Alarm reliability permission check failed:', e);
+                }
+            }
+
+            // Delete old channel (may have wrong importance locked from earlier builds)
+            try {
+                await LN.deleteChannel({ id: 'naam_abhyas' });
+            } catch (e) { /* may not exist */ }
+            // Create fresh channel with guaranteed IMPORTANCE_HIGH for heads-up popup
+            try {
+                await LN.createChannel({
+                    id: 'naam_abhyas_v2',
+                    name: 'Naam Abhyas Reminders',
+                    description: 'Hourly reminders for Naam Simran',
+                    importance: 4,
+                    visibility: 1,
+                    vibration: true,
+                    sound: 'default',
+                    lights: true,
+                    lightColor: '#f7c634'
+                });
+            } catch (e) { /* channel already exists with correct settings */ }
+
+            console.log('[NaamAbhyas] 📅 Schedule data received:', {
+                startHour: config.startHour,
+                endHour: config.endHour,
+                scheduleKeys: config.currentSchedule ? Object.keys(config.currentSchedule) : []
+            });
+
+            // ═══ BUG 2 FIX: Persist schedule to dedicated key for global scheduler sync ═══
+            if (config.currentSchedule && Object.keys(config.currentSchedule).length > 0) {
+                try {
+                    localStorage.setItem('naam_abhyas_schedule', JSON.stringify(config.currentSchedule));
+                    console.log('[NaamAbhyas] 💾 Schedule persisted to naam_abhyas_schedule');
+                } catch (e) { /* storage full, non-critical */ }
+            }
+
+            // NOTE: Click listener is handled by capacitor-notifications-global.js (single handler)
+            // Adding duplicate listeners causes double-navigation bugs.
+
+            // Cancel previous Naam Abhyas notifications (7-day rolling window)
+            const cancelIds = [];
+            for (let i = 0; i < 168; i++) {
+                cancelIds.push({ id: 90000 + i });
+            }
+            try {
+                await LN.cancel({ notifications: cancelIds });
+            } catch (e) { /* ignore if none exist */ }
+
+            const now = new Date();
+            const startHour = config.startHour || config.activeHours?.start || 5;
+            const endHour = config.endHour || config.activeHours?.end || 22;
+            const currentSchedule = config.currentSchedule || {};
+            const notifications = [];
+            const messages = [
+                'Naam japn da time ho gya hai, 2 min layi sare kamm chhaddo.',
+                'Waheguru Ji bula rahe ne. Bas 2 minutes Simran.',
+                'Phone pocket vich rakh lo, akhan band kro, Waheguru japo.',
+                '2-minute Simran break: kaam pause, Waheguru play.',
+                'Naam Abhyas slot live hai. Hun bas 120 seconds Rab naal.',
+                'Your soul is calling. Take 2 minutes for Naam Simran.',
+                'Be still. Breathe. Remember Vaheguru.'
+            ];
+
+            // Schedule for the next 7 days so alarms survive app restarts.
+            for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+                for (let hour = startHour; hour <= endHour; hour++) {
+                    const session = currentSchedule[hour];
+                    
+                    // Skip if no session data for this hour
+                    if (!session || typeof session.startMinute !== 'number' || session.status === 'completed' || session.status === 'skipped') {
+                        continue;
+                    }
+                    
+                    const sessionMinute = session.startMinute;
+                    const scheduleTime = new Date(now);
+                    scheduleTime.setDate(scheduleTime.getDate() + dayOffset);
+                    scheduleTime.setHours(hour, sessionMinute, 0, 0);
+
+                    // Skip times that have already passed
+                    if (scheduleTime <= now) continue;
+
+                    const notifId = 90000 + (dayOffset * 24) + hour;
+
+                    notifications.push({
+                        id: notifId,
+                        title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                        body: messages[(hour + dayOffset) % messages.length],
+                        schedule: {
+                            at: scheduleTime,
+                            allowWhileIdle: true,
+                            exact: true
+                        },
+                        channelId: 'naam_abhyas_v2',
+                        sound: 'default',
+                        smallIcon: 'ic_stat_notify',
+                        extra: {
+                            type: 'naam_abhyas',
+                            action: 'auto_start_naam',
+                            hour: String(hour),
+                            minute: String(sessionMinute),
+                            url: 'NaamAbhyas/naam-abhyas.html',
+                            autoStart: 'true'
+                        }
+                    });
+                }
+            }
+
+            if (notifications.length > 0) {
+                await LN.schedule({ notifications });
+                console.log(`[NaamAbhyas] ✅ Scheduled ${notifications.length} hourly notifications via Capacitor`);
+            }
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to schedule Capacitor notifications:', e);
+        }
+    }
+
+    /**
+     * CAPACITOR-NATIVE: Cancel all Naam Abhyas notifications
+     */
+    async cancelCapacitorBatch() {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+
+        try {
+            const cancelIds = [];
+            for (let i = 0; i < 168; i++) {
+                cancelIds.push({ id: 90000 + i });
+            }
+            await window.Capacitor.Plugins.LocalNotifications.cancel({ notifications: cancelIds });
+            console.log('[NaamAbhyas] Cancelled all Capacitor notifications');
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to cancel Capacitor notifications:', e);
+        }
     }
 }
 

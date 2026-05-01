@@ -11,6 +11,10 @@ const WidgetBridge = {
     PLUGIN_NAME: 'WidgetDataBridge',
     isCapacitor: typeof Capacitor !== 'undefined',
     isNative: false,
+    debug: false,
+    pluginAvailable: false,
+    retryCount: 0,
+    maxRetries: 15,
 
     /**
      * Initialize the widget bridge
@@ -18,8 +22,31 @@ const WidgetBridge = {
     init() {
         if (this.isCapacitor) {
             this.isNative = Capacitor.isNativePlatform();
-            console.log('[WidgetBridge] Initialized. Native:', this.isNative);
+            this.checkPluginAvailability();
+            console.log('[WidgetBridge] Initialized. Native:', this.isNative, 'Plugin:', this.pluginAvailable);
         }
+    },
+
+    /**
+     * Check if plugin is available
+     */
+    checkPluginAvailability() {
+        try {
+            this.pluginAvailable = Capacitor.Plugins && Capacitor.Plugins.WidgetDataBridge;
+            if (!this.pluginAvailable && this.debug) {
+                console.warn('[WidgetBridge] WidgetDataBridge plugin not available yet');
+            }
+        } catch (e) {
+            if (this.debug) console.error('[WidgetBridge] Error checking plugin:', e);
+        }
+    },
+
+    /**
+     * Enable debug mode
+     */
+    setDebug(enabled) {
+        this.debug = enabled;
+        console.log('[WidgetBridge] Debug mode:', enabled);
     },
 
     /**
@@ -75,11 +102,30 @@ const WidgetBridge = {
     },
 
     /**
+     * Sync Amritvela Kirtan data to widget
+     */
+    async syncAmritvelaData() {
+        try {
+            const data = await this.getAmritvelaData();
+            await this.syncToNative('amritvela', data);
+            console.log('[WidgetBridge] Amritvela data synced');
+        } catch (error) {
+            console.error('[WidgetBridge] Error syncing Amritvela:', error);
+        }
+    },
+
+    /**
      * Sync all widgets at once
      */
     async syncAllWidgets() {
         if (!this.isNative) {
-            console.log('[WidgetBridge] Not on native platform, skipping sync');
+            if (this.debug) console.log('[WidgetBridge] Not on native platform, skipping sync');
+            return;
+        }
+
+        this.checkPluginAvailability();
+        if (!this.pluginAvailable) {
+            if (this.debug) console.warn('[WidgetBridge] Plugin not available, skipping sync');
             return;
         }
 
@@ -88,9 +134,10 @@ const WidgetBridge = {
                 this.syncNitnemData(),
                 this.syncNaamAbhyasData(),
                 this.syncCalendarData(),
-                this.syncKirtanData()
+                this.syncKirtanData(),
+                this.syncAmritvelaData()
             ]);
-            console.log('[WidgetBridge] All widgets synced');
+            console.log('[WidgetBridge] All widgets synced successfully');
         } catch (error) {
             console.error('[WidgetBridge] Error syncing all widgets:', error);
         }
@@ -105,7 +152,7 @@ const WidgetBridge = {
                 STREAK_DATA: 'nitnemTracker_streakData',
                 NITNEM_LOG: 'nitnemTracker_nitnemLog',
                 SELECTED_BANIS: 'nitnemTracker_selectedBanis',
-                THEME: 'nitnemTracker_theme'
+                THEME: 'anhad_theme'
             }
         };
 
@@ -116,6 +163,10 @@ const WidgetBridge = {
         const nitnemLog = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.NITNEM_LOG) || '{}');
         const selectedBanis = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.SELECTED_BANIS) || '[]');
         const theme = localStorage.getItem(CONFIG.STORAGE_KEYS.THEME) || 'dark';
+        
+        if (this.debug) {
+            console.log('[WidgetBridge] Nitnem data - streak:', streakData.current, 'progress:', progress, 'theme:', theme);
+        }
 
         // Calculate today's progress
         const todayProgress = nitnemLog[today] || {};
@@ -145,10 +196,15 @@ const WidgetBridge = {
     async getNaamAbhyasData() {
         const STORAGE_KEY = 'naam_abhyas_history';
         const CONFIG_KEY = 'naam_abhyas_config';
+        const THEME_KEY = 'anhad_theme';
 
         const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
         const config = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{"enabled": false, "activeHours": {"start": 5, "end": 22}}');
-        const theme = localStorage.getItem('anhad_theme') || 'dark';
+        const theme = localStorage.getItem(THEME_KEY) || 'dark';
+        
+        if (this.debug) {
+            console.log('[WidgetBridge] Naam Abhyas data - enabled:', config.enabled, 'completed:', completedHours, 'theme:', theme);
+        }
 
         const today = new Date().toLocaleDateString('en-CA');
         const todaySchedule = history.scheduleHistory?.[today] || {};
@@ -201,6 +257,10 @@ const WidgetBridge = {
         const events = JSON.parse(localStorage.getItem('gurpurab_events') || '[]');
         const hukamnama = JSON.parse(localStorage.getItem('today_hukamnama') || '{}');
         const theme = localStorage.getItem('anhad_theme') || 'dark';
+        
+        if (this.debug) {
+            console.log('[WidgetBridge] Calendar data - nextEvent:', nextEvent?.name, 'daysUntil:', daysUntil, 'theme:', theme);
+        }
 
         const today = new Date();
         const todayStr = today.toLocaleDateString('en-CA');
@@ -243,12 +303,48 @@ const WidgetBridge = {
     async getKirtanData() {
         const playerState = JSON.parse(localStorage.getItem('kirtan_player_state') || '{}');
         const theme = localStorage.getItem('anhad_theme') || 'dark';
+        
+        if (this.debug) {
+            console.log('[WidgetBridge] Kirtan data - isPlaying:', playerState.isPlaying, 'track:', playerState.trackName, 'theme:', theme);
+        }
 
         return {
-            trackName: playerState.trackName || 'Not Playing',
-            stationName: playerState.stationName || 'Select Station',
+            trackName: playerState.trackName || 'Darbar Sahib Live',
+            stationName: playerState.stationName || 'Sri Harmandir Sahib Ji',
             isPlaying: playerState.isPlaying || false,
             duration: playerState.duration || '',
+            artwork: playerState.artwork || '../assets/darbar-sahib-day.webp',
+            streamType: playerState.streamType || 'darbar',
+            isDark: theme === 'dark',
+            lastUpdated: Date.now()
+        };
+    },
+
+    /**
+     * Get Amritvela Kirtan data
+     */
+    async getAmritvelaData() {
+        const playerState = JSON.parse(localStorage.getItem('kirtan_player_state') || '{}');
+        const theme = localStorage.getItem('anhad_theme') || 'dark';
+        
+        // Override with Amritvela-specific data if available
+        const amritvelaState = JSON.parse(localStorage.getItem('amritvela_player_state') || '{}');
+        const trackName = amritvelaState.trackName || 'Amritvela Kirtan';
+        const stationName = amritvelaState.stationName || '24/7 Divine Kirtan';
+        const isPlaying = amritvelaState.isPlaying || false;
+        const trackCounter = amritvelaState.trackCounter || 'Track 1 of 40';
+        
+        if (this.debug) {
+            console.log('[WidgetBridge] Amritvela data - isPlaying:', isPlaying, 'track:', trackName, 'theme:', theme);
+        }
+
+        return {
+            trackName: trackName,
+            stationName: stationName,
+            isPlaying: isPlaying,
+            trackCounter: trackCounter,
+            artwork: amritvelaState.artwork || '../assets/Darbar-sahib-AMRITVELA.webp',
+            streamType: 'amritvela',
             isDark: theme === 'dark',
             lastUpdated: Date.now()
         };
@@ -258,7 +354,16 @@ const WidgetBridge = {
      * Send data to native plugin
      */
     async syncToNative(widgetType, data) {
-        if (!this.isNative) return;
+        if (!this.isNative) {
+            if (this.debug) console.log('[WidgetBridge] Not on native platform, skipping sync for', widgetType);
+            return;
+        }
+
+        this.checkPluginAvailability();
+        if (!this.pluginAvailable) {
+            if (this.debug) console.error('[WidgetBridge] Plugin not available for', widgetType, '- ensure WidgetDataBridgePlugin is registered in MainActivity');
+            return;
+        }
 
         try {
             const { WidgetDataBridge } = Capacitor.Plugins;
@@ -267,9 +372,13 @@ const WidgetBridge = {
                     widgetType: widgetType,
                     data: data
                 });
+                if (this.debug) console.log('[WidgetBridge] Successfully synced', widgetType);
+            } else {
+                console.error('[WidgetBridge] WidgetDataBridge not found in Capacitor.Plugins');
             }
         } catch (error) {
-            console.warn('[WidgetBridge] Plugin not available:', error);
+            console.error('[WidgetBridge] Error syncing', widgetType, ':', error.message);
+            console.error('[WidgetBridge] Troubleshooting: Check that WidgetDataBridgePlugin is registered in MainActivity.java and capacitor.config.ts includes the plugin');
         }
     },
 
@@ -277,7 +386,16 @@ const WidgetBridge = {
      * Request manual widget update
      */
     async requestUpdate(widgetType) {
-        if (!this.isNative) return;
+        if (!this.isNative) {
+            if (this.debug) console.log('[WidgetBridge] Not on native platform, skipping update request for', widgetType);
+            return;
+        }
+
+        this.checkPluginAvailability();
+        if (!this.pluginAvailable) {
+            if (this.debug) console.error('[WidgetBridge] Plugin not available for update request:', widgetType);
+            return;
+        }
 
         try {
             const { WidgetDataBridge } = Capacitor.Plugins;
@@ -285,9 +403,10 @@ const WidgetBridge = {
                 await WidgetDataBridge.requestWidgetUpdate({
                     widgetType: widgetType
                 });
+                if (this.debug) console.log('[WidgetBridge] Successfully requested update for', widgetType);
             }
         } catch (error) {
-            console.warn('[WidgetBridge] Request update failed:', error);
+            console.error('[WidgetBridge] Error requesting update for', widgetType, ':', error.message);
         }
     },
 
@@ -295,7 +414,10 @@ const WidgetBridge = {
      * Setup auto-sync listeners
      */
     setupAutoSync() {
-        if (!this.isNative) return;
+        if (!this.isNative) {
+            if (this.debug) console.log('[WidgetBridge] Not on native platform, skipping auto-sync setup');
+            return;
+        }
 
         // Sync on page visibility change
         document.addEventListener('visibilitychange', () => {
@@ -309,8 +431,22 @@ const WidgetBridge = {
             this.syncAllWidgets();
         }, 5 * 60 * 1000);
 
-        console.log('[WidgetBridge] Auto-sync enabled');
-    }
+        // Retry plugin availability check
+        const retryInterval = setInterval(() => {
+            this.retryCount++;
+            this.checkPluginAvailability();
+            if (this.pluginAvailable) {
+                clearInterval(retryInterval);
+                console.log('[WidgetBridge] Plugin became available after', this.retryCount, 'retries');
+                this.syncAllWidgets();
+            } else if (this.retryCount >= this.maxRetries) {
+                clearInterval(retryInterval);
+                console.error('[WidgetBridge] Plugin not available after', this.maxRetries, 'retries (30 seconds). Check MainActivity.java plugin registration.');
+            }
+        }, 2000);
+
+        console.log('[WidgetBridge] Auto-sync enabled with plugin retry logic');
+    },
 };
 
 // Initialize on load

@@ -29,6 +29,7 @@
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
   const CDN_BASE = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
+  const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
 
   // Smart API resolution
@@ -77,10 +78,41 @@
       artwork: resolveAsset('Darbar-sahib-AMRITVELA.webp'),
       type: 'playlist',
       totalTracks: 40,
+      liveApi: '/api/radio/live',
+      durationApi: '/api/radio/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
         return `${CDN_BASE}/day-${safeIndex}.webm?t=${Date.now()}`;
+      }
+    },
+    simran: {
+      name: 'Waheguru Simran',
+      subtitle: 'Amritvela Trust',
+      artwork: resolveAsset('magical-simran.png'),
+      type: 'playlist',
+      totalTracks: 38,
+      liveApi: '/api/simran/live',
+      durationApi: '/api/simran/durations',
+      playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
+      getTrackUrl(index) {
+        const simranTracks = [
+          '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3', '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3', '03 - SUNN YAAR HAMARE SAJAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '04 - SUKH NAAHI RE HAR BHAGAT BINA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '05 - TU PRABH DATA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '06 - SATNAM WAHEGURU - SIMRAN - AMRITVELA TRUST..mp3',
+          '07 - MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '08 - RAKHWALA SIMRAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '09 - AAS PYAASI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '10 - PRABH PAAS JAN KI ARDAS - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '11 - TU HI TU HI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '12 - NAAM NAAM NAAM APNA NAAM DEHO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '13 - DHAN GURU RAMDAS JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '14 - AAO SAJANA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '15 - TUJ BIN KAVAN HAMARA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '16 - MERA BAID GURU GOVINDA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '17 - JAGAN TE SUPNA BHALA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '18 - EH NEECH KARAM HAR MERE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '19 - APNA NAAM JAPAO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '20 - MERE PYAARE SATUGURU JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '21 - RAKH LEHO BHAGWAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '22 - KAB GAL LAVENGE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '23 - MERE RAM MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '24 - RAKHEYA KARO SIMRAN DAY 25.mp3',
+          '25 - WAHEGURU SIMRAN UTH NAAM JAP AMRITVELA TRUST BEST SIMRAN.mp3', '26 - BEST WAHEGURU SIMRAN DAY 27 CHALIYA 2020.mp3', '27 - KAD NANAK AAVE VARI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '28 - BIN GUR NA PAVAIGO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '29 - KIYO SHINGAR MILAN KE TAAYEE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '30 - NAAM BINA NAHI JEEVIA JAYE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '31 - AATH PEHAR SIMRO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '32 - MIL MERE PREETMA JEEO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '33 - SATNAM SHRI WAHEGURU SIMRAN DAY 35 CHALIYA 2020.mp3',
+          '34 - RAKH RAKH MERE BEETHLA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '35 - PRAAN ADHAARA RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '36 - DHAN BABA NANAK - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+          '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3'
+        ];
+        const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
+        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(simranTracks[safeIndex])}?t=${Date.now()}`;
       }
     }
   };
@@ -94,6 +126,8 @@
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isLoading = false;
+  let audioRetryCount = 0;     // Error retry counter (max 5)
+  let playRequestId = 0;       // Guards stale canplay handlers after rapid stream changes
   const listeners = new Map(); // event → Set<fn>
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -122,7 +156,8 @@
   async function getServerLivePosition() {
     try {
       const t0 = Date.now();
-      const url = `${API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+      const apiEndpoint = STREAMS[currentStream]?.liveApi || '/api/radio/live';
+      const url = `${API_BASE}${apiEndpoint}?t=${Date.now()}&r=${Math.random()}`;
       const resp = await fetch(url, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
@@ -149,7 +184,8 @@
   function getLocalLivePosition() {
     const EPOCH = 1704067200000; // Jan 1, 2024
     const elapsed = (Date.now() - EPOCH) / 1000;
-    const totalDur = 40 * 3600;
+    const totalTracks = STREAMS[currentStream]?.totalTracks || 40;
+    const totalDur = totalTracks * 3600;
     const pos = ((elapsed % totalDur) + totalDur) % totalDur;
     return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
   }
@@ -192,6 +228,26 @@
     audio.preload = 'none';
     audio.volume = 0.8;
 
+    // Enable background playback for Capacitor native apps
+    if (window.Capacitor) {
+      // Configure for background audio on iOS/Android
+      audio.setAttribute('playsinline', '');
+      audio.setAttribute('webkit-playsinline', '');
+      
+      // Prevent screen from sleeping during playback
+      if ('wakeLock' in navigator) {
+        document.addEventListener('visibilitychange', async () => {
+          if (document.visibilityState === 'visible' && isPlaying) {
+            try {
+              await navigator.wakeLock.request('screen');
+            } catch (e) {
+              console.log('Wake lock failed:', e);
+            }
+          }
+        });
+      }
+    }
+
     // Restore volume from saved state
     const saved = loadState();
     if (saved && saved.volume !== undefined) {
@@ -201,8 +257,12 @@
     audio.addEventListener('playing', () => {
       isPlaying = true;
       isLoading = false;
+      audioRetryCount = 0; // Reset retry counter on success
       saveState();
       updateMediaSession();
+      acquireWakeLock(); // Keep alive for background playback
+      startForegroundService(); // CRITICAL: Keep process alive in background
+      syncNativeState('PLAY'); // Sync native service state
       emit('statechange', getPublicState());
       window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
         detail: { isPlaying: true, stream: currentStream }
@@ -215,6 +275,9 @@
     audio.addEventListener('pause', () => {
       isPlaying = false;
       saveState();
+      releaseWakeLock(); // Allow screen to sleep
+      stopForegroundService(); // Stop background service when not playing
+      syncNativeState('PAUSE'); // Sync native service state
       emit('statechange', getPublicState());
       window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
         detail: { isPlaying: false, stream: currentStream }
@@ -234,8 +297,12 @@
       emit('loading', { isLoading: false });
     });
 
+    audio.addEventListener('loadedmetadata', () => {
+      reportTrackDuration();
+    });
+
     audio.addEventListener('ended', () => {
-      if (currentStream === 'amritvela') {
+      if (currentStream === 'amritvela' || currentStream === 'simran') {
         playNextTrack();
       }
     });
@@ -254,13 +321,21 @@
       isLoading = false;
       emit('error', { message: 'Audio playback error' });
       emit('statechange', getPublicState());
-      // Auto-retry after 3 seconds
-      setTimeout(() => {
-        if (currentStream && !isPlaying) {
-          console.log('[AnhadAudio] Auto-retrying after error...');
-          play(currentStream);
-        }
-      }, 3000);
+      // Auto-retry with max attempts and increasing delay
+      audioRetryCount = (audioRetryCount || 0) + 1;
+      if (audioRetryCount <= 5 && currentStream && !isPlaying) {
+        const delay = Math.min(3000 * audioRetryCount, 15000);
+        console.log(`[AnhadAudio] Auto-retry ${audioRetryCount}/5 in ${delay/1000}s...`);
+        setTimeout(() => {
+          if (currentStream && !isPlaying) {
+            play(currentStream);
+          }
+        }, delay);
+      } else if (audioRetryCount > 5) {
+        console.warn('[AnhadAudio] Max retries exceeded, stopping auto-retry');
+        audioRetryCount = 0;
+        emit('error', { message: 'Unable to connect. Please try again later.' });
+      }
     });
 
     console.log('[AnhadAudio] ✅ Single audio element created');
@@ -278,6 +353,7 @@
     }
 
     initAudioElement();
+    const requestId = ++playRequestId;
     currentStream = streamName;
     const stream = STREAMS[streamName];
 
@@ -315,6 +391,7 @@
         console.log(`[AnhadAudio] 🔴 AMRITVELA: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
 
         const seekAndPlay = () => {
+          if (requestId !== playRequestId || currentStream !== streamName) return;
           const dur = audio.duration || 3600;
           const seekPos = Math.min(pos.position, dur - 5);
           if (seekPos > 2) {
@@ -341,7 +418,9 @@
         currentTrackIndex = local.trackIndex;
         audio.src = stream.getTrackUrl(currentTrackIndex);
         audio.load();
-        try { await audio.play(); } catch (err) {}
+        if (requestId === playRequestId && currentStream === streamName) {
+          try { await audio.play(); } catch (err) {}
+        }
       }
     }
 
@@ -400,6 +479,25 @@
     await play(currentStream);
   }
 
+  async function reportTrackDuration() {
+    const stream = STREAMS[currentStream];
+    if (!stream || stream.type !== 'playlist' || !stream.durationApi || !audio) return;
+    if (!audio.duration || !isFinite(audio.duration) || audio.duration <= 60) return;
+
+    try {
+      await fetch(`${API_BASE}${stream.durationApi}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackIndex: currentTrackIndex,
+          duration: audio.duration
+        })
+      });
+    } catch (e) {
+      console.warn('[AnhadAudio] Duration report failed:', e.message);
+    }
+  }
+
   function setVolume(vol) {
     initAudioElement();
     audio.volume = Math.max(0, Math.min(1, vol));
@@ -431,23 +529,181 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function updateMediaSession() {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (window.Capacitor) return;
     if (!('mediaSession' in navigator) || !currentStream) return;
     const stream = STREAMS[currentStream];
+
+    // Build artwork array with multiple sizes for best OS rendering
+    // Use stream artwork as primary, app logo as fallback
+    const primaryArt = stream.artwork || 'assets/icons/icon-1024x1024.png';
+    const artworkList = [
+      { src: 'assets/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+      { src: 'assets/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { src: 'assets/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { src: 'assets/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
+    ];
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: stream.name,
       artist: stream.subtitle,
       album: 'ANHAD',
-      artwork: [{ src: stream.artwork, sizes: '512x512', type: 'image/webp' }]
+      artwork: artworkList
     });
 
-    navigator.mediaSession.setActionHandler('play', () => play(currentStream));
+    // Playlist streams are virtual-live: every resume must re-sync to the server timeline.
+    navigator.mediaSession.setActionHandler('play', () => {
+      if (stream.type === 'playlist') {
+        play(currentStream);
+        return;
+      }
+
+      if (audio && audio.src && audio.src !== window.location.href) {
+        audio.play().catch(() => play(currentStream));
+      } else {
+        play(currentStream);
+      }
+    });
     navigator.mediaSession.setActionHandler('pause', () => pause());
     navigator.mediaSession.setActionHandler('stop', () => stop());
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      // Restart the current stream from live position
+      play(currentStream);
+    });
+
     if (stream.type === 'playlist') {
       navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
+      navigator.mediaSession.setActionHandler('seekbackward', () => {
+        if (audio) audio.currentTime = Math.max(0, audio.currentTime - 10);
+      });
+      navigator.mediaSession.setActionHandler('seekforward', () => {
+        if (audio) audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+      });
+    } else {
+      // Live stream — no next/seek
+      try { navigator.mediaSession.setActionHandler('nexttrack', null); } catch(e) {}
+      try { navigator.mediaSession.setActionHandler('seekbackward', null); } catch(e) {}
+      try { navigator.mediaSession.setActionHandler('seekforward', null); } catch(e) {}
     }
+
+    // Update position state for lock screen seek bar
+    if (audio && audio.duration && isFinite(audio.duration)) {
+      try {
+        navigator.mediaSession.setPositionState({
+          duration: audio.duration,
+          playbackRate: audio.playbackRate || 1,
+          position: audio.currentTime
+        });
+      } catch (e) {}
+    }
+
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
   }
+
+  // ─── WAKELOCK: Keep screen alive during playback ─────────────────────────
+  let _wakeLock = null;
+  async function acquireWakeLock() {
+    if (!('wakeLock' in navigator)) return;
+    try { _wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+  }
+  function releaseWakeLock() {
+    if (_wakeLock) { try { _wakeLock.release(); } catch(e) {} _wakeLock = null; }
+  }
+
+  // ─── FOREGROUND SERVICE: Keep app alive in background for audio ────────
+  function startForegroundService() {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+        const stream = STREAMS[currentStream];
+        window.Capacitor.Plugins.AudioService.start({
+          title: stream ? stream.name : 'ANHAD Kirtan',
+          artist: stream ? stream.subtitle : 'Playing'
+        }).catch(function() {});
+        console.log('[AudioService] Foreground service STARTED');
+      }
+    } catch(e) { console.warn('[AudioService] Start failed:', e); }
+  }
+  function stopForegroundService() {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+        window.Capacitor.Plugins.AudioService.stop().catch(function() {});
+        console.log('[AudioService] Foreground service STOPPED');
+      }
+    } catch(e) {}
+  }
+  function updateForegroundServiceNotification() {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService && isPlaying) {
+        const stream = STREAMS[currentStream];
+        window.Capacitor.Plugins.AudioService.updateNotification({
+          title: stream ? stream.name : 'ANHAD Kirtan',
+          artist: stream ? stream.subtitle : 'Playing'
+        }).catch(function() {});
+      }
+    } catch(e) {}
+  }
+  function syncNativeState(action) {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+        window.Capacitor.Plugins.AudioService.updateState({ action }).catch(function() {});
+        console.log('[AudioService] Native state synced:', action);
+      }
+    } catch(e) { console.warn('[AudioService] State sync failed:', e); }
+  }
+
+  // ─── AUDIO FOCUS: Pause on phone call, resume after ───────────────────────
+  let _wasPlayingBeforeInterrupt = false;
+  
+  // Capacitor uses App plugin for lifecycle, NOT document pause/resume (that's Cordova)
+  function setupAudioFocusHandling() {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('appStateChange', (state) => {
+          if (!state.isActive) {
+            // App went to background — DON'T pause, let foreground service keep it alive
+            _wasPlayingBeforeInterrupt = isPlaying;
+          } else {
+            // App came to foreground — re-acquire wakelock and re-sync
+            if (isPlaying) {
+              acquireWakeLock();
+              updateMediaSession();
+            }
+          }
+        });
+        console.log('[AnhadAudio] Capacitor audio focus handling registered');
+      }
+    } catch(e) {}
+  }
+  // Retry until Capacitor is ready
+  if (window.Capacitor) {
+    setTimeout(setupAudioFocusHandling, 1000);
+  }
+
+  // Fallback: Also listen to visibility change for PWA
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && isPlaying) {
+      acquireWakeLock();
+      updateMediaSession();
+      updateForegroundServiceNotification();
+    }
+  });
+
+  // Update position state periodically for lock screen seek bar
+  setInterval(() => {
+    if (window.Capacitor) return; // Skip for Capacitor - native handles it
+    if (isPlaying && audio && 'mediaSession' in navigator) {
+      try {
+        if (audio.duration && isFinite(audio.duration)) {
+          navigator.mediaSession.setPositionState({
+            duration: audio.duration,
+            playbackRate: 1,
+            position: audio.currentTime
+          });
+        }
+      } catch (e) {}
+    }
+  }, 5000);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-RESUME on page load
@@ -463,7 +719,7 @@
 
     // Only auto-resume Darbar live stream, not Amrit Vela
     // Amrit Vela should only play on the Gurbani Radio page
-    if (state.stream === 'amritvela') return;
+    if (state.stream === 'amritvela' || state.stream === 'simran') return;
 
     console.log('[AnhadAudio] 🔄 Auto-resuming:', state.stream);
     currentStream = state.stream;
@@ -527,6 +783,7 @@
     toggle,
     stop,
     jumpToLive,
+    playNextTrack,
     setVolume,
     getState: getPublicState,
     getAudio: () => audio,

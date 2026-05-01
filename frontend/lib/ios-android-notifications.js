@@ -28,8 +28,8 @@
     const CONFIG = {
         // Notification Settings
         APP_NAME: 'ANHAD',
-        APP_ICON: '/assets/apple-touch-icon.png',
-        APP_BADGE: '/assets/favicon-32x32.png',
+        APP_ICON: '/assets/icon-192x192.png',
+        APP_BADGE: '/assets/icon-72x72.png',
 
         // Storage Keys
         NOTIFICATION_PERMISSION_KEY: 'anhad_notification_permission',
@@ -382,6 +382,27 @@
                 if (!result.success) return;
             }
 
+            // Use Capacitor notifications when available (native iOS/Android)
+            if (window.CapacitorNotifications?.isCapacitorAvailable()) {
+                try {
+                    await window.CapacitorNotifications.scheduleNotification({
+                        id: options.id || Date.now(),
+                        title: title,
+                        body: body,
+                        icon: options.icon || CONFIG.APP_ICON,
+                        badge: CONFIG.APP_BADGE,
+                        tag: options.tag || `anhad-${Date.now()}`,
+                        requireInteraction: options.requireInteraction || false,
+                        actions: options.actions || [],
+                        data: options.data || { url: '/' }
+                    });
+                    return true;
+                } catch (error) {
+                    console.error('Capacitor notification error:', error);
+                }
+            }
+
+            // Fallback to service worker for PWA/web
             try {
                 const registration = await navigator.serviceWorker.ready;
 
@@ -398,9 +419,9 @@
 
                 return true;
             } catch (error) {
-                console.error('Show notification error:', error);
+                console.error('Service worker notification error:', error);
 
-                // Fallback to basic notification
+                // Final fallback to basic notification
                 try {
                     new Notification(title, {
                         body: body,

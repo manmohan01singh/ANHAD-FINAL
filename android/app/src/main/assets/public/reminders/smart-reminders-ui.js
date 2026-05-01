@@ -164,7 +164,9 @@
         },
 
         haptic(type = 'light') {
-            if (navigator.vibrate) {
+            if (window.CapacitorHaptics) {
+                window.CapacitorHaptics.impact(type);
+            } else if (navigator.vibrate) {
                 const patterns = { light: [10], medium: [20], success: [10, 30, 20] };
                 navigator.vibrate(patterns[type] || [10]);
             }
@@ -470,7 +472,9 @@
             this.showNotification(reminder);
 
             // Vibrate
-            if (navigator.vibrate) {
+            if (window.CapacitorHaptics) {
+                window.CapacitorHaptics.notification('error');
+            } else if (navigator.vibrate) {
                 navigator.vibrate([500, 200, 500, 200, 1000]);
             }
 
@@ -821,7 +825,11 @@
 
         // Go back
         goBack() {
-            window.location.href = '../index.html';
+            if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else {
+                window.location.href = '../index.html';
+            }
         }
     };
 

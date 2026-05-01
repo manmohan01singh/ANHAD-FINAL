@@ -30,11 +30,8 @@
     const isCapacitor = typeof window.Capacitor !== 'undefined' ||
                         navigator.userAgent.includes('Capacitor');
 
-    // If native Capacitor app, skip welcome and go straight to main app
-    if (isCapacitor) {
-        window.location.replace('../index.html');
-        return;
-    }
+    // NOTE: DO NOT skip welcome screen for Capacitor — user must see it on cold start
+    // The sessionStorage flag 'anhad_welcomed' in index.html prevents redirect loops
 
     // ═══════════════════════════════════════════════════════════════════
     // TIME-OF-DAY SYSTEM
@@ -230,32 +227,73 @@
         });
     }
 
+    // -------------------------------------------------------------------
+    // LIVE KIRTAN AUDIO with UnifiedStats Tracking
+    // -------------------------------------------------------------------
+    class KirtanTracker {
+        constructor() {
+            this.isTracking = false;
+            this.timer = null;
+        }
+        start() {
+            if (this.isTracking) return;
+            this.isTracking = true;
+            console.log("[KirtanTracker] Started");
+            this.recordMinute();
+            this.timer = setInterval(() => this.recordMinute(), 60000);
+        }
+        stop() {
+            if (!this.isTracking) return;
+            this.isTracking = false;
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
+            console.log("[KirtanTracker] Stopped");
+        }
+        recordMinute() {
+            if (window.UnifiedStats && typeof window.UnifiedStats.recordKirtanListening === "function") {
+                window.UnifiedStats.recordKirtanListening(1);
+                console.log("[KirtanTracker] Recorded via UnifiedStats");
+                return;
+            }
+            try {
+                const today = new Date().toISOString().split("T")[0];
+                const key = "anhad_daily_analytics";
+                let data = JSON.parse(localStorage.getItem(key) || "{}");
+                if (!data[today]) data[today] = { readPages: 0, listenMinutes: 0, nitnemCount: 0 };
+                data[today].listenMinutes += 1;
+                localStorage.setItem(key, JSON.stringify(data));
+                console.log("[KirtanTracker] Recorded to localStorage");
+            } catch (e) {
+                console.error("[KirtanTracker] Error:", e);
+            }
+        }
+        cleanup() {
+            this.stop();
+        }
+    }
+
     // ═══════════════════════════════════════════════════════════════════
-    // LIVE KIRTAN AUDIO
+    // LIVE KIRTAN AUDIO - Uses AnhadAudio Singleton
     // ═══════════════════════════════════════════════════════════════════
     function initAudio() {
-        const audio = document.getElementById('kirtan-audio');
         const tapHint = document.getElementById('tap-hint');
 
-        if (!audio) return;
+        if (!window.AnhadAudio) {
+            console.warn('[Homepage] AnhadAudio not available, retrying...');
+            setTimeout(initAudio, 100);
+            return;
+        }
 
-        let isPlaying = false;
+        const tracker = new KirtanTracker();
 
         function toggleAudio() {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                document.body.classList.remove('audio-playing');
-                if (tapHint) tapHint.textContent = 'Tap anywhere to start live kirtan';
+            const state = window.AnhadAudio.getState();
+            if (state.isPlaying) {
+                window.AnhadAudio.pause();
             } else {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    document.body.classList.add('audio-playing');
-                    if (tapHint) tapHint.textContent = 'Tap to pause kirtan';
-                }).catch(err => {
-                    console.warn('Audio autoplay blocked:', err.message);
-                    if (tapHint) tapHint.textContent = 'Tap anywhere to start live kirtan';
-                });
+                window.AnhadAudio.play('darbar');
             }
         }
 
@@ -265,6 +303,41 @@
             if (e.target.closest('#enter-btn') || e.target.closest('a')) return;
             toggleAudio();
         });
+
+        // Subscribe to singleton events for UI updates
+        window.AnhadAudio.on('statechange', (audioState) => {
+            if (audioState.isPlaying) {
+                document.body.classList.add('audio-playing');
+                tracker.start();
+                if (tapHint) tapHint.textContent = 'Tap to pause kirtan';
+            } else {
+                document.body.classList.remove('audio-playing');
+                tracker.stop();
+                if (tapHint) tapHint.textContent = 'Tap to play kirtan';
+            }
+        });
+
+        // Auto-start kirtan on page load
+        setTimeout(() => {
+            window.AnhadAudio.play('darbar');
+        }, 500);
+
+        // Handle visibility change - pause tracking when tab hidden
+        document.addEventListener('visibilitychange', () => {
+            const state = window.AnhadAudio.getState();
+            if (document.hidden && state.isPlaying) {
+                tracker.stop();
+            } else if (!document.hidden && state.isPlaying) {
+                tracker.start();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            tracker.cleanup();
+        });
+
+        console.log('[Homepage] Audio initialized with AnhadAudio singleton');
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -318,7 +391,10 @@
         enterBtn.addEventListener('click', (e) => {
             e.preventDefault();
 
-            // Set flags based on mode
+            // Set the CORRECT flag that index.html checks
+            sessionStorage.setItem('anhad_welcomed', '1');
+
+            // Also set legacy flags for compatibility
             if (isPWA) {
                 sessionStorage.setItem(SESSION_KEY, 'true');
             } else {
@@ -328,7 +404,7 @@
             // Haptic feedback
             if ('vibrate' in navigator) navigator.vibrate(15);
 
-            window.location.href = '../index.html';
+            window.location.replace('../index.html');
         });
     }
 

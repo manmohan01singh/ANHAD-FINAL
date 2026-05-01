@@ -1,22 +1,7 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
-  <script>
-(function() {
-  try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  } catch (e) {}
-})();
-  </script>
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
     <link rel="stylesheet" href="../../css/mobile-lock.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <meta charset="UTF-8">
@@ -29,6 +14,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Global Theme System -->
+    <link rel="stylesheet" href="../../css/theme-variables.css">
+    <script src="../../lib/global-theme.js"></script>
+    
+    <!-- Navigation Libraries -->
+    <script src="../../lib/smart-back.js"></script>
+    <script src="../../lib/page-lifecycle.js"></script>
+    <script src="../../lib/smooth-navigation.js"></script>
+    <script src="../../lib/state-preservation.js"></script>
     
     <style>
         :root {
@@ -540,11 +535,8 @@
         }
     </style>
     
-    <!-- OFFLINE-FIRST: Embedded Bani Data for instant loading -->
-    <script src="../js/offline-bani-data.js?v=1"></script>
-    
     <!-- BaniDB API - now with instant offline-first -->
-    <script src="../js/banidb-api.js?v=3"></script>
+    <script src="../js/banidb-api.js?v=5"></script>
     
     <!-- Preload Manager for instant navigation -->
     <script src="../js/preload-manager.js?v=1"></script>
@@ -757,5 +749,9 @@
             themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
     </script>
+    <!-- Global Engine -->
+    <script src="../../lib/capacitor-notifications-global.js"></script>
+    <script src="../../lib/anhad-widget-bridge.js"></script>
+    <script src="../../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

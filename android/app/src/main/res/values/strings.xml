@@ -10,4 +10,8 @@
     <string name="naam_abhyas_widget_description">Hourly Vaheguru remembrance reminders</string>
     <string name="calendar_widget_description">Upcoming Gurpurabs and daily Hukamnama</string>
     <string name="kirtan_widget_description">Live Kirtan player and current track</string>
+    <string name="amritvela_widget_description">24/7 Amritvela Kirtan player</string>
+    <string name="hukamnama_widget_description">Today\'s Hukamnama Sahib in Gurmukhi</string>
+    <string name="gurbani_khoj_widget_description">Quick Gurbani search from home screen</string>
+    <string name="smart_reminder_widget_description">Today\'s reminder schedule and progress</string>
 </resources>

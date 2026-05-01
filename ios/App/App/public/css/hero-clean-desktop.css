@@ -1,0 +1,47 @@
+/* ═════════════════════════════════════════════════════════════════════════════
+   HERO CARD CLEANUP - Desktop Overlay Removal
+   ════════════════════════════════════════════════════════════════════════════ */
+@media screen and (min-width: 1024px) {
+  /* Completely remove pseudo-element overlays */
+  .hero-card__image-wrapper::before,
+  .hero-card__image-wrapper::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    background-image: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+  }
+
+  /* Clean image display */
+  .hero-card__image {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    -webkit-mask-box-image: none !important;
+    filter: none !important;
+  }
+
+  /* Transparent overlay background */
+  .hero-card__overlay,
+  .hero-card__overlay--cinematic {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Ensure clean card appearance */
+  .hero-card {
+    overflow: hidden !important;
+    border-radius: 16px !important;
+  }
+
+  .hero-card__image-wrapper {
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 16px !important;
+  }
+}

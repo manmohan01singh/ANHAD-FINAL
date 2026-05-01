@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="meditationGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5856D6"/>
+      <stop offset="50%" style="stop-color:#7B68EE"/>
+      <stop offset="100%" style="stop-color:#AF52DE"/>
+    </linearGradient>
+    <radialGradient id="auraGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5856D6;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#5856D6;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Meditation Aura -->
+  <circle cx="32" cy="32" r="28" fill="url(#auraGradient)"/>
+  
+  <!-- Meditating Figure -->
+  <g filter="url(#softGlow)">
+    <!-- Head -->
+    <circle cx="32" cy="22" r="6" fill="url(#meditationGradient)"/>
+    
+    <!-- Body (Lotus Position) -->
+    <path 
+      d="M32 28 
+         C28 28 24 32 24 36 
+         L22 44 
+         Q20 48 24 48 
+         L28 48 
+         L32 44 
+         L36 48 
+         L40 48 
+         Q44 48 42 44 
+         L40 36 
+         C40 32 36 28 32 28 Z" 
+      fill="url(#meditationGradient)"/>
+    
+    <!-- Arms (Meditation Pose) -->
+    <path 
+      d="M24 34 Q20 38 22 42 M40 34 Q44 38 42 42" 
+      stroke="url(#meditationGradient)" 
+      stroke-width="3" 
+      stroke-linecap="round"
+      fill="none"/>
+  </g>
+  
+  <!-- Glow Rays -->
+  <g stroke="url(#meditationGradient)" stroke-width="1.5" stroke-linecap="round" opacity="0.6">
+    <line x1="32" y1="8" x2="32" y2="12"/>
+    <line x1="48" y1="16" x2="45" y2="19"/>
+    <line x1="16" y1="16" x2="19" y2="19"/>
+    <line x1="52" y1="32" x2="48" y2="32"/>
+    <line x1="12" y1="32" x2="16" y2="32"/>
+  </g>
+</svg>

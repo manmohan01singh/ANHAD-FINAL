@@ -1,0 +1,414 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANHAD CLAY — Premium Claymorphism Modal & Toast System
+   3D Soft UI with embossed shadows matching ANHAD design language
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── DESIGN TOKENS ────────────────────────────────────────────────────────── */
+:root {
+  /* Base Colors */
+  --clay-bg-dark: #0a0a0a;
+  --clay-bg-elevated: #141414;
+  --clay-bg-light: #F5F5F5;
+  --clay-bg-elevated-light: #FFFFFF;
+  
+  /* Surface Colors */
+  --clay-surface-dark: rgba(255, 255, 255, 0.08);
+  --clay-surface-light: rgba(0, 0, 0, 0.05);
+  --clay-surface-2-dark: rgba(255, 255, 255, 0.12);
+  --clay-surface-2-light: rgba(0, 0, 0, 0.1);
+  
+  /* Text Colors */
+  --clay-text-dark: #FFFFFF;
+  --clay-text-secondary-dark: rgba(255, 255, 255, 0.75);
+  --clay-text-light: #000000;
+  --clay-text-secondary-light: rgba(0, 0, 0, 0.6);
+  
+  /* 3D Shadow System */
+  --clay-shadow-outer: 20px 20px 60px rgba(0, 0, 0, 0.5), 
+                       -20px -20px 60px rgba(255, 255, 255, 0.05), 
+                       0 0 0 1px rgba(255, 255, 255, 0.05);
+  --clay-shadow-inner: inset 3px 3px 6px rgba(255, 255, 255, 0.1), 
+                       inset -3px -3px 6px rgba(0, 0, 0, 0.4);
+  --clay-shadow-convex: 8px 8px 16px rgba(0, 0, 0, 0.4), 
+                        -8px -8px 16px rgba(255, 255, 255, 0.05), 
+                        inset 1px 1px 2px rgba(255, 255, 255, 0.1);
+  --clay-shadow-concave: inset 3px 3px 6px rgba(0, 0, 0, 0.4), 
+                         inset -3px -3px 6px rgba(255, 255, 255, 0.05);
+  
+  /* Light Theme Shadows */
+  --clay-shadow-outer-light: 8px 8px 16px rgba(0, 0, 0, 0.1), 
+                             -8px -8px 16px rgba(255, 255, 255, 0.9);
+  --clay-shadow-inner-light: inset 2px 2px 5px rgba(0, 0, 0, 0.05), 
+                             inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+  --clay-shadow-convex-light: 6px 6px 12px rgba(0, 0, 0, 0.08), 
+                              -6px -6px 12px rgba(255, 255, 255, 0.95), 
+                              inset 1px 1px 1px rgba(255, 255, 255, 0.9);
+  
+  /* Accent Colors */
+  --clay-gold: #E8A838;
+  --clay-gold-hover: #D49420;
+  --clay-orange: #FF6B35;
+  --clay-orange-hover: #E85A20;
+  --clay-danger: #EF4444;
+  --clay-success: #22C55E;
+  --clay-info: #3B82F6;
+  
+  /* Animation */
+  --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --clay-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --clay-duration: 0.35s;
+  
+  /* Border Radius */
+  --clay-radius: 20px;
+  --clay-radius-sm: 14px;
+  --clay-radius-lg: 24px;
+}
+
+/* ─── DARK MODE (DEFAULT) ─────────────────────────────────────────────────── */
+.anhad-popup-overlay {
+  --clay-current-bg: var(--clay-bg-dark);
+  --clay-current-surface: var(--clay-surface-dark);
+  --clay-current-text: var(--clay-text-dark);
+  --clay-current-text-secondary: var(--clay-text-secondary-dark);
+  --clay-current-shadow-outer: var(--clay-shadow-outer);
+  --clay-current-shadow-inner: var(--clay-shadow-inner);
+  --clay-current-shadow-convex: var(--clay-shadow-convex);
+}
+
+/* ─── LIGHT MODE ──────────────────────────────────────────────────────────── */
+html[data-theme="light"] .anhad-popup-overlay,
+body.light-theme .anhad-popup-overlay {
+  --clay-current-bg: var(--clay-bg-elevated-light);
+  --clay-current-surface: var(--clay-surface-light);
+  --clay-current-text: var(--clay-text-light);
+  --clay-current-text-secondary: var(--clay-text-secondary-light);
+  --clay-current-shadow-outer: var(--clay-shadow-outer-light);
+  --clay-current-shadow-inner: var(--clay-shadow-inner-light);
+  --clay-current-shadow-convex: var(--clay-shadow-convex-light);
+}
+
+/* ─── OVERLAY ──────────────────────────────────────────────────────────────── */
+.anhad-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  transition: opacity var(--clay-duration) var(--clay-ease);
+  padding: 20px;
+}
+
+.anhad-popup-overlay.visible {
+  opacity: 1;
+}
+
+/* ─── CLAY PANEL ──────────────────────────────────────────────────────────── */
+.anhad-popup-panel {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: linear-gradient(145deg, var(--clay-current-surface), rgba(255,255,255,0.02));
+  border-radius: var(--clay-radius);
+  box-shadow: var(--clay-current-shadow-outer);
+  overflow: hidden;
+  transform: scale(0.92) translateY(12px);
+  opacity: 0;
+  transition: transform var(--clay-duration) var(--clay-spring),
+              opacity var(--clay-duration) var(--clay-ease);
+}
+
+.anhad-popup-overlay.visible .anhad-popup-panel {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Exit animation */
+.anhad-popup-overlay.closing .anhad-popup-panel {
+  transform: scale(0.95) translateY(8px);
+  opacity: 0;
+  transition-timing-function: var(--clay-ease);
+  transition-duration: 0.2s;
+}
+
+.anhad-popup-overlay.closing {
+  opacity: 0;
+  transition-duration: 0.2s;
+}
+
+/* ─── ICON STRIP (top accent bar) ──────────────────────────────────────────── */
+.anhad-popup-icon-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px 12px;
+}
+
+.anhad-popup-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--clay-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: var(--clay-current-shadow-convex);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+html[data-theme="light"] .anhad-popup-icon,
+body.light-theme .anhad-popup-icon {
+  border-color: rgba(0,0,0,0.05);
+}
+
+.anhad-popup-icon--success { 
+  background: linear-gradient(145deg, #22C55E, #16A34A);
+  color: white;
+}
+.anhad-popup-icon--error   { 
+  background: linear-gradient(145deg, #EF4444, #DC2626);
+  color: white;
+}
+.anhad-popup-icon--warning { 
+  background: linear-gradient(145deg, #F59E0B, #D97706);
+  color: white;
+}
+.anhad-popup-icon--info    { 
+  background: linear-gradient(145deg, #3B82F6, #2563EB);
+  color: white;
+}
+.anhad-popup-icon--confirm { 
+  background: linear-gradient(145deg, var(--clay-gold), var(--clay-gold-hover));
+  color: white;
+}
+.anhad-popup-icon--prayer {
+  background: linear-gradient(145deg, #E8A838, #D4943A);
+  color: white;
+}
+.anhad-popup-icon--bell {
+  background: linear-gradient(145deg, #FF6B35, #E85A20);
+  color: white;
+}
+
+/* ─── CONTENT ──────────────────────────────────────────────────────────────── */
+.anhad-popup-content {
+  padding: 16px 24px 8px;
+  text-align: center;
+}
+
+.anhad-popup-title {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--clay-current-text);
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+.anhad-popup-message {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--clay-current-text-secondary);
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* ─── INPUT FIELD ──────────────────────────────────────────────────────────── */
+.anhad-popup-input-wrap {
+  padding: 12px 24px 0;
+}
+
+.anhad-popup-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--clay-radius-sm);
+  background: var(--clay-current-bg);
+  color: var(--clay-current-text);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: box-shadow 0.2s;
+  box-sizing: border-box;
+  box-shadow: var(--clay-current-shadow-concave);
+}
+
+.anhad-popup-input:focus {
+  box-shadow: var(--clay-current-shadow-inner), 0 0 0 2px var(--clay-gold);
+}
+
+.anhad-popup-input::placeholder {
+  color: var(--clay-current-text-secondary);
+  opacity: 0.6;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────────────────────── */
+.anhad-popup-actions {
+  display: flex;
+  gap: 12px;
+  padding: 24px;
+  justify-content: center;
+}
+
+.anhad-popup-btn {
+  flex: 1;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--clay-radius-sm);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s var(--clay-spring),
+              box-shadow 0.2s;
+  min-height: 48px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.anhad-popup-btn:active {
+  transform: scale(0.96);
+}
+
+/* Primary (golden clay button) */
+.anhad-popup-btn--primary {
+  background: linear-gradient(145deg, var(--clay-gold), var(--clay-gold-hover));
+  color: #fff;
+  box-shadow: var(--clay-current-shadow-convex), 
+              0 4px 15px rgba(232, 168, 56, 0.3);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.anhad-popup-btn--primary:hover {
+  box-shadow: var(--clay-current-shadow-convex), 
+              0 6px 20px rgba(232, 168, 56, 0.4);
+}
+
+.anhad-popup-btn--primary:active {
+  box-shadow: var(--clay-current-shadow-inner);
+}
+
+/* Danger */
+.anhad-popup-btn--danger {
+  background: linear-gradient(145deg, var(--clay-danger), #DC2626);
+  color: #fff;
+  box-shadow: var(--clay-current-shadow-convex), 
+              0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.anhad-popup-btn--danger:active {
+  box-shadow: var(--clay-current-shadow-inner);
+}
+
+/* Secondary (concave clay button) */
+.anhad-popup-btn--secondary {
+  background: var(--clay-current-bg);
+  color: var(--clay-current-text-secondary);
+  box-shadow: var(--clay-current-shadow-convex);
+}
+
+.anhad-popup-btn--secondary:hover {
+  color: var(--clay-current-text);
+}
+
+.anhad-popup-btn--secondary:active {
+  box-shadow: var(--clay-current-shadow-inner);
+}
+
+/* ─── TOAST ────────────────────────────────────────────────────────────────── */
+.anhad-toast {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: linear-gradient(145deg, var(--clay-current-surface), rgba(255,255,255,0.02));
+  border-radius: 50px;
+  box-shadow: var(--clay-current-shadow-convex);
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--clay-current-text);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--clay-duration) var(--clay-spring),
+              opacity var(--clay-duration) var(--clay-ease);
+  max-width: calc(100vw - 40px);
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+html[data-theme="light"] .anhad-toast,
+body.light-theme .anhad-toast {
+  border-color: rgba(0,0,0,0.05);
+}
+
+.anhad-toast.visible {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.anhad-toast.closing {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-12px);
+  transition-duration: 0.2s;
+}
+
+.anhad-toast__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: var(--clay-current-shadow-convex);
+}
+
+.anhad-toast--success .anhad-toast__icon { 
+  background: linear-gradient(145deg, #22C55E, #16A34A);
+  color: white;
+}
+.anhad-toast--error .anhad-toast__icon   { 
+  background: linear-gradient(145deg, #EF4444, #DC2626);
+  color: white;
+}
+.anhad-toast--warning .anhad-toast__icon { 
+  background: linear-gradient(145deg, #F59E0B, #D97706);
+  color: white;
+}
+.anhad-toast--info .anhad-toast__icon    { 
+  background: linear-gradient(145deg, #3B82F6, #2563EB);
+  color: white;
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .anhad-popup-panel { max-width: calc(100vw - 40px); }
+  .anhad-popup-actions { flex-direction: column; }
+  .anhad-popup-btn { flex: none; }
+  .anhad-toast {
+    padding: 12px 18px;
+    font-size: 13px;
+  }
+}
+
+/* ─── ANIMATION KEYFRAMES ─────────────────────────────────────────────────── */
+@keyframes clay-pop {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.anhad-popup-panel {
+  animation: clay-pop var(--clay-duration) var(--clay-spring);
+}

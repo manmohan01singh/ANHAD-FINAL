@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -53,27 +53,27 @@
     <link rel="stylesheet" href="notes-app.css">
 
     <!-- Global Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
     <link rel="stylesheet" href="../css/dark-mode.css">
   <script src="../lib/global-theme.js"></script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-    <script src="../lib/native-audio-bridge.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/global-mini-player.js" defer></script>
+    
     <script src="../js/anhad-core.js" defer></script>
 </head>
 
 <body>
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          NOTES APPLICATION CONTAINER
-    ═══════════════════════════════════════════════════════════════ -->
+    --------------------------------------------------------------- -->
     <div class="notes-app" id="notes-app">
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              HEADER
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <header class="notes-header">
             <div class="header-glass"></div>
             <div class="header-content">
@@ -110,9 +110,9 @@
             </div>
         </header>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              MAIN CONTENT AREA
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <main class="notes-main" id="notes-main">
 
             <!-- Folder Tabs -->
@@ -157,9 +157,9 @@
             </div>
         </main>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              FLOATING ACTION BUTTON
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <button class="fab" id="fab" aria-label="Create new note">
             <div class="fab-glow"></div>
             <div class="fab-icon">
@@ -167,9 +167,9 @@
             </div>
         </button>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              NOTE EDITOR OVERLAY
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <div class="editor-overlay" id="editor-overlay">
             <div class="editor-container">
 
@@ -225,7 +225,7 @@
                     </button>
                     <div class="toolbar-divider"></div>
                     <button class="toolbar-btn" data-format="gurmukhi" title="Insert Gurmukhi">
-                        <span class="gurmukhi-icon">ੴ</span>
+                        <span class="gurmukhi-icon">?</span>
                     </button>
                 </div>
 
@@ -255,9 +255,9 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              OPTIONS MENU OVERLAY
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <div class="menu-overlay" id="menu-overlay">
             <div class="menu-backdrop" id="menu-backdrop"></div>
             <div class="menu-sheet">
@@ -289,9 +289,9 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              SORT OPTIONS SHEET
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <div class="sort-sheet" id="sort-sheet">
             <div class="sort-backdrop" id="sort-backdrop"></div>
             <div class="sort-content">
@@ -317,9 +317,9 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              DELETE CONFIRMATION MODAL
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <div class="confirm-modal" id="confirm-modal">
             <div class="confirm-backdrop"></div>
             <div class="confirm-dialog">
@@ -335,9 +335,9 @@
             </div>
         </div>
 
-        <!-- ═══════════════════════════════════════════════════════════
+        <!-- -----------------------------------------------------------
              TOAST NOTIFICATION
-        ═══════════════════════════════════════════════════════════ -->
+        ----------------------------------------------------------- -->
         <div class="toast" id="toast">
             <i class="toast-icon fas fa-check-circle"></i>
             <span class="toast-message" id="toast-message">Note saved</span>
@@ -347,15 +347,19 @@
         <input type="file" id="import-input" accept=".json,.txt" style="display: none;">
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════
+    <!-- ---------------------------------------------------------------
          SCRIPTS
-    ═══════════════════════════════════════════════════════════════ -->
+    --------------------------------------------------------------- -->
     <script src="../lib/unified-storage.js"></script>
     <script src="notes-manager.js"></script>
     <script src="notes-ui.js"></script>
     <script src="notes-integration.js"></script>
     <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

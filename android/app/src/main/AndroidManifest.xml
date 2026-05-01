@@ -30,58 +30,132 @@
         </provider>
 
         <!-- WIDGET RECEIVERS -->
-        
-        <!-- Nitnem Tracker Widget -->
-        <receiver 
-            android:name=".widgets.NitnemWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/nitnem_widget_info" />
-        </receiver>
-        
-        <!-- Naam Abhyas Widget -->
-        <receiver 
-            android:name=".widgets.NaamAbhyasWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/naam_abhyas_widget_info" />
-        </receiver>
-        
-        <!-- Calendar Widget -->
-        <receiver 
-            android:name=".widgets.CalendarWidgetProvider"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/calendar_widget_info" />
-        </receiver>
-        
-        <!-- Live Kirtan Widget -->
-        <receiver 
+        <receiver
             android:name=".widgets.KirtanWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="ANHAD Kirtan">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/kirtan_widget_info" />
+                android:resource="@xml/kirtan_widget_info"/>
         </receiver>
-        
+
+        <receiver
+            android:name=".widgets.NitnemWidgetProvider"
+            android:exported="true"
+            android:label="Nitnem Tracker">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/nitnem_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.NaamAbhyasWidgetProvider"
+            android:exported="true"
+            android:label="Naam Abhyas">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/naam_abhyas_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.CalendarWidgetProvider"
+            android:exported="true"
+            android:label="Gurpurab Calendar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/calendar_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.HukamnamaWidgetProvider"
+            android:exported="true"
+            android:label="Hukamnama">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/hukamnama_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.GurbaniKhojWidgetProvider"
+            android:exported="true"
+            android:label="Gurbani Khoj">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/gurbani_khoj_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.SmartReminderWidgetProvider"
+            android:exported="true"
+            android:label="Smart Reminders">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/smart_reminder_widget_info"/>
+        </receiver>
+
+        <receiver
+            android:name=".widgets.AmritvelaWidgetProvider"
+            android:exported="true"
+            android:label="Amritvela Kirtan">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/amritvela_widget_info"/>
+        </receiver>
+
+        <!-- Foreground Service for background audio playback -->
+        <service
+            android:name=".AudioForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <!-- Streak Saver Boot Receiver -->
+        <receiver
+            android:name=".StreakSaverBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
     <!-- Permissions -->
-
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Exact alarms — required for reliable notification timing on Android 12+/13+ -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!-- Microphone — for Gurbani Khoj voice search -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Battery optimization bypass — for reliable alarm delivery -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 </manifest>

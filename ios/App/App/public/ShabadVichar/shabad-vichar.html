@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pa" dir="ltr">
+<head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'light';
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (e) {}
+})();
+  </script>
+  <meta name="color-scheme" content="light dark">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FAF8F5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ਸ਼ਬਦ ਵਿਚਾਰ | Shabad Vichar — ANHAD</title>
+  
+  <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="shabad-vichar.css?v=1.0">
+  
+  <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
+</head>
+<body>
+  
+  <!-- ═══════════════════════════════════════════════════════════════
+       MINIMAL IOS HEADER
+  ═══════════════════════════════════════════════════════════════ -->
+  <header class="app-header">
+    <button class="header-back" id="backBtn" aria-label="Back">
+      <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+        <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h1 class="header-title">ਸ਼ਬਦ ਵਿਚਾਰ</h1>
+    <div class="header-actions">
+      <button class="header-action" id="infoBtn" aria-label="About Shabad Vichar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+      </button>
+      <button class="header-action" id="settingsBtn" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l-.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SHABAD INFO BAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="info-bar">
+    <span class="ang-pill">
+      <span class="ang-label">ਅੰਗ</span>
+      <span class="ang-number" id="angNumber">---</span>
+    </span>
+    <span class="source-text" id="sourceInfo">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MAIN SHABAD CONTENT - Apple Books Style
+  ═══════════════════════════════════════════════════════════════ -->
+  <main class="shabad-content" id="shabadContent">
+    
+    <!-- Loading State -->
+    <div class="state state--loading" id="loadingState">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">ਹੁਕਮ ਆ ਰਿਹਾ ਹੈ...</p>
+    </div>
+    
+    <!-- Error State -->
+    <div class="state state--error" id="errorState">
+      <p class="error-text">ਕੁਨੈਕਸ਼ਨ ਸਮੱਸਿਆ</p>
+      <button class="btn-retry" id="retryBtn">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</button>
+    </div>
+    
+    <!-- Shabad Verses -->
+    <div class="state state--verses" id="versesState">
+      <div class="verses-container" id="versesContainer"></div>
+    </div>
+    
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ACTION BAR
+  ═══════════════════════════════════════════════════════════════ -->
+  <footer class="action-bar">
+    <div class="quick-actions">
+      <button class="action-btn" id="copyBtn" aria-label="Copy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+      </button>
+      <button class="action-btn" id="shareBtn" aria-label="Share">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+          <polyline points="16,6 12,2 8,6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+      </button>
+      <button class="action-btn" id="saveBtn" aria-label="Save">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <button class="btn-new-shabad" id="newShabadBtn">
+      <span>ਨਵਾਂ ਸ਼ਬਦ</span>
+    </button>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SETTINGS SHEET - iOS Style
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <aside class="settings-sheet" id="settingsSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>ਸੈਟਿੰਗਜ਼</h2>
+    </div>
+    <div class="sheet-body">
+      
+      <div class="settings-section">
+        <div class="setting-item">
+          <span class="setting-label">ਲੜੀਵਾਰ (Continuous)</span>
+          <label class="ios-toggle">
+            <input type="checkbox" id="larivaarToggle">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <span class="setting-label">Transliteration</span>
+          <label class="ios-toggle">
+            <input type="checkbox" id="translitToggle">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <span class="setting-label">English Translation</span>
+          <label class="ios-toggle">
+            <input type="checkbox" id="englishToggle" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <span class="setting-label">ਪੰਜਾਬੀ ਅਰਥ</span>
+          <label class="ios-toggle">
+            <input type="checkbox" id="punjabiToggle">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="setting-label">ਅੱਖਰ ਦਾ ਆਕਾਰ (Font Size)</div>
+        <div class="font-slider-wrap">
+          <span class="font-icon">ੳ</span>
+          <input type="range" class="font-slider" id="fontSlider" min="1" max="2" step="0.1" value="1.4">
+          <span class="font-icon font-icon--large">ੳ</span>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <div class="setting-item">
+          <span class="setting-label">ਥੀਮ (Theme)</span>
+          <button class="theme-toggle" id="themeToggleBtn">
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       INFO SHEET - About Shabad Vichar
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="sheet-backdrop" id="infoSheetBackdrop"></div>
+  <aside class="info-sheet" id="infoSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>ਸ਼ਬਦ ਵਿਚਾਰ ਬਾਰੇ</h2>
+    </div>
+    <div class="sheet-body info-sheet-body">
+      
+      <div class="info-section">
+        <div class="info-quote">
+          <p class="gurmukhi-quote">"ਗੁਰਬਾਣੀ ਇਸੁ ਜਗ ਮਹਿ ਚਾਨਣੁ ਕਰਮਿ ਵਸੈ ਮਨਿ ਆਏ ॥੧॥"</p>
+          <p class="quote-translation">Gurbani is the light of this world, through divine grace it comes to dwell in the mind.</p>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3 class="info-title">ਦੈਨਿਕ ਸ਼ਬਦ ਵਿਚਾਰ</h3>
+        <p class="info-text">
+          ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਮਹਾਰਾਜ ਦੇ ਬਚਨ ਅਨੁਸਾਰ, ਹਰ ਰੋਜ਼ ਇੱਕ ਗੁਰਬਾਣੀ ਸ਼ਬਦ ਦਾ ਗਹਿਰਾਈ ਨਾਲ ਅਧਿਐਨ ਕਰਨਾ ਸਾਡੀ ਰੂਹਾਨੀ ਸਿਧਾਂਤ ਹੈ। 
+        </p>
+        <p class="info-text">
+          ਇਹ ਸ਼ਬਦ ਵਿਚਾਰ ਸਾਧਨਾ ਤੁਹਾਨੂੰ ਹਰ ਦਿਨ ਇੱਕ ਨਵਾਂ ਸ਼ਬਦ ਦਿੰਦੀ ਹੈ - ਗੁਰੂ ਜੀ ਦੀ ਹਜ਼ੂਰੀ ਵਿੱਚੋਂ ਆਇਆ ਹੋਇਆ, ਤੁਹਾਡੇ ਅੱਜ ਦੇ ਦਿਨ ਲਈ ਵਿਸ਼ੇਸ਼।
+        </p>
+      </div>
+
+      <div class="info-section">
+        <h3 class="info-title">ਕਿਵੇਂ ਕਰੀਏ ਵਿਚਾਰ?</h3>
+        <ul class="info-list">
+          <li><strong>ਪੜ੍ਹੋ:</strong> ਸ਼ਬਦ ਨੂੰ ਧਿਆਨ ਨਾਲ ਅਤੇ ਹੌਲੀ-ਹੌਲੀ ਪੜ੍ਹੋ</li>
+          <li><strong>ਸਮਝੋ:</strong> ਉਪਲਬਧ ਅਰਥਾਂ ਰਾਹੀਂ ਉਸਦਾ ਭਾਵ ਸਮਝੋ</li>
+          <li><strong>ਮਨਨ ਕਰੋ:</strong> ਇਸਦੀ ਡੂੰਘਾਈ ਵਿੱਚ ਜਾਓ, ਗਹਿਰੇ ਅਰਥਾਂ ਨੂੰ ਮਹਿਸੂਸ ਕਰੋ</li>
+          <li><strong>ਅਮਲ ਕਰੋ:</strong> ਇਹਨਾਂ ਸਿਖਿਆਵਾਂ ਨੂੰ ਆਪਣੀ ਜ਼ਿੰਦਗੀ ਵਿੱਚ ਉਤਾਰੋ</li>
+        </ul>
+      </div>
+
+      <div class="info-section info-footer">
+        <p class="info-subtext">ਹਰ ਰੋਜ਼ ਇਸ ਸ਼ਬਦ ਨੂੰ ਆਪਣੇ ਦਿਲ ਵਿੱਚ ਸਮਾਓ ਅਤੇ ਗੁਰੂ ਜੀ ਦੀ ਬਖਸ਼ਿਸ਼ ਪ੍ਰਾਪਤ ਕਰੋ।</p>
+      </div>
+      
+    </div>
+  </aside>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"><span id="toastMsg"></span></div>
+
+  <!-- Persistent Audio for Cross-Page Playback -->
+  <script src="../lib/audio-preload.js"></script>
+  <script src="../lib/audio-coordinator.js"></script>
+  <script src="../lib/persistent-audio.js"></script>
+  <script src="../lib/background-audio-loader.js"></script>
+  <script src="../lib/smart-back.js"></script>
+  <script src="shabad-vichar.js?v=1.0"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/global-mini-player.js" defer></script>
+</body>
+</html>

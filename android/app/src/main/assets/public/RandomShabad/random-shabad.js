@@ -406,9 +406,12 @@ class RandomShabad {
     }
 
     haptic(type = 'light') {
-        if (!navigator.vibrate) return;
-        const patterns = { light: 8, medium: 15, heavy: 25, error: [20, 40, 20] };
-        navigator.vibrate(patterns[type] || 8);
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact(type);
+        } else if (navigator.vibrate) {
+            const patterns = { light: 8, medium: 15, heavy: 25, error: [20, 40, 20] };
+            navigator.vibrate(patterns[type] || 8);
+        }
     }
 
     load(key) {

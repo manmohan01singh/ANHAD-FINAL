@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -31,7 +31,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#080612">
     <meta name="description"
-        content="Naam Abhyas — Sacred hourly practice. Pause 2 minutes every hour to remember Waheguru.">
+        content="Naam Abhyas • Sacred hourly practice. Pause 2 minutes every hour to remember Waheguru.">
 
     <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</title>
 
@@ -46,22 +46,22 @@
         rel="stylesheet">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="naam-abhyas.css">
-    <link rel="stylesheet" href="naam-abhyas-ultra-premium.css">
-    <link rel="stylesheet" href="naam-abhyas-clay.css">
-    <link rel="stylesheet" href="components/ritual-overlay.css">
+    <link rel="stylesheet" href="naam-abhyas.css?v=3.1">
+    <link rel="stylesheet" href="naam-abhyas-ultra-premium.css?v=3.1">
+    
+    <!-- Global Theme System -->
+    <script src="../lib/global-theme.js"></script>
+    <link rel="stylesheet" href="naam-abhyas-clay.css?v=3.1">
+    <link rel="stylesheet" href="components/ritual-overlay.css?v=3.1">
 
     <!-- Favicon & PWA -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
     <link rel="manifest" href="../manifest.json">
 
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/dark-mode.css">
-    <script>
-        // FORCE GLOBAL THEME - Naam Abhyas should follow index.html theme
-        document.documentElement.setAttribute('data-global-theme', 'force');
-    </script>
-    <script src="../lib/global-theme.js"></script>
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="../css/theme-variables.css">
+    <script src="../lib/theme-engine.js"></script>
+    <script>AnhadTheme.init();</script>
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
     <script src="../lib/audio-preload.js"></script>
@@ -73,17 +73,16 @@
     <!-- Fallback Alarm System (works without Service Worker) -->
     <script src="../lib/fallback-alarm-system.js"></script>
     
-    <script src="../lib/native-audio-bridge.js"></script>
     <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/global-mini-player.js" defer></script>
+    
     <script src="../js/anhad-core.js" defer></script>
 </head>
 
 <body>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          SACRED LOADING SCREEN
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="app-loading" id="appLoading">
         <div class="load-cosmos">
             <div class="load-ring"></div>
@@ -94,9 +93,9 @@
         <div class="loading-sub">Preparing your sacred practice...</div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          COSMIC BACKGROUND
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="cosmos" id="cosmos">
         <canvas id="cosmosCanvas"></canvas>
         <div class="nebula neb-1"></div>
@@ -106,17 +105,17 @@
         <div class="stars-field" id="starsField"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          WELCOME MODAL
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="welcome-modal" id="welcomeModal">
         <div class="welcome-backdrop"></div>
         <div class="welcome-content">
             <div class="welcome-glow"></div>
             <div class="welcome-symbol">ੴ</div>
-            <h2 class="welcome-title">ਵਾਹਿਗੁਰੂ</h2>
+            <h2 class="welcome-title">ਨਾਮ ਅਭਿਆਸ</h2>
             <p class="welcome-subtitle">Welcome to Naam Abhyas</p>
-            <p class="welcome-quote">"ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ"</p>
+            <p class="welcome-quote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
             <p class="welcome-translation">Chanting the Naam, millions of sins are erased</p>
             <div class="welcome-stats">
                 <div class="welcome-stat">
@@ -129,7 +128,7 @@
                 </div>
                 <div class="welcome-stat">
                     <span class="stat-value" id="welcomeTotal">0</span>
-                    <span class="stat-label">⏱️ Total</span>
+                    <span class="stat-label">💪 Total</span>
                 </div>
             </div>
             <button class="welcome-start-btn" id="welcomeStartBtn">
@@ -137,19 +136,19 @@
                 <span class="btn-icon">🙏</span>
                 <span class="btn-text">Begin Naam Abhyas</span>
             </button>
-            <button class="welcome-dismiss-btn" id="welcomeDismissBtn">View Schedule →</button>
+            <button class="welcome-dismiss-btn" id="welcomeDismissBtn">View Schedule ?</button>
         </div>
     </div>
 
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          MAIN APPLICATION
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="app-container" id="appContainer">
 
-        <!-- ═══════════════════════════════════════════════════════════════════
-             HEADER — Transparent & Minimal
-        ═══════════════════════════════════════════════════════════════════ -->
+        <!-- -------------------------------------------------------------------
+             HEADER  Transparent & Minimal
+        ------------------------------------------------------------------- -->
         <header class="app-header" id="appHeader">
             <button class="hdr-btn back-btn" id="backBtn" aria-label="Go back">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -159,21 +158,20 @@
 
             <div class="hdr-actions">
                 <button class="hdr-btn" id="settingsPageBtn" aria-label="Settings">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3" />
-                        <path
-                            d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                 </button>
             </div>
         </header>
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+        <!-- -------------------------------------------------------------------
              SCROLLABLE CONTENT
-        ═══════════════════════════════════════════════════════════════════ -->
+        ------------------------------------------------------------------- -->
         <main class="main-content" id="mainContent">
 
-            <!-- ═══ HERO SECTION ═══ -->
+            <!-- --- HERO SECTION --- -->
             <section class="hero-section" id="heroSection">
                 <!-- Dynamic Sky with Sun/Moon -->
                 <div class="sky-container" id="skyContainer">
@@ -194,17 +192,17 @@
                     <div class="hero-symbol">ੴ</div>
                 </div>
                 <h1 class="hero-title">
-                    <span class="hero-gurmukhi">ਨਾਮ ਅਭਿਆਸ</span>
+                    <span class="hero-gurmukhi">ਵਾਹਿਗੁਰੂ</span>
                     <span class="hero-eng">Naam Abhyas</span>
                 </h1>
-                <p class="hero-tagline">2 minutes every hour · Remember the Divine</p>
+                <p class="hero-tagline">2 minutes every hour • Remember the Divine</p>
             </section>
 
-            <!-- ═══ ENABLE TOGGLE ═══ -->
+            <!-- --- ENABLE TOGGLE --- -->
             <section class="glass-card toggle-card" id="toggleSection">
                 <div class="toggle-row">
                     <div class="toggle-info">
-                        <div class="toggle-icon-wrap"><span>🙏</span></div>
+                        <div class="toggle-icon-wrap"><span>🔔</span></div>
                         <div class="toggle-text">
                             <span class="toggle-label">Enable Naam Abhyas</span>
                             <span class="toggle-desc" id="toggleStatusText">Currently disabled</span>
@@ -217,7 +215,7 @@
                 </div>
             </section>
 
-            <!-- ═══ NEXT SESSION CARD ═══ -->
+            <!-- --- NEXT SESSION CARD --- -->
             <section class="glass-card next-card" id="nextSessionSection">
                 <div class="next-header">
                     <div class="next-icon-wrap">
@@ -246,7 +244,7 @@
                 </div>
             </section>
 
-            <!-- ═══ SACRED DAY TIMELINE ═══ -->
+            <!-- --- SACRED DAY TIMELINE --- -->
             <section class="glass-card timeline-card" id="scheduleSection">
                 <div class="timeline-header">
                     <div class="timeline-icon-wrap">
@@ -273,13 +271,13 @@
                 </div>
             </section>
 
-            <!-- ═══ WISDOM QUOTE ═══ -->
+            <!-- --- WISDOM QUOTE --- -->
             <section class="glass-card wisdom-card" id="wisdomCard">
                 <div class="wisdom-accent"></div>
-                <div class="wisdom-icon">📿</div>
-                <p class="wisdom-quote" id="wisdomQuote">"ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ"</p>
+                <div class="wisdom-icon">💡</div>
+                <p class="wisdom-quote" id="wisdomQuote">"ਸਤਿਨਾਮੁ ਜਪਿ ਵਡਭਾਗੀਆ"</p>
                 <p class="wisdom-translation" id="wisdomTranslation">Chanting the Naam, millions of sins are erased</p>
-                <p class="wisdom-source" id="wisdomSource">— Sri Guru Granth Sahib Ji, Ang 289</p>
+                <p class="wisdom-source" id="wisdomSource">� Sri Guru Granth Sahib Ji, Ang 289</p>
                 <button class="wisdom-refresh" id="wisdomRefreshBtn" aria-label="New quote">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path
@@ -288,13 +286,13 @@
                 </button>
             </section>
 
-            <!-- ═══ QUICK ACTIONS ═══ -->
+            <!-- --- QUICK ACTIONS --- -->
             <section class="quick-actions" id="quickActions">
                 <div class="qa-label">Extra Naam Simran</div>
                 <div class="qa-grid">
                     <button class="qa-btn qa-primary" id="startNowBtn">
                         <div class="qa-btn-glow"></div>
-                        <span class="qa-emoji">▶️</span>
+                        <span class="qa-emoji">🙏</span>
                         <div class="qa-text">
                             <span class="qa-title">Start Now</span>
                             <span class="qa-sub">2 min</span>
@@ -317,7 +315,7 @@
                 </div>
             </section>
 
-            <!-- ═══ DISCIPLINE DASHBOARD ═══ -->
+            <!-- --- DISCIPLINE DASHBOARD --- -->
             <section class="glass-card stats-card" id="quickStatsSection">
                 <div class="stats-header">
                     <div class="stats-icon-wrap">
@@ -331,7 +329,7 @@
                         <p class="stats-subtitle" id="dashboardSubtitle">Keep the streak alive!</p>
                     </div>
                     <div class="perfect-day-indicator hidden" id="perfectDayIndicator">
-                        <span class="perfect-badge">🌟</span>
+                        <span class="perfect-badge">🏆</span>
                     </div>
                 </div>
 
@@ -409,7 +407,7 @@
                 </button>
             </section>
 
-            <!-- ═══ ACHIEVEMENTS ═══ -->
+            <!-- --- ACHIEVEMENTS --- -->
             <section class="glass-card achievements-card" id="achievementsSection">
                 <div class="ach-header">
                     <div class="ach-icon-wrap">
@@ -427,7 +425,7 @@
                 </div>
                 <div class="achievements-preview" id="achievementsPreview">
                     <div class="achievement-badge locked" data-id="first_session">
-                        <span class="badge-icon">🏅</span>
+                        <span class="badge-icon">🙋</span>
                         <span class="badge-name">First Step</span>
                     </div>
                     <div class="achievement-badge locked" data-id="streak_10">
@@ -439,7 +437,7 @@
                         <span class="badge-name">Centurion</span>
                     </div>
                     <div class="achievement-badge locked" data-id="time_1hour">
-                        <span class="badge-icon">⏰</span>
+                        <span class="badge-icon">✨</span>
                         <span class="badge-name">Devotion</span>
                     </div>
                 </div>
@@ -449,9 +447,9 @@
         </main>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          MEDITATION OVERLAY
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="meditation-overlay" id="meditationOverlay">
         <div class="meditation-cosmos">
             <div class="med-ring med-ring-1"></div>
@@ -459,7 +457,7 @@
             <div class="med-ring med-ring-3"></div>
         </div>
         <div class="meditation-content">
-            <div class="meditation-symbol" id="meditationSymbol">ੴ</div>
+            <div class="meditation-symbol" id="meditationSymbol">🧘</div>
             <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
             <div class="breathing-guide" id="breathingGuide">
                 <span>Breathe... Remember...</span>
@@ -474,15 +472,15 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          SESSION ALERT MODAL
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="session-alert-modal" id="sessionAlertModal">
         <div class="alert-backdrop"></div>
         <div class="alert-content">
             <div class="alert-pulse"></div>
-            <div class="alert-icon">🙏</div>
-            <div class="alert-gurmukhi">ੴ ਸਤਿ ਨਾਮੁ</div>
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-gurmukhi">ਵਾਹਿਗੁਰੂ</div>
             <h2 class="alert-title">Time for Naam Abhyas</h2>
             <p class="alert-message">Leave all work. Close your eyes.<br>Remember Vaheguru for 2 minutes.</p>
             <div class="alert-actions">
@@ -497,14 +495,14 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          COMPLETION MODAL
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="completion-modal" id="completionModal">
         <div class="completion-backdrop"></div>
         <div class="completion-content">
-            <div class="completion-emojis">✨ 🙏 ✨</div>
-            <div class="completion-gurmukhi">ਧੰਨ ਗੁਰੂ ਨਾਨਕ</div>
+            <div class="completion-emojis">🎉 ✨ 🙏</div>
+            <div class="completion-gurmukhi">ਮੁਕੰਮਲ ਹੋਇਆ</div>
             <h2 class="completion-title">Session Complete!</h2>
             <div class="completion-stats">
                 <div class="comp-stat">
@@ -541,9 +539,9 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          STATS PANEL
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="stats-panel" id="statsPanel">
         <div class="panel-header">
             <button class="panel-close-btn" id="closeStatsBtn" aria-label="Close">
@@ -556,9 +554,9 @@
         <div class="panel-content" id="statsPanelContent"></div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════════════
+    <!-- -----------------------------------------------------------------------
          SETTINGS MODAL (Bottom Sheet)
-    ═══════════════════════════════════════════════════════════════════════ -->
+    ----------------------------------------------------------------------- -->
     <div class="settings-modal" id="settingsModal">
         <div class="settings-modal-backdrop" id="settingsModalBackdrop"></div>
         <div class="settings-modal-sheet" id="settingsModalSheet">
@@ -583,7 +581,7 @@
                         <label class="theme-option" data-theme="system">
                             <input type="radio" name="theme" value="system" checked>
                             <span class="theme-box">
-                                <span class="theme-icon">📱</span>
+                                <span class="theme-icon">💻</span>
                                 <span class="theme-label">System</span>
                             </span>
                         </label>
@@ -711,7 +709,7 @@
                     <div class="sound-select-wrapper">
                         <select id="notificationSound" class="sound-select">
                             <option value="gentle-bell">🔔 Gentle Bell</option>
-                            <option value="soft-chime">✨ Soft Chime</option>
+                            <option value="soft-chime">🎵 Soft Chime</option>
                         </select>
                         <button class="preview-sound-btn" id="previewSoundBtn" aria-label="Preview sound">
                             <svg class="play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -822,7 +820,11 @@
     <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 
-    <script src="naam-abhyas.js"></script>
+    <script src="naam-abhyas.js?v=3.1"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

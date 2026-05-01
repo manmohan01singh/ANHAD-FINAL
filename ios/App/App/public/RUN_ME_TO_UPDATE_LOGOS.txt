@@ -1,0 +1,53 @@
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║          🎨 ANHAD LOGO UPDATE - QUICK START GUIDE 🎨        ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+📋 WHAT THIS DOES:
+   Generates all app logos from newlogo-removebg-preview.png
+   Creates 20+ logo files in various sizes and formats
+   Updates both web and Android assets automatically
+
+🚀 HOW TO RUN:
+
+   METHOD 1 (EASIEST):
+   ═══════════════════
+   Double-click: GENERATE_LOGOS.bat
+   
+   METHOD 2 (MANUAL):
+   ═══════════════════
+   Open Command Prompt in this folder and run:
+   python generate-logos-simple.py
+
+📁 WHAT GETS CREATED:
+
+   ✓ Favicons (16x16, 32x32, favicon.ico)
+   ✓ App logos (96, 128, 144, 384, 512)
+   ✓ PWA icons (192, 512)
+   ✓ Apple touch icon (180)
+   ✓ Icon directory files (72, 152, 192, 512, 1024)
+   ✓ WebP versions (app-logo.webp, pure-logo.webp, new.webp)
+   ✓ Android copies (automatic)
+
+⚠️  REQUIREMENTS:
+
+   • Python installed (download from python.org)
+   • Pillow library (auto-installed by batch file)
+
+✅ AFTER RUNNING:
+
+   1. Check assets/ folder for new logos
+   2. Check assets/icons/ folder for icon files
+   3. Clear browser cache (Ctrl+Shift+Delete)
+   4. Test PWA installation
+   5. Verify favicon in browser tab
+
+📖 MORE INFO:
+
+   Read: LOGO_GENERATION_README.md
+   Summary: LOGO_UPDATE_SUMMARY.md
+
+═══════════════════════════════════════════════════════════════
+
+Ready? Double-click GENERATE_LOGOS.bat to start! 🚀

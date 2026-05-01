@@ -57,7 +57,7 @@ public class WidgetDataBridgePlugin extends Plugin {
     public void syncAllWidgets(PluginCall call) {
         try {
             Context context = getContext();
-            String[] widgetTypes = {"nitnem", "naamabhyas", "kirtan", "calendar"};
+            String[] widgetTypes = {"nitnem", "naamabhyas", "kirtan", "amritvela", "calendar", "hukamnama", "khoj", "reminders"};
 
             for (String widgetType : widgetTypes) {
                 updateWidget(context, widgetType);
@@ -117,8 +117,16 @@ public class WidgetDataBridgePlugin extends Plugin {
                 return NaamAbhyasWidgetProvider.class;
             case "kirtan":
                 return KirtanWidgetProvider.class;
+            case "amritvela":
+                return AmritvelaWidgetProvider.class;
             case "calendar":
                 return CalendarWidgetProvider.class;
+            case "hukamnama":
+                return HukamnamaWidgetProvider.class;
+            case "khoj":
+                return GurbaniKhojWidgetProvider.class;
+            case "reminders":
+                return SmartReminderWidgetProvider.class;
             default:
                 return null;
         }

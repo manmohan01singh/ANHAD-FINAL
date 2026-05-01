@@ -194,12 +194,9 @@ const BaniDB = (function () {
     }
 
     /**
-     * Get bani data from offline JSON file
+     * Get bani data — delegates to the async chunked loader above
+     * (Legacy wrapper removed — was referencing non-existent allBanisData variable)
      */
-    function getOfflineBani(baniId) {
-        if (!hasOfflineData()) return null;
-        return allBanisData.banis[baniId] || null;
-    }
 
     /**
      * Get list of all Banis from index
@@ -239,44 +236,44 @@ const BaniDB = (function () {
      * Search Banis by query - OFFLINE VERSION (searches within loaded banis)
      */
     async function searchBanis(query, options = {}) {
-        await loadOfflineBanis();
-        if (!allBanisData) return [];
+        // Load all available data for search
+        await loadNitnemBundle();
+        await loadPopularBundle();
+        await loadIndex();
 
         const results = [];
         const queryLower = query.toLowerCase();
 
-        // Search through all banis
-        for (const [baniId, bani] of Object.entries(allBanisData.banis)) {
-            const baniInfo = bani.baniInfo;
-            if (!baniInfo) continue;
+        // Search through nitnem bundle
+        const searchInBundle = (bundle) => {
+            if (!bundle || !bundle.banis) return;
+            for (const [baniId, bani] of Object.entries(bundle.banis)) {
+                const baniInfo = bani.baniInfo;
+                if (!baniInfo) continue;
 
-            // Search in bani name
-            if (baniInfo.unicode?.toLowerCase().includes(queryLower) ||
-                baniInfo.english?.toLowerCase().includes(queryLower)) {
-                results.push({
-                    ID: parseInt(baniId),
-                    gurmukhiUni: baniInfo.unicode,
-                    gurmukhi: baniInfo.gurmukhi,
-                    transliteration: baniInfo.english
-                });
-                continue;
-            }
-
-            // Search in verses
-            if (bani.verses) {
-                for (const verse of bani.verses) {
-                    const verseText = verse.verse?.gurmukhi || verse.verse?.verse || '';
-                    if (verseText.toLowerCase().includes(queryLower)) {
+                // Search in bani name
+                if (baniInfo.unicode?.toLowerCase().includes(queryLower) ||
+                    baniInfo.english?.toLowerCase().includes(queryLower) ||
+                    baniInfo.transliteration?.toLowerCase().includes(queryLower)) {
+                    // Avoid duplicates
+                    if (!results.find(r => r.ID === parseInt(baniId))) {
                         results.push({
                             ID: parseInt(baniId),
                             gurmukhiUni: baniInfo.unicode,
                             gurmukhi: baniInfo.gurmukhi,
-                            transliteration: baniInfo.english
+                            transliteration: baniInfo.english || baniInfo.transliteration
                         });
-                        break;
                     }
                 }
             }
+        };
+
+        searchInBundle(nitnemBundle);
+        searchInBundle(popularBundle);
+
+        // Also search through any already-loaded chunks
+        for (const [, chunkData] of loadedChunks) {
+            searchInBundle(chunkData);
         }
 
         return results;
@@ -286,12 +283,23 @@ const BaniDB = (function () {
      * Get random Shabad - OFFLINE VERSION (returns random verse from loaded banis)
      */
     async function getRandomShabad() {
-        await loadOfflineBanis();
-        if (!allBanisData) return null;
+        // Use already-loaded bundles for random selection
+        await loadNitnemBundle();
+        await loadPopularBundle();
 
-        const baniIds = Object.keys(allBanisData.banis);
+        // Merge available banis from loaded bundles
+        const allAvailable = {};
+        if (nitnemBundle?.banis) Object.assign(allAvailable, nitnemBundle.banis);
+        if (popularBundle?.banis) Object.assign(allAvailable, popularBundle.banis);
+        for (const [, chunkData] of loadedChunks) {
+            if (chunkData?.banis) Object.assign(allAvailable, chunkData.banis);
+        }
+
+        const baniIds = Object.keys(allAvailable);
+        if (baniIds.length === 0) return null;
+
         const randomBaniId = baniIds[Math.floor(Math.random() * baniIds.length)];
-        const bani = allBanisData.banis[randomBaniId];
+        const bani = allAvailable[randomBaniId];
 
         if (!bani?.verses || bani.verses.length === 0) return null;
 

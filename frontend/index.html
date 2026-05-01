@@ -335,6 +335,242 @@
       align-items: flex-start !important;
       gap: 0 !important;
     }
+    
+    .event-card__learn-more {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      margin-top: 10px !important;
+      padding: 8px 16px !important;
+      background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%) !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 20px !important;
+      font-size: 0.7rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.3px !important;
+      cursor: pointer !important;
+      box-shadow: 
+        0 4px 12px rgba(212, 148, 58, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .event-card__learn-more:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 
+        0 6px 16px rgba(212, 148, 58, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    .event-card__learn-more svg {
+      transition: transform 0.3s ease !important;
+    }
+    
+    .event-card__learn-more:hover svg {
+      transform: translateX(3px) !important;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+       COMPACT VIEWPORT LAYOUT — Fit all content on single screen
+       ═══════════════════════════════════════════════════════════════════════════ */
+    @media screen and (max-width: 480px) {
+      /* Header - Compact */
+      .header {
+        padding: 8px 0 4px !important;
+        margin-bottom: 4px !important;
+      }
+      .header__title {
+        font-size: 18px !important;
+      }
+      .header__title-gurmukhi {
+        font-size: 14px !important;
+      }
+      
+      /* Greeting - Compact */
+      .greeting {
+        margin-bottom: 8px !important;
+        padding: 4px 0 0 !important;
+      }
+      .greeting__portrait-wrapper {
+        width: 140px !important;
+        height: 140px !important;
+        margin-bottom: 12px !important;
+      }
+      .greeting__guru-portrait {
+        width: 140px !important;
+        height: 140px !important;
+        min-width: 140px !important;
+        min-height: 140px !important;
+      }
+      .greeting__guru-img {
+        width: 100% !important;
+        height: 100% !important;
+      }
+      #greetingSalutation {
+        font-size: 1.1rem !important;
+        margin-bottom: 6px !important;
+      }
+      #greetingGurbani {
+        font-size: 1.35rem !important;
+      }
+      
+      /* Progress Bar - Compact */
+      .progress-inline {
+        height: 22px !important;
+        padding: 2px 8px !important;
+        margin: 4px 16px 8px !important;
+      }
+      .progress-inline__label {
+        font-size: 0.6rem !important;
+      }
+      .progress-inline__text {
+        font-size: 0.6rem !important;
+      }
+      
+      /* Hero Card - Compact */
+      body .hero-card {
+        min-height: 140px !important;
+        border-radius: 18px !important;
+        margin-bottom: 8px !important;
+      }
+      .hero-card__title {
+        font-size: 1.2rem !important;
+      }
+      .hero-card__subtitle {
+        font-size: 12px !important;
+      }
+      .hero-carousel__dots {
+        margin-top: 8px !important;
+      }
+      
+      /* Event Card - Compact */
+      .event-card {
+        min-height: 70px !important;
+        margin-top: 0 !important;
+        padding: 10px 14px !important;
+        margin-bottom: 8px !important;
+        background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
+        border: 2px solid rgba(212, 148, 58, 0.2) !important;
+        border-radius: 20px !important;
+        box-shadow: 
+          0 2px 8px rgba(0, 0, 0, 0.06),
+          0 0 20px rgba(212, 148, 58, 0.08) !important;
+        position: relative !important;
+      }
+      .event-card__main {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+      .event-card__info {
+        flex: 1 !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+      .event-card__eyebrow {
+        font-size: 0.55rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.8px !important;
+        text-transform: uppercase !important;
+        color: #B8860B !important;
+        margin-bottom: 3px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+      }
+      .event-card__eyebrow::before {
+        content: '📅' !important;
+        font-size: 0.65rem !important;
+      }
+      .event-card__title {
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        color: #8B6914 !important;
+        margin-bottom: 3px !important;
+        line-height: 1.2 !important;
+        text-shadow: 0 1px 2px rgba(212, 148, 58, 0.2) !important;
+      }
+      .event-card__date {
+        font-size: 0.85rem !important;
+        letter-spacing: 0.3px !important;
+        color: #A67C00 !important;
+        margin-bottom: 0 !important;
+        font-weight: 600 !important;
+      }
+      .event-card__countdown-wrapper {
+        display: none !important;
+      }
+      .event-card__days-badge {
+        position: absolute !important;
+        bottom: 8px !important;
+        right: 26px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 4px 12px !important;
+        background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%) !important;
+        color: #FFFFFF !important;
+        border-radius: 12px !important;
+        font-size: 0.65rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 
+          0 2px 8px rgba(212, 148, 58, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+        z-index: 10 !important;
+      }
+      .event-card__guru-img-wrapper {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        padding: 4px !important;
+        background: linear-gradient(145deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #D4943A 75%, #B8860B 100%) !important;
+        border-radius: 50% !important;
+        box-shadow: 
+          0 0 0 2px rgba(255, 255, 255, 0.95),
+          0 0 0 4px rgba(212, 168, 83, 0.35),
+          0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        flex-shrink: 0 !important;
+      }
+      .event-card__guru-img {
+        width: 94% !important;
+        height: 94% !important;
+        border-radius: 50% !important;
+      }
+      .event-card__learn-more {
+        margin-top: 4px !important;
+        padding: 3px 10px !important;
+        font-size: 0.55rem !important;
+        font-weight: 600 !important;
+        background: transparent !important;
+        color: #B8860B !important;
+        border: 1px solid rgba(184, 134, 11, 0.4) !important;
+        border-radius: 10px !important;
+        letter-spacing: 0.2px !important;
+        box-shadow: none !important;
+      }
+      .event-card__learn-more svg {
+        width: 12px !important;
+        height: 12px !important;
+        stroke-width: 1.5 !important;
+      }
+      
+      /* Hide celebration badges in compact mode */
+      .gurpurab-celebration-badge,
+      .gurpurab-remembrance-badge {
+        display: none !important;
+      }
+      
+      /* Section spacing */
+      .section-header {
+        margin-bottom: 8px !important;
+      }
+    }
 
     /* Prevent layout shifts - fixed dimensions */
     .event-card {
@@ -1433,13 +1669,13 @@
         <!-- Portrait First for clear layout -->
         <div class="greeting__portrait-wrapper">
           <div class="greeting__guru-portrait" id="guruPortraitWrapper">
-            <img class="greeting__guru-img" id="guruPortraitImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="140" height="140" loading="eager">
+            <img class="greeting__guru-img" id="guruPortraitImg" src="guruimages/guruhargobindsahebji.jpeg" alt="Sri Guru Hargobind Sahib Ji" width="140" height="140" loading="eager">
           </div>
         </div>
         
         <!-- Text clearly below the image -->
         <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</div>
+          <div class="greeting__salutation" id="greetingSalutation">Sri Guru Hargobind Sahib Ji</div>
           <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ</div>
         </div>
       </div>
@@ -1448,12 +1684,12 @@
     <!-- ════════════════════════════════════════════════════════════════════
          DAILY PROGRESS — iOS-Style Inline Bar
     ════════════════════════════════════════════════════════════════════ -->
-    <div class="progress-inline ios-animate-in" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11">
-      <span class="progress-inline__label" id="progressLabel">Today's Nitnem</span>
+    <div class="progress-inline ios-animate-in" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+      <span class="progress-inline__label" id="progressLabel">☀️ Continue morning Nitnem</span>
       <div class="progress-inline__bar">
         <div class="progress-inline__fill" id="progressFill"></div>
       </div>
-      <span class="progress-inline__text" id="progressText">0/11</span>
+      <span class="progress-inline__text" id="progressText">0/8 Banis</span>
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════════
@@ -1498,7 +1734,8 @@
             <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">● D-LIVE</div>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
-                <div class="hero-card__title hero-card__title--thin">Amritvela Smagams</div>
+                <div class="hero-card__title">Amritvela Smagams</div>
+                <div class="hero-card__subtitle" style="margin-right:75px;max-width:calc(100% - 75px);display:block;">Sacred Dawn Kirtan Collection</div>
               </div>
               <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn2" aria-label="Play Amritvela" data-action="play" data-stream="amritvela">
                 <svg id="heroPlayIcon2" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
@@ -1574,17 +1811,24 @@
       
       <div class="event-card__main">
         <div class="event-card__info">
-          <div class="event-card__eyebrow">Upcoming Gurpurab</div>
-          <div class="event-card__title skeleton" id="eventTitle">Loading...</div>
-          <div class="event-card__date" id="eventDate">—</div>
+          <div class="event-card__eyebrow">UPCOMING GURPURAB</div>
+          <div class="event-card__title" id="eventTitle">GURGADDI SRI GURU HARGOBIND SAHIB JI</div>
+          <div class="event-card__date" id="eventDate">19 JUNE 2025</div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown" id="eventCountdown">—</div>
-            <div class="event-card__countdown-label" id="eventCountdownLabel">days</div>
+            <div class="event-card__countdown" id="eventCountdown">5</div>
+            <div class="event-card__countdown-label" id="eventCountdownLabel">Days Remaining</div>
           </div>
+          <button class="event-card__learn-more" onclick="event.stopPropagation(); window.location.href='Calendar/GurpurabCalendar-ios.html'">
+            Learn More
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
+          <img class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/guruhargobindsahebji.jpeg" alt="Sri Guru Hargobind Sahib Ji" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
         </div>
+      </div>
+      <div class="event-card__days-badge">
+        <span id="eventCountdown">5</span> days left
       </div>
     </article>
 

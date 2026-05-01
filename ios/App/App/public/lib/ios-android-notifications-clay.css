@@ -1,0 +1,453 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   🎨 CLEAN iOS STYLE - Install Popup
+   Professional • Native iOS • Minimal
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --ios-bg: rgba(255, 255, 255, 0.85);
+    --ios-bg-dark: rgba(30, 30, 30, 0.85);
+    --ios-border: rgba(0, 0, 0, 0.1);
+    --ios-border-dark: rgba(255, 255, 255, 0.1);
+    --ios-text: #000000;
+    --ios-text-dark: #FFFFFF;
+    --ios-text-secondary: rgba(0, 0, 0, 0.6);
+    --ios-text-secondary-dark: rgba(255, 255, 255, 0.6);
+    --ios-accent: #007AFF;
+    --ios-shadow: rgba(0, 0, 0, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BACKDROP & CONTAINER
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-install-prompt {
+    position: fixed;
+    inset: 0;
+    z-index: 9999999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.ios-install-prompt.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.ios-prompt-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: opacity 0.3s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MAIN SHEET - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-sheet {
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+
+    background: var(--ios-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border-radius: 20px;
+    border: 1px solid var(--ios-border);
+
+    padding: 28px 24px 32px;
+    padding-bottom: max(32px, calc(env(safe-area-inset-bottom) + 16px));
+
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+
+    box-shadow: 0 8px 32px var(--ios-shadow);
+}
+
+.ios-install-prompt.visible .ios-prompt-sheet {
+    transform: translateY(0);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .ios-prompt-sheet {
+        background: var(--ios-bg-dark);
+        border-color: var(--ios-border-dark);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   HEADER SECTION - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   APP ICON - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px var(--ios-shadow);
+}
+
+.ios-prompt-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TITLE SECTION - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.ios-prompt-title h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ios-text);
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+}
+
+.ios-prompt-title p {
+    font-size: 14px;
+    color: var(--ios-text-secondary);
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-prompt-title h3 {
+        color: var(--ios-text-dark);
+    }
+    .ios-prompt-title p {
+        color: var(--ios-text-secondary-dark);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CLOSE BUTTON - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    color: var(--ios-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ios-prompt-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.ios-prompt-close:active {
+    background: rgba(0, 0, 0, 0.15);
+    transform: scale(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-prompt-close {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--ios-text-secondary-dark);
+    }
+    .ios-prompt-close:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    .ios-prompt-close:active {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   STEPS CONTAINER - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-steps {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 16px;
+    padding: 20px 16px;
+    margin-bottom: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-prompt-steps {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INDIVIDUAL STEPS - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 12px;
+    margin-bottom: 10px;
+    background: transparent;
+    border-radius: 12px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: slideInStep 0.4s ease-out forwards;
+}
+
+.ios-step:last-child {
+    margin-bottom: 0;
+}
+
+@keyframes slideInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Step Number - Clean iOS Style */
+.ios-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--ios-accent);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
+}
+
+/* Step Content - Clean iOS Style */
+.ios-step-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ios-step-content p {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ios-text);
+    line-height: 1.4;
+}
+
+.ios-step-content p:last-child {
+    margin-bottom: 0;
+}
+
+.ios-step-content strong {
+    color: var(--ios-accent);
+    font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-step-content p {
+        color: var(--ios-text-dark);
+    }
+}
+
+/* Icon containers in steps - Clean iOS Style */
+.ios-share-icon,
+.ios-add-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    margin-top: 6px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.ios-share-icon svg,
+.ios-add-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-share-icon,
+    .ios-add-icon {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BENEFITS SECTION - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.ios-benefit {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ios-text);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-benefit {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ios-text-dark);
+    }
+}
+
+.ios-benefit-icon {
+    font-size: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   DISMISS BUTTON - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.ios-prompt-dismiss {
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ios-accent);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ios-prompt-dismiss:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.ios-prompt-dismiss:active {
+    background: rgba(0, 0, 0, 0.12);
+    transform: scale(0.98);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ios-prompt-dismiss {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .ios-prompt-dismiss:hover {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    .ios-prompt-dismiss:active {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN - Clean iOS Style
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+    .ios-prompt-sheet {
+        left: 12px;
+        right: 12px;
+        padding: 24px 20px 28px;
+    }
+
+    .ios-prompt-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .ios-prompt-title h3 {
+        font-size: 20px;
+    }
+
+    .ios-step {
+        padding: 12px 10px;
+    }
+
+    .ios-step-num {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .ios-benefit {
+        min-width: 100%;
+    }
+}
+
+@media (max-height: 700px) {
+    .ios-prompt-sheet {
+        bottom: 12px;
+        padding: 20px 18px 24px;
+    }
+
+    .ios-prompt-header {
+        margin-bottom: 18px;
+    }
+
+    .ios-prompt-steps {
+        padding: 16px 14px;
+        margin-bottom: 16px;
+    }
+
+    .ios-step {
+        padding: 12px 10px;
+        margin-bottom: 8px;
+    }
+
+    .ios-prompt-benefits {
+        margin-bottom: 16px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION SUPPORT
+   ═══════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    .ios-step {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+
+    .ios-install-prompt,
+    .ios-prompt-sheet,
+    .ios-prompt-backdrop {
+        transition: none;
+    }
+}

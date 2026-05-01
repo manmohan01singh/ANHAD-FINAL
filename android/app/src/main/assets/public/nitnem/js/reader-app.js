@@ -126,6 +126,10 @@
             const data = await BaniDB.getBani(state.baniId);
             state.baniData = data;
 
+            if (!data) {
+                throw new Error(`Bani ${state.baniId} could not be loaded. Please check your connection and try again.`);
+            }
+
             if (!data.verses || data.verses.length === 0) {
                 throw new Error('No verses found in this Bani');
             }
@@ -333,7 +337,7 @@
 
     function updateSettingsUI() {
         // Theme buttons
-        document.querySelectorAll('.theme-btn').forEach(btn => {
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
         });
 
@@ -598,7 +602,7 @@
         });
 
         // Theme buttons
-        document.querySelectorAll('.theme-btn').forEach(btn => {
+        document.querySelectorAll('.theme-bubble').forEach(btn => {
             btn.addEventListener('click', () => setTheme(btn.dataset.theme));
         });
 

@@ -14,7 +14,9 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const { Readable } = require('stream');
 const crypto = require('crypto');
-const rateLimit = require('express-rate-limit');
+const rateLimitModule = require('express-rate-limit');
+const rateLimit = rateLimitModule.rateLimit || rateLimitModule;
+const ipKeyGenerator = rateLimitModule.ipKeyGenerator || ((ip) => ip);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +27,9 @@ const PORT = process.env.PORT || 3000;
 
 const CONFIG = {
     R2_BASE_URL: process.env.R2_BASE_URL || 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
+    SIMRAN_R2_BASE_URL: process.env.SIMRAN_R2_BASE_URL || 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev',
+    SIMRAN_R2_PREFIX: process.env.SIMRAN_R2_PREFIX || 'waheguru',
+    SIMRAN_STATE_FILE: process.env.SIMRAN_STATE_FILE || path.join(__dirname, 'simran-state.json'),
     FRONTEND_ROOT: process.env.FRONTEND_ROOT || path.join(__dirname, '..', 'frontend'),
     MAIN_UI: process.env.MAIN_UI || path.join(__dirname, '..', 'frontend'),
     SEHAJ_PROGRESS_DIR: process.env.SEHAJ_PROGRESS_DIR || path.join(__dirname, 'data', 'sehaj-progress'),
@@ -77,6 +82,48 @@ const PLAYLIST = [
     { id: 40, filename: 'day-40.webm', title: 'Day 40 — ਗੁਰਬਾਣੀ ਕੀਰਤਨ', artist: 'Bhai Gurpreet Singh Ji' }
 ];
 
+const SIMRAN_PLAYLIST = [
+    { id: 1, filename: '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3', title: 'Deenanath Suno', artist: 'Amritvela Trust' },
+    { id: 2, filename: '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3', title: 'Tum Karo Daya', artist: 'Amritvela Trust' },
+    { id: 3, filename: '03 - SUNN YAAR HAMARE SAJAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Sunn Yaar Hamare Sajan', artist: 'Amritvela Trust' },
+    { id: 4, filename: '04 - SUKH NAAHI RE HAR BHAGAT BINA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Sukh Naahi Re', artist: 'Amritvela Trust' },
+    { id: 5, filename: '05 - TU PRABH DATA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Tu Prabh Data', artist: 'Amritvela Trust' },
+    { id: 6, filename: '06 - SATNAM WAHEGURU - SIMRAN - AMRITVELA TRUST..mp3', title: 'Satnam Waheguru', artist: 'Amritvela Trust' },
+    { id: 7, filename: '07 - MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mere Ram', artist: 'Amritvela Trust' },
+    { id: 8, filename: '08 - RAKHWALA SIMRAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Rakhwala Simran', artist: 'Amritvela Trust' },
+    { id: 9, filename: '09 - AAS PYAASI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Aas Pyaasi', artist: 'Amritvela Trust' },
+    { id: 10, filename: '10 - PRABH PAAS JAN KI ARDAS - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Prabh Paas Jan Ki Ardas', artist: 'Amritvela Trust' },
+    { id: 11, filename: '11 - TU HI TU HI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Tu Hi Tu Hi', artist: 'Amritvela Trust' },
+    { id: 12, filename: '12 - NAAM NAAM NAAM APNA NAAM DEHO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Naam Naam Naam Apna Naam Deho', artist: 'Amritvela Trust' },
+    { id: 13, filename: '13 - DHAN GURU RAMDAS JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Dhan Guru Ramdas Ji', artist: 'Amritvela Trust' },
+    { id: 14, filename: '14 - AAO SAJANA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Aao Sajana', artist: 'Amritvela Trust' },
+    { id: 15, filename: '15 - TUJ BIN KAVAN HAMARA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Tuj Bin Kavan Hamara', artist: 'Amritvela Trust' },
+    { id: 16, filename: '16 - MERA BAID GURU GOVINDA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mera Baid Guru Govinda', artist: 'Amritvela Trust' },
+    { id: 17, filename: '17 - JAGAN TE SUPNA BHALA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Jagan Te Supna Bhala', artist: 'Amritvela Trust' },
+    { id: 18, filename: '18 - EH NEECH KARAM HAR MERE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Eh Neech Karam Har Mere', artist: 'Amritvela Trust' },
+    { id: 19, filename: '19 - APNA NAAM JAPAO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Apna Naam Japao', artist: 'Amritvela Trust' },
+    { id: 20, filename: '20 - MERE PYAARE SATUGURU JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mere Pyaare Satuguru Ji', artist: 'Amritvela Trust' },
+    { id: 21, filename: '21 - RAKH LEHO BHAGWAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Rakh Leho Bhagwan', artist: 'Amritvela Trust' },
+    { id: 22, filename: '22 - KAB GAL LAVENGE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Kab Gal Lavenge', artist: 'Amritvela Trust' },
+    { id: 23, filename: '23 - MERE RAM MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mere Ram Mere Ram', artist: 'Amritvela Trust' },
+    { id: 24, filename: '24 - RAKHEYA KARO SIMRAN DAY 25.mp3', title: 'Rakheya Karo', artist: 'Amritvela Trust' },
+    { id: 25, filename: '25 - WAHEGURU SIMRAN UTH NAAM JAP AMRITVELA TRUST BEST SIMRAN.mp3', title: 'Waheguru Simran Uth Naam Jap', artist: 'Amritvela Trust' },
+    { id: 26, filename: '26 - BEST WAHEGURU SIMRAN DAY 27 CHALIYA 2020.mp3', title: 'Best Waheguru Simran Day 27', artist: 'Amritvela Trust' },
+    { id: 27, filename: '27 - KAD NANAK AAVE VARI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Kad Nanak Aave Vari', artist: 'Amritvela Trust' },
+    { id: 28, filename: '28 - BIN GUR NA PAVAIGO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Bin Gur Na Pavaigo', artist: 'Amritvela Trust' },
+    { id: 29, filename: '29 - KIYO SHINGAR MILAN KE TAAYEE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Kiyo Shingar Milan Ke Taayee', artist: 'Amritvela Trust' },
+    { id: 30, filename: '30 - NAAM BINA NAHI JEEVIA JAYE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Naam Bina Nahi Jeevia Jaye', artist: 'Amritvela Trust' },
+    { id: 31, filename: '31 - AATH PEHAR SIMRO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Aath Pehar Simro', artist: 'Amritvela Trust' },
+    { id: 32, filename: '32 - MIL MERE PREETMA JEEO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mil Mere Preetma Jeeo', artist: 'Amritvela Trust' },
+    { id: 33, filename: '33 - SATNAM SHRI WAHEGURU SIMRAN DAY 35 CHALIYA 2020.mp3', title: 'Satnam Shri Waheguru', artist: 'Amritvela Trust' },
+    { id: 34, filename: '34 - RAKH RAKH MERE BEETHLA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Rakh Rakh Mere Beethla', artist: 'Amritvela Trust' },
+    { id: 35, filename: '35 - PRAAN ADHAARA RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Praan Adhaara Ram', artist: 'Amritvela Trust' },
+    { id: 36, filename: '36 - DHAN BABA NANAK - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Dhan Baba Nanak', artist: 'Amritvela Trust' },
+    { id: 37, filename: '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Sunn Mann Mittar Pyareya', artist: 'Amritvela Trust' },
+    { id: 38, filename: '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', title: 'Mere Satgur Pyare Gurnanak Aaja', artist: 'Amritvela Trust' }
+];
+
+
 // ═══════════════════════════════════════════════════════════════════
 // LIVE BROADCAST ENGINE — Single Source of Truth
 // ═══════════════════════════════════════════════════════════════════
@@ -90,7 +137,10 @@ const PLAYLIST = [
  *  - Periodic state persistence to survive restarts
  */
 class BroadcastEngine {
-    constructor() {
+    constructor(playlistName, playlist, stateFile) {
+        this.playlistName = playlistName;
+        this.playlist = playlist;
+        this.stateFile = stateFile;
         this.epoch = null;           // Birth of the radio station (ms)
         this.trackDurations = {};    // { "0": 3847.2, "1": 3612.8, ... }
         this.listeners = new Map();  // listenerId → { lastSeen, userAgent }
@@ -107,13 +157,13 @@ class BroadcastEngine {
         let state;
         let needsReset = false;
         try {
-            const data = await fs.readFile(CONFIG.RADIO_STATE_FILE, 'utf8');
+            const data = await fs.readFile(this.stateFile, 'utf8');
             state = JSON.parse(data);
             // If the old epoch is from before we added shuffle, reset it
             if (!state.shuffleEnabled) {
                 needsReset = true;
             }
-            console.log('[📻 Broadcast] Loaded existing radio state');
+            console.log('[📻 ' + this.playlistName + '] Loaded existing radio state');
         } catch (err) {
             needsReset = true;
         }
@@ -126,7 +176,7 @@ class BroadcastEngine {
                 trackDurations: state?.trackDurations || {},
                 shuffleEnabled: true
             };
-            console.log('[📻 Broadcast] 🔀 Created fresh radio state with SHUFFLE enabled (epoch = now)');
+            console.log('[📻 ' + this.playlistName + '] 🔀 Created fresh radio state with SHUFFLE enabled (epoch = now)');
         }
 
         this.epoch = state.epoch;
@@ -149,11 +199,11 @@ class BroadcastEngine {
         await this.persistState();
 
         const livePos = this.getCurrentLivePosition();
-        const track = PLAYLIST[livePos.trackIndex];
+        const track = this.playlist[livePos.trackIndex];
         console.log(`[📻 Broadcast] Epoch: ${new Date(this.epoch).toISOString()}`);
         console.log(`[📻 Broadcast] Currently playing: ${track.title} at ${this.formatTime(livePos.trackPosition)}`);
         console.log(`[📻 Broadcast] Shuffle order (first 10): ${this.shuffleOrder.slice(0, 10).map(i => i + 1).join(', ')}...`);
-        console.log(`[📻 Broadcast] ${Object.keys(this.trackDurations).length}/40 track durations known`);
+        console.log(`[📻 Broadcast] ${Object.keys(this.trackDurations).length}/${this.playlist.length} track durations known`);
     }
 
     /**
@@ -173,7 +223,7 @@ class BroadcastEngine {
         }
 
         // Create ordered array and shuffle it
-        this.shuffleOrder = Array.from({ length: PLAYLIST.length }, (_, i) => i);
+        this.shuffleOrder = Array.from({ length: this.playlist.length }, (_, i) => i);
         for (let i = this.shuffleOrder.length - 1; i > 0; i--) {
             const j = Math.floor(rand() * (i + 1));
             [this.shuffleOrder[i], this.shuffleOrder[j]] = [this.shuffleOrder[j], this.shuffleOrder[i]];
@@ -193,7 +243,7 @@ class BroadcastEngine {
      */
     getTotalPlaylistDuration() {
         let total = 0;
-        for (let i = 0; i < PLAYLIST.length; i++) {
+        for (let i = 0; i < this.playlist.length; i++) {
             total += this.getTrackDuration(i);
         }
         return total;
@@ -218,7 +268,7 @@ class BroadcastEngine {
         this.regenerateShuffleOrder(cycle);
 
         let accumulated = 0;
-        for (let i = 0; i < PLAYLIST.length; i++) {
+        for (let i = 0; i < this.playlist.length; i++) {
             const actualTrackIndex = this.shuffleOrder[i];
             const trackDuration = this.getTrackDuration(actualTrackIndex);
             if (accumulated + trackDuration > positionInPlaylist) {
@@ -254,7 +304,7 @@ class BroadcastEngine {
         if (!isFinite(duration) || duration <= 60 || duration > 86400) {
             return false; // Reject unreasonable durations
         }
-        if (trackIndex < 0 || trackIndex >= PLAYLIST.length) {
+        if (trackIndex < 0 || trackIndex >= this.playlist.length) {
             return false;
         }
 
@@ -323,10 +373,10 @@ class BroadcastEngine {
                 lastSaved: new Date().toISOString(),
                 knownDurations: Object.keys(this.trackDurations).length
             };
-            await fs.writeFile(CONFIG.RADIO_STATE_FILE, JSON.stringify(state, null, 2), 'utf8');
+            await fs.writeFile(this.stateFile, JSON.stringify(state, null, 2), 'utf8');
             this.stateDirty = false;
         } catch (err) {
-            console.error('[📻 Broadcast] Failed to persist state:', err.message);
+            console.error('[📻 ' + this.playlistName + '] Failed to persist state:', err.message);
         }
     }
 
@@ -350,12 +400,13 @@ class BroadcastEngine {
     async shutdown() {
         clearInterval(this.saveInterval);
         await this.persistState();
-        console.log('[📻 Broadcast] State saved on shutdown');
+        console.log('[📻 ' + this.playlistName + '] State saved on shutdown');
     }
 }
 
 // Create the global broadcast engine
-const broadcast = new BroadcastEngine();
+const broadcast = new BroadcastEngine('Amritvela', PLAYLIST, CONFIG.RADIO_STATE_FILE);
+const simranBroadcast = new BroadcastEngine('Waheguru Simran', SIMRAN_PLAYLIST, CONFIG.SIMRAN_STATE_FILE);
 
 // ═══════════════════════════════════════════════════════════════════
 // MIDDLEWARE
@@ -403,9 +454,10 @@ const apiLimiter = rateLimit({
     message: { error: 'Too many requests. Please slow down.' },
     // Use Cloudflare's client IP if available, fall back to default
     keyGenerator: (req) => {
-        return req.headers['cf-connecting-ip'] || 
-               req.headers['x-forwarded-for']?.split(',')[0].trim() || 
+        const clientIp = req.headers['cf-connecting-ip'] ||
+               req.headers['x-forwarded-for']?.split(',')[0].trim() ||
                req.ip;
+        return ipKeyGenerator(clientIp);
     }
 });
 app.use('/api/', apiLimiter);
@@ -781,6 +833,363 @@ app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
 // AUDIO PROXY
 // ═══════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════
+// 🟣 MAGICAL SIMRAN API
+// ═══════════════════════════════════════════════════════════════════
+
+app.get('/api/simran/live', (req, res) => {
+    let livePos, track;
+    try {
+        livePos = simranBroadcast.getCurrentLivePosition();
+        track = SIMRAN_PLAYLIST[livePos.trackIndex];
+        if (!track) throw new Error('Track index out of bounds: ' + livePos.trackIndex);
+    } catch (err) {
+        console.error('[Radio] Live position error:', err.message);
+        return res.status(500).json({ error: 'Broadcast engine error' });
+    }
+
+    res.json({
+        // Compatibility shape expected by rebuilt clients
+        currentTrack: {
+            title: track.title,
+            duration: simranBroadcast.getTrackDuration(livePos.trackIndex),
+            index: livePos.trackIndex + 1
+        },
+        position: Math.round(livePos.trackPosition * 100) / 100,
+        listeners: simranBroadcast.getListenerCount(),
+        isPlaying: true,
+
+        // What to play
+        trackIndex: livePos.trackIndex,
+        trackPosition: Math.round(livePos.trackPosition * 100) / 100,
+        trackTitle: track.title,
+        trackArtist: track.artist,
+        trackFilename: track.filename,
+        trackUrl: `${CONFIG.SIMRAN_R2_BASE_URL}/${CONFIG.SIMRAN_R2_PREFIX.replace(/^\/+|\/+$/g, '')}/${encodeURIComponent(track.filename)}`,
+        trackDuration: simranBroadcast.getTrackDuration(livePos.trackIndex),
+
+        // Metadata
+        totalElapsed: Math.round(livePos.totalElapsed),
+        playlistDuration: Math.round(livePos.playlistDuration),
+        playlistCycle: livePos.playlistCycle,
+        totalTracks: SIMRAN_PLAYLIST.length,
+
+        // Sync data
+        epoch: simranBroadcast.epoch,
+        serverTime: Date.now(),
+
+        // Community
+        listenersCount: simranBroadcast.getListenerCount(),
+
+        // All track durations for client-side prediction
+        trackDurations: Object.fromEntries(
+            SIMRAN_PLAYLIST.map((_, i) => [i, simranBroadcast.getTrackDuration(i)])
+        )
+    });
+});
+
+/**
+ * POST /api/simran/durations
+ * 
+ * Clients report actual track durations when they load metadata.
+ * This improves accuracy over time as real durations replace estimates.
+ * 
+ * Body: { trackIndex: number, duration: number }
+ */
+app.post('/api/simran/durations', (req, res) => {
+    const { trackIndex, duration } = req.body;
+
+    if (typeof trackIndex !== 'number' || typeof duration !== 'number') {
+        return res.status(400).json({ error: 'trackIndex and duration are required numbers' });
+    }
+
+    const accepted = simranBroadcast.reportDuration(trackIndex, duration);
+    res.json({
+        accepted,
+        trackIndex,
+        duration: simranBroadcast.getTrackDuration(trackIndex),
+        knownDurations: Object.keys(simranBroadcast.trackDurations).length
+    });
+});
+
+/**
+ * POST /api/simran/heartbeat
+ * 
+ * Clients call this every 30s to maintain their "listener" status.
+ * Returns current live position for drift correction.
+ * 
+ * Body: { listenerId: string }
+ */
+app.post('/api/simran/heartbeat', (req, res) => {
+    const { listenerId } = req.body;
+
+    if (!listenerId) {
+        return res.status(400).json({ error: 'listenerId is required' });
+    }
+
+    simranBroadcast.heartbeat(listenerId, req.headers['user-agent'] || '');
+
+    const livePos = simranBroadcast.getCurrentLivePosition();
+    const track = SIMRAN_PLAYLIST[livePos.trackIndex];
+
+    res.json({
+        ok: true,
+        listenersCount: simranBroadcast.getListenerCount(),
+        // Drift correction data
+        trackIndex: livePos.trackIndex,
+        trackPosition: Math.round(livePos.trackPosition * 100) / 100,
+        trackFilename: track.filename,
+        serverTime: Date.now()
+    });
+});
+
+/**
+ * GET /api/simran/listeners
+ * 
+ * Returns the current listener count.
+ */
+app.get('/api/simran/listeners', (req, res) => {
+    res.json({
+        count: simranBroadcast.getListenerCount(),
+        timestamp: Date.now()
+    });
+});
+
+/**
+ * GET /api/simran/status
+ * 
+ * Detailed broadcast status for admin/debugging.
+ */
+app.get('/api/simran/status', (req, res) => {
+    const livePos = simranBroadcast.getCurrentLivePosition();
+    const track = SIMRAN_PLAYLIST[livePos.trackIndex];
+    const knownCount = Object.keys(simranBroadcast.trackDurations).length;
+
+    res.json({
+        status: 'broadcasting',
+        epoch: simranBroadcast.epoch,
+        epochDate: new Date(simranBroadcast.epoch).toISOString(),
+        uptime: simranBroadcast.formatTime(livePos.totalElapsed),
+        currentTrack: {
+            index: livePos.trackIndex,
+            title: track.title,
+            artist: track.artist,
+            position: simranBroadcast.formatTime(livePos.trackPosition),
+            duration: simranBroadcast.formatTime(simranBroadcast.getTrackDuration(livePos.trackIndex))
+        },
+        playlist: {
+            totalTracks: SIMRAN_PLAYLIST.length,
+            totalDuration: simranBroadcast.formatTime(livePos.playlistDuration),
+            cycle: livePos.playlistCycle,
+            knownDurations: `${knownCount}/${SIMRAN_PLAYLIST.length}`
+        },
+        listeners: {
+            active: simranBroadcast.getListenerCount()
+        },
+        serverTime: new Date().toISOString()
+    });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// SEHAJ PAATH API - Progress Management
+// ═══════════════════════════════════════════════════════════════════
+
+// Helper to read progress file
+async function readProgressFile(filePath) {
+    try {
+        const data = await fs.readFile(filePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        return createDefaultProgress();
+    }
+}
+
+// Helper to write progress file
+async function writeProgressFile(progress, filePath) {
+    try {
+        await fs.mkdir(path.dirname(filePath), { recursive: true });
+        await fs.writeFile(filePath, JSON.stringify(progress, null, 2), 'utf8');
+        return true;
+    } catch (error) {
+        console.error('[Sehaj Paath] Error writing progress:', error.message);
+        return false;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PER-USER IDENTITY — UUID cookie, one progress file per user
+// ═══════════════════════════════════════════════════════════════════
+
+// UUID_REGEX defined above
+
+function getUserId(req, res) {
+    const cookieHeader = req.headers.cookie || '';
+    const match = cookieHeader.match(/(?:^|;\s*)anhad_user_id=([^;]+)/);
+    let userId = match ? match[1] : null;
+    if (!userId || !UUID_REGEX.test(userId)) {
+        userId = crypto.randomUUID();
+        res.setHeader('Set-Cookie',
+            `anhad_user_id=${userId}; Path=/; Max-Age=31536000; SameSite=Lax; HttpOnly`
+        );
+    }
+    return userId;
+}
+
+function getProgressFilePath(userId) {
+    const safeId = userId.replace(/[^0-9a-f-]/gi, '');
+    return path.join(CONFIG.SEHAJ_PROGRESS_DIR, `sehaj-progress-${safeId}.json`);
+}
+
+// Create default progress structure
+function createDefaultProgress() {
+    return {
+        version: 1,
+        currentAng: 1,
+        completedAngs: [],
+        bookmarks: [],
+        history: [],
+        totals: {
+            totalReadingSeconds: 0,
+            completions: 0,
+        },
+        session: {
+            active: false,
+            startedAt: null,
+            startAng: null,
+            lastAng: null,
+            seconds: 0,
+        },
+        settings: {
+            theme: 'dark',
+            gurmukhiFont: 'noto-sans',
+            fontSize: 30,
+            fontWeight: 500,
+            lineSpacing: 1.9,
+            larivaar: false,
+            padChed: true,
+            showTransliteration: true,
+            showEnglish: true,
+            showPunjabi: false,
+            showProgress: true,
+            showProgressPercent: true,
+            showAngCounter: true,
+            autoScrollEnabled: false,
+            autoScrollSpeed: 4,
+            dailyAngGoal: 5,
+            reminders: {
+                enabled: false,
+                time: '05:00',
+                days: [0, 1, 2, 3, 4, 5, 6],
+            },
+        },
+    };
+}
+
+// GET - Fetch progress
+app.get('/api/sehaj-paath/progress', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const filePath = getProgressFilePath(userId);
+        const progress = await readProgressFile(filePath);
+        res.json(progress);
+    } catch (error) {
+        console.error('[Sehaj Paath] Error reading progress:', error.message);
+        res.status(500).json({ error: 'Failed to read progress' });
+    }
+});
+
+// PUT - Save progress
+app.put('/api/sehaj-paath/progress', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const filePath = getProgressFilePath(userId);
+        const progress = req.body;
+        const success = await writeProgressFile(progress, filePath);
+        if (success) {
+            res.json({ success: true, message: 'Progress saved' });
+        } else {
+            res.status(500).json({ error: 'Failed to save progress' });
+        }
+    } catch (error) {
+        console.error('[Sehaj Paath] Error saving progress:', error.message);
+        res.status(500).json({ error: 'Failed to save progress' });
+    }
+});
+
+// POST - Update specific fields
+app.post('/api/sehaj-paath/progress', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const filePath = getProgressFilePath(userId);
+        const updates = req.body;
+        const current = await readProgressFile(filePath);
+        const merged = { ...current, ...updates };
+        const success = await writeProgressFile(merged, filePath);
+        if (success) {
+            res.json({ success: true, data: merged });
+        } else {
+            res.status(500).json({ error: 'Failed to update progress' });
+        }
+    } catch (error) {
+        console.error('[Sehaj Paath] Error updating progress:', error.message);
+        res.status(500).json({ error: 'Failed to update progress' });
+    }
+});
+
+// POST - Add bookmark
+app.post('/api/sehaj-paath/bookmarks', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const filePath = getProgressFilePath(userId);
+        const { ang, note } = req.body;
+        const progress = await readProgressFile(filePath);
+
+        const bookmark = {
+            id: `${Date.now()}`,
+            ang: Math.max(1, Math.min(1430, Number(ang))),
+            note: note || '',
+            createdAt: new Date().toISOString(),
+        };
+
+        progress.bookmarks = progress.bookmarks || [];
+        progress.bookmarks.push(bookmark);
+        if (progress.history) progress.history = progress.history.slice(-100);
+
+        await writeProgressFile(progress, filePath);
+        res.json({ success: true, bookmark });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to add bookmark' });
+    }
+});
+
+// DELETE - Remove bookmark
+app.delete('/api/sehaj-paath/bookmarks/:id', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const filePath = getProgressFilePath(userId);
+        const { id } = req.params;
+        const progress = await readProgressFile(filePath);
+
+        progress.bookmarks = (progress.bookmarks || []).filter(b => b.id !== id);
+
+        await writeProgressFile(progress, filePath);
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to remove bookmark' });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// STATIC AUDIO FILES - Alarm tones (must be before /audio proxy)
+// ═══════════════════════════════════════════════════════════════════
+
+app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
+
+// ═══════════════════════════════════════════════════════════════════
+// AUDIO PROXY
+// ═══════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════
 app.get('/audio/:filename', async (req, res) => {
     const filename = req.params.filename;
 
@@ -855,8 +1264,95 @@ app.get('/audio/:filename', async (req, res) => {
 // OTHER API ROUTES
 // ═══════════════════════════════════════════════════════════════════
 
+app.get('/simran-audio/:filename', async (req, res) => {
+    const filename = req.params.filename;
+
+    if (!filename.endsWith('.mp3')) {
+        return res.status(400).json({ error: 'Invalid audio filename' });
+    }
+
+    const simranPrefix = CONFIG.SIMRAN_R2_PREFIX
+        ? CONFIG.SIMRAN_R2_PREFIX.replace(/^\/+|\/+$/g, '') + '/'
+        : '';
+    const r2Url = `${CONFIG.SIMRAN_R2_BASE_URL}/${simranPrefix}${encodeURIComponent(filename)}`;
+
+    console.log(`[Proxy] Fetching: ${r2Url}`);
+
+    if (process.env.SIMRAN_PROXY_MODE !== 'stream') {
+        return res.redirect(302, r2Url);
+    }
+
+    try {
+        const fetchOptions = {
+            method: 'GET',
+            redirect: 'follow',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; GurbaniRadio/1.0)',
+                'Accept': '*/*',
+            }
+        };
+
+        if (req.headers.range) {
+            fetchOptions.headers['Range'] = req.headers.range;
+        }
+
+        const r2Response = await fetch(r2Url, fetchOptions);
+
+        if (!r2Response.ok && r2Response.status !== 206) {
+            console.error(`[Proxy] R2 Error: ${r2Response.status}`);
+            return res.status(r2Response.status).json({
+                error: 'Audio not found',
+                status: r2Response.status
+            });
+        }
+
+        // CORS headers for cross-origin audio streaming - allow all origins for audio
+        const origin = req.headers.origin;
+        if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+            res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+            res.setHeader('Access-Control-Allow-Origin', origin);
+        }
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Content-Type', r2Response.headers.get('content-type') || 'audio/mpeg');
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+
+        if (r2Response.headers.get('content-length')) {
+            res.setHeader('Content-Length', r2Response.headers.get('content-length'));
+        }
+
+        if (r2Response.headers.get('content-range')) {
+            res.setHeader('Content-Range', r2Response.headers.get('content-range'));
+            res.status(206);
+        }
+
+        const stream = Readable.fromWeb(r2Response.body);
+        stream.pipe(res);
+
+        stream.on('error', (err) => console.error('[Proxy] Stream error:', err.message));
+        res.on('close', () => stream.destroy());
+
+    } catch (error) {
+        console.error('[Proxy] Error:', error.message);
+        res.status(500).json({ error: 'Proxy error' });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// OTHER API ROUTES
+// ═══════════════════════════════════════════════════════════════════
+
+
 app.get('/api/tracks', (req, res) => {
-    res.json({ tracks: PLAYLIST, baseUrl: '/audio' });
+    res.json({
+        tracks: PLAYLIST,
+        baseUrl: '/audio',
+        simranTracks: SIMRAN_PLAYLIST,
+        simranBaseUrl: '/simran-audio'
+    });
 });
 
 app.get('/health', (req, res) => {
@@ -982,6 +1478,7 @@ app.use((req, res) => {
 async function startServer() {
     // Initialize the broadcast engine first
     await broadcast.initialize();
+    await simranBroadcast.initialize();
 
     app.listen(PORT, () => {
         const livePos = broadcast.getCurrentLivePosition();
@@ -1008,6 +1505,7 @@ async function startServer() {
 process.on('SIGINT', async () => {
     console.log('\n[Server] Shutting down gracefully...');
     await broadcast.shutdown();
+    await simranBroadcast.shutdown();
     process.exit(0);
 });
 

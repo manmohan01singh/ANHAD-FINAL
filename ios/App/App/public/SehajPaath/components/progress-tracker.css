@@ -1,0 +1,224 @@
+/* Progress Tracker Styles */
+
+.progress-tracker {
+    padding: var(--space-4);
+}
+
+.progress-circle-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+}
+
+.progress-circle {
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.progress-ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: var(--glass-border);
+    stroke-width: 12;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: var(--sehaj-gold);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 502.4;
+    stroke-dashoffset: 502.4;
+    transition: stroke-dashoffset 1s var(--ease-out-expo);
+}
+
+.progress-center-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ang {
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.progress-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: var(--space-1);
+}
+
+.progress-percent {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--sehaj-gold);
+    margin-top: var(--space-2);
+}
+
+/* Progress Stats */
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.progress-stat {
+    text-align: center;
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border-light);
+}
+
+.progress-stat-value {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    display: block;
+}
+
+.progress-stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin-top: var(--space-1);
+    display: block;
+}
+
+/* Weekly Chart */
+.weekly-chart {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border-light);
+    margin-bottom: var(--space-4);
+}
+
+.weekly-chart-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.weekly-bars {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 100px;
+    gap: var(--space-2);
+}
+
+.weekly-bar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.bar-fill {
+    width: 100%;
+    min-height: 4px;
+    background: var(--sehaj-gold);
+    border-radius: var(--radius-sm);
+    transition: height 0.5s var(--ease-out-expo);
+}
+
+.bar-label {
+    font-size: 10px;
+    color: var(--text-quaternary);
+}
+
+.bar-value {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* Heatmap */
+.reading-heatmap {
+    padding: var(--space-4);
+    background: var(--glass-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border-light);
+}
+
+.heatmap-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.heatmap-cell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--glass-border);
+}
+
+.heatmap-cell.level-1 {
+    background: rgba(212, 175, 55, 0.2);
+}
+
+.heatmap-cell.level-2 {
+    background: rgba(212, 175, 55, 0.4);
+}
+
+.heatmap-cell.level-3 {
+    background: rgba(212, 175, 55, 0.6);
+}
+
+.heatmap-cell.level-4 {
+    background: rgba(212, 175, 55, 0.8);
+}
+
+.heatmap-cell.level-5 {
+    background: var(--sehaj-gold);
+}
+
+/* Estimated Completion */
+.estimated-completion {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 149, 0, 0.1));
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    text-align: center;
+}
+
+.estimated-label {
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+}
+
+.estimated-date {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--sehaj-gold);
+    margin-top: var(--space-1);
+}
+
+.estimated-days {
+    font-size: var(--text-xs);
+    color: var(--text-quaternary);
+    margin-top: var(--space-1);
+}

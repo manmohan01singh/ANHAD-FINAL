@@ -32,6 +32,7 @@
   <link rel="icon" type="image/png" href="../favicon.ico">
   
   <!-- Global Theme (must be first!) -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
   <script src="../lib/global-theme.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
@@ -48,7 +49,11 @@
   <!-- Styles -->
   <link rel="stylesheet" href="../css/claymorphism-system.css?v=1">
   <link rel="stylesheet" href="insights.css">
-  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.9">
+  
+  <style>
+    /* Tab bar styles now handled by shared css/nav-glass.css */
+  </style>
 </head>
 
 <body>
@@ -58,17 +63,14 @@
 
   <!-- Header -->
   <header class="insights-header" id="pageHeader">
-    <button class="back-btn glass-nav__back" id="backBtn" aria-label="Go back" onclick="window.history.back()">
+    <button class="back-btn glass-nav__back" id="backBtn" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <h1 class="insights-header__title">Library</h1>
-    <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle theme">
-      <span id="themeIcon">🌙</span>
-    </button>
   </header>
 
   <!-- Main Content -->
-  <main class="insights-app page-enter" id="mainContent">
+  <main class="insights-app page-enter" id="mainContent" style="padding-bottom: 100px;">
     
     <!-- --- TODAY'S INSPIRATION --- -->
     <section class="inspiration-section" id="inspirationCard">
@@ -138,7 +140,7 @@
         <div class="category-card" data-topic="guruSahibs" onclick="openModal('guruSahibs')">
           <div class="category-icon">👑</div>
           <span class="category-name">Guru Sahibaan</span>
-          <span class="category-desc">10 Guru Sahib Ji</span>
+          <span class="category-desc">11 Guru Sahib Ji</span>
         </div>
       </div>
     </section>
@@ -272,24 +274,29 @@
   <!-- Insights Scripts -->
   <script src="insights.js"></script>
 
-  <!-- Liquid Glass Navigation -->
-  <nav class="anhad-bottom-nav" id="mainNav" aria-label="Main Navigation">
-    <div class="nav-pill">
-      <button class="nav-item" data-page="home" aria-label="Home">
-        <div class="nav-icon-wrap">🏠</div>
-      </button>
-      <button class="nav-item active" data-page="learning" aria-label="Learning">
-        <div class="nav-icon-wrap">📚</div>
-      </button>
-      <button class="nav-item" data-page="favorites" aria-label="Favorites">
-        <div class="nav-icon-wrap">❤️</div>
-      </button>
-      <button class="nav-item" data-page="profile" aria-label="Profile">
-        <div class="nav-icon-wrap">👤</div>
-      </button>
-    </div>
+  <!-- Floating Tab Bar — Same as Home Page -->
+  <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
+    <a href="../index.html" class="tab-item">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">Home</span>
+    </a>
+    <a href="insights.html" class="tab-item active">
+      <span class="tab-icon">📚</span>
+      <span class="tab-label">Learning</span>
+    </a>
+    <a href="../Favorites/favorites.html" class="tab-item">
+      <span class="tab-icon">❤️</span>
+      <span class="tab-label">Favorites</span>
+    </a>
+    <a href="../Dashboard/dashboard.html" class="tab-item">
+      <span class="tab-icon">📈</span>
+      <span class="tab-label">Dashboard</span>
+    </a>
   </nav>
-  <script src="../js/anhad-nav.js"></script>
 
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

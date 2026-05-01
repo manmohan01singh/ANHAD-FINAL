@@ -416,31 +416,32 @@
     const Haptic = {
 
         tap() {
-
-            if (navigator.vibrate && State.settings?.vibration) {
-
-                navigator.vibrate(10);
-
+            if (State.settings?.vibration) {
+                if (window.CapacitorHaptics) {
+                    window.CapacitorHaptics.impact('light');
+                } else if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
             }
-
         },
 
         success() {
-
-            if (navigator.vibrate && State.settings?.vibration) {
-
-                navigator.vibrate([10, 50, 20]);
-
+            if (State.settings?.vibration) {
+                if (window.CapacitorHaptics) {
+                    window.CapacitorHaptics.notification('success');
+                } else if (navigator.vibrate) {
+                    navigator.vibrate([10, 50, 20]);
+                }
             }
-
         },
 
         warning() {
-
-            if (navigator.vibrate && State.settings?.vibration) {
-
-                navigator.vibrate([30, 30, 30]);
-
+            if (State.settings?.vibration) {
+                if (window.CapacitorHaptics) {
+                    window.CapacitorHaptics.notification('warning');
+                } else if (navigator.vibrate) {
+                    navigator.vibrate([30, 30, 30]);
+                }
             }
 
         }
@@ -1661,7 +1662,7 @@
 
                     body,
 
-                    icon: '../assets/favicon.svg',
+                    icon: '../assets/icon-192x192.png',
 
                     badge: '../assets/badge.png',
 

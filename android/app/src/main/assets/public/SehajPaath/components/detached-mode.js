@@ -385,7 +385,9 @@ class DetachedReadingMode {
      * Haptic feedback
      */
     haptic(type = 'light') {
-        if ('vibrate' in navigator) {
+        if (window.CapacitorHaptics) {
+            window.CapacitorHaptics.impact(type);
+        } else if ('vibrate' in navigator) {
             const patterns = {
                 light: [10],
                 medium: [20],

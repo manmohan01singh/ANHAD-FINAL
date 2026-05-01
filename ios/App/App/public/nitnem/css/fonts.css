@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM GURMUKHI FONTS
+   ═══════════════════════════════════════════════════════════════ */
+
+/* PG Serif Regular */
+@font-face {
+    font-family: 'PG Serif';
+    src: url('../g-fonts/pg_serif_r.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* PG Serif Semi-bold */
+@font-face {
+    font-family: 'PG Serif';
+    src: url('../g-fonts/pg_serif_s.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* MFJashan */
+@font-face {
+    font-family: 'MFJashan';
+    src: url('../g-fonts/mffjashan.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* PG Khanna */
+@font-face {
+    font-family: 'PG Khanna';
+    src: url('../g-fonts/pg_khanna_c_6.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Pixel R */
+@font-face {
+    font-family: 'Pixel R';
+    src: url('../g-fonts/pixel_r_21.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Font Classes */
+.font-pg-serif {
+    font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-mfjashan {
+    font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-pg-khanna {
+    font-family: 'PG Khanna', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-pixel-r {
+    font-family: 'Pixel R', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-noto {
+    font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+}
