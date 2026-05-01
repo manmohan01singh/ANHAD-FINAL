@@ -1530,11 +1530,8 @@ class NaamAbhyas {
         const today = this.getTodayString();
         const duration = this.config.duration || 2; // Duration in minutes
 
-        // Calculate spacing based on duration
-        // 2 min duration = 20 min spacing, 3 min = 30 min spacing, 5 min = 40 min spacing
-        const spacingMinutes = duration <= 2 ? 20 : (duration <= 3 ? 30 : 40);
-
-        console.log(`📅 Generating schedule: duration=${duration}min, spacing=${spacingMinutes}min`);
+        // Pure random times - no spacing constraints
+        console.log(`📅 Generating schedule: duration=${duration}min, pure random times`);
 
         // Check if we already have a schedule for today
         if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
@@ -1542,7 +1539,7 @@ class NaamAbhyas {
             const existingDuration = this.history.scheduleHistory[today]._duration;
             if (existingDuration && existingDuration !== duration) {
                 console.log(`📅 Duration changed from ${existingDuration} to ${duration}, regenerating schedule`);
-                this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
+                this.currentSchedule = this.generatePureRandomSchedule(startHour, endHour, duration);
                 this.history.scheduleHistory[today] = this.currentSchedule;
                 this.saveHistory();
             } else {
@@ -1581,8 +1578,8 @@ class NaamAbhyas {
                 this.history.dailyRefreshes[today] = 0;
             }
         } else {
-            // Generate new schedule based on duration
-            this.currentSchedule = this.generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration);
+            // Generate new schedule with purely random times
+            this.currentSchedule = this.generatePureRandomSchedule(startHour, endHour, duration);
 
             // Save to history
             if (!this.history.scheduleHistory) {
@@ -1604,7 +1601,38 @@ class NaamAbhyas {
     }
 
     /**
-     * Generate schedule based on duration spacing
+     * Generate schedule with purely random times for each hour
+     */
+    generatePureRandomSchedule(startHour, endHour, duration) {
+        const schedule = {};
+        let sessionIndex = 0;
+
+        // Generate one random session for each hour in the active range
+        for (let hour = startHour; hour <= endHour; hour++) {
+            const randomMinute = Math.floor(Math.random() * 60); // 0-59 minutes
+
+            schedule[hour] = {
+                hour: hour,
+                startMinute: randomMinute,
+                endMinute: randomMinute + duration,
+                startTime: this.formatTime12h(hour, randomMinute),
+                endTime: this.formatTime12h(hour, randomMinute + duration),
+                duration: duration,
+                status: 'pending',
+                index: sessionIndex++
+            };
+
+            console.log(`📅 Session ${sessionIndex}: ${schedule[hour].startTime} - ${schedule[hour].endTime} (${duration}min)`);
+        }
+
+        // Store duration for change detection
+        schedule._duration = duration;
+
+        return schedule;
+    }
+
+    /**
+     * Generate schedule based on duration spacing (legacy)
      */
     generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration) {
         const schedule = {};
@@ -1729,7 +1757,7 @@ class NaamAbhyas {
 
         const today = this.getTodayString();
         const refreshesUsed = (this.history.dailyRefreshes && this.history.dailyRefreshes[today]) || 0;
-        const REFRESH_LIMIT = 1;
+        const REFRESH_LIMIT = 10;
 
         if (refreshesUsed >= REFRESH_LIMIT) {
             refreshBtn.classList.add('disabled');
@@ -1754,8 +1782,8 @@ class NaamAbhyas {
             return null;
         }
 
-        // Generate random minute between 5 and 53 (avoiding edges)
-        const randomMinute = Math.floor(Math.random() * 48) + 5;
+        // Generate purely random minute between 0 and 59 for completely random times
+        const randomMinute = Math.floor(Math.random() * 60);
 
         return {
             hour: hour,

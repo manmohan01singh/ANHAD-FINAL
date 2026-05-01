@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * ANHAD AUDIO SINGLETON — THE ONE TRUE AUDIO ENGINE
  * 
@@ -26,6 +26,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   const STATE_KEY = 'anhad_audio_state';
+  const DURATION_CACHE_KEY = 'anhad_audio_track_durations_v1';
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
   const CDN_BASE = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
@@ -78,6 +79,7 @@
       artwork: resolveAsset('Darbar-sahib-AMRITVELA.webp'),
       type: 'playlist',
       totalTracks: 40,
+      defaultTrackDuration: 3600,
       liveApi: '/api/radio/live',
       durationApi: '/api/radio/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
@@ -89,9 +91,10 @@
     simran: {
       name: 'Waheguru Simran',
       subtitle: 'Amritvela Trust',
-      artwork: resolveAsset('magical-simran.png'),
+      artwork: resolveAsset('waheguru-simran-cover.svg'),
       type: 'playlist',
       totalTracks: 38,
+      defaultTrackDuration: 2000,
       liveApi: '/api/simran/live',
       durationApi: '/api/simran/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
@@ -149,6 +152,32 @@
     listeners.get(event)?.delete(fn);
   }
 
+  function getDurationCache() {
+    try {
+      const raw = localStorage.getItem(DURATION_CACHE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function rememberTrackDuration(streamName, trackIndex, duration) {
+    if (!streamName || !Number.isFinite(duration) || duration <= 60) return;
+    try {
+      const cache = getDurationCache();
+      cache[streamName] = cache[streamName] || {};
+      cache[streamName][trackIndex] = Math.round(duration);
+      localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
+    } catch (e) {}
+  }
+
+  function getCachedTrackDuration(streamName, trackIndex) {
+    const stream = STREAMS[streamName];
+    const fallback = stream?.defaultTrackDuration || 3600;
+    const duration = getDurationCache()?.[streamName]?.[trackIndex];
+    return Number.isFinite(duration) && duration > 60 ? duration : fallback;
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // SERVER SYNC — Single source of live position truth
   // ═══════════════════════════════════════════════════════════════════════════
@@ -184,10 +213,17 @@
   function getLocalLivePosition() {
     const EPOCH = 1704067200000; // Jan 1, 2024
     const elapsed = (Date.now() - EPOCH) / 1000;
-    const totalTracks = STREAMS[currentStream]?.totalTracks || 40;
-    const totalDur = totalTracks * 3600;
+    const streamName = currentStream || 'amritvela';
+    const totalTracks = STREAMS[streamName]?.totalTracks || 40;
+    const durations = Array.from({ length: totalTracks }, (_, index) => getCachedTrackDuration(streamName, index));
+    const totalDur = durations.reduce((sum, dur) => sum + dur, 0);
     const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-    return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
+    let cursor = pos;
+    for (let index = 0; index < totalTracks; index += 1) {
+      if (cursor < durations[index]) return { trackIndex: index, position: cursor };
+      cursor -= durations[index];
+    }
+    return { trackIndex: 0, position: 0 };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -345,6 +381,56 @@
   // CORE PLAYBACK — The ONLY place audio.src is set
   // ═══════════════════════════════════════════════════════════════════════════
 
+  function loadPlaylistPosition(streamName, pos, requestId, depth = 0) {
+    const stream = STREAMS[streamName];
+    if (!audio || !stream || stream.type !== 'playlist') return;
+
+    currentTrackIndex = ((Number(pos.trackIndex) || 0) % stream.totalTracks + stream.totalTracks) % stream.totalTracks;
+    const requestedPosition = Math.max(0, Number(pos.position) || 0);
+    audio.src = stream.getTrackUrl(currentTrackIndex);
+    audio.load();
+
+    console.log(`[AnhadAudio] Virtual live: ${streamName} track ${currentTrackIndex + 1} at ${Math.floor(requestedPosition)}s`);
+
+    const seekAndPlay = () => {
+      if (requestId !== playRequestId || currentStream !== streamName) return;
+
+      const loadedDuration = Number(audio.duration);
+      const duration = Number.isFinite(loadedDuration) && loadedDuration > 60
+        ? loadedDuration
+        : getCachedTrackDuration(streamName, currentTrackIndex);
+
+      rememberTrackDuration(streamName, currentTrackIndex, duration);
+
+      if (requestedPosition >= duration - 3 && depth < stream.totalTracks) {
+        const nextPosition = Math.max(0, requestedPosition - duration);
+        const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
+        console.log(`[AnhadAudio] Live position crossed track end, rolling to track ${nextIndex + 1}`);
+        loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
+        return;
+      }
+
+      const seekPos = Math.min(requestedPosition, Math.max(0, duration - 5));
+      if (seekPos > 2 && Number.isFinite(audio.duration)) {
+        audio.currentTime = seekPos;
+        console.log(`[AnhadAudio] Seeked to ${Math.floor(seekPos)}s`);
+      }
+
+      audio.play().catch(e => {
+        console.warn('[AnhadAudio] Play failed:', e.message);
+        isPlaying = false;
+        isLoading = false;
+        emit('statechange', getPublicState());
+      });
+    };
+
+    if (audio.readyState >= 2) {
+      seekAndPlay();
+    } else {
+      audio.addEventListener('canplay', seekAndPlay, { once: true });
+    }
+  }
+
   async function play(streamName) {
     if (!streamName) streamName = currentStream || 'darbar';
     if (!STREAMS[streamName]) {
@@ -383,44 +469,11 @@
       // ── AMRITVELA: Server-sync + seek to live position ──
       try {
         const pos = await getServerLivePosition();
-        currentTrackIndex = pos.trackIndex;
-        const freshUrl = stream.getTrackUrl(currentTrackIndex);
-        audio.src = freshUrl;
-        audio.load();
-
-        console.log(`[AnhadAudio] 🔴 AMRITVELA: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
-
-        const seekAndPlay = () => {
-          if (requestId !== playRequestId || currentStream !== streamName) return;
-          const dur = audio.duration || 3600;
-          const seekPos = Math.min(pos.position, dur - 5);
-          if (seekPos > 2) {
-            audio.currentTime = seekPos;
-            console.log(`[AnhadAudio] ✅ Seeked to ${Math.floor(seekPos)}s`);
-          }
-          audio.play().catch(e => {
-            console.warn('[AnhadAudio] Play failed:', e.message);
-            isPlaying = false;
-            isLoading = false;
-            emit('statechange', getPublicState());
-          });
-        };
-
-        if (audio.readyState >= 2) {
-          seekAndPlay();
-        } else {
-          audio.addEventListener('canplay', seekAndPlay, { once: true });
-        }
+        loadPlaylistPosition(streamName, pos, requestId);
       } catch (e) {
         console.error('[AnhadAudio] Amritvela sync failed:', e);
-        // Fallback
         const local = getLocalLivePosition();
-        currentTrackIndex = local.trackIndex;
-        audio.src = stream.getTrackUrl(currentTrackIndex);
-        audio.load();
-        if (requestId === playRequestId && currentStream === streamName) {
-          try { await audio.play(); } catch (err) {}
-        }
+        loadPlaylistPosition(streamName, local, requestId);
       }
     }
 
@@ -484,6 +537,8 @@
     if (!stream || stream.type !== 'playlist' || !stream.durationApi || !audio) return;
     if (!audio.duration || !isFinite(audio.duration) || audio.duration <= 60) return;
 
+    rememberTrackDuration(currentStream, currentTrackIndex, audio.duration);
+
     try {
       await fetch(`${API_BASE}${stream.durationApi}`, {
         method: 'POST',
@@ -536,12 +591,12 @@
 
     // Build artwork array with multiple sizes for best OS rendering
     // Use stream artwork as primary, app logo as fallback
-    const primaryArt = stream.artwork || 'assets/icons/icon-1024x1024.png';
+    const primaryArt = stream.artwork || resolveAsset('icons/icon-1024x1024.png');
     const artworkList = [
-      { src: 'assets/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
-      { src: 'assets/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
-      { src: 'assets/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { src: 'assets/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { src: resolveAsset('icons/icon-72x72.png'), sizes: '72x72', type: 'image/png' },
+      { src: resolveAsset('icons/icon-152x152.png'), sizes: '152x152', type: 'image/png' },
+      { src: resolveAsset('icons/icon-192x192.png'), sizes: '192x192', type: 'image/png' },
+      { src: resolveAsset('icons/icon-512x512.png'), sizes: '512x512', type: 'image/png' },
       { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
     ];
 
@@ -704,6 +759,32 @@
       } catch (e) {}
     }
   }, 5000);
+
+  let lastWatchTime = 0;
+  let stalledWatchTicks = 0;
+  setInterval(() => {
+    if (!isPlaying || !audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') return;
+    const duration = Number(audio.duration);
+    const currentTime = Number(audio.currentTime) || 0;
+
+    if (Number.isFinite(duration) && duration > 60 && currentTime >= duration - 2) {
+      play(currentStream);
+      return;
+    }
+
+    if (!audio.paused && Math.abs(currentTime - lastWatchTime) < 0.35) {
+      stalledWatchTicks += 1;
+    } else {
+      stalledWatchTicks = 0;
+    }
+    lastWatchTime = currentTime;
+
+    if (stalledWatchTicks >= 2) {
+      stalledWatchTicks = 0;
+      console.warn('[AnhadAudio] Playlist playback looked stuck, refreshing virtual live position');
+      play(currentStream);
+    }
+  }, 15000);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-RESUME on page load

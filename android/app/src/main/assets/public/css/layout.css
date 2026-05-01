@@ -219,7 +219,7 @@ html.dark-mode .hero-card__image--light {
 @media (max-width: 380px) {
   .hide-xs { display: none !important; }
   
-  .hero-card { min-height: 320px; }
+  .hero-card { min-height: 220px; }
   .feature-card { height: 160px; }
   .features-grid { gap: 10px; }
   .nav-item { padding: 8px 14px; }

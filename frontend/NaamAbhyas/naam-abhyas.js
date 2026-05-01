@@ -1763,16 +1763,25 @@ class NaamAbhyas {
     regenerateSchedule() {
         const today = this.getTodayString();
 
+        // Force clear today's schedule to ensure random times
+        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
+            delete this.history.scheduleHistory[today];
+            console.log('📅 Cleared cached schedule for today');
+        }
+
+        // Also clear global schedule cache
+        localStorage.removeItem('naam_abhyas_schedule');
+
         // 1. Check Refresh Limit
         if (!this.history.dailyRefreshes) {
             this.history.dailyRefreshes = {};
         }
 
         const refreshesUsed = this.history.dailyRefreshes[today] || 0;
-        const REFRESH_LIMIT = 1; // Strict limit: 1 refresh per day
+        const REFRESH_LIMIT = 10; // Strict limit: 1 refresh per day
 
         if (refreshesUsed >= REFRESH_LIMIT) {
-            this.showToast('Daily refresh limit reached (1/day)', 'info');
+            this.showToast('Daily refresh limit reached (10/day)', 'info');
             this.updateRefreshButtonState();
             return;
         }
@@ -1841,7 +1850,7 @@ class NaamAbhyas {
 
         const today = this.getTodayString();
         const refreshesUsed = (this.history.dailyRefreshes && this.history.dailyRefreshes[today]) || 0;
-        const REFRESH_LIMIT = 1;
+        const REFRESH_LIMIT = 10;
 
         if (refreshesUsed >= REFRESH_LIMIT) {
             refreshBtn.classList.add('disabled');
@@ -1866,8 +1875,8 @@ class NaamAbhyas {
             return null;
         }
 
-        // Generate random minute between 5 and 53 (avoiding edges)
-        const randomMinute = Math.floor(Math.random() * 48) + 5;
+        // Generate purely random minute between 0 and 59 for completely random times
+        const randomMinute = Math.floor(Math.random() * 60);
 
         return {
             hour: hour,

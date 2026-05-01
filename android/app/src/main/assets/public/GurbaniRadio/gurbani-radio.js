@@ -26,7 +26,7 @@
     cacheKeys.forEach(key => localStorage.removeItem(key));
 
     // Set version to force reload
-    const CURRENT_VERSION = '2.0.1';
+    const CURRENT_VERSION = '2.1.0-simran-switch';
     const storedVersion = localStorage.getItem('gurbani-radio-version');
     
     if (storedVersion !== CURRENT_VERSION) {
@@ -230,6 +230,14 @@
                             <div>
                                 <div class="playlist-title">Amritvela Kirtan</div>
                                 <div class="playlist-subtitle">24/7 Peaceful Kirtan</div>
+                            </div>
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="playlist-item">
+                            <i class="fas fa-pray"></i>
+                            <div>
+                                <div class="playlist-title">Waheguru Simran</div>
+                                <div class="playlist-subtitle">Virtual live from Amritvela Trust</div>
                             </div>
                             <i class="fas fa-play-circle"></i>
                         </div>
