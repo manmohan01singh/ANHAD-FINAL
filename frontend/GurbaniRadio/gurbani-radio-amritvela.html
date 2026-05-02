@@ -1176,10 +1176,13 @@
         }
     };
 
+    const legacyAudioEvents = { addEventListener: () => {}, load: () => {} };
+
     // DOM Elements
     const dom = {
         player: document.getElementById('player'),
-        // REMOVED: audioDarbar, audioAmritvela - singleton handles audio
+        audioDarbar: legacyAudioEvents,
+        audioAmritvela: legacyAudioEvents,
 
         // Stream switcher
         streamPill: document.getElementById('streamPill'),
@@ -1297,23 +1300,9 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
-    // AMRITVELA SYNC - Virtual Live with Shuffle Fallback
+    // Virtual live sync — ../lib/anhad-audio-singleton.js (server epoch + shuffle)
     // ═══════════════════════════════════════════════════════════════════════════════
-    
-    // Universal Deterministic offline fallback if the live server is ever unavailable
-    // This mathematical timeline ensures ALL devices stay perfectly in sync even fully offline.
-    function getLocalLivePosition() {
-        const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
-        const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
-        const totalDur = 40 * 3600; // 40 days
-        const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-        return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
-    }
-    
-    function getRandomTrackIndex() {
-        return Math.floor(Math.random() * STATE.totalTracks);
-    }
-    
+
     // REMOVED: syncAmritvelaPosition - singleton handles server sync
     async function syncAmritvelaPosition() {
         // Singleton handles all server sync logic
@@ -1590,7 +1579,9 @@
         // Volume
         dom.volumeInput.addEventListener('input', (e) => {
             STATE.volume = e.target.value / 100;
+            if (window.AnhadAudio) window.AnhadAudio.setVolume(STATE.volume);
             updateUI();
+            saveState();
         });
         
         // Theme
@@ -1679,10 +1670,8 @@
         
         // Visibility change - re-sync when returning
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && STATE.isPlaying) {
-                if (STATE.currentStream === 'amritvela') {
-                    syncAmritvelaPosition();
-                }
+            if (!document.hidden && STATE.isPlaying && STATE.currentStream === 'amritvela') {
+                window.AnhadAudio?.jumpToLive();
             }
         });
         
@@ -1705,21 +1694,14 @@
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             
             const data = await resp.json();
-            const serverTrackIndex = data.trackIndex ?? getRandomTrackIndex();
-            
-            // Only switch tracks if server is on a different track
-            if (serverTrackIndex !== STATE.currentTrackIndex) {
-                console.log(`[GR] 🔄 Track change: ${STATE.currentTrackIndex + 1} → ${serverTrackIndex + 1}`);
-                STATE.currentTrackIndex = serverTrackIndex;
-                const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
-                dom.audioAmritvela.src = trackUrl;
-                dom.audioAmritvela.load();
-                
-                // Update track info
-                dom.trackTitle.textContent = data.trackTitle || `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
-                dom.trackArtist.textContent = data.trackArtist || 'ANHAD Gurbani Radio';
-                
-                // If was playing, the track change handler will auto-play after load
+            if (typeof data.trackIndex !== 'number') return;
+
+            const st = window.AnhadAudio?.getState?.();
+            if (!st || st.currentStream !== 'amritvela' || !STATE.isPlaying) return;
+
+            if (data.trackIndex !== st.currentTrackIndex) {
+                console.log(`[GR] 🔄 Server track advance → resync virtual live`);
+                await window.AnhadAudio.jumpToLive();
             }
         } catch (err) {
             // Silently fail - offline mode will handle it
@@ -1741,9 +1723,13 @@
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (audioState) => {
                 STATE.isPlaying = audioState.isPlaying;
-                STATE.currentStream = audioState.currentStream;
+                if (audioState.currentStream && STREAMS[audioState.currentStream]) {
+                    STATE.currentStream = audioState.currentStream;
+                    updateStreamUI(STATE.currentStream);
+                }
                 STATE.currentTrackIndex = audioState.currentTrackIndex;
                 updateUI();
+                saveState();
             });
 
             window.AnhadAudio.on('loading', (data) => {
@@ -1828,6 +1814,5 @@
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
-    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

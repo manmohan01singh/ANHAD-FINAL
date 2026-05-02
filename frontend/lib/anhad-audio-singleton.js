@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * ANHAD AUDIO SINGLETON — THE ONE TRUE AUDIO ENGINE
  * 
@@ -27,6 +27,7 @@
 
   const STATE_KEY = 'anhad_audio_state';
   const DURATION_CACHE_KEY = 'anhad_audio_track_durations_v1';
+  const BROADCAST_META_KEY = 'anhad_broadcast_virtual_meta_v1';
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
   const CDN_BASE = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
@@ -131,6 +132,7 @@
   let isLoading = false;
   let audioRetryCount = 0;     // Error retry counter (max 5)
   let playRequestId = 0;       // Guards stale canplay handlers after rapid stream changes
+  let lastPlaylistEndedAt = 0; // Coalesce ended + near-end watchdog double-fires
   const listeners = new Map(); // event → Set<fn>
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -178,6 +180,102 @@
     return Number.isFinite(duration) && duration > 60 ? duration : fallback;
   }
 
+  /**
+   * Persist server epoch + merge API track durations (must mirror backend BroadcastEngine).
+   */
+  function persistBroadcastMeta(streamName, data) {
+    if (!streamName || !data || data.epoch == null) return;
+    try {
+      const raw = localStorage.getItem(BROADCAST_META_KEY);
+      const meta = raw ? JSON.parse(raw) : {};
+      meta[streamName] = { epoch: Number(data.epoch), lastServerTime: Date.now() };
+      localStorage.setItem(BROADCAST_META_KEY, JSON.stringify(meta));
+    } catch (e) {}
+
+    if (data.trackDurations && typeof data.trackDurations === 'object') {
+      try {
+        const cache = getDurationCache();
+        cache[streamName] = cache[streamName] || {};
+        Object.entries(data.trackDurations).forEach(([k, v]) => {
+          const idx = Number(k);
+          const dur = Number(v);
+          if (Number.isFinite(idx) && idx >= 0 && Number.isFinite(dur) && dur > 60) {
+            cache[streamName][idx] = Math.round(dur);
+          }
+        });
+        localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
+      } catch (e) {}
+    }
+  }
+
+  function getBroadcastEpoch(streamName) {
+    try {
+      const meta = JSON.parse(localStorage.getItem(BROADCAST_META_KEY) || '{}');
+      const e = meta[streamName]?.epoch;
+      return Number.isFinite(e) ? e : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Deterministic shuffle — same algorithm as backend/server.js BroadcastEngine.regenerateShuffleOrder
+   */
+  function regenerateShuffleOrder(epoch, cycle, length) {
+    let seed = (epoch || 0) + cycle * 2654435761;
+    function rand() {
+      seed |= 0;
+      seed = seed + 0x6d2b79f5 | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = t + Math.imul(t ^ (t >>> 7), 61 | t) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    const shuffleOrder = Array.from({ length }, (_, i) => i);
+    for (let i = shuffleOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [shuffleOrder[i], shuffleOrder[j]] = [shuffleOrder[j], shuffleOrder[i]];
+    }
+    return shuffleOrder;
+  }
+
+  /**
+   * Virtual-live position using persisted server epoch + shuffled playlist (offline / API fallback).
+   */
+  function computeVirtualLivePosition(streamName) {
+    const stream = STREAMS[streamName];
+    const totalTracks = stream?.totalTracks || 40;
+    const epoch = getBroadcastEpoch(streamName) || 1704067200000;
+
+    const getDur = (index) => getCachedTrackDuration(streamName, index);
+
+    let totalPlaylistDuration = 0;
+    for (let i = 0; i < totalTracks; i += 1) {
+      totalPlaylistDuration += getDur(i);
+    }
+    if (totalPlaylistDuration <= 0) {
+      return { trackIndex: 0, position: 0 };
+    }
+
+    const elapsedSeconds = (Date.now() - epoch) / 1000;
+    const cycle = Math.floor(elapsedSeconds / totalPlaylistDuration);
+    const positionInPlaylist = ((elapsedSeconds % totalPlaylistDuration) + totalPlaylistDuration) % totalPlaylistDuration;
+    const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
+
+    let accumulated = 0;
+    for (let i = 0; i < totalTracks; i += 1) {
+      const actualTrackIndex = shuffleOrder[i];
+      const trackDuration = getDur(actualTrackIndex);
+      if (accumulated + trackDuration > positionInPlaylist) {
+        return {
+          trackIndex: actualTrackIndex,
+          position: Math.max(0, positionInPlaylist - accumulated)
+        };
+      }
+      accumulated += trackDuration;
+    }
+    return { trackIndex: shuffleOrder[0] || 0, position: 0 };
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // SERVER SYNC — Single source of live position truth
   // ═══════════════════════════════════════════════════════════════════════════
@@ -198,6 +296,15 @@
       const data = await resp.json();
       const latency = (t1 - t0) / 2000;
 
+      if (currentStream && data.epoch != null) {
+        persistBroadcastMeta(currentStream, data);
+      }
+
+      if (typeof data.trackIndex !== 'number' || !Number.isFinite(data.trackPosition)) {
+        console.warn('[AnhadAudio] Live API missing track fields; using virtual timeline');
+        return getLocalLivePosition();
+      }
+
       console.log(`[AnhadAudio] ✅ Server sync: Track ${data.trackIndex + 1} at ${Math.floor(data.trackPosition)}s (latency: ${latency.toFixed(2)}s)`);
       return {
         trackIndex: data.trackIndex,
@@ -214,19 +321,8 @@
   }
 
   function getLocalLivePosition() {
-    const EPOCH = 1704067200000; // Jan 1, 2024
-    const elapsed = (Date.now() - EPOCH) / 1000;
     const streamName = currentStream || 'amritvela';
-    const totalTracks = STREAMS[streamName]?.totalTracks || 40;
-    const durations = Array.from({ length: totalTracks }, (_, index) => getCachedTrackDuration(streamName, index));
-    const totalDur = durations.reduce((sum, dur) => sum + dur, 0);
-    const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-    let cursor = pos;
-    for (let index = 0; index < totalTracks; index += 1) {
-      if (cursor < durations[index]) return { trackIndex: index, position: cursor };
-      cursor -= durations[index];
-    }
-    return { trackIndex: 0, position: 0 };
+    return computeVirtualLivePosition(streamName);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -342,6 +438,9 @@
 
     audio.addEventListener('ended', () => {
       if (currentStream === 'amritvela' || currentStream === 'simran') {
+        const now = Date.now();
+        if (now - lastPlaylistEndedAt < 2500) return;
+        lastPlaylistEndedAt = now;
         playNextTrack();
       }
     });
@@ -787,6 +886,9 @@
     const currentTime = Number(audio.currentTime) || 0;
 
     if (Number.isFinite(duration) && duration > 60 && currentTime >= duration - 2) {
+      const now = Date.now();
+      if (now - lastPlaylistEndedAt < 2500) return;
+      lastPlaylistEndedAt = now;
       play(currentStream);
       return;
     }

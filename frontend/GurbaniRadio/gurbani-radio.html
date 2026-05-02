@@ -634,6 +634,132 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
+       STREAM SWITCHER BAR - Below Artwork
+       ═══════════════════════════════════════════════════════════════════════════════ */
+    .stream-switcher-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 6px;
+        margin: 16px 0 12px;
+        background: linear-gradient(145deg, var(--surface-1), var(--surface-2));
+        border-radius: 24px;
+        box-shadow: 
+            inset 2px 2px 6px rgba(0,0,0,0.3),
+            inset -2px -2px 6px rgba(255,255,255,0.05),
+            0 4px 12px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .stream-bar-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 10px 8px;
+        border: none;
+        background: transparent;
+        color: var(--text-tertiary);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 18px;
+        transition: all 0.3s var(--spring);
+        position: relative;
+        min-width: 70px;
+    }
+
+    .stream-bar-btn:hover {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-secondary);
+    }
+
+    .stream-bar-btn.active {
+        background: linear-gradient(145deg, var(--gold-light), var(--gold-primary));
+        color: var(--bg-dark);
+        box-shadow: 
+            0 6px 20px rgba(232, 168, 56, 0.4),
+            inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .stream-bar-btn.active[data-stream="amritvela"] {
+        background: linear-gradient(145deg, var(--orange-light), var(--orange-primary));
+        box-shadow: 
+            0 6px 20px rgba(255, 107, 53, 0.4),
+            inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .stream-bar-btn.active[data-stream="simran"] {
+        background: linear-gradient(145deg, var(--simran-light), var(--simran-primary));
+        box-shadow: 
+            0 6px 20px var(--simran-glow),
+            inset 0 1px 2px rgba(255,255,255,0.4);
+    }
+
+    .bar-btn-icon {
+        font-size: 18px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+
+    .stream-bar-btn.active .bar-btn-icon {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+
+    .bar-btn-label {
+        font-size: 10px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .bar-btn-indicator {
+        position: absolute;
+        bottom: 4px;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .stream-bar-btn.active .bar-btn-indicator {
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
+    }
+
+    /* Light mode adjustments */
+    html[data-theme="light"] .stream-switcher-bar,
+    body.light-theme .stream-switcher-bar {
+        background: linear-gradient(145deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02));
+        box-shadow: 
+            inset 2px 2px 6px rgba(0,0,0,0.1),
+            inset -2px -2px 6px rgba(255,255,255,0.8),
+            0 4px 12px rgba(0,0,0,0.1);
+        border-color: rgba(0,0,0,0.05);
+    }
+
+    html[data-theme="light"] .stream-bar-btn,
+    body.light-theme .stream-bar-btn {
+        color: rgba(0,0,0,0.5);
+    }
+
+    html[data-theme="light"] .stream-bar-btn:hover,
+    body.light-theme .stream-bar-btn:hover {
+        background: rgba(0,0,0,0.05);
+        color: rgba(0,0,0,0.7);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════════
        TRACK INFO
        ═══════════════════════════════════════════════════════════════════════════════ */
     .track-info {
@@ -1233,6 +1359,25 @@
             </div>
         </section>
 
+        <!-- STREAM SWITCHER BAR - Below Artwork -->
+        <section class="stream-switcher-bar" id="streamSwitcherBar">
+            <button class="stream-bar-btn active" data-stream="darbar" id="barBtnDarbar">
+                <span class="bar-btn-icon"><i class="fas fa-mosque"></i></span>
+                <span class="bar-btn-label">Darbar Sahib</span>
+                <span class="bar-btn-indicator"></span>
+            </button>
+            <button class="stream-bar-btn" data-stream="amritvela" id="barBtnAmritvela">
+                <span class="bar-btn-icon"><i class="fas fa-sun"></i></span>
+                <span class="bar-btn-label">Amritvela</span>
+                <span class="bar-btn-indicator"></span>
+            </button>
+            <button class="stream-bar-btn" data-stream="simran" id="barBtnSimran">
+                <span class="bar-btn-icon"><i class="fas fa-spa"></i></span>
+                <span class="bar-btn-label">Simran</span>
+                <span class="bar-btn-indicator"></span>
+            </button>
+        </section>
+
         <!-- TRACK INFO -->
         <section class="track-info" id="trackInfo">
             <h1 class="track-title" id="trackTitle">Live Kirtan</h1>
@@ -1398,6 +1543,11 @@
         simranSwitch: document.getElementById('simranSwitch'),
         simranSwitchState: document.getElementById('simranSwitchState'),
         
+        // Stream switcher bar (below artwork)
+        barBtnDarbar: document.getElementById('barBtnDarbar'),
+        barBtnAmritvela: document.getElementById('barBtnAmritvela'),
+        barBtnSimran: document.getElementById('barBtnSimran'),
+        
         // Artwork
         artworkContainer: document.getElementById('artworkContainer'),
         artworkImg: document.getElementById('artworkImg'),
@@ -1491,6 +1641,11 @@
         dom.btnAmritvela.classList.toggle('active', isAmritvela);
         dom.btnSimran.classList.toggle('active', isSimran);
         
+        // Update stream bar buttons (below artwork)
+        if (dom.barBtnDarbar) dom.barBtnDarbar.classList.toggle('active', streamType === 'darbar');
+        if (dom.barBtnAmritvela) dom.barBtnAmritvela.classList.toggle('active', isAmritvela);
+        if (dom.barBtnSimran) dom.barBtnSimran.classList.toggle('active', isSimran);
+        
         // Update artwork
         dom.artworkImg.src = stream.image;
         dom.artworkImg.alt = stream.name;
@@ -1529,23 +1684,9 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
-    // AMRITVELA SYNC - Virtual Live with Shuffle Fallback
+    // AMRITVELA / SIMRAN — virtual live sync lives in ../lib/anhad-audio-singleton.js
     // ═══════════════════════════════════════════════════════════════════════════════
-    
-    // Universal Deterministic offline fallback if the live server is ever unavailable
-    // This mathematical timeline ensures ALL devices stay perfectly in sync even fully offline.
-    function getLocalLivePosition() {
-        const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
-        const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
-        const totalDur = 40 * 3600; // 40 days
-        const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-        return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
-    }
-    
-    function getRandomTrackIndex() {
-        return Math.floor(Math.random() * STATE.totalTracks);
-    }
-    
+
     // REMOVED: syncAmritvelaPosition - singleton handles server sync
     async function syncAmritvelaPosition() {
         // Singleton handles all server sync logic
@@ -1816,6 +1957,11 @@
         dom.btnSimran.addEventListener('click', () => switchStream('simran'));
         dom.simranSwitch.addEventListener('click', toggleSimranSwitch);
         
+        // Stream switcher bar (below artwork)
+        if (dom.barBtnDarbar) dom.barBtnDarbar.addEventListener('click', () => switchStream('darbar'));
+        if (dom.barBtnAmritvela) dom.barBtnAmritvela.addEventListener('click', () => switchStream('amritvela'));
+        if (dom.barBtnSimran) dom.barBtnSimran.addEventListener('click', () => switchStream('simran'));
+        
         // Controls
         dom.playBtn.addEventListener('click', togglePlay);
         dom.prevBtn.addEventListener('click', prevTrack);
@@ -1931,31 +2077,26 @@
     // ═══════════════════════════════════════════════════════════════════════════════
     
     async function checkTrackSync() {
-        // Only check if we need to switch tracks, don't adjust position
-        // This keeps multiple phones in sync without stuttering
+        const syncUrl = STATE.currentStream === 'simran'
+            ? STREAMS.simran.syncUrl
+            : STREAMS.amritvela.syncUrl;
         try {
-            const resp = await fetch(STREAMS.amritvela.syncUrl, { 
+            const resp = await fetch(syncUrl, { 
                 cache: 'no-store',
                 headers: { 'Cache-Control': 'no-cache' }
             });
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             
             const data = await resp.json();
-            const serverTrackIndex = data.trackIndex ?? getRandomTrackIndex();
-            
-            // Only switch tracks if server is on a different track
-            if (serverTrackIndex !== STATE.currentTrackIndex) {
-                console.log(`[GR] 🔄 Track change: ${STATE.currentTrackIndex + 1} → ${serverTrackIndex + 1}`);
-                STATE.currentTrackIndex = serverTrackIndex;
-                const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
-                dom.audioAmritvela.src = trackUrl;
-                dom.audioAmritvela.load();
-                
-                // Update track info
-                dom.trackTitle.textContent = data.trackTitle || `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
-                dom.trackArtist.textContent = data.trackArtist || 'ANHAD Gurbani Radio';
-                
-                // If was playing, the track change handler will auto-play after load
+            if (typeof data.trackIndex !== 'number') return;
+
+            const st = window.AnhadAudio?.getState?.();
+            const pl = STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran';
+            if (!st || !pl || !STATE.isPlaying) return;
+
+            if (data.trackIndex !== st.currentTrackIndex) {
+                console.log(`[GR] 🔄 Server track advance → resync virtual live`);
+                await window.AnhadAudio.jumpToLive();
             }
         } catch (err) {
             // Silently fail - offline mode will handle it
@@ -2030,7 +2171,7 @@
         // Continuous polling - only check for track changes, not position
         // Position only jumps when user explicitly plays (pure virtual live)
         setInterval(() => {
-            if (STATE.isPlaying && STATE.currentStream === 'amritvela' && !document.hidden) {
+            if (STATE.isPlaying && (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') && !document.hidden) {
                 checkTrackSync(); // Lightweight track-only check
             }
         }, 30000); // Check every 30 seconds
@@ -2071,6 +2212,5 @@
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
-    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>
