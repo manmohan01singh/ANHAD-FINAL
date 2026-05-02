@@ -86,7 +86,7 @@
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        return `${CDN_BASE}/day-${safeIndex}.webm?t=${Date.now()}`;
+        return `${CDN_BASE}/day-${safeIndex}.webm`;
       }
     },
     simran: {
@@ -116,7 +116,7 @@
           '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3'
         ];
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
-        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(simranTracks[safeIndex])}?t=${Date.now()}`;
+        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(simranTracks[safeIndex])}`;
       }
     }
   };
@@ -128,6 +128,7 @@
   let audio = null;            // THE one Audio element
   let currentStream = null;    // 'darbar' | 'amritvela' | null
   let currentTrackIndex = 0;
+  let currentShufflePosition = 0; // Position in shuffle order for seamless advancing
   let isPlaying = false;
   let isLoading = false;
   let audioRetryCount = 0;     // Error retry counter (max 5)
@@ -361,7 +362,7 @@
     if (audio) return;
 
     audio = new Audio();
-    audio.preload = 'none';
+    audio.preload = 'auto';  // Auto-preload so browser starts buffering immediately
     audio.volume = 0.8;
 
     // Enable background playback for Capacitor native apps
@@ -491,43 +492,86 @@
     if (!audio || !stream || stream.type !== 'playlist') return;
 
     currentTrackIndex = ((Number(pos.trackIndex) || 0) % stream.totalTracks + stream.totalTracks) % stream.totalTracks;
+    // Store shuffle position if provided
+    if (pos.shufflePosition !== undefined) {
+      currentShufflePosition = pos.shufflePosition;
+    }
     const requestedPosition = Math.max(0, Number(pos.position) || 0);
+    const isFromBeginning = requestedPosition < 2; // Track transition = start from 0
+
+    // Check if we need to cross into the next track BEFORE loading audio
+    // This avoids loading a track only to skip it immediately
+    if (!isFromBeginning && depth < stream.totalTracks) {
+      const cachedDuration = getCachedTrackDuration(streamName, currentTrackIndex);
+      if (requestedPosition >= cachedDuration - 3) {
+        const nextPosition = Math.max(0, requestedPosition - cachedDuration);
+        const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
+        console.log(`[AnhadAudio] 🔄 Pre-check: position ${Math.floor(requestedPosition)}s exceeds cached duration ${Math.floor(cachedDuration)}s, skipping to track ${nextIndex + 1}`);
+        loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
+        return;
+      }
+    }
+
+    // Set source and begin loading
     audio.src = stream.getTrackUrl(currentTrackIndex);
     audio.load();
 
     console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (depth: ${depth})`);
 
+    let seekAndPlayCalled = false;
     const seekAndPlay = () => {
+      if (seekAndPlayCalled) return; // Prevent double-fire
+      seekAndPlayCalled = true;
+
       if (requestId !== playRequestId || currentStream !== streamName) {
         console.log(`[AnhadAudio] ⚠️ Request mismatch: expected ${requestId}, got ${playRequestId}`);
         return;
       }
 
+      // Remember real duration if available
       const loadedDuration = Number(audio.duration);
+      if (Number.isFinite(loadedDuration) && loadedDuration > 60) {
+        rememberTrackDuration(streamName, currentTrackIndex, loadedDuration);
+      }
+
+      // For track transitions (position ~0), just play immediately — no seek needed
+      if (isFromBeginning) {
+        console.log(`[AnhadAudio] ▶️ Track transition: playing from beginning`);
+        audio.play().then(() => {
+          isPlaying = true;
+          isLoading = false;
+          emit('statechange', getPublicState());
+        }).catch(e => {
+          console.warn('[AnhadAudio] ❌ Play failed:', e.message);
+          isPlaying = false;
+          isLoading = false;
+          emit('statechange', getPublicState());
+        });
+        return;
+      }
+
+      // For virtual-live seek (initial play / resync), seek then play
       const duration = Number.isFinite(loadedDuration) && loadedDuration > 60
         ? loadedDuration
         : getCachedTrackDuration(streamName, currentTrackIndex);
 
-      rememberTrackDuration(streamName, currentTrackIndex, duration);
-
-      console.log(`[AnhadAudio] 📊 Track duration: ${duration}s, requested: ${requestedPosition}s`);
-
-      if (requestedPosition >= duration - 3 && depth < stream.totalTracks) {
-        const nextPosition = Math.max(0, requestedPosition - duration);
+      // Double-check we haven't overshot the track with real duration
+      if (Number.isFinite(loadedDuration) && loadedDuration > 60 && requestedPosition >= loadedDuration - 3 && depth < stream.totalTracks) {
+        const nextPosition = Math.max(0, requestedPosition - loadedDuration);
         const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
-        console.log(`[AnhadAudio] 🔄 Live position crossed track end, rolling to track ${nextIndex + 1}`);
+        console.log(`[AnhadAudio] 🔄 Real duration check: position crossed track end, rolling to track ${nextIndex + 1}`);
         loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
         return;
       }
 
       const seekPos = Math.min(requestedPosition, Math.max(0, duration - 5));
-      
-      // Always seek to the live position, even if it's close to start
-      if (Number.isFinite(audio.duration)) {
-        audio.currentTime = seekPos;
-        console.log(`[AnhadAudio] ⏩ Seeked to ${Math.floor(seekPos)}s (requested: ${Math.floor(requestedPosition)}s)`);
+
+      // Seek to the live position
+      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+        audio.currentTime = Math.min(seekPos, audio.duration - 1);
+        console.log(`[AnhadAudio] ⏩ Seeked to ${Math.floor(seekPos)}s`);
       } else {
-        console.warn(`[AnhadAudio] ⚠️ Cannot seek - audio duration not available`);
+        console.warn(`[AnhadAudio] ⚠️ Duration unknown, will play from start and seek after`);
       }
 
       audio.play().then(() => {
@@ -535,6 +579,13 @@
         isPlaying = true;
         isLoading = false;
         emit('statechange', getPublicState());
+        // If we couldn't seek before play (no duration), try now
+        if (seekPos > 2 && Number.isFinite(audio.duration) && audio.duration > seekPos) {
+          if (Math.abs(audio.currentTime - seekPos) > 10) {
+            audio.currentTime = Math.min(seekPos, audio.duration - 1);
+            console.log(`[AnhadAudio] ⏩ Post-play seek to ${Math.floor(seekPos)}s`);
+          }
+        }
       }).catch(e => {
         console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         isPlaying = false;
@@ -544,11 +595,25 @@
     };
 
     if (audio.readyState >= 2) {
-      console.log(`[AnhadAudio] 🚀 Audio ready, seeking immediately`);
+      console.log(`[AnhadAudio] 🚀 Audio already buffered, playing immediately`);
       seekAndPlay();
     } else {
-      console.log(`[AnhadAudio] ⏳ Waiting for audio to load (readyState: ${audio.readyState})`);
+      console.log(`[AnhadAudio] ⏳ Loading audio... (readyState: ${audio.readyState})`);
+      // Listen for the earliest usable event
       audio.addEventListener('canplay', seekAndPlay, { once: true });
+      audio.addEventListener('loadeddata', seekAndPlay, { once: true });
+      // For position 0 (track transitions), also try on loadedmetadata (fires earliest)
+      if (isFromBeginning) {
+        audio.addEventListener('loadedmetadata', seekAndPlay, { once: true });
+      }
+      // Aggressive 3-second timeout — don't wait forever for CDN
+      // The browser will continue buffering while playing
+      setTimeout(() => {
+        if (!seekAndPlayCalled && requestId === playRequestId) {
+          console.warn(`[AnhadAudio] ⏰ 3s timeout (readyState: ${audio.readyState}), forcing play`);
+          seekAndPlay();
+        }
+      }, 3000);
     }
   }
 
@@ -658,42 +723,43 @@
     trackTransitionInProgress = true;
 
     try {
+      const stream = STREAMS[currentStream];
+      if (!stream || !audio) { trackTransitionInProgress = false; return; }
+
       // Remember the just-finished track's real duration for future accuracy
       if (audio && audio.duration && isFinite(audio.duration) && audio.duration > 60) {
         rememberTrackDuration(currentStream, currentTrackIndex, audio.duration);
       }
 
-      // Compute where we should be NOW in the virtual-live timeline
-      // Since the track just ended, the timeline has moved forward and the
-      // local calculation will land on the correct next shuffled track
-      const pos = computeVirtualLivePosition(currentStream);
+      const epoch = getBroadcastEpoch(currentStream) || 1704067200000;
+      const totalTracks = stream.totalTracks || 40;
 
-      console.log(`[AnhadAudio] ⏭️ Local advance: track ${currentTrackIndex + 1} → track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
+      // Compute current cycle and shuffle order
+      const elapsedSeconds = (Date.now() - epoch) / 1000;
+      let totalPlaylistDuration = 0;
+      for (let i = 0; i < totalTracks; i++) totalPlaylistDuration += getCachedTrackDuration(currentStream, i);
+      const cycle = Math.floor(elapsedSeconds / totalPlaylistDuration);
+      const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
 
-      const stream = STREAMS[currentStream];
-      if (!stream || !audio) { trackTransitionInProgress = false; return; }
+      // Find where we currently are in the shuffle order
+      let currentPosInShuffle = shuffleOrder.indexOf(currentTrackIndex);
+      if (currentPosInShuffle === -1) currentPosInShuffle = currentShufflePosition;
 
-      // If the virtual-live calc somehow lands on the same track we just finished,
-      // force advance to the next track in the current shuffle cycle
-      if (pos.trackIndex === currentTrackIndex) {
-        const epoch = getBroadcastEpoch(currentStream) || 1704067200000;
-        const totalTracks = stream.totalTracks || 40;
-        const elapsedSeconds = (Date.now() - epoch) / 1000;
-        let totalPlaylistDuration = 0;
-        for (let i = 0; i < totalTracks; i++) totalPlaylistDuration += getCachedTrackDuration(currentStream, i);
-        const cycle = Math.floor(elapsedSeconds / totalPlaylistDuration);
-        const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
-        const currentShufflePos = shuffleOrder.indexOf(currentTrackIndex);
-        const nextShufflePos = (currentShufflePos + 1) % totalTracks;
-        pos.trackIndex = shuffleOrder[nextShufflePos];
-        pos.position = 0;
-        console.log(`[AnhadAudio] 🔀 Same-track detected, forced shuffle advance → track ${pos.trackIndex + 1}`);
-      }
+      // ALWAYS advance to next position in shuffle — never re-compute from timeline
+      const nextPosInShuffle = (currentPosInShuffle + 1) % totalTracks;
+      const nextTrackIndex = shuffleOrder[nextPosInShuffle];
+      currentShufflePosition = nextPosInShuffle;
+
+      console.log(`[AnhadAudio] ⏭️ Shuffle advance: position ${currentPosInShuffle}→${nextPosInShuffle}, track ${currentTrackIndex + 1} → track ${nextTrackIndex + 1}`);
 
       const requestId = ++playRequestId;
-      loadPlaylistPosition(currentStream, pos, requestId);
+      loadPlaylistPosition(currentStream, {
+        trackIndex: nextTrackIndex,
+        position: 0,
+        shufflePosition: nextPosInShuffle
+      }, requestId);
 
-      // Also report the duration to the server in the background
+      // Report duration to server in background
       reportTrackDuration();
     } catch (e) {
       console.error('[AnhadAudio] AdvanceToNextTrack error:', e);
