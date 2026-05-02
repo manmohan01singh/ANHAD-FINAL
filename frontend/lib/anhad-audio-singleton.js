@@ -95,7 +95,7 @@
       artwork: resolveAsset('waheguru-simran-cover.svg'),
       type: 'playlist',
       totalTracks: 38,
-      defaultTrackDuration: 2000,
+      defaultTrackDuration: 3600,
       liveApi: '/api/simran/live',
       durationApi: '/api/simran/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
@@ -131,6 +131,7 @@
   let isPlaying = false;
   let isLoading = false;
   let audioRetryCount = 0;     // Error retry counter (max 5)
+  let trackTransitionInProgress = false; // Prevents ended + watchdog double-fire
   let playRequestId = 0;       // Guards stale canplay handlers after rapid stream changes
   let lastPlaylistEndedAt = 0; // Coalesce ended + near-end watchdog double-fires
   const listeners = new Map(); // event → Set<fn>
@@ -440,8 +441,10 @@
       if (currentStream === 'amritvela' || currentStream === 'simran') {
         const now = Date.now();
         if (now - lastPlaylistEndedAt < 2500) return;
+        if (trackTransitionInProgress) return;
         lastPlaylistEndedAt = now;
-        playNextTrack();
+        console.log('[AnhadAudio] 🔚 Track ended naturally, advancing to next...');
+        advanceToNextTrack();
       }
     });
 
@@ -644,10 +647,68 @@
     }));
   }
 
+  /**
+   * Advance to the next track in the shuffled playlist WITHOUT re-querying the server.
+   * This ensures seamless auto-advance when a track naturally ends.
+   * Uses the local virtual-live position (which just advanced past the ended track).
+   */
+  async function advanceToNextTrack() {
+    if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
+    if (trackTransitionInProgress) return;
+    trackTransitionInProgress = true;
+
+    try {
+      // Remember the just-finished track's real duration for future accuracy
+      if (audio && audio.duration && isFinite(audio.duration) && audio.duration > 60) {
+        rememberTrackDuration(currentStream, currentTrackIndex, audio.duration);
+      }
+
+      // Compute where we should be NOW in the virtual-live timeline
+      // Since the track just ended, the timeline has moved forward and the
+      // local calculation will land on the correct next shuffled track
+      const pos = computeVirtualLivePosition(currentStream);
+
+      console.log(`[AnhadAudio] ⏭️ Local advance: track ${currentTrackIndex + 1} → track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
+
+      const stream = STREAMS[currentStream];
+      if (!stream || !audio) { trackTransitionInProgress = false; return; }
+
+      // If the virtual-live calc somehow lands on the same track we just finished,
+      // force advance to the next track in the current shuffle cycle
+      if (pos.trackIndex === currentTrackIndex) {
+        const epoch = getBroadcastEpoch(currentStream) || 1704067200000;
+        const totalTracks = stream.totalTracks || 40;
+        const elapsedSeconds = (Date.now() - epoch) / 1000;
+        let totalPlaylistDuration = 0;
+        for (let i = 0; i < totalTracks; i++) totalPlaylistDuration += getCachedTrackDuration(currentStream, i);
+        const cycle = Math.floor(elapsedSeconds / totalPlaylistDuration);
+        const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
+        const currentShufflePos = shuffleOrder.indexOf(currentTrackIndex);
+        const nextShufflePos = (currentShufflePos + 1) % totalTracks;
+        pos.trackIndex = shuffleOrder[nextShufflePos];
+        pos.position = 0;
+        console.log(`[AnhadAudio] 🔀 Same-track detected, forced shuffle advance → track ${pos.trackIndex + 1}`);
+      }
+
+      const requestId = ++playRequestId;
+      loadPlaylistPosition(currentStream, pos, requestId);
+
+      // Also report the duration to the server in the background
+      reportTrackDuration();
+    } catch (e) {
+      console.error('[AnhadAudio] AdvanceToNextTrack error:', e);
+      // Fallback: full server re-sync
+      await play(currentStream);
+    } finally {
+      // Clear the flag after a short delay to prevent immediate re-triggers
+      setTimeout(() => { trackTransitionInProgress = false; }, 3000);
+    }
+  }
+
   async function playNextTrack() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
-    // Re-sync with server on track boundary for perfect live sync
-    await play(currentStream);
+    // Use local advancement for seamless transitions
+    await advanceToNextTrack();
   }
 
   async function reportTrackDuration() {
@@ -882,17 +943,21 @@
   let stalledWatchTicks = 0;
   setInterval(() => {
     if (!isPlaying || !audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') return;
+    if (trackTransitionInProgress) return; // Don't interfere during a transition
     const duration = Number(audio.duration);
     const currentTime = Number(audio.currentTime) || 0;
 
-    if (Number.isFinite(duration) && duration > 60 && currentTime >= duration - 2) {
+    // Near-end detection: if within 5s of track end and ended hasn't fired yet
+    if (Number.isFinite(duration) && duration > 60 && currentTime >= duration - 5) {
       const now = Date.now();
-      if (now - lastPlaylistEndedAt < 2500) return;
+      if (now - lastPlaylistEndedAt < 3000) return; // ended handler already handled this
       lastPlaylistEndedAt = now;
-      play(currentStream);
+      console.log('[AnhadAudio] 🕐 Watchdog: near end of track, advancing...');
+      advanceToNextTrack();
       return;
     }
 
+    // Stall detection: if audio.currentTime hasn't moved in 30+ seconds
     if (!audio.paused && Math.abs(currentTime - lastWatchTime) < 0.35) {
       stalledWatchTicks += 1;
     } else {
@@ -900,9 +965,9 @@
     }
     lastWatchTime = currentTime;
 
-    if (stalledWatchTicks >= 2) {
+    if (stalledWatchTicks >= 3) { // 45 seconds of stall (3 × 15s)
       stalledWatchTicks = 0;
-      console.warn('[AnhadAudio] Playlist playback looked stuck, refreshing virtual live position');
+      console.warn('[AnhadAudio] Playlist playback looked stuck for 45s, refreshing virtual live position');
       play(currentStream);
     }
   }, 15000);
