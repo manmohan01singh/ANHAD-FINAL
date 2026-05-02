@@ -499,24 +499,11 @@
     const requestedPosition = Math.max(0, Number(pos.position) || 0);
     const isFromBeginning = requestedPosition < 2; // Track transition = start from 0
 
-    // Check if we need to cross into the next track BEFORE loading audio
-    // This avoids loading a track only to skip it immediately
-    if (!isFromBeginning && depth < stream.totalTracks) {
-      const cachedDuration = getCachedTrackDuration(streamName, currentTrackIndex);
-      if (requestedPosition >= cachedDuration - 3) {
-        const nextPosition = Math.max(0, requestedPosition - cachedDuration);
-        const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
-        console.log(`[AnhadAudio] 🔄 Pre-check: position ${Math.floor(requestedPosition)}s exceeds cached duration ${Math.floor(cachedDuration)}s, skipping to track ${nextIndex + 1}`);
-        loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
-        return;
-      }
-    }
-
-    // Set source and begin loading
+    // Set source and begin loading — TRUST the server's trackIndex directly
     audio.src = stream.getTrackUrl(currentTrackIndex);
     audio.load();
 
-    console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (depth: ${depth})`);
+    console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s`);
 
     let seekAndPlayCalled = false;
     const seekAndPlay = () => {
@@ -524,7 +511,7 @@
       seekAndPlayCalled = true;
 
       if (requestId !== playRequestId || currentStream !== streamName) {
-        console.log(`[AnhadAudio] ⚠️ Request mismatch: expected ${requestId}, got ${playRequestId}`);
+        console.log(`[AnhadAudio] ⚠️ Request mismatch, aborting`);
         return;
       }
 
@@ -550,36 +537,32 @@
         return;
       }
 
-      // For virtual-live seek (initial play / resync), seek then play
-      const duration = Number.isFinite(loadedDuration) && loadedDuration > 60
-        ? loadedDuration
-        : getCachedTrackDuration(streamName, currentTrackIndex);
-
-      // Double-check we haven't overshot the track with real duration
-      if (Number.isFinite(loadedDuration) && loadedDuration > 60 && requestedPosition >= loadedDuration - 3 && depth < stream.totalTracks) {
-        const nextPosition = Math.max(0, requestedPosition - loadedDuration);
-        const nextIndex = (currentTrackIndex + 1) % stream.totalTracks;
-        console.log(`[AnhadAudio] 🔄 Real duration check: position crossed track end, rolling to track ${nextIndex + 1}`);
-        loadPlaylistPosition(streamName, { trackIndex: nextIndex, position: nextPosition }, requestId, depth + 1);
-        return;
+      // For virtual-live seek: clamp position to actual audio duration
+      // TRUST the server's track — don't try to roll to next track
+      const realDur = Number.isFinite(loadedDuration) && loadedDuration > 60 ? loadedDuration : null;
+      let seekPos = requestedPosition;
+      
+      if (realDur && seekPos >= realDur - 2) {
+        // Position exceeds real audio duration — clamp to near end
+        // The audio will end soon and advanceToNextTrack() handles the transition
+        seekPos = Math.max(0, realDur - 5);
+        console.log(`[AnhadAudio] ⚡ Position ${Math.floor(requestedPosition)}s exceeds duration ${Math.floor(realDur)}s, clamping to ${Math.floor(seekPos)}s`);
       }
-
-      const seekPos = Math.min(requestedPosition, Math.max(0, duration - 5));
 
       // Seek to the live position
       if (Number.isFinite(audio.duration) && audio.duration > 0) {
         audio.currentTime = Math.min(seekPos, audio.duration - 1);
-        console.log(`[AnhadAudio] ⏩ Seeked to ${Math.floor(seekPos)}s`);
+        console.log(`[AnhadAudio] ⏩ Seeked to ${Math.floor(audio.currentTime)}s`);
       } else {
-        console.warn(`[AnhadAudio] ⚠️ Duration unknown, will play from start and seek after`);
+        console.warn(`[AnhadAudio] ⚠️ Duration unknown, will seek after play starts`);
       }
 
       audio.play().then(() => {
-        console.log(`[AnhadAudio] ▶️ Playing ${streamName} at live position`);
+        console.log(`[AnhadAudio] ▶️ Playing ${streamName} track ${currentTrackIndex + 1} at live position`);
         isPlaying = true;
         isLoading = false;
         emit('statechange', getPublicState());
-        // If we couldn't seek before play (no duration), try now
+        // If we couldn't seek before play (no duration info), try now
         if (seekPos > 2 && Number.isFinite(audio.duration) && audio.duration > seekPos) {
           if (Math.abs(audio.currentTime - seekPos) > 10) {
             audio.currentTime = Math.min(seekPos, audio.duration - 1);
@@ -599,7 +582,6 @@
       seekAndPlay();
     } else {
       console.log(`[AnhadAudio] ⏳ Loading audio... (readyState: ${audio.readyState})`);
-      // Listen for the earliest usable event
       audio.addEventListener('canplay', seekAndPlay, { once: true });
       audio.addEventListener('loadeddata', seekAndPlay, { once: true });
       // For position 0 (track transitions), also try on loadedmetadata (fires earliest)
@@ -607,7 +589,6 @@
         audio.addEventListener('loadedmetadata', seekAndPlay, { once: true });
       }
       // Aggressive 3-second timeout — don't wait forever for CDN
-      // The browser will continue buffering while playing
       setTimeout(() => {
         if (!seekAndPlayCalled && requestId === playRequestId) {
           console.warn(`[AnhadAudio] ⏰ 3s timeout (readyState: ${audio.readyState}), forcing play`);

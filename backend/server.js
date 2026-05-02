@@ -128,6 +128,11 @@ const SIMRAN_PLAYLIST = [
 // LIVE BROADCAST ENGINE — Single Source of Truth
 // ═══════════════════════════════════════════════════════════════════
 
+// ── FIXED EPOCH — NEVER changes across deploys, restarts, or filesystem wipes ──
+// This is the birth of the radio station. All position math derives from this.
+// Using Jan 1 2024 00:00:00 UTC ensures deterministic shuffle on ALL devices.
+const FIXED_EPOCH = 1704067200000; // 2024-01-01T00:00:00.000Z
+
 /**
  * The BroadcastEngine is the heart of the live radio station.
  * It manages:
@@ -141,7 +146,7 @@ class BroadcastEngine {
         this.playlistName = playlistName;
         this.playlist = playlist;
         this.stateFile = stateFile;
-        this.epoch = null;           // Birth of the radio station (ms)
+        this.epoch = FIXED_EPOCH;    // ALWAYS the same — deterministic virtual live
         this.trackDurations = {};    // { "0": 3847.2, "1": 3612.8, ... }
         this.listeners = new Map();  // listenerId → { lastSeen, userAgent }
         this.stateDirty = false;
@@ -154,33 +159,21 @@ class BroadcastEngine {
      * Loads or creates radio-state.json with the epoch.
      */
     async initialize() {
-        let state;
-        let needsReset = false;
+        // Always use FIXED_EPOCH — but load learned track durations from state file
+        let learnedDurations = {};
         try {
             const data = await fs.readFile(this.stateFile, 'utf8');
-            state = JSON.parse(data);
-            // If the old epoch is from before we added shuffle, reset it
-            if (!state.shuffleEnabled) {
-                needsReset = true;
+            const state = JSON.parse(data);
+            if (state.trackDurations && typeof state.trackDurations === 'object') {
+                learnedDurations = state.trackDurations;
             }
-            console.log('[📻 ' + this.playlistName + '] Loaded existing radio state');
+            console.log('[📻 ' + this.playlistName + '] Loaded ' + Object.keys(learnedDurations).length + ' learned durations from state file');
         } catch (err) {
-            needsReset = true;
+            console.log('[📻 ' + this.playlistName + '] No state file found, starting fresh');
         }
 
-        if (needsReset) {
-            // Fresh start with shuffle enabled — epoch = NOW
-            state = {
-                epoch: Date.now(),
-                startedAt: new Date().toISOString(),
-                trackDurations: state?.trackDurations || {},
-                shuffleEnabled: true
-            };
-            console.log('[📻 ' + this.playlistName + '] 🔀 Created fresh radio state with SHUFFLE enabled (epoch = now)');
-        }
-
-        this.epoch = state.epoch;
-        this.trackDurations = state.trackDurations || {};
+        this.epoch = FIXED_EPOCH; // ALWAYS fixed — deterministic
+        this.trackDurations = learnedDurations;
 
         // Generate initial shuffle order
         this.regenerateShuffleOrder(0);
@@ -505,6 +498,7 @@ app.get('/api/radio/live', (req, res) => {
 
         // What to play
         trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
         trackPosition: Math.round(livePos.trackPosition * 100) / 100,
         trackTitle: track.title,
         trackArtist: track.artist,
@@ -581,6 +575,7 @@ app.post('/api/radio/heartbeat', (req, res) => {
         listenersCount: broadcast.getListenerCount(),
         // Drift correction data
         trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
         trackPosition: Math.round(livePos.trackPosition * 100) / 100,
         trackFilename: track.filename,
         serverTime: Date.now()
@@ -861,6 +856,7 @@ app.get('/api/simran/live', (req, res) => {
 
         // What to play
         trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
         trackPosition: Math.round(livePos.trackPosition * 100) / 100,
         trackTitle: track.title,
         trackArtist: track.artist,
@@ -937,6 +933,7 @@ app.post('/api/simran/heartbeat', (req, res) => {
         listenersCount: simranBroadcast.getListenerCount(),
         // Drift correction data
         trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
         trackPosition: Math.round(livePos.trackPosition * 100) / 100,
         trackFilename: track.filename,
         serverTime: Date.now()
