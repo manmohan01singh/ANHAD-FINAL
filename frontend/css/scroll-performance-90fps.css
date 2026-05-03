@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
-   SCROLL PERFORMANCE OPTIMIZATION - 90 FPS TARGET
+   SCROLL PERFORMANCE OPTIMIZATION - 90 FPS TARGET (ENHANCED)
    ═══════════════════════════════════════════════════════════════════════════════
    
    This file optimizes scroll performance by:
@@ -8,6 +8,7 @@
    - Simplifying box-shadows during scroll
    - Using will-change strategically
    - Enabling passive scroll listeners via CSS hints
+   - NEW: Enhanced scroll containment and performance monitoring
    
    Load this AFTER all other CSS files.
    ═══════════════════════════════════════════════════════════════════════════════ */
@@ -17,18 +18,32 @@
    that breaks position:fixed on the tab-bar navbar (makes it scroll with content
    instead of staying fixed at the viewport bottom). */
 
-/* All scrollable containers */
+/* All scrollable containers - Enhanced with better containment */
 .main-content,
 #app,
 .app,
 .gurbani-scroll,
 .verses-container,
 .modal-body,
-[data-scrollable] {
+[data-scrollable],
+html,
+body {
   -webkit-overflow-scrolling: touch;
   transform: translateZ(0);
   will-change: scroll-position;
   contain: layout style paint;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* Enhanced scroll performance for main app container */
+#app,
+.app {
+  isolation: isolate;
+  contain: strict;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* ─── DISABLE EXPENSIVE BLUR FILTERS DURING SCROLL ─── */
@@ -111,21 +126,25 @@ html.dark-mode .backdrop-blur {
   }
 }
 
-/* ─── PERFORMANCE MODE FOR MOBILE ─── */
+/* ─── PERFORMANCE MODE FOR MOBILE (ENHANCED) ─── */
 @media (max-width: 768px) {
   /* Disable all blur effects on mobile */
-  * {
+  *,
+  *::before,
+  *::after {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
   
-  /* Simplify shadows on mobile */
+  /* Simplify shadows on mobile - even more aggressive */
   .clay-card,
   .clay,
   .quick-card,
   .practice-card,
-  .event-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  .event-card,
+  .hero-card {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+    transition: none !important;
   }
   
   /* Disable aurora animations on mobile */
@@ -137,6 +156,29 @@ html.dark-mode .backdrop-blur {
   /* Disable mandana watermark on mobile */
   .mandana-watermark {
     display: none !important;
+  }
+  
+  /* Disable complex gradients on mobile */
+  .event-card,
+  .hero-card {
+    background: #F8F8F8 !important;
+  }
+  
+  html.dark-mode .event-card,
+  html.dark-mode .hero-card {
+    background: #2C2C2E !important;
+  }
+  
+  /* Optimize images for mobile scroll */
+  img {
+    transform: translateZ(0);
+    will-change: transform;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* Disable text shadows for performance */
+  * {
+    text-shadow: none !important;
   }
 }
 
@@ -178,14 +220,25 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── CONTAINMENT FOR BETTER PERFORMANCE ─── */
+/* ─── CONTAINMENT FOR BETTER PERFORMANCE (ENHANCED) ─── */
 .card,
 .quick-card,
 .practice-card,
 .event-card,
-.hero-card {
+.hero-card,
+.greeting__portrait-wrapper {
   contain: layout style paint;
   transform: translateZ(0);
+  isolation: isolate;
+  backface-visibility: hidden;
+}
+
+/* Enhanced scroll container optimization */
+.main-content,
+.gurbani-scroll {
+  contain: strict;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
 }
 
 /* ─── DISABLE EXPENSIVE DROP SHADOWS ─── */
@@ -277,15 +330,110 @@ html.dark-mode .nav-glass {
   contain: layout;
 }
 
-/* ─── SCROLL SNAP FOR BETTER PERFORMANCE ─── */
+/* ─── SCROLL SNAP FOR BETTER PERFORMANCE (ENHANCED) ─── */
 @media (hover: none) and (pointer: coarse) {
   .main-content,
   .gurbani-scroll {
     scroll-snap-type: y proximity;
+    scroll-padding-top: 80px;
   }
   
   .card,
-  .quick-card {
+  .quick-card,
+  .event-card,
+  .hero-card {
     scroll-snap-align: start;
+    scroll-margin-top: 80px;
   }
+}
+
+/* ─── NEW: ADVANCED SCROLL PERFORMANCE OPTIMIZATIONS ─── */
+
+/* Optimize scroll performance with CSS hints */
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+}
+
+/* Enhanced GPU acceleration for critical elements */
+header,
+nav,
+.nav-glass,
+.mini-player,
+.gmp,
+.tab-bar {
+  transform: translateZ(0);
+  will-change: transform;
+  isolation: isolate;
+  backface-visibility: hidden;
+}
+
+/* Disable expensive CSS animations during scroll */
+.scrolling .aurora-bg,
+.scrolling .particle-burst,
+.scrolling .spark-burst {
+  animation-play-state: paused !important;
+}
+
+/* Optimize touch responsiveness */
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Enhanced performance for scroll-heavy areas */
+.main-content {
+  scroll-padding-top: 70px;
+  scroll-padding-bottom: 100px;
+}
+
+/* Prevent layout shifts during scroll */
+.event-card,
+.quick-card,
+.practice-card,
+.hero-card {
+  contain: layout size;
+  min-height: 120px;
+}
+
+/* Optimize backdrop filters for performance */
+.glass,
+.glass-effect {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.dark-mode .glass,
+html.dark-mode .glass-effect {
+  background: rgba(28, 28, 30, 0.95) !important;
+}
+
+/* Disable expensive transitions during scroll */
+.scrolling * {
+  transition: none !important;
+  animation-duration: 0.01ms !important;
+}
+
+/* Enhanced image optimization */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Performance monitoring class */
+.performance-mode {
+  contain: strict;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100vh;
 }
