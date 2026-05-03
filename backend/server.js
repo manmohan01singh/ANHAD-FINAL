@@ -18,10 +18,6 @@ const rateLimitModule = require('express-rate-limit');
 const rateLimit = rateLimitModule.rateLimit || rateLimitModule;
 const ipKeyGenerator = rateLimitModule.ipKeyGenerator || ((ip) => ip);
 
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegPath = require('ffmpeg-static');
-ffmpeg.setFfmpegPath(ffmpegPath);
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -1125,49 +1121,6 @@ app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
 // ═══════════════════════════════════════════════════════════════════
 // AUDIO PROXY
 // ═══════════════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════════════
-// DYNAMIC MP3 TRANSCODER (For Android WebView Support)
-// ═══════════════════════════════════════════════════════════════════
-app.get('/api/stream-mp3', (req, res) => {
-    const filename = req.query.file;
-    const startSeconds = parseFloat(req.query.start) || 0;
-
-    if (!filename || !/^day-\d{1,2}\.webm$/.test(filename)) {
-        return res.status(400).json({ error: 'Invalid audio filename' });
-    }
-
-    const r2Url = `${CONFIG.R2_BASE_URL}/${filename}`;
-    
-    console.log(`[Transcoder] Streaming MP3 from ${startSeconds}s: ${r2Url}`);
-
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Transfer-Encoding', 'chunked');
-    res.setHeader('Connection', 'keep-alive');
-    const origin = req.headers.origin;
-    if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
-        res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-
-    const command = ffmpeg(r2Url)
-        .setStartTime(startSeconds)
-        .format('mp3')
-        .audioCodec('libmp3lame')
-        .audioBitrate('64k')
-        .on('error', (err) => {
-            if (err.message.includes('SIGKILL') || err.message.includes('closed')) return;
-            console.error('[Transcoder] FFmpeg Error:', err.message);
-            if (!res.headersSent) res.status(500).end();
-        });
-
-    command.pipe(res, { end: true });
-
-    req.on('close', () => {
-        command.kill('SIGKILL');
-    });
-});
 
 // ═══════════════════════════════════════════════════════════════════
 app.get('/audio/:filename', async (req, res) => {
