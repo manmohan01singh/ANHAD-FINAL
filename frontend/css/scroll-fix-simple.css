@@ -3,10 +3,26 @@
    ═══════════════════════════════════════════════════════════════════════════════
    
    Basic scroll optimization without aggressive changes
+   Target the specific main.app container that handles scrolling
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* Basic touch scrolling optimization */
-.main-content,
+/* FIX DOUBLE SCROLL: Target the main app container specifically */
+main.app,
+#app {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Ensure body doesn't interfere with scrolling */
+body {
+  overflow: hidden;
+}
+
+/* Basic touch scrolling optimization for other containers */
 .gurbani-scroll,
 .verses-container,
 [data-scrollable] {
@@ -14,10 +30,9 @@
   scroll-behavior: smooth;
 }
 
-/* Simple GPU acceleration for scroll containers */
-.main-content,
-#app,
-.app {
+/* Simple GPU acceleration for main containers only */
+main.app,
+#app {
   transform: translateZ(0);
   will-change: scroll-position;
 }
@@ -33,5 +48,11 @@
   .aurora-bg,
   .particle-burst {
     display: none;
+  }
+  
+  main.app,
+  #app {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 }
