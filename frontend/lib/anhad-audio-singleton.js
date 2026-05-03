@@ -84,10 +84,11 @@
       liveApi: '/api/radio/live',
       durationApi: '/api/radio/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
-      getTrackUrl(index) {
+      getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        // Append version cache-buster to bypass previously corrupted WebView caches without breaking CDN edge cache
-        return `${CDN_BASE}/day-${safeIndex}.webm?v=2.1.4`;
+        // Use the backend MP3 transcoder for bulletproof Android playback!
+        // This converts the 68MB WebM into a continuous, non-chunked MP3 stream on the fly.
+        return `https://anhad-final.onrender.com/api/stream-mp3?file=day-${safeIndex}.webm&start=${Math.floor(position)}`;
       }
     },
     simran: {

@@ -57,6 +57,11 @@ const config: CapacitorConfig = {
             updateInterval: 15,
             // Enable debug logging
             debug: false
+        },
+
+        // Native HTTP Stack
+        CapacitorHttp: {
+            enabled: true
         }
     }
 };
