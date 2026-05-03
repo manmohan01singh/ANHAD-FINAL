@@ -87,4 +87,62 @@ public class AlarmReliabilityPlugin extends Plugin {
         PowerManager powerManager = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
         return powerManager != null && !powerManager.isIgnoringBatteryOptimizations(getContext().getPackageName());
     }
+
+    @PluginMethod
+    public void scheduleFullScreenAlarm(PluginCall call) {
+        if (!canScheduleExactAlarms()) {
+            call.reject("Exact alarms permission not granted");
+            return;
+        }
+
+        try {
+            int id = call.getInt("id", 0);
+            long timestamp = call.getLong("timestamp", 0L);
+            String title = call.getString("title", "Alarm");
+            String message = call.getString("message", "");
+            String hour = call.getString("hour", "");
+            String minute = call.getString("minute", "");
+
+            if (timestamp <= System.currentTimeMillis()) {
+                call.reject("Timestamp is in the past");
+                return;
+            }
+
+            Intent intent = new Intent(getContext(), AlarmReceiver.class);
+            intent.putExtra("id", id);
+            intent.putExtra("title", title);
+            intent.putExtra("message", message);
+            intent.putExtra("hour", hour);
+            intent.putExtra("minute", minute);
+
+            int flags = android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags |= android.app.PendingIntent.FLAG_IMMUTABLE;
+            }
+
+            android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
+                    getContext(),
+                    id,
+                    intent,
+                    flags
+            );
+
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                AlarmManager.AlarmClockInfo alarmClockInfo = new AlarmManager.AlarmClockInfo(
+                        timestamp,
+                        pendingIntent // Used to show icon in status bar, can just reuse
+                );
+                alarmManager.setAlarmClock(alarmClockInfo, pendingIntent);
+                
+                JSObject result = new JSObject();
+                result.put("success", true);
+                call.resolve(result);
+            } else {
+                call.reject("AlarmManager is null");
+            }
+        } catch (Exception e) {
+            call.reject("Failed to schedule full screen alarm", e);
+        }
+    }
 }

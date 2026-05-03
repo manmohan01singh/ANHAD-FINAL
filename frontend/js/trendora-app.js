@@ -340,16 +340,6 @@
       try {
         // Get filter preference from localStorage first (default to guru-sahib)
         const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
-        
-        // Check sessionStorage cache first (1-hour TTL) - include filter in cache key
-        const cacheKey = 'gurpurab_cache_' + nameFilter;
-        const cached = sessionStorage.getItem(cacheKey);
-        if (cached) {
-          try {
-            const c = JSON.parse(cached);
-            if (c.ts && Date.now() - c.ts < 3600000) return c.data;
-          } catch(e) { /* cache miss */ }
-        }
 
         const response = await fetch('data/gurpurab-events-2026.json');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -389,21 +379,24 @@
             
             return true;
           })
-          .map(e => ({
-            name: e.name_en,
-            name_pa: e.name_pa,
-            id: e.id,
-            date: new Date(e.gregorian_date),
-            type: e.type,
-            eventCategory: this.classifyEventType(e.type, e.name_en)
-          }))
+          .map(e => {
+            const [y, m, d] = e.gregorian_date.split('-');
+            return {
+              name: e.name_en,
+              name_pa: e.name_pa,
+              id: e.id,
+              date: new Date(y, m - 1, d), // Local midnight
+              type: e.type,
+              eventCategory: this.classifyEventType(e.type, e.name_en)
+            };
+          })
           .sort((a, b) => a.date - b.date);
 
         const now = new Date();
-        const todayStr = now.toLocaleDateString('en-CA');
+        const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         // Find ALL events for today (multiple Gurpurabs possible)
-        const todayEvents = events.filter(g => g.date.toLocaleDateString('en-CA') === todayStr);
+        const todayEvents = events.filter(g => g.date.getTime() === todayMidnight.getTime());
         
         let result = null;
         if (todayEvents.length > 0) {
@@ -422,9 +415,9 @@
             isMultiple: todayEvents.length > 1
           };
         } else {
-          const upcoming = events.find(g => g.date >= now);
+          const upcoming = events.find(g => g.date > todayMidnight);
           if (upcoming) {
-            const daysLeft = Math.ceil((upcoming.date - now) / 86400000);
+            const daysLeft = Math.round((upcoming.date - todayMidnight) / 86400000);
             const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             result = {
               events: [{
@@ -442,8 +435,8 @@
           }
         }
 
-        // Cache the result
-        try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: result })); } catch(e) {}
+        // We bypass sessionStorage here so daysLeft properly counts down automatically on midnight rolls.
+        // The fetch request to the local JSON is already cached by the browser and service worker.
         return result;
       } catch (e) {
         return null;
@@ -769,6 +762,9 @@
             eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
           }
 
+          const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
+          const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
+
           // Update date/countdown display
           if (event.isToday) {
             if (event.eventCategory === 'remembrance') {
@@ -784,10 +780,14 @@
               if (countEl) countEl.textContent = '🙏';
               if (labelEl) labelEl.textContent = 'Today';
             }
+            if (badgeValueEl) badgeValueEl.textContent = 'Today';
+            if (badgeLabelEl) badgeLabelEl.textContent = '';
           } else {
             if (dateEl) dateEl.textContent = event.dateStr;
             if (countEl) countEl.textContent = event.daysLeft;
             if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+            if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
+            if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
           }
 
           // Update Guru image

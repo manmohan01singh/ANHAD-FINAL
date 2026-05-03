@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0E">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:padding="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ਵਾਹਿਗੁਰੂ"
+            android:textSize="48sp"
+            android:textColor="#FFB347"
+            android:layout_marginBottom="16dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alarmTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Naam Abhyas"
+            android:textSize="28sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="8dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alarmMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time to remember Vaheguru"
+            android:textSize="18sp"
+            android:textColor="#BBBBBB"
+            android:gravity="center"
+            android:layout_marginBottom="48dp" />
+
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="#FFB347"
+            android:textColor="#000000"
+            android:text="Start 2 Min Session"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnDismiss"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="#2A2A35"
+            android:textColor="#FFFFFF"
+            android:text="Skip For Now"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

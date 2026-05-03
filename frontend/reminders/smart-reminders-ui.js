@@ -932,7 +932,7 @@
         window.addEventListener('scroll', () => {
             const header = $('#appHeader');
             if (header) header.classList.toggle('scrolled', window.scrollY > 10);
-        });
+        }, { passive: true });
     }
 
     // ══════════════════════════════════════════════════════════════════════════

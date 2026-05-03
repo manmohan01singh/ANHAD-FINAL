@@ -43,6 +43,8 @@
   <!-- Critical inline CSS to prevent flash -->
   <style>
     html { color-scheme: var(--color-scheme, light); }
+    html.dark-mode { background-color: #1C1C1E !important; }
+    html:not(.dark-mode) { background-color: #F2F2F7 !important; }
     html.dark-mode, body.dark-mode { color: #FFFFFF !important; }
     html:not(.dark-mode), body:not(.dark-mode) { color: #1A1A1F !important; }
     body {
@@ -1828,7 +1830,7 @@
         </div>
       </div>
       <div class="event-card__days-badge">
-        <span id="eventCountdown">5</span> days left
+        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
       </div>
     </article>
 

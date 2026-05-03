@@ -1166,7 +1166,8 @@ class VisualizerEngine {
             );
 
             this.previousHeights[index] = smoothedHeight;
-            bar.style.height = `${smoothedHeight}px`;
+            const scale = smoothedHeight / this.options.maxHeight;
+            bar.style.transform = `scaleY(${scale}) translateZ(0)`;
         });
 
         this.animationId = requestAnimationFrame(() => this.animate());
@@ -3547,3 +3548,72 @@ document.addEventListener('visibilitychange', () => {
     console.log('[SW Handler] Global Service Worker message handler initialized');
 })();
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ANDROID PERFORMANCE ENHANCEMENTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Handle Android hardware back button
+async function initAndroidBackButton() {
+  try {
+    const { App } = await import('https://unpkg.com/@capacitor/app@6/dist/esm/index.js')
+      .catch(() => ({ App: null }));
+    
+    if (!App) return; // not in Capacitor
+    
+    App.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        // Show exit confirmation or minimize app
+        App.minimizeApp?.();
+      }
+    });
+  } catch (e) {
+    // Not in Capacitor WebView — ignore
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initAndroidBackButton);
+
+// Handle visibilitychange to stop heartbeat
+document.addEventListener('visibilitychange', () => {
+    const radio = window.gurbaniRadio;
+    if (!radio) return;
+    
+    const virtualLive = radio.audioEngine?.virtualLive;
+    const visualizer = radio.visualizer || radio.ui?.visualizer;
+
+    if (document.hidden) {
+        // App backgrounded: stop expensive intervals
+        if (virtualLive) virtualLive.stopHeartbeat();
+        if (visualizer) visualizer.stop();
+    } else {
+        // App foregrounded: re-sync with server
+        if (virtualLive) virtualLive.startHeartbeat();
+        if (radio.audioEngine?.isPlaying) {
+            if (visualizer) visualizer.start();
+        }
+        // Re-sync radio position after backgrounding
+        if (radio.audioEngine?.isPlaying && radio.audioEngine?.config?.virtualLive) {
+            if (virtualLive) virtualLive.syncWithServer();
+        }
+    }
+});
+
+// Capacitor-specific (if available)
+try {
+    const { App } = window.Capacitor?.Plugins || {};
+    if (App) {
+        App.addListener('pause', () => {
+            const virtualLive = window.gurbaniRadio?.audioEngine?.virtualLive;
+            if (virtualLive) virtualLive.stopHeartbeat();
+        });
+        App.addListener('resume', () => {
+            const virtualLive = window.gurbaniRadio?.audioEngine?.virtualLive;
+            if (virtualLive) {
+                virtualLive.startHeartbeat();
+                virtualLive.syncWithServer();
+            }
+        });
+    }
+} catch (e) {}

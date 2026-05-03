@@ -634,132 +634,6 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════════
-       STREAM SWITCHER BAR - Below Artwork
-       ═══════════════════════════════════════════════════════════════════════════════ */
-    .stream-switcher-bar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 6px;
-        margin: 16px 0 12px;
-        background: linear-gradient(145deg, var(--surface-1), var(--surface-2));
-        border-radius: 24px;
-        box-shadow: 
-            inset 2px 2px 6px rgba(0,0,0,0.3),
-            inset -2px -2px 6px rgba(255,255,255,0.05),
-            0 4px 12px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .stream-bar-btn {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        padding: 10px 8px;
-        border: none;
-        background: transparent;
-        color: var(--text-tertiary);
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 18px;
-        transition: all 0.3s var(--spring);
-        position: relative;
-        min-width: 70px;
-    }
-
-    .stream-bar-btn:hover {
-        background: rgba(255,255,255,0.05);
-        color: var(--text-secondary);
-    }
-
-    .stream-bar-btn.active {
-        background: linear-gradient(145deg, var(--gold-light), var(--gold-primary));
-        color: var(--bg-dark);
-        box-shadow: 
-            0 6px 20px rgba(232, 168, 56, 0.4),
-            inset 0 1px 2px rgba(255,255,255,0.4);
-    }
-
-    .stream-bar-btn.active[data-stream="amritvela"] {
-        background: linear-gradient(145deg, var(--orange-light), var(--orange-primary));
-        box-shadow: 
-            0 6px 20px rgba(255, 107, 53, 0.4),
-            inset 0 1px 2px rgba(255,255,255,0.4);
-    }
-
-    .stream-bar-btn.active[data-stream="simran"] {
-        background: linear-gradient(145deg, var(--simran-light), var(--simran-primary));
-        box-shadow: 
-            0 6px 20px var(--simran-glow),
-            inset 0 1px 2px rgba(255,255,255,0.4);
-    }
-
-    .bar-btn-icon {
-        font-size: 18px;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.1);
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-
-    .stream-bar-btn.active .bar-btn-icon {
-        background: rgba(255,255,255,0.3);
-        transform: scale(1.1);
-    }
-
-    .bar-btn-label {
-        font-size: 10px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-
-    .bar-btn-indicator {
-        position: absolute;
-        bottom: 4px;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: transparent;
-        transition: all 0.3s ease;
-    }
-
-    .stream-bar-btn.active .bar-btn-indicator {
-        background: currentColor;
-        box-shadow: 0 0 8px currentColor;
-    }
-
-    /* Light mode adjustments */
-    html[data-theme="light"] .stream-switcher-bar,
-    body.light-theme .stream-switcher-bar {
-        background: linear-gradient(145deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02));
-        box-shadow: 
-            inset 2px 2px 6px rgba(0,0,0,0.1),
-            inset -2px -2px 6px rgba(255,255,255,0.8),
-            0 4px 12px rgba(0,0,0,0.1);
-        border-color: rgba(0,0,0,0.05);
-    }
-
-    html[data-theme="light"] .stream-bar-btn,
-    body.light-theme .stream-bar-btn {
-        color: rgba(0,0,0,0.5);
-    }
-
-    html[data-theme="light"] .stream-bar-btn:hover,
-    body.light-theme .stream-bar-btn:hover {
-        background: rgba(0,0,0,0.05);
-        color: rgba(0,0,0,0.7);
-    }
-
-    /* ═══════════════════════════════════════════════════════════════════════════════
        TRACK INFO
        ═══════════════════════════════════════════════════════════════════════════════ */
     .track-info {
@@ -1359,25 +1233,6 @@
             </div>
         </section>
 
-        <!-- STREAM SWITCHER BAR - Below Artwork -->
-        <section class="stream-switcher-bar" id="streamSwitcherBar">
-            <button class="stream-bar-btn active" data-stream="darbar" id="barBtnDarbar">
-                <span class="bar-btn-icon"><i class="fas fa-mosque"></i></span>
-                <span class="bar-btn-label">Darbar Sahib</span>
-                <span class="bar-btn-indicator"></span>
-            </button>
-            <button class="stream-bar-btn" data-stream="amritvela" id="barBtnAmritvela">
-                <span class="bar-btn-icon"><i class="fas fa-sun"></i></span>
-                <span class="bar-btn-label">Amritvela</span>
-                <span class="bar-btn-indicator"></span>
-            </button>
-            <button class="stream-bar-btn" data-stream="simran" id="barBtnSimran">
-                <span class="bar-btn-icon"><i class="fas fa-spa"></i></span>
-                <span class="bar-btn-label">Simran</span>
-                <span class="bar-btn-indicator"></span>
-            </button>
-        </section>
-
         <!-- TRACK INFO -->
         <section class="track-info" id="trackInfo">
             <h1 class="track-title" id="trackTitle">Live Kirtan</h1>
@@ -1543,11 +1398,6 @@
         simranSwitch: document.getElementById('simranSwitch'),
         simranSwitchState: document.getElementById('simranSwitchState'),
         
-        // Stream switcher bar (below artwork)
-        barBtnDarbar: document.getElementById('barBtnDarbar'),
-        barBtnAmritvela: document.getElementById('barBtnAmritvela'),
-        barBtnSimran: document.getElementById('barBtnSimran'),
-        
         // Artwork
         artworkContainer: document.getElementById('artworkContainer'),
         artworkImg: document.getElementById('artworkImg'),
@@ -1640,11 +1490,6 @@
         dom.btnDarbar.classList.toggle('active', streamType === 'darbar');
         dom.btnAmritvela.classList.toggle('active', isAmritvela);
         dom.btnSimran.classList.toggle('active', isSimran);
-        
-        // Update stream bar buttons (below artwork)
-        if (dom.barBtnDarbar) dom.barBtnDarbar.classList.toggle('active', streamType === 'darbar');
-        if (dom.barBtnAmritvela) dom.barBtnAmritvela.classList.toggle('active', isAmritvela);
-        if (dom.barBtnSimran) dom.barBtnSimran.classList.toggle('active', isSimran);
         
         // Update artwork
         dom.artworkImg.src = stream.image;
@@ -1941,6 +1786,7 @@
                 if (state.stream && STREAMS[state.stream]) {
                     STATE.currentStream = state.stream;
                     STATE.currentTrackIndex = state.trackIndex || 0;
+                    STATE.isPlaying = state.isPlaying || false;
                 }
             }
         } catch (e) {}
@@ -1956,11 +1802,6 @@
         dom.btnAmritvela.addEventListener('click', () => switchStream('amritvela'));
         dom.btnSimran.addEventListener('click', () => switchStream('simran'));
         dom.simranSwitch.addEventListener('click', toggleSimranSwitch);
-        
-        // Stream switcher bar (below artwork)
-        if (dom.barBtnDarbar) dom.barBtnDarbar.addEventListener('click', () => switchStream('darbar'));
-        if (dom.barBtnAmritvela) dom.barBtnAmritvela.addEventListener('click', () => switchStream('amritvela'));
-        if (dom.barBtnSimran) dom.barBtnSimran.addEventListener('click', () => switchStream('simran'));
         
         // Controls
         dom.playBtn.addEventListener('click', togglePlay);
@@ -2059,11 +1900,16 @@
             }
         });
         
-        // Visibility change - re-sync when returning
+        // Visibility change - DON'T resync on return, just update UI
+        // The audio singleton continues playing in background automatically
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden && STATE.isPlaying) {
-                if (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') {
-                    window.AnhadAudio?.jumpToLive();
+                // Just refresh the UI state from the singleton
+                const st = window.AnhadAudio?.getState?.();
+                if (st) {
+                    STATE.isPlaying = st.isPlaying;
+                    STATE.currentTrackIndex = st.currentTrackIndex;
+                    updateUI();
                 }
             }
         });
@@ -2077,29 +1923,15 @@
     // ═══════════════════════════════════════════════════════════════════════════════
     
     async function checkTrackSync() {
-        const syncUrl = STATE.currentStream === 'simran'
-            ? STREAMS.simran.syncUrl
-            : STREAMS.amritvela.syncUrl;
-        try {
-            const resp = await fetch(syncUrl, { 
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache' }
-            });
-            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-            
-            const data = await resp.json();
-            if (typeof data.trackIndex !== 'number') return;
-
-            const st = window.AnhadAudio?.getState?.();
-            const pl = STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran';
-            if (!st || !pl || !STATE.isPlaying) return;
-
-            if (data.trackIndex !== st.currentTrackIndex) {
-                console.log(`[GR] 🔄 Server track advance → resync virtual live`);
-                await window.AnhadAudio.jumpToLive();
-            }
-        } catch (err) {
-            // Silently fail - offline mode will handle it
+        // Lightweight check — only update UI metadata, never restart playback
+        // The audio singleton handles track transitions internally
+        const st = window.AnhadAudio?.getState?.();
+        if (!st || !STATE.isPlaying) return;
+        
+        // Just sync UI state with singleton
+        if (st.currentTrackIndex !== STATE.currentTrackIndex) {
+            STATE.currentTrackIndex = st.currentTrackIndex;
+            console.log(`[GR] UI track sync: now showing track ${STATE.currentTrackIndex + 1}`);
         }
     }
 
@@ -2190,8 +2022,20 @@
         // Initial connection overlay text
         dom.connectingStream.textContent = STREAMS[STATE.currentStream].name;
         
-        // Auto-play disabled to prevent NotAllowedError - user must tap play
-        // Only resume UI state, don't auto-play audio
+        // Auto-resume: play if was playing before refresh, but ONLY if user has already interacted.
+        // Chrome blocks audio.play() without a user gesture — we pre-fetch the live position
+        // so the UI shows the correct track, then wait for the user's first tap to actually play.
+        if (streamParam || STATE.isPlaying) {
+            const reason = streamParam ? `stream param (${STATE.currentStream})` : 'previous session';
+            console.log('[Gurbani Radio] Ready for user tap, pre-loaded for', reason);
+            // UI is already set up correctly — user just needs to tap ▶ to play
+            STATE.isPlaying = false;
+            updateUI();
+        } else {
+            console.log('[Gurbani Radio] Waiting for user to press play');
+        }
+
+
         
         console.log('🪯 Gurbani Radio - Extreme Claymorphism Edition');
         console.log('💡 Space=Play/Pause, ↑↓=Volume, L=Live/Resync');

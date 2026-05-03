@@ -133,33 +133,20 @@ const SIMRAN_PLAYLIST = [
 // Using Jan 1 2024 00:00:00 UTC ensures deterministic shuffle on ALL devices.
 const FIXED_EPOCH = 1704067200000; // 2024-01-01T00:00:00.000Z
 
-/**
- * The BroadcastEngine is the heart of the live radio station.
- * It manages:
- *  - A fixed epoch timestamp from which all position math derives
- *  - Track durations (learned from clients, persisted to disk)
- *  - Active listener tracking with heartbeat TTL
- *  - Periodic state persistence to survive restarts
- */
 class BroadcastEngine {
     constructor(playlistName, playlist, stateFile) {
         this.playlistName = playlistName;
         this.playlist = playlist;
         this.stateFile = stateFile;
-        this.epoch = FIXED_EPOCH;    // ALWAYS the same — deterministic virtual live
-        this.trackDurations = {};    // { "0": 3847.2, "1": 3612.8, ... }
-        this.listeners = new Map();  // listenerId → { lastSeen, userAgent }
+        this.epoch = FIXED_EPOCH;
+        this.trackDurations = {};
+        this.listeners = new Map();
         this.stateDirty = false;
         this.saveInterval = null;
-        this.shuffleOrder = [];      // Deterministic shuffle order per cycle
+        this.shuffleOrder = [];
     }
 
-    /**
-     * Initialize the broadcast engine on server startup.
-     * Loads or creates radio-state.json with the epoch.
-     */
     async initialize() {
-        // Always use FIXED_EPOCH — but load learned track durations from state file
         let learnedDurations = {};
         try {
             const data = await fs.readFile(this.stateFile, 'utf8');
@@ -172,23 +159,15 @@ class BroadcastEngine {
             console.log('[📻 ' + this.playlistName + '] No state file found, starting fresh');
         }
 
-        this.epoch = FIXED_EPOCH; // ALWAYS fixed — deterministic
+        this.epoch = FIXED_EPOCH;
         this.trackDurations = learnedDurations;
-
-        // Generate initial shuffle order
         this.regenerateShuffleOrder(0);
 
-        // Persist state periodically
         this.saveInterval = setInterval(() => {
-            if (this.stateDirty) {
-                this.persistState();
-            }
+            if (this.stateDirty) this.persistState();
         }, CONFIG.STATE_SAVE_INTERVAL);
 
-        // Clean up expired listeners every 30s
         setInterval(() => this.cleanupListeners(), 30000);
-
-        // Persist on save
         await this.persistState();
 
         const livePos = this.getCurrentLivePosition();
@@ -199,13 +178,7 @@ class BroadcastEngine {
         console.log(`[📻 Broadcast] ${Object.keys(this.trackDurations).length}/${this.playlist.length} track durations known`);
     }
 
-    /**
-     * Deterministic shuffle using Fisher-Yates with a seeded PRNG.
-     * Same cycle number always produces the same order.
-     * This ensures all clients see the same shuffle.
-     */
     regenerateShuffleOrder(cycle) {
-        // Simple seeded PRNG (mulberry32)
         let seed = (this.epoch || 0) + cycle * 2654435761;
         function rand() {
             seed |= 0;
@@ -214,8 +187,6 @@ class BroadcastEngine {
             t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
             return ((t ^ t >>> 14) >>> 0) / 4294967296;
         }
-
-        // Create ordered array and shuffle it
         this.shuffleOrder = Array.from({ length: this.playlist.length }, (_, i) => i);
         for (let i = this.shuffleOrder.length - 1; i > 0; i--) {
             const j = Math.floor(rand() * (i + 1));
@@ -223,76 +194,41 @@ class BroadcastEngine {
         }
     }
 
-    /**
-     * Get the duration of a specific track.
-     * Uses client-reported duration if available, otherwise defaults.
-     */
     getTrackDuration(index) {
         return this.trackDurations[String(index)] || CONFIG.DEFAULT_TRACK_DURATION;
     }
 
-    /**
-     * Get total duration of the entire playlist in seconds.
-     */
     getTotalPlaylistDuration() {
         let total = 0;
-        for (let i = 0; i < this.playlist.length; i++) {
-            total += this.getTrackDuration(i);
-        }
+        for (let i = 0; i < this.playlist.length; i++) total += this.getTrackDuration(i);
         return total;
     }
 
-    /**
-     * THE CORE CALCULATION: What is playing RIGHT NOW?
-     * 
-     * elapsed = (now - epoch) / 1000  → total seconds since birth
-     * position = elapsed % totalPlaylistDuration → position within the looping playlist
-     * Walk through SHUFFLED tracks to find which track and at what seek position
-     */
+    // CRITICAL FIX: cycle uses FIXED total so shuffle never jumps when durations are learned
     getCurrentLivePosition() {
         const now = Date.now();
-        const elapsedMs = now - this.epoch;
-        const elapsedSeconds = elapsedMs / 1000;
-        const totalPlaylistDuration = this.getTotalPlaylistDuration();
-        const cycle = Math.floor(elapsedSeconds / totalPlaylistDuration);
-        const positionInPlaylist = ((elapsedSeconds % totalPlaylistDuration) + totalPlaylistDuration) % totalPlaylistDuration;
-
-        // Regenerate shuffle for current cycle
+        const elapsedSeconds = (now - this.epoch) / 1000;
+        const fixedTotal = this.playlist.length * CONFIG.DEFAULT_TRACK_DURATION;
+        const cycle = Math.floor(elapsedSeconds / fixedTotal);
+        const learnedTotal = this.getTotalPlaylistDuration();
+        const positionInPlaylist = ((elapsedSeconds % learnedTotal) + learnedTotal) % learnedTotal;
         this.regenerateShuffleOrder(cycle);
-
         let accumulated = 0;
         for (let i = 0; i < this.playlist.length; i++) {
             const actualTrackIndex = this.shuffleOrder[i];
             const trackDuration = this.getTrackDuration(actualTrackIndex);
             if (accumulated + trackDuration > positionInPlaylist) {
-                const trackPosition = positionInPlaylist - accumulated;
                 return {
-                    trackIndex: actualTrackIndex,
-                    shufflePosition: i,
-                    trackPosition: Math.max(0, trackPosition),
-                    totalElapsed: elapsedSeconds,
-                    playlistDuration: totalPlaylistDuration,
-                    playlistCycle: cycle
+                    trackIndex: actualTrackIndex, shufflePosition: i,
+                    trackPosition: Math.max(0, positionInPlaylist - accumulated),
+                    totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle
                 };
             }
             accumulated += trackDuration;
         }
-
-        // Fallback
-        return {
-            trackIndex: this.shuffleOrder[0] || 0,
-            shufflePosition: 0,
-            trackPosition: 0,
-            totalElapsed: elapsedSeconds,
-            playlistDuration: totalPlaylistDuration,
-            playlistCycle: cycle
-        };
+        return { trackIndex: this.shuffleOrder[0] || 0, shufflePosition: 0, trackPosition: 0, totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle };
     }
 
-    /**
-     * Report an actual track duration from a client.
-     * Only updates if it seems reasonable (> 60s, < 24h).
-     */
     reportDuration(trackIndex, duration) {
         if (!isFinite(duration) || duration <= 60 || duration > 86400) {
             return false; // Reject unreasonable durations

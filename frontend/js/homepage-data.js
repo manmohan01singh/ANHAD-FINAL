@@ -204,18 +204,23 @@ document.addEventListener('DOMContentLoaded', function () {
       const response = await fetch('data/gurpurab-events-2026.json');
       const data = await response.json();
       const events2026 = data.years['2026'] || [];
-      const gurpurabs = events2026.map(e => ({ 
-        name: e.name_en, 
-        id: e.id,
-        date: new Date(e.gregorian_date), 
-        type: e.type 
-      })).sort((a, b) => a.date - b.date);
+      const gurpurabs = events2026.map(e => {
+        const [y, m, d] = e.gregorian_date.split('-');
+        return { 
+          name: e.name_en, 
+          id: e.id,
+          date: new Date(y, m - 1, d), // Local midnight 
+          type: e.type 
+        };
+      }).sort((a, b) => a.date - b.date);
+      
       const now = new Date();
-      const todayStr = now.toLocaleDateString('en-CA');
-      const todayEvent = gurpurabs.find(g => g.date.toLocaleDateString('en-CA') === todayStr);
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const todayEvent = gurpurabs.find(g => g.date.getTime() === todayMidnight.getTime());
       
       // Determine which event to display (today's event or next upcoming)
-      const displayEvent = todayEvent || gurpurabs.find(g => g.date >= now);
+      const displayEvent = todayEvent || gurpurabs.find(g => g.date > todayMidnight);
       
       if (displayEvent) {
         // FIX: Add event type classes to calendar card for ring lights
@@ -244,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         // It's an upcoming event
-        const daysLeft = Math.ceil((displayEvent.date - now) / 86400000);
+        const daysLeft = Math.round((displayEvent.date - todayMidnight) / 86400000);
         const dateStr = displayEvent.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         
         // FIX: Add celebration class for upcoming celebration events

@@ -263,17 +263,18 @@ const WidgetBridge = {
         }
 
         const today = new Date();
-        const todayStr = today.toLocaleDateString('en-CA');
+        const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
         // Find next upcoming event
         let nextEvent = null;
         let daysUntil = -1;
 
         for (const event of events) {
-            const eventDate = new Date(event.date);
-            if (eventDate >= today) {
-                const diffTime = eventDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const [y, m, d] = (event.date || event.gregorian_date).split('T')[0].split('-');
+            const eventDate = new Date(y, m - 1, d); // Local midnight
+            if (eventDate >= todayMidnight) {
+                const diffTime = eventDate - todayMidnight;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
                 if (daysUntil === -1 || diffDays < daysUntil) {
                     daysUntil = diffDays;
                     nextEvent = event;

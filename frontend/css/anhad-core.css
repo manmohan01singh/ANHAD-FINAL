@@ -602,3 +602,8 @@ img[src*="gurugranthsahebji.jpeg"] {
   justify-content: center !important;
 }
 
+/* Fix Visualizer transform origin for GPU scale */
+.viz-bar {
+  transform-origin: bottom center !important;
+  will-change: transform;
+}

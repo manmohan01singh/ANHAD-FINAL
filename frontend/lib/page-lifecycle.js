@@ -18,6 +18,11 @@
   window.addEventListener('pageshow', function (event) {
     // Always clean up, whether from bfcache (persisted=true) or fresh load
     recoverPageState(event.persisted);
+    
+    // SAFETY: Ensure splash screen is hidden on any page load (fixes notification deep link black screen)
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SplashScreen) {
+        window.Capacitor.Plugins.SplashScreen.hide().catch(function(){});
+    }
   });
 
   // ─── PAGEHIDE: Proactively clean up BEFORE bfcache stores the page ───

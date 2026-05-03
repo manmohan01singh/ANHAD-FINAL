@@ -488,7 +488,19 @@ class NaamAbhyas {
                 }
             }
         });
+
+        // ═══ Fix 4: foreground alarm event from capacitor-notifications-global ═══
+        // When the user is already on this page and a Naam alarm fires,
+        // the global script dispatches this event so we handle it natively.
+        window.addEventListener('naamAbhyasAlarmFired', (evt) => {
+            const { hour } = evt.detail || {};
+            const hourNum = parseInt(hour);
+            const session = (this.currentSchedule && this.currentSchedule[hourNum])
+                || (this.currentSchedule && this.currentSchedule[new Date().getHours()]);
+            if (session) this.triggerSessionAlert(session);
+        });
     }
+
 
     /**
      * ═══ BUG 7 FIX: Execute auto-start using params captured on critical path ═══
@@ -1644,6 +1656,21 @@ class NaamAbhyas {
         console.log(`📅 Generating schedule: duration=${duration}min, spacing=${spacingMinutes}min`);
 
         // Check if we already have a schedule for today
+        // ═══ MIGRATION: Detect old fixed-interval schedule and force-regenerate ═══
+        // Old schedules had all sessions at same minute (e.g., 5:40, 6:40, 7:40).
+        // New random schedules have varied minutes. Detect the old format and clear it.
+        if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
+            const existing = this.history.scheduleHistory[today];
+            const sessionMinutes = Object.keys(existing)
+                .filter(k => k !== '_duration' && k !== '_spacing' && existing[k] && typeof existing[k].startMinute === 'number')
+                .map(k => existing[k].startMinute);
+            const allSame = sessionMinutes.length > 2 && sessionMinutes.every(m => m === sessionMinutes[0]);
+            if (allSame) {
+                console.log('📅 Detected old fixed-interval schedule — clearing for random regeneration');
+                delete this.history.scheduleHistory[today];
+            }
+        }
+
         if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
             // Check if duration changed - if so, regenerate
             const existingDuration = this.history.scheduleHistory[today]._duration;
@@ -1716,46 +1743,38 @@ class NaamAbhyas {
     }
 
     /**
-     * Generate schedule based on duration spacing
+     * Generate schedule with one TRULY RANDOM time per active hour.
+     * ═══ FIXED: Old version used fixed intervals (n:00, n:20, n:40).
+     *            New version assigns random minutes (e.g. 6:32, 7:14, 8:51).
+     * Each active hour [startHour, endHour] gets exactly one session
+     * at a random minute between 3 and 57 (avoids very start/end of hour).
      */
     generateDurationBasedSchedule(startHour, endHour, spacingMinutes, duration) {
         const schedule = {};
-        const startMinute = startHour * 60;
-        const endMinute = endHour * 60;
-        let currentMinute = startMinute;
         let sessionIndex = 0;
 
-        while (currentMinute < endMinute) {
-            const hour = Math.floor(currentMinute / 60);
-            const minute = currentMinute % 60;
+        for (let hour = startHour; hour <= endHour; hour++) {
+            // Random minute between 3 and 57 for natural-feeling times
+            // This avoids :00 and :59 which feel too "on the hour"
+            const randomMinute = 3 + Math.floor(Math.random() * 55); // 3–57
 
-            // Don't exceed end hour
-            if (hour > endHour) break;
-
-            // ═══ FIX BUG 2: Include `hour` property in each session object ═══
-            // Without this, getNextScheduledSession() returns sessions with
-            // undefined `hour`, causing NaN in calculateNextSession() → "NA NS" display
             schedule[hour] = {
                 hour: hour,
-                startMinute: minute,
-                endMinute: minute + duration,
-                startTime: this.formatTime12h(hour, minute),
-                endTime: this.formatTime12h(hour, minute + duration),
+                startMinute: randomMinute,
+                endMinute: Math.min(59, randomMinute + duration),
+                startTime: this.formatTime12h(hour, randomMinute),
+                endTime: this.formatTime12h(hour, randomMinute + duration),
                 duration: duration,
                 status: 'pending',
                 index: sessionIndex++
             };
 
-            // Add buffer time between sessions (minimum 5 minutes)
-            const buffer = Math.max(5, spacingMinutes - duration);
-            currentMinute += duration + buffer;
-
-            console.log(`📅 Session ${sessionIndex}: ${schedule[hour].startTime} - ${schedule[hour].endTime} (${duration}min)`);
+            console.log(`📅 Session ${sessionIndex}: ${schedule[hour].startTime} (random minute: ${randomMinute})`);
         }
 
         // Store duration for change detection
         schedule._duration = duration;
-        schedule._spacing = spacingMinutes;
+        schedule._spacing = spacingMinutes; // kept for compatibility
 
         return schedule;
     }

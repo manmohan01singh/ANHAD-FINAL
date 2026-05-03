@@ -6577,41 +6577,24 @@ const StreakManager = {
      */
     recalculateStreak() {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
-        // A day is "complete" if EITHER Amritvela OR Nitnem is done (more lenient)
+        // A day is "complete" ONLY if Amritvela is marked before 6 AM (or saved by Streak Saver)
         const completeDates = new Set();
-
         const amritvelaDates = Object.keys(amritvelaLog);
-        const nitnemDates = Object.keys(nitnemLog);
 
-        // Add all Amritvela dates
         amritvelaDates.forEach(date => {
-            completeDates.add(date);
-        });
-
-        // Add all Nitnem completion dates
-        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, {
-            amritvela: [],
-            rehras: [],
-            sohila: []
-        });
-
-        nitnemDates.forEach(date => {
-            const nitnemData = nitnemLog[date];
-            if (nitnemData) {
-                // Check if any banis were completed
-
-                let anyComplete = false;
-                Object.keys(selectedBanis).forEach(period => {
-                    const selected = selectedBanis[period];
-                    const completed = nitnemData[period] || [];
-                    if (selected.length > 0 && completed.length > 0) {
-                        anyComplete = true;
+            const entry = amritvelaLog[date];
+            if (entry) {
+                // If it's a streak saver patch, it counts!
+                if (entry.isStreakSaverPatch) {
+                    completeDates.add(date);
+                } else if (entry.time) {
+                    const [hours, minutes] = entry.time.split(':').map(Number);
+                    if (hours < 6) {
+                        completeDates.add(date);
                     }
-                });
-
-                if (anyComplete) {
+                } else {
+                    // Legacy data without time
                     completeDates.add(date);
                 }
             }
@@ -6638,32 +6621,24 @@ const StreakManager = {
      */
     calculateHistoricalStreak(targetDateStr) {
         const amritvelaLog = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-        const nitnemLog = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
 
         const completeDates = new Set();
         const amritvelaDates = Object.keys(amritvelaLog);
-        const nitnemDates = Object.keys(nitnemLog);
 
-        const selectedBanis = StorageManager.load(CONFIG.STORAGE_KEYS.SELECTED_BANIS, { amritvela: [], rehras: [], sohila: [] });
-
-        // Add all Amritvela dates
+        // Add Amritvela dates that match the criteria
         amritvelaDates.forEach(date => {
-            completeDates.add(date);
-        });
-
-        // Add all Nitnem completion dates
-        nitnemDates.forEach(date => {
-            const nitnemData = nitnemLog[date];
-            if (nitnemData) {
-                let anyComplete = false;
-                Object.keys(selectedBanis).forEach(period => {
-                    const selected = selectedBanis[period];
-                    const completed = nitnemData[period] || [];
-                    if (selected.length > 0 && completed.length > 0) {
-                        anyComplete = true;
+            const entry = amritvelaLog[date];
+            if (entry) {
+                if (entry.isStreakSaverPatch) {
+                    completeDates.add(date);
+                } else if (entry.time) {
+                    const [hours, minutes] = entry.time.split(':').map(Number);
+                    if (hours < 6) {
+                        completeDates.add(date);
                     }
-                });
-                if (anyComplete) completeDates.add(date);
+                } else {
+                    completeDates.add(date);
+                }
             }
         });
 
