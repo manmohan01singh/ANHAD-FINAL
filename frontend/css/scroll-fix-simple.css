@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   SIMPLE SCROLL FIX - MINIMAL APPROACH
+   ═══════════════════════════════════════════════════════════════════════════════
+   
+   Basic scroll optimization without aggressive changes
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Basic touch scrolling optimization */
+.main-content,
+.gurbani-scroll,
+.verses-container,
+[data-scrollable] {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Simple GPU acceleration for scroll containers */
+.main-content,
+#app,
+.app {
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Disable expensive effects during scroll only */
+.scrolling .aurora-bg,
+.scrolling .particle-burst {
+  animation-play-state: paused;
+}
+
+/* Basic mobile optimization */
+@media (max-width: 768px) {
+  .aurora-bg,
+  .particle-burst {
+    display: none;
+  }
+}
