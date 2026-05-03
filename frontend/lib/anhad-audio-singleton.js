@@ -131,6 +131,7 @@
   let currentStream = null;    // 'darbar' | 'amritvela' | null
   let currentTrackIndex = 0;
   let currentShufflePosition = 0; // Position in shuffle order for seamless advancing
+  let proxyOffsetSeconds = 0; // Tracks the offset applied by the backend MP3 transcoder
   let isPlaying = false;
   let isLoading = false;
   let isPlayLocked = false;    // CAPACITOR FIX: prevents re-entrant play() during active play operation
@@ -575,7 +576,13 @@
     lastWatchTime = 0;   // Reset stall baseline so seek-position jump doesn't look like a stall
     stalledWatchTicks = 0;
 
-    const trackUrl = stream.getTrackUrl(currentTrackIndex);
+    const trackUrl = stream.getTrackUrl(currentTrackIndex, requestedPosition);
+
+    if (trackUrl.includes('api/stream-mp3')) {
+      proxyOffsetSeconds = requestedPosition;
+    } else {
+      proxyOffsetSeconds = 0;
+    }
 
     // Set isLoading BEFORE audio.load()
     isLoading = true;
@@ -626,6 +633,11 @@
       }
 
       const performSeek = (afterPlay = false) => {
+        if (proxyOffsetSeconds > 0) {
+          console.log(`[AnhadAudio] ⏩ Skipping client seek, backend MP3 proxy handled the ${Math.floor(proxyOffsetSeconds)}s offset.`);
+          return true;
+        }
+
         if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
           if (!afterPlay) console.warn('[AnhadAudio] ⚠️ Duration still unknown at seek-time, will retry post-play');
           return false;
@@ -1198,8 +1210,8 @@
       artwork: stream?.artwork || '',
       playerPage: stream?.playerPage || '',
       volume: audio?.volume || 0.8,
-      currentTime: audio?.currentTime || 0,
-      duration: audio?.duration || 0
+      currentTime: (audio?.currentTime || 0) + proxyOffsetSeconds,
+      duration: (proxyOffsetSeconds > 0 && audio?.duration) ? (audio.duration + proxyOffsetSeconds) : (audio?.duration || 0)
     };
   }
 
