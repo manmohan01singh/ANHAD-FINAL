@@ -123,12 +123,14 @@
         ];
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
         const filename = simranTracks[safeIndex];
-        // VBR MP3 seeking is broken in all browsers — server-side seek for any mid-track position
-        if (position > 5) {
+        // VBR MP3 seeking is broken in browsers — server-side seek only for Capacitor Android
+        if (window.Capacitor && position > 5) {
           return `${API_BASE}/api/stream-mp3?file=${encodeURIComponent(filename)}&start=${Math.floor(position)}`;
         }
         // PWA: direct CDN works fine
-        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}`;
+        const directUrl = `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}`;
+        console.log('[AnhadAudio] Simran direct CDN URL:', directUrl);
+        return directUrl;
       }
     }
   };
@@ -280,7 +282,7 @@
 
     const elapsedSeconds = (Date.now() - epoch) / 1000;
     const cycle = Math.floor(elapsedSeconds / fixedTotal);
-    const positionInPlaylist = ((elapsedSeconds % learnedTotal) + learnedTotal) % learnedTotal;
+    const positionInPlaylist = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
     const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
 
     let accumulated = 0;
