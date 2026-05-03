@@ -84,10 +84,15 @@
       liveApi: '/api/radio/live',
       durationApi: '/api/radio/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
-      getTrackUrl(index) {
+      getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        // Append version cache-buster to bypass previously corrupted WebView caches without breaking CDN edge cache
-        return `${CDN_BASE}/day-${safeIndex}.webm?v=2.1.4`;
+        const filename = `day-${safeIndex}.webm`;
+        // Android: use server-side seeking to bypass WebM buffering bug
+        if (window.Capacitor && position > 5) {
+          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
+        }
+        // PWA: direct CDN works fine
+        return `${CDN_BASE}/${filename}?v=2.1.4`;
       }
     },
     simran: {
@@ -100,7 +105,7 @@
       liveApi: '/api/simran/live',
       durationApi: '/api/simran/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
-      getTrackUrl(index) {
+      getTrackUrl(index, position = 0) {
         const simranTracks = [
           '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3', '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3', '03 - SUNN YAAR HAMARE SAJAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
           '04 - SUKH NAAHI RE HAR BHAGAT BINA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '05 - TU PRABH DATA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '06 - SATNAM WAHEGURU - SIMRAN - AMRITVELA TRUST..mp3',
@@ -117,7 +122,13 @@
           '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3', '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3'
         ];
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
-        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(simranTracks[safeIndex])}`;
+        const filename = simranTracks[safeIndex];
+        // VBR MP3 seeking is broken in all browsers — server-side seek for any mid-track position
+        if (position > 5) {
+          return `${API_BASE}/api/stream-mp3?file=${encodeURIComponent(filename)}&start=${Math.floor(position)}`;
+        }
+        // PWA: direct CDN works fine
+        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}`;
       }
     }
   };
@@ -574,7 +585,7 @@
     lastWatchTime = 0;   // Reset stall baseline so seek-position jump doesn't look like a stall
     stalledWatchTicks = 0;
 
-    const trackUrl = stream.getTrackUrl(currentTrackIndex);
+    const trackUrl = stream.getTrackUrl(currentTrackIndex, requestedPosition);
 
     // Set isLoading BEFORE audio.load()
     isLoading = true;
@@ -651,6 +662,18 @@
         return true;
       };
 
+      // If Capacitor already got a pre-seeked stream, don't seek again
+      if (window.Capacitor && trackUrl.includes('/api/stream-mp3')) {
+        audio.volume = 0;
+        audio.play().then(() => {
+          setTimeout(() => { audio.volume = 0.8; }, 300);
+        }).catch(e => {
+          audio.volume = 0.8;
+          console.warn('[AnhadAudio] Play failed:', e.message);
+        });
+        return; // Server already seeked, no currentTime manipulation needed
+      }
+
       performSeek(false);
 
       audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
@@ -684,11 +707,15 @@
 
     // ── Wait for loadedmetadata: guarantees audio.duration is finite ──
     // We prefer this over canplay which can fire before duration is known.
-    const onMeta = () => doSeekAndPlay('loadedmetadata');
+    const onMeta = () => {
+      reportTrackDuration();
+      doSeekAndPlay('loadedmetadata');
+    };
     const onCanPlay = () => { if (!seekAndPlayCalled) doSeekAndPlay('canplay'); };
 
     if (audio.readyState >= 1) { // HAVE_METADATA or better
       console.log(`[AnhadAudio] 🚀 Metadata ready (readyState ${audio.readyState}), seeking immediately`);
+      reportTrackDuration();
       doSeekAndPlay('readyState>=1');
     } else {
       console.log(`[AnhadAudio] ⏳ Waiting for metadata... (readyState: ${audio.readyState})`);

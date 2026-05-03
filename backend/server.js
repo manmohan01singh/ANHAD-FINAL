@@ -17,6 +17,9 @@ const crypto = require('crypto');
 const rateLimitModule = require('express-rate-limit');
 const rateLimit = rateLimitModule.rateLimit || rateLimitModule;
 const ipKeyGenerator = rateLimitModule.ipKeyGenerator || ((ip) => ip);
+const ffmpegPath = require('ffmpeg-static');
+const ffmpeg = require('fluent-ffmpeg');
+if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -1272,6 +1275,54 @@ app.get('/simran-audio/:filename', async (req, res) => {
         console.error('[Proxy] Error:', error.message);
         res.status(500).json({ error: 'Proxy error' });
     }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// SERVER-SIDE SEEK TRANSCODE — Android WebView bypass
+// ═══════════════════════════════════════════════════════════════════
+
+app.get('/api/stream-mp3', async (req, res) => {
+    const { file, start } = req.query;
+    if (!file || typeof file !== 'string') {
+        return res.status(400).json({ error: 'Missing file parameter' });
+    }
+    const seekSeconds = Math.max(0, Math.floor(Number(start) || 0));
+
+    // Validate file is from our known playlists
+    const isValid = PLAYLIST.some(t => t.filename === file) ||
+                    SIMRAN_PLAYLIST.some(t => t.filename === file);
+    if (!isValid) {
+        return res.status(400).json({ error: 'Invalid audio filename' });
+    }
+
+    const isMP3 = file.endsWith('.mp3');
+    const r2Base = isMP3 ? CONFIG.SIMRAN_R2_BASE_URL : CONFIG.R2_BASE_URL;
+    const simranPrefix = isMP3 ? (CONFIG.SIMRAN_R2_PREFIX.replace(/^\/+|\/+$/g, '') + '/') : '';
+    const inputUrl = `${r2Base}/${simranPrefix}${encodeURIComponent(file)}`;
+
+    console.log(`[Transcode] ffmpeg seek ${seekSeconds}s → ${file}`);
+
+    res.setHeader('Content-Type', 'audio/mpeg');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Connection', 'keep-alive');
+
+    const command = ffmpeg(inputUrl)
+        .seekInput(seekSeconds)
+        .audioCodec(isMP3 ? 'copy' : 'libmp3lame')
+        .audioBitrate(isMP3 ? null : '128k')
+        .format('mp3')
+        .on('start', (cmd) => console.log(`[Transcode] ${cmd}`))
+        .on('error', (err, stdout, stderr) => {
+            console.error('[Transcode] ffmpeg error:', err.message);
+            if (!res.headersSent) res.status(500).json({ error: 'Transcode failed' });
+        })
+        .on('end', () => console.log('[Transcode] ffmpeg finished'));
+
+    command.pipe(res, { end: true });
+
+    req.on('close', () => {
+        try { command.kill('SIGKILL'); } catch (e) {}
+    });
 });
 
 // ═══════════════════════════════════════════════════════════════════
