@@ -30,7 +30,7 @@
   const BROADCAST_META_KEY = 'anhad_broadcast_virtual_meta_v1';
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
-  const CDN_BASE = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
+  const CDN_BASE = 'https://anhad-final.onrender.com/audio';
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
 
@@ -86,7 +86,8 @@
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        return `${CDN_BASE}/day-${safeIndex}.webm`;
+        // Append version cache-buster to bypass previously corrupted WebView caches without breaking CDN edge cache
+        return `${CDN_BASE}/day-${safeIndex}.webm?v=2.1.4`;
       }
     },
     simran: {
@@ -362,6 +363,13 @@
     } catch (e) { return null; }
   }
 
+  // Restore currentStream on init so toggling correctly targets the active stream
+  const initialSavedState = loadState();
+  if (initialSavedState && initialSavedState.stream && STREAMS[initialSavedState.stream]) {
+    currentStream = initialSavedState.stream;
+    currentTrackIndex = initialSavedState.trackIndex || 0;
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // AUDIO ELEMENT — Created ONCE
   // ═══════════════════════════════════════════════════════════════════════════
@@ -369,9 +377,27 @@
   function initAudioElement() {
     if (audio) return;
 
-    audio = new Audio();
-    audio.preload = 'auto';  // Auto-preload so browser starts buffering immediately
+    // CAPACITOR DOM FIX: Use <video> instead of <audio> for video/webm!
+    // Since the Amritvela files are actually 'video/webm' (even though they only contain Opus audio),
+    // Android WebView's Audio pipeline chokes on them and loops buffering. 
+    // The Video pipeline allocates a proper hardware buffer and handles seeking flawlessly!
+    audio = document.createElement('video');
+    audio.preload = 'metadata';
     audio.volume = 0.8;
+
+    // CAPACITOR DOM FIX: Append to DOM to force Android WebView to allocate a full-priority media buffer!
+    // In-memory Audio objects get their network requests aggressively throttled on mobile,
+    // which causes the infinite "buffering" loop when downloading the WebM Cues index!
+    audio.id = 'anhad-global-audio';
+    // Use visually hidden instead of display:none to prevent aggressive WebView throttling
+    audio.style.position = 'absolute';
+    audio.style.width = '1px';
+    audio.style.height = '1px';
+    audio.style.opacity = '0';
+    audio.style.pointerEvents = 'none';
+    if (!document.getElementById('anhad-global-audio')) {
+      document.body.appendChild(audio);
+    }
 
     // Enable background playback for Capacitor native apps
     if (window.Capacitor) {
@@ -465,10 +491,6 @@
       emit('loading', { isLoading: false });
     });
 
-    audio.addEventListener('loadedmetadata', () => {
-      reportTrackDuration();
-    });
-
     audio.addEventListener('ended', () => {
       if (currentStream === 'amritvela' || currentStream === 'simran') {
         const now = Date.now();
@@ -558,11 +580,12 @@
     isLoading = true;
     emit('loading', { isLoading: true });
 
-    // For track transitions (from 0:00), no special fragment needed.
-    // CAPACITOR FIX: DO NOT use #t= for Android WebView! It causes infinite loading/stuttering loops.
-    // We will seek manually via audio.currentTime after metadata loads.
+    // CAPACITOR FIX: DO NOT use #t= for Android WebView! It causes infinite loading/stuttering loops
+    // because the native Android MediaPlayer fails to parse WebM HTTP fragments correctly.
+    // We will seek manually via audio.currentTime.
     audio.src = trackUrl;
-    audio.load();
+    // CAPACITOR BUGFIX: Do NOT call audio.load() here. Calling load() immediately after setting src
+    // on Android WebView resets the OS network buffer and permanently jams the MediaPlayer.
 
     console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (fromBeginning=${isFromBeginning})`);
 
@@ -577,11 +600,8 @@
         return;
       }
 
-      // Cache the real duration NOW (loadedmetadata guarantees it's available)
+      // DO NOT cache local duration - always rely on server's broadcast truth
       const loadedDuration = Number(audio.duration);
-      if (Number.isFinite(loadedDuration) && loadedDuration > 60) {
-        rememberTrackDuration(streamName, currentTrackIndex, loadedDuration);
-      }
 
       // ── Track from beginning: just play ──
       if (isFromBeginning) {
@@ -604,13 +624,22 @@
         console.log(`[AnhadAudio] ⚡ Clamping ${Math.floor(requestedPosition)}s → ${Math.floor(seekPos)}s (track duration=${Math.floor(realDur)}s)`);
       }
 
-      // Perform the seek since we removed the #t= fragment for Capacitor compatibility
       const performSeek = (afterPlay = false) => {
         if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
           if (!afterPlay) console.warn('[AnhadAudio] ⚠️ Duration still unknown at seek-time, will retry post-play');
           return false;
         }
+        
         const clampedSeek = Math.min(seekPos, audio.duration - 1);
+
+        // CAPACITOR FIX: Delay manual seek on Android until after playback has started!
+        // If we set currentTime while the MediaPlayer is still initializing the buffer,
+        // it permanently locks up ("infinite buffering").
+        if (window.Capacitor && !afterPlay) {
+            console.log(`[AnhadAudio] ⏳ Capacitor: Deferring seek to post-play to prevent buffer lock...`);
+            return true; // We will seek in the .then() block of audio.play()
+        }
+
         if (Math.abs(audio.currentTime - clampedSeek) > 3) {
           audio.currentTime = clampedSeek;
           // Extend grace window: we just seeked, give CDN time to buffer new byte-range
@@ -618,27 +647,34 @@
           lastWatchTime = clampedSeek;
           stalledWatchTicks = 0;
           console.log(`[AnhadAudio] ⏩ ${afterPlay ? 'Post-play' : 'Pre-play'} seek → ${Math.floor(clampedSeek)}s`);
-        } else {
-          console.log(`[AnhadAudio] ✅ Browser MediaFragment respected, at ${Math.floor(audio.currentTime)}s`);
         }
         return true;
       };
 
       performSeek(false);
 
+      audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
       audio.play().then(() => {
         isPlaying = true;
         isLoading = false;
         emit('statechange', getPublicState());
-        // Post-play retry if duration was unknown before play()
-        if (seekPos > 2 && !performSeek(true)) {
-          // Last resort: wait for loadedmetadata then seek
-          audio.addEventListener('loadedmetadata', () => {
-            if (requestId === playRequestId) performSeek(true);
-          }, { once: true });
-        }
-        console.log(`[AnhadAudio] ▶️ Now playing ${streamName} track ${currentTrackIndex + 1} from ~${Math.floor(audio.currentTime)}s (${reason})`);
+        
+        // Wait for the MediaPlayer to physically start pumping audio bytes
+        audio.addEventListener('playing', () => {
+          if (seekPos > 2) {
+            console.log(`[AnhadAudio] ⏳ MediaPlayer is now pumping bytes, executing safe seek...`);
+            performSeek(true);
+            
+            // Restore volume after a tiny delay to allow buffer to jump
+            setTimeout(() => { audio.volume = 0.8; }, 100);
+          } else {
+            audio.volume = 0.8;
+          }
+        }, { once: true });
+        
+        console.log(`[AnhadAudio] ▶️ Play promise resolved, waiting for native playing event... (${reason})`);
       }).catch(e => {
+        audio.volume = 0.8;
         console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         isPlaying = false;
         isLoading = false;
@@ -706,7 +742,6 @@
         const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
         console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
         audio.src = freshUrl;
-        audio.load();
         try {
           await audio.play();
         } catch (e) {
@@ -802,11 +837,6 @@
       const stream = STREAMS[currentStream];
       if (!stream || !audio) { trackTransitionInProgress = false; return; }
 
-      // Remember the just-finished track's real duration for future accuracy
-      if (audio && audio.duration && isFinite(audio.duration) && audio.duration > 60) {
-        rememberTrackDuration(currentStream, currentTrackIndex, audio.duration);
-      }
-
       const epoch = getBroadcastEpoch(currentStream) || 1704067200000;
       const totalTracks = stream.totalTracks || 40;
       const defaultDur = stream.defaultTrackDuration || 3600;
@@ -834,9 +864,6 @@
         position: 0,
         shufflePosition: nextPosInShuffle
       }, requestId);
-
-      // Report duration to server in background
-      reportTrackDuration();
     } catch (e) {
       console.error('[AnhadAudio] AdvanceToNextTrack error:', e);
       // Fallback: full server re-sync
