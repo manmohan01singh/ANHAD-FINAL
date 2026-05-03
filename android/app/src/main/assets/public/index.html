@@ -85,9 +85,25 @@
 
   <script>
     (function() {
-      var isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isPWA) { if (sessionStorage.getItem('anhad_session_active') !== 'true') window.location.replace('./Homepage/ios-homepage.html'); }
-      else { if (localStorage.getItem('anhad_welcome_seen') !== 'true') window.location.replace('./Homepage/ios-homepage.html'); }
+      // UNIFIED welcome check — works for PWA, Browser, and Capacitor native app
+      // 'anhad_welcomed' is set by the "Enter ANHAD" button onclick in ios-homepage.html
+      // and also by initEnterButton() in ios-homepage.js
+      var isCapacitor = typeof window.Capacitor !== 'undefined';
+      var isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      // Primary check: use sessionStorage flag set by the Enter button
+      if (sessionStorage.getItem('anhad_welcomed') === '1') {
+        // Already welcomed this session — proceed to app
+      } else if (!isCapacitor && !isPWA && localStorage.getItem('anhad_welcome_seen') === 'true') {
+        // Browser returning visitor — skip welcome
+        sessionStorage.setItem('anhad_welcomed', '1'); // Hydrate session flag
+      } else if (!isCapacitor && isPWA && sessionStorage.getItem('anhad_session_active') === 'true') {
+        // PWA returning in same session — skip welcome
+        sessionStorage.setItem('anhad_welcomed', '1');
+      } else {
+        // Cold start (Capacitor, new browser tab, new PWA session) → Show welcome
+        window.location.replace('./Homepage/ios-homepage.html');
+      }
     })();
   </script>
 

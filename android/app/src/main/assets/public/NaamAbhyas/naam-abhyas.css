@@ -1033,19 +1033,19 @@ button {
     color: #fff;
 }
 
-/* ═══ MODALS ═══ */
+/* ═══ SESSION ALERT MODAL — Premium Heads-Up Bottom Sheet ═══ */
 .session-alert-modal,
 .completion-modal,
 .settings-modal {
     position: fixed;
     inset: 0;
-    z-index: 900;
+    z-index: 9999; /* Above everything including meditation overlay */
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* Bottom sheet style */
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     will-change: opacity, visibility;
 }
 
@@ -1056,28 +1056,53 @@ button {
     visibility: visible;
 }
 
+/* Settings modal stays centered */
+.settings-modal {
+    align-items: flex-end;
+}
+
 .alert-backdrop,
 .completion-backdrop,
 .settings-modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .alert-content,
 .completion-content {
     position: relative;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    border-radius: var(--radius-2xl);
-    padding: var(--space-8);
+    background: linear-gradient(160deg, rgba(20,10,35,0.98) 0%, rgba(10,5,20,0.99) 100%);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border-radius: 32px 32px 0 0;
+    padding: 32px 28px calc(28px + env(safe-area-inset-bottom, 16px));
     text-align: center;
-    max-width: 320px;
-    margin: var(--space-4);
-    border: 1px solid var(--glass-border);
-    animation: modalIn 0.4s var(--ease-smooth);
+    width: 100%;
+    max-width: 520px;
+    border: 1px solid rgba(255,149,0,0.25);
+    border-bottom: none;
+    box-shadow: 0 -8px 60px rgba(255,149,0,0.15), 0 -2px 16px rgba(0,0,0,0.5);
+    animation: bottomSheetIn 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+    /* Drag handle */
+}
+
+.alert-content::before,
+.completion-content::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    margin: 0 auto 24px;
+}
+
+@keyframes bottomSheetIn {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
 }
 
 @keyframes modalIn {
@@ -1085,7 +1110,6 @@ button {
         transform: translateY(30px) scale(0.95);
         opacity: 0;
     }
-
     to {
         transform: translateY(0) scale(1);
         opacity: 1;
@@ -1093,68 +1117,109 @@ button {
 }
 
 .alert-icon {
-    font-size: 2.5rem;
-    margin-bottom: var(--space-3);
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.12); }
 }
 
 .alert-gurmukhi {
     font-family: var(--font-gurmukhi);
-    font-size: var(--text-lg);
-    color: var(--accent-primary);
-    margin-bottom: var(--space-2);
+    font-size: 1.6rem;
+    color: #FFB347;
+    text-shadow: 0 0 20px rgba(255,179,71,0.5);
+    margin-bottom: 8px;
 }
 
 .alert-title {
-    font-size: var(--text-xl);
+    font-size: 1.4rem;
     font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--space-2);
+    color: #ffffff;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
 }
 
 .alert-message {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: var(--space-5);
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.6;
+    margin-bottom: 28px;
 }
 
 .alert-actions {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: 10px;
 }
 
 .alert-btn {
-    padding: var(--space-4);
-    border-radius: var(--radius-lg);
-    font-size: var(--text-base);
-    font-weight: 600;
+    padding: 17px 20px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-2);
-    transition: all 0.2s;
+    gap: 10px;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing: -0.01em;
 }
 
-.alert-btn.primary {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, #FF6B35 100%);
+/* FIX: HTML uses alert-primary / alert-secondary */
+.alert-btn.alert-primary {
+    background: linear-gradient(135deg, #FF9500 0%, #FF6B35 100%);
     color: white;
+    box-shadow: 0 4px 24px rgba(255,149,0,0.4);
 }
 
-.alert-btn.primary:hover {
-    transform: scale(1.02);
+.alert-btn.alert-primary:hover,
+.alert-btn.alert-primary:active {
+    transform: scale(1.03);
+    box-shadow: 0 6px 32px rgba(255,149,0,0.55);
 }
 
-.alert-btn.secondary {
-    background: transparent;
-    border: 1px solid var(--glass-border);
-    color: var(--text-secondary);
+.alert-btn.alert-secondary {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.55);
 }
+
+.alert-btn.alert-secondary:hover {
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.8);
+}
+
+/* Legacy selectors kept for backward compat */
+.alert-btn.primary { background: linear-gradient(135deg, #FF9500 0%, #FF6B35 100%); color: white; }
+.alert-btn.secondary { background: transparent; border: 1px solid var(--glass-border); color: var(--text-secondary); }
 
 .alert-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
+
+/* Alert pulse ring behind the icon */
+.alert-pulse {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,149,0,0.35) 0%, transparent 70%);
+    animation: pulsePing 2s ease-out infinite;
+}
+
+@keyframes pulsePing {
+    0%   { transform: translateX(-50%) scale(1); opacity: 0.7; }
+    100% { transform: translateX(-50%) scale(2.5); opacity: 0; }
+}
+
 
 /* Completion Modal */
 .completion-content {

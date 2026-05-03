@@ -131,6 +131,7 @@
   let currentShufflePosition = 0; // Position in shuffle order for seamless advancing
   let isPlaying = false;
   let isLoading = false;
+  let isPlayLocked = false;    // CAPACITOR FIX: prevents re-entrant play() during active play operation
   let audioRetryCount = 0;     // Error retry counter (max 5)
   let trackTransitionInProgress = false; // Prevents ended + watchdog double-fire
   let playRequestId = 0;       // Guards stale canplay handlers after rapid stream changes
@@ -139,6 +140,8 @@
   let lastLoadedAt = 0;        // Timestamp of last audio.load() call
   let lastWatchTime = 0;       // For stall detection
   let stalledWatchTicks = 0;   // Consecutive stall ticks
+  let foregroundServiceGraceUntil = 0; // CAPACITOR FIX: grace window after startForegroundService()
+  let foregroundServiceActive = false;  // CAPACITOR FIX: prevents double-starting the foreground service
   const listeners = new Map(); // event → Set<fn>
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -399,13 +402,22 @@
     audio.addEventListener('playing', () => {
       isPlaying = true;
       isLoading = false;
-      emit('loading', { isLoading: false }); // FIX: ensure UI clears spinner on play resume
-      audioRetryCount = 0; // Reset retry counter on success
+      isPlayLocked = false;
+      emit('loading', { isLoading: false });
+      audioRetryCount = 0;
       saveState();
       updateMediaSession();
-      acquireWakeLock(); // Keep alive for background playback
-      startForegroundService(); // CRITICAL: Keep process alive in background
-      syncNativeState('PLAY'); // Sync native service state
+      acquireWakeLock();
+
+      // Set grace window BEFORE starting foreground service.
+      // On Android, AudioService.start() grabs audio focus which fires a spurious 'pause'.
+      foregroundServiceGraceUntil = Date.now() + 3000;
+      if (!foregroundServiceActive) {
+        foregroundServiceActive = true;
+        startForegroundService();
+      }
+      syncNativeState('PLAY');
+
       emit('statechange', getPublicState());
       window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
         detail: { isPlaying: true, stream: currentStream }
@@ -416,11 +428,19 @@
     });
 
     audio.addEventListener('pause', () => {
-      // Ignore pause events that fire during track transitions (src change causes an internal pause)
-      // and during normal loading (browser pauses when loading new src)
       if (trackTransitionInProgress || isLoading) return;
+
+      // CAPACITOR: Suppress spurious pause from AudioService audio focus grab.
+      // Android re-grants focus automatically — just ignore the pause.
+      if (Date.now() < foregroundServiceGraceUntil) {
+        console.log('[AnhadAudio] ⚡ Suppressing spurious pause (grace window)');
+        return;
+      }
+
       isPlaying = false;
       isLoading = false;
+      isPlayLocked = false;
+      foregroundServiceActive = false;
       emit('loading', { isLoading: false });
       saveState();
       releaseWakeLock();
@@ -484,14 +504,21 @@
       const errMsg = audio.error ? audio.error.message : 'unknown';
       console.warn(`[AnhadAudio] ❌ Audio error code=${errCode}: ${errMsg}`);
 
-      // For playlist streams, auto-retry once on network errors (code 2/3/4)
+      // For playlist streams, auto-retry on network errors (code 2/3/4)
+      // The retry calls play() which re-fetches the live position. audioRetryCount
+      // is reset to 0 on success (in the 'playing' handler), so at most 3 retries.
+      isPlayLocked = false;
       if ((currentStream === 'amritvela' || currentStream === 'simran') && audioRetryCount < 3) {
         audioRetryCount++;
-        console.log(`[AnhadAudio] 🔁 Auto-retry ${audioRetryCount}/3 in 2s...`);
+        const retryDelay = 2000 * audioRetryCount;
+        const streamAtError = currentStream;
+        console.log(`[AnhadAudio] 🔁 Auto-retry ${audioRetryCount}/3 in ${retryDelay/1000}s...`);
         setTimeout(() => {
-          if (!isPlaying && currentStream) play(currentStream);
-        }, 2000);
-        return; // Don't emit error yet — let the retry handle it
+          if (!isPlaying && !isPlayLocked && currentStream === streamAtError) {
+            play(currentStream);
+          }
+        }, retryDelay);
+        return;
       }
 
       audioRetryCount = 0;
@@ -527,8 +554,7 @@
 
     const trackUrl = stream.getTrackUrl(currentTrackIndex);
 
-    // Set isLoading BEFORE audio.load() — this prevents the 'pause' event that fires
-    // internally during src change from resetting the UI to 'paused' state.
+    // Set isLoading BEFORE audio.load()
     isLoading = true;
     emit('loading', { isLoading: true });
 
@@ -649,11 +675,20 @@
       return;
     }
 
+    // CAPACITOR FIX: Block re-entrant play() calls.
+    // On Android, the auto-retry logic + foreground service events can trigger
+    // multiple overlapping play() calls which cause the reload loop.
+    if (isPlayLocked && streamName === currentStream) {
+      console.log('[AnhadAudio] ⚡ play() blocked — already loading stream:', streamName);
+      return;
+    }
+
     initAudioElement();
     const requestId = ++playRequestId;
     currentStream = streamName;
     const stream = STREAMS[streamName];
 
+    isPlayLocked = true; // Lock: cleared when 'playing' fires or on error
     isLoading = true;
     emit('loading', { isLoading: true });
     emit('statechange', getPublicState());
@@ -661,31 +696,39 @@
     // Pause any competing page-level audio elements
     killCompetingAudio();
 
-    if (stream.type === 'live') {
-      // ── DARBAR LIVE: Cache-bust + force live edge ──
-      const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
-      console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
-      audio.src = freshUrl;
-      audio.load();
-      try {
-        await audio.play();
-      } catch (e) {
-        console.warn('[AnhadAudio] Autoplay blocked:', e.message);
-        isPlaying = false;
-        isLoading = false;
-        emit('statechange', getPublicState());
-      }
+    // Auto-unlock after 15s in case something goes wrong and 'playing' never fires
+    const lockTimeout = setTimeout(() => { isPlayLocked = false; }, 15000);
 
-    } else if (stream.type === 'playlist') {
-      // ── AMRITVELA: Server-sync + seek to live position ──
-      try {
-        const pos = await getServerLivePosition();
-        loadPlaylistPosition(streamName, pos, requestId);
-      } catch (e) {
-        console.error('[AnhadAudio] Amritvela sync failed:', e);
-        const local = getLocalLivePosition();
-        loadPlaylistPosition(streamName, local, requestId);
+    try {
+      if (stream.type === 'live') {
+        // ── DARBAR LIVE: Cache-bust + force live edge ──
+        const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
+        console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
+        audio.src = freshUrl;
+        audio.load();
+        try {
+          await audio.play();
+        } catch (e) {
+          console.warn('[AnhadAudio] Autoplay blocked:', e.message);
+          isPlaying = false;
+          isLoading = false;
+          isPlayLocked = false;
+          emit('statechange', getPublicState());
+        }
+
+      } else if (stream.type === 'playlist') {
+        // ── AMRITVELA: Server-sync + seek to live position ──
+        try {
+          const pos = await getServerLivePosition();
+          loadPlaylistPosition(streamName, pos, requestId);
+        } catch (e) {
+          console.error('[AnhadAudio] Amritvela sync failed:', e);
+          const local = getLocalLivePosition();
+          loadPlaylistPosition(streamName, local, requestId);
+        }
       }
+    } finally {
+      clearTimeout(lockTimeout);
     }
 
     saveState();
@@ -698,6 +741,12 @@
     }
   }
 
+  async function resume() {
+    // Always re-sync to server to provide a 'Live' feel, skipping over paused time.
+    console.log('[AnhadAudio] Resuming with full live-sync (virtual live feel)');
+    await play(currentStream || 'darbar');
+  }
+
   async function toggle(streamName) {
     initAudioElement();
 
@@ -705,16 +754,17 @@
       // Currently playing the same stream → pause
       pause();
     } else if (streamName && streamName !== currentStream) {
-      // Different stream requested → switch
+      // Different stream requested → switch (always full sync for new stream)
       await play(streamName);
     } else if (audio && audio.paused && currentStream) {
-      // Paused → resume at live position
-      await play(currentStream);
+      // Paused → resume at current position (no re-sync for playlist streams)
+      await resume();
     } else {
       // Nothing loaded → play default
       await play(streamName || 'darbar');
     }
   }
+
 
   async function jumpToLive() {
     if (!currentStream) currentStream = 'darbar';
@@ -877,18 +927,12 @@
       artwork: artworkList
     });
 
-    // Playlist streams are virtual-live: every resume must re-sync to the server timeline.
+    // CAPACITOR FIX: Use resume() for MediaSession play handler.
+    // On Android, the lock screen/notification play button fires this.
+    // Calling play() triggers a full server re-sync which causes stutter.
+    // resume() plays in-place if audio is still loaded, falls back to play() only if needed.
     navigator.mediaSession.setActionHandler('play', () => {
-      if (stream.type === 'playlist') {
-        play(currentStream);
-        return;
-      }
-
-      if (audio && audio.src && audio.src !== window.location.href) {
-        audio.play().catch(() => play(currentStream));
-      } else {
-        play(currentStream);
-      }
+      resume();
     });
     navigator.mediaSession.setActionHandler('pause', () => pause());
     navigator.mediaSession.setActionHandler('stop', () => stop());
@@ -944,12 +988,17 @@
         window.Capacitor.Plugins.AudioService.start({
           title: stream ? stream.name : 'ANHAD Kirtan',
           artist: stream ? stream.subtitle : 'Playing'
-        }).catch(function() {});
+        }).catch(function(e) {
+          // If start fails, reset the flag so it can be retried next time
+          foregroundServiceActive = false;
+          console.warn('[AudioService] Foreground service start failed:', e);
+        });
         console.log('[AudioService] Foreground service STARTED');
       }
     } catch(e) { console.warn('[AudioService] Start failed:', e); }
   }
   function stopForegroundService() {
+    foregroundServiceActive = false; // Reset flag so service can start again on next play
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
         window.Capacitor.Plugins.AudioService.stop().catch(function() {});
@@ -1066,6 +1115,14 @@
 
     if (stalledWatchTicks >= 3) {
       stalledWatchTicks = 0;
+      if (Date.now() < foregroundServiceGraceUntil) {
+        console.log('[AnhadAudio] ⚡ Watchdog: stall ignored — within foreground service grace window');
+        return;
+      }
+      if (isPlayLocked) {
+        console.log('[AnhadAudio] ⚡ Watchdog: stall ignored — play() already in progress');
+        return;
+      }
       console.warn('[AnhadAudio] 🔄 Playlist truly stalled 45s, re-syncing to live position...');
       play(currentStream);
     }
@@ -1146,6 +1203,7 @@
     _singleton: true,
     play,
     pause,
+    resume,
     toggle,
     stop,
     jumpToLive,

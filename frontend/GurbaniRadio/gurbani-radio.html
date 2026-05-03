@@ -44,7 +44,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- <link rel="stylesheet" href="../css/anhad-clay.css?v=1"> removed: conflicts with iOS design -->
     <!-- REMOVED: global-mini-player.css - using overlay-player styles instead -->
@@ -159,14 +159,8 @@
 
         <!-- CONTROLS -->
         <section class="controls">
-            <button class="control-btn secondary" id="prevBtn" aria-label="Previous">
-                <i class="fas fa-backward-step"></i>
-            </button>
             <button class="control-btn primary" id="playBtn" aria-label="Play">
                 <i class="fas fa-play" id="playIcon"></i>
-            </button>
-            <button class="control-btn secondary" id="nextBtn" aria-label="Next">
-                <i class="fas fa-forward-step"></i>
             </button>
         </section>
 
@@ -236,6 +230,7 @@
             url: 'https://live.sgpc.net:8443/;nocache=1',
             type: 'live',
             image: '../assets/darbar-sahib-evening.webp',
+            lightImage: '../Homepage/darbar-sahib.webp',
             title: 'Live Kirtan',
             artist: 'Sri Harmandir Sahib',
             color: 'gold'
@@ -257,6 +252,7 @@
             })(),
             type: 'playlist',
             image: '../assets/Darbar-sahib-AMRITVELA.webp',
+            lightImage: '../Homepage/darbar-sahib.webp',
             title: 'Amritvela Kirtan',
             artist: 'Divine Shabad',
             color: 'orange'
@@ -367,8 +363,12 @@
 
         // Use singleton to switch streams
         if (wasPlaying) {
+            STATE.isConnecting = true;
+            updateUI();
             await window.AnhadAudio.play(streamType);
             STATE.isPlaying = true;
+            STATE.isConnecting = false;
+            updateUI();
         } else {
             // Just update state, don't auto-play
             updateUI();
@@ -393,10 +393,18 @@
         dom.btnAmritvela.classList.toggle('active', isAmritvela);
         dom.btnSimran.classList.toggle('active', isSimran);
         
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const displayImage = (currentTheme === 'light' && stream.lightImage) ? stream.lightImage : stream.image;
+
         // Update artwork
-        dom.artworkImg.src = stream.image;
+        dom.artworkImg.src = displayImage;
         dom.artworkImg.alt = stream.name;
         dom.artworkContainer.classList.toggle('simran', isSimran);
+        
+        // Match background with artwork
+        if (dom.bgDarbar) {
+            dom.bgDarbar.src = displayImage;
+        }
         
         // Update track info
         dom.trackTitle.textContent = stream.title;
@@ -446,6 +454,11 @@
     
     async function play() {
         if (!window.AnhadAudio) return;
+        // Guard: don't re-trigger if singleton is already loading/connecting
+        if (STATE.isConnecting) {
+            console.log('[GR] play() ignored — already connecting');
+            return;
+        }
 
         STATE.isConnecting = true;
         dom.playBtn.classList.add('loading');
@@ -461,8 +474,11 @@
         } catch (err) {
             console.error('[GR] Play error:', err);
             STATE.isConnecting = false;
-            handleAudioError(err);
+            dom.playBtn.classList.remove('loading');
+            // Only show error toast — singleton auto-retries internally, don't double-retry
+            showError('Connecting...', 'Establishing connection to stream', true);
         } finally {
+            STATE.isConnecting = false;
             dom.playBtn.classList.remove('loading');
         }
 
@@ -480,7 +496,11 @@
     }
 
     function togglePlay() {
-        STATE.isPlaying ? pause() : play();
+        if (STATE.isConnecting) return; // Block double-taps during connection
+        // Use singleton's toggle() which is smarter: resumes in-place when appropriate
+        if (!window.AnhadAudio) return;
+        window.AnhadAudio.toggle(STATE.isPlaying ? null : STATE.currentStream);
+        hapticFeedback(STATE.isPlaying ? 30 : 50);
     }
 
     function nextTrack() {
@@ -645,6 +665,11 @@
             document.body.classList.remove('light-theme');
             dom.themeIcon.className = 'fas fa-sun';
         }
+        
+        // Re-render stream UI to instantly swap images
+        if (STATE && STATE.currentStream) {
+            updateStreamUI(STATE.currentStream);
+        }
     }
 
     function toggleTheme() {
@@ -707,8 +732,6 @@
         
         // Controls
         dom.playBtn.addEventListener('click', togglePlay);
-        dom.prevBtn.addEventListener('click', prevTrack);
-        dom.nextBtn.addEventListener('click', nextTrack);
         
         // Volume
         dom.volumeInput.addEventListener('input', (e) => {
@@ -733,52 +756,38 @@
             play();
         });
         
-        // Audio events - Darbar
-        dom.audioDarbar.addEventListener('playing', () => {
-            STATE.isPlaying = true;
+        // ── Audio Singleton UI Sync ──
+        window.addEventListener('anhadAudioStateChange', (e) => {
+            STATE.isPlaying = e.detail.isPlaying;
+            if (e.detail.stream) STATE.currentStream = e.detail.stream;
             updateUI();
-            showStatus('Connected • Darbar Sahib Live');
-            setTimeout(hideStatus, 3000);
+            
+            if (STATE.isPlaying) {
+                if (STATE.currentStream === 'darbar') {
+                    showStatus('Connected • Darbar Sahib Live');
+                } else {
+                    showStatus(`Playing • ${STATE.currentStream === 'amritvela' ? 'Amritvela' : 'Simran'}`);
+                }
+                setTimeout(hideStatus, 3000);
+            }
         });
-        
-        dom.audioDarbar.addEventListener('pause', () => {
-            STATE.isPlaying = false;
-            updateUI();
-        });
-        
-        dom.audioDarbar.addEventListener('error', (e) => {
-            handlePlaybackError(new Error('Stream error'));
-        });
-        
-        dom.audioDarbar.addEventListener('waiting', () => {
-            showStatus('Buffering...');
-        });
-        
-        // Audio events - Amritvela
-        dom.audioAmritvela.addEventListener('playing', () => {
-            STATE.isPlaying = true;
-            updateUI();
-            showStatus(`Playing • Day ${STATE.currentTrackIndex + 1}`);
-            setTimeout(hideStatus, 3000);
-        });
-        
-        dom.audioAmritvela.addEventListener('pause', () => {
-            STATE.isPlaying = false;
-            updateUI();
-        });
-        
-        dom.audioAmritvela.addEventListener('ended', () => {
-            nextTrack();
-        });
-        
-        dom.audioAmritvela.addEventListener('error', (e) => {
-            const errCode = dom.audioAmritvela.error ? dom.audioAmritvela.error.code : '?';
-            const errMsg = dom.audioAmritvela.error ? dom.audioAmritvela.error.message : 'unknown';
-            console.error('[GR] Amritvela audio error: code=' + errCode + ', msg=' + errMsg + ', src=' + (dom.audioAmritvela.src || 'none'));
-            handlePlaybackError(new Error('Amritvela audio error (code ' + errCode + '): ' + errMsg));
-        });
-        
-        dom.audioAmritvela.addEventListener('timeupdate', updateElapsedTime);
+
+        // Use global AnhadAudio methods for time/error if available
+        if (window.AnhadAudio) {
+            window.AnhadAudio.on('loading', (e) => {
+                if (e.isLoading) showStatus('Buffering...');
+                else hideStatus();
+            });
+            window.AnhadAudio.on('error', (e) => {
+                handlePlaybackError(new Error(e.message || 'Stream error'));
+            });
+            window.AnhadAudio.on('timeupdate', (e) => {
+                if (!STATE.isPlaying) return;
+                const mins = Math.floor(e.currentTime / 60);
+                const secs = Math.floor(e.currentTime % 60);
+                dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            });
+        }
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -851,12 +860,16 @@
         // Subscribe to singleton events for UI sync
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (audioState) => {
-                STATE.isPlaying = audioState.isPlaying;
+                // Don't flip to "paused" while we're still loading/connecting
+                if (!STATE.isConnecting || audioState.isPlaying) {
+                    STATE.isPlaying = audioState.isPlaying;
+                }
                 if (audioState.currentStream && STREAMS[audioState.currentStream]) {
                     STATE.currentStream = audioState.currentStream;
                     updateStreamUI(STATE.currentStream);
                 }
                 STATE.currentTrackIndex = audioState.currentTrackIndex;
+                if (audioState.isPlaying) STATE.isConnecting = false;
                 updateUI();
             });
 
@@ -876,7 +889,18 @@
             });
 
             window.AnhadAudio.on('error', (data) => {
-                handlePlaybackError(new Error(data?.message || 'Audio playback error'));
+                // Singleton already auto-retries errors internally (up to 3 times).
+                // DO NOT call play() or handlePlaybackError here — that would cause a reload loop.
+                // Just update the UI to show the error state.
+                const msg = data?.message || 'Audio playback error';
+                console.warn('[Gurbani Radio] Audio error (singleton):', msg);
+                STATE.isPlaying = false;
+                STATE.isConnecting = false;
+                updateUI();
+                // Only show error if singleton has given up retrying
+                if (msg.toLowerCase().includes('code 2') || msg.toLowerCase().includes('code 3') || msg.toLowerCase().includes('code 4')) {
+                    showError('Stream Unavailable', 'Please check your connection and tap Retry', true);
+                }
             });
 
             console.log('[Gurbani Radio] Subscribed to AnhadAudio events');
@@ -1018,16 +1042,11 @@
             }, 350);
         }
 
-        // ── Theme-aware bg: day image when light mode ──
+        // ── Theme-aware bg: disabled old opacity toggling, now relying on displayImage ──
         function applyThemeBg() {
-            const isLight = document.documentElement.getAttribute('data-theme')==='light';
-            if (bgDay) {
-                bgDay.style.transition='opacity .9s ease';
-                bgDay.style.opacity = isLight ? '1' : '0';
-            }
+            if (bgDay) bgDay.style.display = 'none';
             if (bgNight) {
-                bgNight.style.transition='opacity .9s ease';
-                bgNight.style.opacity = isLight ? '0' : '1';
+                bgNight.style.opacity = '1';
             }
         }
 
@@ -1053,8 +1072,11 @@
                 const _orig = updateStreamUI;
                 window.updateStreamUI = function(st) {
                     _orig(st);
-                    if (typeof STREAMS!=='undefined' && STREAMS[st]?.image) {
-                        updateAmbient(STREAMS[st].image);
+                    if (typeof STREAMS!=='undefined' && STREAMS[st]) {
+                        const stream = STREAMS[st];
+                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                        const displayImage = (currentTheme === 'light' && stream.lightImage) ? stream.lightImage : stream.image;
+                        updateAmbient(displayImage);
                     }
                 };
                 return true;

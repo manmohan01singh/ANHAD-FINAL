@@ -169,7 +169,6 @@ html.dark-mode .backdrop-blur {
 img {
   will-change: transform;
   transform: translateZ(0);
-  content-visibility: auto;
 }
 
 /* ─── TEXT RENDERING OPTIMIZATION ─── */

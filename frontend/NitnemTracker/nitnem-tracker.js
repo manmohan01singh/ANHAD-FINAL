@@ -3461,6 +3461,52 @@ const NitnemManager = {
                 BaniModal.open(period);
             });
         });
+
+        // ═══ MY POTHI SYNC: Listen for completion updates from My Pothi ═══
+        // This fires when user checks/unchecks a bani in My Pothi and it syncs here
+        window.addEventListener('nitnemCompletionUpdated', (e) => {
+            const { baniId, uid, isComplete, period } = e.detail || {};
+            if (!period || !uid) return;
+            console.log('[NitnemTracker] My Pothi sync received:', { baniId, uid, isComplete, period });
+
+            // FIX DOUBLE-COUNT: Check if UID already exists before adding
+            if (isComplete) {
+                if (!this.completedToday[period]) this.completedToday[period] = [];
+                if (!this.completedToday[period].includes(uid)) {
+                    this.completedToday[period].push(uid);
+                    this.saveTodayProgress();
+                }
+            } else {
+                // Remove from completedToday
+                if (this.completedToday[period]) {
+                    this.completedToday[period] = this.completedToday[period].filter(id => id !== uid);
+                    this.saveTodayProgress();
+                }
+            }
+
+            // Re-render the affected period's visual list (show/hide green checkmark)
+            this.renderBaniList(period);
+            this.updateProgress();
+            this.updateCounts();
+        });
+
+        // Also listen for storage changes from My Pothi (cross-tab sync)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'nitnemTracker_nitnemLog') {
+                console.log('[NitnemTracker] Storage sync (log) from My Pothi — re-loading progress');
+                this.loadTodayProgress();
+                this.renderAllLists();
+                this.updateProgress();
+            }
+            if (e.key === 'nitnemTracker_selectedBanis') {
+                // My Pothi auto-registered new banis — reload and re-render
+                console.log('[NitnemTracker] Storage sync (selectedBanis) from My Pothi — re-loading banis');
+                this.loadSelectedBanis();
+                this.loadTodayProgress();
+                this.renderAllLists();
+                this.updateProgress();
+            }
+        });
     },
 
     /**

@@ -1609,11 +1609,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
    § 9. QUICK ACCESS CARDS — Trendora Light Tinted Surfaces
    Each card has a unique warm/cool tint. Generous touch targets.
 ═══════════════════════════════════════════════════════════════════════════════ */
-/* PERF: Lazy-render below-fold sections */
+/* PERF: Cards render persistently */
 .quick-card,
 .event-card {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 80px;
+  /* Removed content-visibility to prevent scroll jank/reloading */
 }
 
 .quick-card {

@@ -211,8 +211,8 @@
   html.dark-mode .desktop-sidebar,
   [data-theme="dark"] .desktop-sidebar {
     background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(248, 250, 252, 0.95) 100%) !important;
+      rgba(15, 15, 15, 0.95) 0%,
+      rgba(20, 20, 25, 0.95) 100%) !important;
     border-right: 1px solid rgba(255,255,255,0.08);
   }
   

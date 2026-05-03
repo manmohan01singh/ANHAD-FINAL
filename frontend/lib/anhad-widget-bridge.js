@@ -69,27 +69,33 @@
             var today = new Date().toLocaleDateString('en-CA');
             var theme = localStorage.getItem('anhad_theme') || 'light';
 
-            // Read streak data from consistent key
+            // Read streak data
             var streakData = {};
             try { streakData = JSON.parse(localStorage.getItem('nitnemTracker_streakData') || '{"current": 0}'); } catch(e) {}
             var streak = streakData.current || 0;
 
-            // Read today's completion from NitnemTracker
+            // Read today's completion — period-keyed schema: { amritvela: [uid,...], rehras: [...], sohila: [...] }
             var nitnemLog = {};
             try { nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}'); } catch(e) {}
             var todayLog = nitnemLog[today] || {};
-            var completedIds = Object.keys(todayLog).filter(function(k) { return todayLog[k] === true; });
+            // Count all completed UIDs across all periods
+            var completedCount = (todayLog.amritvela ? todayLog.amritvela.length : 0)
+                               + (todayLog.rehras    ? todayLog.rehras.length    : 0)
+                               + (todayLog.sohila    ? todayLog.sohila.length    : 0);
 
-            // Read selected banis
-            var selectedBanis = [];
-            try { selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '[]'); } catch(e) {}
-            var totalBanis = selectedBanis.length || 5;
-            var progress = totalBanis > 0 ? Math.round((completedIds.length / totalBanis) * 100) : 0;
+            // Read selected banis — period-keyed object: { amritvela: [...], rehras: [...], sohila: [...] }
+            var selectedBanisRaw = {};
+            try { selectedBanisRaw = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || '{}'); } catch(e) {}
+            var totalBanis = ((selectedBanisRaw.amritvela || []).length)
+                           + ((selectedBanisRaw.rehras    || []).length)
+                           + ((selectedBanisRaw.sohila    || []).length)
+                           || 5; // fallback default
+            var progress = totalBanis > 0 ? Math.round((completedCount / totalBanis) * 100) : 0;
 
-            // Build completion indicator array
+            // Build completion indicator array (one boolean per bani slot)
             var indicators = [];
             for (var i = 0; i < totalBanis; i++) {
-                indicators.push(i < completedIds.length);
+                indicators.push(i < completedCount);
             }
 
             await plugin.syncWidgetData({
@@ -97,7 +103,7 @@
                 data: {
                     streak: streak,
                     progress: progress,
-                    completedBanis: completedIds.length,
+                    completedBanis: completedCount,
                     totalBanis: totalBanis,
                     completedBanisList: indicators,
                     isDark: theme === 'dark'
