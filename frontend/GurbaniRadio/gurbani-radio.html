@@ -118,16 +118,6 @@
             <div class="artwork-clay" id="artworkContainer">
                 <div class="artwork-inner">
                     <img class="artwork-img" src="../assets/darbar-sahib-evening.webp" alt="Sri Darbar Sahib" id="artworkImg" crossorigin="anonymous">
-                    <div class="equalizer" id="equalizer">
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                        <div class="eq-bar"></div>
-                    </div>
                 </div>
                 <div class="live-badge" id="liveBadge">Live</div>
             </div>
@@ -204,7 +194,7 @@
     </div>
 
     <!-- UNIFIED AUDIO SINGLETON -->
-    <script src="../lib/anhad-audio-singleton.js"></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.1.1"></script>
     <!-- REMOVED: Inline audio elements - singleton handles audio -->
 
     <script>
@@ -302,7 +292,6 @@
         bgDarbar: document.getElementById('bgDarbar'),
         bgAmritvela: document.getElementById('bgAmritvela'),
         liveBadge: document.getElementById('liveBadge'),
-        equalizer: document.getElementById('equalizer'),
         
         // Track info
         trackTitle: document.getElementById('trackTitle'),
@@ -605,13 +594,11 @@
             dom.playIcon.classList.add('fa-pause');
             dom.artworkContainer.classList.add('playing');
             dom.player.classList.remove('paused');
-            dom.equalizer.classList.remove('paused');
         } else {
             dom.playIcon.classList.remove('fa-pause');
             dom.playIcon.classList.add('fa-play');
             dom.artworkContainer.classList.remove('playing');
             dom.player.classList.add('paused');
-            dom.equalizer.classList.add('paused');
         }
         
         // Volume
@@ -1054,6 +1041,13 @@
         function updateAmbient(imgSrc) {
             const artImg = document.getElementById('artworkImg');
             if (!artImg) return;
+            
+            // Only crossfade if the image is actually changing
+            if (artImg.src.endsWith(imgSrc.replace('../', '')) || artImg.getAttribute('src') === imgSrc) {
+                applyPalette(artImg); // Just apply palette if image hasn't changed
+                return;
+            }
+
             artImg.classList.add('xfade');
             setTimeout(()=>{
                 artImg.src = imgSrc;

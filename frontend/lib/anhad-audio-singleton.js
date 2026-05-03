@@ -559,8 +559,9 @@
     emit('loading', { isLoading: true });
 
     // For track transitions (from 0:00), no special fragment needed.
-    // For virtual-live seeks, append #t= so the browser requests the right byte range.
-    audio.src = isFromBeginning ? trackUrl : `${trackUrl}#t=${Math.floor(requestedPosition)}`;
+    // CAPACITOR FIX: DO NOT use #t= for Android WebView! It causes infinite loading/stuttering loops.
+    // We will seek manually via audio.currentTime after metadata loads.
+    audio.src = trackUrl;
     audio.load();
 
     console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (fromBeginning=${isFromBeginning})`);
@@ -603,7 +604,7 @@
         console.log(`[AnhadAudio] ⚡ Clamping ${Math.floor(requestedPosition)}s → ${Math.floor(seekPos)}s (track duration=${Math.floor(realDur)}s)`);
       }
 
-      // Perform the seek only if browser didn't already honour the #t= fragment
+      // Perform the seek since we removed the #t= fragment for Capacitor compatibility
       const performSeek = (afterPlay = false) => {
         if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
           if (!afterPlay) console.warn('[AnhadAudio] ⚠️ Duration still unknown at seek-time, will retry post-play');

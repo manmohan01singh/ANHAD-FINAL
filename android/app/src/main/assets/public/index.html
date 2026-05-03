@@ -389,6 +389,11 @@
       transform: translateX(3px) !important;
     }
 
+    /* Hide the extra days badge on desktop */
+    .event-card__days-badge {
+      display: none;
+    }
+
     /* ═══════════════════════════════════════════════════════════════════════════
        COMPACT VIEWPORT LAYOUT — Fit all content on single screen
        ═══════════════════════════════════════════════════════════════════════════ */
@@ -1134,12 +1139,12 @@
         display: block !important;
       }
 
-      /* Remove dark mode gradient - use same light gradient in both modes */
+      /* Dark mode desktop background */
       html body.dark-mode::after,
       body.dark-mode::after {
         background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.72) 0%,
-          rgba(248, 250, 252, 0.77) 100%) !important;
+          #000000 0%,
+          #111111 100%) !important;
       }
       
       /* Main content colors */
@@ -1338,6 +1343,9 @@
           transition: all 0.3s ease !important;
           position: relative;
           overflow: hidden;
+          max-width: 850px !important;
+          margin: -20px auto 48px auto !important;
+          padding: 32px 48px !important;
         }
         .event-card::before {
           content: '';
@@ -1371,20 +1379,24 @@
         /* Guru image - AI-style decorative frame */
         .event-card__guru-img-wrapper {
           position: relative;
-          padding: 6px;
+          padding: 8px;
           background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #D4943A 75%, #B8860B 100%);
           border-radius: 50%;
           box-shadow: 
-            0 0 0 3px rgba(255, 255, 255, 0.8),
-            0 0 0 6px rgba(212, 148, 58, 0.3),
-            0 8px 24px rgba(0, 0, 0, 0.15),
-            0 0 30px rgba(255, 215, 0, 0.4);
+            0 0 0 4px rgba(255, 255, 255, 0.8),
+            0 0 0 8px rgba(212, 148, 58, 0.3),
+            0 12px 30px rgba(0, 0, 0, 0.2),
+            0 0 40px rgba(255, 215, 0, 0.5);
           animation: frameGlow 3s ease-in-out infinite;
+          width: 156px !important;
+          height: 156px !important;
+          min-width: 156px !important;
+          min-height: 156px !important;
         }
         
         .event-card__guru-img {
-          width: 98px !important;
-          height: 98px !important;
+          width: 140px !important;
+          height: 140px !important;
           object-fit: cover;
           border-radius: 50%;
           transition: opacity 0.3s ease, transform 0.3s ease;
