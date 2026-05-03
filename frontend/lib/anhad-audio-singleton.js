@@ -86,9 +86,15 @@
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        // Use the backend MP3 transcoder for bulletproof Android playback!
-        // This converts the 68MB WebM into a continuous, non-chunked MP3 stream on the fly.
-        return `https://anhad-final.onrender.com/api/stream-mp3?file=day-${safeIndex}.webm&start=${Math.floor(position)}`;
+        const filename = `day-${safeIndex}.webm`;
+        
+        // MIRROR PWA STRATEGY: Use server-side seeking (transcoder) for Android to prevent infinite buffering
+        if (position > 5) {
+          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
+        }
+        
+        // Otherwise use the standard proxy
+        return `${API_BASE}/audio/${filename}`;
       }
     },
     simran: {
@@ -666,7 +672,7 @@
 
       performSeek(false);
 
-      audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
+      if (proxyOffsetSeconds === 0) audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
       audio.play().then(() => {
         isPlaying = true;
         isLoading = false;
@@ -674,7 +680,7 @@
         
         // Wait for the MediaPlayer to physically start pumping audio bytes
         audio.addEventListener('playing', () => {
-          if (seekPos > 2) {
+          if (seekPos > 2 && proxyOffsetSeconds === 0) {
             console.log(`[AnhadAudio] ⏳ MediaPlayer is now pumping bytes, executing safe seek...`);
             performSeek(true);
             

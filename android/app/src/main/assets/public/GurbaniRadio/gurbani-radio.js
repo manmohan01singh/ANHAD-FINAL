@@ -26,7 +26,7 @@
     cacheKeys.forEach(key => localStorage.removeItem(key));
 
     // Set version to force reload
-    const CURRENT_VERSION = '2.1.6-seek-fix';
+    const CURRENT_VERSION = '2.1.7-proxy';
     const storedVersion = localStorage.getItem('gurbani-radio-version');
     
     if (storedVersion !== CURRENT_VERSION) {

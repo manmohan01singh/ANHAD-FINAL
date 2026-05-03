@@ -194,7 +194,7 @@
     </div>
 
     <!-- UNIFIED AUDIO SINGLETON -->
-    <script src="../lib/anhad-audio-singleton.js?v=2.1.6-seek-fix"></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.1.7-proxy"></script>
     <!-- REMOVED: Inline audio elements - singleton handles audio -->
 
     <script>
@@ -700,7 +700,7 @@
                 if (state.stream && STREAMS[state.stream]) {
                     STATE.currentStream = state.stream;
                     STATE.currentTrackIndex = state.trackIndex || 0;
-                    STATE.isPlaying = state.isPlaying || false;
+                    STATE.isPlaying = false;
                 }
             }
         } catch (e) {}

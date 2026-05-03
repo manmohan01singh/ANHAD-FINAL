@@ -30,40 +30,25 @@
         </provider>
 
         <!-- WIDGET RECEIVERS -->
-        <receiver
-            android:name=".widgets.KirtanWidgetProvider"
-            android:exported="true"
-            android:label="ANHAD Kirtan">
+        <receiver android:name=".widgets.KirtanWidgetProvider" android:exported="true" android:label="ANHAD Kirtan">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/kirtan_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/kirtan_widget_info" />
         </receiver>
 
-        <receiver
-            android:name=".widgets.NitnemWidgetProvider"
-            android:exported="true"
-            android:label="Nitnem Tracker">
+        <receiver android:name=".widgets.NitnemWidgetProvider" android:exported="true" android:label="Nitnem Tracker">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/nitnem_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/nitnem_widget_info" />
         </receiver>
 
-        <receiver
-            android:name=".widgets.NaamAbhyasWidgetProvider"
-            android:exported="true"
-            android:label="Naam Abhyas">
+        <receiver android:name=".widgets.NaamAbhyasWidgetProvider" android:exported="true" android:label="Naam Abhyas">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/naam_abhyas_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/naam_abhyas_widget_info" />
         </receiver>
 
         <receiver
@@ -71,23 +56,16 @@
             android:exported="true"
             android:label="Gurpurab Calendar">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/calendar_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/calendar_widget_info" />
         </receiver>
 
-        <receiver
-            android:name=".widgets.HukamnamaWidgetProvider"
-            android:exported="true"
-            android:label="Hukamnama">
+        <receiver android:name=".widgets.HukamnamaWidgetProvider" android:exported="true" android:label="Hukamnama">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/hukamnama_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/hukamnama_widget_info" />
         </receiver>
 
         <receiver
@@ -95,11 +73,9 @@
             android:exported="true"
             android:label="Gurbani Khoj">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/gurbani_khoj_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/gurbani_khoj_widget_info" />
         </receiver>
 
         <receiver
@@ -107,11 +83,9 @@
             android:exported="true"
             android:label="Smart Reminders">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/smart_reminder_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/smart_reminder_widget_info" />
         </receiver>
 
         <receiver
@@ -119,25 +93,22 @@
             android:exported="true"
             android:label="Amritvela Kirtan">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/amritvela_widget_info"/>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/amritvela_widget_info" />
         </receiver>
 
         <!-- Foreground Service for background audio playback -->
         <service
             android:name=".AudioForegroundService"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:foregroundServiceType="mediaPlayback"
+        />
 
         <!-- Streak Saver Boot Receiver -->
-        <receiver
-            android:name=".StreakSaverBootReceiver"
-            android:exported="true">
+        <receiver android:name=".StreakSaverBootReceiver" android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
@@ -148,8 +119,8 @@
             android:showOnLockScreen="true"
             android:launchMode="singleTask"
             android:excludeFromRecents="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        />
     </application>
 
     <!-- Permissions -->
@@ -162,7 +133,7 @@
     <!-- Exact alarms — required for reliable notification timing on Android 12+/13+ -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    
+
     <!-- Full-Screen Intent for Alarms -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />

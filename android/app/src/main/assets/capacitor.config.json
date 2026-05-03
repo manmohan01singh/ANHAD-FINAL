@@ -30,6 +30,9 @@
 		"WidgetDataBridge": {
 			"updateInterval": 15,
 			"debug": false
+		},
+		"CapacitorHttp": {
+			"enabled": true
 		}
 	}
 }
