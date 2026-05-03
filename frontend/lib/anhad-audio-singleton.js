@@ -84,17 +84,10 @@
       liveApi: '/api/radio/live',
       durationApi: '/api/radio/durations',
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
-      getTrackUrl(index, position = 0) {
+      getTrackUrl(index) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-        const filename = `day-${safeIndex}.webm`;
-        
-        // MIRROR PWA STRATEGY: Use server-side seeking (transcoder) for Android to prevent infinite buffering
-        if (position > 5) {
-          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
-        }
-        
-        // Otherwise use the standard proxy
-        return `${API_BASE}/audio/${filename}`;
+        // Append version cache-buster to bypass previously corrupted WebView caches without breaking CDN edge cache
+        return `${CDN_BASE}/day-${safeIndex}.webm?v=2.1.4`;
       }
     },
     simran: {
@@ -137,7 +130,6 @@
   let currentStream = null;    // 'darbar' | 'amritvela' | null
   let currentTrackIndex = 0;
   let currentShufflePosition = 0; // Position in shuffle order for seamless advancing
-  let proxyOffsetSeconds = 0; // Tracks the offset applied by the backend MP3 transcoder
   let isPlaying = false;
   let isLoading = false;
   let isPlayLocked = false;    // CAPACITOR FIX: prevents re-entrant play() during active play operation
@@ -582,13 +574,7 @@
     lastWatchTime = 0;   // Reset stall baseline so seek-position jump doesn't look like a stall
     stalledWatchTicks = 0;
 
-    const trackUrl = stream.getTrackUrl(currentTrackIndex, requestedPosition);
-
-    if (trackUrl.includes('api/stream-mp3')) {
-      proxyOffsetSeconds = requestedPosition;
-    } else {
-      proxyOffsetSeconds = 0;
-    }
+    const trackUrl = stream.getTrackUrl(currentTrackIndex);
 
     // Set isLoading BEFORE audio.load()
     isLoading = true;
@@ -639,11 +625,6 @@
       }
 
       const performSeek = (afterPlay = false) => {
-        if (proxyOffsetSeconds > 0) {
-          console.log(`[AnhadAudio] ⏩ Skipping client seek, backend MP3 proxy handled the ${Math.floor(proxyOffsetSeconds)}s offset.`);
-          return true;
-        }
-
         if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
           if (!afterPlay) console.warn('[AnhadAudio] ⚠️ Duration still unknown at seek-time, will retry post-play');
           return false;
@@ -672,7 +653,7 @@
 
       performSeek(false);
 
-      if (proxyOffsetSeconds === 0) audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
+      audio.volume = 0; // Mute temporarily to avoid hearing the 0:00 glitch before seek
       audio.play().then(() => {
         isPlaying = true;
         isLoading = false;
@@ -680,7 +661,7 @@
         
         // Wait for the MediaPlayer to physically start pumping audio bytes
         audio.addEventListener('playing', () => {
-          if (seekPos > 2 && proxyOffsetSeconds === 0) {
+          if (seekPos > 2) {
             console.log(`[AnhadAudio] ⏳ MediaPlayer is now pumping bytes, executing safe seek...`);
             performSeek(true);
             
@@ -1216,8 +1197,8 @@
       artwork: stream?.artwork || '',
       playerPage: stream?.playerPage || '',
       volume: audio?.volume || 0.8,
-      currentTime: (audio?.currentTime || 0) + proxyOffsetSeconds,
-      duration: (proxyOffsetSeconds > 0 && audio?.duration) ? (audio.duration + proxyOffsetSeconds) : (audio?.duration || 0)
+      currentTime: audio?.currentTime || 0,
+      duration: audio?.duration || 0
     };
   }
 
