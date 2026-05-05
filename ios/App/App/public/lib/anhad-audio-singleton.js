@@ -92,7 +92,7 @@
           return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
         }
         // PWA: direct CDN works fine
-        return `${CDN_BASE}/${filename}?v=2.1.4`;
+        return `${CDN_BASE}/${filename}?v=2.1.4&t=${Date.now()}`;
       }
     },
     simran: {
@@ -123,12 +123,14 @@
         ];
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
         const filename = simranTracks[safeIndex];
-        // VBR MP3 seeking is broken in all browsers — server-side seek for any mid-track position
-        if (position > 5) {
+        // VBR MP3 seeking is broken in browsers — server-side seek only for Capacitor Android
+        if (window.Capacitor && position > 5) {
           return `${API_BASE}/api/stream-mp3?file=${encodeURIComponent(filename)}&start=${Math.floor(position)}`;
         }
         // PWA: direct CDN works fine
-        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}`;
+        const directUrl = `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?t=${Date.now()}`;
+        console.log('[AnhadAudio] Simran direct CDN URL:', directUrl);
+        return directUrl;
       }
     }
   };
@@ -144,6 +146,7 @@
   let isPlaying = false;
   let isLoading = false;
   let isPlayLocked = false;    // CAPACITOR FIX: prevents re-entrant play() during active play operation
+  let playLockTimeoutId = null;
   let audioRetryCount = 0;     // Error retry counter (max 5)
   let trackTransitionInProgress = false; // Prevents ended + watchdog double-fire
   let playRequestId = 0;       // Guards stale canplay handlers after rapid stream changes
@@ -280,7 +283,7 @@
 
     const elapsedSeconds = (Date.now() - epoch) / 1000;
     const cycle = Math.floor(elapsedSeconds / fixedTotal);
-    const positionInPlaylist = ((elapsedSeconds % learnedTotal) + learnedTotal) % learnedTotal;
+    const positionInPlaylist = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
     const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
 
     let accumulated = 0;
@@ -388,26 +391,47 @@
   function initAudioElement() {
     if (audio) return;
 
-    // CAPACITOR DOM FIX: Use <video> instead of <audio> for video/webm!
-    // Since the Amritvela files are actually 'video/webm' (even though they only contain Opus audio),
-    // Android WebView's Audio pipeline chokes on them and loops buffering. 
-    // The Video pipeline allocates a proper hardware buffer and handles seeking flawlessly!
-    audio = document.createElement('video');
-    audio.preload = 'metadata';
-    audio.volume = 0.8;
+    // Check for preloaded audio from audio-preload.js and adopt it
+    if (window.__anhadPreloadedAudio && window.__anhadPreloadedAudio.audio) {
+      console.log('[AnhadAudio] Adopting preloaded audio element');
+      audio = window.__anhadPreloadedAudio.audio;
+      // Sync state from preload
+      if (window.__anhadPreloadedAudio.stream) {
+        currentStream = window.__anhadPreloadedAudio.stream;
+        currentTrackIndex = window.__anhadPreloadedAudio.trackIndex || 0;
+      }
+      // Clear the preloaded reference
+      window.__anhadPreloadedAudio = null;
+      
+      // Re-attach event listeners to the adopted element
+      attachAudioEventListeners();
+      return;
+    }
 
-    // CAPACITOR DOM FIX: Append to DOM to force Android WebView to allocate a full-priority media buffer!
-    // In-memory Audio objects get their network requests aggressively throttled on mobile,
-    // which causes the infinite "buffering" loop when downloading the WebM Cues index!
-    audio.id = 'anhad-global-audio';
-    // Use visually hidden instead of display:none to prevent aggressive WebView throttling
-    audio.style.position = 'absolute';
-    audio.style.width = '1px';
-    audio.style.height = '1px';
-    audio.style.opacity = '0';
-    audio.style.pointerEvents = 'none';
-    if (!document.getElementById('anhad-global-audio')) {
-      document.body.appendChild(audio);
+    if (window.Capacitor) {
+      // CAPACITOR DOM FIX: Use <video> instead of <audio> for video/webm!
+      // Since the Amritvela files are actually 'video/webm' (even though they only contain Opus audio),
+      // Android WebView's Audio pipeline chokes on them and loops buffering.
+      // The Video pipeline allocates a proper hardware buffer and handles seeking more reliably.
+      audio = document.createElement('video');
+      audio.preload = 'metadata';
+      audio.volume = 0.8;
+
+      // CAPACITOR DOM FIX: Append to DOM to force Android WebView to allocate a full-priority media buffer!
+      audio.id = 'anhad-global-audio';
+      // Use visually hidden instead of display:none to prevent aggressive WebView throttling
+      audio.style.position = 'absolute';
+      audio.style.width = '1px';
+      audio.style.height = '1px';
+      audio.style.opacity = '0';
+      audio.style.pointerEvents = 'none';
+      if (!document.getElementById('anhad-global-audio')) {
+        document.body.appendChild(audio);
+      }
+    } else {
+      audio = new Audio();
+      audio.preload = 'metadata';
+      audio.volume = 0.8;
     }
 
     // Enable background playback for Capacitor native apps
@@ -436,10 +460,20 @@
       audio.volume = saved.volume;
     }
 
+    attachAudioEventListeners();
+  }
+
+  function attachAudioEventListeners() {
+    if (!audio) return;
+    
     audio.addEventListener('playing', () => {
       isPlaying = true;
       isLoading = false;
       isPlayLocked = false;
+      if (playLockTimeoutId) {
+        clearTimeout(playLockTimeoutId);
+        playLockTimeoutId = null;
+      }
       emit('loading', { isLoading: false });
       audioRetryCount = 0;
       saveState();
@@ -541,6 +575,10 @@
       // The retry calls play() which re-fetches the live position. audioRetryCount
       // is reset to 0 on success (in the 'playing' handler), so at most 3 retries.
       isPlayLocked = false;
+      if (playLockTimeoutId) {
+        clearTimeout(playLockTimeoutId);
+        playLockTimeoutId = null;
+      }
       if ((currentStream === 'amritvela' || currentStream === 'simran') && audioRetryCount < 3) {
         audioRetryCount++;
         const retryDelay = 2000 * audioRetryCount;
@@ -760,15 +798,28 @@
     // Pause any competing page-level audio elements
     killCompetingAudio();
 
-    // Auto-unlock after 15s in case something goes wrong and 'playing' never fires
-    const lockTimeout = setTimeout(() => { isPlayLocked = false; }, 15000);
+    // Auto-unlock after 15s in case something goes wrong and 'playing' never fires.
+    // IMPORTANT: do NOT clear this immediately; it must remain active until playback succeeds or fails.
+    if (playLockTimeoutId) clearTimeout(playLockTimeoutId);
+    playLockTimeoutId = setTimeout(() => {
+      isPlayLocked = false;
+      playLockTimeoutId = null;
+      console.warn('[AnhadAudio] ⏱️ play() lock auto-unlocked after timeout');
+      emit('statechange', getPublicState());
+    }, 15000);
 
     try {
       if (stream.type === 'live') {
         // ── DARBAR LIVE: Cache-bust + force live edge ──
-        const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
+        const baseUrl = (window.Capacitor && streamName === 'darbar') ? `${API_BASE}/api/darbar-live` : stream.url;
+        const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
         console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
         audio.src = freshUrl;
+        // On mobile browsers, force the media element to reset its internal pipeline.
+        // On Android WebView this can be harmful, so only do it for non-Capacitor.
+        if (!window.Capacitor && typeof audio.load === 'function') {
+          try { audio.load(); } catch (e) {}
+        }
         try {
           await audio.play();
         } catch (e) {
@@ -776,6 +827,7 @@
           isPlaying = false;
           isLoading = false;
           isPlayLocked = false;
+          if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
           emit('statechange', getPublicState());
         }
 
@@ -791,7 +843,7 @@
         }
       }
     } finally {
-      clearTimeout(lockTimeout);
+      // no-op: playLockTimeoutId is cleared by success (playing) or failure (error/autounlock)
     }
 
     saveState();
@@ -1294,7 +1346,43 @@
     getStream: () => currentStream
   };
 
+  // ─── Detect and kill competing audio systems ──────────────────────────────
+  function detectAndKillCompetingSystems() {
+    // Check for persistent-audio.js legacy system
+    if (window.LegacyAnhadAudio && !window.LegacyAnhadAudio._legacy) {
+      console.warn('[AnhadAudio] ⚠️ Detected legacy audio system using wrong namespace - forcing cleanup');
+    }
+    
+    // Check for GlobalMiniPlayer (global-mini-player.js)
+    if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.getAudio) {
+      const gmpAudio = window.GlobalMiniPlayer.getAudio();
+      if (gmpAudio && !gmpAudio.paused) {
+        console.warn('[AnhadAudio] ⚠️ Detected active GlobalMiniPlayer - pausing it');
+        window.GlobalMiniPlayer.pause();
+        window.GlobalMiniPlayer.stop?.();
+      }
+      // Unregister from coordinator if registered
+      if (window.AudioCoordinator) {
+        window.AudioCoordinator.unregister('GlobalMiniPlayer');
+      }
+    }
+    
+    // Check for any orphaned <audio> elements on the page
+    document.querySelectorAll('audio').forEach(el => {
+      if (el.id !== 'anhad-global-audio' && !el.paused) {
+        console.warn('[AnhadAudio] ⚠️ Killing orphaned audio element');
+        el.pause();
+        el.src = '';
+        el.removeAttribute('src');
+      }
+    });
+    
+    // Log detection summary
+    console.log('[AnhadAudio] ✅ Competing system check complete');
+  }
+
   // ─── Init ─────────────────────────────────────────────────────────────────
+  detectAndKillCompetingSystems();
   initAudioElement();
   registerWithCoordinator();
 

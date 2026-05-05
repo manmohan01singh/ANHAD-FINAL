@@ -44,6 +44,39 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(AlarmReliabilityPlugin.class);
         super.onCreate(savedInstanceState);
 
+        // ═══════════════════════════════════════════════════════════════════
+        // NUCLEAR: Force-configure WebView for reliable audio streaming
+        // Without these, <audio> elements silently refuse to play cross-origin media.
+        // ═══════════════════════════════════════════════════════════════════
+        android.webkit.WebView webView = getBridge().getWebView();
+        if (webView != null) {
+            android.webkit.WebSettings settings = webView.getSettings();
+
+            // CRITICAL: Allow autoplay without user gesture — without this,
+            // audio.play() silently fails unless triggered by a direct tap handler.
+            settings.setMediaPlaybackRequiresUserGesture(false);
+
+            // Allow mixed content (HTTPS page loading HTTP audio streams)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                settings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            }
+
+            // Enable media-related web features
+            settings.setDomStorageEnabled(true);
+            settings.setJavaScriptEnabled(true);
+            settings.setAllowFileAccess(true);
+            settings.setAllowContentAccess(true);
+            settings.setDatabaseEnabled(true);
+
+            // Allow cross-origin resource sharing for media elements
+            settings.setAllowUniversalAccessFromFileURLs(true);
+            settings.setAllowFileAccessFromFileURLs(true);
+
+            Log.d(TAG, "✅ WebView configured for audio streaming: " +
+                "gesture=" + settings.getMediaPlaybackRequiresUserGesture() +
+                ", mixedContent=ALWAYS_ALLOW");
+        }
+
         // Register receiver for background audio controls
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(mediaCommandReceiver, new IntentFilter("com.gurbaniradio.app.MEDIA_COMMAND"), Context.RECEIVER_EXPORTED);

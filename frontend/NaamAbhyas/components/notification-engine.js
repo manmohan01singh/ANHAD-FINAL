@@ -192,82 +192,6 @@ class NotificationEngine {
     }
 
     /**
-     * Schedule Naam Abhyas notifications for a session
-     * @param {object} session - Session data
-     * @param {object} config - Notification config
-     */
-    scheduleSessionNotifications(session, config) {
-        const sessionTime = new Date();
-        sessionTime.setHours(session.hour, session.startMinute, 0, 0);
-
-        // 1. Hour start notification
-        if (config.hourStart) {
-            const hourStart = new Date();
-            hourStart.setHours(session.hour, 0, 0, 0);
-
-            if (hourStart > new Date()) {
-                this.schedule(
-                    `naam_hour_${session.hour}`,
-                    hourStart,
-                    '🙏 Naam Abhyas',
-                    {
-                        body: `Your Naam Abhyas this hour: ${session.startTime} - ${session.endTime}`,
-                        tag: 'naam-hour-start'
-                    }
-                );
-            }
-        }
-
-        // 2. Pre-reminder (default 2 minutes before)
-        if (config.preReminder) {
-            const preReminderMinutes = config.preReminderMinutes || 2;
-            const preReminder = new Date(sessionTime);
-            preReminder.setMinutes(preReminder.getMinutes() - preReminderMinutes);
-
-            if (preReminder > new Date()) {
-                this.schedule(
-                    `naam_pre_${session.hour}`,
-                    preReminder,
-                    '🔔 Naam Abhyas Starting Soon!',
-                    {
-                        body: `Starting in ${preReminderMinutes} minutes. Prepare yourself.`,
-                        tag: 'naam-pre-reminder'
-                    }
-                );
-            }
-        }
-
-        // 3. Start time notification - ALSO REGISTER WITH GLOBAL ALARM SYSTEM
-        if (sessionTime > new Date()) {
-            this.schedule(
-                `naam_start_${session.hour}`,
-                sessionTime,
-                '🙏 TIME FOR NAAM ABHYAS',
-                {
-                    body: 'Leave all work. Remember Vaheguru.',
-                    tag: 'naam-start',
-                    requireInteraction: true,
-                    actions: [
-                        { action: 'start', title: 'Start Now' },
-                        { action: 'skip', title: 'Skip' }
-                    ]
-                }
-            );
-
-            // CRITICAL FIX: Also register with global alarm system for guaranteed firing
-            if (window.GlobalAlarmSystem) {
-                window.GlobalAlarmSystem.registerNaamAbhyasAlarm({
-                    id: `naam_${session.hour}`,
-                    hour: session.hour,
-                    minute: session.startMinute,
-                    title: 'Naam Abhyas',
-                    enabled: true
-                });
-            }
-        }
-    }
-
-    /**
      * Cancel a scheduled notification
      * @param {string} id - Notification ID
      */
@@ -315,75 +239,31 @@ class NotificationEngine {
             time: new Date(n.time),
             title: n.title
         }));
-                    title,
-                    timestamp: Date.now(),
-                    success: false,
-                    error: e.message
-                });
-            }
-            
-            return null;
-        }
     }
 
     /**
-     * Add notification to history for debugging
-     * @param {object} entry - History entry
+     * Check if notifications are permitted
+     * @returns {boolean}
      */
-    addToHistory(entry) {
-        this.notificationHistory.push(entry);
-        // Keep only last 100 entries
-        if (this.notificationHistory.length > 100) {
-            this.notificationHistory.shift();
-        }
+    isPermitted() {
+        return this.permission === 'granted';
     }
 
     /**
-     * Get notification history
-     * @returns {Array} Notification history
+     * Helper to generate a deterministic pseudo-random minute between 10 and 50
+     * based on the date and hour, ensuring consistency across app reloads.
      */
-    getHistory() {
-        return this.notificationHistory;
-    }
-
-    /**
-     * Schedule a notification for a specific time
-     * @param {string} id - Unique notification ID
-     * @param {Date} time - Time to show notification
-     * @param {string} title - Notification title
-     * @param {object} options - Notification options
-     */
-    schedule(id, time, title, options = {}) {
-        const now = Date.now();
-        const scheduleTime = time instanceof Date ? time.getTime() : time;
-        const delay = scheduleTime - now;
-
-        if (delay <= 0) {
-            // Time has passed, show immediately
-            this.show(title, options);
-            return;
+    _getRandomMinuteForHour(dateStr, hour) {
+        // Simple hash of date string + hour
+        let hash = 0;
+        const str = dateStr + "_" + hour;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
         }
-
-        // Clear any existing scheduled notification with same ID
-        this.cancel(id);
-
-        // Schedule new notification
-        const timeoutId = setTimeout(() => {
-            this.show(title, options);
-
-            // Remove from scheduled list
-            this.scheduledNotifications = this.scheduledNotifications.filter(n => n.id !== id);
-        }, delay);
-
-        this.scheduledNotifications.push({
-            id,
-            timeoutId,
-            time: scheduleTime,
-            title,
-            options
-        });
-
-        console.log(`🔔 Scheduled notification "${id}" for ${new Date(scheduleTime).toLocaleTimeString()}`);
+        // Get pseudo-random number between 10 and 50
+        return 10 + Math.abs(hash) % 41;
     }
 
     /**
@@ -689,6 +569,32 @@ class NotificationEngine {
             console.log('[NaamAbhyas] Cancelled all Capacitor notifications');
         } catch (e) {
             console.error('[NaamAbhyas] Failed to cancel Capacitor notifications:', e);
+        }
+    }
+
+    /**
+     * CAPACITOR-NATIVE: Force refresh all notifications with new schedule
+     * This ensures notification times update when active hours change
+     */
+    async forceRefreshCapacitorNotifications(config) {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+
+        console.log('[NaamAbhyas] Force refreshing Capacitor notifications due to schedule change');
+
+        try {
+            // First cancel all existing notifications
+            await this.cancelCapacitorBatch();
+
+            // Wait a brief moment for cancellation to process
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Then reschedule with new configuration
+            await this.scheduleCapacitorHourlyBatch(config);
+
+            console.log('[NaamAbhyas] ✅ Force refresh completed - notifications updated with new schedule');
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to force refresh Capacitor notifications:', e);
         }
     }
 }

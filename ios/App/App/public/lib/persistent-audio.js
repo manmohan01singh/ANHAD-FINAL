@@ -577,8 +577,9 @@
         }
     }
 
-    // Expose global API
-    window.AnhadAudio = {
+    // Expose global API - RENAMED to avoid conflict with anhad-audio-singleton.js
+    // This is the LEGACY audio system - do not use in new code
+    window.LegacyAnhadAudio = {
         play,
         pause,
         toggle,
@@ -589,27 +590,28 @@
         nextTrack,
         prevTrack,
         getAudio: () => audio,
-        STREAMS: Object.keys(STREAMS)
+        STREAMS: Object.keys(STREAMS),
+        _legacy: true
     };
 
-    // Register with AudioCoordinator if available
+    // Register with AudioCoordinator if available - Use different ID to avoid conflict
     if (window.AudioCoordinator) {
-        window.AudioCoordinator.register('AnhadAudio', {
+        window.AudioCoordinator.register('LegacyAnhadAudio', {
             pause: pause,
             isPlaying: isPlaying,
             getStream: getCurrentStream
         });
-        console.log('🎵 AnhadAudio registered with AudioCoordinator');
+        console.log('🎵 LegacyAnhadAudio registered with AudioCoordinator');
     } else {
         // Wait for coordinator to load
         setTimeout(() => {
             if (window.AudioCoordinator) {
-                window.AudioCoordinator.register('AnhadAudio', {
+                window.AudioCoordinator.register('LegacyAnhadAudio', {
                     pause: pause,
                     isPlaying: isPlaying,
                     getStream: getCurrentStream
                 });
-                console.log('🎵 AnhadAudio registered with AudioCoordinator (delayed)');
+                console.log('🎵 LegacyAnhadAudio registered with AudioCoordinator (delayed)');
             }
         }, 500);
     }

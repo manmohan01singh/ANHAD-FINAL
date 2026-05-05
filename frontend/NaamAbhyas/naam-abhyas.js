@@ -715,7 +715,17 @@ class NaamAbhyas {
             startHour.addEventListener('change', (e) => {
                 this.config.activeHours.start = parseInt(e.target.value);
                 this.saveConfig();
-                this.regenerateSchedule();
+                // Force refresh to bypass daily limit when active hours change
+                this.regenerateSchedule(true);
+                // Reschedule notifications with new times
+                if (this.config.enabled && this.notificationEngine) {
+                    this.scheduleUpcomingNotifications();
+                    // Force refresh Capacitor notifications with new schedule
+                    if (this.notificationEngine.forceRefreshCapacitorNotifications) {
+                        this.notificationEngine.forceRefreshCapacitorNotifications(this.config);
+                    }
+                }
+                this.showToast('Active hours updated', 'success');
             });
         }
 
@@ -723,7 +733,17 @@ class NaamAbhyas {
             endHour.addEventListener('change', (e) => {
                 this.config.activeHours.end = parseInt(e.target.value);
                 this.saveConfig();
-                this.regenerateSchedule();
+                // Force refresh to bypass daily limit when active hours change
+                this.regenerateSchedule(true);
+                // Reschedule notifications with new times
+                if (this.config.enabled && this.notificationEngine) {
+                    this.scheduleUpcomingNotifications();
+                    // Force refresh Capacitor notifications with new schedule
+                    if (this.notificationEngine.forceRefreshCapacitorNotifications) {
+                        this.notificationEngine.forceRefreshCapacitorNotifications(this.config);
+                    }
+                }
+                this.showToast('Active hours updated', 'success');
             });
         }
 
@@ -1779,7 +1799,7 @@ class NaamAbhyas {
         return schedule;
     }
 
-    regenerateSchedule() {
+    regenerateSchedule(forceRefresh = false) {
         const today = this.getTodayString();
 
         // Force clear today's schedule to ensure random times
@@ -1791,7 +1811,7 @@ class NaamAbhyas {
         // Also clear global schedule cache
         localStorage.removeItem('naam_abhyas_schedule');
 
-        // 1. Check Refresh Limit
+        // 1. Check Refresh Limit (bypass if forceRefresh is true)
         if (!this.history.dailyRefreshes) {
             this.history.dailyRefreshes = {};
         }
@@ -1799,7 +1819,7 @@ class NaamAbhyas {
         const refreshesUsed = this.history.dailyRefreshes[today] || 0;
         const REFRESH_LIMIT = 10; // Strict limit: 1 refresh per day
 
-        if (refreshesUsed >= REFRESH_LIMIT) {
+        if (!forceRefresh && refreshesUsed >= REFRESH_LIMIT) {
             this.showToast('Daily refresh limit reached (10/day)', 'info');
             this.updateRefreshButtonState();
             return;

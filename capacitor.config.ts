@@ -59,9 +59,9 @@ const config: CapacitorConfig = {
             debug: false
         },
 
-        // Native HTTP Stack
+        // Native HTTP Stack — DISABLED to prevent interference with WebView audio loading
         CapacitorHttp: {
-            enabled: true
+            enabled: false
         }
     }
 };

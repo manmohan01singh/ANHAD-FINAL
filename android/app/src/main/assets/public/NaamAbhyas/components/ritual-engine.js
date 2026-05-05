@@ -384,11 +384,20 @@ class RitualEngine {
         // Play session start sound
         this.playBeep('start');
 
-        // Auto-play Vaheguru Jaap in background during session
+        // Auto-play ambient Vaheguru Jaap in background during session
+        // This ensures consistent sound regardless of launch method (notification vs direct)
         if (this.app?.audioManager) {
-            this.app.audioManager.playAmbient(0.25).then(() => {
-                console.log('[RitualEngine] Vaheguru Jaap started');
-            }).catch(e => console.log('[RitualEngine] Vaheguru Jaap failed:', e));
+            // Initialize audio context if needed
+            if (this.app.audioManager.audioContext) {
+                this.app.audioManager.initAudioContext();
+            }
+            
+            // Play ambient sound with retry logic
+            this.playAmbientWithRetry(0.25, 3).then(() => {
+                console.log('[RitualEngine] ✅ Ambient sound started successfully');
+            }).catch(e => console.warn('[RitualEngine] ⚠️ Ambient sound failed after retries:', e));
+        } else {
+            console.warn('[RitualEngine] ⚠️ AudioManager not available for ambient sound');
         }
 
         // Vibrate if enabled
@@ -951,6 +960,35 @@ class RitualEngine {
         } catch (e) {
             console.log('[RitualEngine] Audio not available');
         }
+    }
+
+    /**
+     * Play ambient sound with retry logic for consistency
+     * @param {number} volume - Volume level
+     * @param {number} maxRetries - Maximum retry attempts
+     */
+    async playAmbientWithRetry(volume = 0.25, maxRetries = 3) {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const audio = await this.app.audioManager.playAmbient(volume);
+                if (audio) {
+                    console.log(`[RitualEngine] ✅ Ambient sound started on attempt ${attempt}`);
+                    return audio;
+                }
+            } catch (e) {
+                console.warn(`[RitualEngine] Ambient sound attempt ${attempt} failed:`, e);
+            }
+            
+            // Wait before retry (with progressive delay)
+            if (attempt < maxRetries) {
+                await new Promise(resolve => setTimeout(resolve, attempt * 200));
+            }
+        }
+        
+        // If all retries failed, try fallback beep
+        console.warn('[RitualEngine] All ambient sound attempts failed, using fallback');
+        this.playBeep('start');
+        return null;
     }
 
     /**

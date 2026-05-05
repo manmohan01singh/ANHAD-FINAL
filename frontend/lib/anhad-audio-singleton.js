@@ -412,16 +412,14 @@
     }
 
     if (window.Capacitor) {
-      // CAPACITOR: Use standard <audio> element.
-      // The stream-mp3 proxy converts WebM→MP3 on the server, so Android gets clean MP3.
-      // <video> was causing buffer allocation issues on some Android WebView versions.
+      // CAPACITOR: Use standard <audio> element with crossOrigin for CDN access.
       audio = document.createElement('audio');
-      audio.preload = 'metadata';
+      audio.preload = 'auto';
       audio.volume = 0.8;
+      audio.crossOrigin = 'anonymous';
 
-      // CAPACITOR DOM FIX: Append to DOM to force Android WebView to allocate a full-priority media buffer!
+      // DOM-attached element: forces Android WebView to allocate a media buffer
       audio.id = 'anhad-global-audio';
-      // Use visually hidden instead of display:none to prevent aggressive WebView throttling
       audio.style.position = 'absolute';
       audio.style.width = '1px';
       audio.style.height = '1px';
@@ -633,11 +631,12 @@
     emit('loading', { isLoading: true });
 
     // CAPACITOR FIX: DO NOT use #t= for Android WebView!
-    // We will seek manually via audio.currentTime.
     audio.src = trackUrl;
-    // CRITICAL: Call load() to force the media pipeline to reset and fetch the new source.
-    // Without this, Android WebView's MediaPlayer ignores src changes on reused elements.
-    try { audio.load(); } catch (e) { console.warn('[AnhadAudio] load() failed:', e.message); }
+    // On PWA: call load() to reset media pipeline for reused elements.
+    // On Capacitor: do NOT call load() — it jams Android's native MediaPlayer.
+    if (!window.Capacitor) {
+      try { audio.load(); } catch (e) {}
+    }
 
     console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (fromBeginning=${isFromBeginning})`);
 
@@ -817,14 +816,19 @@
 
     try {
       if (stream.type === 'live') {
-        // ── DARBAR LIVE: Cache-bust + force live edge ──
-        const baseUrl = (window.Capacitor && streamName === 'darbar') ? `${API_BASE}/api/darbar-live` : stream.url;
+        // ── DARBAR LIVE ──
+        // Capacitor: try SGPC directly (fastest, no Render middleman)
+        // Fallback: Render proxy for CORS/port compatibility
+        const baseUrl = (window.Capacitor && streamName === 'darbar')
+          ? SGPC_LIVE
+          : stream.url;
         const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
-        console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
+        console.log('[AnhadAudio] 🔴 LIVE: ' + freshUrl);
         audio.src = freshUrl;
-        // Force the media pipeline to reset and start loading the new source.
-        // CRITICAL for Capacitor: without load(), WebView ignores src changes.
-        try { audio.load(); } catch (e) {}
+        // PWA only: call load() to reset pipeline
+        if (!window.Capacitor) {
+          try { audio.load(); } catch (e) {}
+        }
         try {
           await audio.play();
         } catch (e) {

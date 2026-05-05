@@ -319,28 +319,13 @@
     <!-- Date Picker (hidden input) -->
     <input type="date" id="dateInput" class="hidden" aria-hidden="true">
 
-    <!-- Persistent Audio for Cross-Page Playback -->
+    <!-- Unified Audio System -->
     <script src="../lib/audio-preload.js"></script>
-  <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/audio-coordinator.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
     <script src="../lib/overlay-player.js"></script>
     
     <script src="../lib/smooth-navigation.js"></script>
-    
-    <!-- CRITICAL: Global Mini Player - Persistent audio across pages -->
-    <script src="../lib/global-mini-player.js"></script>
-    
-    <!-- DEBUG: Check GMP status -->
-    <script>
-    setTimeout(() => {
-        const gmp = document.getElementById('gmp');
-        const gmpCss = document.getElementById('gmp-css');
-        console.log('[DEBUG] GMP element:', gmp);
-        console.log('[DEBUG] GMP CSS loaded:', gmpCss);
-        console.log('[DEBUG] GMP classes:', gmp?.className);
-        console.log('[DEBUG] GlobalMiniPlayer API:', window.GlobalMiniPlayer);
-        console.log('[DEBUG] has gmp--visible:', gmp?.classList.contains('gmp--visible'));
-    }, 1000);
-    </script>
     
     
     <!-- Offline-First Hukamnama Cache -->
