@@ -87,9 +87,12 @@
       getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
         const filename = `day-${safeIndex}.webm`;
-        // Direct CDN URL for both PWA and Capacitor.
-        // Modern Android WebView (Chrome 90+) handles WebM seeking via currentTime.
-        // The server proxy was causing cold-start delays and ffmpeg timeouts on Render.
+        // Android WebView: WebM+Opus is NOT reliably supported by Android's MediaPlayer.
+        // Use server-side MP3 proxy which converts WebM→MP3 via ffmpeg.
+        if (window.Capacitor) {
+          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
+        }
+        // PWA: WebM plays fine in Chrome
         return `${CDN_BASE}/${filename}?v=2.1.4&t=${Date.now()}`;
       }
     },
@@ -631,12 +634,12 @@
     isLoading = true;
     emit('loading', { isLoading: true });
 
-    // CAPACITOR FIX: DO NOT use #t= for Android WebView! It causes infinite loading/stuttering loops
-    // because the native Android MediaPlayer fails to parse WebM HTTP fragments correctly.
+    // CAPACITOR FIX: DO NOT use #t= for Android WebView!
     // We will seek manually via audio.currentTime.
     audio.src = trackUrl;
-    // CAPACITOR BUGFIX: Do NOT call audio.load() here. Calling load() immediately after setting src
-    // on Android WebView resets the OS network buffer and permanently jams the MediaPlayer.
+    // CRITICAL: Call load() to force the media pipeline to reset and fetch the new source.
+    // Without this, Android WebView's MediaPlayer ignores src changes on reused elements.
+    try { audio.load(); } catch (e) { console.warn('[AnhadAudio] load() failed:', e.message); }
 
     console.log(`[AnhadAudio] 🎯 Virtual live: ${streamName} track ${currentTrackIndex + 1}/${stream.totalTracks} at ${Math.floor(requestedPosition)}s (fromBeginning=${isFromBeginning})`);
 
@@ -703,19 +706,37 @@
         return true;
       };
 
-      // UNIFIED PLAY PATH — Same logic for PWA and Capacitor
-      // Both use direct CDN URLs with client-side seeking via currentTime.
-      // Capacitor: brief mute→seek→unmute to avoid hearing 0:00 glitch during seek.
-      // PWA: seek directly at full volume (instant).
-      if (window.Capacitor && seekPos > 2) {
-        // Android: mute → play → seek → unmute
+      // ═══ PLAY PATH SELECTION ═══
+      // 1. stream-mp3: server already seeked via ffmpeg → just play, no client seek
+      // 2. Capacitor + seek needed: mute → play → seek → unmute
+      // 3. PWA / from-beginning: seek → play at full volume
+
+      const isServerPreSeeked = trackUrl.includes('/api/stream-mp3');
+
+      if (isServerPreSeeked) {
+        // Server already seeked — just play. Brief mute to hide initial buffer pop.
         audio.volume = 0;
         audio.play().then(() => {
           isPlaying = true;
           isLoading = false;
           emit('statechange', getPublicState());
-          
-          // Wait for the MediaPlayer to start before seeking
+          console.log(`[AnhadAudio] ▶️ stream-mp3: Playing (server seeked to ${Math.floor(requestedPosition)}s) (${reason})`);
+          setTimeout(() => { audio.volume = 0.8; }, 300);
+        }).catch(e => {
+          audio.volume = 0.8;
+          isPlaying = false;
+          isLoading = false;
+          emit('statechange', getPublicState());
+          console.warn('[AnhadAudio] ❌ Play failed:', e.message);
+        });
+      } else if (window.Capacitor && seekPos > 2) {
+        // Android direct CDN: mute → play → wait for MediaPlayer → seek → unmute
+        audio.volume = 0;
+        audio.play().then(() => {
+          isPlaying = true;
+          isLoading = false;
+          emit('statechange', getPublicState());
+
           const doCapacitorSeek = () => {
             performSeek(true);
             setTimeout(() => { audio.volume = 0.8; }, 150);
@@ -733,8 +754,10 @@
           emit('statechange', getPublicState());
           console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         });
+        // Safety: always restore volume after 5s no matter what
+        setTimeout(() => { if (audio && audio.volume < 0.1) audio.volume = 0.8; }, 5000);
       } else {
-        // PWA + Capacitor from-beginning: seek first, then play at full volume
+        // PWA + from-beginning: seek directly, play at full volume
         performSeek(false);
         audio.play().then(() => {
           isPlaying = true;
@@ -822,11 +845,9 @@
         const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
         console.log('[AnhadAudio] 🔴 LIVE: Fresh stream connection');
         audio.src = freshUrl;
-        // On mobile browsers, force the media element to reset its internal pipeline.
-        // On Android WebView this can be harmful, so only do it for non-Capacitor.
-        if (!window.Capacitor && typeof audio.load === 'function') {
-          try { audio.load(); } catch (e) {}
-        }
+        // Force the media pipeline to reset and start loading the new source.
+        // CRITICAL for Capacitor: without load(), WebView ignores src changes.
+        try { audio.load(); } catch (e) {}
         try {
           await audio.play();
         } catch (e) {
