@@ -363,7 +363,7 @@ app.use(express.json({ limit: '10kb' }));
 
 // CORS — allow localhost variants for development, env-controlled for production
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
-    'http://localhost:3000,http://127.0.0.1:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
+    'http://localhost:3000,http://127.0.0.1:3000,https://localhost,https://localhost:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
     .split(',').map(o => o.trim()).filter(Boolean);
 
 // For local dev, be permissive; production uses strict origin list
@@ -371,8 +371,10 @@ const IS_LOCAL_DEV = !process.env.ALLOWED_ORIGINS;
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
+    const requestedHeaders = req.headers['access-control-request-headers'];
+    const requestedMethod = req.headers['access-control-request-method'];
     
-    // Local dev: allow any localhost origin
+    // Local dev: allow any localhost origin (including https://localhost)
     if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
         res.setHeader('Access-Control-Allow-Origin', origin || '*');
         res.setHeader('Vary', 'Origin');
@@ -381,11 +383,14 @@ app.use((req, res, next) => {
         res.setHeader('Vary', 'Origin');
     }
     
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', requestedMethod || 'GET, POST, PUT, DELETE, OPTIONS');
+    // IMPORTANT: echo requested headers so preflight always passes (Capacitor/WebView can send extra headers)
+    res.setHeader('Access-Control-Allow-Headers', requestedHeaders || 'Content-Type, Range, Authorization');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     
-    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    if (req.method === 'OPTIONS') {
+        return res.status(204).end();
+    }
     next();
 });
 
