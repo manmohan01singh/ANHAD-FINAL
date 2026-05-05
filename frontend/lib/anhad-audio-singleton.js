@@ -152,6 +152,7 @@
   let stalledWatchTicks = 0;   // Consecutive stall ticks
   let foregroundServiceGraceUntil = 0; // CAPACITOR FIX: grace window after startForegroundService()
   let foregroundServiceActive = false;  // CAPACITOR FIX: prevents double-starting the foreground service
+  let capacitorWatchdogGraceUntil = 0; // CAPACITOR FIX: suppress watchdog for 2 minutes after play
   const listeners = new Map(); // event → Set<fn>
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -483,6 +484,10 @@
       // Set grace window BEFORE starting foreground service.
       // On Android, AudioService.start() grabs audio focus which fires a spurious 'pause'.
       foregroundServiceGraceUntil = Date.now() + 3000;
+      // CAPACITOR FIX: Suppress watchdog for 2 minutes after play() to avoid WebView false stalls
+      if (window.Capacitor) {
+        capacitorWatchdogGraceUntil = Date.now() + 120000; // 2 minutes
+      }
       if (!foregroundServiceActive) {
         foregroundServiceActive = true;
         startForegroundService();
@@ -1205,6 +1210,12 @@
       lastWatchTime = Number(audio.currentTime) || 0;
       return;
     }
+    // CAPACITOR FIX: Suppress watchdog for 2 minutes after play() to avoid WebView false stalls
+    if (window.Capacitor && Date.now() < capacitorWatchdogGraceUntil) {
+      stalledWatchTicks = 0;
+      lastWatchTime = Number(audio.currentTime) || 0;
+      return;
+    }
 
     const duration = Number(audio.duration);
     const currentTime = Number(audio.currentTime) || 0;
@@ -1231,8 +1242,10 @@
       stalledWatchTicks = 0;
     }
     lastWatchTime = currentTime;
+    // CAPACITOR FIX: Raise stall threshold to 6 ticks (90s) for WebView's longer buffering
+    const stallThreshold = window.Capacitor ? 6 : 3;
 
-    if (stalledWatchTicks >= 3) {
+    if (stalledWatchTicks >= stallThreshold) {
       stalledWatchTicks = 0;
       if (Date.now() < foregroundServiceGraceUntil) {
         console.log('[AnhadAudio] ⚡ Watchdog: stall ignored — within foreground service grace window');
@@ -1242,7 +1255,7 @@
         console.log('[AnhadAudio] ⚡ Watchdog: stall ignored — play() already in progress');
         return;
       }
-      console.warn('[AnhadAudio] 🔄 Playlist truly stalled 45s, re-syncing to live position...');
+      console.warn(`[AnhadAudio] 🔄 Playlist stalled ${stallThreshold * 15}s, re-syncing to live position...`);
       play(currentStream);
     }
   }, 15000);
