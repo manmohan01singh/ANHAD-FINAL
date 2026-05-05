@@ -412,11 +412,11 @@
     }
 
     if (window.Capacitor) {
-      // CAPACITOR: Use standard <audio> element with crossOrigin for CDN access.
+      // CAPACITOR: Standard <audio> element — NO crossOrigin (CORS not needed for playback,
+      // and SGPC/R2 CDN don't send Access-Control-Allow-Origin for https://localhost)
       audio = document.createElement('audio');
       audio.preload = 'auto';
       audio.volume = 0.8;
-      audio.crossOrigin = 'anonymous';
 
       // DOM-attached element: forces Android WebView to allocate a media buffer
       audio.id = 'anhad-global-audio';
