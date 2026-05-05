@@ -31,6 +31,7 @@
   const RESUME_THRESHOLD_MS = 30 * 60 * 1000; // 30 minutes
 
   const CDN_BASE = 'https://anhad-final.onrender.com/audio';
+  const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev'; // Direct R2 for Amritvela WebM
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
 
@@ -87,13 +88,10 @@
       getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
         const filename = `day-${safeIndex}.webm`;
-        // Android WebView: WebM+Opus is NOT reliably supported by Android's MediaPlayer.
-        // Use server-side MP3 proxy which converts WebM→MP3 via ffmpeg.
-        if (window.Capacitor) {
-          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
-        }
-        // PWA: WebM plays fine in Chrome
-        return `${CDN_BASE}/${filename}?v=2.1.4&t=${Date.now()}`;
+        // Capacitor: direct R2 CDN (no Render middleman = no cold starts)
+        // PWA: same-origin Render proxy (simpler, no CORS issues)
+        const base = window.Capacitor ? CDN_BASE_R2 : CDN_BASE;
+        return `${base}/${filename}?v=2.1.4&t=${Date.now()}`;
       }
     },
     simran: {
@@ -706,31 +704,11 @@
         return true;
       };
 
-      // ═══ PLAY PATH SELECTION ═══
-      // 1. stream-mp3: server already seeked via ffmpeg → just play, no client seek
-      // 2. Capacitor + seek needed: mute → play → seek → unmute
-      // 3. PWA / from-beginning: seek → play at full volume
+      // ═══ PLAY PATH ═══
+      // Capacitor with seek: mute → play → seek → unmute (avoids hearing 0:00 glitch)
+      // PWA / from-beginning: seek → play at full volume
 
-      const isServerPreSeeked = trackUrl.includes('/api/stream-mp3');
-
-      if (isServerPreSeeked) {
-        // Server already seeked — just play. Brief mute to hide initial buffer pop.
-        audio.volume = 0;
-        audio.play().then(() => {
-          isPlaying = true;
-          isLoading = false;
-          emit('statechange', getPublicState());
-          console.log(`[AnhadAudio] ▶️ stream-mp3: Playing (server seeked to ${Math.floor(requestedPosition)}s) (${reason})`);
-          setTimeout(() => { audio.volume = 0.8; }, 300);
-        }).catch(e => {
-          audio.volume = 0.8;
-          isPlaying = false;
-          isLoading = false;
-          emit('statechange', getPublicState());
-          console.warn('[AnhadAudio] ❌ Play failed:', e.message);
-        });
-      } else if (window.Capacitor && seekPos > 2) {
-        // Android direct CDN: mute → play → wait for MediaPlayer → seek → unmute
+      if (window.Capacitor && seekPos > 2) {
         audio.volume = 0;
         audio.play().then(() => {
           isPlaying = true;
@@ -754,10 +732,9 @@
           emit('statechange', getPublicState());
           console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         });
-        // Safety: always restore volume after 5s no matter what
+        // Safety: always restore volume after 5s
         setTimeout(() => { if (audio && audio.volume < 0.1) audio.volume = 0.8; }, 5000);
       } else {
-        // PWA + from-beginning: seek directly, play at full volume
         performSeek(false);
         audio.play().then(() => {
           isPlaying = true;
