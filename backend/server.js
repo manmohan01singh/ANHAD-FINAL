@@ -207,29 +207,33 @@ class BroadcastEngine {
         return total;
     }
 
-    // CRITICAL FIX: cycle uses FIXED total so shuffle never jumps when durations are learned
+    // CRITICAL FIX: Both cycle AND position use FIXED total so server matches client exactly.
+    // Previously positionInPlaylist used learnedTotal which diverged from client's fixedTotal,
+    // causing tracks to start from random intervals.
     getCurrentLivePosition() {
         const now = Date.now();
         const elapsedSeconds = (now - this.epoch) / 1000;
         const fixedTotal = this.playlist.length * CONFIG.DEFAULT_TRACK_DURATION;
         const cycle = Math.floor(elapsedSeconds / fixedTotal);
-        const learnedTotal = this.getTotalPlaylistDuration();
-        const positionInPlaylist = ((elapsedSeconds % learnedTotal) + learnedTotal) % learnedTotal;
+        const positionInPlaylist = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
         this.regenerateShuffleOrder(cycle);
         let accumulated = 0;
+        // CRITICAL: Loop MUST use the same fixed duration per track as the modulo above.
+        // If we used learned durations here but fixedTotal above, the accumulated sum
+        // could be less than positionInPlaylist, causing the loop to fall through.
+        const perTrackDuration = CONFIG.DEFAULT_TRACK_DURATION; // 3600s
         for (let i = 0; i < this.playlist.length; i++) {
             const actualTrackIndex = this.shuffleOrder[i];
-            const trackDuration = this.getTrackDuration(actualTrackIndex);
-            if (accumulated + trackDuration > positionInPlaylist) {
+            if (accumulated + perTrackDuration > positionInPlaylist) {
                 return {
                     trackIndex: actualTrackIndex, shufflePosition: i,
                     trackPosition: Math.max(0, positionInPlaylist - accumulated),
-                    totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle
+                    totalElapsed: elapsedSeconds, playlistDuration: fixedTotal, playlistCycle: cycle
                 };
             }
-            accumulated += trackDuration;
+            accumulated += perTrackDuration;
         }
-        return { trackIndex: this.shuffleOrder[0] || 0, shufflePosition: 0, trackPosition: 0, totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle };
+        return { trackIndex: this.shuffleOrder[0] || 0, shufflePosition: 0, trackPosition: 0, totalElapsed: elapsedSeconds, playlistDuration: fixedTotal, playlistCycle: cycle };
     }
 
     reportDuration(trackIndex, duration) {
@@ -1323,6 +1327,51 @@ app.get('/api/stream-mp3', async (req, res) => {
     req.on('close', () => {
         try { command.kill('SIGKILL'); } catch (e) {}
     });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// DARBAR SAHIB LIVE PROXY — Android WebView stabilization
+// ═══════════════════════════════════════════════════════════════════
+
+app.get('/api/darbar-live', async (req, res) => {
+    // Proxy SGPC live stream through our domain.
+    // Some Android WebView media stacks behave poorly with the original URL format/port.
+    const upstreamUrl = 'https://live.sgpc.net:8443/;nocache=1';
+
+    try {
+        const upstream = await fetch(upstreamUrl, {
+            headers: {
+                // Avoid intermediary caching.
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                // Pass through user agent for compatibility.
+                'User-Agent': req.headers['user-agent'] || 'ANHAD'
+            }
+        });
+
+        if (!upstream.ok) {
+            console.error(`[DarbarProxy] Upstream error: ${upstream.status}`);
+            return res.status(upstream.status).json({ error: 'Upstream live stream unavailable' });
+        }
+
+        res.setHeader('Content-Type', upstream.headers.get('content-type') || 'audio/mpeg');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+
+        const stream = Readable.fromWeb(upstream.body);
+        stream.pipe(res);
+
+        stream.on('error', (err) => console.error('[DarbarProxy] Stream error:', err.message));
+        res.on('close', () => stream.destroy());
+    } catch (e) {
+        console.error('[DarbarProxy] Error:', e.message);
+        res.status(500).json({ error: 'Darbar proxy error' });
+    }
 });
 
 // ═══════════════════════════════════════════════════════════════════
