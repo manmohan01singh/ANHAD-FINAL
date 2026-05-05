@@ -87,11 +87,9 @@
       getTrackUrl(index, position = 0) {
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
         const filename = `day-${safeIndex}.webm`;
-        // Android: ALWAYS use server-side MP3 proxy — WebM is not reliably playable on Android WebView
-        if (window.Capacitor) {
-          return `${API_BASE}/api/stream-mp3?file=${filename}&start=${Math.floor(position)}`;
-        }
-        // PWA: direct CDN works fine
+        // Direct CDN URL for both PWA and Capacitor.
+        // Modern Android WebView (Chrome 90+) handles WebM seeking via currentTime.
+        // The server proxy was causing cold-start delays and ffmpeg timeouts on Render.
         return `${CDN_BASE}/${filename}?v=2.1.4&t=${Date.now()}`;
       }
     },
@@ -123,14 +121,10 @@
         ];
         const safeIndex = ((index % this.totalTracks) + this.totalTracks) % this.totalTracks;
         const filename = simranTracks[safeIndex];
-        // Android: ALWAYS use server-side MP3 proxy — VBR MP3 seeking is unreliable on Android WebView
-        if (window.Capacitor) {
-          return `${API_BASE}/api/stream-mp3?file=${encodeURIComponent(filename)}&start=${Math.floor(position)}`;
-        }
-        // PWA: direct CDN works fine
-        const directUrl = `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?t=${Date.now()}`;
-        console.log('[AnhadAudio] Simran direct CDN URL:', directUrl);
-        return directUrl;
+        // Direct CDN URL for both PWA and Capacitor.
+        // Simran tracks are MP3 — natively supported on all platforms.
+        // Seeking done via audio.currentTime after loadedmetadata.
+        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?t=${Date.now()}`;
       }
     }
   };
@@ -263,7 +257,11 @@
   }
 
   /**
-   * Virtual-live position using persisted server epoch + shuffled playlist (offline / API fallback).
+   * Virtual-live position (offline fallback).
+   * Mirrors server's getCurrentLivePosition() exactly:
+   *  - Cycle uses fixedTotal (shuffle stability)
+   *  - Position uses learnedTotal (actual durations, no dead zones)
+   *  - Server-synced durations from localStorage cache
    */
   function computeVirtualLivePosition(streamName) {
     const stream = STREAMS[streamName];
@@ -271,25 +269,36 @@
     const epoch = getBroadcastEpoch(streamName) || 1704067200000;
     const defaultDur = stream?.defaultTrackDuration || 3600;
 
-    // CRITICAL: Both modulo AND accumulation use fixed duration per track.
-    // This ensures client and server ALWAYS agree on which track is playing.
+    const getDur = (index) => getCachedTrackDuration(streamName, index);
+
     const fixedTotal = totalTracks * defaultDur;
+    const learnedTotal = (() => {
+      let t = 0;
+      for (let i = 0; i < totalTracks; i++) t += getDur(i);
+      return t > 0 ? t : fixedTotal;
+    })();
 
     const elapsedSeconds = (Date.now() - epoch) / 1000;
+
+    // Cycle uses fixedTotal for shuffle stability (matches server)
     const cycle = Math.floor(elapsedSeconds / fixedTotal);
-    const positionInPlaylist = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
     const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
+
+    // Position uses learnedTotal — wraps to prevent dead zones (matches server)
+    const rawPosition = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
+    const positionInPlaylist = rawPosition % learnedTotal;
 
     let accumulated = 0;
     for (let i = 0; i < totalTracks; i += 1) {
       const actualTrackIndex = shuffleOrder[i];
-      if (accumulated + defaultDur > positionInPlaylist) {
+      const trackDuration = getDur(actualTrackIndex);
+      if (accumulated + trackDuration > positionInPlaylist) {
         return {
           trackIndex: actualTrackIndex,
           position: Math.max(0, positionInPlaylist - accumulated)
         };
       }
-      accumulated += defaultDur;
+      accumulated += trackDuration;
     }
     return { trackIndex: shuffleOrder[0] || 0, position: 0 };
   }
@@ -608,6 +617,7 @@
     const requestedPosition = Math.max(0, Number(pos.position) || 0);
     const isFromBeginning = requestedPosition < 2; // Track transition = start from 0
 
+
     // ── WATCHDOG GRACE: Suppress stall detection for 45s after every new load ──
     // This prevents the watchdog from triggering during CDN buffering / seek latency.
     lastLoadedAt = Date.now();
@@ -660,6 +670,7 @@
       const realDur = Number.isFinite(loadedDuration) && loadedDuration > 60 ? loadedDuration : null;
       let seekPos = requestedPosition;
 
+      // Safety clamp: if position somehow exceeds real duration, cap it
       if (realDur && seekPos >= realDur - 2) {
         seekPos = Math.max(0, realDur - 5);
         console.log(`[AnhadAudio] ⚡ Clamping ${Math.floor(requestedPosition)}s → ${Math.floor(seekPos)}s (track duration=${Math.floor(realDur)}s)`);
@@ -692,72 +703,51 @@
         return true;
       };
 
-      // If Capacitor already got a pre-seeked stream, don't seek again
-      if (window.Capacitor && trackUrl.includes('/api/stream-mp3')) {
+      // UNIFIED PLAY PATH — Same logic for PWA and Capacitor
+      // Both use direct CDN URLs with client-side seeking via currentTime.
+      // Capacitor: brief mute→seek→unmute to avoid hearing 0:00 glitch during seek.
+      // PWA: seek directly at full volume (instant).
+      if (window.Capacitor && seekPos > 2) {
+        // Android: mute → play → seek → unmute
         audio.volume = 0;
         audio.play().then(() => {
           isPlaying = true;
           isLoading = false;
           emit('statechange', getPublicState());
-          console.log(`[AnhadAudio] ▶️ Capacitor stream-mp3: Playing (server pre-seeked to ${Math.floor(requestedPosition)}s)`);
-          setTimeout(() => { audio.volume = 0.8; }, 300);
+          
+          // Wait for the MediaPlayer to start before seeking
+          const doCapacitorSeek = () => {
+            performSeek(true);
+            setTimeout(() => { audio.volume = 0.8; }, 150);
+            console.log(`[AnhadAudio] ▶️ Capacitor: Seeked to ${Math.floor(seekPos)}s (${reason})`);
+          };
+          if (audio.readyState >= 2) {
+            doCapacitorSeek();
+          } else {
+            audio.addEventListener('playing', doCapacitorSeek, { once: true });
+          }
         }).catch(e => {
           audio.volume = 0.8;
           isPlaying = false;
           isLoading = false;
           emit('statechange', getPublicState());
-          console.warn('[AnhadAudio] Play failed:', e.message);
+          console.warn('[AnhadAudio] ❌ Play failed:', e.message);
         });
-        return; // Server already seeked, no currentTime manipulation needed
-      }
-
-      // PWA: seek directly before play — browser handles seeks fine, no mute hack needed.
-      // The mute→play→seek→unmute dance was designed for Android's MediaPlayer which
-      // can't handle pre-play seeks, but on PWA it causes volume to get stuck at 0.
-      if (!window.Capacitor) {
+      } else {
+        // PWA + Capacitor from-beginning: seek first, then play at full volume
         performSeek(false);
         audio.play().then(() => {
           isPlaying = true;
           isLoading = false;
           emit('statechange', getPublicState());
-          console.log(`[AnhadAudio] ▶️ PWA: Playing from ${Math.floor(audio.currentTime)}s (${reason})`);
+          console.log(`[AnhadAudio] ▶️ Playing from ${Math.floor(audio.currentTime)}s (${reason})`);
         }).catch(e => {
           console.warn('[AnhadAudio] ❌ Play failed:', e.message);
           isPlaying = false;
           isLoading = false;
           emit('statechange', getPublicState());
         });
-        return;
       }
-
-      // CAPACITOR ONLY: mute → play → seek → unmute to prevent hearing 0:00 glitch
-      audio.volume = 0;
-      audio.play().then(() => {
-        isPlaying = true;
-        isLoading = false;
-        emit('statechange', getPublicState());
-        
-        // Wait for the MediaPlayer to physically start pumping audio bytes
-        audio.addEventListener('playing', () => {
-          if (seekPos > 2) {
-            console.log(`[AnhadAudio] ⏳ MediaPlayer is now pumping bytes, executing safe seek...`);
-            performSeek(true);
-            
-            // Restore volume after a tiny delay to allow buffer to jump
-            setTimeout(() => { audio.volume = 0.8; }, 100);
-          } else {
-            audio.volume = 0.8;
-          }
-        }, { once: true });
-        
-        console.log(`[AnhadAudio] ▶️ Capacitor: Play promise resolved, waiting for native playing event... (${reason})`);
-      }).catch(e => {
-        audio.volume = 0.8;
-        console.warn('[AnhadAudio] ❌ Play failed:', e.message);
-        isPlaying = false;
-        isLoading = false;
-        emit('statechange', getPublicState());
-      });
     };
 
     // ── Wait for loadedmetadata: guarantees audio.duration is finite ──

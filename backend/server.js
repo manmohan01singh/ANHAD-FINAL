@@ -207,33 +207,43 @@ class BroadcastEngine {
         return total;
     }
 
-    // CRITICAL FIX: Both cycle AND position use FIXED total so server matches client exactly.
-    // Previously positionInPlaylist used learnedTotal which diverged from client's fixedTotal,
-    // causing tracks to start from random intervals.
+    /**
+     * VIRTUAL LIVE POSITION — Deterministic mapping from wallclock time to track+position
+     * 
+     * Design:
+     * - Cycle (shuffle order) uses FIXED total for stability (shuffle never jumps)
+     * - Position within cycle uses LEARNED (actual) durations so position never
+     *   exceeds a track's real length (eliminates dead zones)
+     * - When rawPosition > learnedTotal, wraps back into content range
+     */
     getCurrentLivePosition() {
         const now = Date.now();
         const elapsedSeconds = (now - this.epoch) / 1000;
         const fixedTotal = this.playlist.length * CONFIG.DEFAULT_TRACK_DURATION;
+        const learnedTotal = this.getTotalPlaylistDuration();
+
+        // Cycle uses fixedTotal for shuffle stability
         const cycle = Math.floor(elapsedSeconds / fixedTotal);
-        const positionInPlaylist = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
         this.regenerateShuffleOrder(cycle);
+
+        // Position uses learnedTotal (actual durations) — wraps to prevent dead zones
+        const rawPosition = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
+        const positionInPlaylist = rawPosition % learnedTotal;
+
         let accumulated = 0;
-        // CRITICAL: Loop MUST use the same fixed duration per track as the modulo above.
-        // If we used learned durations here but fixedTotal above, the accumulated sum
-        // could be less than positionInPlaylist, causing the loop to fall through.
-        const perTrackDuration = CONFIG.DEFAULT_TRACK_DURATION; // 3600s
         for (let i = 0; i < this.playlist.length; i++) {
             const actualTrackIndex = this.shuffleOrder[i];
-            if (accumulated + perTrackDuration > positionInPlaylist) {
+            const trackDuration = this.getTrackDuration(actualTrackIndex);
+            if (accumulated + trackDuration > positionInPlaylist) {
                 return {
                     trackIndex: actualTrackIndex, shufflePosition: i,
                     trackPosition: Math.max(0, positionInPlaylist - accumulated),
-                    totalElapsed: elapsedSeconds, playlistDuration: fixedTotal, playlistCycle: cycle
+                    totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle
                 };
             }
-            accumulated += perTrackDuration;
+            accumulated += trackDuration;
         }
-        return { trackIndex: this.shuffleOrder[0] || 0, shufflePosition: 0, trackPosition: 0, totalElapsed: elapsedSeconds, playlistDuration: fixedTotal, playlistCycle: cycle };
+        return { trackIndex: this.shuffleOrder[0] || 0, shufflePosition: 0, trackPosition: 0, totalElapsed: elapsedSeconds, playlistDuration: learnedTotal, playlistCycle: cycle };
     }
 
     reportDuration(trackIndex, duration) {
