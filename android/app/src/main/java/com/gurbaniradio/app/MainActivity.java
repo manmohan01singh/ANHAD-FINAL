@@ -20,10 +20,10 @@ public class MainActivity extends BridgeActivity {
             if (command != null) {
                 Log.d(TAG, "Received media command from service: " + command);
                 String jsStr = "";
+                // Only handle PAUSE/STOP from native service; ignore PLAY to prevent reset loop
+                // JS already plays via user interaction; native PLAY just updates UI state
                 if (command.equals("PAUSE") || command.equals("STOP")) {
                     jsStr = "if(window.AnhadAudio) { window.AnhadAudio.pause(); }";
-                } else if (command.equals("PLAY")) {
-                    jsStr = "if(window.AnhadAudio) { window.AnhadAudio.play(); }";
                 }
                 
                 final String finalJs = jsStr;

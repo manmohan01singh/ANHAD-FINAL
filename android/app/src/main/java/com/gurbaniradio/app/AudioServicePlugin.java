@@ -65,9 +65,23 @@ public class AudioServicePlugin extends Plugin {
         call.resolve();
     }
 
+    private long lastPlayTime = 0;
+    private static final long PLAY_DEBOUNCE_MS = 2000;
+
     @PluginMethod
     public void updateState(PluginCall call) {
         String action = call.getString("action", "PLAY");
+        long now = System.currentTimeMillis();
+
+        // Debounce rapid PLAY commands to prevent 1.5s reset loop
+        if ("PLAY".equals(action) && (now - lastPlayTime < PLAY_DEBOUNCE_MS)) {
+            System.out.println("[AudioService] Debouncing PLAY command, last=" + (now - lastPlayTime) + "ms ago");
+            call.resolve();
+            return;
+        }
+
+        lastPlayTime = now;
+
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.setAction(action.equals("PLAY") ? AudioForegroundService.ACTION_PLAY : AudioForegroundService.ACTION_PAUSE);
 
