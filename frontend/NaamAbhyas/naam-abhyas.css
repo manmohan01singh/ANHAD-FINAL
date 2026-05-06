@@ -2841,4 +2841,259 @@ button {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
+}/* -------------------------------------------------------------------------
+   PREMIUM OVERHAUL: MEDITATION & MODALS
+   ------------------------------------------------------------------------- */
+
+/* Duration Premium Control */
+.duration-control-premium {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
 }
+.duration-presets {
+    display: flex;
+    gap: 8px;
+}
+.preset-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 148, 58, 0.2);
+    background: rgba(255, 255, 255, 0.5);
+    color: #8B6914;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.preset-btn.active {
+    background: #D4943A;
+    color: white;
+    border-color: #D4943A;
+    box-shadow: 0 4px 12px rgba(212, 148, 58, 0.3);
+}
+.duration-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 14px;
+    padding: 4px 16px;
+    border: 1px solid rgba(212, 148, 58, 0.15);
+}
+.duration-num-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #D4943A;
+    outline: none;
+}
+.duration-unit {
+    color: #8B6914;
+    font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Immersive Meditation SVG Progress */
+.meditation-cosmos {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.med-progress-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.med-progress-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 8;
+}
+.med-progress-ring {
+    fill: none;
+    stroke: #D4943A;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 534;
+    stroke-dashoffset: 534;
+    transition: stroke-dashoffset 1s linear;
+    filter: drop-shadow(0 0 12px rgba(212, 148, 58, 0.6));
+}
+.med-center-content {
+    text-align: center;
+    z-index: 2;
+    animation: medPulse 4s ease-in-out infinite;
+}
+@keyframes medPulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.meditation-controls-v2 {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+.timer-display-v2 {
+    font-size: 4.5rem;
+    font-weight: 200;
+    color: white;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.med-action-row {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+.med-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 20px;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.med-btn:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.2); }
+.med-btn-present { background: rgba(212, 148, 58, 0.3); border: 1.5px solid rgba(212, 148, 58, 0.4); }
+.med-btn .btn-icon { font-size: 1.5rem; }
+.med-btn .btn-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9; }
+
+.med-skip-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 12px;
+    cursor: pointer;
+}
+
+/* iOS Style Alert Card */
+.alert-ios-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    width: 92%;
+    max-width: 380px;
+    border-radius: 32px;
+    padding: 24px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    animation: iosPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+@keyframes iosPop {
+    0% { transform: scale(0.8) translateY(40px); opacity: 0; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.alert-header-ios {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+.alert-icon-ios {
+    width: 48px;
+    height: 48px;
+    background: #D4943A;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 10px 20px rgba(212, 148, 58, 0.2);
+}
+.alert-info-ios { flex: 1; }
+.alert-category { font-size: 0.7rem; font-weight: 800; color: #8B6914; opacity: 0.6; letter-spacing: 1px; }
+.alert-title-ios { font-size: 1.3rem; font-weight: 700; color: #1C1C1E; margin: 0; }
+.alert-time-chip { background: rgba(212, 148, 58, 0.1); color: #D4943A; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; }
+
+.alert-body-ios { margin-bottom: 24px; }
+.alert-body-ios p { font-size: 1.1rem; line-height: 1.5; color: #3A3A3C; margin: 0; font-weight: 500; font-style: italic; }
+
+.alert-footer-ios { display: flex; flex-direction: column; gap: 10px; }
+.alert-btn-ios {
+    padding: 16px;
+    border-radius: 18px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.alert-btn-ready { background: #D4943A; color: white; box-shadow: 0 10px 25px rgba(212, 148, 58, 0.3); }
+.alert-btn-row-ios { display: flex; gap: 10px; }
+.alert-btn-silent, .alert-btn-skip { flex: 1; background: rgba(0, 0, 0, 0.05); color: #1C1C1E; }
+.alert-btn-ios:active { transform: scale(0.96); opacity: 0.8; }
+
+/* Completion Card iOS */
+.completion-card-ios {
+    background: white;
+    width: 90%;
+    max-width: 360px;
+    border-radius: 36px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.2);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+.comp-icon-ios { font-size: 3.5rem; margin-bottom: 16px; }
+.comp-title-ios { font-size: 1.8rem; font-weight: 800; color: #1C1C1E; margin: 0 0 8px; }
+.comp-blessing-ios { font-size: 1rem; color: #8E8E93; margin-bottom: 32px; line-height: 1.4; }
+
+.comp-stats-row-ios {
+    display: flex;
+    justify-content: space-around;
+    background: #F2F2F7;
+    padding: 20px;
+    border-radius: 24px;
+    margin-bottom: 32px;
+}
+.comp-stat-ios { display: flex; flex-direction: column; gap: 4px; }
+.comp-stat-ios .stat-val { font-size: 1.2rem; font-weight: 800; color: #D4943A; }
+.comp-stat-ios .stat-lbl { font-size: 0.7rem; font-weight: 600; color: #8E8E93; text-transform: uppercase; }
+
+.comp-continue-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 20px;
+    border: none;
+    background: #1C1C1E;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Dark Mode Adjustments */
+.dark-mode .alert-ios-card { background: rgba(28, 28, 30, 0.85); border-color: rgba(255, 255, 255, 0.1); }
+.dark-mode .alert-title-ios { color: white; }
+.dark-mode .alert-body-ios p { color: #D1D1D6; }
+.dark-mode .alert-btn-silent, .dark-mode .alert-btn-skip { background: rgba(255, 255, 255, 0.1); color: white; }
+.dark-mode .completion-card-ios { background: #1C1C1E; border-color: rgba(255, 255, 255, 0.1); }
+.dark-mode .comp-title-ios { color: white; }
+.dark-mode .comp-stats-row-ios { background: rgba(255, 255, 255, 0.05); }
+.dark-mode .comp-continue-btn { background: #D4943A; color: white; }
+.dark-mode .duration-input-wrapper { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }

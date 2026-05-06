@@ -1,6 +1,6 @@
 {
-  "name": "ANHAD - ਅਨਹਦ",
-  "short_name": "ANHAD",
+  "name": "Anhad",
+  "short_name": "Anhad",
   "description": "Divine Gurbani Experience - 24/7 Kirtan streaming with reminders",
   "start_url": "./index.html",
   "scope": "./",

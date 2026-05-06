@@ -647,7 +647,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ॥ Wake up for Amrit Vela meditation',
       hour: 4,
       minute: 0,
-      icon: '/assets/icon-192x192.png'
+      icon: '/assets/Darbar-sahib-AMRITVELA.webp'
     },
     {
       id: 'hukamnama',
@@ -679,7 +679,7 @@ async function checkAndFireScheduledNotifications() {
       body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
       hour: 17,
       minute: 0,
-      icon: '/assets/icon-192x192.png'
+      icon: '/assets/Darbar-sahib-AMRITVELA.webp'
     },
     {
       id: 'sohila',

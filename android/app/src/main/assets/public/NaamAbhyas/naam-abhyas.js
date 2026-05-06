@@ -272,7 +272,6 @@ class NaamAbhyas {
             console.log('🙏 Initializing Naam Abhyas...');
 
             // Phase 1: CRITICAL PATH - Must complete fast
-            // These must happen before hiding loading screen
             try {
                 this.config = this.loadConfig();
                 this.history = this.loadHistory();
@@ -302,30 +301,27 @@ class NaamAbhyas {
                 console.error('❌ UI update failed:', e);
             }
 
-            // Load initial UI state (toggle, duration, theme, etc.)
+            // Load initial UI state
             try {
                 this.loadInitialState();
             } catch (e) {
                 console.error('❌ Initial state loading failed:', e);
             }
 
-            // Bind event listeners IMMEDIATELY (Critical Phase 1)
+            // Bind event listeners IMMEDIATELY
             try {
                 this.bindEvents();
             } catch (e) {
                 console.error('❌ Event binding failed:', e);
             }
 
-            // ═══ FIX BUG 5: Initialize NotificationEngine BEFORE scheduling ═══
-            // Must happen on critical path so it's available when enable() or
-            // scheduleUpcomingNotifications() is called
+            // Notification Engine init
             try {
                 if (typeof NotificationEngine !== 'undefined') {
                     this.notificationEngine = new NotificationEngine();
-                    console.log('🔔 NotificationEngine initialized (critical path)');
                 }
             } catch (e) {
-                console.error('❌ NotificationEngine critical init failed:', e);
+                console.error('❌ NotificationEngine init failed:', e);
             }
 
             // If already enabled, start countdown and schedule notifications
@@ -333,105 +329,31 @@ class NaamAbhyas {
                 try {
                     this.startCountdownUpdates();
                     this.scheduleUpcomingNotifications();
-                    this.scheduleHourlyRefresh();
                 } catch (e) {
                     console.error('❌ Failed to start enabled state features:', e);
                 }
             }
 
+            // HIDE LOADING SCREEN NOW
             this.hideLoadingScreen();
             this.isInitialized = true;
             console.log('✅ Naam Abhyas core initialized');
 
-            // ═══ CAPTURE AUTO-START: from URL params OR localStorage cold-start bridge ═══
-            this._capturedAutoStartParams = null;
-            try {
-                // Method 1: URL parameters (warm start — JS listener navigated here)
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('autoStart') === 'true') {
-                    this._capturedAutoStartParams = {
-                        autoStart: true,
-                        hour: urlParams.get('hour'),
-                        minute: urlParams.get('minute')
-                    };
-                    console.log('[NaamAbhyas] 🚀 Auto-start from URL params:', this._capturedAutoStartParams);
-                    window.history.replaceState({}, '', window.location.pathname);
-                }
-                
-                // Method 2: localStorage bridge (cold start — notification clicked while app was killed)
-                if (!this._capturedAutoStartParams) {
-                    const pendingLaunch = JSON.parse(localStorage.getItem('anhad_pending_naam_launch') || 'null');
-                    if (pendingLaunch && pendingLaunch.autoStart && (Date.now() - pendingLaunch.timestamp) < 30000) {
-                        this._capturedAutoStartParams = {
-                            autoStart: true,
-                            hour: pendingLaunch.hour,
-                            minute: pendingLaunch.minute
-                        };
-                        console.log('[NaamAbhyas] 🚀 Auto-start from cold-start bridge:', this._capturedAutoStartParams);
-                    }
-                    // Always clean up the bridge flag
-                    localStorage.removeItem('anhad_pending_naam_launch');
-                }
-            } catch (e) {
-                console.error('[NaamAbhyas] Failed to capture auto-start params:', e);
-            }
-
             // Phase 2: DEFERRED - Non-critical operations
-            // Use requestIdleCallback or setTimeout to defer heavy work
             const initDeferred = () => {
                 console.log('🔄 Running deferred initialization...');
 
-                // Initialize components
                 try {
-                    this.initializeComponents();
-                } catch (e) {
-                    console.error('❌ Component initialization failed:', e);
-                }
-
-
-
-                // Initialize engines
-                try {
+                    this.initializeComponents(); // Now includes RitualEngine
                     this.scheduleManager = new ScheduleManager(this);
-                    
-                    // GuaranteedAlarmSystem is an object, not a constructor
-                    if (window.GuaranteedAlarmSystem) {
-                        this.guaranteedAlarmSystem = window.GuaranteedAlarmSystem;
-                        if (typeof this.guaranteedAlarmSystem.init === 'function') {
-                            this.guaranteedAlarmSystem.init();
-                        }
-                    }
                 } catch (e) {
-                    console.error('❌ Engine initialization failed:', e);
+                    console.error('❌ Deferred initialization failed:', e);
                 }
 
-                // Setup Service Worker listener
-                try {
-                    this.setupServiceWorkerListener();
-                } catch (e) {
-                    console.log('Service Worker listener not available:', e);
-                }
-
-                // Register periodic background sync if already enabled
-                if (this.config.enabled) {
-                    try {
-                        this.registerPeriodicBackgroundSync();
-                    } catch (e) {
-                        console.error('❌ Failed to register periodic sync:', e);
-                    }
-                }
-
-                // ═══ BUG 7 FIX: Execute auto-start using params captured on critical path ═══
-                // By this point ritualEngine is initialized, so we can safely trigger
                 this.executeAutoStart();
-
-                // ═══ ENHANCED: Check for missed sessions while app was closed ═══
                 this.checkForMissedSessions();
-
-                console.log('✅ Deferred initialization complete');
             };
 
-            // Defer by 100ms to let browser paint
             if ('requestIdleCallback' in window) {
                 requestIdleCallback(initDeferred, { timeout: 500 });
             } else {
@@ -662,140 +584,105 @@ class NaamAbhyas {
         const toggle = document.getElementById('naamAbhyasToggle');
         if (toggle) {
             toggle.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    this.enable();
-                } else {
-                    this.disable();
-                }
+                if (e.target.checked) this.enable();
+                else this.disable();
             });
         }
 
-        // Theme selection handled by ThemeEngine
-
-        // Duration options - toggle selected class on parent labels
-        const durationOptions = document.querySelectorAll('input[name="duration"]');
-        durationOptions.forEach(option => {
-            option.addEventListener('change', (e) => {
-                // Remove selected from all duration labels
-                document.querySelectorAll('#durationOptions .radio-option').forEach(lbl => lbl.classList.remove('selected'));
-                // Add selected to the changed input's parent label
-                const parentLabel = e.target.closest('.radio-option');
-                if (parentLabel) parentLabel.classList.add('selected');
-
-                this.config.duration = parseInt(e.target.value);
+        // ─── Duration: custom number input + preset buttons ───────────────────
+        const durationInput = document.getElementById('durationCustomInput');
+        if (durationInput) {
+            durationInput.addEventListener('change', (e) => {
+                let val = parseInt(e.target.value);
+                if (val < 2) val = 2;
+                if (val > 60) val = 60;
+                e.target.value = val;
+                this.config.duration = val;
                 this.saveConfig();
-
-                // ═══ FIX BUG 3: Force schedule regeneration on duration change ═══
-                // Don't use regenerateSchedule() — it has a 1/day refresh limit.
-                // Instead, delete today's cached schedule and call generateDailySchedule()
-                // which already has proper duration-change detection logic.
-                const today = this.getTodayString();
-                if (this.history.scheduleHistory && this.history.scheduleHistory[today]) {
-                    // Mark the old duration so generateDailySchedule detects the change
-                    this.history.scheduleHistory[today]._duration = -1; // Force mismatch
-                    this.saveHistory();
-                }
-                this.generateDailySchedule();
-
-                // Re-schedule notifications for the new times
-                if (this.config.enabled) {
-                    this.scheduleUpcomingNotifications();
-                }
-
+                this.regenerateSchedule(true);
                 this.updateUI();
-                this.showToast(`Duration set to ${this.config.duration} minutes`, 'success');
+                this._updateActivePreset(val);
+            });
+        }
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mins = parseInt(btn.dataset.min);
+                if (durationInput) durationInput.value = mins;
+                this.config.duration = mins;
+                this.saveConfig();
+                this.regenerateSchedule(true);
+                this.updateUI();
+                this._updateActivePreset(mins);
+                this.showToast(`Duration: ${mins}m`, 'success');
             });
         });
 
-        // Active hours
-        const startHour = document.getElementById('activeHoursStart');
-        const endHour = document.getElementById('activeHoursEnd');
-
-        if (startHour) {
-            startHour.addEventListener('change', (e) => {
-                this.config.activeHours.start = parseInt(e.target.value);
-                this.saveConfig();
-                // Force refresh to bypass daily limit when active hours change
-                this.regenerateSchedule(true);
-                // Reschedule notifications with new times
-                if (this.config.enabled && this.notificationEngine) {
-                    this.scheduleUpcomingNotifications();
-                    // Force refresh Capacitor notifications with new schedule
-                    if (this.notificationEngine.forceRefreshCapacitorNotifications) {
-                        this.notificationEngine.forceRefreshCapacitorNotifications(this.config);
-                    }
+        // ─── Quick Action Cards ──────────────────────────────────────────────
+        const startNowBtn = document.getElementById('startNowBtn');
+        if (startNowBtn) {
+            startNowBtn.addEventListener('click', () => {
+                if (this.ritualEngine) {
+                    this.ritualEngine.triggerManualSession(this.config.duration || 2, false);
+                } else {
+                    this.startMeditation(this.config.duration || 2);
                 }
-                this.showToast('Active hours updated', 'success');
             });
         }
 
-        if (endHour) {
-            endHour.addEventListener('change', (e) => {
-                this.config.activeHours.end = parseInt(e.target.value);
-                this.saveConfig();
-                // Force refresh to bypass daily limit when active hours change
-                this.regenerateSchedule(true);
-                // Reschedule notifications with new times
-                if (this.config.enabled && this.notificationEngine) {
-                    this.scheduleUpcomingNotifications();
-                    // Force refresh Capacitor notifications with new schedule
-                    if (this.notificationEngine.forceRefreshCapacitorNotifications) {
-                        this.notificationEngine.forceRefreshCapacitorNotifications(this.config);
-                    }
+        const quickNaamBtn = document.getElementById('quickNaamBtn');
+        if (quickNaamBtn) {
+            quickNaamBtn.addEventListener('click', () => {
+                if (this.ritualEngine) {
+                    this.ritualEngine.triggerManualSession(0.5, false); // 30 seconds
+                } else {
+                    this.startMeditation(0.5);
                 }
-                this.showToast('Active hours updated', 'success');
             });
         }
 
-        // Notification toggles
-        this.bindToggle('hourStartNotification', 'notifications.hourStart');
-        this.bindToggle('preReminderNotification', 'notifications.preReminder');
-        this.bindToggle('vibrationEnabled', 'notifications.vibration');
-        this.bindToggle('soundEnabled', 'notifications.soundEnabled');
-        this.bindToggle('autoStartTimer', 'autoStartTimer');
-
-        // Sound selection
-        const soundSelect = document.getElementById('notificationSound');
-        if (soundSelect) {
-            soundSelect.addEventListener('change', (e) => {
-                this.config.notifications.sound = e.target.value;
-                this.saveConfig();
+        const deepModeBtn = document.getElementById('deepModeBtn');
+        if (deepModeBtn) {
+            deepModeBtn.addEventListener('click', () => {
+                if (this.ritualEngine) {
+                    this.ritualEngine.triggerManualSession(11, false); // 11 minutes
+                } else {
+                    this.startMeditation(11);
+                }
             });
         }
 
-        // Preview sound button with play/stop toggle
-        const previewBtn = document.getElementById('previewSoundBtn');
-        if (previewBtn) {
-            previewBtn.addEventListener('click', () => {
-                this.toggleSoundPreview();
+        const viewFullStatsBtn = document.getElementById('viewFullStatsBtn');
+        if (viewFullStatsBtn) {
+            viewFullStatsBtn.addEventListener('click', () => {
+                this.showStatsPanel();
             });
         }
 
-        // Refresh schedule button
-        const refreshBtn = document.getElementById('refreshScheduleBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                this.regenerateSchedule();
-                this.showToast('Schedule refreshed', 'success');
-            });
-        }
-
-        // Session alert modal buttons (legacy alert modal)
+        // ─── Modals: Session Alert (Ready / Silent / Skip) ─────────────────────
         const alertStartNowBtn = document.getElementById('alertStartNowBtn');
+        const alertSilentBtn = document.getElementById('alertSilentBtn');
         const skipSessionBtn = document.getElementById('skipSessionBtn');
 
         if (alertStartNowBtn) {
             alertStartNowBtn.addEventListener('click', () => {
                 this.hideAlertModal();
-                const session = this.currentAlertSession || this.getNextScheduledSession();
-                // Use Ritual Engine for the sacred experience
-                if (this.ritualEngine && session) {
-                    // Use triggerScheduledSession so it's recorded as scheduled (not extra)
-                    this.ritualEngine.triggerScheduledSession(session, this.config.duration || 2);
-                } else if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(this.config.duration || 2, true);
+                if (this.ritualEngine) {
+                    const session = this.currentAlertSession || this.getNextScheduledSession();
+                    this.ritualEngine.triggerScheduledSession(session, this.config.duration);
                 } else {
                     this.startMeditation();
+                }
+            });
+        }
+
+        if (alertSilentBtn) {
+            alertSilentBtn.addEventListener('click', () => {
+                this.hideAlertModal();
+                if (this.ritualEngine) {
+                    const session = this.currentAlertSession || this.getNextScheduledSession();
+                    // Trigger with silent flag
+                    this.ritualEngine.triggerScheduledSession(session, this.config.duration, true);
                 }
             });
         }
@@ -807,15 +694,50 @@ class NaamAbhyas {
             });
         }
 
-        // Meditation overlay
-        const endEarlyBtn = document.getElementById('endEarlyBtn');
-        if (endEarlyBtn) {
-            endEarlyBtn.addEventListener('click', () => {
+        // ─── Modals: Meditation Overlay (Present / Silent / Skip) ──────────────
+        const medPresentBtn = document.getElementById('medPresentBtn');
+        const medSilentBtn = document.getElementById('medSilentBtn');
+        const skipMeditationBtn = document.getElementById('skipMeditationBtn');
+
+        if (medPresentBtn) {
+            medPresentBtn.addEventListener('click', () => {
+                // Flash effect for presence acknowledgment
+                medPresentBtn.classList.add('acknowledging');
+                setTimeout(() => medPresentBtn.classList.remove('acknowledging'), 500);
+                if (this.ritualEngine) this.ritualEngine.recordPresence();
+            });
+        }
+
+        if (medSilentBtn) {
+            medSilentBtn.addEventListener('click', () => {
+                const isMuted = medSilentBtn.dataset.muted === 'true';
+                const nextMuted = !isMuted;
+                medSilentBtn.dataset.muted = nextMuted;
+                
+                const icon = document.getElementById('silentBtnIcon');
+                const label = document.getElementById('silentBtnLabel');
+                
+                if (nextMuted) {
+                    if (icon) icon.textContent = '🔇';
+                    if (label) label.textContent = 'Muted';
+                    medSilentBtn.classList.add('muted-active');
+                    if (this.audioManager) this.audioManager.mute();
+                } else {
+                    if (icon) icon.textContent = '🔊';
+                    if (label) label.textContent = 'Silent';
+                    medSilentBtn.classList.remove('muted-active');
+                    if (this.audioManager) this.audioManager.unmute();
+                }
+            });
+        }
+
+        if (skipMeditationBtn) {
+            skipMeditationBtn.addEventListener('click', () => {
                 this.endMeditationEarly();
             });
         }
 
-        // Completion modal
+        // ─── Modals: Completion ──────────────────────────────────────────────
         const continueBtn = document.getElementById('continueBtn');
         if (continueBtn) {
             continueBtn.addEventListener('click', () => {
@@ -823,92 +745,33 @@ class NaamAbhyas {
             });
         }
 
-        // Stats panel
-        const viewStatsBtn = document.getElementById('viewFullStatsBtn');
-        const statsPageBtn = document.getElementById('statsPageBtn');
-        const closeStatsBtn = document.getElementById('closeStatsBtn');
+        // ─── Other Controls ──────────────────────────────────────────────────
+        this.bindToggle('hourStartNotification', 'notifications.hourStart');
+        this.bindToggle('vibrationEnabled', 'notifications.vibration');
+        this.bindToggle('soundEnabled', 'notifications.soundEnabled');
 
-        if (viewStatsBtn) {
-            viewStatsBtn.addEventListener('click', () => this.showStatsPanel());
-        }
-        if (statsPageBtn) {
-            statsPageBtn.addEventListener('click', () => this.showStatsPanel());
-        }
-        if (closeStatsBtn) {
-            closeStatsBtn.addEventListener('click', () => this.hideStatsPanel());
-        }
-
-        // Settings modal
-        const settingsPageBtn = document.getElementById('settingsPageBtn');
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        const settingsModalBackdrop = document.getElementById('settingsModalBackdrop');
-
-        if (settingsPageBtn) {
-            settingsPageBtn.addEventListener('click', () => this.showSettingsModal());
-        }
         if (closeSettingsBtn) {
             closeSettingsBtn.addEventListener('click', () => this.hideSettingsModal());
         }
-        if (settingsModalBackdrop) {
-            settingsModalBackdrop.addEventListener('click', () => this.hideSettingsModal());
+
+        const settingsPageBtn = document.getElementById('settingsPageBtn');
+        if (settingsPageBtn) {
+            settingsPageBtn.addEventListener('click', () => this.showSettingsModal());
         }
 
-        // Visibility change - resume when page becomes visible
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && this.config.enabled) {
-                this.updateCountdown();
-                this.checkForMissedSessions();
-            }
-        });
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (this.config.theme === 'system') {
-                this.applyTheme();
-            }
-        });
+        const previewSoundBtn = document.getElementById('previewSoundBtn');
+        if (previewSoundBtn) {
+            previewSoundBtn.addEventListener('click', () => {
+                this.playIosChime('notification');
+                this.showToast('Testing notification chime... 🙏', 'info');
+            });
+        }
 
-        // ═══ NEW MAGICAL FEATURES ═══
-
-        // Wisdom quote refresh button
         const wisdomRefreshBtn = document.getElementById('wisdomRefreshBtn');
         if (wisdomRefreshBtn) {
-            wisdomRefreshBtn.addEventListener('click', () => this.showNewWisdom());
-        }
-
-        // Quick action buttons - EXTRA sessions (not counted towards schedule)
-        const startNowQuickBtn = document.getElementById('startNowBtn');
-        if (startNowQuickBtn) {
-            startNowQuickBtn.addEventListener('click', () => {
-                // Use Ritual Engine with 2-minute EXTRA session
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(2, true); // 2 min, isExtra=true
-                } else {
-                    this.startMeditation(2);
-                }
-            });
-        }
-
-        const quickNaamBtn = document.getElementById('quickNaamBtn');
-        if (quickNaamBtn) {
-            quickNaamBtn.addEventListener('click', () => {
-                // Quick 30-second EXTRA session
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(0.5, true); // 0.5 min (30s), isExtra=true
-                } else {
-                    this.startMeditation(0.5);
-                }
-            });
-        }
-
-        const deepModeBtn = document.getElementById('deepModeBtn');
-        if (deepModeBtn) {
-            deepModeBtn.addEventListener('click', () => {
-                // Deep 11-minute EXTRA session
-                if (this.ritualEngine) {
-                    this.ritualEngine.triggerManualSession(11, true); // 11 min, isExtra=true
-                } else {
-                    this.startMeditation(11);
-                }
+            wisdomRefreshBtn.addEventListener('click', () => {
+                this.showNewWisdom();
             });
         }
 
@@ -960,14 +823,11 @@ class NaamAbhyas {
             themeRadio.checked = true;
         }
 
-        // Set duration radio and toggle selected class
-        const durationRadio = document.querySelector(`input[name="duration"][value="${this.config.duration}"]`);
-        if (durationRadio) {
-            durationRadio.checked = true;
-            // Clear all selected, then mark the correct one
-            document.querySelectorAll('#durationOptions .radio-option').forEach(lbl => lbl.classList.remove('selected'));
-            const parentLabel = durationRadio.closest('.radio-option');
-            if (parentLabel) parentLabel.classList.add('selected');
+        // Set duration custom input and sync presets
+        const durationInput = document.getElementById('durationCustomInput');
+        if (durationInput) {
+            durationInput.value = this.config.duration || 2;
+            this._updateActivePreset(this.config.duration);
         }
 
         // Set active hours
@@ -2143,45 +2003,6 @@ class NaamAbhyas {
         this.updateUI();
     }
 
-    checkForMissedSessions() {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const today = this.getTodayString();
-
-        // Mark past sessions as skipped if not completed
-        for (let hour = this.config.activeHours.start; hour < currentHour; hour++) {
-            const session = this.currentSchedule[hour];
-            if (session && session.status === 'pending') {
-                session.status = 'skipped';
-
-                // Record in history
-                this.recordSession({
-                    hour: hour,
-                    startTime: session.startTime,
-                    status: 'skipped',
-                    skipReason: 'missed'
-                });
-            }
-        }
-
-        // Check current hour
-        const currentSession = this.currentSchedule[currentHour];
-        if (currentSession && currentSession.status === 'pending') {
-            if (currentMinute > currentSession.endMinute) {
-                currentSession.status = 'skipped';
-                this.recordSession({
-                    hour: currentHour,
-                    startTime: currentSession.startTime,
-                    status: 'skipped',
-                    skipReason: 'missed'
-                });
-            }
-        }
-
-        this.saveHistory();
-        this.renderScheduleTimeline();
-    }
 
     /* ═════════════════════════════════════════════════════════════════════════
        SESSION HANDLING
@@ -2834,21 +2655,15 @@ class NaamAbhyas {
     }
 
     showSettingsModal() {
-        console.log('🛡️ NaamAbhyas: Opening settings modal...');
         const modal = document.getElementById('settingsModal');
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Pause heavy background animations for performance
-            const canvas = document.getElementById('cosmosCanvas');
-            if (canvas) canvas.style.display = 'none';
+            // Performance: Instead of hiding canvas (which causes reflow), 
+            // we just pause the starfield animation if it exists
             const starsField = document.getElementById('starsField');
             if (starsField) starsField.style.animationPlayState = 'paused';
-            
-            console.log('✅ Modal active state applied');
-        } else {
-            console.error('❌ Settings modal element not found!');
         }
     }
 
@@ -3401,12 +3216,111 @@ class NaamAbhyas {
 window.naamAbhyas = null;
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.naamAbhyas = new NaamAbhyas();
-    window.naamAbhyas.init();
-});
+function initNaamAbhyas() {
+    if (window.naamAbhyas && typeof window.naamAbhyas.init === 'function') {
+        window.naamAbhyas.init();
+    } else {
+        window.naamAbhyas = new NaamAbhyas();
+        window.naamAbhyas.init();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNaamAbhyas);
+} else {
+    initNaamAbhyas();
+}
 
 // Export for module usage
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = NaamAbhyas;
 }
+
+/**
+ * ═══ HELPER METHODS FOR PREMIUM OVERHAUL ═══
+ */
+
+NaamAbhyas.prototype._updateActivePreset = function(mins) {
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.min) === mins);
+    });
+};
+
+NaamAbhyas.prototype.showCompletionModal = function(stats) {
+    const modal = document.getElementById('completionModal');
+    if (!modal) return;
+    
+    // Rotating high-spirit blessings
+    const blessings = [
+        "Millions of sins erased. You are purified.",
+        "The mind is stilled. The soul is awake.",
+        "You walked with the Guru for these moments.",
+        "A peaceful heart is a sacred temple.",
+        "Simran is the only true wealth. You are rich today.",
+        "ਧੰਨੁ ਧੰਨੁ ਤੂ ਮੇਰੇ ਸਤਿਗੁਰਾ... Blessed are you, O True Guru."
+    ];
+    const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+    
+    const blessingEl = document.getElementById('completionBlessing');
+    if (blessingEl) blessingEl.textContent = randomBlessing;
+    
+    // Update stats
+    if (stats) {
+        if (document.getElementById('compDuration')) document.getElementById('compDuration').textContent = `${stats.duration}m`;
+        if (document.getElementById('compStreak')) document.getElementById('compStreak').textContent = stats.streak;
+        if (document.getElementById('compToday')) document.getElementById('compToday').textContent = `${stats.today}/${stats.goal}`;
+    }
+    
+    modal.classList.add('active');
+    this.playIosChime('completion');
+};
+
+NaamAbhyas.prototype.playIosChime = function(type) {
+    if (!this.config.notifications.soundEnabled) return;
+    
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        if (type === 'completion') {
+            // Harmonic high-pitch bell
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.8);
+        } else {
+            // Standard iOS-like "tnnn"
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+    } catch(e) { console.warn('Audio API chime failed', e); }
+};
+
+NaamAbhyas.prototype._syncToNitemTracker = function(sessionData) {
+    try {
+        const trackerData = JSON.parse(localStorage.getItem('nitnem_tracker_data') || '{}');
+        const today = this.getTodayString();
+        
+        if (!trackerData[today]) trackerData[today] = { naam_abhyas: 0, sessions: [] };
+        trackerData[today].naam_abhyas = (trackerData[today].naam_abhyas || 0) + 1;
+        trackerData[today].sessions.push({
+            time: new Date().toLocaleTimeString(),
+            duration: sessionData.duration,
+            isScheduled: sessionData.isScheduled
+        });
+        
+        localStorage.setItem('nitnem_tracker_data', JSON.stringify(trackerData));
+        window.dispatchEvent(new CustomEvent('naamAbhyasComplete', { detail: sessionData }));
+    } catch(e) { console.error('Nitnem sync failed', e); }
+};

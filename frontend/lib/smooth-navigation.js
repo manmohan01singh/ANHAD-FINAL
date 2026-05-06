@@ -13,116 +13,161 @@
 
   const MAIN_TARGET_ID = 'app';
   const GMP_ID = 'global-mini-player';
+  
+  /**
+   * SPA POLYFILL: Ensures DOMContentLoaded listeners run even after AJAX swaps
+   */
+  (function polyfillDOMContentLoaded() {
+    const originalAddEventListener = document.addEventListener;
+    document.addEventListener = function(type, listener, options) {
+      if (type === 'DOMContentLoaded' && document.readyState !== 'loading') {
+        // If we are in SPA mode and the shell is already loaded, 
+        // trigger the listener immediately for the new content.
+        setTimeout(listener, 1); 
+      }
+      return originalAddEventListener.call(this, type, listener, options);
+    };
+  })();
+
   const SHELL_SCRIPTS = [
     'overlay-player.js',
     'smooth-navigation.js',
     'global-theme.js',
     'audio-coordinator.js',
-    'trendora-app.js'
+    'anhad-audio-singleton.js',
+    'anhad-core.js',
+    'pwa-register.js',
+    'smart-back.js',
+    'page-lifecycle.js'
   ];
 
   /**
-   * Navigate to a URL using View Transitions for smooth mini player persistence
+   * Navigate to a URL using AJAX swap and View Transitions
    * @param {string} url - Destination URL
    * @param {Object} options - Navigation options
    */
   window.navigateTo = async function(url, options = {}) {
-    if (!url || typeof url !== 'string') {
-      console.warn('[SmoothNav] Invalid URL provided');
-      return;
-    }
+    if (!url || typeof url !== 'string') return;
 
-    // Handle external links normally
+    // Handle external links or same-page links
     if (url.startsWith('http') && !url.includes(window.location.hostname)) {
       window.open(url, '_blank');
       return;
     }
     
-    // Normalize URL for comparison
     const targetUrl = new URL(url, window.location.origin);
     if (targetUrl.href === window.location.href && !options.force) return;
 
-    // OPTIMIZATION: Skip View Transitions for dashboard to prevent lag
-    // View Transitions capture screenshots which causes jank on complex pages
-    const isDashboard = url.includes('dashboard') || url.includes('Dashboard');
-    const skipTransition = isDashboard || options.instant;
+    console.log(`[SmoothNav] Navigating to: ${url}`);
 
-    // Check if View Transitions API is supported
-    const supportsViewTransitions = 'startViewTransition' in document && !skipTransition;
-
-    if (!supportsViewTransitions) {
-      // Fallback: standard navigation (instant for dashboard)
-      window.location.href = url;
-      return;
-    }
-
-    // Mark mini player for view transition
-    const gmp = document.getElementById(GMP_ID);
-    if (gmp) {
-      gmp.style.viewTransitionName = 'mini-player';
-    }
-
-    // Start the view transition
-    try {
-      document.startViewTransition(() => {
-        // During transition, keep mini player visible
-        if (gmp) {
-          gmp.style.opacity = '1';
-          gmp.style.transform = 'translateY(0)';
-        }
-
-        // Navigate to the new page
-        window.location.href = url;
-      });
-    } catch (e) {
-      console.warn('[SmoothNav] View transition failed, using fallback:', e);
-      window.location.href = url;
+    // If View Transitions API is supported, wrap the swap
+    if ('startViewTransition' in document && !options.instant) {
+      document.startViewTransition(() => performSwap(url, options));
+    } else {
+      performSwap(url, options);
     }
   };
 
   /**
    * Fetch new page and swap content
    */
-  async function performSwap(url) {
+  async function performSwap(url, options = {}) {
+    const loader = ensureLoader();
+    let loaderTimeout = null;
+
     try {
-      // 1. Fetch the page immediately
+      // 1. Show loader with slight delay to avoid flicker on fast networks
+      loaderTimeout = setTimeout(() => loader.classList.add('visible'), 200);
+      document.body.classList.add('page-loading');
+
+      // 2. Fetch the page
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       
-      // 2. Parse the content
+      // 3. Parse the content
       const parser = new DOMParser();
       const newDoc = parser.parseFromString(text, 'text/html');
 
-      // 3. Extract targets
-      const newContent = newDoc.getElementById(MAIN_TARGET_ID);
-      const currentContent = document.getElementById(MAIN_TARGET_ID);
+      // 4. Extract targets
+      const newApp = newDoc.getElementById(MAIN_TARGET_ID);
+      const currentApp = document.getElementById(MAIN_TARGET_ID);
 
-      if (newContent && currentContent) {
-        // Update URL in address bar
-        history.pushState(null, '', url);
-
-        // 4. Update the content
-        currentContent.innerHTML = newContent.innerHTML;
-
-        // 5. Update Shell elements (Title)
-        document.title = newDoc.title;
-        
-        // 6. Manage Scripts (The most critical part for logic continuity)
-        executePageScripts(newDoc);
-
-        // 7. Post-navigation logic
-        window.scrollTo({ top: 0, behavior: 'instant' });
-        window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
-        
-        console.log('[SmoothNav] Shell Swap Successful.');
-      } else {
-        throw new Error('Target structure mismatch (no #app found)');
+      if (!newApp || !currentApp) {
+         throw new Error('Target structure mismatch (no #app found)');
       }
+
+      // 5. Update Shell elements (Title, Head assets)
+      document.title = newDoc.title;
+      syncHeadAssets(newDoc);
+      
+      // 6. SWAP CONTENT
+      currentApp.innerHTML = newApp.innerHTML;
+      
+      // 7. Update URL
+      if (!options.replace) {
+        history.pushState({ spa: true }, '', url);
+      } else {
+        history.replaceState({ spa: true }, '', url);
+      }
+
+      // 8. Execute Scripts
+      executePageScripts(newDoc);
+
+      // 9. Clean up and signal completion
+      clearTimeout(loaderTimeout);
+      loader.classList.remove('visible');
+      document.body.classList.remove('page-loading');
+      
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      
+      // Trigger lifecycle recovery (removes exit classes etc)
+      if (window.AnhadPageLifecycle) {
+        window.AnhadPageLifecycle.recover();
+      }
+      
+      window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+      
     } catch (e) {
-      console.warn('[SmoothNav] App Shell swap failed, falling back to full reload:', e);
+      console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
       window.location.href = url;
     }
+  }
+
+  /**
+   * Ensures the glass loader exists in the DOM
+   */
+  function ensureLoader() {
+    let loader = document.querySelector('.nav-loading-overlay');
+    if (!loader) {
+      loader = document.createElement('div');
+      loader.className = 'nav-loading-overlay';
+      loader.innerHTML = `
+        <div class="nav-loading-overlay__shimmer"></div>
+        <div class="nav-loading-overlay__spinner"></div>
+      `;
+      document.body.appendChild(loader);
+    }
+    return loader;
+  }
+
+  /**
+   * Syncs new CSS links from the target document
+   */
+  function syncHeadAssets(newDoc) {
+    const currentStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .map(l => l.getAttribute('href'));
+    const newStyles = Array.from(newDoc.querySelectorAll('link[rel="stylesheet"]'));
+
+    newStyles.forEach(style => {
+      const href = style.getAttribute('href');
+      if (href && !currentStyles.includes(href)) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        document.head.appendChild(link);
+      }
+    });
   }
 
   /**
@@ -182,10 +227,30 @@
       window.navigateTo(href);
     });
 
-    // Handle browser back/forward buttons
-    window.addEventListener('popstate', () => {
-      performSwap(window.location.href);
+    // Smart Pre-fetching
+    document.addEventListener('mouseover', e => {
+      const link = e.target.closest('a');
+      if (link) prefetchLink(link.getAttribute('href'));
     });
+    document.addEventListener('touchstart', e => {
+      const link = e.target.closest('a');
+      if (link) prefetchLink(link.getAttribute('href'));
+    }, { passive: true });
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', (e) => {
+      performSwap(window.location.href, { replace: true });
+    });
+  }
+
+  const prefetchCache = new Set();
+  function prefetchLink(url) {
+    if (!url || url.includes('#') || prefetchCache.has(url)) return;
+    prefetchCache.add(url);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = url;
+    document.head.appendChild(link);
   }
 
   // Self-initialize

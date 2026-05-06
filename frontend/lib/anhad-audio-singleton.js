@@ -917,9 +917,9 @@
   }
 
   /**
-   * Advance to the next track in the shuffled playlist WITHOUT re-querying the server.
-   * This ensures seamless auto-advance when a track naturally ends.
-   * Uses the local virtual-live position (which just advanced past the ended track).
+   * Advance to the next track in the shuffled playlist WITH server synchronization.
+   * This ensures true virtual live sync - all devices hear the same position.
+   * Like buses: the server timeline runs continuously regardless of listeners.
    */
   async function advanceToNextTrack() {
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
@@ -930,9 +930,38 @@
       const stream = STREAMS[currentStream];
       if (!stream || !audio) { trackTransitionInProgress = false; return; }
 
+      // CRITICAL FIX: Always sync with server for true virtual live
+      // This ensures all devices advance to the same track at the same position
+      // The server timeline runs continuously like buses - passengers join/leave but buses keep moving
+      console.log('[AnhadAudio] 🔄 Syncing with server for track advance...');
+      const serverPos = await getServerLivePosition();
+      
+      // Only show ending tracks if they're actually ending (within 30 seconds of end)
+      const trackDuration = stream.getTrackDuration ? stream.getTrackDuration(serverPos.trackIndex) : getDur(serverPos.trackIndex);
+      const isActuallyEnding = trackDuration && (trackDuration - serverPos.position) < 30;
+      
+      if (isActuallyEnding) {
+        console.log(`[AnhadAudio] 🚌 Track ${serverPos.trackIndex + 1} actually ending (${Math.floor(trackDuration - serverPos.position)}s left)`);
+      }
+      
+      currentTrackIndex = serverPos.trackIndex;
+      currentShufflePosition = serverPos.shufflePosition || 0;
+
+      console.log(`[AnhadAudio] ⏭️ Server-synced advance: Track ${currentTrackIndex + 1} at ${Math.floor(serverPos.position)}s ${isActuallyEnding ? '(ending)' : ''}`);
+
+      const requestId = ++playRequestId;
+      loadPlaylistPosition(currentStream, {
+        trackIndex: serverPos.trackIndex,
+        position: serverPos.position,
+        shufflePosition: serverPos.shufflePosition
+      }, requestId);
+    } catch (e) {
+      console.error('[AnhadAudio] Server sync failed during advance, using local calculation:', e);
+      
+      // Fallback: Use local calculation only if server fails
       const epoch = getBroadcastEpoch(currentStream) || 1704067200000;
-      const totalTracks = stream.totalTracks || 40;
-      const defaultDur = stream.defaultTrackDuration || 3600;
+      const totalTracks = STREAMS[currentStream].totalTracks || 40;
+      const defaultDur = STREAMS[currentStream].defaultTrackDuration || 3600;
 
       // STABLE: use fixed total for cycle (matches server fix)
       const fixedTotal = totalTracks * defaultDur;
@@ -944,12 +973,13 @@
       let currentPosInShuffle = shuffleOrder.indexOf(currentTrackIndex);
       if (currentPosInShuffle === -1) currentPosInShuffle = currentShufflePosition;
 
-      // ALWAYS advance to next position in shuffle — never re-compute from timeline
+      // ALWAYS advance to next position in shuffle
       const nextPosInShuffle = (currentPosInShuffle + 1) % totalTracks;
       const nextTrackIndex = shuffleOrder[nextPosInShuffle];
+      currentTrackIndex = nextTrackIndex;
       currentShufflePosition = nextPosInShuffle;
 
-      console.log(`[AnhadAudio] ⏭️ Shuffle advance: position ${currentPosInShuffle}→${nextPosInShuffle}, track ${currentTrackIndex + 1} → track ${nextTrackIndex + 1}`);
+      console.log(`[AnhadAudio] ⏭️ Fallback advance: position ${currentPosInShuffle}→${nextPosInShuffle}, track ${nextTrackIndex + 1}`);
 
       const requestId = ++playRequestId;
       loadPlaylistPosition(currentStream, {
@@ -957,10 +987,6 @@
         position: 0,
         shufflePosition: nextPosInShuffle
       }, requestId);
-    } catch (e) {
-      console.error('[AnhadAudio] AdvanceToNextTrack error:', e);
-      // Fallback: full server re-sync
-      await play(currentStream);
     } finally {
       // Clear the flag after a short delay to prevent immediate re-triggers
       setTimeout(() => { trackTransitionInProgress = false; }, 3000);
@@ -1031,15 +1057,31 @@
     const stream = STREAMS[currentStream];
 
     // Build artwork array with multiple sizes for best OS rendering
-    // Use stream artwork as primary, app logo as fallback
+    // For Kirtan streams (amritvela, simran), use stream artwork for all sizes
+    // For other streams, use app logo
+    const isKirtanStream = currentStream === 'amritvela' || currentStream === 'simran';
     const primaryArt = stream.artwork || resolveAsset('icons/icon-1024x1024.png');
-    const artworkList = [
-      { src: resolveAsset('icons/icon-72x72.png'), sizes: '72x72', type: 'image/png' },
-      { src: resolveAsset('icons/icon-152x152.png'), sizes: '152x152', type: 'image/png' },
-      { src: resolveAsset('icons/icon-192x192.png'), sizes: '192x192', type: 'image/png' },
-      { src: resolveAsset('icons/icon-512x512.png'), sizes: '512x512', type: 'image/png' },
-      { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
-    ];
+    
+    let artworkList;
+    if (isKirtanStream && stream.artwork) {
+      // Use stream artwork for all sizes for Kirtan playing
+      artworkList = [
+        { src: stream.artwork, sizes: '72x72', type: 'image/webp' },
+        { src: stream.artwork, sizes: '152x152', type: 'image/webp' },
+        { src: stream.artwork, sizes: '192x192', type: 'image/webp' },
+        { src: stream.artwork, sizes: '512x512', type: 'image/webp' },
+        { src: stream.artwork, sizes: '1024x1024', type: 'image/webp' }
+      ];
+    } else {
+      // Use app logo for non-Kirtan streams or fallback
+      artworkList = [
+        { src: resolveAsset('icons/icon-72x72.png'), sizes: '72x72', type: 'image/png' },
+        { src: resolveAsset('icons/icon-152x152.png'), sizes: '152x152', type: 'image/png' },
+        { src: resolveAsset('icons/icon-192x192.png'), sizes: '192x192', type: 'image/png' },
+        { src: resolveAsset('icons/icon-512x512.png'), sizes: '512x512', type: 'image/png' },
+        { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
+      ];
+    }
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: stream.name,

@@ -623,10 +623,21 @@ class ShabadVichar {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// INITIALIZE
+// INITIALIZE — SPA Compatible
 // ═══════════════════════════════════════════════════════════════
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.shabadVichar = new ShabadVichar();
+function initShabadVichar() {
+    // Prevent double initialization if already loaded in this SPA session
+    if (window.shabadVichar && typeof window.shabadVichar.init === 'function') {
+        window.shabadVichar.init();
+    } else {
+        window.shabadVichar = new ShabadVichar();
+    }
     console.log('%c☬ ANHAD — Shabad Vichar', 'color: #D4A03A; font-size: 14px; font-weight: bold;');
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShabadVichar);
+} else {
+    initShabadVichar();
+}

@@ -1,6 +1,6 @@
 {
 	"appId": "com.gurbaniradio.app",
-	"appName": "ANHAD",
+	"appName": "Anhad",
 	"webDir": "frontend",
 	"server": {
 		"androidScheme": "https",
