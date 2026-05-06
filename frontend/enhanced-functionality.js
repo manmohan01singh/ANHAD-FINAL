@@ -91,7 +91,7 @@ class GurbaniRadioEnhancements {
       playBtn.classList.add('playing');
       playBtn.setAttribute('aria-pressed', 'true');
       playIcon.className = 'fas fa-pause';
-      this.showNotification('▶️ Playing Gurbani Kirtan', 'success');
+      this.showNotification('▶️ Playing Gurbani Kirtan', 'success', true); // Use Kirtan cover image
     } else {
       playBtn.classList.remove('playing');
       playBtn.setAttribute('aria-pressed', 'false');
@@ -891,13 +891,19 @@ class GurbaniRadioEnhancements {
   }
 
   // Notification System
-  showNotification(message, type = 'info') {
+  showNotification(message, type = 'info', useKirtanArt = false) {
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification--${type}`;
+    
+    // Use Kirtan cover image for album art when playing Kirtan
+    const notificationIcon = useKirtanArt ? 
+      '<img src="/assets/Darbar-sahib-AMRITVELA.webp" alt="Kirtan Cover" style="width: 24px; height: 24px; border-radius: 4px;" />' :
+      this.getNotificationIcon(type);
+    
     notification.innerHTML = `
       <div class="notification__content">
-        <div class="notification__icon">${this.getNotificationIcon(type)}</div>
+        <div class="notification__icon">${notificationIcon}</div>
         <div class="notification__message">${message}</div>
       </div>
     `;

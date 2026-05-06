@@ -129,9 +129,12 @@
 
     const state = window.AnhadAudio.getState();
 
-    // Force hide on player page
-    const isPlayerPage = window.location.pathname.toLowerCase().includes('gurbani-radio');
-    if (isPlayerPage) {
+    // Force hide on player page and dashboard
+    const currentPath = window.location.pathname.toLowerCase();
+    const isPlayerPage = currentPath.includes('gurbani-radio');
+    const isDashboardPage = currentPath.includes('dashboard');
+    
+    if (isPlayerPage || isDashboardPage) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');
       return;
