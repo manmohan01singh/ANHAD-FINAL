@@ -844,7 +844,8 @@
   <!-- Scripts -->
   <script src="../lib/share-card.js"></script>
   <script src="../lib/smart-back.js"></script>
-  <script src="../pwa-register.js"></script>
+  <script src="../lib/smooth-navigation.js?v=2"></script>
+  <script src="../pwa-register.js?v=2"></script>
   <script>
     (function() {
       'use strict';
@@ -957,7 +958,7 @@
           }
           
           container.innerHTML = bookmarks.map((bm, i) => `
-            <div class="fav-card" onclick="window.location.href='../SehajPaath/reader.html?ang=${bm.ang}'">
+            <div class="fav-card" data-href="../SehajPaath/reader.html?ang=${bm.ang}">
               <div class="fav-card__header">
                 <span class="fav-card__type">Ang ${bm.ang}</span>
                 <div class="fav-card__actions">
@@ -999,7 +1000,7 @@
           }
           
           container.innerHTML = notes.map((note, i) => `
-            <div class="fav-card" onclick="window.location.href='../Notes/notes.html'">
+            <div class="fav-card" data-href="../Notes/notes.html">
               <div class="fav-card__header">
                 <span class="fav-card__type">Gurbani Note</span>
                 <div class="fav-card__actions">
@@ -1079,11 +1080,13 @@
         const shabadId = shabad.shabadId || shabad.id;
         if (shabadId) {
           // Navigate to shabad reader
-          window.location.href = `../GurbaniKhoj/shabad-reader.html?shabad=${shabadId}`;
+          if (window.navigateTo) window.navigateTo(`../GurbaniKhoj/shabad-reader.html?shabad=${shabadId}`);
+          else window.location.href = `../GurbaniKhoj/shabad-reader.html?shabad=${shabadId}`;
         } else {
           // Fallback: if no shabadId, try to search by ang
           if (shabad.ang) {
-            window.location.href = `../SehajPaath/reader.html?ang=${shabad.ang}`;
+            if (window.navigateTo) window.navigateTo(`../SehajPaath/reader.html?ang=${shabad.ang}`);
+            else window.location.href = `../SehajPaath/reader.html?ang=${shabad.ang}`;
           } else {
             alert('Cannot open this Shabad - no ID available');
           }

@@ -75,11 +75,10 @@
         return 'https://anhad-final.onrender.com';
     })();
 
-    // BRUTAL VIRTUAL LIVE: NO CACHE - always fetch fresh position
-    // Even 1 second matters - once gone, gone forever
+    // PERFORMANCE FIX: Cache live position for 5 seconds to avoid blocking network on every request
     let serverSyncData = null;
     let lastSyncTime = 0;
-    const SYNC_CACHE_TTL = 0; // ZERO cache for pure live
+    const SYNC_CACHE_TTL = 5000; // 5-second cache to reduce battery drain and UI jank
 
     // Get current position from SERVER (async) - THE ONLY SOURCE OF TRUTH
     async function getServerLivePosition() {
@@ -267,6 +266,7 @@
 
     // Cleanup function to abort all event listeners
     function cleanup() {
+        if (!abortController) return; // FIX: Guard against null AbortController
         abortController.abort();
         abortController = new AbortController();
         console.log('[PersistentAudio] Event listeners cleaned up');

@@ -91,7 +91,18 @@ public class AlarmReliabilityPlugin extends Plugin {
     @PluginMethod
     public void scheduleFullScreenAlarm(PluginCall call) {
         if (!canScheduleExactAlarms()) {
-            call.reject("Exact alarms permission not granted");
+            // CRITICAL FIX: Auto-redirect to settings instead of silently rejecting
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                    intent.setData(Uri.parse("package:" + getContext().getPackageName()));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getActivity().startActivity(intent);
+                }
+                call.resolve(new JSObject().put("openedSettings", true).put("exactAlarm", false));
+            } catch (Exception e) {
+                call.reject("Exact alarms permission not granted");
+            }
             return;
         }
 

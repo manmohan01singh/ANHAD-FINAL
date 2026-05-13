@@ -17,8 +17,8 @@ const config: CapacitorConfig = {
     android: {
         // Allow mixed content for live streaming (SGPC)
         allowMixedContent: true,
-        // Enable WebView debugging during development
-        webContentsDebuggingEnabled: true,
+        // Enable WebView debugging during development ONLY
+        webContentsDebuggingEnabled: false,
         // Background audio config
         backgroundColor: '#000000'
     },
@@ -42,9 +42,11 @@ const config: CapacitorConfig = {
 
         // Splash screen configuration
         SplashScreen: {
-            launchShowDuration: 2000,
-            backgroundColor: '#FFFFFF',
-            showSpinner: false,
+            launchShowDuration: 0,
+            launchAutoHide: true,
+            backgroundColor: '#000000',
+            showSpinner: true,
+            spinnerColor: '#f7c634',
             androidSpinnerStyle: 'small',
             spinnerColor: '#f7c634',
             androidSplashResourceName: 'splash',

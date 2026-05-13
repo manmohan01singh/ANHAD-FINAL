@@ -3,12 +3,8 @@ package com.gurbaniradio.app;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
-import com.getcapacitor.JSObject;
-import com.getcapacitor.Plugin;
-import com.getcapacitor.PluginCall;
-import com.getcapacitor.PluginMethod;
-import com.getcapacitor.annotation.CapacitorPlugin;
 
 /**
  * Streak Saver Boot Receiver
@@ -20,18 +16,27 @@ public class StreakSaverBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            Log.d(TAG, "Device booted - scheduling streak saver notification");
-            
-            // Note: Since Capacitor LocalNotifications is a JS plugin,
-            // we can't directly schedule from native side.
-            // Instead, we'll set a flag that the JS code will check on app startup
+            Log.d(TAG, "Device booted - rescheduling alarms via ReminderForegroundService");
+
             try {
+                // Mark that the app needs to reschedule its alarms
                 android.content.SharedPreferences prefs = context.getSharedPreferences(
                     "streak_saver_prefs", Context.MODE_PRIVATE);
                 prefs.edit().putBoolean("needs_streak_saver_schedule", true).apply();
-                Log.d(TAG, "Set flag to schedule streak saver notification on next app open");
+
+                // BUG-05 FIX: Start ReminderForegroundService with reschedule action.
+                // A bare sendBroadcast() had no receiver — the JS side is not running at boot.
+                Intent serviceIntent = new Intent(context, ReminderForegroundService.class);
+                serviceIntent.putExtra("action", "reschedule");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent);
+                } else {
+                    context.startService(serviceIntent);
+                }
+
+                Log.d(TAG, "ReminderForegroundService started for post-boot alarm rescheduling");
             } catch (Exception e) {
-                Log.e(TAG, "Error setting streak saver flag", e);
+                Log.e(TAG, "Error starting ReminderForegroundService on boot", e);
             }
         }
     }

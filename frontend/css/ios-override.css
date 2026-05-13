@@ -327,6 +327,7 @@ body.dark-mode .header--compact {
 /* ── Cards — Premium EXTRA rounded curve ── */
 .hero-card {
   border-radius: 24px;
+  box-shadow: none !important;
 }
 
 .hero-card__image-wrapper {
@@ -490,6 +491,7 @@ body.dark-mode .header--compact {
 .event-card {
   border-radius: 22px;
   padding: 16px 20px;
+  box-shadow: none !important;
 }
 
 .event-card__main {
@@ -997,28 +999,14 @@ html.dark-mode body.dark-mode .event-card:active {
 /* Hero Cards - Dark Claymorphism 3D Effect */
 html.dark-mode body.dark-mode .hero-card {
   background: #0D0D0F !important;
-  box-shadow: 
-    /* Strong outer shadow for 3D lift - pumping out effect */
-    25px 25px 50px rgba(0, 0, 0, 0.7),
-    15px 15px 30px rgba(0, 0, 0, 0.5),
-    -8px -8px 25px rgba(255, 255, 255, 0.04),
-    /* Inner highlights - strong top-left glow for 3D pop */
-    inset 10px 10px 25px rgba(255, 255, 255, 0.08),
-    inset 5px 5px 12px rgba(255, 255, 255, 0.05),
-    /* Inner shadows - deep bottom-right for depth */
-    inset -10px -10px 25px rgba(0, 0, 0, 0.6),
-    inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: none !important;
   border: none !important;
   transform: translateY(-2px);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html.dark-mode body.dark-mode .hero-card:active {
-  box-shadow: 
-    /* Pressed state - deep inset shadows */
-    inset 15px 15px 35px rgba(0, 0, 0, 0.7),
-    inset -8px -8px 20px rgba(255, 255, 255, 0.06),
-    inset 5px 5px 12px rgba(255, 255, 255, 0.04) !important;
+  box-shadow: none !important;
   background: #0A0A0C !important;
   transform: translateY(0) scale(0.98);
 }

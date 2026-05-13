@@ -6709,16 +6709,33 @@ const StreakManager = {
     },
 
     /**
+     * StreakSaverManager - Race-condition guard for saving streaks
+     */
+    StreakSaverManager: {
+        _saveQueue: Promise.resolve(),
+        enqueueSave(stateToSave) {
+            this._saveQueue = this._saveQueue.then(() => {
+                return new Promise(resolve => {
+                    try {
+                        const existingData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {});
+                        const mergedData = { ...existingData, ...stateToSave };
+                        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, mergedData);
+                    } catch (e) {
+                        console.error('[StreakSaverManager] Failed to save streak:', e);
+                    }
+                    // Add tiny delay to ensure storage write completes
+                    setTimeout(resolve, 50);
+                });
+            });
+        }
+    },
+
+    /**
      * Save streak data
      */
     saveStreakData() {
         this.state.lastUpdated = new Date().toISOString();
-        
-        // SYNC: Preserve global AnhadStats fields to avoid data corruption
-        const existingData = StorageManager.load(CONFIG.STORAGE_KEYS.STREAK_DATA, {});
-        const mergedData = { ...existingData, ...this.state };
-        
-        StorageManager.save(CONFIG.STORAGE_KEYS.STREAK_DATA, mergedData);
+        this.StreakSaverManager.enqueueSave(this.state);
     },
 
     /**

@@ -71,7 +71,7 @@
 
             // Read streak data
             var streakData = {};
-            try { streakData = JSON.parse(localStorage.getItem('nitnemTracker_streakData') || '{"current": 0}'); } catch(e) {}
+            try { streakData = JSON.parse(localStorage.getItem('anhad_streak_data') || '{"current": 0}'); } catch(e) {}
             var streak = streakData.current || 0;
 
             // Read today's completion — period-keyed schema: { amritvela: [uid,...], rehras: [...], sohila: [...] }
@@ -332,7 +332,7 @@
 
             // Get streak from consistent key
             var streakData = {};
-            try { streakData = JSON.parse(localStorage.getItem('nitnemTracker_streakData') || '{"current": 0}'); } catch(e) {}
+            try { streakData = JSON.parse(localStorage.getItem('anhad_streak_data') || '{"current": 0}'); } catch(e) {}
             var streak = streakData.current || 0;
 
             await plugin.syncWidgetData({

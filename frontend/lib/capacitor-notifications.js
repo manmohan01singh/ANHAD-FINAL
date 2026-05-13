@@ -104,7 +104,9 @@ async function scheduleNotification(options) {
                 title: options.title,
                 body: options.body || '',
                 schedule: options.scheduledTime ? {
-                    at: new Date(options.scheduledTime)
+                    at: new Date(options.scheduledTime),
+                    allowWhileIdle: true,
+                    exact: true
                 } : undefined,
                 extra: options.data || {},
                 smallIcon: 'ic_stat_icon_config_sample',
@@ -157,9 +159,10 @@ async function scheduleNotification(options) {
                     console.log('[CapacitorNotifications] Scheduled via Web API (delayed)');
                     return;
                 }
+                // FIX: If delay is <= 0 (overdue), show immediately instead of silently dropping the notification
             }
             
-            // Show immediately
+            // Show immediately (also catches overdue notifications)
             new Notification(options.title, {
                 body: options.body,
                 icon: options.icon,
@@ -265,3 +268,91 @@ window.CapacitorNotifications = {
     getPendingNotifications,
     cancelAllNotifications
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NOTIFICATION DEEP-LINK ROUTING
+// When user taps a notification, navigate to the correct app page.
+// Reads: notification.extra.url (relative path from frontend root, e.g.
+//   "GurbaniRadio/gurbani-radio.html?stream=amritvela"
+//   "NitnemTracker/nitnem-tracker.html"
+//   "NaamAbhyas/naam-abhyas.html"
+// )
+// ═══════════════════════════════════════════════════════════════════════════
+(function initNotificationDeepLink() {
+    if (!window.Capacitor || !window.Capacitor.Plugins) {
+        // Retry after Capacitor loads
+        setTimeout(initNotificationDeepLink, 1500);
+        return;
+    }
+    const { LocalNotifications } = window.Capacitor.Plugins;
+    if (!LocalNotifications || typeof LocalNotifications.addListener !== 'function') {
+        setTimeout(initNotificationDeepLink, 1500);
+        return;
+    }
+
+    // Already registered guard
+    if (window.__anhadNotifListenerRegistered) return;
+    window.__anhadNotifListenerRegistered = true;
+
+    LocalNotifications.addListener('localNotificationActionPerformed', (event) => {
+        try {
+            const extra = event.notification && event.notification.extra;
+            if (!extra) return;
+
+            // Determine target URL
+            let targetUrl = extra.url || null;
+            if (!targetUrl && extra.action) {
+                // Legacy action-based routing
+                const actionMap = {
+                    'open_radio':        'GurbaniRadio/gurbani-radio.html',
+                    'open_radio_darbar': 'GurbaniRadio/gurbani-radio.html?stream=darbar',
+                    'open_amritvela':    'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+                    'open_simran':       'GurbaniRadio/gurbani-radio.html?stream=simran',
+                    'open_nitnem':       'NitnemTracker/nitnem-tracker.html',
+                    'open_naam_abhyas':  'NaamAbhyas/naam-abhyas.html',
+                    'open_streak':       'NitnemTracker/nitnem-tracker.html#streak',
+                    'show_tracker':      'NitnemTracker/nitnem-tracker.html',
+                    'show_streak_saver': 'NitnemTracker/nitnem-tracker.html?streakSaver=activate',
+                    'auto_start_naam':   'NaamAbhyas/naam-abhyas.html?autoStart=true',
+                    'show_naam':         'NaamAbhyas/naam-abhyas.html',
+                    'show_alarm':        'reminders/reminders.html'
+                };
+                targetUrl = actionMap[extra.action] || null;
+                if (extra.action === 'auto_start_naam') {
+                    const params = new URLSearchParams({ autoStart: 'true' });
+                    if (extra.hour !== undefined) params.set('hour', extra.hour);
+                    if (extra.minute !== undefined) params.set('minute', extra.minute);
+                    targetUrl = 'NaamAbhyas/naam-abhyas.html?' + params.toString();
+                }
+            }
+
+            if (!targetUrl) {
+                console.log('[NotifRouter] No target URL in notification extra:', extra);
+                return;
+            }
+
+            console.log('[NotifRouter] Navigating to:', targetUrl);
+
+            // Build absolute path relative to frontend root
+            // The app's index.html is at the root, pages are in sub-folders.
+            const currentPath = window.location.pathname;
+            // Find the frontend root (everything up to and including /frontend/ or last known dir)
+            let base = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            // If we're deep in a subdir, go up to root
+            const depth = (currentPath.match(/\//g) || []).length - 1;
+            let prefix = '';
+            for (let i = 0; i < depth; i++) prefix += '../';
+
+            // Use smooth navigation if available, otherwise direct href
+            if (window.SmoothNav && window.SmoothNav.navigate) {
+                window.SmoothNav.navigate(prefix + targetUrl);
+            } else {
+                window.location.href = prefix + targetUrl;
+            }
+        } catch (e) {
+            console.error('[NotifRouter] Deep-link routing error:', e);
+        }
+    });
+
+    console.log('[NotifRouter] ✅ Notification deep-link listener registered');
+})();

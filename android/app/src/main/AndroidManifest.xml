@@ -107,6 +107,13 @@
             android:foregroundServiceType="mediaPlayback"
         />
 
+        <!-- Foreground Service for alarm/reminder reliability -->
+        <service
+            android:name=".ReminderForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+        />
+
         <!-- Streak Saver Boot Receiver -->
         <receiver android:name=".StreakSaverBootReceiver" android:exported="true">
             <intent-filter>

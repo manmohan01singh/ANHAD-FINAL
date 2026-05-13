@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const pngToIco = require('png-to-ico').default;
 
-const SOURCE_PNG = path.join(__dirname, 'assets', 'favicon-32x32.png');
+const SOURCE_PNG = path.join(__dirname, 'assets', 'app-logo.png');
 const OUTPUT_ICO = path.join(__dirname, 'favicon.ico');
 
 async function generateFavicon() {

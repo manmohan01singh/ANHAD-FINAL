@@ -20,8 +20,43 @@
     const STORAGE_KEYS = {
         CONFIG: 'spiritual_notifications_config',
         HUKAMNAMA_CACHE: 'hukamnama_first_pankti_cache',
-        LAST_RANDOM_SCHEDULE: 'last_random_schedule_date'
+        LAST_RANDOM_SCHEDULE: 'last_random_schedule_date',
+        LAST_TIMEZONE_OFFSET: 'spiritual_last_timezone_offset'
     };
+
+    /**
+     * FIX: Build a timezone-safe schedule time.
+     * If the user's timezone has changed, re-schedule everything to keep the same local wall-clock time.
+     * @param {string} timeStr - HH:MM time string
+     * @param {Date} baseDate - base date for scheduling
+     * @returns {Date} schedule time in local timezone
+     */
+    function buildScheduleTime(timeStr, baseDate) {
+        const [hh, mm] = timeStr.split(':').map(Number);
+        const d = new Date(baseDate);
+        d.setHours(hh, mm, 0, 0);
+        // If time has passed today, schedule for tomorrow
+        const now = new Date();
+        if (d <= now) {
+            d.setDate(d.getDate() + 1);
+        }
+        return d;
+    }
+
+    /**
+     * FIX: Check if timezone has changed since last schedule.
+     * If so, we need to re-schedule all notifications.
+     */
+    function hasTimezoneChanged() {
+        const currentOffset = new Date().getTimezoneOffset();
+        const savedOffset = localStorage.getItem(STORAGE_KEYS.LAST_TIMEZONE_OFFSET);
+        if (savedOffset === null) return false; // first run
+        return parseInt(savedOffset, 10) !== currentOffset;
+    }
+
+    function saveTimezoneOffset() {
+        localStorage.setItem(STORAGE_KEYS.LAST_TIMEZONE_OFFSET, String(new Date().getTimezoneOffset()));
+    }
 
     // Default configuration
     const DEFAULT_CONFIG = {
@@ -254,7 +289,7 @@
                                 channelId: 'spiritual_reminders',
                                 sound: 'default',
                                 smallIcon: 'ic_stat_notify',
-                                extra: { action: 'open_hukamnama' }
+                                extra: { action: 'open_hukamnama', url: 'Hukamnama/daily-hukamnama.html' }
                             });
                         }
                     }
@@ -274,7 +309,7 @@
                                 channelId: 'spiritual_reminders',
                                 sound: 'default',
                                 smallIcon: 'ic_stat_notify',
-                                extra: { action: 'open_bani', target: 'Amritvela' }
+                                extra: { action: 'open_nitnem', url: 'NitnemTracker/nitnem-tracker.html' }
                             });
                         }
                     }
@@ -294,7 +329,7 @@
                                 channelId: 'spiritual_reminders',
                                 sound: 'default',
                                 smallIcon: 'ic_stat_notify',
-                                extra: { action: 'open_bani', target: 'Rehras' }
+                                extra: { action: 'open_bani', target: 'Rehras', url: 'NitnemTracker/nitnem-tracker.html' }
                             });
                         }
                     }
@@ -314,7 +349,7 @@
                                 channelId: 'spiritual_reminders',
                                 sound: 'default',
                                 smallIcon: 'ic_stat_notify',
-                                extra: { action: 'open_bani', target: 'Sohela' }
+                                extra: { action: 'open_bani', target: 'Sohela', url: 'NitnemTracker/nitnem-tracker.html' }
                             });
                         }
                     }
@@ -325,6 +360,10 @@
                     const randomNotifs = this.scheduleRandomNotifications(now);
                     notifications.push(...randomNotifs);
                 }
+
+                // Kirtan reminder (once per day, random between 7-10 AM)
+                const kirtanNotifs = this.scheduleKirtanReminder(now);
+                notifications.push(...kirtanNotifs);
 
                 // Schedule all notifications
                 if (notifications.length > 0) {
@@ -388,6 +427,73 @@
             localStorage.setItem(STORAGE_KEYS.LAST_RANDOM_SCHEDULE, today);
 
             return notifications;
+        }
+
+        /**
+         * Schedule daily Kirtan reminder (7-10 AM, direct link to Darbar Sahib)
+         */
+        scheduleKirtanReminder(now) {
+            const today = now.toDateString();
+            const key = 'spiritual_kirtan_reminder_date';
+            if (localStorage.getItem(key) === today) return [];
+
+            const kirtanMessages = [
+                { body: 'Darbar Sahib live kirtan suno, man nu shanti milegi 🙏', stream: 'darbar' },
+                { body: 'Amritvela kirtan chal rahi hai — join karo 🎵', stream: 'amritvela' },
+                { body: 'Waheguru Simran sunna chahoge? Tap karo 🙏', stream: 'simran' },
+                { body: 'Live Darbar Sahib kirtan — suno ik pal 🌅', stream: 'darbar' },
+                { body: 'Gurbani kirtan with ANHAD — tap to listen 🎵', stream: 'amritvela' },
+            ];
+            const pick = kirtanMessages[Math.floor(Math.random() * kirtanMessages.length)];
+            const streamUrls = {
+                darbar: 'GurbaniRadio/gurbani-radio.html?stream=darbar',
+                amritvela: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+                simran: 'GurbaniRadio/gurbani-radio.html?stream=simran'
+            };
+
+            const h = 7 + Math.floor(Math.random() * 3); // 7, 8, or 9 AM
+            const m = Math.floor(Math.random() * 60);
+            const fireAt = new Date(now);
+            fireAt.setHours(h, m, 0, 0);
+            if (fireAt <= now) fireAt.setDate(fireAt.getDate() + 1);
+
+            localStorage.setItem(key, today);
+            return [{
+                id: 30001,
+                title: '🎵 Kirtan Sun Lo',
+                body: pick.body,
+                schedule: { at: fireAt, allowWhileIdle: true, exact: true },
+                channelId: 'spiritual_reminders',
+                sound: 'default',
+                smallIcon: 'ic_stat_notify',
+                extra: { action: 'open_radio', url: streamUrls[pick.stream] }
+            }];
+        }
+
+        /**
+         * Fire a Nitnem completion congratulations notification immediately.
+         * Called when all banis are marked complete for today.
+         */
+        async scheduleNitnemCompletionNotification() {
+            if (!this.isNative() || !window.Capacitor.Plugins.LocalNotifications) return;
+            try {
+                const fireAt = new Date(Date.now() + 5000); // 5 seconds from now
+                await window.Capacitor.Plugins.LocalNotifications.schedule({
+                    notifications: [{
+                        id: 40001,
+                        title: '✅ Nitnem Complete! Waheguru 🙏',
+                        body: 'Sab baaniya mukammal kar litin. Guru Sahib di kirpa bani rahe.',
+                        schedule: { at: fireAt, allowWhileIdle: true, exact: true },
+                        channelId: 'spiritual_reminders',
+                        sound: 'default',
+                        smallIcon: 'ic_stat_notify',
+                        extra: { action: 'open_nitnem', url: 'NitnemTracker/nitnem-tracker.html' }
+                    }]
+                });
+                console.log('[SpiritualNotifications] Nitnem completion notification scheduled');
+            } catch (e) {
+                console.error('[SpiritualNotifications] Nitnem completion notification failed:', e);
+            }
         }
 
         /**
@@ -500,8 +606,38 @@
     window.SpiritualNotifications = new SpiritualNotifications();
 
     // Auto-schedule on load if in native environment
+    // BUG-09 FIX: Only schedule once per calendar day.
     if (window.SpiritualNotifications.isNative()) {
-        window.SpiritualNotifications.scheduleAll();
+        const today = new Date().toDateString();
+        const lastScheduled = localStorage.getItem('spiritual_last_scheduled_date');
+        if (lastScheduled !== today) {
+            window.SpiritualNotifications.scheduleAll().then(() => {
+                localStorage.setItem('spiritual_last_scheduled_date', today);
+            }).catch(e => {
+                console.error('[SpiritualNotifications] Auto-schedule failed:', e);
+            });
+        } else {
+            console.log('[SpiritualNotifications] Already scheduled today, skipping.');
+        }
     }
+
+    // ── Nitnem completion listener ──
+    // When nitnem-tracker.js marks all banis complete, it dispatches 'nitnemUpdate'
+    // with { complete: true }. Fire a celebratory notification.
+    window.addEventListener('nitnemUpdate', (e) => {
+        try {
+            if (e.detail && e.detail.complete === true && window.SpiritualNotifications) {
+                const today = new Date().toDateString();
+                const key = 'spiritual_nitnem_completion_notif_date';
+                // Only fire once per day
+                if (localStorage.getItem(key) !== today) {
+                    localStorage.setItem(key, today);
+                    window.SpiritualNotifications.scheduleNitnemCompletionNotification();
+                }
+            }
+        } catch (e) {
+            console.error('[SpiritualNotifications] nitnemUpdate handler error:', e);
+        }
+    });
 
 })();

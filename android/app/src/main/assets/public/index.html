@@ -53,6 +53,12 @@
       opacity: 0;
     }
     body.theme-loaded { opacity: 1; transition: opacity 0.2s ease; }
+    html.theme-changing,
+    html.theme-changing *,
+    html.theme-changing *::before,
+    html.theme-changing *::after {
+      transition: none !important;
+    }
     html.dark-mode { --bg-primary: transparent !important; }
   </style>
   
@@ -81,8 +87,6 @@
   <link rel="stylesheet" href="./css/anhad-core.css?v=5">
 
   <script src="./js/anhad-core.js" defer></script>
-  <script src="./lib/global-theme.js"></script>
-
   <script>
     (function() {
       // UNIFIED welcome check — works for PWA, Browser, and Capacitor native app
@@ -148,8 +152,8 @@
   <!-- CRITICAL: Remove dark hero overlays on desktop -->
   <link rel="stylesheet" href="css/hero-clean-desktop.css">
   
-  <!-- SIMPLE SCROLL FIX - Minimal approach -->
-  <link rel="stylesheet" href="css/scroll-fix-simple.css?v=1">
+  <!-- 90 FPS PERFORMANCE SCROLL FIX -->
+  <link rel="stylesheet" href="css/scroll-performance-90fps.css?v=2">
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -2216,6 +2220,7 @@
       const savedTheme = localStorage.getItem('anhad_theme') || 'light';
       
       function applyTheme(theme) {
+        html.classList.add('theme-changing');
         // Save to localStorage
         localStorage.setItem('anhad_theme', theme);
 
@@ -2257,6 +2262,11 @@
         if (metaTheme) {
           metaTheme.content = theme === 'dark' ? '#0D0D0F' : '#F1F3F6';
         }
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            html.classList.remove('theme-changing');
+          });
+        });
       }
 
       // Apply initial theme

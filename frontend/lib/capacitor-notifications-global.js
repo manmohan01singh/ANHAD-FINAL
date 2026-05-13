@@ -429,8 +429,8 @@
 
                 // Check if user has a streak to protect
                 var streakData = null;
-                try { streakData = JSON.parse(localStorage.getItem('nitnemTracker_streakData') || '{}'); } catch(e) {}
-                var hasStreak = streakData && streakData.current > 0;
+                try { streakData = JSON.parse(localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData') || '{}'); } catch(e) {}
+                var hasStreak = streakData && ((streakData.current || streakData.currentStreak || 0) > 0);
 
                 if (hasStreak) {
                     notifs.push({
@@ -439,7 +439,7 @@
                         body: 'Your streak needs protection. Open the app to check your Amritvela status.',
                         schedule: { at: scheduleDate, allowWhileIdle: true, exact: true },
                         channelId: 'anhad_alarms', sound: 'default', smallIcon: 'ic_stat_notify',
-                        extra: { action: 'show_streak_saver' }
+                        extra: { action: 'show_streak_saver', url: 'NitnemTracker/nitnem-tracker.html?streakSaver=activate' }
                     });
                 }
             }
@@ -584,7 +584,9 @@
                         ndt.setDate(ndt.getDate() + nd); 
                         ndt.setHours(nh, sessionMinute, 0, 0);
                         
+                        var alertTime = new Date(ndt.getTime() - 30000);
                         if (ndt <= now) continue;
+                        if (alertTime <= now) alertTime = new Date(now.getTime() + 1000);
                         
                         // Deterministic message selection (consistent per hour)
                         var msgIdx = (nh + nd * 7) % spiritualMessages.length;
@@ -608,7 +610,7 @@
                             id: 90000 + (nd * 24) + nh,
                             title: naamTitle,
                             body: bodyText,
-                            schedule: { at: ndt, allowWhileIdle: true, exact: true },
+                            schedule: { at: alertTime, allowWhileIdle: true, exact: true },
                             channelId: 'naam_abhyas_v2',
                             sound: 'default',
                             smallIcon: 'ic_stat_notify',
@@ -622,6 +624,22 @@
                                 type: 'naam_abhyas'
                             }
                         });
+
+                        // ═══ FIX 5: Native full-screen alarm for locked screen (Naam Abhyas) ═══
+                        if (reliabilityPlugin && nd === 0) {
+                            (function(lbl, alTime, ts, hStr, mStr) {
+                                reliabilityPlugin.scheduleFullScreenAlarm({
+                                    id: hash('fs_naam_' + nh + '_d0'),
+                                    timestamp: ts,
+                                    title: lbl,
+                                    message: alTime + ' \u2014 ' + bodyText,
+                                    hour: hStr,
+                                    minute: mStr
+                                }).catch(function(e) {
+                                    console.warn('[ANHAD] FS alarm failed:', e);
+                                });
+                            })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute));
+                        }
                     }
                 }
                 console.log('[ANHAD] Naam Abhyas: scheduled ' + notifs.filter(function(n) { return n.channelId === 'naam_abhyas_v2'; }).length + ' notifications');
@@ -637,11 +655,53 @@
                     body: 'Complete your remaining banis to save your streak 🙏',
                     schedule: { at: sdt, allowWhileIdle: true, exact: true },
                     channelId: 'anhad_alarms', sound: 'default', smallIcon: 'ic_stat_notify',
-                    extra: { action: 'show_tracker' }
+                    extra: { action: 'show_tracker', url: 'NitnemTracker/nitnem-tracker.html' }
                 });
             }
 
             // ═══ ADD STREAK SAVER NOTIFICATION ═══
+            for (var ndc = 0; ndc < 3; ndc++) {
+                var ndtComplete = new Date(now);
+                ndtComplete.setDate(ndtComplete.getDate() + ndc);
+                ndtComplete.setHours(21, 0, 0, 0);
+                if (ndtComplete <= now) continue;
+                var completeDate = ndtComplete.toLocaleDateString('en-CA');
+                if (ndc === 0 && localStorage.getItem('anhad_nitnem_notif_' + completeDate) === 'sent') continue;
+                notifs.push({
+                    id: 81000 + ndc,
+                    title: 'Nitnem Check',
+                    body: 'Tap to complete any remaining banis for today.',
+                    schedule: { at: ndtComplete, allowWhileIdle: true, exact: true },
+                    channelId: 'anhad_alarms', sound: 'default', smallIcon: 'ic_stat_notify',
+                    extra: { action: 'show_tracker', url: 'NitnemTracker/nitnem-tracker.html' }
+                });
+            }
+
+            var lastRadioOpened = parseInt(localStorage.getItem('anhad_gurbani_radio_last_opened') || '0', 10);
+            var heardKirtanRecently = lastRadioOpened && (Date.now() - lastRadioOpened < 6 * 60 * 60 * 1000);
+            if (!heardKirtanRecently) {
+                var kirtanSlots = [
+                    { hour: 6, stream: 'darbar', body: 'Darbar Sahib live kirtan is ready. Tap to listen.' },
+                    { hour: 18, stream: 'amritvela', body: 'Take a quiet moment with Gurbani kirtan.' }
+                ];
+                for (var kd = 0; kd < 3; kd++) {
+                    kirtanSlots.forEach(function(slot, slotIndex) {
+                        var kt = new Date(now);
+                        kt.setDate(kt.getDate() + kd);
+                        kt.setHours(slot.hour, 0, 0, 0);
+                        if (kt <= now) return;
+                        notifs.push({
+                            id: 82000 + kd * 10 + slotIndex,
+                            title: 'Gurbani Kirtan',
+                            body: slot.body,
+                            schedule: { at: kt, allowWhileIdle: true, exact: true },
+                            channelId: 'spiritual_reminders', sound: 'default', smallIcon: 'ic_stat_notify',
+                            extra: { action: 'open_radio', url: 'GurbaniRadio/gurbani-radio.html?stream=' + slot.stream }
+                        });
+                    });
+                }
+            }
+
             scheduleStreakSaverCheck(notifs);
 
             // ═══ ADD SPIRITUAL NOTIFICATIONS ═══
@@ -711,7 +771,23 @@
             } catch(e) {}
         }
 
-        LN.addListener('localNotificationActionPerformed', function(data) {
+        function resolveFrontendUrl(url) {
+            if (!url) return '';
+            if (/^https?:\/\//.test(url) || url.indexOf('../') === 0 || url.indexOf('./') === 0) return url;
+            var p = window.location.pathname;
+            if (p.indexOf('/NaamAbhyas/') !== -1 ||
+                p.indexOf('/NitnemTracker/') !== -1 ||
+                p.indexOf('/GurbaniRadio/') !== -1 ||
+                p.indexOf('/Homepage/') !== -1 ||
+                p.indexOf('/reminders/') !== -1) {
+                return '../' + url;
+            }
+            return './' + url;
+        }
+
+        if (!window.__anhadNotifListenerRegistered) {
+            window.__anhadNotifListenerRegistered = true;
+            LN.addListener('localNotificationActionPerformed', function(data) {
             var ex = data.notification && data.notification.extra;
             if (!ex) return;
             console.log('[ANHAD] Notification clicked:', JSON.stringify(ex));
@@ -728,18 +804,22 @@
                 window.location.href = url;
             }
             else if (ex.action === 'show_tracker') {
-                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : './NitnemTracker/nitnem-tracker.html';
+                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
                 if (trackerPath) window.location.href = trackerPath;
             }
             else if (ex.action === 'show_streak_saver') {
-                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : './NitnemTracker/nitnem-tracker.html';
+                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? 'nitnem-tracker.html' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
                 if (trackerPath) window.location.href = trackerPath + '?streakSaver=activate';
             }
             // ═══ SPIRITUAL NOTIFICATION ACTIONS ═══
             else if (window.SpiritualNotifications) {
                 window.SpiritualNotifications.handleNotificationAction(ex.action, ex.target);
             }
-        });
+            else if (ex.url) {
+                window.location.href = resolveFrontendUrl(ex.url);
+            }
+            });
+        }
         // ═══ FOREGROUND: Smart popup when Naam notification arrives (Fix 4) ═══
         LN.addListener('localNotificationReceived', function(n) {
             var ex = n.extra;

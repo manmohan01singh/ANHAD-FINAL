@@ -1,58 +1,32 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
-   SIMPLE SCROLL FIX - MINIMAL APPROACH
-   ═══════════════════════════════════════════════════════════════════════════════
-   
-   Basic scroll optimization without aggressive changes
-   Target the specific main.app container that handles scrolling
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* Simple Scroll Fix - Basic scroll behavior improvements */
 
-/* FIX DOUBLE SCROLL: Target the main app container specifically */
-main.app,
-#app {
-  -webkit-overflow-scrolling: touch;
+/* Ensure smooth scrolling */
+html {
   scroll-behavior: smooth;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100vh;
-  height: 100dvh;
 }
 
-/* Ensure body doesn't interfere with scrolling */
+/* Fix iOS momentum scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal scroll on mobile */
 body {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
-/* Basic touch scrolling optimization for other containers */
-.gurbani-scroll,
-.verses-container,
-[data-scrollable] {
+/* Fix scroll container issues */
+.scroll-container {
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
-/* Simple GPU acceleration for main containers only */
-main.app,
-#app {
-  transform: translateZ(0);
-  will-change: scroll-position;
+/* Hide scrollbar for cleaner look */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Disable expensive effects during scroll only */
-.scrolling .aurora-bg,
-.scrolling .particle-burst {
-  animation-play-state: paused;
-}
-
-/* Basic mobile optimization */
-@media (max-width: 768px) {
-  .aurora-bg,
-  .particle-burst {
-    display: none;
-  }
-  
-  main.app,
-  #app {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-  }
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

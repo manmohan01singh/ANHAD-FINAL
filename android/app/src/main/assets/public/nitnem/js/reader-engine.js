@@ -53,7 +53,7 @@
         showGurmukhi: true,
         showRoman: true,
         showEnglish: true,
-        showPunjabi: false,
+        showPunjabi: true,
 
         // Ik Onkar Background - default (will be adjusted by theme in loadSettings)
         ikonkarTransparency: 10

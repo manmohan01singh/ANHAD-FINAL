@@ -723,6 +723,8 @@
                 url: window.location.href
               }
             });
+
+            this.scheduleFullScreenAlarm(alarm, scheduleTime, dayOffset);
           }
         });
 
@@ -737,6 +739,25 @@
         }
       } catch (error) {
         console.error('[AlarmScheduler] Failed to schedule all alarms with Capacitor:', error);
+      }
+    },
+
+    async scheduleFullScreenAlarm(alarm, scheduledTime, dayOffset = 0) {
+      const plugin = window.Capacitor?.Plugins?.AlarmReliability;
+      if (!plugin || !scheduledTime || new Date(scheduledTime) <= new Date()) return;
+
+      try {
+        const [hour = '', minute = ''] = String(alarm.time || '').split(':');
+        await plugin.scheduleFullScreenAlarm({
+          id: this.hashString('fs_' + alarm.id + '_' + new Date(scheduledTime).toDateString() + '_' + dayOffset),
+          timestamp: new Date(scheduledTime).getTime(),
+          title: alarm.label || alarm.title || 'Reminder',
+          message: 'Time for your spiritual practice',
+          hour,
+          minute
+        });
+      } catch (error) {
+        console.warn('[AlarmScheduler] Full-screen alarm scheduling failed:', error);
       }
     },
 
@@ -942,11 +963,17 @@
             sound: 'default',
             smallIcon: 'ic_stat_notify',
             extra: {
+              action: 'show_alarm',
               alarmId: alarm.id,
+              alarmLabel: alarm.label || alarm.title || 'Alarm',
+              alarmTime: alarm.time || '',
+              alarmIcon: alarm.icon || '🔔',
+              alarmTone: alarm.tone || 'audio1',
               url: window.location.href
             }
           }]
         });
+        await this.scheduleFullScreenAlarm(alarm, scheduledTime, 0);
         console.log('[AlarmScheduler] Scheduled with Capacitor:', alarm.label, 'at', new Date(scheduledTime).toLocaleString());
       } catch (error) {
         console.error('[AlarmScheduler] Capacitor scheduling failed:', error);

@@ -158,10 +158,12 @@
       history.back();
     } else if (savedRef) {
       // We have a recorded referrer from a previous visit
-      window.location.href = savedRef;
+      if (window.navigateTo) window.navigateTo(savedRef);
+      else window.location.href = savedRef;
     } else {
       // Direct load or no history — go to fallback
-      window.location.href = fallbackUrl;
+      if (window.navigateTo) window.navigateTo(fallbackUrl);
+      else window.location.href = fallbackUrl;
     }
   };
 

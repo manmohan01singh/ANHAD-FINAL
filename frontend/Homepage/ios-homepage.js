@@ -319,7 +319,12 @@
 
         // Auto-start kirtan on page load
         setTimeout(() => {
-            window.AnhadAudio.play('darbar');
+            if (navigator.onLine) {
+                window.AnhadAudio.play('darbar').catch(e => console.warn('[Homepage] Autoplay failed:', e));
+            } else {
+                console.warn('[Homepage] Offline, skipping auto-play to prevent crash');
+                if (tapHint) tapHint.textContent = 'App is offline. Tap when connected.';
+            }
         }, 500);
 
         // Handle visibility change - pause tracking when tab hidden

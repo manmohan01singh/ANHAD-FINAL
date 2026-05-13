@@ -54,12 +54,65 @@
         try {
             data.lastActive = new Date().toISOString();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+            // SYNC: Update legacy streak data for backward compatibility
+            // This ensures trendora-app.js and other components see the same streak
+            const legacySd = localStorage.getItem('anhad_streak_data');
+            let legacy = legacySd ? JSON.parse(legacySd) : {};
+            legacy.current = data.streaks.nitnem;
+            legacy.currentStreak = data.streaks.nitnem;
+            if (data.streaks.nitnem > (legacy.longest || 0)) {
+                legacy.longest = data.streaks.nitnem;
+                legacy.longestStreak = data.streaks.nitnem;
+            }
+            legacy.lastUpdated = data.lastActive;
+            localStorage.setItem('anhad_streak_data', JSON.stringify(legacy));
+
             // Dispatch event for real-time updates
             window.dispatchEvent(new CustomEvent('statsChanged', { 
-                detail: { today: data.daily[getTodayString()] }
+                detail: { today: data.daily[getTodayString()], streaks: data.streaks }
             }));
         } catch (e) {
             console.error('[UnifiedStats] Error saving stats:', e);
+        }
+    }
+
+    /**
+     * Migration: Copy legacy streak data to UnifiedStats if it doesn't exist
+     */
+    function migrateLegacyData(stats) {
+        let changed = false;
+
+        // 1. Check anhad_streak_data (used by AnhadStats)
+        try {
+            const legacySd = localStorage.getItem('anhad_streak_data');
+            if (legacySd) {
+                const legacy = JSON.parse(legacySd);
+                const legacyStreak = legacy.current || legacy.currentStreak || 0;
+                if (legacyStreak > stats.streaks.nitnem) {
+                    console.log(`[UnifiedStats] Migrating streak from anhad_streak_data: ${legacyStreak}`);
+                    stats.streaks.nitnem = legacyStreak;
+                    changed = true;
+                }
+            }
+        } catch (e) {}
+
+        // 2. Check nitnemTracker_userData (used by legacy NitnemTracker)
+        try {
+            const legacyUd = localStorage.getItem('nitnemTracker_userData');
+            if (legacyUd) {
+                const legacy = JSON.parse(legacyUd);
+                const legacyStreak = legacy.streaks?.current || legacy.streak?.current || 0;
+                if (legacyStreak > stats.streaks.nitnem) {
+                    console.log(`[UnifiedStats] Migrating streak from nitnemTracker_userData: ${legacyStreak}`);
+                    stats.streaks.nitnem = legacyStreak;
+                    changed = true;
+                }
+            }
+        } catch (e) {}
+
+        if (changed) {
+            saveStats(stats);
         }
     }
 
@@ -251,6 +304,10 @@
     // Auto-init: Fire event on load to sync any existing data
     window.addEventListener('load', () => {
         const stats = getStats();
+        
+        // Run migration
+        migrateLegacyData(stats);
+        
         const today = getTodayData(stats);
         
         window.dispatchEvent(new CustomEvent('statsInitialized', {

@@ -20,10 +20,12 @@ public class AudioServicePlugin extends Plugin {
     public void start(PluginCall call) {
         String title = call.getString("title", "ANHAD Kirtan");
         String artist = call.getString("artist", "Sri Harmandir Sahib Ji");
+        String stream = call.getString("stream", "darbar");
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.putExtra("title", title);
         intent.putExtra("artist", artist);
+        intent.putExtra("stream", stream);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(intent);
@@ -51,10 +53,12 @@ public class AudioServicePlugin extends Plugin {
     public void updateNotification(PluginCall call) {
         String title = call.getString("title", "ANHAD Kirtan");
         String artist = call.getString("artist", "");
+        String stream = call.getString("stream", "darbar");
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.putExtra("title", title);
         intent.putExtra("artist", artist);
+        intent.putExtra("stream", stream);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().startForegroundService(intent);
@@ -80,7 +84,9 @@ public class AudioServicePlugin extends Plugin {
             return;
         }
 
-        lastPlayTime = now;
+        if ("PLAY".equals(action)) {
+            lastPlayTime = now;
+        }
 
         Intent intent = new Intent(getContext(), AudioForegroundService.class);
         intent.setAction(action.equals("PLAY") ? AudioForegroundService.ACTION_PLAY : AudioForegroundService.ACTION_PAUSE);

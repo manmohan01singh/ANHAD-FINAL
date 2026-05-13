@@ -116,22 +116,35 @@ public class FullScreenAlarmActivity extends AppCompatActivity {
     }
 
     private void stopAlarmAndFinish() {
+        releaseResources();
+        finish();
+    }
+
+    /** Releases MediaPlayer and WakeLock without calling finish() */
+    private void releaseResources() {
         if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            mediaPlayer.release();
+            try {
+                // FIX: isPlaying() throws IllegalStateException if called after release()
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+            } catch (IllegalStateException ignored) {}
+            try {
+                mediaPlayer.release();
+            } catch (Exception ignored) {}
             mediaPlayer = null;
         }
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
+            wakeLock = null;
         }
-        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopAlarmAndFinish();
+        // FIX: Only release resources here, do NOT call finish() again
+        // (finish() is already called by stopAlarmAndFinish or the system)
+        releaseResources();
     }
 }

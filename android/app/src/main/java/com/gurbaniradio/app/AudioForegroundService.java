@@ -42,6 +42,7 @@ public class AudioForegroundService extends Service {
     private boolean isPlaying = true;
     private String currentTitle = "ANHAD Kirtan";
     private String currentArtist = "Sri Harmandir Sahib Ji";
+    private String currentStream = "darbar";
 
     @Override
     public void onCreate() {
@@ -59,8 +60,19 @@ public class AudioForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            String action = intent.getAction();
+        if (intent == null) {
+            // Service restarted by OS (START_STICKY), rebuild state from saved data
+            if (currentTitle == null || currentTitle.isEmpty()) {
+                currentTitle = "ANHAD Kirtan";
+                currentArtist = "Sri Harmandir Sahib Ji";
+                currentStream = "darbar";
+            }
+            startForeground(NOTIFICATION_ID, buildNotification());
+            broadcastCommand("RECONNECT");
+            return START_STICKY;
+        }
+
+        String action = intent.getAction();
             
             if (ACTION_STOP.equals(action) || "STOP".equals(action)) {
                 isPlaying = false;
@@ -90,15 +102,16 @@ public class AudioForegroundService extends Service {
             // Default: start with new title/artist
             String title = intent.getStringExtra("title");
             String artist = intent.getStringExtra("artist");
+            String stream = intent.getStringExtra("stream");
             if (title != null) currentTitle = title;
             if (artist != null) currentArtist = artist;
+            if (stream != null) currentStream = stream;
             isPlaying = true;
             
             updateMediaSessionMetadata();
             updateMediaSessionState();
             startForeground(NOTIFICATION_ID, buildNotification());
-        }
-        return START_STICKY;
+            return START_STICKY;
     }
 
     private void initMediaSession() {
@@ -138,7 +151,16 @@ public class AudioForegroundService extends Service {
     
     private Bitmap getAlbumArt() {
         try {
-            Bitmap rawArt = BitmapFactory.decodeResource(getResources(), R.drawable.splash);
+            int resId = R.drawable.splash;
+            if ("darbar".equals(currentStream)) {
+                resId = R.drawable.artwork_darbar;
+            } else if ("amritvela".equals(currentStream)) {
+                resId = R.drawable.artwork_amritvela;
+            } else if ("simran".equals(currentStream)) {
+                resId = R.drawable.artwork_simran;
+            }
+
+            Bitmap rawArt = BitmapFactory.decodeResource(getResources(), resId);
             if (rawArt != null) {
                 // Scale down to 512x512 to avoid TransactionTooLargeException while keeping it crisp
                 return Bitmap.createScaledBitmap(rawArt, 512, 512, true);

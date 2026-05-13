@@ -1076,7 +1076,7 @@
         
         <!-- Header -->
         <header class="header">
-            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back">
+            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" onclick="goHome(event)">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -1281,7 +1281,7 @@
     
     <!-- Floating Tab Bar -->
     <nav class="tab-bar">
-        <a href="../index.html" class="tab-item">
+        <a href="../index.html" class="tab-item" onclick="goHome(event)">
             <span class="tab-icon">🏠</span>
             <span class="tab-label">Home</span>
         </a>
@@ -1338,9 +1338,8 @@
         // SKELETON LOADING
         // ═══════════════════════════════════════════════════════════════
         
-        setTimeout(() => {
-            document.getElementById('skeletonContainer').classList.add('hidden');
-        }, 600);
+        // Hide skeleton immediately — content is static HTML, no need to wait
+        document.getElementById('skeletonContainer').classList.add('hidden');
         
         // ═══════════════════════════════════════════════════════════════
         // THEME TOGGLE - Using Global AnhadTheme API
@@ -1440,6 +1439,22 @@
             searchInput.value = '';
             searchResults.innerHTML = '<p class="search-hint">Type to search for banis...</p>';
         });
+    </script>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // GO HOME — Set session flags so main index.html doesn't redirect
+        // to the welcome screen (ios-homepage.html)
+        // ═══════════════════════════════════════════════════════════════
+        function goHome(e) {
+            e.preventDefault();
+            try {
+                sessionStorage.setItem('anhad_welcomed', '1');
+                sessionStorage.setItem('anhad_session_active', 'true');
+                localStorage.setItem('anhad_welcome_seen', 'true');
+            } catch (_) {}
+            window.location.href = '../index.html';
+        }
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>

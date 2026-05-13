@@ -12,6 +12,19 @@ const UltraWelcomeLoader = {
   startTime: null,
 
   init() {
+    // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
+    // The loader should only show on the very first page load of the session.
+    if (sessionStorage.getItem('anhad_loader_shown') === '1') {
+      console.log('[UltraLoader] Already shown this session, skipping');
+      // Immediately reveal the app without the loader
+      requestAnimationFrame(() => {
+        const app = document.getElementById('app');
+        if (app) app.classList.add('ultra-cascade');
+      });
+      return;
+    }
+    sessionStorage.setItem('anhad_loader_shown', '1');
+
     this.startTime = Date.now();
     this.createLoader();
     this.createFloatingParticles();

@@ -149,7 +149,7 @@ const WidgetBridge = {
     async getNitnemData() {
         const CONFIG = {
             STORAGE_KEYS: {
-                STREAK_DATA: 'nitnemTracker_streakData',
+                STREAK_DATA: 'anhad_streak_data',
                 NITNEM_LOG: 'nitnemTracker_nitnemLog',
                 SELECTED_BANIS: 'nitnemTracker_selectedBanis',
                 THEME: 'anhad_theme'

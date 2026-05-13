@@ -9,7 +9,7 @@
 
 class StreakEngine {
     constructor() {
-        this.STORAGE_KEY = 'nitnemTracker_streakData';
+        this.STORAGE_KEY = 'anhad_streak_data';
         this.AMRITVELA_KEY = 'nitnemTracker_amritvelaLog';
         this.NITNEM_KEY = 'nitnemTracker_nitnemLog';
         this._selectedBanis = null; // Cache for selected Banis to avoid repeated localStorage reads

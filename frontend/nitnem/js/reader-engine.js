@@ -682,8 +682,6 @@
         const fontSize = state.settings.gurbaniFontSize || 28;
         const textAlign = state.settings.textAlign || 'center';
 
-        console.log('🔤 Applying font:', fontKey, fontFamily);
-
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
             el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
@@ -691,12 +689,11 @@
             // Add current font class
             el.classList.add(`font-${fontKey}`);
 
-            // FORCE apply inline styles with cssText for maximum priority
-            el.style.cssText = `
-                font-family: ${fontFamily} !important;
-                font-weight: ${fontWeight} !important;
-                font-size: ${fontSize}px !important;
-            `;
+            // FIX: Use individual property assignment instead of cssText
+            // cssText wipes ALL inline styles (including color settings from color picker)
+            el.style.setProperty('font-family', fontFamily, 'important');
+            el.style.setProperty('font-weight', fontWeight, 'important');
+            el.style.setProperty('font-size', `${fontSize}px`, 'important');
         });
 
         // Apply text alignment
@@ -707,7 +704,7 @@
         // Update font preview
         const preview = document.querySelector('.font-preview-text');
         if (preview) {
-            preview.style.cssText = `font-family: ${fontFamily} !important;`;
+            preview.style.fontFamily = fontFamily;
         }
 
         // Update font select value
@@ -1278,6 +1275,12 @@
                 }
                 els.tickBtn?.classList.add('ticked');
                 console.log('[Reader] Bani ticked in Nitnem Tracker for period:', period);
+
+                // SYNC: Record in UnifiedStats for streak tracking
+                if (window.UnifiedStats) {
+                    const baniName = state.baniMeta?.nameEnglish || 'Bani';
+                    window.UnifiedStats.recordNitnemBani(baniName);
+                }
             }
 
             // Save back to localStorage

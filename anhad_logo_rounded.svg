@@ -1,0 +1,78 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="roundedCorners">
+      <path d="M 200,100 Q 100,0 100,100 900,100 Q 100,100 824,100 824,0 724,0 Q 724,100 624,100 624,200 500,200 Q 500,200 400,200 400,100 300,100 Q 300,100 200,100 200,100 200,200 200,200 200,200 Z"/>
+    </clipPath>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.3"/>
+      <feComposite in2="offsetblur" in="SourceGraphic"/>
+      <feMerge>
+        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="shadow"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F7C868;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="clayEffect" cx="50%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="60%" style="stop-color:#F0E6D6;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:0.3" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background with claymorphism effect -->
+  <rect width="1024" height="1024" fill="url(#clayEffect)" rx="180" ry="180"/>
+  
+  <!-- Main logo content -->
+  <g clip-path="url(#roundedCorners)">
+    <!-- Outer glow ring -->
+    <circle cx="512" cy="512" r="480" fill="none" stroke="url(#goldGradient)" stroke-width="8" opacity="0.6"/>
+    <circle cx="512" cy="512" r="460" fill="none" stroke="#FFD700" stroke-width="4" opacity="0.8"/>
+    
+    <!-- Inner khanda symbol -->
+    <g transform="translate(512, 512)">
+      <!-- Vertical center line -->
+      <rect x="-2" y="-200" width="4" height="300" fill="#FFD700" rx="2"/>
+      
+      <!-- Top curves -->
+      <path d="M -150,-180 Q -180,-200 -120,-180 Q -60,-200 0,-180 Q 60,-200 120,-180 Q 180,-200 200,-180" 
+            fill="none" stroke="#FFD700" stroke-width="6" stroke-linecap="round"/>
+      
+      <!-- Side curves -->
+      <path d="M -200,-150 Q -220,-100 -200,-50 Q -200,0 -200,50 Q -200,100 -200,150 Q -200,200 -150,200" 
+            fill="none" stroke="#FFD700" stroke-width="6" stroke-linecap="round"/>
+      <path d="M 200,-150 Q 220,-100 200,-50 Q 200,0 200,50 Q 200,100 200,150 Q 200,200 -150,200" 
+            fill="none" stroke="#FFD700" stroke-width="6" stroke-linecap="round"/>
+      
+      <!-- Bottom curve -->
+      <path d="M -120,180 Q -60,200 0,180 Q 60,200 120,180" 
+            fill="none" stroke="#FFD700" stroke-width="6" stroke-linecap="round"/>
+      
+      <!-- Left daggers -->
+      <path d="M -180,-100 L -220,-50 L -200,50 L -180,150" 
+            fill="none" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
+      <path d="M 180,-100 L 220,-50 L 200,50 L 180,150" 
+            fill="none" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    
+    <!-- Center circle with ek onkar symbol -->
+    <circle cx="512" cy="512" r="120" fill="#FFD700"/>
+    <circle cx="512" cy="512" r="100" fill="#FFFFFF"/>
+    
+    <!-- Ek Onkar symbol -->
+    <g transform="translate(512, 512)">
+      <path d="M -30,-20 Q 0,-40 30,-20 Q 60,0 30,20 Q 0,40 -30,20 Q -60,0 -30,-20 Z" 
+            fill="#FFD700"/>
+      <path d="M -20,-10 Q 0,-20 20,-10 Q 40,0 20,10 Q 0,20 -20,10 Q -40,0 -20,-10 Z" 
+            fill="#FFFFFF"/>
+    </g>
+  </g>
+  
+  <!-- Apply shadow filter to the entire logo -->
+  <rect width="1024" height="1024" fill="none" filter="url(#shadow)" rx="180" ry="180"/>
+</svg>

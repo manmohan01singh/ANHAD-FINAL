@@ -91,19 +91,19 @@
 
   /* ── Shadow System (Trendora depth layers) ── */
   --shadow-0: none;
-  --shadow-xs: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8), inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -2px -2px 5px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 12px 12px 24px rgba(0, 0, 0, 0.08), -12px -12px 24px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 1), inset -6px -6px 12px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 16px 16px 32px rgba(0, 0, 0, 0.08), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.06);
-  --shadow-xl: 20px 20px 40px rgba(0, 0, 0, 0.1), -20px -20px 40px rgba(255, 255, 255, 1), inset 10px 10px 20px rgba(255, 255, 255, 1), inset -10px -10px 20px rgba(0, 0, 0, 0.08);
-  --shadow-2xl: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.08);
-  --shadow-card: 16px 16px 32px rgba(0, 0, 0, 0.07), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 22px 22px 44px rgba(0, 0, 0, 0.09), -22px -22px 44px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.06);
-  --shadow-float: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 0.8), inset -6px -6px 12px rgba(0, 0, 0, 0.04);
-  --shadow-inset: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
-  --shadow-clay-btn: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-clay-btn-active: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
-  --shadow-clay-nav: 0 -8px 24px rgba(255,255,255,1), 0 8px 24px rgba(0, 0, 0, 0.08), inset 4px 4px 12px rgba(255,255,255,1), inset -4px -4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-float: none;
+  --shadow-inset: none;
+  --shadow-clay-btn: none;
+  --shadow-clay-btn-active: none;
+  --shadow-clay-nav: none;
 
   /* ── Radii (Trendora generous curves) ── */
   --radius-xs: 16px;
@@ -1089,6 +1089,64 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   content: none;
 }
 
+.quick-card__streak {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  color: #ff3b30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Streak Saved State for Nitnem Tracker Card */
+.quick-card.streak-saved {
+  background: linear-gradient(145deg, #f0f4f8 0%, #d9e2ec 100%) !important;
+  border: 2px solid rgba(82, 110, 150, 0.4) !important;
+  box-shadow: 
+    0 10px 30px rgba(82, 110, 150, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.quick-card__streak.saved {
+  color: #243b53 !important;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.quick-card.streak-saved::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 55%
+  );
+  animation: saved-shimmer 6s infinite linear;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes saved-shimmer {
+  0% { transform: translateX(-30%) translateY(-30%); }
+  100% { transform: translateX(30%) translateY(30%); }
+}
+
+.quick-card.streak-saved .quick-card__icon {
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(82, 110, 150, 0.2);
+}
+
+.quick-card.streak-saved .quick-card__icon svg {
+  color: #486581;
+}
+
 .progress-inline__text {
   font-size: var(--text-caption);
   font-weight: var(--weight-bold);
@@ -1139,7 +1197,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   border-radius: 24px;
   overflow: hidden;
   background: var(--surface-primary);
-  box-shadow: var(--shadow-float);
+  box-shadow: none !important;
   cursor: pointer;
   transition: transform var(--duration-normal) var(--ease-spring),
               box-shadow var(--duration-normal) ease;
@@ -1150,7 +1208,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 
 .hero-card:active {
   transform: scale(0.975);
-  box-shadow: var(--shadow-card);
+  box-shadow: none !important;
 }
 
 .hero-card__image-wrapper {
@@ -1398,7 +1456,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   border-radius: var(--radius-full);
   opacity: 1;
   background: var(--accent);
-  box-shadow: 0 2px 8px rgba(212, 148, 58, 0.35);
+  box-shadow: none !important;
 }
 
 
@@ -1813,7 +1871,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   transition: transform var(--duration-fast) var(--ease-spring);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none !important;
 }
 
 .event-card:active {
@@ -2964,7 +3022,7 @@ body.dark-mode .install-banner {
 
 /* Mobile: simplified shadows (single layer) */
 .is-mobile .hero-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: none !important;
 }
 
 .is-mobile .bottom-nav__glass {

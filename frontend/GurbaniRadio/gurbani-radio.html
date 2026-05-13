@@ -118,7 +118,7 @@
             <div class="artwork-glow" id="artworkGlow"></div>
             <div class="artwork-clay" id="artworkContainer">
                 <div class="artwork-inner">
-                    <img class="artwork-img" src="../assets/darbar-sahib-evening.webp" alt="Sri Darbar Sahib" id="artworkImg" crossorigin="anonymous">
+                    <img class="artwork-img" src="../assets/darbar-sahib-evening.webp" alt="Sri Darbar Sahib" id="artworkImg">
                 </div>
                 <div class="live-badge" id="liveBadge">Live</div>
             </div>
@@ -133,6 +133,8 @@
                 </span>
             </div>
             <p class="track-artist" id="trackArtist">Sri Harmandir Sahib</p>
+            <!-- Simran track subtitle: shows actual track name (e.g. "Deenanath Suno") -->
+            <p class="track-subtitle" id="trackSubtitle" style="display:none;"></p>
         </section>
 
         <!-- PROGRESS -->
@@ -143,9 +145,22 @@
             </div>
             <div class="progress-labels">
                 <span id="elapsedTime">--:--</span>
-                <span class="live-indicator" id="liveLabel">Live Stream</span>
+                <!-- LIVE label: only shown for Darbar status -->
+                <span class="live-indicator" id="liveLabel" style="display:none; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--anhad-red); letter-spacing:1px; text-transform:uppercase;">
+                    <span class="live-jump-dot pulsing" id="liveLabelDot" style="background:var(--anhad-red); width:6px; height:6px; border-radius:50%; display:inline-block;"></span>LIVE
+                </span>
+                <!-- LIVE button: explicit jump-to-live control for all streams -->
                 <span>∞</span>
             </div>
+        </section>
+
+        <!-- LIVE ACTION -->
+        <section class="live-action" id="liveAction">
+            <button class="live-jump-btn" id="liveJumpBtn" type="button" title="Jump to live position" aria-label="Jump to live">
+                <span class="live-jump-dot" aria-hidden="true"></span>
+                <span>LIVE</span>
+                <span class="live-behind-text" id="liveBehindText"></span>
+            </button>
         </section>
 
         <!-- CONTROLS -->
@@ -210,9 +225,18 @@
         volume: 0.7,
         currentTrackIndex: 0,
         totalTracks: 40,
+        lastTrackSyncAt: 0,
         retryCount: 0,
         maxRetries: 5,
         lastError: null
+    };
+
+    const LIVE_UI = {
+        anchorWallTime: 0,
+        anchorAudioTime: 0,
+        pausedAt: 0,
+        isBehind: false,
+        pendingAnchor: false
     };
 
     const STREAMS = {
@@ -293,6 +317,9 @@
         bgDarbar: document.getElementById('bgDarbar'),
         bgAmritvela: document.getElementById('bgAmritvela'),
         liveBadge: document.getElementById('liveBadge'),
+        liveLabel: document.getElementById('liveLabel'),
+        liveJumpBtn: document.getElementById('liveJumpBtn'),
+        liveBehindText: document.getElementById('liveBehindText'),
         
         // Track info
         trackTitle: document.getElementById('trackTitle'),
@@ -337,6 +364,67 @@
         return window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
     }
 
+    function isVirtualStream(streamType = STATE.currentStream) {
+        return streamType === 'amritvela' || streamType === 'simran';
+    }
+
+    function markLiveAnchor() {
+        const audio = getAudio();
+        LIVE_UI.anchorWallTime = Date.now();
+        LIVE_UI.anchorAudioTime = audio ? Number(audio.currentTime) || 0 : 0;
+        LIVE_UI.pausedAt = 0;
+        LIVE_UI.isBehind = false;
+        LIVE_UI.pendingAnchor = false;
+        updateLiveButtonState(true);
+    }
+
+    function requestLiveAnchor() {
+        LIVE_UI.pendingAnchor = true;
+    }
+
+    function getBehindLiveSeconds() {
+        if (!isVirtualStream() || !LIVE_UI.anchorWallTime) return 0;
+        const audio = getAudio();
+        if (!audio) return 0;
+        const expected = LIVE_UI.anchorAudioTime + ((Date.now() - LIVE_UI.anchorWallTime) / 1000);
+        return Math.max(0, expected - (Number(audio.currentTime) || 0));
+    }
+
+    function updateLiveButtonState() {
+        if (!dom.liveJumpBtn || !window.AnhadAudio) return;
+        
+        const state = window.AnhadAudio.getState();
+        const isBehind = isVirtualStream() && state.isBehind;
+        const offset = state.liveOffset || 0;
+
+        dom.liveJumpBtn.classList.toggle('is-behind', isBehind);
+        dom.liveJumpBtn.classList.toggle('is-synced', !isBehind);
+        
+        if (dom.liveBehindText) {
+            if (isBehind) {
+                const totalSecs = Math.round(offset);
+                if (totalSecs >= 3600) {
+                    const h = Math.floor(totalSecs / 3600);
+                    const m = Math.floor((totalSecs % 3600) / 60);
+                    const s = totalSecs % 60;
+                    dom.liveBehindText.textContent = `-${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                } else if (totalSecs >= 60) {
+                    const m = Math.floor(totalSecs / 60);
+                    const s = totalSecs % 60;
+                    dom.liveBehindText.textContent = `-${m}:${s.toString().padStart(2,'0')}`;
+                } else {
+                    dom.liveBehindText.textContent = `-${totalSecs}s`;
+                }
+            } else {
+                dom.liveBehindText.textContent = '';
+            }
+        }
+        
+        const dot = dom.liveJumpBtn.querySelector('.live-jump-dot');
+        if (dot) dot.classList.toggle('pulsing', isBehind);
+        LIVE_UI.isBehind = isBehind;
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════════
     // STREAM SWITCHING
     // ═══════════════════════════════════════════════════════════════════════════════
@@ -347,6 +435,10 @@
         const prevStream = STATE.currentStream;
         STATE.currentStream = streamType;
         const wasPlaying = STATE.isPlaying;
+        LIVE_UI.anchorWallTime = 0;
+        LIVE_UI.anchorAudioTime = 0;
+        LIVE_UI.pausedAt = 0;
+        LIVE_UI.pendingAnchor = false;
 
         // Update UI
         updateStreamUI(streamType);
@@ -406,8 +498,23 @@
         // Update volume fill color
         dom.volumeFill.className = 'volume-fill ' + streamType;
         
-        // Show/hide live badge
+        // Show/hide live label and badge
         dom.liveBadge.style.display = streamType === 'darbar' ? 'flex' : 'none';
+        if (dom.liveLabel) {
+            dom.liveLabel.style.display = streamType === 'darbar' ? 'inline-flex' : 'none';
+        }
+
+        // Show/hide LIVE jump button (explicit jump-to-live control for all streams)
+        if (dom.liveJumpBtn) {
+            dom.liveJumpBtn.style.display = 'inline-flex';
+            updateLiveButtonState(!isVirtualStream(streamType));
+        }
+
+        // Show/hide track subtitle
+        const trackSubtitle = document.getElementById('trackSubtitle');
+        if (trackSubtitle) {
+            trackSubtitle.style.display = streamType === 'simran' ? 'block' : 'none';
+        }
 
         // Magical Simran switch
         if (dom.simranSwitch) {
@@ -487,10 +594,29 @@
 
     function togglePlay() {
         if (STATE.isConnecting) return; // Block double-taps during connection
-        // Use singleton's toggle() which is smarter: resumes in-place when appropriate
         if (!window.AnhadAudio) return;
-        window.AnhadAudio.toggle(STATE.isPlaying ? null : STATE.currentStream);
-        hapticFeedback(STATE.isPlaying ? 30 : 50);
+
+        if (STATE.isPlaying) {
+            // Currently playing → pause in-place
+            STATE.isPlaying = false;
+            STATE.isConnecting = false;
+            LIVE_UI.pausedAt = isVirtualStream() ? Date.now() : 0;
+            updateUI();
+            window.AnhadAudio.pause();
+            hapticFeedback(30);
+        } else {
+            // Paused → resume in-place (NO re-sync to live position)
+            // Use resumeInPlace() so Play/Pause feels instant and doesn't jump position.
+            // The separate LIVE button is responsible for re-syncing to live.
+            const audio = getAudio();
+            const st = window.AnhadAudio.getState?.();
+            if (!audio || !audio.src || st?.currentStream !== STATE.currentStream) {
+                window.AnhadAudio.play(STATE.currentStream);
+            } else {
+                window.AnhadAudio.resumeInPlace();
+            }
+            hapticFeedback(50);
+        }
     }
 
     function nextTrack() {
@@ -595,11 +721,24 @@
             dom.playIcon.classList.add('fa-pause');
             dom.artworkContainer.classList.add('playing');
             dom.player.classList.remove('paused');
+            
+            // Make Darbar live badge blink when playing
+            if (STATE.currentStream === 'darbar') {
+                const dot = document.getElementById('liveLabelDot');
+                if (dot) dot.classList.add('pulsing');
+            }
+            if (isVirtualStream() && !LIVE_UI.anchorWallTime) markLiveAnchor();
         } else {
             dom.playIcon.classList.remove('fa-pause');
             dom.playIcon.classList.add('fa-play');
             dom.artworkContainer.classList.remove('playing');
             dom.player.classList.add('paused');
+            
+            // Stop blinking when paused
+            if (STATE.currentStream === 'darbar') {
+                const dot = document.getElementById('liveLabelDot');
+                if (dot) dot.classList.remove('pulsing');
+            }
         }
         
         // Volume
@@ -720,6 +859,41 @@
         
         // Controls
         dom.playBtn.addEventListener('click', togglePlay);
+
+        // LIVE button — jumps to live server position (re-sync)
+        if (dom.liveJumpBtn) {
+            dom.liveJumpBtn.addEventListener('click', () => {
+                if (!window.AnhadAudio) return;
+                hapticFeedback(40);
+                const dot = dom.liveJumpBtn.querySelector('.live-jump-dot');
+                dom.liveJumpBtn.classList.add('pulsing');
+                if (dot) dot.classList.add('pulsing');
+                window.AnhadAudio.jumpToLive().then(() => {
+                    requestLiveAnchor();
+                    updateLiveButtonState(true);
+                    dom.liveJumpBtn.classList.remove('pulsing');
+                    if (dot) dot.classList.remove('pulsing');
+                }).catch(() => {
+                    dom.liveJumpBtn.classList.remove('pulsing');
+                    if (dot) dot.classList.remove('pulsing');
+                });
+                showStatus('Syncing to live position...');
+                setTimeout(hideStatus, 3000);
+            });
+        }
+        
+        // Listen for live position sync status
+        window.addEventListener('anhadLiveSyncStatus', (e) => {
+            const { isAtLiveEdge } = e.detail;
+            if (dom.liveJumpBtn) {
+                if (isAtLiveEdge) {
+                    requestLiveAnchor();
+                    updateLiveButtonState(true);
+                } else {
+                    updateLiveButtonState();
+                }
+            }
+        });
         
         // Volume
         dom.volumeInput.addEventListener('input', (e) => {
@@ -760,6 +934,26 @@
             }
         });
 
+        // ── Track title/subtitle update (Simran actual track name) ──
+        window.addEventListener('anhadTrackChanged', (e) => {
+            const { stream, trackTitle, trackArtist } = e.detail;
+            if (stream !== STATE.currentStream) return;
+            const sub = document.getElementById('trackSubtitle');
+
+            if (stream === 'simran') {
+                dom.trackTitle.textContent = 'Waheguru Simran';
+                if (sub) {
+                    sub.textContent = trackTitle || '';
+                    sub.style.display = trackTitle ? 'block' : 'none';
+                }
+                dom.trackArtist.textContent = trackArtist || 'Amritvela Trust';
+            } else if (stream === 'amritvela') {
+                dom.trackTitle.textContent = 'Amritvela Kirtan';
+                if (sub) sub.style.display = 'none';
+                dom.trackArtist.textContent = trackArtist || 'Divine Shabad';
+            }
+        });
+
         // Use global AnhadAudio methods for time/error if available
         if (window.AnhadAudio) {
             window.AnhadAudio.on('loading', (e) => {
@@ -791,11 +985,7 @@
                 STATE.volume = Math.max(0, STATE.volume - 0.1);
                 updateUI();
             } else if (e.key === 'l' || e.key === 'L') {
-                if (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') {
-                    syncAmritvelaPosition().then(() => play());
-                } else {
-                    play();
-                }
+                window.AnhadAudio?.jumpToLive?.();
             }
         });
         
@@ -840,6 +1030,7 @@
     
     function init() {
         loadState();
+        try { localStorage.setItem('anhad_gurbani_radio_last_opened', String(Date.now())); } catch (e) {}
         initTheme();
         initEventListeners();
 
@@ -848,16 +1039,22 @@
         // Subscribe to singleton events for UI sync
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (audioState) => {
-                // Don't flip to "paused" while we're still loading/connecting
-                if (!STATE.isConnecting || audioState.isPlaying) {
-                    STATE.isPlaying = audioState.isPlaying;
-                }
+                // Synchronize playing state immediately to avoid icon mismatch
+                STATE.isPlaying = audioState.isPlaying;
                 if (audioState.currentStream && STREAMS[audioState.currentStream]) {
                     STATE.currentStream = audioState.currentStream;
                     updateStreamUI(STATE.currentStream);
                 }
                 STATE.currentTrackIndex = audioState.currentTrackIndex;
                 if (audioState.isPlaying) STATE.isConnecting = false;
+                if (audioState.isPlaying && isVirtualStream(audioState.currentStream)) {
+                    if (!LIVE_UI.anchorWallTime) {
+                        requestLiveAnchor();
+                    }
+                    if (LIVE_UI.pausedAt) {
+                        LIVE_UI.pausedAt = 0;
+                    }
+                }
                 updateUI();
             });
 
@@ -873,6 +1070,10 @@
                     const mins = Math.floor(data.currentTime / 60);
                     const secs = Math.floor(data.currentTime % 60);
                     dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                    if (LIVE_UI.pendingAnchor && isVirtualStream() && STATE.isPlaying) {
+                        markLiveAnchor();
+                    }
+                    updateLiveButtonState();
                 }
             });
 
@@ -917,10 +1118,12 @@
         // Continuous polling - only check for track changes, not position
         // Position only jumps when user explicitly plays (pure virtual live)
         setInterval(() => {
-            if (STATE.isPlaying && (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') && !document.hidden) {
+            if (STATE.isPlaying && (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') && !document.hidden && Date.now() - STATE.lastTrackSyncAt > 30000) {
+                STATE.lastTrackSyncAt = Date.now();
                 checkTrackSync(); // Lightweight track-only check
             }
-        }, 30000); // Check every 30 seconds
+            updateLiveButtonState();
+        }, 1000); // Keep LIVE state and track metadata fresh without resyncing
         
         // Check URL params for stream selection
         const urlParams = new URLSearchParams(window.location.search);
@@ -936,10 +1139,17 @@
         // Initial connection overlay text
         dom.connectingStream.textContent = STREAMS[STATE.currentStream].name;
         
-        // Auto-resume: play if was playing before refresh, but ONLY if user has already interacted.
-        // Chrome blocks audio.play() without a user gesture — we pre-fetch the live position
-        // so the UI shows the correct track, then wait for the user's first tap to actually play.
-        if (streamParam || STATE.isPlaying) {
+        // Auto-resume or Autoplay
+        const autoplay = urlParams.get('autoplay') === 'true';
+        if (autoplay) {
+            console.log('[Gurbani Radio] Autoplay requested via URL param');
+            STATE.isPlaying = true; // Set playing state
+            updateUI();
+            // Short delay to ensure everything is ready
+            setTimeout(() => {
+                play();
+            }, 600);
+        } else if (streamParam || STATE.isPlaying) {
             const reason = streamParam ? `stream param (${STATE.currentStream})` : 'previous session';
             console.log('[Gurbani Radio] Ready for user tap, pre-loaded for', reason);
             // UI is already set up correctly — user just needs to tap ▶ to play

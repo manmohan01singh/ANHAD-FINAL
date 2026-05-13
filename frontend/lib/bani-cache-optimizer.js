@@ -31,11 +31,11 @@ class BaniCacheOptimizer {
         
         // Guru images to preload
         this.guruImages = [
-            '/assets/darbar-sahib-day.webp',
-            '/assets/Darbar-sahib-AMRITVELA.webp',
-            '/assets/darbar-sahib-evening.webp',
-            '/assets/darbar-sahib-evening.jpg',
-            '/assets/HUKAMNAMA-SAHIB.webp'
+            'assets/darbar-sahib-day.webp',
+            'assets/Darbar-sahib-AMRITVELA.webp',
+            'assets/darbar-sahib-evening.webp',
+            'assets/darbar-sahib-evening.jpg',
+            'assets/HUKAMNAMA-SAHIB.webp'
         ];
         
         // Background download queue
@@ -174,7 +174,7 @@ class BaniCacheOptimizer {
             // Fallback to nitnem bundle for nitnem banis
             const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
             if (nitnemBanis.includes(baniId)) {
-                const response = await fetch('../data/banis-chunks/nitnem-banis.json');
+                const response = await fetch('data/banis-chunks/nitnem-banis.json');
                 if (!response.ok) throw new Error('Failed to load nitnem bundle');
                 const jsonData = await response.json();
                 

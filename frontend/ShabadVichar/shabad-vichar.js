@@ -230,7 +230,7 @@ class ShabadVichar {
             const diff = currentX - startX;
             if (diff > 100) {
                 this.haptic('light');
-                window.location.href = '../index.html';
+                if (window.navigateTo) window.navigateTo('../index.html'); else window.location.href = '../index.html';
                 isSwiping = false;
             }
         }, { passive: true });
@@ -257,6 +257,18 @@ class ShabadVichar {
         }
     }
 
+    showError(message) {
+        console.error('User error:', message);
+        // Try to show error in UI if error container exists
+        if (this.$.errorState) {
+            this.$.errorState.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+        // Also try to show as alert for better user feedback
+        if (typeof alert !== 'undefined') {
+            setTimeout(() => alert(message), 100);
+        }
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // API — FETCH SHABAD
     // ═══════════════════════════════════════════════════════════════
@@ -269,22 +281,58 @@ class ShabadVichar {
         this.showState('loading');
         this.haptic('medium');
 
-        // Create timeout promise
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Timeout')), 10000);
-        });
+        const maxRetries = 3;
+        const baseTimeout = 10000; // 10 seconds
+        let attempt = 0;
+
+        const attemptFetch = async (retryCount) => {
+            const timeout = baseTimeout * Math.pow(2, retryCount); // Exponential backoff
+            
+            const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => reject(new Error(`Timeout after ${timeout}ms`)), timeout);
+            });
+
+            try {
+                console.log(`Attempt ${retryCount + 1}/${maxRetries} with ${timeout}ms timeout`);
+                
+                const res = await Promise.race([
+                    fetch('https://api.banidb.com/v2/random/shabad', {
+                        method: 'GET',
+                        headers: {
+                            'Cache-Control': 'no-cache',
+                            'Pragma': 'no-cache'
+                        }
+                    }),
+                    timeoutPromise
+                ]);
+                
+                if (!res.ok) {
+                    throw new Error(`Network error: ${res.status} ${res.statusText}`);
+                }
+
+                const data = await res.json();
+                if (!data?.verses?.length) {
+                    throw new Error('No verses in response');
+                }
+
+                return data;
+
+            } catch (err) {
+                console.error(`Attempt ${retryCount + 1} failed:`, err.message);
+                
+                if (retryCount === maxRetries - 1) {
+                    throw err; // Final attempt failed, throw the error
+                }
+                
+                // Wait before next retry with exponential backoff
+                await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+                return attemptFetch(retryCount + 1);
+            }
+        };
 
         try {
-            const res = await Promise.race([
-                fetch('https://api.banidb.com/v2/random/shabad'),
-                timeoutPromise
-            ]);
+            const data = await attemptFetch(0);
             
-            if (!res.ok) throw new Error('Network error');
-
-            const data = await res.json();
-            if (!data?.verses?.length) throw new Error('No verses');
-
             this.state.shabad = data;
 
             // If this is the daily shabad, save it
@@ -299,9 +347,18 @@ class ShabadVichar {
             this.haptic('light');
 
         } catch (err) {
-            console.error('Fetch error:', err);
+            console.error('All fetch attempts failed:', err);
             this.showState('error');
             this.haptic('error');
+            
+            // Show user-friendly error message
+            if (err.message.includes('Timeout')) {
+                this.showError('Network timeout - please check your connection and try again');
+            } else if (err.message.includes('Network error')) {
+                this.showError('Network error - please check your internet connection');
+            } else {
+                this.showError('Unable to fetch shabad - please try again later');
+            }
         } finally {
             this.state.isLoading = false;
         }
