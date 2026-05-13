@@ -35,15 +35,13 @@
     seenBefore = localStorage.getItem('anhad_welcome_seen') === 'true';
   } catch (e) {}
 
-  if (sessionStorage.getItem('anhad_welcomed') === '1' || sessionActive || isInternalNav || isSPA || seenBefore) {
-    // Skip splash - mark as welcomed for this session
+  if (sessionStorage.getItem('anhad_welcomed') === '1' || isSPA) {
+    // Already in SPA or already entered in this session
     try {
       sessionStorage.setItem('anhad_welcomed', '1');
-      localStorage.setItem(ACTIVE_KEY, Date.now().toString());
     } catch (e) {}
   } else {
     // Cold start - redirect to splash
-    // Note: This script is intended to be loaded from index.html (root)
     window.location.replace('./Homepage/ios-homepage.html');
   }
 })();

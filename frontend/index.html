@@ -24,11 +24,8 @@
       const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F2F2F7';
       document.documentElement.style.backgroundColor = bg;
       
-      // FAST-TRACK: Prevent white flash and redundant loaders
+      // FAST-TRACK: Prevent white flash
       document.documentElement.classList.add('theme-loaded');
-      if (localStorage.getItem('anhad_welcome_seen') === 'true') {
-        sessionStorage.setItem('anhad_welcomed', '1');
-      }
 
       // Sync to body as soon as it exists
       const observer = new MutationObserver(() => {

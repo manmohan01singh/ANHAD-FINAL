@@ -166,9 +166,21 @@
     const isBackToHome = target === '../index.html';
     
     if (isBackToHome) {
-      const root = window.ANHAD_ROOT || (window.location.origin + '/');
+      let root = window.ANHAD_ROOT;
+      if (!root) {
+        // Robustly resolve root from the current location
+        const path = window.location.pathname;
+        const marker = '/frontend/';
+        const idx = path.indexOf(marker);
+        if (idx !== -1) {
+          root = path.substring(0, idx + marker.length);
+        } else {
+          // Fallback to origin root if /frontend/ not found
+          root = window.location.origin + '/';
+        }
+      }
       target = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
-      console.log('[SmartBack] Back-to-Home detected, resolving to absolute root:', target);
+      console.log('[SmartBack] Back-to-Home detected, resolved to:', target);
     }
 
     console.log('[SmartBack] Navigating to fallback:', target);

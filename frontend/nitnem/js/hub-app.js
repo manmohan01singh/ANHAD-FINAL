@@ -656,7 +656,7 @@
     // ═══════════════════════════════════════════════════════════════
 
     function hideLoadingScreen() {
-        const loadingOverlay = document.getElementById('loadingOverlay');
+        const loadingOverlay = document.getElementById('skeletonContainer') || document.getElementById('loadingOverlay');
         if (loadingOverlay) {
             loadingOverlay.classList.add('hidden');
             // Immediate hide to prevent persistent overlay

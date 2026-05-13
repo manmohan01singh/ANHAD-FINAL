@@ -31,8 +31,33 @@
             const stored = localStorage.getItem('anhad_nitnem_version');
             if (stored !== MOD_VERSION) {
                 localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
-                // No forced reload here - the SPA shell handles updates
             }
+        })();
+
+        // Theme Initialization (Instant)
+        (function() {
+            const theme = localStorage.getItem('anhad_theme') || 'light';
+            let effectiveTheme = theme;
+            if (theme === 'auto') {
+                const hour = new Date().getHours();
+                effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', effectiveTheme);
+            document.documentElement.style.colorScheme = effectiveTheme;
+            if (effectiveTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F8F9FA';
+            document.documentElement.style.backgroundColor = bg;
+            
+            // Sync to body
+            const observer = new MutationObserver(() => {
+                if (document.body) {
+                    if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
         })();
     </script>
     

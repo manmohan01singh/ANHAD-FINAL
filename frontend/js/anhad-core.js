@@ -5,6 +5,24 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL APP ROOT RESOLUTION
+// ═══════════════════════════════════════════════════════════════════════════════
+(function() {
+    if (!window.ANHAD_ROOT) {
+        const path = window.location.pathname;
+        const marker = '/frontend/';
+        const idx = path.indexOf(marker);
+        if (idx !== -1) {
+            window.ANHAD_ROOT = path.substring(0, idx + marker.length);
+        } else {
+            // Fallback for local development
+            window.ANHAD_ROOT = '/';
+        }
+        console.log('[ANHAD] Global Root Resolved:', window.ANHAD_ROOT);
+    }
+})();
+
 (function AnhadCore() {
   'use strict';
 
