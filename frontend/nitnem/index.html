@@ -25,31 +25,13 @@
     
     
     <script>
+        // Module Version Check (Lightweight)
         (function() {
-            const APP_VERSION = '1.0.1'; // Increment this on every deploy
-            const storedVersion = localStorage.getItem('anhad_app_version');
-            
-            if (storedVersion !== APP_VERSION) {
-                localStorage.setItem('anhad_app_version', APP_VERSION);
-                // Force reload from server, not cache
-                if (storedVersion) {
-                    window.location.reload(true);
-                }
-            }
-            
-            // Service Worker registration for better cache control
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // New version available - force reload
-                                window.location.reload();
-                            }
-                        });
-                    });
-                });
+            const MOD_VERSION = '1.0.1';
+            const stored = localStorage.getItem('anhad_nitnem_version');
+            if (stored !== MOD_VERSION) {
+                localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
+                // No forced reload here - the SPA shell handles updates
             }
         })();
     </script>
@@ -168,10 +150,21 @@
             min-height: 100vh;
         }
 
-        /* Dark Mode Body Override */
+        /* Dark Mode Overrides */
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --ios-blue: #0A84FF;
+            --ios-orange: #FF9F0A;
+            --sacred-gold: #D4AF37;
+            --glass-bg: rgba(28, 28, 30, 0.85);
+            --separator: rgba(255, 255, 255, 0.15);
+        }
+        
         [data-theme="dark"] body {
-            background: #000000;
-            color: #FFFFFF;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -1076,7 +1069,7 @@
         
         <!-- Header -->
         <header class="header">
-            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" onclick="goHome(event)">
+            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" data-anhad-back="../index.html">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -1453,7 +1446,15 @@
                 sessionStorage.setItem('anhad_session_active', 'true');
                 localStorage.setItem('anhad_welcome_seen', 'true');
             } catch (_) {}
-            window.location.href = '../index.html';
+            
+            // USE STANDARDIZED NAVIGATION ENGINE
+            if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else if (window.navigateTo) {
+                window.navigateTo('../index.html');
+            } else {
+                window.location.href = '../index.html';
+            }
         }
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->

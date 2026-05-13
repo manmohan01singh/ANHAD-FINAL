@@ -127,6 +127,15 @@
         // Seeking done via audio.currentTime after loadedmetadata.
         return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?t=${Math.floor(Date.now() / 30000)}`;
       }
+    },
+    hukamnama: {
+      name: 'Daily Hukamnama',
+      subtitle: 'Sachkhand Sri Harmandir Sahib',
+      url: `${API_BASE}/api/hukamnama/audio`, // Use backend streaming proxy
+      artwork: resolveAsset('HUKAMNAMA-SAHIB.webp'),
+      type: 'live',
+      skipCacheBuster: true,
+      playerPage: 'Hukamnama/daily-hukamnama.html'
     }
   };
 
@@ -957,8 +966,9 @@
         const baseUrl = (window.Capacitor && streamName === 'darbar')
           ? SGPC_LIVE
           : stream.url;
-        // FIX: Deterministic cache buster to prevent SGPC rebuffer loop
-        const freshUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 5000) * 5000;
+        const freshUrl = stream.skipCacheBuster 
+          ? baseUrl 
+          : (baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 5000) * 5000);
         console.log('[AnhadAudio] 🔴 LIVE: ' + freshUrl);
         audio.src = freshUrl;
         // PWA only: call load() to reset pipeline

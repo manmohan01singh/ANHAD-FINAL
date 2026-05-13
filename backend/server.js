@@ -782,6 +782,71 @@ app.delete('/api/sehaj-paath/bookmarks/:id', async (req, res) => {
 
 app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
 
+// ─── HUKAMNAMA AUDIO PROXY ─────────────────────────────────────────
+// Scrapes SGPC page to find today's audio URL and proxies/redirects it.
+// Cached for 10 minutes to reduce SGPC server load.
+let hukamAudioCache = { url: null, ts: 0 };
+
+app.get('/api/hukamnama/audio', async (req, res) => {
+    try {
+        const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+        const now = Date.now();
+
+        // Step 1: Get the real URL (with caching)
+        if (!hukamAudioCache.url || (now - hukamAudioCache.ts) > CACHE_TTL) {
+            const https = require('https');
+            const html = await new Promise((resolve, reject) => {
+                const r = https.get('https://sgpc.net/hukamnama-sahib/', {
+                    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; AnhadApp/3.0)' },
+                    timeout: 8000
+                }, (res2) => {
+                    let data = '';
+                    res2.on('data', c => data += c);
+                    res2.on('end', () => resolve(data));
+                });
+                r.on('error', reject);
+                r.on('timeout', () => { r.destroy(); reject(new Error('timeout')); });
+            });
+
+            const mp3Match = html.match(/["'](https?:\/\/[^"']+\.mp3[^"']*)['"]/i);
+            if (mp3Match && mp3Match[1]) {
+                hukamAudioCache = { url: mp3Match[1], ts: now };
+                console.log('[🎙️ Hukamnama] Scraped fresh URL:', mp3Match[1]);
+            } else {
+                const d = new Date();
+                hukamAudioCache = { 
+                    url: `https://www.sgpc.net/hukamnama/${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/hukamnama.mp3`,
+                    ts: now 
+                };
+                console.log('[🎙️ Hukamnama] No URL in page, using fallback:', hukamAudioCache.url);
+            }
+        }
+
+        // Step 2: Stream the data to the client (Bypasses CORS entirely)
+        const https = require('https');
+        const audioReq = https.get(hukamAudioCache.url, (audioRes) => {
+            // Forward headers
+            res.setHeader('Content-Type', 'audio/mpeg');
+            res.setHeader('Accept-Ranges', 'bytes');
+            if (audioRes.headers['content-length']) {
+                res.setHeader('Content-Length', audioRes.headers['content-length']);
+            }
+            // Pipe the data
+            audioRes.pipe(res);
+        });
+
+        audioReq.on('error', (err) => {
+            console.error('[🎙️ Hukamnama] Streaming error:', err.message);
+            if (!res.headersSent) res.status(502).end();
+        });
+
+    } catch (err) {
+        console.error('[🎙️ Hukamnama] Proxy error:', err.message);
+        if (!res.headersSent) res.status(502).json({ error: 'Could not stream Hukamnama audio' });
+    }
+});
+
+
 // ═══════════════════════════════════════════════════════════════════
 // AUDIO PROXY
 // ═══════════════════════════════════════════════════════════════════

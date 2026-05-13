@@ -19,6 +19,26 @@
       } else {
         document.documentElement.classList.remove('dark-mode');
       }
+      
+      // CRITICAL: Immediately set background to prevent white flash
+      const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F2F2F7';
+      document.documentElement.style.backgroundColor = bg;
+      
+      // FAST-TRACK: Prevent white flash and redundant loaders
+      document.documentElement.classList.add('theme-loaded');
+      if (localStorage.getItem('anhad_welcome_seen') === 'true') {
+        sessionStorage.setItem('anhad_welcomed', '1');
+      }
+
+      // Sync to body as soon as it exists
+      const observer = new MutationObserver(() => {
+        if (document.body) {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
     })();
   </script>
   
@@ -66,53 +86,13 @@
 
   <script src="./js/anhad-core.js" defer></script>
 
+  <!-- Welcome/Splash Check - Handled by external script to allow SPA skipping -->
+  <script src="lib/welcome-check.js"></script>
+
   <script>
     (function() {
-      // UNIFIED welcome check
-      var isCapacitor = typeof window.Capacitor !== 'undefined';
-      var isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-      // FIX: Prevent double-splash on back navigation in Capacitor.
-      // We use a short-lived timestamp marker: if the app was active within the last
-      // 30 seconds, we treat this as a back-navigation (not a cold start) and skip splash.
-      var ACTIVE_KEY = 'anhad_capacitor_active_ts';
-      var ACTIVE_WINDOW_MS = 30000; // 30 seconds
-      var capacitorActive = false;
-      if (isCapacitor) {
-        var lastActive = parseInt(localStorage.getItem(ACTIVE_KEY) || '0', 10);
-        capacitorActive = (Date.now() - lastActive) < ACTIVE_WINDOW_MS;
-      }
-
-      // Also treat navigating back from an internal page (referrer check) as welcomed
-      var isInternalNav = document.referrer.indexOf(window.location.hostname) !== -1 ||
-                          document.referrer.indexOf('file://') !== -1;
-
-      if (sessionStorage.getItem('anhad_welcomed') === '1') {
-        // Already welcomed this session — proceed normally
-      } else if (capacitorActive) {
-        // Capacitor: app active recently — skip splash (user is navigating back)
-        sessionStorage.setItem('anhad_welcomed', '1');
-      } else if (isInternalNav) {
-        // Coming from an internal page — skip splash
-        sessionStorage.setItem('anhad_welcomed', '1');
-      } else if (!isCapacitor && !isPWA && localStorage.getItem('anhad_welcome_seen') === 'true') {
-        sessionStorage.setItem('anhad_welcomed', '1');
-      } else if (!isCapacitor && isPWA && sessionStorage.getItem('anhad_session_active') === 'true') {
-        sessionStorage.setItem('anhad_welcomed', '1');
-      } else {
-        window.location.replace('./Homepage/ios-homepage.html');
-      }
-
-      // Mark theme as loaded immediately to show content
-      window.addEventListener('DOMContentLoaded', function() {
-        document.body.classList.add('theme-loaded');
-        // FIX: Refresh the Capacitor active timestamp on each successful page load
-        // so back-navigation within 30s skips the splash, but a cold start (>30s gap)
-        // correctly shows the splash screen.
-        if (isCapacitor) {
-          localStorage.setItem(ACTIVE_KEY, Date.now().toString());
-        }
-      });
+      // App initialized marker
+      document.body.classList.add('theme-loaded');
     })();
   </script>
 
@@ -399,13 +379,13 @@
     .event-card__title {
       font-family: 'Cinzel', serif !important;
       font-weight: 700 !important;
-      font-size: 0.9rem !important;
-      line-height: 1.25 !important;
-      letter-spacing: 0.3px !important;
+      font-size: 1rem !important;
+      line-height: 1.2 !important;
+      letter-spacing: 0.2px !important;
       text-transform: uppercase !important;
-      color: #72500A !important;
-      max-width: 160px !important;
-      text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+      color: var(--event-title-color, #72500A) !important;
+      max-width: 280px !important;
+      text-shadow: var(--event-title-shadow, 0 1px 1px rgba(255, 255, 255, 0.6)) !important;
     }
     .event-card__eyebrow {
       font-family: 'Inter', sans-serif !important;
@@ -579,7 +559,7 @@
         margin-top: 0 !important;
         padding: 10px 14px !important;
         margin-bottom: 8px !important;
-        background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
+        background: var(--card-event-gradient) !important;
         border: 2px solid rgba(212, 148, 58, 0.2) !important;
         border-radius: 20px !important;
         box-shadow: none !important;
@@ -615,13 +595,14 @@
         color: #D4943A !important;
       }
       .event-card__title {
-        font-size: 0.95rem !important;
+        font-size: 1.1rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.4px !important;
-        color: #72500A !important;
+        letter-spacing: 0.2px !important;
+        color: var(--event-title-color, #72500A) !important;
         margin-bottom: 6px !important;
-        line-height: 1.25 !important;
-        text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+        line-height: 1.2 !important;
+        text-shadow: var(--event-title-shadow, 0 1px 2px rgba(255, 255, 255, 0.8)) !important;
+        max-width: 100% !important;
       }
       .event-card__date {
         font-size: 0.8rem !important;
@@ -843,7 +824,7 @@
     }
     /* FORCE Quick Access Cards - Cushion/puffy claymorphism */
     .quick-card--green {
-      background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+      background: var(--card-green-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -859,7 +840,7 @@
     }
     
     .quick-card--gold {
-      background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -875,7 +856,7 @@
     }
     
     .quick-card--purple {
-      background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+      background: var(--card-purple-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -891,7 +872,7 @@
     }
     
     .quick-card--blue {
-      background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+      background: var(--card-blue-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -907,7 +888,7 @@
     }
     
     .quick-card--rose {
-      background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
+      background: var(--card-rose-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -931,7 +912,7 @@
     
     /* Practice Cards - Cushion style with colors */
     .practice-card--nitnem {
-      background: linear-gradient(165deg, #FFF8E1 0%, #FFECB3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -947,7 +928,7 @@
     }
     
     .practice-card--sehaj {
-      background: linear-gradient(165deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+      background: var(--card-purple-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -963,7 +944,7 @@
     }
     
     .practice-card--hukam {
-      background: linear-gradient(165deg, #FFE4C4 0%, #FFD4A3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -980,7 +961,7 @@
     
     /* Gurpurab Event Card - Clean without white shadows */
     .event-card {
-      background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
+      background: var(--card-event-gradient) !important;
       border: 2px solid rgba(212, 148, 58, 0.15) !important;
       border-radius: 32px !important;
       box-shadow: none !important;
@@ -1387,7 +1368,7 @@
         
         /* Quick Access Cards - Cushion/puffy claymorphism */
         .quick-card--green {
-          background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+          background: var(--card-green-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1397,7 +1378,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--gold {
-          background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1407,7 +1388,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--purple {
-          background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+          background: var(--card-purple-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1417,7 +1398,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--blue {
-          background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+          background: var(--card-blue-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1427,7 +1408,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--rose {
-          background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
+          background: var(--card-rose-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1439,7 +1420,7 @@
         
         /* Practice Cards - Cushion style with colors */
         .practice-card--nitnem {
-          background: linear-gradient(165deg, #FFF8E1 0%, #FFECB3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1449,7 +1430,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--sehaj {
-          background: linear-gradient(165deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+          background: var(--card-purple-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1459,7 +1440,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--hukam {
-          background: linear-gradient(165deg, #FFE4C4 0%, #FFD4A3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1471,7 +1452,7 @@
         
         /* Gurpurab Event Card - EXTREME PILLOW Claymorphism */
         .event-card {
-          background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 50%, #FFF5E6 100%) !important;
+          background: var(--card-event-gradient) !important;
           border: 1px solid rgba(212, 148, 58, 0.12) !important;
           border-radius: 28px !important;
           box-shadow: 
@@ -1954,6 +1935,9 @@
                 <div class="hero-card__title hero-card__title--thin" id="heroHukamTitle" style="font-family:var(--font-gurmukhi)">Today's Hukamnama</div>
                 <div class="hero-card__subtitle" id="heroHukamSubtitle" style="margin-right:75px !important;margin-left:12px !important;max-width:calc(100% - 87px) !important;display:block !important;font-size:15.5px !important;letter-spacing:0.3px !important;">Sri Guru Granth Sahib Ji</div>
               </div>
+              <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn4" aria-label="Play Hukamnama" data-action="play" data-stream="hukamnama">
+                <svg id="heroPlayIcon4" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
+              </button>
             </div>
           </div>
         </article>
@@ -2424,6 +2408,26 @@
               }
               
               if (navigator.vibrate) navigator.vibrate(10);
+            }
+          });
+        });
+
+        // 3. Play Button Handler for Hero Cards
+        const heroPlayButtons = document.querySelectorAll('.hero-card__play-btn');
+        heroPlayButtons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Don't trigger card navigation
+            if (window.AnhadAudio) {
+              const stream = this.dataset.stream;
+              console.log('[Homepage] Hero play button clicked for:', stream);
+              window.AnhadAudio.play(stream);
+              
+              if (window.CapacitorHaptics) {
+                window.CapacitorHaptics.impact({ style: 'medium' });
+              } else if (navigator.vibrate) {
+                navigator.vibrate(10);
+              }
             }
           });
         });

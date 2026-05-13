@@ -168,10 +168,23 @@
   }
 
   /* Auto-init if data-anhad-core attribute present on <html> or <body> */
+  function refreshSessionFlags() {
+    try {
+      localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+      sessionStorage.setItem('anhad_welcomed', '1');
+      // Set a long-term flag once they've entered the app successfully
+      localStorage.setItem('anhad_welcome_seen', 'true');
+    } catch (e) {}
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    refreshSessionFlags();
     var autoEl = document.documentElement.dataset.anhadCore || document.body.dataset.anhadCore;
     if (autoEl !== undefined) {
       _runAll({});
     }
   });
+
+  // Also refresh on every SPA page swap
+  window.addEventListener('anhad_page_changed', refreshSessionFlags);
 })();

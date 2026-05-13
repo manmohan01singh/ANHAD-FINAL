@@ -28,8 +28,8 @@
     // ═══════════════════════════════════════════════════════════════
 
     const getElements = () => ({
-        // Updated to match actual HTML element IDs
-        loadingOverlay: document.getElementById('loadingOverlay'),
+        // Match actual HTML IDs in nitnem/index.html
+        loadingOverlay: document.getElementById('skeletonContainer') || document.getElementById('loadingOverlay'),
         greeting: document.getElementById('greeting'),
         searchTrigger: document.getElementById('searchTrigger'),
         settingsBtn: document.getElementById('settingsBtn'),
@@ -675,5 +675,17 @@
     // INITIALIZE
     // ═══════════════════════════════════════════════════════════════
 
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init();
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+
+    // SPA integration
+    window.addEventListener('anhad_page_changed', function() {
+        if (window.location.pathname.includes('/nitnem/')) {
+            console.log('[HubApp] Re-initializing for SPA navigation...');
+            init();
+        }
+    });
 })();

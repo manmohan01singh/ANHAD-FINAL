@@ -236,7 +236,10 @@
 
     init() {
       const track = document.getElementById('guruSliderTrack');
-      if (!track) return;
+      if (!track) {
+        console.log('[PortraitSlider] Track element not found, skipping init');
+        return;
+      }
 
       // Clear track and inject slides
       track.innerHTML = '';
@@ -1188,6 +1191,14 @@
       this.updateNotesCard();
       this.updateNitnemQuickAccess();
       this.autoRemindUpcomingGurpurab();
+      
+      // RE-INIT HOMEPAGE COMPONENTS
+      // These elements only exist on index.html, but refreshAll is called 
+      // on every SPA swap. The internal guards in these init methods 
+      // will prevent errors if the elements are missing.
+      if (typeof Greeting !== 'undefined') Greeting.update();
+      if (typeof PortraitSlider !== 'undefined') PortraitSlider.init();
+      if (typeof CarouselController !== 'undefined') CarouselController.init();
     },
 
     async autoRemindUpcomingGurpurab() {

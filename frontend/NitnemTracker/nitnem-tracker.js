@@ -6162,6 +6162,18 @@ const AlarmManager = {
         // Setup event listeners
         this.setupEventListeners();
 
+        // Listen for background sync updates
+        const refreshHandler = (e) => {
+            console.log(`[AlarmManager] 🔄 Sync event detected (${e.type}), updating UI...`);
+            this.loadAlarmData();
+            this.renderTodayAlarms();
+            this.renderWeekView();
+        };
+
+        window.addEventListener('alarmSynced', refreshHandler);
+        window.addEventListener('nitnemSync', refreshHandler);
+        window.addEventListener('nitnemTracker_sync', refreshHandler);
+
         // Render week view
         this.renderWeekView();
 
@@ -6228,7 +6240,7 @@ const AlarmManager = {
     /**
      * Sync from Smart Reminders - Enhanced Pro Level
      */
-    syncFromSmartReminders() {
+    async syncFromSmartReminders() {
         // Prevent double sync
         if (this.state.isSyncing) return;
         this.state.isSyncing = true;
@@ -6243,7 +6255,13 @@ const AlarmManager = {
         });
 
         try {
-            // Try multiple storage keys — sr_reminders_v7 is the PRIMARY key (smart-reminders-v7.js line 23)
+            // 1. Proactively trigger AutoAlarmSync if available (handles IndexedDB)
+            if (window.AutoAlarmSync) {
+                console.log('[AlarmManager] Triggering AutoAlarmSync...');
+                await window.AutoAlarmSync.syncNow();
+            }
+
+            // 2. Scan localStorage for reminders
             const keys = ['sr_reminders_v7', 'anhad_smart_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
             let rawData = null;
             let foundKey = null;
@@ -6272,7 +6290,7 @@ const AlarmManager = {
                 // v4 format - direct array
                 reminders = data;
             } else if (data.core || data.custom) {
-                // v1 format - object with core/custom
+                // v7/v1 format - object with core/custom
                 if (data.core) {
                     Object.values(data.core).forEach(r => reminders.push(r));
                 }
@@ -6285,9 +6303,16 @@ const AlarmManager = {
             const today = new Date().getDay(); // 0 = Sunday
             const todayDate = Utils.getTodayString();
 
-            // Get stats data
-            const statsData = localStorage.getItem('sr_stats_v4');
-            const stats = statsData ? JSON.parse(statsData) : {};
+            // 3. Scan localStorage for stats/completion data
+            const statKeys = ['sr_stats_v7', 'sr_stats_v4', 'anhad_smart_stats_v7'];
+            let stats = {};
+            for (const key of statKeys) {
+                const s = localStorage.getItem(key);
+                if (s) {
+                    stats = JSON.parse(s);
+                    break;
+                }
+            }
 
             this.state.todayAlarms = reminders
                 .filter(r => {
@@ -6306,11 +6331,14 @@ const AlarmManager = {
                         const entry = alarmLog[r.id];
                         status = typeof entry === 'object' ? entry.status : entry;
                     } else if (stats.completedById && stats.completedById[r.id]) {
-                        // Check if completed today in Smart Reminders stats
+                        // Check if completed today in Smart Reminders stats (Legacy support)
                         const lastCompleted = stats.lastCompletedDate?.[r.id];
                         if (lastCompleted === todayDate) {
                             status = 'responded';
                         }
+                    } else if (stats.history && stats.history[todayDate] && stats.history[todayDate][r.id]) {
+                        // Check v7 history if it exists
+                        status = stats.history[todayDate][r.id].status || 'responded';
                     }
 
                     // Check if alarm time has passed
@@ -6330,8 +6358,8 @@ const AlarmManager = {
                     return {
                         id: r.id || Utils.generateId(),
                         time: r.time || '00:00',
-                        label: r.title || r.titlePunjabi || r.label || 'Reminder',
-                        labelPunjabi: r.titlePunjabi || '',
+                        label: r.label || r.title || r.titlePunjabi || 'Reminder',
+                        labelPunjabi: r.gurmukhi || r.titlePunjabi || '',
                         bani: r.bani || r.description || '',
                         icon: r.icon || '🔔',
                         color: r.color || '#007AFF',
@@ -6359,6 +6387,8 @@ const AlarmManager = {
             // Show success message
             if (this.state.todayAlarms.length > 0) {
                 Toast.success('Synced!', `${this.state.todayAlarms.length} reminders loaded`);
+            } else {
+                Toast.info('Synced', 'No reminders found for today');
             }
 
         } catch (e) {

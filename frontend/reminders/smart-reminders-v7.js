@@ -511,6 +511,11 @@
       // Broadcast to other tabs
       this.broadcast('ALARM_RESPONSE', { alarmId, status, timestamp: time });
 
+      // Dispatch event for UI update and Nitnem Tracker integration
+      window.dispatchEvent(new CustomEvent('alarmSynced', {
+        detail: { alarmId, status, timestamp: time }
+      }));
+
       // Dispatch event for UI update
       window.dispatchEvent(new CustomEvent('alarmResponseRecorded', {
         detail: { alarmId, status, timestamp: time }

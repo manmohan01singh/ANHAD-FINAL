@@ -139,31 +139,44 @@
    * Priority: 
    *   1. If browser history exists AND we have a same-origin referrer → history.back()
    *   2. If we have a saved referrer → navigate to it directly
-   *   3. Fallback to specified URL (default: ../index.html)
+   *   3. Fallback to specified URL (resolved via ANHAD_ROOT)
    * 
    * @param {string} [fallbackUrl] — URL to go to if no history or direct-load
    */
   window.anhadGoBack = function(fallbackUrl) {
-    fallbackUrl = fallbackUrl || '../index.html';
+    // 1. Prioritize browser history if we have a valid referrer from our own origin
+    // This matches the reliable pattern in smart-reminders-v7.js
+    if (document.referrer && window.history.length > 1) {
+      try {
+        var ref = new URL(document.referrer);
+        if (ref.origin === window.location.origin) {
+          console.log('[SmartBack] Navigating back via history.back()');
+          history.back();
+          return;
+        }
+      } catch (e) { /* ignore invalid referrer */ }
+    }
 
-    // Save scroll state of the page we're leaving
-    // (the destination page will restore its own scroll on load)
-
-    // Check if we have meaningful history to go back to
-    var savedRef = getSavedReferrer();
+    // 2. Resolve fallback URL
+    // Default to index.html if none provided
+    var target = fallbackUrl || '../index.html';
     
-    if (document.referrer && history.length > 1) {
-      // We came here from another page in this tab — use history.back()
-      // This is the smoothest option: preserves form state, bfcache, etc.
-      history.back();
-    } else if (savedRef) {
-      // We have a recorded referrer from a previous visit
-      if (window.navigateTo) window.navigateTo(savedRef);
-      else window.location.href = savedRef;
+    // Determine if we should use absolute root for "Home Hub" targets.
+    // If the target is specifically pointing up a directory to index.html, it's likely a "Back to Home" intent.
+    const isBackToHome = target === '../index.html';
+    
+    if (isBackToHome) {
+      const root = window.ANHAD_ROOT || (window.location.origin + '/');
+      target = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
+      console.log('[SmartBack] Back-to-Home detected, resolving to absolute root:', target);
+    }
+
+    console.log('[SmartBack] Navigating to fallback:', target);
+    
+    if (window.navigateTo) {
+      window.navigateTo(target);
     } else {
-      // Direct load or no history — go to fallback
-      if (window.navigateTo) window.navigateTo(fallbackUrl);
-      else window.location.href = fallbackUrl;
+      window.location.href = target;
     }
   };
 
@@ -177,7 +190,7 @@
     var selectors = [
       '#backBtn', '#bk', '#back-btn', '#navBack',
       '.header__back', '.header-back', '.nav-back',
-      '.glass-nav__back', '.glass-back-btn',
+      '.glass-nav__back', '.glass-back-btn', '.reader-back', '.back-btn',
       '[data-anhad-back]'
     ];
 
@@ -199,15 +212,22 @@
           fallback = el.getAttribute('href');
         }
 
-        // Remove any existing inline onclick that might conflict
-        if (el.hasAttribute('onclick')) {
+        // Remove any existing inline onclick that might conflict, 
+        // UNLESS it's already an anhadGoBack call
+        if (el.hasAttribute('onclick') && !el.getAttribute('onclick').includes('anhadGoBack')) {
           el.removeAttribute('onclick');
         }
+
+        if (el._anhadClickWired) return;
+        el._anhadClickWired = true;
 
         el.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          window.anhadGoBack(fallback);
+          
+          // Use data-attribute fallback if present, else A-tag href, else the detected fallback
+          var customFallback = el.getAttribute('data-anhad-back') || fallback;
+          window.anhadGoBack(customFallback);
         });
 
         // Set cursor for non-anchor elements
@@ -231,6 +251,13 @@
     autoWire();
     restoreScrollState();
   }
+
+  // SPA INTEGRATION: Re-wire when page content changes via smooth-navigation
+  window.addEventListener('anhad_page_changed', function() {
+    console.log('[SmartBack] Page changed, re-wiring back buttons...');
+    autoWire();
+    restoreScrollState();
+  });
 
   // Save scroll state before navigating away
   window.addEventListener('beforeunload', function() {

@@ -8,16 +8,22 @@
 const UltraWelcomeLoader = {
   loader: null,
   progressFill: null,
-  minLoadTime: 2000, // Minimum 2 seconds to show the beautiful loader
+  minLoadTime: 600, // Reduced from 2000 for faster re-entry
   startTime: null,
 
   init() {
     // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
     // The loader should only show on the very first page load of the session.
-    if (sessionStorage.getItem('anhad_loader_shown') === '1') {
-      console.log('[UltraLoader] Already shown this session, skipping');
+    // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
+    // The loader should only show on the very first page load of the session.
+    if (sessionStorage.getItem('anhad_loader_shown') === '1' || 
+        sessionStorage.getItem('anhad_welcomed') === '1' || 
+        localStorage.getItem('anhad_welcome_seen') === 'true') {
+      console.log('[UltraLoader] Already welcomed, skipping splash');
       // Immediately reveal the app without the loader
       requestAnimationFrame(() => {
+        document.documentElement.classList.add('theme-loaded');
+        document.body.classList.add('theme-loaded');
         const app = document.getElementById('app');
         if (app) app.classList.add('ultra-cascade');
       });

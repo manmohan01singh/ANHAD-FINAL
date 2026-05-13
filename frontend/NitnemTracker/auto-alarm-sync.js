@@ -111,26 +111,47 @@
     function syncFromLocalStorage() {
         try {
             // Try to get reminder data from localStorage as fallback
-            const reminderKey = 'smartReminders_alarms';
-            const stored = localStorage.getItem(reminderKey);
+            const keys = ['sr_reminders_v7', 'smartReminders_alarms', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1'];
+            let reminders = null;
+            let rawData = null;
+
+            for (const key of keys) {
+                rawData = localStorage.getItem(key);
+                if (rawData) break;
+            }
             
-            if (stored) {
-                const reminders = JSON.parse(stored);
+            if (rawData) {
+                const data = JSON.parse(rawData);
                 const alarmLog = getAlarmLog();
                 
-                // Convert reminders to alarm format
-                alarmLog.syncedAlarms = reminders.map(r => ({
-                    id: r.id,
-                    title: r.title,
-                    time: r.time,
-                    enabled: r.enabled,
-                    days: r.days || []
-                }));
-                
-                alarmLog.lastSync = Date.now();
-                saveAlarmLog(alarmLog);
-                
-                console.log('[AlarmSync] ✅ Synced from localStorage:', alarmLog.syncedAlarms.length, 'alarms');
+                // Handle v7/v4 format (object with core/custom)
+                if (data.core || data.custom) {
+                    reminders = [];
+                    if (data.core) {
+                        Object.values(data.core).forEach(r => reminders.push(r));
+                    }
+                    if (Array.isArray(data.custom)) {
+                        reminders.push(...data.custom);
+                    }
+                } else if (Array.isArray(data)) {
+                    reminders = data;
+                }
+
+                if (reminders) {
+                    // Convert reminders to alarm format
+                    alarmLog.syncedAlarms = reminders.map(r => ({
+                        id: r.id,
+                        title: r.label || r.title || 'Reminder',
+                        time: r.time,
+                        enabled: r.enabled !== false,
+                        days: r.days || [0, 1, 2, 3, 4, 5, 6]
+                    }));
+                    
+                    alarmLog.lastSync = Date.now();
+                    saveAlarmLog(alarmLog);
+                    
+                    console.log('[AlarmSync] ✅ Synced from localStorage:', alarmLog.syncedAlarms.length, 'alarms');
+                }
             }
         } catch (e) {
             console.warn('[AlarmSync] localStorage fallback error:', e);

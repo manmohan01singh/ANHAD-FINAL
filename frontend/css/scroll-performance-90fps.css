@@ -1,6 +1,6 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
-   SCROLL PERFORMANCE OPTIMIZATION (LEAN — No Anti-Patterns)
-   ═══════════════════════════════════════════════════════════════════════════════
+﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SCROLL PERFORMANCE OPTIMIZATION (LEAN â€” No Anti-Patterns)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    
    KEY PRINCIPLES:
    - NO will-change on passive elements (wastes VRAM per composite layer)
@@ -10,9 +10,9 @@
    - CSS-driven scroll optimizations via .scrolling / .is-scrolling classes
    
    Load this AFTER all other CSS files.
-   ═══════════════════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ─── SCROLL CONTAINER ESSENTIALS ─── */
+/* â”€â”€â”€ SCROLL CONTAINER ESSENTIALS â”€â”€â”€ */
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -35,12 +35,12 @@ main.app,
   overscroll-behavior-y: contain;
 }
 
-/* ─── TOUCH OPTIMIZATION ─── */
+/* â”€â”€â”€ TOUCH OPTIMIZATION â”€â”€â”€ */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ─── FIXED ELEMENTS — Need GPU layer ─── */
+/* â”€â”€â”€ FIXED ELEMENTS â€” Need GPU layer â”€â”€â”€ */
 /* Only elements that are ACTUALLY fixed/animated get will-change */
 .tab-bar,
 .mini-player,
@@ -52,14 +52,14 @@ header {
   backface-visibility: hidden;
 }
 
-/* ─── CSS CONTAINMENT — Only for independent blocks ─── */
+/* â”€â”€â”€ CSS CONTAINMENT â€” Only for independent blocks â”€â”€â”€ */
 .event-card,
 .quick-card,
 .practice-card {
   contain: layout style;
 }
 
-/* ─── DURING SCROLL: Simplify rendering ─── */
+/* â”€â”€â”€ DURING SCROLL: Simplify rendering â”€â”€â”€ */
 /* The .scrolling class is added/removed by scroll-performance-90fps.js */
 .scrolling .aurora-bg,
 .scrolling .particle-burst,
@@ -71,11 +71,11 @@ header {
   animation-play-state: paused !important;
 }
 
-/* Simplify shadows during fast scroll — barely visible anyway */
-body.is-scrolling .event-card,
-body.is-scrolling .quick-card,
-body.is-scrolling .practice-card,
-body.is-scrolling .hero-card {
+/* Simplify shadows during fast scroll â€” barely visible anyway */
+.is-scrolling .event-card,
+.is-scrolling .quick-card,
+.is-scrolling .practice-card,
+.is-scrolling .hero-card {
   box-shadow: none !important;
   transition: none !important;
 }
@@ -88,11 +88,11 @@ body.is-scrolling .hero-card {
 }
 
 /* Disable non-essential transitions during scroll */
-body.is-scrolling .progress-inline__fill::after {
+.is-scrolling .progress-inline__fill::after {
   animation: none !important;
 }
 
-/* ─── REDUCED MOTION SUPPORT ─── */
+/* â”€â”€â”€ REDUCED MOTION SUPPORT â”€â”€â”€ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -110,12 +110,12 @@ body.is-scrolling .progress-inline__fill::after {
   }
 }
 
-/* ─── THEME TRANSITION OPTIMIZATION ─── */
+/* â”€â”€â”€ THEME TRANSITION OPTIMIZATION â”€â”€â”€ */
 html, body {
   transition: background-color 0s, color 0s !important;
 }
 
-/* ─── PAGE LOADING STATES ─── */
+/* â”€â”€â”€ PAGE LOADING STATES â”€â”€â”€ */
 .page-loading .app {
   opacity: 0.7;
   pointer-events: none;
@@ -137,7 +137,7 @@ html, body {
   transition: opacity 0.15s ease;
 }
 
-html.dark-mode .nav-loading-overlay {
+.dark-mode .nav-loading-overlay {
   background: rgba(0, 0, 0, 0.6);
 }
 
@@ -163,7 +163,7 @@ html.dark-mode .nav-loading-overlay {
   to { transform: rotate(360deg); }
 }
 
-/* ─── VIEW TRANSITIONS API ─── */
+/* â”€â”€â”€ VIEW TRANSITIONS API â”€â”€â”€ */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.2s;

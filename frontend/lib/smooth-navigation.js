@@ -20,7 +20,30 @@
   const DOM_CACHE = new Map(); // For keepAlive strategy
   const FETCH_QUEUE = new Set();
   
-  let currentActiveUrl = window.location.href;
+  /**
+   * Normalizes a URL for caching and comparison
+   */
+  function normalizeUrl(url) {
+    try {
+      const u = new URL(url, window.location.origin);
+      let path = u.pathname;
+      // Remove trailing slash if not root
+      if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+      // Remove index.html for root comparison consistency
+      if (path.endsWith('/index.html')) path = path.slice(0, -11) || '/';
+      return u.origin + path + u.search;
+    } catch (e) {
+      return url;
+    }
+  }
+
+  let currentActiveUrl = normalizeUrl(window.location.href);
+  
+  // Cache the initial page immediately to prevent re-fetching on first 'back' navigation
+  if (document.documentElement.innerHTML) {
+    PAGE_CACHE.set(currentActiveUrl, document.documentElement.outerHTML);
+  }
+
 
   // NOTE: DOMContentLoaded polyfill removed — it caused every SPA swap to
   // re-fire DOMContentLoaded on ALL previously loaded scripts, causing
@@ -37,6 +60,7 @@
     'pwa-register.js',
     'smart-back.js',
     'page-lifecycle.js',
+    'welcome-check.js',
     'hub-app.js',
     'trendora-app.js',
     'ultra-welcome-loader.js',
@@ -73,30 +97,26 @@
 
     // Resolve to absolute URL using document.baseURI for correct relative path handling
     const absoluteUrl = new URL(url, document.baseURI).href;
-    const targetUrl = new URL(absoluteUrl);
+    const normalized = normalizeUrl(absoluteUrl);
     
-    if (targetUrl.origin !== window.location.origin) {
-      window.open(absoluteUrl, '_blank');
-      return;
-    }
-    
-    if (targetUrl.href === window.location.href && !options.force) return;
+    if (normalized === currentActiveUrl && !options.force) return;
 
     // NOTE: We no longer serialize outerHTML (expensive string, causes jank).
     // Back navigation uses the PAGE_CACHE HTML fetched at load time instead.
-    performSwap(absoluteUrl, options);
+    performSwap(normalized, options);
   };
 
   /**
    * Fetch new page and swap content
    */
   async function performSwap(url, options = {}) {
+    url = normalizeUrl(url);
     const loader = ensureLoader();
     let loaderTimeout = null;
     let transitionFinished = false;
 
     try {
-      // 1. Check PAGE_CACHE first for INSTANT swap
+      /* CACHE BYPASSED FOR STABILITY 
       const cachedContent = PAGE_CACHE.get(url);
       if (cachedContent) {
         if ('startViewTransition' in document && !options.instant) {
@@ -106,6 +126,7 @@
         }
         return;
       }
+      */
 
       // 2. Not in cache? Show loader and fetch
       loaderTimeout = setTimeout(() => {
@@ -163,21 +184,56 @@
     document.title = newDoc.title;
     
     // Sync critical navigation elements outside the main app area
-    const shellSelectors = ['#mainNav', '#pageHeader', '.tab-bar', '.sidebar', '.desktop-sidebar', 'header:not(.app-header)'];
+    // We only sync if the element exists in BOTH to prevent shell elements from being replaced by page-specific ones
+    const shellSelectors = [
+      '#mainNav', '#main-nav', '#pageHeader', '#globalPlayer', 
+      '.tab-bar', '.sidebar', '.desktop-sidebar', '.app-header'
+    ];
+    
     shellSelectors.forEach(selector => {
       const newNode = newDoc.querySelector(selector);
       const currentNode = document.querySelector(selector);
       if (newNode && currentNode) {
-        // Sync inner content
-        currentNode.innerHTML = newNode.innerHTML;
-        
-        // Sync all attributes (id, class, style, etc)
-        Array.from(newNode.attributes).forEach(attr => {
-          currentNode.setAttribute(attr.name, attr.value);
-        });
+        if (newNode.innerHTML !== currentNode.innerHTML) {
+          currentNode.innerHTML = newNode.innerHTML;
+        }
+      }
+    });
 
-        // Resolve paths for the shell element
-        resolveRelativePaths(currentNode, url);
+    // MODULE CLEANUP: Remove module-specific elements that are OUTSIDE #app
+    // If an element exists in current page but NOT in the new page, and it's not a shell element, remove it.
+    const moduleSpecificSelectors = [
+      '.bg-orbs', '.ikonkar-background', '#ikonkarBackground', '.bg-effects',
+      '.skeleton-container', '#skeletonContainer', '#skeletonLoader',
+      '.app-loading', '#appLoading', '.ultra-loader', '.ultra-welcome-loader',
+      '.welcome-screen'
+    ];
+    
+    // Reset body classes and styles to prevent module-leakage
+    const globalClasses = ['dark-mode', 'is-mobile', 'reduce-motion', 'theme-loaded'];
+    const currentClasses = Array.from(document.body.classList);
+    currentClasses.forEach(cls => {
+      if (!globalClasses.includes(cls)) {
+        document.body.classList.remove(cls);
+      }
+    });
+    
+    // Clear inline body styles (e.g. background-image from Hukamnama or Nitnem)
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundColor = '';
+    document.body.style.overflow = '';
+    
+    moduleSpecificSelectors.forEach(selector => {
+      const currentEl = document.querySelector(selector);
+      const newEl = newDoc.querySelector(selector);
+      
+      if (currentEl && !newEl) {
+        console.log('[SPA] Cleaning up module element:', selector);
+        currentEl.remove();
+      } else if (!currentEl && newEl) {
+        console.log('[SPA] Injecting module element:', selector);
+        // Clone to body but keep it outside #app
+        document.body.appendChild(newEl.cloneNode(true));
       }
     });
 
@@ -318,8 +374,15 @@
         }));
       } else {
         // Inline scripts run immediately (synchronous)
+        // PROTECT: Skip common shell initialization patterns in inline scripts
+        const content = script.textContent;
+        if (content.includes('serviceWorker.register') || content.includes('location.reload')) {
+          console.log('[SmoothNav] Skipping potentially disruptive inline shell script');
+          continue;
+        }
+        
         const newScript = document.createElement('script');
-        newScript.textContent = script.textContent;
+        newScript.textContent = content;
         document.body.appendChild(newScript);
       }
     }
@@ -338,7 +401,9 @@
   const MAX_CONCURRENT_PREFETCH = 2;
   
   async function prefetchPage(url) {
-    if (!url || url.includes('#') || PAGE_CACHE.has(url) || FETCH_QUEUE.has(url)) return;
+    if (!url || url.includes('#')) return;
+    const normalized = normalizeUrl(new URL(url, document.baseURI).href);
+    if (PAGE_CACHE.has(normalized) || FETCH_QUEUE.has(normalized)) return;
     if (FETCH_QUEUE.size >= MAX_CONCURRENT_PREFETCH) return;
     
     // Skip prefetch on slow/metered connections
@@ -414,7 +479,8 @@
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', (e) => {
-      performSwap(window.location.href, { replace: true, instant: true, isBack: true });
+      const normalized = normalizeUrl(window.location.href);
+      performSwap(normalized, { replace: true, instant: true, isBack: true });
     });
 
     // Integrate with Capacitor native back button
@@ -517,5 +583,13 @@
   // Also run conversion on page change
   window.addEventListener('anhad_page_changed', convertOnclickToDataHref);
 
+  // Periodic cache maintenance to prevent memory leaks in long sessions
+  setInterval(() => {
+    if (PAGE_CACHE.size > 20) {
+      const keys = Array.from(PAGE_CACHE.keys());
+      // Keep initial page and last 10
+      keys.slice(1, keys.length - 10).forEach(key => PAGE_CACHE.delete(key));
+    }
+  }, 60000);
 
 })();
