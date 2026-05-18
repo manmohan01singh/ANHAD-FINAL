@@ -563,7 +563,7 @@
     // Handle browser back/forward buttons
     window.addEventListener('popstate', (e) => {
       const normalized = normalizeUrl(window.location.href);
-      performSwap(normalized, { replace: true, instant: true, isBack: true });
+      performSwap(normalized, { replace: true, isBack: true });
     });
 
     // Integrate with Capacitor native back button

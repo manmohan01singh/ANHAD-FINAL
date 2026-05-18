@@ -70,7 +70,7 @@
     gurbaniRadioSimran: 'GurbaniRadio/gurbani-radio.html?stream=simran&autoplay=true',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
     shabadVichar: 'ShabadVichar/shabad-vichar.html',
-    nitnem: 'nitnem/indexbani.html',
+    nitnem: 'nitnem/index.html',
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',

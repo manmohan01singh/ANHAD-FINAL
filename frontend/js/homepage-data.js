@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
     shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
-    nitnemCard: 'nitnem/indexbani.html',
+    nitnemCard: 'nitnem/index.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',

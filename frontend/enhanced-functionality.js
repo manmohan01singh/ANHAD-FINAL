@@ -204,7 +204,7 @@ class GurbaniRadioEnhancements {
   }
 
   openNitnemPaath() {
-    window.location.href = '../nitnem/indexbani.html';
+    window.location.href = '../nitnem/index.html';
   }
 
   openNotes() {

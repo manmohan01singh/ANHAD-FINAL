@@ -90,7 +90,6 @@ const STATIC_FILES = [
 
   // Nitnem v2.1 - RENOVATED MODULE (iOS 26++ Design)
   'nitnem/index.html',
-  'nitnem/indexbani.html',
   'nitnem/reader.html',
   'nitnem/css/main.css',
   'nitnem/css/category.css',
