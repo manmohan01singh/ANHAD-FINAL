@@ -32,6 +32,7 @@
   --ac-btn-active:    rgba(255, 255, 255, 0.18);
   --ac-offline-bg:    rgba(255, 59, 48, 0.90);
   --ac-online-bg:     rgba(48, 209, 88, 0.90);
+  --ac-glass-shimmer: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
 }
 
 /* Light theme overrides */
@@ -251,6 +252,80 @@
 .page-enter > *:nth-child(3)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.08s both; }
 .page-enter > *:nth-child(4)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.12s both; }
 .page-enter > *:nth-child(5)  { animation: ac-page-enter 0.48s var(--ac-spring) 0.16s both; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL SOOTHING LOADER (Glassmorphism)
+────────────────────────────────────────────────────────────────────────────── */
+.nav-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(18, 18, 22, 0.35); /* More transparent dark */
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--ac-smooth), visibility 0.3s var(--ac-smooth);
+  pointer-events: none;
+}
+
+.nav-loading-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.nav-loading-overlay__spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--ac-nav-border);
+  border-top-color: var(--ac-gold);
+  border-radius: 50%;
+  animation: ac-spin 0.8s linear infinite;
+}
+
+[data-theme="light"] .nav-loading-overlay {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.nav-loading-overlay__shimmer {
+  position: absolute;
+  inset: 0;
+  background: var(--ac-glass-shimmer);
+  background-size: 200% 100%;
+  animation: ac-shimmer 2s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes ac-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ac-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GPU ACCELERATED SCROLLING
+────────────────────────────────────────────────────────────────────────────── */
+.gpu-accelerated,
+.scroll-container,
+.main-content {
+  -webkit-overflow-scrolling: touch;
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+body.page-loading {
+  cursor: wait;
+}
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    OFFLINE BANNER
@@ -602,3 +677,18 @@ img[src*="gurugranthsahebji.jpeg"] {
   justify-content: center !important;
 }
 
+/* Fix Visualizer transform origin for GPU scale */
+.viz-bar {
+  transform-origin: bottom center !important;
+  will-change: transform;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INSTANT THEME TRANSITION
+────────────────────────────────────────────────────────────────────────────── */
+html.theme-changing,
+html.theme-changing *,
+html.theme-changing *::before,
+html.theme-changing *::after {
+  transition: none !important;
+}

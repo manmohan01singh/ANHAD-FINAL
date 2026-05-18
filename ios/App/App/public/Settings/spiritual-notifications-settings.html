@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Spiritual Notifications - ANHAD</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary, #f5f5f7);
+            color: var(--text-primary, #1a1a2e);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        [data-theme="dark"] body {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .header {
+            background: var(--bg-secondary, #ffffff);
+            padding: 60px 20px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color, #e5e5e5);
+        }
+
+        [data-theme="dark"] .header {
+            background: #1c1c1e;
+            border-bottom-color: #2c2c2e;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary, #666);
+            font-size: 14px;
+        }
+
+        [data-theme="dark"] .header p {
+            color: #aaa;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-primary, #1a1a2e);
+        }
+
+        [data-theme="dark"] .back-btn {
+            color: #ffffff;
+        }
+
+        .settings-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary, #666);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        [data-theme="dark"] .section-title {
+            color: #aaa;
+        }
+
+        .setting-card {
+            background: var(--bg-secondary, #ffffff);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+
+        [data-theme="dark"] .setting-card {
+            background: #1c1c1e;
+        }
+
+        .setting-card:active {
+            transform: scale(0.98);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-icon {
+            font-size: 28px;
+            margin-right: 16px;
+        }
+
+        .setting-label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .setting-description {
+            font-size: 13px;
+            color: var(--text-secondary, #666);
+        }
+
+        [data-theme="dark"] .setting-description {
+            color: #aaa;
+        }
+
+        .setting-time {
+            font-size: 14px;
+            color: var(--accent-color, #f7c634);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            width: 51px;
+            height: 31px;
+            background: var(--toggle-off, #e5e5e5);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="dark"] .toggle {
+            background: #3a3a3c;
+        }
+
+        .toggle.active {
+            background: var(--accent-color, #f7c634);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 27px;
+            height: 27px;
+            background: #ffffff;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle.active::after {
+            transform: translateX(20px);
+        }
+
+        /* Time Picker */
+        .time-picker {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-picker input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color, #e5e5e5);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            background: var(--bg-primary, #f5f5f7);
+            color: var(--text-primary, #1a1a2e);
+        }
+
+        [data-theme="dark"] .time-picker input {
+            background: #2c2c2e;
+            border-color: #3a3a3c;
+            color: #ffffff;
+        }
+
+        /* Save Button */
+        .save-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f7c634, #ff9500);
+            color: #ffffff;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(247, 198, 52, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .save-btn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-secondary, #666);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color, #e5e5e5);
+            border-top-color: var(--accent-color, #f7c634);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <h1>Spiritual Notifications</h1>
+        <p>Manage your daily spiritual reminders</p>
+    </div>
+
+    <div class="settings-container" id="settingsContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            <span>Loading settings...</span>
+        </div>
+    </div>
+
+    <button class="save-btn" id="saveBtn" onclick="saveSettings()" style="display: none;">Save Settings</button>
+
+    <div class="toast" id="toast">Settings saved!</div>
+
+    <script src="../lib/spiritual-notifications.js"></script>
+    <script>
+        function goBack() {
+            window.history.back() || (window.location.href = '../index.html');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function createToggle(id, checked) {
+            const toggle = document.createElement('div');
+            toggle.className = 'toggle' + (checked ? ' active' : '');
+            toggle.dataset.id = id;
+            toggle.onclick = function() {
+                this.classList.toggle('active');
+                document.getElementById('saveBtn').style.display = 'block';
+            };
+            return toggle;
+        }
+
+        function createTimePicker(id, value) {
+            const picker = document.createElement('input');
+            picker.type = 'time';
+            picker.value = value;
+            picker.dataset.id = id;
+            picker.onchange = function() {
+                document.getElementById('saveBtn').style.display = 'block';
+            };
+            return picker;
+        }
+
+        function renderSettings() {
+            const container = document.getElementById('settingsContainer');
+            const config = window.SpiritualNotifications.getConfig();
+
+            let html = '';
+
+            // Fixed-time notifications section
+            html += '<div class="section">';
+            html += '<div class="section-title">Daily Reminders</div>';
+
+            // Hukamnama
+            html += '<div class="setting-card">';
+            html += '<div class="setting-icon">🙏</div>';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Hukamnama</div>';
+            html += '<div class="setting-description">Daily Hukamnama with first pankti</div>';
+            html += '<div class="setting-time">' + config.hukamnama.time + '</div>';
+            html += '</div>';
+            html += '<div class="time-picker">';
+            html += '<input type="time" value="' + config.hukamnama.time + '" data-key="hukamnama.time">';
+            html += '</div>';
+            html += '</div>';
+
+            // Amritvela
+            html += '<div class="setting-card">';
+            html += '<div class="setting-icon">🌅</div>';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Amritvela Banis</div>';
+            html += '<div class="setting-description">Morning banis reminder</div>';
+            html += '<div class="setting-time">' + config.amritvela.time + '</div>';
+            html += '</div>';
+            html += '<div class="time-picker">';
+            html += '<input type="time" value="' + config.amritvela.time + '" data-key="amritvela.time">';
+            html += '</div>';
+            html += '</div>';
+
+            // Rehras Sahib
+            html += '<div class="setting-card">';
+            html += '<div class="setting-icon">🙏</div>';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Rehras Sahib</div>';
+            html += '<div class="setting-description">Evening paath reminder</div>';
+            html += '<div class="setting-time">' + config.rehras.time + '</div>';
+            html += '</div>';
+            html += '<div class="time-picker">';
+            html += '<input type="time" value="' + config.rehras.time + '" data-key="rehras.time">';
+            html += '</div>';
+            html += '</div>';
+
+            // Sohela
+            html += '<div class="setting-card">';
+            html += '<div class="setting-icon">🌙</div>';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Sohela Sahib</div>';
+            html += '<div class="setting-description">Bedtime paath reminder</div>';
+            html += '<div class="setting-time">' + config.sohela.time + '</div>';
+            html += '</div>';
+            html += '<div class="time-picker">';
+            html += '<input type="time" value="' + config.sohela.time + '" data-key="sohela.time">';
+            html += '</div>';
+            html += '</div>';
+
+            html += '</div>';
+
+            // Random notifications section
+            html += '<div class="section">';
+            html += '<div class="section-title">Inspirational Reminders</div>';
+
+            html += '<div class="setting-card">';
+            html += '<div class="setting-icon">💫</div>';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Random Notifications</div>';
+            html += '<div class="setting-description">' + config.random.count + 'x daily between ' + config.random.startHour + ' AM - ' + config.random.endHour + ' PM</div>';
+            html += '</div>';
+            html += '<div class="toggle' + (config.random.enabled ? ' active' : '') + '" id="randomToggle"></div>';
+            html += '</div>';
+
+            html += '</div>';
+
+            // Enable/Disable toggles for each
+            html += '<div class="section">';
+            html += '<div class="section-title">Enable/Disable</div>';
+
+            html += '<div class="setting-card">';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Hukamnama Reminder</div>';
+            html += '</div>';
+            html += '<div class="toggle' + (config.hukamnama.enabled ? ' active' : '') + '" data-key="hukamnama.enabled"></div>';
+            html += '</div>';
+
+            html += '<div class="setting-card">';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Amritvela Reminder</div>';
+            html += '</div>';
+            html += '<div class="toggle' + (config.amritvela.enabled ? ' active' : '') + '" data-key="amritvela.enabled"></div>';
+            html += '</div>';
+
+            html += '<div class="setting-card">';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Rehras Sahib Reminder</div>';
+            html += '</div>';
+            html += '<div class="toggle' + (config.rehras.enabled ? ' active' : '') + '" data-key="rehras.enabled"></div>';
+            html += '</div>';
+
+            html += '<div class="setting-card">';
+            html += '<div class="setting-info">';
+            html += '<div class="setting-label">Sohela Sahib Reminder</div>';
+            html += '</div>';
+            html += '<div class="toggle' + (config.sohela.enabled ? ' active' : '') + '" data-key="sohela.enabled"></div>';
+            html += '</div>';
+
+            html += '</div>';
+
+            container.innerHTML = html;
+
+            // Add event listeners
+            document.querySelectorAll('.toggle').forEach(toggle => {
+                toggle.onclick = function() {
+                    this.classList.toggle('active');
+                    document.getElementById('saveBtn').style.display = 'block';
+                };
+            });
+
+            document.querySelectorAll('input[type="time"]').forEach(input => {
+                input.onchange = function() {
+                    document.getElementById('saveBtn').style.display = 'block';
+                };
+            });
+        }
+
+        function saveSettings() {
+            const config = window.SpiritualNotifications.getConfig();
+
+            // Get time values
+            document.querySelectorAll('input[type="time"]').forEach(input => {
+                const key = input.dataset.key;
+                if (key) {
+                    const [section, prop] = key.split('.');
+                    config[section][prop] = input.value;
+                }
+            });
+
+            // Get toggle values
+            document.querySelectorAll('.toggle[data-key]').forEach(toggle => {
+                const key = toggle.dataset.key;
+                if (key) {
+                    const [section, prop] = key.split('.');
+                    config[section][prop] = toggle.classList.contains('active');
+                }
+            });
+
+            // Random toggle
+            const randomToggle = document.getElementById('randomToggle');
+            if (randomToggle) {
+                config.random.enabled = randomToggle.classList.contains('active');
+            }
+
+            // Save config
+            window.SpiritualNotifications.config = config;
+            window.SpiritualNotifications.saveConfig();
+
+            // Reschedule notifications
+            window.SpiritualNotifications.scheduleAll();
+
+            showToast('Settings saved!');
+
+            // Hide save button
+            document.getElementById('saveBtn').style.display = 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load theme
+            const theme = localStorage.getItem('anhad_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+
+            // Render settings
+            if (window.SpiritualNotifications) {
+                renderSettings();
+            } else {
+                setTimeout(renderSettings, 100);
+            }
+        });
+    </script>
+</body>
+</html>

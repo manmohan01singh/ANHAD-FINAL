@@ -22,16 +22,8 @@
     <meta name="theme-color" content="#000000">
     <title>ANHAD</title>
     
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/theme-variables.css">
-    <script src="../lib/global-theme.js"></script>
-    
-    <!-- Navigation Libraries -->
-    <script src="../lib/smart-back.js"></script>
-    <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/state-preservation.js"></script>
-    
+    <!-- PERF: No navigation libraries needed on splash screen -->
+    <!-- These were blocking render by loading smooth-navigation, smart-back, etc. -->
     <style>
         * {
             margin: 0;
@@ -66,28 +58,30 @@
             50% { opacity: 0.85; }
         }
 
-        /* Golden rays */
+        /* Golden rays — composited rotation, GPU only */
         .rays {
             position: fixed;
             inset: 0;
             background: conic-gradient(
                 from 0deg at 50% 50%,
                 transparent 0deg,
-                rgba(212, 148, 58, 0.1) 30deg,
+                rgba(212, 148, 58, 0.08) 30deg,
                 transparent 60deg,
-                rgba(212, 148, 58, 0.1) 90deg,
+                rgba(212, 148, 58, 0.08) 90deg,
                 transparent 120deg,
-                rgba(212, 148, 58, 0.1) 150deg,
+                rgba(212, 148, 58, 0.08) 150deg,
                 transparent 180deg,
-                rgba(212, 148, 58, 0.1) 210deg,
+                rgba(212, 148, 58, 0.08) 210deg,
                 transparent 240deg,
-                rgba(212, 148, 58, 0.1) 270deg,
+                rgba(212, 148, 58, 0.08) 270deg,
                 transparent 300deg,
-                rgba(212, 148, 58, 0.1) 330deg,
+                rgba(212, 148, 58, 0.08) 330deg,
                 transparent 360deg
             );
-            animation: raysRotate 60s linear infinite;
+            animation: raysRotate 80s linear infinite;
             opacity: 0.3;
+            /* PERF: Explicit compositor promotion */
+            will-change: transform;
         }
 
         @keyframes raysRotate {
@@ -97,7 +91,7 @@
 
         /* Ik Onkar symbol */
         .ik-onkar {
-            font-family: 'Noto Sans Gurmukhi', sans-serif;
+            font-family: 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
             font-size: 180px;
             font-weight: 700;
             color: transparent;
@@ -112,15 +106,14 @@
             -webkit-background-clip: text;
             background-clip: text;
             animation: 
-                symbolReveal 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                shimmer 5s ease-in-out infinite;
+                symbolReveal 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                shimmer 5s ease-in-out 1s infinite;
             opacity: 0;
-            transform: scale(0.5) rotate(-20deg);
-            text-shadow: 
-                0 0 80px rgba(255, 215, 0, 0.8),
-                0 0 120px rgba(255, 165, 0, 0.6),
-                0 0 160px rgba(255, 215, 0, 0.4);
-            filter: drop-shadow(0 20px 40px rgba(255, 215, 0, 0.5));
+            transform: scale(0.6) rotate(-10deg);
+            /* PERF: Reduced text-shadow spread — large spreads are expensive */
+            text-shadow: 0 0 60px rgba(255, 215, 0, 0.7);
+            filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.5));
+            will-change: transform, opacity;
         }
 
         @keyframes symbolReveal {
@@ -243,9 +236,11 @@
             }
         }
     </style>
+    <!-- PERF: font-display=swap prevents FOIT; preconnect speeds up font load -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 </head>
 <body>
     <div class="splash-bg"></div>
@@ -263,13 +258,19 @@
     </div>
 
     <script>
-        // Redirect to main page after 3 seconds
+        // PERF: Reduced from 3000ms to 1500ms — users don't need to watch a
+        // loading screen for 3 seconds. 1.5s is enough for the symbol to reveal.
+        const SPLASH_DURATION = 1500;
+        const FADE_DURATION = 600;
+
         setTimeout(() => {
-            document.getElementById('splashContainer').classList.add('fade-out');
+            const container = document.getElementById('splashContainer');
+            if (container) container.classList.add('fade-out');
             setTimeout(() => {
-                window.location.href = 'ios-homepage.html';
-            }, 800);
-        }, 3000);
+                // Use replace so back button doesn't return to splash
+                window.location.replace('ios-homepage.html');
+            }, FADE_DURATION);
+        }, SPLASH_DURATION);
     </script>
 </body>
 </html>

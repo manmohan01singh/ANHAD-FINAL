@@ -19,6 +19,12 @@
 (function () {
     'use strict';
 
+    // GUARD: Skip if GlobalAlarmSystem is already active to prevent duplicate alarm firing
+    if (window.GLOBAL_ALARM_SYSTEM_ACTIVE) {
+        console.log('🔔 GuaranteedAlarmSystem: Skipping — GlobalAlarmSystem already active');
+        return;
+    }
+
     if (window.GuaranteedAlarmSystem) return;
 
     const CONFIG = {
@@ -57,15 +63,23 @@
     };
 
     function detectAudioPath() {
+        // 1. Use global ANHAD_ROOT if available (from smooth-navigation.js)
+        if (window.ANHAD_ROOT) {
+            return window.ANHAD_ROOT + 'Audio/';
+        }
+
         const path = window.location.pathname.toLowerCase();
         const port = window.location.port;
         
-        // If using backend server (port 3000), use absolute path
+        // 2. If using backend server (port 3000), use absolute path
         if (port === '3000') {
+            if (path.includes('/anhad-final/frontend/')) {
+                return '/ANHAD-FINAL/frontend/Audio/';
+            }
             return '/Audio/';
         }
         
-        // Otherwise use relative paths based on location
+        // 3. Otherwise use relative paths based on location
         const subdirs = ['/reminders/', '/nitnemtracker/', '/naamabhyas/', '/hukamnama/',
             '/calendar/', '/notes/', '/sehajpaath/', '/gurbanisearch/', '/dashboard/', '/favorites/'];
         for (const subdir of subdirs) {
@@ -74,27 +88,34 @@
         return 'Audio/';
     }
 
-    // Verify audio file accessibility
-    function verifyAudioFiles() {
-        const testAudio = new Audio(CONFIG.AUDIO_BASE + 'audio1.mp3');
-        testAudio.addEventListener('canplaythrough', () => {
-            console.log('✅ [GuaranteedAlarms] Audio files accessible at:', CONFIG.AUDIO_BASE);
-        }, { once: true });
-        testAudio.addEventListener('error', (e) => {
-            console.warn('⚠️ [GuaranteedAlarms] Audio path may be incorrect:', CONFIG.AUDIO_BASE);
-            console.warn('⚠️ Trying alternative path...');
-            // Try alternative path
-            const altAudio = new Audio('/Audio/audio1.mp3');
-            altAudio.addEventListener('canplaythrough', () => {
-                console.log('✅ [GuaranteedAlarms] Audio files found at: /Audio/');
-                CONFIG.AUDIO_BASE = '/Audio/';
-            }, { once: true });
-            altAudio.addEventListener('error', () => {
-                console.error('❌ [GuaranteedAlarms] Cannot access audio files. Check Audio folder location.');
-            }, { once: true });
-            altAudio.load();
-        }, { once: true });
-        testAudio.load();
+    // BUG-08 FIX: Use a cheap HEAD fetch instead of new Audio() + .load().
+    // The old Audio() approach created an orphaned HTMLMediaElement on every page
+    // load — it allocated a media buffer, fired an HTTP request, and was never
+    // paused or nulled, leaking both memory and network resources.
+    async function verifyAudioFiles() {
+        try {
+            const resp = await fetch(CONFIG.AUDIO_BASE + 'audio1.mp3', {
+                method: 'HEAD',
+                cache: 'no-store'
+            });
+            if (resp.ok) {
+                console.log('✅ [GuaranteedAlarms] Audio files accessible at:', CONFIG.AUDIO_BASE);
+                return;
+            }
+            throw new Error('HTTP ' + resp.status);
+        } catch (e) {
+            console.warn('⚠️ [GuaranteedAlarms] Audio path may be wrong:', CONFIG.AUDIO_BASE);
+            // Try /Audio/ fallback
+            try {
+                const resp2 = await fetch('/Audio/audio1.mp3', { method: 'HEAD', cache: 'no-store' });
+                if (resp2.ok) {
+                    CONFIG.AUDIO_BASE = '/Audio/';
+                    console.log('✅ [GuaranteedAlarms] Audio files found at: /Audio/');
+                }
+            } catch (e2) {
+                console.error('❌ [GuaranteedAlarms] Cannot access audio files at any known path.');
+            }
+        }
     }
 
     const State = {
@@ -347,8 +368,8 @@
 
             const notification = new Notification(title, {
                 body: body,
-                icon: '../assets/favicon-32x32.png',
-                badge: '../assets/favicon-32x32.png',
+                icon: '../assets/icon-192x192.png',
+                badge: '../assets/icon-72x72.png',
                 tag: `alarm-${reminder.id}`,
                 requireInteraction: true,
                 vibrate: [500, 200, 500],
@@ -466,10 +487,19 @@
         // Check immediately
         periodicCheck();
 
-        // Check when page becomes visible
+        // PERFORMANCE FIX: Clear interval when page hidden to save battery, restore when visible
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 periodicCheck();
+                if (!State.checkInterval) {
+                    State.checkInterval = setInterval(periodicCheck, CONFIG.CHECK_INTERVAL);
+                }
+            } else {
+                // Page hidden: reduce check frequency to save battery on mobile
+                if (State.checkInterval) {
+                    clearInterval(State.checkInterval);
+                    State.checkInterval = null;
+                }
             }
         });
 

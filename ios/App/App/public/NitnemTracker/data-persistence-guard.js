@@ -22,7 +22,7 @@
         NITNEM_LOG: 'nitnemTracker_nitnemLog',
         MALA_LOG: 'nitnemTracker_malaLog',
         ALARM_LOG: 'nitnemTracker_alarmLog',
-        STREAK_DATA: 'nitnemTracker_streakData',
+        STREAK_DATA: 'anhad_streak_data',
         ACHIEVEMENTS: 'nitnemTracker_achievements',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
         THEME: 'nitnemTracker_theme'

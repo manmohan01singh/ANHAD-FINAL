@@ -225,11 +225,21 @@ class AudioManager {
      * @param {number} volume - Volume for ambient sound
      */
     async playAmbient(volume = 0.3) {
+        // Ensure audio context is initialized
+        this.initAudioContext();
+        
         // Try dedicated vaheguru-jaap first, fallback to ambient-waheguru
         let audio = await this.play('vaheguru-jaap', { volume, loop: true });
         if (!audio) {
             audio = await this.play('ambient-waheguru', { volume, loop: true });
         }
+        
+        if (audio) {
+            console.log('[AudioManager] ✅ Ambient sound started successfully');
+        } else {
+            console.warn('[AudioManager] ⚠️ Failed to start ambient sound');
+        }
+        
         return audio;
     }
 

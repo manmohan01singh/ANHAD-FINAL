@@ -78,8 +78,8 @@ class NotificationEngine {
         }
 
         const defaultOptions = {
-            icon: '../assets/favicon.svg',
-            badge: '../assets/favicon.svg',
+            icon: '../assets/icon-192x192.png',
+            badge: '../assets/icon-72x72.png',
             vibrate: [200, 100, 200],
             tag: 'naam-abhyas',
             renotify: true,
@@ -189,6 +189,81 @@ class NotificationEngine {
         });
 
         console.log(`🔔 Scheduled notification "${id}" for ${new Date(scheduleTime).toLocaleTimeString()}`);
+    }
+
+    /**
+     * Cancel a scheduled notification
+     * @param {string} id - Notification ID
+     */
+    cancel(id) {
+        const scheduled = this.scheduledNotifications.find(n => n.id === id);
+        if (scheduled) {
+            clearTimeout(scheduled.timeoutId);
+            this.scheduledNotifications = this.scheduledNotifications.filter(n => n.id !== id);
+            console.log(`🔔 Cancelled notification "${id}"`);
+        }
+    }
+
+    /**
+     * Cancel all scheduled notifications
+     */
+    cancelAll() {
+        this.scheduledNotifications.forEach(n => {
+            clearTimeout(n.timeoutId);
+        });
+        this.scheduledNotifications = [];
+        console.log('🔔 Cancelled all scheduled notifications');
+    }
+
+    /**
+     * Cancel notifications for a specific hour
+     * @param {number} hour - Hour to cancel
+     */
+    cancelHour(hour) {
+        const idsToCancel = [
+            `naam_hour_${hour}`,
+            `naam_pre_${hour}`,
+            `naam_start_${hour}`
+        ];
+
+        idsToCancel.forEach(id => this.cancel(id));
+    }
+
+    /**
+     * Get scheduled notifications
+     * @returns {Array} Scheduled notifications
+     */
+    getScheduled() {
+        return this.scheduledNotifications.map(n => ({
+            id: n.id,
+            time: new Date(n.time),
+            title: n.title
+        }));
+    }
+
+    /**
+     * Check if notifications are permitted
+     * @returns {boolean}
+     */
+    isPermitted() {
+        return this.permission === 'granted';
+    }
+
+    /**
+     * Helper to generate a deterministic pseudo-random minute between 10 and 50
+     * based on the date and hour, ensuring consistency across app reloads.
+     */
+    _getRandomMinuteForHour(dateStr, hour) {
+        // Simple hash of date string + hour
+        let hash = 0;
+        const str = dateStr + "_" + hour;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        // Get pseudo-random number between 10 and 50
+        return 10 + Math.abs(hash) % 41;
     }
 
     /**
@@ -323,6 +398,204 @@ class NotificationEngine {
      */
     isPermitted() {
         return this.permission === 'granted';
+    }
+
+    /**
+     * Helper to generate a deterministic pseudo-random minute between 10 and 50
+     * based on the date and hour, ensuring consistency across app reloads.
+     */
+    _getRandomMinuteForHour(dateStr, hour) {
+        // Simple hash of date string + hour
+        let hash = 0;
+        const str = dateStr + "_" + hour;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        // Get pseudo-random number between 10 and 50
+        return 10 + Math.abs(hash) % 41;
+    }
+
+    /**
+     * Schedule Capacitor-native notifications for Naam Abhyas.
+     * ═══ OVERHAULED: Fixes BUG 3 (importance), BUG 4 (no channel delete), BUG 5 (no priority field) ═══
+     * Also persists schedule to dedicated localStorage key for cross-page sync.
+     */
+    async scheduleCapacitorHourlyBatch(config) {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+        if (!config || !config.enabled) return;
+
+        try {
+            const LN = window.Capacitor.Plugins.LocalNotifications;
+
+            // Request permission first
+            const perms = await LN.checkPermissions();
+            if (perms.display !== 'granted') {
+                await LN.requestPermissions();
+            }
+
+            if (window.Capacitor.Plugins.AlarmReliability) {
+                try {
+                    const status = await window.Capacitor.Plugins.AlarmReliability.getStatus();
+                    if (!status || status.exactAlarm !== true) {
+                        await window.Capacitor.Plugins.AlarmReliability.requestExactAlarmPermission();
+                    }
+                    if (status && status.batteryOptimized === true) {
+                        await window.Capacitor.Plugins.AlarmReliability.requestIgnoreBatteryOptimizations();
+                    }
+                } catch (e) {
+                    console.warn('[NaamAbhyas] Alarm reliability permission check failed:', e);
+                }
+            }
+
+            console.log('[NaamAbhyas] 📅 Schedule data received:', {
+                startHour: config.startHour,
+                endHour: config.endHour
+            });
+
+            // Cancel previous Naam Abhyas notifications (7-day rolling window)
+            const cancelIds = [];
+            for (let i = 0; i < 168; i++) {
+                cancelIds.push({ id: 90000 + i });
+            }
+            try {
+                await LN.cancel({ notifications: cancelIds });
+            } catch (e) { /* ignore if none exist */ }
+
+            const now = new Date();
+            const startHour = config.startHour || config.activeHours?.start || 5;
+            const endHour = config.endHour || config.activeHours?.end || 22;
+            const messages = [
+                'Naam japn da time ho gya hai, 2 min layi sare kamm chhaddo.',
+                'Waheguru Ji bula rahe ne. Bas 2 minutes Simran.',
+                'Phone pocket vich rakh lo, akhan band kro, Waheguru japo.',
+                '2-minute Simran break: kaam pause, Waheguru play.',
+                'Naam Abhyas slot live hai. Hun bas 120 seconds Rab naal.',
+                'Your soul is calling. Take 2 minutes for Naam Simran.',
+                'Be still. Breathe. Remember Vaheguru.'
+            ];
+
+            let scheduledCount = 0;
+
+            // Schedule for the next 7 days so alarms survive app restarts.
+            for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+                for (let hour = startHour; hour <= endHour; hour++) {
+                    const scheduleDate = new Date(now);
+                    scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
+                    
+                    const dateStr = scheduleDate.toISOString().split('T')[0];
+                    // Use deterministic random minute between 10 and 50
+                    const sessionMinute = this._getRandomMinuteForHour(dateStr, hour);
+                    
+                    scheduleDate.setHours(hour, sessionMinute, 0, 0);
+
+                    // Skip times that have already passed
+                    if (scheduleDate <= now) continue;
+
+                    const notifId = 90000 + (dayOffset * 24) + hour;
+                    const message = messages[(hour + dayOffset) % messages.length];
+
+                    // 1. Try to schedule Native Full-Screen Alarm (Play Store style)
+                    if (window.Capacitor.Plugins.AlarmReliability && window.Capacitor.Plugins.AlarmReliability.scheduleFullScreenAlarm) {
+                        try {
+                            await window.Capacitor.Plugins.AlarmReliability.scheduleFullScreenAlarm({
+                                id: notifId,
+                                timestamp: scheduleDate.getTime(),
+                                title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                                message: message,
+                                hour: String(hour),
+                                minute: String(sessionMinute)
+                            });
+                            scheduledCount++;
+                            continue; // Successfully scheduled full-screen alarm, skip LocalNotifications
+                        } catch (e) {
+                            console.warn('[NaamAbhyas] Full-screen alarm failed, falling back to LocalNotifications', e);
+                        }
+                    }
+
+                    // 2. Fallback to LocalNotifications if native full-screen plugin fails
+                    try {
+                        await LN.schedule({
+                            notifications: [{
+                                id: notifId,
+                                title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                                body: message,
+                                schedule: {
+                                    at: scheduleDate,
+                                    allowWhileIdle: true,
+                                    exact: true
+                                },
+                                channelId: 'naam_abhyas_v2',
+                                sound: 'default',
+                                smallIcon: 'ic_stat_notify',
+                                extra: {
+                                    type: 'naam_abhyas',
+                                    action: 'auto_start_naam',
+                                    hour: String(hour),
+                                    minute: String(sessionMinute),
+                                    url: 'NaamAbhyas/naam-abhyas.html',
+                                    autoStart: 'true'
+                                }
+                            }]
+                        });
+                        scheduledCount++;
+                    } catch (e) {
+                        console.error('[NaamAbhyas] Fallback notification scheduling failed', e);
+                    }
+                }
+            }
+
+            console.log(`[NaamAbhyas] ✅ Scheduled ${scheduledCount} randomized hourly alarms via Native Engine`);
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to schedule Capacitor notifications:', e);
+        }
+    }
+
+    /**
+     * CAPACITOR-NATIVE: Cancel all Naam Abhyas notifications
+     */
+    async cancelCapacitorBatch() {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+
+        try {
+            const cancelIds = [];
+            for (let i = 0; i < 168; i++) {
+                cancelIds.push({ id: 90000 + i });
+            }
+            await window.Capacitor.Plugins.LocalNotifications.cancel({ notifications: cancelIds });
+            console.log('[NaamAbhyas] Cancelled all Capacitor notifications');
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to cancel Capacitor notifications:', e);
+        }
+    }
+
+    /**
+     * CAPACITOR-NATIVE: Force refresh all notifications with new schedule
+     * This ensures notification times update when active hours change
+     */
+    async forceRefreshCapacitorNotifications(config) {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+        if (!window.Capacitor.Plugins.LocalNotifications) return;
+
+        console.log('[NaamAbhyas] Force refreshing Capacitor notifications due to schedule change');
+
+        try {
+            // First cancel all existing notifications
+            await this.cancelCapacitorBatch();
+
+            // Wait a brief moment for cancellation to process
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Then reschedule with new configuration
+            await this.scheduleCapacitorHourlyBatch(config);
+
+            console.log('[NaamAbhyas] ✅ Force refresh completed - notifications updated with new schedule');
+        } catch (e) {
+            console.error('[NaamAbhyas] Failed to force refresh Capacitor notifications:', e);
+        }
     }
 }
 

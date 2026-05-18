@@ -40,7 +40,8 @@
   
     <!-- REMOVED: global-mini-player.js and mini-player-extreme.js - using overlay-player.js instead -->
     <link rel="stylesheet" href="../css/responsive-fix.css">
-    <link rel="icon" type="image/png" href="../favicon.ico">
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
+    <link rel="apple-touch-icon" href="../assets/icon-180x180.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1032,7 +1033,7 @@
         <section class="artwork-section">
             <div class="artwork-clay" id="artworkContainer">
                 <div class="artwork-inner">
-                    <img class="artwork-img" src="../assets/darbar-sahib-evening.webp" alt="Sri Darbar Sahib" id="artworkImg">
+                    <img class="artwork-img" src="../assets/darbar-sahib-day.webp" alt="Sri Darbar Sahib" id="artworkImg">
                     <div class="equalizer" id="equalizer">
                         <div class="eq-bar"></div>
                         <div class="eq-bar"></div>
@@ -1123,7 +1124,7 @@
     </div>
 
     <!-- UNIFIED AUDIO SINGLETON -->
-    <script src="../lib/anhad-audio-singleton.js"></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.1.1"></script>
     <!-- REMOVED: Inline audio elements - singleton handles audio -->
 
     <script>
@@ -1176,10 +1177,13 @@
         }
     };
 
+    const legacyAudioEvents = { addEventListener: () => {}, load: () => {} };
+
     // DOM Elements
     const dom = {
         player: document.getElementById('player'),
-        // REMOVED: audioDarbar, audioAmritvela - singleton handles audio
+        audioDarbar: legacyAudioEvents,
+        audioAmritvela: legacyAudioEvents,
 
         // Stream switcher
         streamPill: document.getElementById('streamPill'),
@@ -1297,23 +1301,9 @@
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════
-    // AMRITVELA SYNC - Virtual Live with Shuffle Fallback
+    // Virtual live sync — ../lib/anhad-audio-singleton.js (server epoch + shuffle)
     // ═══════════════════════════════════════════════════════════════════════════════
-    
-    // Universal Deterministic offline fallback if the live server is ever unavailable
-    // This mathematical timeline ensures ALL devices stay perfectly in sync even fully offline.
-    function getLocalLivePosition() {
-        const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
-        const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
-        const totalDur = 40 * 3600; // 40 days
-        const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-        return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
-    }
-    
-    function getRandomTrackIndex() {
-        return Math.floor(Math.random() * STATE.totalTracks);
-    }
-    
+
     // REMOVED: syncAmritvelaPosition - singleton handles server sync
     async function syncAmritvelaPosition() {
         // Singleton handles all server sync logic
@@ -1590,7 +1580,9 @@
         // Volume
         dom.volumeInput.addEventListener('input', (e) => {
             STATE.volume = e.target.value / 100;
+            if (window.AnhadAudio) window.AnhadAudio.setVolume(STATE.volume);
             updateUI();
+            saveState();
         });
         
         // Theme
@@ -1679,10 +1671,8 @@
         
         // Visibility change - re-sync when returning
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && STATE.isPlaying) {
-                if (STATE.currentStream === 'amritvela') {
-                    syncAmritvelaPosition();
-                }
+            if (!document.hidden && STATE.isPlaying && STATE.currentStream === 'amritvela') {
+                window.AnhadAudio?.jumpToLive();
             }
         });
         
@@ -1705,21 +1695,14 @@
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             
             const data = await resp.json();
-            const serverTrackIndex = data.trackIndex ?? getRandomTrackIndex();
-            
-            // Only switch tracks if server is on a different track
-            if (serverTrackIndex !== STATE.currentTrackIndex) {
-                console.log(`[GR] 🔄 Track change: ${STATE.currentTrackIndex + 1} → ${serverTrackIndex + 1}`);
-                STATE.currentTrackIndex = serverTrackIndex;
-                const trackUrl = `${STREAMS.amritvela.baseUrl}/day-${STATE.currentTrackIndex + 1}.webm?t=${Date.now()}`;
-                dom.audioAmritvela.src = trackUrl;
-                dom.audioAmritvela.load();
-                
-                // Update track info
-                dom.trackTitle.textContent = data.trackTitle || `Day ${STATE.currentTrackIndex + 1} — ਗੁਰਬਾਣੀ ਕੀਰਤਨ`;
-                dom.trackArtist.textContent = data.trackArtist || 'ANHAD Gurbani Radio';
-                
-                // If was playing, the track change handler will auto-play after load
+            if (typeof data.trackIndex !== 'number') return;
+
+            const st = window.AnhadAudio?.getState?.();
+            if (!st || st.currentStream !== 'amritvela' || !STATE.isPlaying) return;
+
+            if (data.trackIndex !== st.currentTrackIndex) {
+                console.log(`[GR] 🔄 Server track advance → resync virtual live`);
+                await window.AnhadAudio.jumpToLive();
             }
         } catch (err) {
             // Silently fail - offline mode will handle it
@@ -1741,9 +1724,13 @@
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (audioState) => {
                 STATE.isPlaying = audioState.isPlaying;
-                STATE.currentStream = audioState.currentStream;
+                if (audioState.currentStream && STREAMS[audioState.currentStream]) {
+                    STATE.currentStream = audioState.currentStream;
+                    updateStreamUI(STATE.currentStream);
+                }
                 STATE.currentTrackIndex = audioState.currentTrackIndex;
                 updateUI();
+                saveState();
             });
 
             window.AnhadAudio.on('loading', (data) => {
@@ -1825,5 +1812,8 @@
     <script src="../lib/user-stats.js?v=1.0"></script>
     <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
     <script src="../lib/kirtan-listening-tracker.js?v=1.0"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
 </body>
 </html>

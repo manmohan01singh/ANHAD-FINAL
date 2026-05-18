@@ -38,12 +38,15 @@ const UltraWelcome = {
         <div class="ultra-welcome-loader__overlay"></div>
         <div class="ultra-welcome-loader__glow"></div>
         <div class="ultra-welcome-loader__logo">
-          <img src="../assets/app-logo-384.png" alt="ANHAD">
+          <div class="ultra-welcome-loader__ring"></div>
+          <div class="ultra-welcome-loader__ring ultra-welcome-loader__ring--2"></div>
+          <img src="../assets/icon-512x512.png" alt="ANHAD">
         </div>
         <div class="ultra-welcome-loader__text">ANHAD</div>
         <div class="ultra-welcome-loader__progress">
           <div class="ultra-welcome-loader__progress-fill"></div>
         </div>
+        <div class="ultra-welcome-loader__gurmukhi">ੴ ਸਤਿ ਨਾਮੁ</div>
       </div>
     `;
 
@@ -254,7 +257,7 @@ const UltraWelcome = {
       '../assets/darbar-sahib-day.webp',
       '../assets/Darbar-sahib-AMRITVELA.webp',
       '../assets/darbar-sahib-evening.webp',
-      '../assets/app-logo-384.png'
+      '../assets/icon-384x384.png'
     ];
 
     const promises = images.map(src => {

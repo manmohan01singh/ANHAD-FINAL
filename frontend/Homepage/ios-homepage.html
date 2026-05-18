@@ -113,7 +113,7 @@
 
         <!-- Bottom -->
         <footer id="bottom-ui">
-            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1" onclick="sessionStorage.setItem('anhad_welcomed','1'); localStorage.setItem('anhad_welcome_seen','true');">
+            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1" onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now()+'');}catch(e){}">
                 <span class="enter-btn-main">Enter ANHAD</span>
             </a>
             <p id="tap-hint" class="card-fade-in delay-4">Tap anywhere to start live kirtan</p>

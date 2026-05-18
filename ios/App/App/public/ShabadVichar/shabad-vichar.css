@@ -78,6 +78,8 @@ html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -86,7 +88,9 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   min-height: 100dvh;
+  width: 100%;
   overflow-x: hidden;
+  position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -116,19 +120,30 @@ body {
 }
 
 .header-back {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
   width: 44px;
   height: 44px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   color: var(--accent-gold);
-  text-decoration: none;
-  padding-left: 8px;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  border-radius: 50%;
 }
 
 .header-back:active {
-  opacity: 0.5;
+  opacity: 0.4;
+  transform: scale(0.9);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .header-back:active {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .header-title {
@@ -156,19 +171,27 @@ body {
   justify-content: center;
   background: transparent;
   border: none;
+  outline: none;
   color: var(--accent-gold);
   cursor: pointer;
   padding: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  border-radius: 50%;
 }
 
 .header-action:active {
-  opacity: 0.5;
+  opacity: 0.4;
+  transform: scale(0.9);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .header-action:active {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   INFO BAR — Clean iOS Style (No pills, no gradients)
-═══════════════════════════════════════════════════════════════ */
+   INFO BAR — Clean iOS Style with Scrollable Meta Badges
+   ═══════════════════════════════════════════════════════════════ */
 
 .info-bar {
   position: fixed;
@@ -360,6 +383,9 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-paper);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .verse-item {
@@ -400,6 +426,8 @@ body {
   text-align: center;
   margin-bottom: 12px;
   letter-spacing: 0.01em;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .verse-gurmukhi.larivaar {
@@ -877,7 +905,7 @@ body {
     padding: 0 40px;
   }
   
-  .verse-card {
+  .verse-item {
     padding: 32px 36px;
   }
   
@@ -888,6 +916,9 @@ body {
 
 @media (min-width: 1024px) {
   .verses-container {
-    max-width: 720px;
+    max-width: 800px;
+    margin: 0 auto;
+    border-left: 0.5px solid var(--separator-light);
+    border-right: 0.5px solid var(--separator-light);
   }
 }

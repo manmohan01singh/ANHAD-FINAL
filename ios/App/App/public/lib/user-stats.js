@@ -85,14 +85,19 @@
         }
     }
 
+    let _saveDebounceTimer = null;
     function saveStats(stats) {
-        try {
-            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-            // Dispatch event for dashboard updates
-            window.dispatchEvent(new CustomEvent('statsUpdated', { detail: stats }));
-        } catch (e) {
-            console.error('[UserStats] Error saving stats:', e);
-        }
+        // PERFORMANCE FIX: Debounce localStorage writes to prevent jank and QuotaExceeded
+        clearTimeout(_saveDebounceTimer);
+        _saveDebounceTimer = setTimeout(() => {
+            try {
+                localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+                // Dispatch event for dashboard updates
+                window.dispatchEvent(new CustomEvent('statsUpdated', { detail: stats }));
+            } catch (e) {
+                console.error('[UserStats] Error saving stats:', e);
+            }
+        }, 300);
     }
 
     function getStreak() {
@@ -467,6 +472,32 @@
             stopListeningSession();
         }
     });
+
+    // CRITICAL: Flush partial listening time when app goes to background or closes
+    // Without this, force-closing mid-kirtan loses all time since last 1-minute tick
+    function flushPartialListeningTime() {
+        if (!listeningInterval) return; // Not listening
+        const stats = getStats();
+        if (!stats.sessionStartTime) return;
+
+        const elapsedMs = Date.now() - stats.sessionStartTime;
+        const elapsedMinutes = Math.floor(elapsedMs / 60000);
+        if (elapsedMinutes > stats.sessionListeningMinutes) {
+            const newMinutes = elapsedMinutes - stats.sessionListeningMinutes;
+            if (newMinutes > 0) {
+                addListeningTime(newMinutes);
+                console.log(`[UserStats] Flushed ${newMinutes} min of partial listening time`);
+            }
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            flushPartialListeningTime();
+        }
+    });
+
+    window.addEventListener('pagehide', flushPartialListeningTime);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // INITIALIZATION - DEFERRED FOR PERFORMANCE

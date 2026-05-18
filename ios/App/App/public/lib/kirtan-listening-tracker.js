@@ -198,8 +198,18 @@
         const checkInterval = setInterval(() => {
             checkCount++;
             let anyPlaying = false;
-            
-            // Check 1: GlobalMiniPlayer (most reliable)
+
+            // Check 1: AnhadAudio singleton (primary)
+            if (window.AnhadAudio && window.AnhadAudio.isPlaying) {
+                if (window.AnhadAudio.isPlaying()) {
+                    anyPlaying = true;
+                    if (checkCount % 10 === 0) { // Log every 10 checks (20 seconds)
+                        console.log('[KirtanTracker] AnhadAudio is playing (check #' + checkCount + ')');
+                    }
+                }
+            }
+
+            // Check 2: GlobalMiniPlayer (fallback)
             if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.isPlaying) {
                 if (window.GlobalMiniPlayer.isPlaying()) {
                     anyPlaying = true;
@@ -208,8 +218,8 @@
                     }
                 }
             }
-            
-            // Check 2: Audio elements in DOM (fallback)
+
+            // Check 3: Audio elements in DOM (fallback)
             const audioElements = document.querySelectorAll('audio');
             audioElements.forEach(audio => {
                 if (!audio.paused && !audio.ended && audio.currentTime > 0) {

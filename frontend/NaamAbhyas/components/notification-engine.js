@@ -159,6 +159,15 @@ class NotificationEngine {
      * @param {object} options - Notification options
      */
     schedule(id, time, title, options = {}) {
+        // CAPACITOR FIX: On native platforms, all notification scheduling is handled
+        // by capacitor-notifications-global.js using exact native alarms.
+        // The web setTimeout path is unreliable in background/Doze mode and creates
+        // duplicate scheduling conflicts. Skip entirely on native builds.
+        if (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+            console.log(`🔔 [NotificationEngine] Skipping web schedule for "${id}" — using native alarms`);
+            return;
+        }
+
         const now = Date.now();
         const scheduleTime = time instanceof Date ? time.getTime() : time;
         const delay = scheduleTime - now;

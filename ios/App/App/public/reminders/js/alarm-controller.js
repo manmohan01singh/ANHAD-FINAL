@@ -1227,8 +1227,8 @@
                     isPreReminder ? `Upcoming: ${reminder.title}` : reminder.title,
                     {
                         body: isPreReminder ? 'Coming up soon...' : 'Time for your Paath',
-                        icon: '../assets/favicon.svg',
-                        badge: '../assets/favicon.svg',
+                        icon: '../assets/icon-192x192.png',
+                        badge: '../assets/icon-72x72.png',
                         tag: `alarm-${reminder.id}`,
                         requireInteraction: !isPreReminder,
                         vibrate: CONFIG.VIBRATION_PATTERN

@@ -7,13 +7,33 @@
 (function() {
   try {
     const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
+    const html = document.documentElement;
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+      const hour = new Date().getHours();
+      effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
     }
+    
+    if (effectiveTheme === 'dark') {
+      html.classList.add('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'dark');
+      html.style.colorScheme = 'dark';
+      html.style.backgroundColor = '#0D0D0F';
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+      html.setAttribute('data-theme', 'light');
+      html.style.colorScheme = 'light';
+      html.style.backgroundColor = '#F2F2F7';
+    }
+    
+    // Sync to body as soon as it exists
+    const observer = new MutationObserver(() => {
+      if (document.body) {
+        if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+        observer.disconnect();
+      }
+    });
+    observer.observe(html, { childList: true, subtree: true });
   } catch (e) {}
 })();
   </script>
@@ -33,7 +53,7 @@
     <!-- Navigation Libraries -->
     <script src="../lib/smart-back.js"></script>
     <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/smooth-navigation.js"></script>
+    <script src="../lib/smooth-navigation.js?v=2"></script>
     <script src="../lib/state-preservation.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,7 +113,7 @@
 
         <!-- Bottom -->
         <footer id="bottom-ui">
-            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1">
+            <a href="../index.html" id="enter-btn" class="card-fade-in delay-1" onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now()+'');}catch(e){}">
                 <span class="enter-btn-main">Enter ANHAD</span>
             </a>
             <p id="tap-hint" class="card-fade-in delay-4">Tap anywhere to start live kirtan</p>
@@ -107,6 +127,9 @@
     <script src="../lib/anhad-audio-singleton.js"></script>
     <!-- REMOVED: mini-player-extreme.js - replaced by singleton -->
     <script src="ios-homepage.js"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
 </body>
 
 </html>

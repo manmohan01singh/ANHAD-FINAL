@@ -196,8 +196,8 @@ class FallbackAlarmSystem {
             if ('Notification' in window && Notification.permission === 'granted') {
                 const notification = new Notification(alarm.title, {
                     body: alarm.body,
-                    icon: alarm.icon || '/assets/icons/icon-192x192.png',
-                    badge: alarm.badge || '/assets/icons/icon-72x72.png',
+                    icon: alarm.icon || '/assets/icon-192x192.png',
+                    badge: alarm.badge || '/assets/icon-72x72.png',
                     tag: alarm.tag || `fallback-${alarm.id}`,
                     requireInteraction: true,
                     vibrate: [500, 200, 500, 200, 500],

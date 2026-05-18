@@ -8,10 +8,29 @@
 const UltraWelcomeLoader = {
   loader: null,
   progressFill: null,
-  minLoadTime: 2000, // Minimum 2 seconds to show the beautiful loader
+  minLoadTime: 600, // Reduced from 2000 for faster re-entry
   startTime: null,
 
   init() {
+    // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
+    // The loader should only show on the very first page load of the session.
+    // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
+    // The loader should only show on the very first page load of the session.
+    if (sessionStorage.getItem('anhad_loader_shown') === '1' || 
+        sessionStorage.getItem('anhad_welcomed') === '1' || 
+        localStorage.getItem('anhad_welcome_seen') === 'true') {
+      console.log('[UltraLoader] Already welcomed, skipping splash');
+      // Immediately reveal the app without the loader
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add('theme-loaded');
+        document.body.classList.add('theme-loaded');
+        const app = document.getElementById('app');
+        if (app) app.classList.add('ultra-cascade');
+      });
+      return;
+    }
+    sessionStorage.setItem('anhad_loader_shown', '1');
+
     this.startTime = Date.now();
     this.createLoader();
     this.createFloatingParticles();
@@ -23,7 +42,9 @@ const UltraWelcomeLoader = {
     const loaderHTML = `
       <div class="ultra-loader">
         <div class="ultra-loader__logo">
-          <img src="assets/app-logo-384.png" alt="ANHAD">
+          <div class="ultra-welcome-loader__ring"></div>
+          <div class="ultra-welcome-loader__ring ultra-welcome-loader__ring--2"></div>
+          <img src="assets/icon-512x512.png" alt="ANHAD">
           <div class="ultra-loader__orbit">
             <div class="ultra-loader__particle"></div>
             <div class="ultra-loader__particle"></div>
@@ -35,6 +56,7 @@ const UltraWelcomeLoader = {
         <div class="ultra-loader__progress">
           <div class="ultra-loader__progress-fill"></div>
         </div>
+        <div class="ultra-welcome-loader__gurmukhi">ੴ ਸਤਿ ਨਾਮੁ</div>
       </div>
     `;
 
@@ -97,7 +119,7 @@ const UltraWelcomeLoader = {
     const criticalImages = [
       'assets/darbar-sahib-day.webp',
       'assets/Darbar-sahib-AMRITVELA.webp',
-      'assets/app-logo-384.png'
+      'assets/icon-512x512.png'
     ];
 
     const imagePromises = criticalImages.map(src => {

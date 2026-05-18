@@ -122,6 +122,17 @@ function getGuruNameForEvent(eventName, guruNumber) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  // FIX: Guard against duplicate initialization on SPA re-mount
+  // BUT: Allow re-initialization on SPA page change (back navigation)
+  if (window._homepageDataInitialized) {
+    console.log('[HomepageData] Already initialized, skipping duplicate init');
+    return;
+  }
+  window._homepageDataInitialized = true;
+
+  // FIX: Track intervals for cleanup
+  const _hpIntervals = [];
+
   // ━━━ NAVIGATION PATHS ━━━
   const NAV_PATHS = {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
@@ -143,7 +154,11 @@ document.addEventListener('DOMContentLoaded', function () {
       el.addEventListener('click', () => {
         el.style.transform = 'scale(0.97)';
         if (navigator.vibrate) navigator.vibrate(10);
-        setTimeout(() => window.location.href = path, 100);
+        const destination = path;
+        setTimeout(() => {
+          if (window.navigateTo) window.navigateTo(destination);
+          else window.location.href = destination;
+        }, 100);
       });
       el.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
@@ -201,21 +216,27 @@ document.addEventListener('DOMContentLoaded', function () {
     
     if (!subtitleEl || !dateEl) return;
     try {
-      const response = await fetch('data/gurpurab-events-2026.json');
+      const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
+      const response = await fetch(dataUrl);
       const data = await response.json();
       const events2026 = data.years['2026'] || [];
-      const gurpurabs = events2026.map(e => ({ 
-        name: e.name_en, 
-        id: e.id,
-        date: new Date(e.gregorian_date), 
-        type: e.type 
-      })).sort((a, b) => a.date - b.date);
+      const gurpurabs = events2026.map(e => {
+        const [y, m, d] = e.gregorian_date.split('-');
+        return { 
+          name: e.name_en, 
+          id: e.id,
+          date: new Date(y, m - 1, d), // Local midnight 
+          type: e.type 
+        };
+      }).sort((a, b) => a.date - b.date);
+      
       const now = new Date();
-      const todayStr = now.toLocaleDateString('en-CA');
-      const todayEvent = gurpurabs.find(g => g.date.toLocaleDateString('en-CA') === todayStr);
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      const todayEvent = gurpurabs.find(g => g.date.getTime() === todayMidnight.getTime());
       
       // Determine which event to display (today's event or next upcoming)
-      const displayEvent = todayEvent || gurpurabs.find(g => g.date >= now);
+      const displayEvent = todayEvent || gurpurabs.find(g => g.date > todayMidnight);
       
       if (displayEvent) {
         // FIX: Add event type classes to calendar card for ring lights
@@ -244,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         // It's an upcoming event
-        const daysLeft = Math.ceil((displayEvent.date - now) / 86400000);
+        const daysLeft = Math.round((displayEvent.date - todayMidnight) / 86400000);
         const dateStr = displayEvent.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         
         // FIX: Add celebration class for upcoming celebration events
@@ -324,9 +345,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const today = new Date().toLocaleDateString('en-CA');
       const nl = localStorage.getItem('nitnemTracker_nitnemLog');
       if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completedToday = p[today].length; else if (typeof p[today] === 'object') { const td = p[today]; completedToday = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } }
-      const sd = localStorage.getItem('nitnemTracker_streakData');
-      if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
-      if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
+      
+      // SYNC: Use UnifiedStats for streak data
+      if (window.UnifiedStats) {
+        const streaks = window.UnifiedStats.getStreaks();
+        streak = streaks.nitnem || 0;
+      } else {
+        const sd = localStorage.getItem('anhad_streak_data');
+        if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
+        if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
+      }
     } catch (e) {}
     const streakEl = document.getElementById('streakDays'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
     const circumference = 163.36, progress = completedToday / totalBanis, offset = circumference * (1 - progress);
@@ -340,6 +368,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (streakEl) streakEl.textContent = `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak`;
     } else { if (textEl) textEl.textContent = 'Track your daily Nitnem practice'; if (streakEl) streakEl.textContent = '📿 Start Today'; }
   }
+
+  // Bind to UnifiedStats events for real-time updates
+  window.addEventListener('statsInitialized', updateNitnemTracker);
+  window.addEventListener('statsChanged', updateNitnemTracker);
+  window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
 
   // ━━━ SEHAJ PAATH ━━━
   function updateSehajPaath() {
@@ -396,7 +429,9 @@ document.addEventListener('DOMContentLoaded', function () {
     notifBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      window.location.href = 'reminders/smart-reminders-v7.html';
+      // FIX: Use SPA navigation instead of direct href
+      if (window.navigateTo) window.navigateTo('reminders/smart-reminders-v7.html');
+      else window.location.href = 'reminders/smart-reminders-v7.html';
     });
   }
 
@@ -416,7 +451,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return;
       }
-      window.location.href = 'Homepage/ios-homepage.html';
+      
+      const destination = 'Homepage/ios-homepage.html';
+      if (window.navigateTo) window.navigateTo(destination);
+      else window.location.href = destination;
     });
   }
 
@@ -494,11 +532,46 @@ document.addEventListener('DOMContentLoaded', function () {
   // ━━━ INIT ALL ━━━
   updateGreeting(); updateClock(); updateListenerCount(); updateHukamDate(); updateNextGurpurab();
   updateNextSession(); updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNitnemSubtitle(); updateNotificationBadge();
-  setInterval(updateClock, 1000); setInterval(updateListenerCount, 5000); setInterval(updateGreeting, 60000); setInterval(updateNitnemSubtitle, 60000); setInterval(updateNotificationBadge, 60000);
+  // FIX: Store interval IDs so they can be cleaned up on page unload
+  _hpIntervals.push(
+    setInterval(updateClock, 1000),
+    setInterval(updateListenerCount, 5000),
+    setInterval(updateGreeting, 60000),
+    setInterval(updateNitnemSubtitle, 60000),
+    setInterval(updateNotificationBadge, 60000)
+  );
+
+  // FIX: Clean up intervals on page unload to prevent memory leaks
+  window.addEventListener('pagehide', () => {
+    _hpIntervals.forEach(id => clearInterval(id));
+    _hpIntervals.length = 0;
+    // CRITICAL: Reset initialization flag so data re-initializes on SPA return
+    window._homepageDataInitialized = false;
+  });
 
   // ━━━ REFRESH ON RETURN ━━━
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
   window.addEventListener('pageshow', e => { if (e.persisted) { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
+
+  // ━━━ REFRESH ON SPA NAVIGATION BACK ━━━
+  // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh
+  // all dynamic data (especially Gurpurab) to prevent stale information.
+  window.addEventListener('anhad_page_changed', function() {
+    // Only run if we're on the homepage
+    if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('/frontend/')) {
+      console.log('[HomepageData] SPA page changed back to homepage, refreshing data');
+      updateNextGurpurab();
+      updateGreeting();
+      updateClock();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNextSession();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+      updateHukamDate();
+    }
+  });
 
   console.log('✨ ANHAD Premium Homepage Data Initialized');
 });
@@ -523,19 +596,22 @@ document.addEventListener('DOMContentLoaded', function () {
       islandDefault.style.pointerEvents = 'none';
       
       islandPlaying.style.opacity = '1';
-      島Playing.style.pointerEvents = 'auto'; // Oh wait, typo in my thought, fixed here:
       islandPlaying.style.pointerEvents = 'auto';
       islandWaveform.classList.remove('paused');
       
       islandStreamName.textContent = streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan';
       islandActionBtn.innerHTML = '<i class="fas fa-pause"></i>';
       
-      if (navigator.mediaSession) {
+      if (!window.Capacitor && navigator.mediaSession) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan',
           artist: 'Sri Harmandir Sahib Ji',
           album: 'ANHAD Audio Engine',
-          artwork: [{ src: 'assets/icon-512.png', sizes: '512x512', type: 'image/png' }]
+          artwork: [
+            { src: 'assets/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+            { src: 'assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+            { src: 'assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
+          ]
         });
       }
     } else {
@@ -595,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dynamic Island Interactions
     islandActionBtn?.addEventListener('click', (e) => {
       e.stopPropagation(); // Don't trigger island click
-      if (window.AnhadAudio) window.AnhadAudio.togglePlay();
+      if (window.AnhadAudio) window.AnhadAudio.toggle();
     });
     
     // Clicking island while playing routes to full player
@@ -607,7 +683,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // MediaSession OS Controls (Lockscreen/Control Center)
-    if (navigator.mediaSession) {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (!window.Capacitor && navigator.mediaSession) {
       navigator.mediaSession.setActionHandler('play', () => { if (window.AnhadAudio) window.AnhadAudio.play(); });
       navigator.mediaSession.setActionHandler('pause', () => { if (window.AnhadAudio) window.AnhadAudio.pause(); });
     }

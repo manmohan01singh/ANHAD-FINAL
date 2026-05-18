@@ -686,9 +686,23 @@ const VoiceSearch = {
         console.log('VoiceSearch.init() called');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         console.log('SpeechRecognition available:', !!SpeechRecognition);
+
+        // In Capacitor WebView, SpeechRecognition is not available
+        const isCapacitor = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+
         if (!SpeechRecognition) {
             console.warn('Voice not supported');
-            if (DOM.micBtn) DOM.micBtn.style.display = 'none';
+            if (DOM.micBtn) {
+                // Don't hide — let user tap and see message
+                DOM.micBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (isCapacitor) {
+                        showToast('Voice search is not available in the app. Please use the Gurmukhi keyboard instead.');
+                    } else {
+                        showToast('Voice search not supported on this browser');
+                    }
+                });
+            }
             return;
         }
 

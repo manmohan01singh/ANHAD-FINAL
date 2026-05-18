@@ -1,293 +1,84 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * PERFORMANCE OPTIMIZER JS
+ * PERFORMANCE OPTIMIZER JS (LEAN)
  * ═══════════════════════════════════════════════════════════════════════════════
- * Fixes scrolling performance issues (flickering, lag, color splashing)
- * WITHOUT removing any animations or UI elements.
+ * Lightweight scroll/visibility handler.
+ * Removed: will-change spam, translateZ(0) on every icon, contain on every
+ * glass element, IntersectionObserver for animation pausing (handled by CSS).
  * 
- * Key optimizations:
- * 1. Adds 'is-scrolling' class during scroll to pause background animations
- * 2. Throttles scroll-based CSS variable updates
- * 3. Uses requestIdleCallback for non-critical updates
- * 4. Implements intersection observer for off-screen animation pausing
- * ═══════════════════════════════════════════════════════════════════════════════
+ * What remains:
+ * 1. 'is-scrolling' class during scroll (CSS handles the rest)
+ * 2. Visibility-based animation pausing
+ * 3. Lazy IntersectionObserver for off-screen content-visibility
  */
 
 (function () {
     'use strict';
 
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // CONFIGURATION
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    const CONFIG = {
-        scrollDebounceMs: 150,          // Time to wait after scroll stops
-        scrollThrottleMs: 16,           // ~60fps throttle
-        enableScrollClass: true,        // Add is-scrolling class during scroll
-        enableAnimationPausing: true,   // Pause animations during scroll
-        enableIntersectionPausing: true // Pause off-screen animations
-    };
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // SCROLL PERFORMANCE HANDLER
-    // ═══════════════════════════════════════════════════════════════════════════════
-
     let scrollTimeout = null;
     let isScrolling = false;
-    let lastScrollY = 0;
-    let rafId = null;
 
     function onScrollStart() {
-        if (!isScrolling && CONFIG.enableScrollClass) {
+        if (!isScrolling) {
             isScrolling = true;
             document.body.classList.add('is-scrolling');
         }
     }
 
     function onScrollEnd() {
-        if (isScrolling && CONFIG.enableScrollClass) {
+        if (isScrolling) {
             isScrolling = false;
             document.body.classList.remove('is-scrolling');
         }
     }
 
     function handleScroll() {
-        const scrollY = window.scrollY || window.pageYOffset;
-
-        // Skip if scroll position hasn't changed meaningfully
-        if (Math.abs(scrollY - lastScrollY) < 2) return;
-        lastScrollY = scrollY;
-
-        // Mark scroll start
         onScrollStart();
-
-        // Clear existing timeout
-        if (scrollTimeout) {
-            clearTimeout(scrollTimeout);
-        }
-
-        // Set timeout to detect scroll end
-        scrollTimeout = setTimeout(onScrollEnd, CONFIG.scrollDebounceMs);
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(onScrollEnd, 150);
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // OPTIMIZED LIQUID GLASS SCROLL HANDLER
-    // ═══════════════════════════════════════════════════════════════════════════════
+    // Single passive scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    /**
-     * Optimized version of the liquid glass scroll handler
-     * Reduces DOM updates and batches CSS property changes
-     */
-    let liquidGlassTicking = false;
-    let lastLiquidUpdate = 0;
-    const LIQUID_UPDATE_INTERVAL = 100; // Update every 100ms instead of every frame
-
-    function updateLiquidGlassOptimized() {
-        const now = performance.now();
-
-        // Throttle updates to reduce repaints
-        if (now - lastLiquidUpdate < LIQUID_UPDATE_INTERVAL) {
-            liquidGlassTicking = false;
-            return;
-        }
-        lastLiquidUpdate = now;
-
-        const scrollY = window.scrollY || window.pageYOffset;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = max > 0 ? scrollY / max : 0;
-
-        // Batch all CSS custom property updates into a single frame
-        const root = document.documentElement;
-
-        // Use CSS.registerProperty for smoother transitions if available
-        root.style.setProperty("--liquid-flow", (scrollY * 0.1).toFixed(1));
-        root.style.setProperty("--refraction", (20 + progress * 30).toFixed(1));
-        root.style.setProperty("--highlight-shift", (progress * 80).toFixed(1));
-        root.style.setProperty("--dispersion", (0.3 + progress * 0.5).toFixed(2));
-
-        liquidGlassTicking = false;
-    }
-
-    function requestLiquidUpdate() {
-        if (!liquidGlassTicking) {
-            liquidGlassTicking = true;
-
-            // Use requestIdleCallback for non-critical visual updates
-            if (window.requestIdleCallback) {
-                requestIdleCallback(() => {
-                    requestAnimationFrame(updateLiquidGlassOptimized);
-                }, { timeout: 100 });
-            } else {
-                requestAnimationFrame(updateLiquidGlassOptimized);
-            }
-        }
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // UTILITY FUNCTIONS
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    /**
-     * Debounce function to prevent rapid callback execution
-     * @param {Function} func - Function to debounce
-     * @param {number} wait - Delay in milliseconds
-     * @returns {Function} Debounced function
-     */
-    function debounce(func, wait = 100) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // INTERSECTION OBSERVER FOR OFF-SCREEN ANIMATIONS
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    let animationObserver = null;
-    let observedElements = new WeakSet();
-
-    function initIntersectionPausing() {
-        if (!CONFIG.enableIntersectionPausing || !window.IntersectionObserver) return;
-
-        const animatedElements = document.querySelectorAll(`
-            .aurora,
-            .orb,
-            .floating-particle,
-            .cosmic-bg__divine-rays,
-            .flower-of-life,
-            [class*="animate-"],
-            [class*="--pulse"],
-            [class*="--float"],
-            [class*="--glow"]
-        `);
-
-        if (animatedElements.length === 0) return;
-
-        // Debounced callback to prevent rapid state changes during scroll bounce
-        const debouncedCallback = debounce((entries) => {
-            entries.forEach(entry => {
-                const element = entry.target;
-                // Only pause when completely off-screen to prevent flickering
-                if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
-                    element.style.animationPlayState = 'running';
-                } else if (!entry.isIntersecting && entry.boundingClientRect.top > window.innerHeight) {
-                    // Only pause if element is below viewport (not above - momentum scroll may bring it back)
-                    element.style.animationPlayState = 'paused';
-                }
-            });
-        }, 150); // 150ms debounce prevents rapid state changes
-
-        animationObserver = new IntersectionObserver(debouncedCallback, {
-            root: null,
-            rootMargin: '100px', // Increased buffer to prevent flickering
-            threshold: [0, 0.1, 0.5, 1] // Multiple thresholds for smooth transitions
-        });
-
-        animatedElements.forEach(el => {
-            if (!observedElements.has(el)) {
-                observedElements.add(el);
-                animationObserver.observe(el);
-            }
-        });
-        
-        // Cleanup on pagehide
-        window.addEventListener('pagehide', () => {
-            if (animationObserver) {
-                animationObserver.disconnect();
-                animationObserver = null;
-            }
-        }, { once: true });
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // ICON FLICKERING FIX
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    function fixIconFlickering() {
-        // Force GPU layer for all Font Awesome icons
-        const icons = document.querySelectorAll('.fas, .far, .fab, .fa, [class*="fa-"]');
-
-        icons.forEach(icon => {
-            // Ensure consistent rendering
-            icon.style.willChange = 'transform';
-            icon.style.transform = 'translateZ(0)';
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // BACKDROP FILTER OPTIMIZATION
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    function optimizeBackdropFilters() {
-        const glassElements = document.querySelectorAll('.ios-glass, .liquid-glass, [class*="glass"]');
-
-        glassElements.forEach(el => {
-            // Force compositing layer
-            if (!el.style.transform) {
-                el.style.transform = 'translateZ(0)';
-            }
-            el.style.isolation = 'isolate';
-            // Add CSS containment for better performance
-            el.style.contain = 'layout style paint';
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // VISIBILITY CHANGE HANDLER
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    function handleVisibilityChange() {
+    // Pause animations when tab hidden
+    document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
-            // Pause all background animations when tab is hidden
             document.body.classList.add('is-scrolling');
         } else {
-            // Resume animations when tab is visible
             document.body.classList.remove('is-scrolling');
         }
-    }
+    });
 
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // INITIALIZATION
-    // ═══════════════════════════════════════════════════════════════════════════════
+    // Lazy content-visibility for off-screen sections (after DOMContentLoaded)
+    function initContentVisibility() {
+        if (!('IntersectionObserver' in window)) return;
+        
+        var sections = document.querySelectorAll('.quick-access-grid, .practice-grid, .sheet');
+        if (!sections.length) return;
 
-    function init() {
-        // Replace existing scroll listener with optimized version
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        window.addEventListener('scroll', requestLiquidUpdate, { passive: true });
-
-        // Visibility change handling
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        // Initialize after DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                fixIconFlickering();
-                optimizeBackdropFilters();
-                initIntersectionPausing();
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.style.contentVisibility = 'visible';
+                } else {
+                    entry.target.style.contentVisibility = 'auto';
+                }
             });
-        } else {
-            fixIconFlickering();
-            optimizeBackdropFilters();
-            initIntersectionPausing();
-        }
+        }, { rootMargin: '200px' });
 
-        console.log('[PerfOptimizer] ✅ Scroll performance optimizer initialized');
+        sections.forEach(function(el) { observer.observe(el); });
     }
 
-    // Run initialization
-    init();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initContentVisibility);
+    } else {
+        initContentVisibility();
+    }
 
-    // Expose for debugging
+    console.log('[PerfOptimizer] ✅ Lean performance optimizer initialized');
+
     window.PerfOptimizer = {
-        config: CONFIG,
-        forceScrollEnd: onScrollEnd,
-        reinit: init
+        forceScrollEnd: onScrollEnd
     };
-
 })();

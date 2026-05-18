@@ -1,6 +1,7 @@
 {
-  "version": "5.1.7",
-  "build": "20260425.10",
-  "timestamp": "2026-04-25T13:16:00Z",
-  "commit": "fix: toast initialization crash during daily reset check"
+  "version": "3.9.8",
+  "buildTime": "2026-05-18T07:45:00.000Z",
+  "timestamp": 1747548300000,
+  "commitHash": "golden-radio-logo-05",
+  "branch": "main"
 }

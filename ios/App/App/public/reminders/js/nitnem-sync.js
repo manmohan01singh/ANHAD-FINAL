@@ -27,7 +27,7 @@
         storage: {
             trackerData: 'nitnemTracker_alarmData',
             dailyLog: 'nitnemTracker_dailyLog',
-            streakData: 'nitnemTracker_streakData',
+            streakData: 'anhad_streak_data',
             stats: 'nitnemTracker_stats'
         },
         channelName: 'gurbani-nitnem-sync',

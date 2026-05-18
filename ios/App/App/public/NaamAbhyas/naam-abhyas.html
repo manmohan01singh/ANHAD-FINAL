@@ -55,7 +55,7 @@
     <link rel="stylesheet" href="components/ritual-overlay.css?v=3.1">
 
     <!-- Favicon & PWA -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
     <link rel="manifest" href="../manifest.json">
 
     <!-- Unified Theme System -->
@@ -448,94 +448,92 @@
     </div>
 
     <!-- -----------------------------------------------------------------------
-         MEDITATION OVERLAY
+         MEDITATION OVERLAY — Premium SVG Immersive Experience
     ----------------------------------------------------------------------- -->
     <div class="meditation-overlay" id="meditationOverlay">
         <div class="meditation-cosmos">
-            <div class="med-ring med-ring-1"></div>
-            <div class="med-ring med-ring-2"></div>
-            <div class="med-ring med-ring-3"></div>
+            <svg class="med-progress-svg" viewBox="0 0 200 200">
+                <circle class="med-progress-bg" cx="100" cy="100" r="85"></circle>
+                <circle class="med-progress-ring" id="medProgressRing" cx="100" cy="100" r="85"></circle>
+            </svg>
+            <div class="med-center-content">
+                <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
+                <div class="breathing-guide" id="breathingGuide">Breathe... Remember...</div>
+            </div>
         </div>
-        <div class="meditation-content">
-            <div class="meditation-symbol" id="meditationSymbol">🧘</div>
-            <div class="waheguru-text" id="waheguruText">ਵਾਹਿਗੁਰੂ</div>
-            <div class="breathing-guide" id="breathingGuide">
-                <span>Breathe... Remember...</span>
+        <div class="meditation-controls-v2">
+            <div class="timer-display-v2" id="timerDisplay">02:00</div>
+            <div class="med-action-row">
+                <button class="med-btn med-btn-present" id="medPresentBtn">
+                    <span class="btn-icon">🙋</span>
+                    <span class="btn-label">I Am Present</span>
+                </button>
+                <button class="med-btn med-btn-silent" id="medSilentBtn" data-muted="false">
+                    <span class="btn-icon" id="silentBtnIcon">🔊</span>
+                    <span class="btn-label" id="silentBtnLabel">Silent</span>
+                </button>
             </div>
-            <div class="meditation-timer" id="meditationTimer">
-                <div class="timer-display" id="timerDisplay">2:00</div>
-                <div class="timer-progress">
-                    <div class="timer-progress-bar" id="timerProgressBar"></div>
-                </div>
+            <div class="med-footer-actions">
+                <button class="med-skip-btn" id="skipMeditationBtn">Skip / End Early</button>
             </div>
-            <button class="end-early-btn" id="endEarlyBtn">End Early</button>
         </div>
     </div>
 
     <!-- -----------------------------------------------------------------------
-         SESSION ALERT MODAL
+         SESSION ALERT MODAL — iOS Style Notification
     ----------------------------------------------------------------------- -->
     <div class="session-alert-modal" id="sessionAlertModal">
         <div class="alert-backdrop"></div>
-        <div class="alert-content">
-            <div class="alert-pulse"></div>
-            <div class="alert-icon">⚠️</div>
-            <div class="alert-gurmukhi">ਵਾਹਿਗੁਰੂ</div>
-            <h2 class="alert-title">Time for Naam Abhyas</h2>
-            <p class="alert-message">Leave all work. Close your eyes.<br>Remember Vaheguru for 2 minutes.</p>
-            <div class="alert-actions">
-                <button class="alert-btn alert-primary" id="alertStartNowBtn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                    Start Now
-                </button>
-                <button class="alert-btn alert-secondary" id="skipSessionBtn">Skip This Time</button>
+        <div class="alert-ios-card">
+            <div class="alert-header-ios">
+                <div class="alert-icon-ios">🙏</div>
+                <div class="alert-info-ios">
+                    <span class="alert-category">NAAM ABHYAS</span>
+                    <h2 class="alert-title-ios" id="alertTitle">Time for Simran</h2>
+                </div>
+                <div class="alert-time-chip" id="alertTimeChip">2 min</div>
+            </div>
+            <div class="alert-body-ios">
+                <p id="alertMessage">"Leave all work. Close your eyes. Remember Vaheguru."</p>
+            </div>
+            <div class="alert-footer-ios">
+                <button class="alert-btn-ios alert-btn-ready" id="alertStartNowBtn">I Am Ready</button>
+                <div class="alert-btn-row-ios">
+                    <button class="alert-btn-ios alert-btn-silent" id="alertSilentBtn">Silent Mode</button>
+                    <button class="alert-btn-ios alert-btn-skip" id="skipSessionBtn">Skip</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- -----------------------------------------------------------------------
-         COMPLETION MODAL
+         COMPLETION MODAL — Rotating Blessings
     ----------------------------------------------------------------------- -->
     <div class="completion-modal" id="completionModal">
         <div class="completion-backdrop"></div>
-        <div class="completion-content">
-            <div class="completion-emojis">🎉 ✨ 🙏</div>
-            <div class="completion-gurmukhi">ਮੁਕੰਮਲ ਹੋਇਆ</div>
-            <h2 class="completion-title">Session Complete!</h2>
-            <div class="completion-stats">
-                <div class="comp-stat">
-                    <span class="comp-stat-icon">⏱️</span>
-                    <span class="comp-stat-label">Duration</span>
-                    <span class="comp-stat-value" id="compDuration">2:00</span>
+        <div class="completion-card-ios">
+            <div class="comp-header-ios">
+                <div class="comp-icon-ios">✨</div>
+                <h2 class="comp-title-ios" id="completionTitle">Wonderful!</h2>
+                <p class="comp-blessing-ios" id="completionBlessing">You remembered Guru Maharaj Ji</p>
+            </div>
+            
+            <div class="comp-stats-row-ios">
+                <div class="comp-stat-ios">
+                    <span class="stat-val" id="compDuration">2:00</span>
+                    <span class="stat-lbl">Duration</span>
                 </div>
-                <div class="comp-stat">
-                    <span class="comp-stat-icon">🔥</span>
-                    <span class="comp-stat-label">Streak</span>
-                    <span class="comp-stat-value" id="compStreak">0</span>
+                <div class="comp-stat-ios">
+                    <span class="stat-val" id="compStreak">0</span>
+                    <span class="stat-lbl">Streak</span>
                 </div>
-                <div class="comp-stat">
-                    <span class="comp-stat-icon">📅</span>
-                    <span class="comp-stat-label">Today</span>
-                    <span class="comp-stat-value" id="compToday">0/0</span>
+                <div class="comp-stat-ios">
+                    <span class="stat-val" id="compToday">0/0</span>
+                    <span class="stat-lbl">Today</span>
                 </div>
             </div>
 
-            <!-- Achievement Unlock -->
-            <div class="achievement-unlock hidden" id="achievementUnlock">
-                <div class="achievement-unlock-badge" id="achievementBadge">🏅</div>
-                <div class="achievement-unlock-text">
-                    <span class="achievement-label">Achievement Unlocked!</span>
-                    <h3 class="achievement-name" id="achievementName">First Step</h3>
-                    <p class="achievement-desc" id="achievementDesc">Complete your first Naam Abhyas</p>
-                </div>
-            </div>
-
-            <div class="next-session-info" id="nextSessionInfo">
-                Next session: Loading...
-            </div>
-            <button class="continue-btn" id="continueBtn">Continue</button>
+            <button class="comp-continue-btn" id="continueBtn">Continue Journey</button>
         </div>
     </div>
 
@@ -602,33 +600,22 @@
                     </div>
                 </div>
 
-                <!-- Duration Setting -->
+                <!-- Duration Setting: CUSTOM INPUT + PRESETS -->
                 <div class="setting-group">
                     <div class="setting-label">
-                        <span class="setting-title">Duration</span>
-                        <span class="setting-desc">How long each session lasts</span>
+                        <span class="setting-title">Session Duration</span>
+                        <span class="setting-desc">How long for each Simran session?</span>
                     </div>
-                    <div class="radio-group" id="durationOptions">
-                        <label class="radio-option">
-                            <input type="radio" name="duration" value="1">
-                            <span class="radio-mark"></span>
-                            <span class="radio-text">1 minute</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="duration" value="2" checked>
-                            <span class="radio-mark"></span>
-                            <span class="radio-text">2 minutes <span class="recommended">Recommended</span></span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="duration" value="3">
-                            <span class="radio-mark"></span>
-                            <span class="radio-text">3 minutes</span>
-                        </label>
-                        <label class="radio-option">
-                            <input type="radio" name="duration" value="5">
-                            <span class="radio-mark"></span>
-                            <span class="radio-text">5 minutes</span>
-                        </label>
+                    <div class="duration-control-premium">
+                        <div class="duration-presets" id="durationPresets">
+                            <button class="preset-btn" data-min="2">2m</button>
+                            <button class="preset-btn" data-min="5">5m</button>
+                            <button class="preset-btn" data-min="11">11m</button>
+                        </div>
+                        <div class="duration-input-wrapper">
+                            <input type="number" id="durationCustomInput" min="2" max="60" value="2" class="duration-num-input">
+                            <span class="duration-unit">mins</span>
+                        </div>
                     </div>
                 </div>
 
@@ -820,7 +807,11 @@
     <script src="../lib/alarm-coordinator.js" defer></script>
     <script src="../lib/global-alarm-system.js" defer></script>
 
-    <script src="naam-abhyas.js?v=3.3-random"></script>
+    <script src="naam-abhyas.js?v=3.4-clear"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

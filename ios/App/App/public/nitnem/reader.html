@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../css/mobile-lock.css">
@@ -37,7 +37,7 @@
     <!-- Ik Onkar Background Image -->
     <div class="ikonkar-background" id="ikonkarBackground">
         <img src="../assets/icons/bg-nitnem.jpg" 
-             alt="ੴ" />
+             alt="Background" />
     </div>
 
     <!-- Loading -->
@@ -50,7 +50,7 @@
 
     <!-- Error State -->
     <div class="error-state" id="errorState" style="display: none;">
-        <div class="error-icon">❌</div>
+        <div class="error-icon">⚠️</div>
         <h2>Unable to Load</h2>
         <p id="errorMessage">Something went wrong</p>
         <button class="error-btn" id="retryBtn">Try Again</button>
@@ -78,7 +78,7 @@
             </a>
 
             <div class="reader-title" id="readerTitle">
-                <span class="reader-gurmukhi">ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ</span>
+                <span class="reader-gurmukhi">ਧੁਰ ਕੀ ਬਾਣੀ ਜੀ</span>
                 <span class="reader-english">Bani</span>
             </div>
 
@@ -138,7 +138,7 @@
                 <div class="next-bani-container" id="nextBaniContainer" style="display: none;">
                     <div class="next-bani-label">Next in My Pothi</div>
                     <a href="#" class="next-bani-btn" id="nextBaniBtn">
-                        <span class="next-bani-icon" id="nextBaniIcon">📖</span>
+                        <span class="next-bani-icon" id="nextBaniIcon">▶</span>
                         <span class="next-bani-name" id="nextBaniName">Next Bani</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
@@ -420,19 +420,19 @@
                 <div class="setting-card">
                     <button class="setting-action" id="resetBtn">
                         <div class="action-info">
-                            <span class="action-icon">↺</span>
+                            <span class="action-icon">🔄</span>
                             <div class="action-text">
                                 <span class="action-label">Reset Settings</span>
                                 <span class="action-desc">Restore defaults</span>
                             </div>
                         </div>
-                        <span class="action-arrow">→</span>
+                        <span class="action-arrow">›</span>
                     </button>
                 </div>
             </section>
 
             <footer class="settings-footer">
-                <p class="version-info">ANHAD v5.0 © Pure iOS</p>
+                <p class="version-info">ANHAD v5.0 � Pure iOS</p>
                 <p class="api-credit">Powered by BaniDB</p>
             </footer>
 
@@ -470,18 +470,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         'use strict';
         
-        console.log('✓ Initializing dynamic orb effects...');
+        console.log('✨ Initializing dynamic orb effects...');
         
         const orb1 = document.querySelector('.orb-1');
         const orb2 = document.querySelector('.orb-2');
         const orb3 = document.querySelector('.orb-3');
         
         if (!orb1 || !orb2) {
-            console.warn('⚠ Orbs not found in DOM');
+            console.warn('⚠️ Orbs not found in DOM');
             return;
         }
         
-        console.log('✓ Orbs found:', { orb1, orb2, orb3 });
+        console.log('✨ Orbs found:', { orb1, orb2, orb3 });
         
         // Sacred color palettes for scroll journey - REDDISH/PINK THEME (no green)
         const darkThemeColors = [
@@ -580,9 +580,13 @@
         
         // Initial call
         updateOrbs();
-        console.log('✓ Orb scroll effects initialized!');
+        console.log('✨ Orb scroll effects initialized!');
     });
     </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>
 

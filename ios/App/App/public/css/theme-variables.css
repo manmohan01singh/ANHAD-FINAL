@@ -18,9 +18,9 @@
  *   --btn-text          - Primary button text
  */
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════════
    LIGHT THEME — White/Gray scale, #1C1C1E text, #FFD60A highlight
-   ═══════════════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
     /* Backgrounds */
     --bg-primary: #FFFFFF;
@@ -38,6 +38,18 @@
     --highlight-color: #FFD60A;
     --btn-bg: #007AFF;
     --btn-text: #FFFFFF;
+    
+    /* Card Gradients */
+    --card-green-gradient: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
+    --card-gold-gradient: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%);
+    --card-purple-gradient: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%);
+    --card-blue-gradient: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%);
+    --card-rose-gradient: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%);
+    --card-event-gradient: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%);
+    
+    /* Event Card Specific */
+    --event-title-color: #72500A;
+    --event-title-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -60,6 +72,18 @@
     --highlight-color: #FFD60A;
     --btn-bg: #0A84FF;
     --btn-text: #FFFFFF;
+    
+    /* Card Gradients - Dark mode versions */
+    --card-green-gradient: linear-gradient(140deg, #1C3D2A 0%, #2D4A3E 100%);
+    --card-gold-gradient: linear-gradient(140deg, #3D2D1C 0%, #4A3D2A 100%);
+    --card-purple-gradient: linear-gradient(140deg, #2D1C3D 0%, #3A2D4A 100%);
+    --card-blue-gradient: linear-gradient(140deg, #1C2D3D 0%, #2A3D4A 100%);
+    --card-rose-gradient: linear-gradient(140deg, #3D1C2D 0%, #4A2A3D 100%);
+    --card-event-gradient: linear-gradient(160deg, #2D2D1C 0%, #3D3D2A 25%, #4A4A2D 50%, #3D3D1C 75%, #2D2D2A 100%);
+    
+    /* Event Card Specific */
+    --event-title-color: #F5F5F7;
+    --event-title-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -82,6 +106,10 @@
     --highlight-color: #D4A017;
     --btn-bg: #D4A017;
     --btn-text: #3B2A00;
+    
+    /* Event Card Specific */
+    --event-title-color: #4A3500;
+    --event-title-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -104,6 +132,10 @@
     --highlight-color: #C8860A;
     --btn-bg: #C8860A;
     --btn-text: #FFFFFF;
+    
+    /* Event Card Specific */
+    --event-title-color: #5D4037;
+    --event-title-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -127,6 +159,14 @@ html:not([data-theme]) {
     --highlight-color: #FFD60A;
     --btn-bg: #007AFF;
     --btn-text: #FFFFFF;
+    
+    /* Card Gradients - Default to light theme */
+    --card-green-gradient: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%);
+    --card-gold-gradient: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%);
+    --card-purple-gradient: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%);
+    --card-blue-gradient: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%);
+    --card-rose-gradient: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%);
+    --card-event-gradient: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

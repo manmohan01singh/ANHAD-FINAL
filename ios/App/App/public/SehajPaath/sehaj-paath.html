@@ -46,8 +46,14 @@
     <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
     
+    <!-- Navigation Libraries -->
+    <script src="../lib/smart-back.js"></script>
+    <script src="../lib/page-lifecycle.js"></script>
+    <script src="../lib/smooth-navigation.js?v=2"></script>
+    <script src="../lib/state-preservation.js"></script>
+    
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     <script src="../js/anhad-core.js" defer></script>
     
@@ -64,12 +70,12 @@
             <div class="loading-khanda">
                 <svg viewBox="0 0 100 100" class="khanda-icon">
                     <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
-                    <text x="50" y="58" text-anchor="middle" font-size="24" fill="currentColor">☬</text>
+                    <path d="M50 5L55 25H75L59 37L64 57L50 45L36 57L41 37L25 25H45L50 5Z" fill="currentColor"/>
                 </svg>
             </div>
             <div class="loading-spinner"></div>
             <p class="loading-text">ਵਾਹਿਗੁਰੂ</p>
-            <p class="loading-subtext">Loading Sri Guru Granth Sahib Ji...</p>
+            <p class="loading-subtext">Sri Guru Granth Sahib Ji Reading...</p>
         </div>
     </div>
 
@@ -676,5 +682,9 @@
     
     <!-- Critical Fixes -->
     <script src="fixes/modal-scroll-fix.js"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

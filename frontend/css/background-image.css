@@ -10,6 +10,8 @@
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
+    opacity: 0; /* Default: hidden — user can enable via settings slider */
+    transition: opacity 0.4s ease;
 }
 
 /* Subtle noise texture */
@@ -97,15 +99,15 @@
 
 /* Theme-based opacity */
 [data-theme="light"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.10);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 [data-theme="dark"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.30);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 html.dark-mode .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.30);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 .ikonkar-background.hidden {

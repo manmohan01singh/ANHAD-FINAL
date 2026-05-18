@@ -30,6 +30,18 @@ class PWAManager {
     this.currentVersion = null;
     this.versionCheckInterval = null;
     this._hasReloaded = false; // in-memory guard
+    
+    // Resolve app root from script location (robustly handles query strings)
+    const scriptTag = document.querySelector('script[src*="pwa-register.js"]');
+    if (scriptTag) {
+      const url = new URL(scriptTag.src);
+      const parts = url.pathname.split('pwa-register.js');
+      this.root = url.origin + parts[0];
+    } else {
+      this.root = '/ANHAD-FINAL/frontend/';
+    }
+    console.log(`[PWA] Resolved root: ${this.root}`);
+
     this.init();
   }
 
@@ -63,13 +75,26 @@ class PWAManager {
   }
 
   /**
-   * Safe reload — only reloads if not in cooldown
+   * Safe reload — only reloads if not in cooldown AND NOT PLAYING AUDIO.
+   * This prevents updates from interrupting kirtan sessions.
    */
   _safeReload(reason) {
     if (this._hasReloaded || this._isInReloadCooldown()) {
       console.log(`[PWA] Skipping reload (${reason}) — cooldown active`);
       return;
     }
+
+    // CRITICAL: Never auto-refresh if audio is playing
+    if (window.AnhadAudio && window.AnhadAudio.getState) {
+      const state = window.AnhadAudio.getState();
+      if (state.isPlaying) {
+        console.log(`[PWA] Skipping auto-refresh (${reason}) — audio is currently playing`);
+        // Check again in 10 minutes
+        setTimeout(() => this.checkVersionAndUpdate(), 600000);
+        return;
+      }
+    }
+
     console.log(`[PWA] Reloading: ${reason}`);
     this._markReload();
     window.location.reload();
@@ -97,7 +122,11 @@ class PWAManager {
         console.log('🔒 Screen orientation locked to portrait');
         return;
       } catch (err) {
-        console.warn('Screen orientation lock failed:', err.message);
+        // Only warn on mobile where we expect this to work, and ignore noise on iOS where it's unsupported
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!isIOS && /Android/i.test(navigator.userAgent)) {
+          console.warn('Screen orientation lock failed:', err.message);
+        }
       }
     }
 
@@ -146,8 +175,8 @@ class PWAManager {
     this.lockOrientation();
 
     try {
-      this.registration = await navigator.serviceWorker.register('./sw.js', {
-        scope: './'
+      this.registration = await navigator.serviceWorker.register(`${this.root}sw.js`, {
+        scope: this.root
       });
 
       console.log('SW registered:', this.registration.scope);
@@ -226,13 +255,15 @@ class PWAManager {
   startVersionPolling() {
     this.currentVersion = localStorage.getItem('anhad_app_version') || null;
 
-    // Initial check (delayed slightly to let page settle)
-    setTimeout(() => this.checkVersionAndUpdate(), 3000);
+    // Initial check (delayed to let page fully settle)
+    setTimeout(() => this.checkVersionAndUpdate(), 8000);
 
-    // Poll every 10 seconds for instant updates
+    // PERF FIX: Reduced from 10s to 90s.
+    // Polling every 10s = 6 network fetches/min = measurable jank on slow connections.
+    // 90s is still fast enough for near-instant update delivery.
     this.versionCheckInterval = setInterval(() => {
       this.checkVersionAndUpdate();
-    }, 10 * 1000);
+    }, 90 * 1000);
   }
 
   async checkVersionAndUpdate() {
@@ -240,7 +271,7 @@ class PWAManager {
     if (this._hasReloaded || this._isInReloadCooldown()) return;
 
     try {
-      const response = await fetch(`./version.json?_t=${Date.now()}`, {
+      const response = await fetch(`${this.root}version.json?_t=${Date.now()}`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
       });
@@ -503,8 +534,8 @@ class PWAManager {
       const registration = await navigator.serviceWorker.ready;
       await registration.showNotification('🙏 ANHAD Installed!', {
         body: 'You will now receive daily reminders for Nitnem, Rehras, and Naam Abhyas',
-        icon: './assets/icons/icon-192x192.png',
-        badge: './assets/icons/icon-72x72.png',
+        icon: './assets/icon-192x192.png',
+        badge: './assets/icon-72x72.png',
         tag: 'pwa-install-confirmation',
         requireInteraction: false,
         vibrate: [200, 100, 200]

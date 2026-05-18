@@ -5,6 +5,24 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL APP ROOT RESOLUTION
+// ═══════════════════════════════════════════════════════════════════════════════
+(function() {
+    if (!window.ANHAD_ROOT) {
+        const path = window.location.pathname;
+        const marker = '/frontend/';
+        const idx = path.indexOf(marker);
+        if (idx !== -1) {
+            window.ANHAD_ROOT = path.substring(0, idx + marker.length);
+        } else {
+            // Fallback for local development
+            window.ANHAD_ROOT = '/';
+        }
+        console.log('[ANHAD] Global Root Resolved:', window.ANHAD_ROOT);
+    }
+})();
+
 (function AnhadCore() {
   'use strict';
 
@@ -168,10 +186,23 @@
   }
 
   /* Auto-init if data-anhad-core attribute present on <html> or <body> */
+  function refreshSessionFlags() {
+    try {
+      localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+      sessionStorage.setItem('anhad_welcomed', '1');
+      // Set a long-term flag once they've entered the app successfully
+      localStorage.setItem('anhad_welcome_seen', 'true');
+    } catch (e) {}
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
+    refreshSessionFlags();
     var autoEl = document.documentElement.dataset.anhadCore || document.body.dataset.anhadCore;
     if (autoEl !== undefined) {
       _runAll({});
     }
   });
+
+  // Also refresh on every SPA page swap
+  window.addEventListener('anhad_page_changed', refreshSessionFlags);
 })();

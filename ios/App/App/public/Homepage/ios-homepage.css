@@ -32,15 +32,12 @@
     --ease-spring: cubic-bezier(0.37, 0.01, 0.28, 1);
     --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     
-    /* ═══════════════════════════════════════════════════════════════════════
-       CLAYMORPHISM DESIGN TOKENS — Extreme 3D Depth System
-       ═══════════════════════════════════════════════════════════════════════ */
+    /* Claymorphism tokens — blur reduced for Android WebView GPU performance */
     --clay-bg: rgba(255, 255, 255, 0.08);
     --clay-bg-strong: rgba(255, 255, 255, 0.12);
     --clay-border: rgba(255, 255, 255, 0.18);
     --clay-border-strong: rgba(255, 255, 255, 0.25);
     
-    /* Double Shadow System — The Heart of Claymorphism */
     --clay-shadow-light: 8px 8px 16px rgba(0, 0, 0, 0.4);
     --clay-shadow-dark: -4px -4px 12px rgba(255, 255, 255, 0.05);
     --clay-shadow-outer: 12px 12px 24px rgba(0, 0, 0, 0.5), 
@@ -52,9 +49,9 @@
     --clay-shadow-gold-strong: 0 12px 48px rgba(201, 162, 39, 0.5),
                               0 6px 24px rgba(201, 162, 39, 0.3);
     
-    /* Blur & Depth */
-    --clay-blur: blur(20px);
-    --clay-blur-strong: blur(30px);
+    /* PERF: Reduced blur values — blur(30px) crushes GPU on Android WebView */
+    --clay-blur: blur(12px);
+    --clay-blur-strong: blur(16px);
     --clay-radius-sm: 16px;
     --clay-radius-md: 24px;
     --clay-radius-lg: 32px;
@@ -92,6 +89,8 @@ body {
     position: fixed;
     inset: 0;
     user-select: none;
+    /* PERF: Eliminates 300ms tap delay on Android */
+    touch-action: manipulation;
 }
 
 .gurmukhi {
@@ -115,7 +114,9 @@ body {
     background-image: url('../assets/darbar-sahib-day.webp');
     opacity: 0;
     transform: scale(1.05);
-    animation: sceneReveal 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    /* PERF: Pre-promote to compositor layer before animation */
+    will-change: transform, opacity;
+    animation: sceneReveal 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }
 
 @keyframes sceneReveal {
@@ -127,6 +128,7 @@ body {
 
 #scene-bg.loaded {
     transform: scale(1.0);
+    will-change: auto; /* Release after animation */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -179,9 +181,12 @@ body {
         rgba(255, 200, 80, 0.2) 40%,
         transparent 70%
     );
-    filter: blur(30px);
+    /* PERF: Static blur on a fixed element is fine; but don't animate it */
+    filter: blur(20px);
     pointer-events: none;
-    transition: opacity 3s ease, top 3s ease;
+    /* PERF: Only transition opacity, not top — animating top causes layout */
+    transition: opacity 1.5s ease;
+    will-change: opacity;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -219,10 +224,13 @@ body {
         transparent 65%
     );
     mix-blend-mode: overlay;
-    filter: blur(40px);
+    /* PERF: Reduced from 40px — large blur on large element is extremely expensive */
+    filter: blur(20px);
     pointer-events: none;
     opacity: 0.25;
-    transition: opacity 1.5s ease;
+    transition: opacity 1s ease;
+    /* PERF: Compositor layer hint */
+    will-change: opacity;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -237,7 +245,11 @@ body {
     justify-content: space-between;
     padding: 0 24px;
     opacity: 0;
-    animation: uiReveal 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.5s forwards;
+    /* PERF: Rendering isolation + compositor hint */
+    contain: layout style;
+    will-change: opacity;
+    /* PERF: Reduced from 1.5s — faster perceived load */
+    animation: uiReveal 0.6s cubic-bezier(0.19, 1, 0.22, 1) 0.3s forwards;
 }
 
 @keyframes uiReveal {
@@ -262,7 +274,6 @@ body {
     align-items: center;
     gap: 12px;
     padding: 14px 24px;
-    /* Premium glassmorphism */
     background: linear-gradient(145deg,
         rgba(201, 162, 39, 0.3) 0%,
         rgba(201, 162, 39, 0.2) 50%,
@@ -270,20 +281,19 @@ body {
     border: 1.5px solid rgba(201, 162, 39, 0.4);
     border-radius: var(--clay-radius-full);
     box-shadow: 
-        /* Outer shadows for depth */
         8px 8px 24px rgba(0, 0, 0, 0.5),
         -4px -4px 16px rgba(255, 255, 255, 0.1),
-        /* Glow effect */
         0 0 30px rgba(201, 162, 39, 0.35),
-        /* Inner highlight */
         inset 0 1px 2px rgba(255, 255, 255, 0.2),
         inset 0 -1px 2px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    /* PERF: Reduced from blur(30px) — backdrop-filter is the biggest GPU cost */
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
     opacity: 0;
     transform: translateY(-20px) scale(0.9);
-    animation: badgeReveal 1s var(--ease-ios) 1s forwards;
-    transition: all 0.4s var(--ease-spring);
+    will-change: transform, opacity;
+    animation: badgeReveal 0.6s var(--ease-ios) 0.4s forwards;
+    transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
 }
 
 #live-badge:hover {
@@ -376,9 +386,11 @@ body {
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.4),
         inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: all 0.4s var(--ease-spring);
+    /* PERF: Reduced from blur(20px) */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+    will-change: transform;
 }
 
 #shabad:hover {
@@ -397,11 +409,13 @@ body {
     }
 }
 
-/* Staggered Card Fade-In Animations */
+/* Staggered Card Fade-In — reduced delays for snappier feel */
 .card-fade-in {
     opacity: 0;
-    transform: translateY(40px);
-    animation: cardFadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    transform: translateY(20px);
+    /* PERF: will-change pre-allocates compositor layer */
+    will-change: transform, opacity;
+    animation: cardFadeInUp 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }
 
 @keyframes cardFadeInUp {
@@ -411,13 +425,13 @@ body {
     }
 }
 
-/* Staggered delays - total sequence 1-1.5 seconds */
+/* PERF: Compressed stagger — all cards visible within 0.4s instead of 1.0s */
 .delay-0 { animation-delay: 0s; }
-.delay-1 { animation-delay: 0.2s; }
-.delay-2 { animation-delay: 0.4s; }
-.delay-3 { animation-delay: 0.6s; }
-.delay-4 { animation-delay: 0.8s; }
-.delay-5 { animation-delay: 1.0s; }
+.delay-1 { animation-delay: 0.08s; }
+.delay-2 { animation-delay: 0.16s; }
+.delay-3 { animation-delay: 0.24s; }
+.delay-4 { animation-delay: 0.32s; }
+.delay-5 { animation-delay: 0.40s; }
 
 /* Fireworks Particle Canvas */
 #fireworks-canvas {
@@ -440,8 +454,9 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 
         0 4px 16px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    /* PERF: Reduced from blur(16px) */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     line-height: 1.4;
 }
 
@@ -581,14 +596,17 @@ body {
 /* ─────────────────────────────────────────────────────────────────────────────
    AUDIO PLAYING STATE — Enhanced Clay Glow
    ───────────────────────────────────────────────────────────────────────────── */
+/* PERF FIX: templeAuraPulse previously animated filter:blur() on every frame
+   which is one of the most expensive GPU operations (forces full layer rasterise).
+   Replaced with pure opacity+scale animation — runs 100% on compositor thread. */
 body.audio-playing #temple-glow {
-    opacity: 0.95;
+    opacity: 0.8;
     animation: templeAuraPulse 4s ease-in-out infinite alternate;
 }
 
 @keyframes templeAuraPulse {
-    0% { opacity: 0.7; transform: translate(-50%, 0) scale(1); filter: blur(35px); }
-    100% { opacity: 1; transform: translate(-50%, 0) scale(1.08); filter: blur(55px); }
+    0%   { opacity: 0.6; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0.95; transform: translate(-50%, 0) scale(1.06); }
 }
 
 body.audio-playing #live-badge {

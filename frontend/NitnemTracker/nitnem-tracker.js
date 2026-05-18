@@ -3259,41 +3259,45 @@ const AmritvelaManager = {
             woke: true  // FIXED: Set woke flag for streak calculation
         };
 
-        // ═══ ENHANCED: Play time-based animation FIRST ═══
-        this.playTimeBasedAnimation(hours);
-
-        // Save to log
-        const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
-        log[today] = entry;
-        StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, log);
-
-        // Mark as done
+        // ═══ INSTANT UI FEEDBACK (< 16ms) — DOM updates BEFORE storage I/O ═══
+        // 1. Immediately mark flag (prevents double-click)
         this.todayMarked = true;
 
-        // Haptic feedback
+        // 2. Instantly update button visual state
+        this.showMarkedState(entry);
+
+        // 3. Play time-based animation
+        this.playTimeBasedAnimation(hours);
+
+        // 4. Haptic + sound feedback
         HapticManager.success();
         SoundManager.success();
 
-        // Show marked state
-        this.showMarkedState(entry);
-
-        // Show message
+        // 5. Show message
         this.showMessage(this.getSlotEmoji(slotInfo.label), slotInfo.message);
 
-        // Update stats
-        this.updateStats();
-
-        // ═══ ENHANCED: Broadcast update to all sections ═══
-        this.broadcastAttendanceUpdate(entry);
-
-        // Show toast
-        Toast.success('ਹਾਜ਼ਰੀ ਲੱਗੀ!', `You woke up at ${entry.time} - ${slotInfo.label}`);
-
-        // Refresh date strip if open
-        DateHistoryView.refreshDateDots();
-
-        // Animate button
+        // 6. Animate button ripple
         this.animateButton();
+
+        // ═══ DEFERRED: Storage I/O + Heavy operations (non-blocking) ═══
+        setTimeout(() => {
+            // Save to log
+            const log = StorageManager.load(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, {});
+            log[today] = entry;
+            StorageManager.save(CONFIG.STORAGE_KEYS.AMRITVELA_LOG, log);
+
+            // Update stats
+            this.updateStats();
+
+            // Broadcast update to all sections (streak recalculation, achievements)
+            this.broadcastAttendanceUpdate(entry);
+
+            // Show toast
+            Toast.success('ਹਾਜ਼ਰੀ ਲੱਗੀ!', `You woke up at ${entry.time} - ${slotInfo.label}`);
+
+            // Refresh date strip if open
+            DateHistoryView.refreshDateDots();
+        }, 0);
     },
 
     /**
@@ -7268,7 +7272,24 @@ const StreakSaverManager = {
      */
     init() {
         this.checkAndCleanupExpired();
-        this.checkStreakBreak();
+
+        // ═══ 6 AM AUTO-CHECK: Ensure streak is evaluated on first app open ═══
+        // If it's past 6 AM and we haven't checked today, run immediately.
+        // This covers the case where user opens the app hours after 6 AM.
+        try {
+            const lastCheckDate = localStorage.getItem('streak_last_auto_check_date');
+            const today = Utils.getTodayString();
+            if (lastCheckDate !== today && new Date().getHours() >= 6) {
+                console.log('[StreakSaver] Auto-check: first open past 6 AM today');
+                localStorage.setItem('streak_last_auto_check_date', today);
+                this.checkStreakBreak();
+            } else {
+                this.checkStreakBreak();
+            }
+        } catch (e) {
+            this.checkStreakBreak();
+        }
+
         this.renderPunishmentUI();
 
         // ═══ ENHANCED: Add continuous check every 5 minutes for 6 AM threshold ═══

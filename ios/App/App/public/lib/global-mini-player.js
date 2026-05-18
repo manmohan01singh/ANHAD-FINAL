@@ -670,20 +670,42 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function updateMediaSession() {
+    // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
+    if (window.Capacitor) return;
     if (!('mediaSession' in navigator)) return;
     const stream = STREAMS[currentStream];
     if (!stream) return;
+
+    // Multiple artwork sizes for best OS rendering — logo fallback
+    const primaryArt = stream.artwork || '../assets/icons/icon-1024x1024.png';
+    const artworkList = [
+      { src: '../assets/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+      { src: '../assets/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { src: '../assets/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { src: '../assets/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
+    ];
 
     navigator.mediaSession.metadata = new MediaMetadata({
       title: stream.name,
       artist: stream.subtitle,
       album: 'ANHAD',
-      artwork: [{ src: stream.artwork, sizes: '512x512', type: 'image/webp' }]
+      artwork: artworkList
     });
 
-    navigator.mediaSession.setActionHandler('play', () => audio?.play());
+    // CRITICAL: Instant resume from lock screen — just audio.play()
+    navigator.mediaSession.setActionHandler('play', () => {
+      if (audio && audio.src && audio.src !== window.location.href) {
+        audio.play().catch(() => playStream(currentStream));
+      } else {
+        playStream(currentStream);
+      }
+    });
     navigator.mediaSession.setActionHandler('pause', () => audio?.pause());
     navigator.mediaSession.setActionHandler('stop', () => stopAudio());
+    navigator.mediaSession.setActionHandler('previoustrack', () => playStream(currentStream));
+
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -750,6 +772,9 @@
     document.body.appendChild(el);
     miniPlayerEl = el;
 
+    // Create Spotify-style background element
+    createBackgroundElement();
+
     // Apply any pending UI update that was queued before injection
     if (pendingUIUpdate !== null) {
       console.log('[GMP] Applying pending UI update after injection. forceVisible:', pendingUIUpdate);
@@ -789,6 +814,34 @@
     });
   }
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SPOTIFY-STYLE BACKGROUND
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  let backgroundEl = null;
+
+  function createBackgroundElement() {
+    if (document.getElementById('gmp-background')) return;
+
+    const bg = document.createElement('div');
+    bg.id = 'gmp-background';
+    bg.className = 'gmp-background';
+    bg.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(bg);
+    backgroundEl = bg;
+  }
+
+  function updateBackground(artworkUrl) {
+    if (!backgroundEl) createBackgroundElement();
+    
+    if (artworkUrl && isPlaying) {
+      backgroundEl.style.backgroundImage = `url('${artworkUrl}')`;
+      backgroundEl.classList.add('gmp-background--visible');
+    } else {
+      backgroundEl.classList.remove('gmp-background--visible');
+    }
+  }
+
   // Loading state management
   let isLoading = false;
 
@@ -826,6 +879,8 @@
       playIcon.style.opacity = '0';
       setTimeout(() => {
         playIcon.innerHTML = isPlaying
+      // Hide background
+      updateBackground(null);
           ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
           : '<path d="M8 5v14l11-7z"/>';
         playIcon.style.opacity = '1';
@@ -836,7 +891,10 @@
   function updateMiniPlayerUI(forceVisible) {
     if (!miniPlayerEl) {
       // Queue the update for when mini player is ready
-      pendingUIUpdate = forceVisible;
+      pendingUSpotify-style background
+    if (stream?.artwork) updateBackground(stream.artwork);
+
+    // Update IUpdate = forceVisible;
       console.log('[GMP] updateMiniPlayerUI: miniPlayerEl is null, queuing update. forceVisible:', forceVisible);
       return;
     }

@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="nitnem-performance-fix.css?v=1.0">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 
     <!-- PWA Manifest -->
@@ -1500,6 +1500,10 @@
                 .catch(err => console.log('SW registration failed:', err));
         }
     </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

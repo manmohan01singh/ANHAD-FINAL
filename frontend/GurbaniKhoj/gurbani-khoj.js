@@ -46,6 +46,7 @@ const DOM = {
     searchBar: $('#searchBar'),
     keyboardBtn: $('#keyboardBtn'),
     micBtn: $('#micBtn'),
+    clearBtn: $('#clearBtn'),
     voicePanel: $('#voicePanel'),
     voiceCancel: $('#voiceCancel'),
     voiceStatus: $('#voiceStatus'),
@@ -77,7 +78,12 @@ const DOM = {
     toastText: $('#toastText'),
 
     // Live Kirtan Tracker
-    liveKirtanCard: $('#liveKirtanCard')
+    liveKirtanCard: $('#liveKirtanCard'),
+
+    // Background Layers
+    guruBgContainer: $('#guruBgContainer'),
+    guruBgImg1: $('#guruBgImg1'),
+    guruBgImg2: $('#guruBgImg2')
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -187,6 +193,81 @@ function extractFirstLetters(text) {
     }
 
     return result;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BACKGROUND MANAGER & SEARCH SYNC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const BackgroundManager = {
+    images: [
+        'gurunanakdevsahebji.jpeg',
+        'gurugranthsahebji.jpeg',
+        'gurugobindsinghsahebji.jpeg',
+        'guruangaddevsahebji.jpeg',
+        'guruamardasji.jpeg',
+        'gururamdassahebji.jpeg',
+        'guruarjanddevsahebji.jpeg',
+        'guruhargobindsahebji.jpeg',
+        'guruharraisahebji.jpeg',
+        'guruharkrishansahebji.jpeg',
+        'gurutegbahadursahebji.jpeg'
+    ],
+    currentIndex: 0,
+    timer: null,
+
+    init() {
+        // Start background image cycling
+        this.start();
+        this.updateBlurState();
+    },
+
+    start() {
+        if (this.timer) clearInterval(this.timer);
+        this.timer = setInterval(() => {
+            this.next();
+        }, 15000); // 15 seconds cycle for richer active feel
+    },
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    },
+
+    next() {
+        if (!DOM.guruBgImg1 || !DOM.guruBgImg2) return;
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+        const newImageSrc = `../guruimages/${this.images[this.currentIndex]}`;
+
+        const activeImg = DOM.guruBgImg1.classList.contains('active') ? DOM.guruBgImg1 : DOM.guruBgImg2;
+        const inactiveImg = activeImg === DOM.guruBgImg1 ? DOM.guruBgImg2 : DOM.guruBgImg1;
+
+        inactiveImg.src = newImageSrc;
+        inactiveImg.onload = () => {
+            inactiveImg.classList.add('active');
+            activeImg.classList.remove('active');
+        };
+    },
+
+    updateBlurState() {
+        const hasText = !!(DOM.searchInput && DOM.searchInput.value.trim());
+        if (DOM.guruBgContainer) {
+            DOM.guruBgContainer.classList.toggle('blurred', hasText);
+        }
+    }
+};
+
+function updateSearchInput(value) {
+    if (DOM.searchInput) {
+        DOM.searchInput.value = value;
+    }
+    State.keyboardText = value;
+    if (DOM.clearBtn) {
+        DOM.clearBtn.style.display = value.trim() ? 'block' : 'none';
+    }
+    BackgroundManager.updateBlurState();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -428,27 +509,33 @@ function hideAllViews() {
     DOM.loadingState?.classList.remove('active');
     DOM.emptyState?.classList.remove('active');
     DOM.welcomeState?.classList.remove('active');
+    document.body.classList.remove('has-results');
 }
 
 function showLoading() {
     hideAllViews();
     DOM.loadingState?.classList.add('active');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 function showEmpty(message = 'Try searching with first letters') {
     hideAllViews();
     if (DOM.emptyMessage) DOM.emptyMessage.textContent = message;
     DOM.emptyState?.classList.add('active');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 function showWelcome() {
     hideAllViews();
     DOM.welcomeState?.classList.add('active');
+    DOM.guruBgContainer?.classList.remove('blurred');
 }
 
 function showResults() {
     hideAllViews();
     DOM.resultsView?.classList.add('active');
+    document.body.classList.add('has-results');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -872,7 +959,7 @@ const VoiceSearch = {
 
         if (firstLetters.length >= 2) {
             console.log('Extracted first letters:', firstLetters);
-            DOM.searchInput.value = firstLetters;
+            updateSearchInput(firstLetters);
             showToast(`Searching: ${firstLetters}`);
             await performSearch();
         } else {
@@ -897,32 +984,32 @@ const Keyboard = {
     close() {
         DOM.keyboardOverlay.classList.remove('active');
         document.body.classList.remove('keyboard-open');
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
     },
 
     addChar(char) {
         State.keyboardText += char;
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     backspace() {
         State.keyboardText = State.keyboardText.slice(0, -1);
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     space() {
         State.keyboardText += ' ';
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     search() {
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.close();
         performSearch();
         haptic('medium');
@@ -1011,7 +1098,7 @@ const History = {
     select(index) {
         const item = this.items[index];
         if (item && item.query) {
-            DOM.searchInput.value = item.query;
+            updateSearchInput(item.query);
             this.close();
             performSearch();
             haptic();
@@ -1040,11 +1127,21 @@ function initEventListeners() {
     // Theme toggle
     DOM.themeToggle?.addEventListener('click', () => Theme.toggle());
 
+    // Clear search button
+    DOM.clearBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateSearchInput('');
+        showWelcome();
+        haptic();
+    });
+
     // Search input with debounced search
     let searchTimeout;
     DOM.searchInput.addEventListener('input', (e) => {
-        // Update keyboard text state when typing directly
-        State.keyboardText = e.target.value;
+        const val = e.target.value;
+        State.keyboardText = val;
+        DOM.clearBtn.style.display = val.trim() ? 'block' : 'none';
+        BackgroundManager.updateBlurState();
 
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
@@ -1098,22 +1195,45 @@ function initEventListeners() {
     });
 
     // Keyboard keys - use both click and touch events for mobile
+    // Premium iOS Virtual Keyboard Event Handler
     const keyboardBody = DOM.keyboardOverlay?.querySelector('.keyboard-body');
-    console.log('Keyboard body found:', keyboardBody);
     if (keyboardBody) {
-        const handleKeyPress = (e) => {
-            console.log('Key press event:', e.type, e.target);
-            const key = e.target.closest('.kb-key');
-            if (!key) {
-                console.log('No .kb-key found for click');
-                return;
+        // Strip inline onclick handlers dynamically to guarantee zero double-typing bugs
+        DOM.keyboardOverlay.querySelectorAll('.kb-key').forEach(key => {
+            key.removeAttribute('onclick');
+        });
+
+        let activePreviewBubble = null;
+        let activeKeyEl = null;
+
+        const removeBubble = () => {
+            if (activePreviewBubble) {
+                activePreviewBubble.remove();
+                activePreviewBubble = null;
             }
+            if (activeKeyEl) {
+                activeKeyEl.classList.remove('pressed');
+                activeKeyEl = null;
+            }
+        };
+
+        const handleKeyPointerDown = (e) => {
+            const key = e.target.closest('.kb-key');
+            if (!key) return;
 
             e.preventDefault();
             e.stopPropagation();
 
-            console.log('Key clicked:', key.textContent.trim(), 'action:', key.dataset.action);
+            removeBubble();
+
             const action = key.dataset.action;
+            const text = key.textContent.trim();
+
+            // Tactile key press effect
+            key.classList.add('pressed');
+            activeKeyEl = key;
+
+            // Trigger action
             if (action === 'backspace') {
                 Keyboard.backspace();
             } else if (action === 'space') {
@@ -1121,13 +1241,50 @@ function initEventListeners() {
             } else if (action === 'search') {
                 Keyboard.search();
             } else {
-                Keyboard.addChar(key.textContent.trim());
+                Keyboard.addChar(text);
+
+                // Show native iOS style Key Preview Bubble above character keys
+                const rect = key.getBoundingClientRect();
+                const bubble = document.createElement('div');
+                bubble.className = 'kb-key-preview-bubble';
+                bubble.textContent = text;
+                document.body.appendChild(bubble);
+
+                const bubbleWidth = 56;
+                const bubbleHeight = 68;
+                const top = rect.top - bubbleHeight - 6;
+                const left = rect.left + (rect.width / 2) - (bubbleWidth / 2);
+
+                bubble.style.cssText = `
+                    position: fixed;
+                    top: ${top}px;
+                    left: ${left}px;
+                    width: ${bubbleWidth}px;
+                    height: ${bubbleHeight}px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--ios-glass-key-preview, rgba(255, 255, 255, 0.98));
+                    color: #000;
+                    font-size: 26px;
+                    font-weight: 600;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                    pointer-events: none;
+                    z-index: 100000;
+                    transform-origin: bottom center;
+                    animation: kbPreviewPop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                `;
+                activePreviewBubble = bubble;
             }
         };
 
-        keyboardBody.addEventListener('click', handleKeyPress);
-        keyboardBody.addEventListener('touchstart', handleKeyPress, { passive: false });
-        console.log('Keyboard event listeners attached');
+        keyboardBody.addEventListener('pointerdown', handleKeyPointerDown);
+        
+        // Clean up preview bubbles on lift/leave
+        window.addEventListener('pointerup', removeBubble);
+        window.addEventListener('pointercancel', removeBubble);
+        keyboardBody.addEventListener('pointerleave', removeBubble);
     } else {
         console.error('Keyboard body not found!');
     }
@@ -1213,6 +1370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Favorites.load();
     VoiceSearch.init();
     initEventListeners();
+    BackgroundManager.init();
 
     // Try to restore full search state from sessionStorage (back-navigation)
     let restored = false;
@@ -1221,8 +1379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const historyQuery = sessionStorage.getItem('gurbaniKhoj_historyQuery');
         if (historyQuery) {
             sessionStorage.removeItem('gurbaniKhoj_historyQuery');
-            DOM.searchInput.value = historyQuery;
-            State.keyboardText = historyQuery;
+            updateSearchInput(historyQuery);
             performSearch();
             restored = true;
         }
@@ -1231,9 +1388,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedRaw = sessionStorage.getItem('gurbaniKhoj_state');
             if (savedRaw) {
                 const saved = JSON.parse(savedRaw);
-                // Clear it so it only restores once
-                // Keep state in storage so it persists for multiple back/forth navigations
-                // sessionStorage.removeItem('gurbaniKhoj_state');
 
                 if (saved.allResults && saved.allResults.length > 0) {
                     // Restore state
@@ -1242,8 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     State.sourceFilter = saved.sourceFilter || 'all';
                     State.page = saved.page || 1;
                     State.totalPages = saved.totalPages || 1;
-                    DOM.searchInput.value = saved.inputValue || saved.query || '';
-                    State.keyboardText = DOM.searchInput.value;
+                    updateSearchInput(saved.inputValue || saved.query || '');
 
                     // Restore active source chip
                     document.querySelectorAll('.source-chip').forEach(c => {

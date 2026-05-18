@@ -101,6 +101,16 @@
     
     if (normalized === currentActiveUrl && !options.force) return;
 
+    // CRITICAL: Before navigating to index.html, always stamp session flags so
+    // welcome-check.js NEVER triggers the splash/welcome screen redirect.
+    if (absoluteUrl.endsWith('/index.html') || absoluteUrl.endsWith('/index')) {
+      try {
+        sessionStorage.setItem('anhad_welcomed', '1');
+        localStorage.setItem('anhad_welcome_seen', 'true');
+        localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+      } catch(e) {}
+    }
+
     // NOTE: We no longer serialize outerHTML (expensive string, causes jank).
     // Back navigation uses the PAGE_CACHE HTML fetched at load time instead.
     performSwap(normalized, options);
@@ -116,27 +126,13 @@
     let transitionFinished = false;
 
     try {
-      /* CACHE BYPASSED FOR STABILITY 
-      const cachedContent = PAGE_CACHE.get(url);
-      if (cachedContent) {
-        if ('startViewTransition' in document && !options.instant) {
-          document.startViewTransition(() => applyNewContent(cachedContent, url, options));
-        } else {
-          await applyNewContent(cachedContent, url, options);
-        }
-        return;
-      }
-      */
-
-      // 2. Not in cache? Show loader and fetch
+      // Show loader after grace period (only for forward navigation, not back)
       loaderTimeout = setTimeout(() => {
-        if (!transitionFinished) {
-          // Only show loader if not a back navigation
-          if (options.isBack) return;
+        if (!transitionFinished && !options.isBack) {
           loader.classList.add('visible');
           document.body.classList.add('page-loading');
         }
-      }, 250); // Increased grace period to 250ms for "ultra smooth" loads
+      }, 120); // Reduced from 250ms for snappier feel
 
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -146,20 +142,23 @@
       PAGE_CACHE.set(url, text);
       
       transitionFinished = true;
+      clearTimeout(loaderTimeout);
+      
       if ('startViewTransition' in document && !options.instant) {
         document.startViewTransition(() => applyNewContent(text, url, options));
       } else {
         await applyNewContent(text, url, options);
       }
       
-      // Clean up loader
+    } catch (e) {
+      console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
+      clearTimeout(loaderTimeout);
+      window.location.href = url;
+    } finally {
+      // ROBUST: Always clean up loader state
       clearTimeout(loaderTimeout);
       loader.classList.remove('visible');
       document.body.classList.remove('page-loading');
-      
-    } catch (e) {
-      console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
-      window.location.href = url;
     }
   }
 
@@ -180,6 +179,23 @@
        return;
     }
 
+    // INSTANT HIDE: Before ANY DOM change, hide all module-specific out-of-app elements
+    // This prevents them flashing during the swap (e.g. Nitnem bg-orbs, skeleton-container)
+    [
+      '.bg-orbs', '.ikonkar-background', '#ikonkarBackground', '.bg-effects',
+      '.skeleton-container', '#skeletonContainer', '#skeletonLoader',
+      '.ultra-loader', '.ultra-welcome-loader', '.welcome-screen',
+      '.hukam-player', '.action-bar'
+    ].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+      }
+    });
+
     // Update Shell elements (Title, Head assets)
     document.title = newDoc.title;
     
@@ -193,10 +209,34 @@
     shellSelectors.forEach(selector => {
       const newNode = newDoc.querySelector(selector);
       const currentNode = document.querySelector(selector);
+      
       if (newNode && currentNode) {
+        // Sync contents if present in both
         if (newNode.innerHTML !== currentNode.innerHTML) {
           currentNode.innerHTML = newNode.innerHTML;
         }
+      } else if (newNode && !currentNode) {
+        // Inject shell element if it exists in the incoming page but is missing from active DOM
+        console.log('[SPA] Dynamic Shell Sync — Injecting missing shell element:', selector);
+        const clonedNode = newNode.cloneNode(true);
+        
+        // Find correct placement
+        if (selector === '.desktop-sidebar') {
+          const appEl = document.getElementById(MAIN_TARGET_ID);
+          if (appEl) {
+            appEl.parentNode.insertBefore(clonedNode, appEl);
+          } else {
+            document.body.prepend(clonedNode);
+          }
+        } else if (selector === '.tab-bar' || selector === '#bottomNav') {
+          document.body.appendChild(clonedNode);
+        } else {
+          document.body.appendChild(clonedNode);
+        }
+      } else if (!newNode && currentNode) {
+        // Remove shell element if it does not exist in the incoming page but exists in active DOM
+        console.log('[SPA] Dynamic Shell Sync — Removing shell element:', selector);
+        currentNode.remove();
       }
     });
 
@@ -206,7 +246,11 @@
       '.bg-orbs', '.ikonkar-background', '#ikonkarBackground', '.bg-effects',
       '.skeleton-container', '#skeletonContainer', '#skeletonLoader',
       '.app-loading', '#appLoading', '.ultra-loader', '.ultra-welcome-loader',
-      '.welcome-screen'
+      '.welcome-screen',
+      // Hukamnama-specific elements
+      '.hukam-player', '.action-bar', '.modal-overlay',
+      // Other page-specific overlays
+      '.live-caption-overlay', '.radio-menu'
     ];
     
     // Reset body classes and styles to prevent module-leakage
@@ -218,10 +262,12 @@
       }
     });
     
-    // Clear inline body styles (e.g. background-image from Hukamnama or Nitnem)
+    // Clear ALL inline body styles to prevent leakage from any module
     document.body.style.backgroundImage = '';
     document.body.style.backgroundColor = '';
     document.body.style.overflow = '';
+    document.body.style.minHeight = '';
+    document.body.style.color = '';
     
     moduleSpecificSelectors.forEach(selector => {
       const currentEl = document.querySelector(selector);
@@ -268,6 +314,7 @@
     
     // Force absolute path resolution on newly swapped content
     resolveRelativePaths(currentApp, url);
+    absoluteifyShellLinks();
 
     // Re-init any core components
     if (window.AnhadCore && window.AnhadCore.init) {
@@ -297,6 +344,36 @@
         const resolved = new URL(val, base).pathname;
         el.setAttribute(attr, resolved);
       } catch(e) {}
+    });
+  }
+
+  /**
+   * Resolves relative links inside shell elements (.desktop-sidebar, .tab-bar)
+   * to absolute pathnames relative to window.ANHAD_ROOT.
+   * This prevents directory nesting from corrupting links.
+   */
+  function absoluteifyShellLinks() {
+    const root = window.ANHAD_ROOT;
+    if (!root) return;
+    
+    const shellSelectors = ['.desktop-sidebar', '.tab-bar', '#bottomNav'];
+    shellSelectors.forEach(selector => {
+      const shellEl = document.querySelector(selector);
+      if (!shellEl) return;
+      
+      shellEl.querySelectorAll('a[href]').forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('#')) return;
+        
+        try {
+          // Resolve relative to the app root
+          const resolved = new URL(href, root).pathname;
+          link.setAttribute('href', resolved);
+          console.log(`[SmoothNav] Resolved shell link: ${href} -> ${resolved}`);
+        } catch (e) {
+          console.warn('[SmoothNav] Failed to resolve shell link:', href, e);
+        }
+      });
     });
   }
 
@@ -344,7 +421,10 @@
    * Finds and executes scripts from the new document
    */
   async function executePageScripts(newDoc, sourceUrl) {
-    const scripts = Array.from(newDoc.querySelectorAll('script'));
+    // CRITICAL: Only execute scripts from <body>, never from <head>.
+    // Head scripts like welcome-check.js, global-theme.js, anhad-core.js
+    // are shell-level and MUST NOT re-run on every SPA swap.
+    const scripts = Array.from(newDoc.body.querySelectorAll('script'));
     const externalScripts = [];
     
     for (const script of scripts) {
@@ -356,9 +436,6 @@
       }
 
       if (src) {
-        // PERF FIX: Load external scripts in PARALLEL instead of sequential await.
-        // Sequential loading was the #1 cause of slow page transitions —
-        // each script blocked the next, causing 100-500ms extra per navigation.
         const absoluteSrc = new URL(src, sourceUrl).href;
         // Skip already-loaded scripts to prevent double-init
         if (document.querySelector(`script[src="${absoluteSrc}"]`)) continue;
@@ -369,15 +446,13 @@
           });
           newScript.src = absoluteSrc;
           newScript.onload = resolve;
-          newScript.onerror = resolve; // Never block on script errors
+          newScript.onerror = resolve;
           document.body.appendChild(newScript);
         }));
       } else {
-        // Inline scripts run immediately (synchronous)
-        // PROTECT: Skip common shell initialization patterns in inline scripts
+        // Inline scripts — skip dangerous patterns
         const content = script.textContent;
         if (content.includes('serviceWorker.register') || content.includes('location.reload')) {
-          console.log('[SmoothNav] Skipping potentially disruptive inline shell script');
           continue;
         }
         
@@ -387,7 +462,6 @@
       }
     }
     
-    // Wait for ALL external scripts in parallel
     if (externalScripts.length > 0) {
       await Promise.all(externalScripts);
     }
@@ -437,6 +511,15 @@
       if (link) {
         const href = link.getAttribute('href');
         if (href && !href.startsWith('http') && !href.startsWith('#') && !link.hasAttribute('data-no-spa')) {
+          // CRITICAL: Before navigating to index.html stamp session flags so
+          // welcome-check.js NEVER triggers the splash screen on back navigation
+          if (href.endsWith('index.html') || href.endsWith('/index') || href === '../' || href === './') {
+            try {
+              sessionStorage.setItem('anhad_welcomed', '1');
+              localStorage.setItem('anhad_welcome_seen', 'true');
+              localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+            } catch(e) {}
+          }
           e.preventDefault();
           window.navigateTo(href);
           return;
@@ -579,6 +662,7 @@
   // Self-initialize
   setupLinkInterception();
   convertOnclickToDataHref();
+  absoluteifyShellLinks();
   
   // Also run conversion on page change
   window.addEventListener('anhad_page_changed', convertOnclickToDataHref);

@@ -44,14 +44,43 @@
     html.dark-mode { background-color: #0D0D0F !important; }
     html:not(.dark-mode) { background-color: #F2F2F7 !important; }
     body { background-color: transparent !important; }
-    /* Prevent FOUC but show content fast */
-    .app { opacity: 0; transition: opacity 0.2s ease; }
-    .theme-loaded .app { opacity: 1; }
+    /* CRITICAL: Show content immediately — no opacity transition.
+       The old opacity:0 → 1 transition caused the ANHAD logo splash flash
+       on every navigation back to index.html. */
+    .app { opacity: 1; }
     
     /* GLOBAL SHADOW REMOVAL OVERRIDE - FLAT DESIGN */
     .hero-card, .event-card, .clay-card, .clay-hero {
       box-shadow: none !important;
       filter: none !important;
+    }
+
+    /* ═════════════════════════════════════════════════════════════════
+       ANTI-FLASH: Hide desktop-only elements on mobile BEFORE paint.
+       desktop-responsive.css is loaded async (media=print trick) so
+       it arrives AFTER first paint — the sidebar flashes as raw HTML.
+       This inline rule fires synchronously and prevents the flash.
+       ═════════════════════════════════════════════════════════════════ */
+    @media screen and (max-width: 1023px) {
+      .desktop-sidebar {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
+
+    /* Radio back button styling */
+    .header__btn-img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      transition: filter 0.3s ease, transform 0.2s ease;
+      display: block;
+      /* Premium Antique Gold in light mode */
+      filter: invert(62%) sepia(85%) saturate(386%) hue-rotate(356deg) brightness(91%) contrast(92%) drop-shadow(0 1px 2px rgba(212, 148, 58, 0.2));
+    }
+    html.dark-mode .header__btn-img {
+      /* Radiant Glowing Gold in dark mode */
+      filter: invert(72%) sepia(60%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(100%) drop-shadow(0 0 6px rgba(212, 148, 58, 0.45));
     }
   </style>
   
@@ -86,12 +115,8 @@
   <!-- Welcome/Splash Check - Handled by external script to allow SPA skipping -->
   <script src="lib/welcome-check.js"></script>
 
-  <script>
-    (function() {
-      // App initialized marker
-      document.body.classList.add('theme-loaded');
-    })();
-  </script>
+  <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
+  <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
 
   <!-- PERF: Removed duplicate theme-apply block — already handled by first theme IIFE above -->
 
@@ -1697,7 +1722,11 @@
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop
   ════════════════════════════════════════════════════════════════════════════ -->
-  <aside class="desktop-sidebar" aria-label="Desktop Navigation">
+  <!-- ANTI-FLASH: Desktop sidebar must be hidden inline before any external CSS
+       loads. desktop-responsive.css is loaded async (media=print) and arrives
+       AFTER first paint, causing the raw sidebar HTML to flash on mobile. -->
+  <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar"
+         style="display:none">
     <div class="desktop-sidebar__brand">
       <img src="assets/app-logo.png" alt="ANHAD" class="desktop-sidebar__logo">
       <div>
@@ -1723,7 +1752,7 @@
         <span class="ios-emoji" role="img" aria-label="dashboard">📊</span>
         Dashboard
       </a>
-      <a href="Nitnem/nitnem.html" class="desktop-sidebar__link">
+      <a href="nitnem/index.html" class="desktop-sidebar__link">
         <span class="ios-emoji" role="img" aria-label="prayer">📿</span>
         Nitnem
       </a>
@@ -1744,6 +1773,12 @@
       </a>
     </div>
   </aside>
+  <script>
+    // Show sidebar only on desktop — replaces the async CSS we can't rely on for first paint
+    if (window.innerWidth >= 1024) {
+      document.getElementById('desktopSidebar').style.display = '';
+    }
+  </script>
 
   <!-- PERF: Mobile/reduce-motion detection — add classes before first paint -->
   <script>
@@ -1788,8 +1823,13 @@
     ════════════════════════════════════════════════════════════════════ -->
     <header class="header" role="banner" style="background: transparent !important;">
       <div class="header__left">
-        <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" aria-label="Go Back">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <!-- Back to Welcome/Splash screen -->
+        <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" id="homeBackBtn"
+           aria-label="Welcome Screen"
+           title="Back to Welcome"
+           style="text-decoration:none; display: flex; align-items: center; justify-content: center;"
+           onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
+          <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
       </div>
       <div class="header__center">

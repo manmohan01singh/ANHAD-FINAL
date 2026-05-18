@@ -16,15 +16,15 @@
   } catch (e) {}
 })();
   </script>
-  <meta name="color-scheme" content="light dark">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#FAF8F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>ਸ਼ਬਦ ਵਿਚਾਰ | Shabad Vichar — ANHAD</title>
   
-  <link rel="icon" type="image/png" href="../assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" href="../assets/icon-72x72.png">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
   
   <!-- Premium Fonts -->
@@ -39,9 +39,7 @@
   <script src="../lib/global-theme.js"></script>
   
   <!-- Navigation Libraries -->
-  <script src="../lib/smart-back.js"></script>
   <script src="../lib/page-lifecycle.js"></script>
-  <script src="../lib/smooth-navigation.js"></script>
   <script src="../lib/state-preservation.js"></script>
 </head>
 <body>
@@ -265,14 +263,16 @@
   <!-- Toast -->
   <div class="toast" id="toast"><span id="toastMsg"></span></div>
 
-  <!-- Persistent Audio for Cross-Page Playback -->
+  <!-- Unified Audio System -->
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/persistent-audio.js"></script>
-  <script src="../lib/background-audio-loader.js"></script>
+  <script src="../lib/anhad-audio-singleton.js"></script>
+  <script src="../lib/overlay-player.js"></script>
   <script src="../lib/smart-back.js"></script>
   <script src="shabad-vichar.js?v=1.0"></script>
   <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/global-mini-player.js" defer></script>
+  <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+  <script src="../lib/capacitor-notifications-global.js"></script>
+  <script src="../lib/anhad-widget-bridge.js"></script>
 </body>
 </html>

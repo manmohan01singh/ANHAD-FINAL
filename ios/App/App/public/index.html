@@ -3,79 +3,85 @@
 <head>
   <meta charset="UTF-8">
   
-  <!-- CRITICAL: Global error handler — catches all unhandled JS errors -->
-  <script>
-    (function() {
-      var errorLog = [];
-      function logError(type, msg, file, line) {
-        var entry = { type: type, msg: String(msg).slice(0, 200), file: file, line: line, t: Date.now() };
-        errorLog.push(entry);
-        if (errorLog.length > 20) errorLog.shift();
-        try { localStorage.setItem('anhad_error_log', JSON.stringify(errorLog)); } catch(e) {}
-        console.error('[ANHAD ' + type + ']', msg, file ? ('@ ' + file + ':' + line) : '');
-      }
-      window.onerror = function(msg, src, line, col, err) {
-        logError('ERROR', msg, src, line);
-        return false; // Don't suppress — let console show it too
-      };
-      window.addEventListener('unhandledrejection', function(e) {
-        var reason = e.reason ? (e.reason.message || e.reason) : 'Unknown';
-        logError('PROMISE', reason, '', 0);
-      });
-      // Load previous errors
-      try { errorLog = JSON.parse(localStorage.getItem('anhad_error_log') || '[]'); } catch(e) {}
-    })();
-  </script>
-  
-  <!-- Theme initialization - IMMEDIATE execution before any rendering -->
   <script>
     (function() {
       const theme = localStorage.getItem('anhad_theme') || 'light';
-      document.documentElement.setAttribute('data-theme', theme);
-      document.documentElement.style.colorScheme = theme;
-      
-      if (theme === 'dark') {
+      let effectiveTheme = theme;
+      if (theme === 'auto') {
+        const hour = new Date().getHours();
+        effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', effectiveTheme);
+      document.documentElement.setAttribute('data-theme-mode', theme);
+      document.documentElement.style.colorScheme = effectiveTheme;
+      if (effectiveTheme === 'dark') {
         document.documentElement.classList.add('dark-mode');
-        if (document.body) document.body.classList.add('dark-mode');
       } else {
         document.documentElement.classList.remove('dark-mode');
-        if (document.body) document.body.classList.remove('dark-mode');
       }
       
-      // Add body class as soon as DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-          if (theme === 'dark') {
-            document.body.classList.add('dark-mode');
-          } else {
-            document.body.classList.remove('dark-mode');
-          }
-          // Show body after theme is applied
-          setTimeout(function() {
-            document.body.classList.add('theme-loaded');
-          }, 50);
-        });
-      } else {
-        // DOM already loaded
-        setTimeout(function() {
+      // CRITICAL: Immediately set background to prevent white flash
+      const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F2F2F7';
+      document.documentElement.style.backgroundColor = bg;
+      
+      // FAST-TRACK: Prevent white flash
+      document.documentElement.classList.add('theme-loaded');
+
+      // Sync to body as soon as it exists
+      const observer = new MutationObserver(() => {
+        if (document.body) {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
-        }, 50);
-      }
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
     })();
   </script>
   
-  <!-- Critical inline CSS to prevent flash -->
   <style>
-    html { color-scheme: var(--color-scheme, light); }
-    html.dark-mode, body.dark-mode { color: #FFFFFF !important; }
-    html:not(.dark-mode), body:not(.dark-mode) { color: #1A1A1F !important; }
-    body {
-      transition: background-color 0s, color 0s !important;
-      background-color: transparent !important;
-      opacity: 0;
+    html { color-scheme: light dark; }
+    html.dark-mode { background-color: #0D0D0F !important; }
+    html:not(.dark-mode) { background-color: #F2F2F7 !important; }
+    body { background-color: transparent !important; }
+    /* CRITICAL: Show content immediately — no opacity transition.
+       The old opacity:0 → 1 transition caused the ANHAD logo splash flash
+       on every navigation back to index.html. */
+    .app { opacity: 1; }
+    
+    /* GLOBAL SHADOW REMOVAL OVERRIDE - FLAT DESIGN */
+    .hero-card, .event-card, .clay-card, .clay-hero {
+      box-shadow: none !important;
+      filter: none !important;
     }
-    body.theme-loaded { opacity: 1; transition: opacity 0.2s ease; }
-    html.dark-mode { --bg-primary: transparent !important; }
+
+    /* ═════════════════════════════════════════════════════════════════
+       ANTI-FLASH: Hide desktop-only elements on mobile BEFORE paint.
+       desktop-responsive.css is loaded async (media=print trick) so
+       it arrives AFTER first paint — the sidebar flashes as raw HTML.
+       This inline rule fires synchronously and prevents the flash.
+       ═════════════════════════════════════════════════════════════════ */
+    @media screen and (max-width: 1023px) {
+      .desktop-sidebar {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
+
+    /* Radio back button styling */
+    .header__btn-img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      transition: filter 0.3s ease, transform 0.2s ease;
+      display: block;
+      /* Premium Antique Gold in light mode */
+      filter: invert(62%) sepia(85%) saturate(386%) hue-rotate(356deg) brightness(91%) contrast(92%) drop-shadow(0 1px 2px rgba(212, 148, 58, 0.2));
+    }
+    html.dark-mode .header__btn-img {
+      /* Radiant Glowing Gold in dark mode */
+      filter: invert(72%) sepia(60%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(100%) drop-shadow(0 0 6px rgba(212, 148, 58, 0.45));
+    }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -88,78 +94,57 @@
   <!-- Global Theme System -->
   <link rel="stylesheet" href="css/theme-variables.css">
   <script src="lib/global-theme.js"></script>
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="icon" type="image/png" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="assets/icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16x16.png">
   <title>ANHAD | ਅਨਹਦ • Divine Gurbani Experience</title>
   <meta name="description" content="ANHAD — 24/7 Gurbani Kirtan, Nitnem, Hukamnama, Sehaj Paath. Your sacred companion.">
   
   <link rel="preconnect" href="https://anhad-final.onrender.com">
   <link rel="preconnect" href="https://api.banidb.com">
   <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
-  <link rel="stylesheet" href="css/global-mini-player.css?v=4">
-  <!-- REMOVED: mini-player-extreme.js - replaced by anhad-audio-singleton.js -->
-  <link rel="stylesheet" href="css/desktop-responsive.css?v=11">
+  
+  <!-- PERF: Removed aggressive prefetch links — SPA engine handles viewport-based prefetch -->
+
+  <link rel="stylesheet" href="css/global-mini-player.css?v=4" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/desktop-responsive.css?v=11" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="./css/anhad-core.css?v=5">
 
   <script src="./js/anhad-core.js" defer></script>
-  <script src="./lib/global-theme.js"></script>
 
-  <script>
-    (function() {
-      // CRITICAL: Capacitor native app — skip welcome screen entirely to prevent redirect loop
-      var isCapacitor = typeof window.Capacitor !== 'undefined' || navigator.userAgent.includes('Capacitor');
-      if (isCapacitor) return; // Stay on index.html, no redirect needed for native app
+  <!-- Welcome/Splash Check - Handled by external script to allow SPA skipping -->
+  <script src="lib/welcome-check.js"></script>
 
-      var isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isPWA) { if (sessionStorage.getItem('anhad_session_active') !== 'true') window.location.replace('./Homepage/ios-homepage.html'); }
-      else { if (localStorage.getItem('anhad_welcome_seen') !== 'true') window.location.replace('./Homepage/ios-homepage.html'); }
-    })();
-  </script>
+  <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
+  <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
 
-  <!-- Apply theme to body as soon as it's available -->
-  <script>
-    (function() {
-      try {
-        const theme = localStorage.getItem('anhad_theme') || 'light';
-        if (theme === 'dark') {
-          document.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.add('dark-mode');
-          });
-        }
-      } catch (e) {}
-    })();
-  </script>
+  <!-- PERF: Removed duplicate theme-apply block — already handled by first theme IIFE above -->
 
   <!-- Preloads — Critical Resources -->
-  <link rel="preload" href="assets/fonts/OptimusPrinceps.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" href="nitnem/g-fonts/mffjashan.ttf" as="font" type="font/ttf" crossorigin>
+  <!-- PERF: Only preload fonts used above-the-fold -->
   <link rel="preload" href="nitnem/g-fonts/pg_serif_s.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" as="image" href="assets/darbar-sahib-day.webp" type="image/webp" fetchpriority="high">
-  <!-- PERF: Removed duplicate PNG preload — WebP is sufficient for modern browsers -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <!-- DECORATIVE FONTS: Loaded lazily after first paint -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
   <link rel="stylesheet" href="css/trendora-premium.css?v=9">
   <link rel="stylesheet" href="css/anhad-clay.css?v=1">
   <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
-  <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1">
-  <link rel="stylesheet" href="css/gurpurab-special-mode.css">
-  <link rel="stylesheet" href="css/install-button.css">
-  <!-- Mobile Accessibility CSS - WCAG 2.5.5 touch targets -->
-  <link rel="stylesheet" href="css/mobile-accessibility.css">
   <link rel="stylesheet" href="css/nav-glass.css?v=4.1.9">
-  <!-- Non-critical CSS loaded async -->
+  <!-- Non-critical CSS loaded async via media trick -->
+  <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/gurpurab-special-mode.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/install-button.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
-
-  <!-- CRITICAL: Remove dark hero overlays on desktop -->
-  <link rel="stylesheet" href="css/hero-clean-desktop.css">
-  
-  <!-- SCROLL PERFORMANCE OPTIMIZATION - 90 FPS Target (load last to override) -->
-  <link rel="stylesheet" href="css/scroll-performance-90fps.css?v=1">
+  <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
+  <!-- PERF: Removed scroll-fix-simple.css — redundant with scroll-performance-90fps.css -->
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -194,6 +179,7 @@
       display: flex !important;
       flex-direction: column;
       justify-content: center;
+      align-items: flex-start !important;
     }
 
     /* CRITICAL: Navbar & Greeting Stability - Now using nav-glass.css */
@@ -284,6 +270,107 @@
       display: block !important;
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
     }
+
+    /* ═══ GURU PORTRAIT SLIDER ═══ */
+    .greeting__portrait-slider {
+      position: relative !important;
+      width: 100% !important;
+      height: 160px !important;
+      margin-bottom: 24px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: visible !important;
+      touch-action: pan-y !important;
+      user-select: none !important;
+    }
+
+    .greeting__slider-track {
+      position: absolute !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 100% !important;
+      height: 100% !important;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+      will-change: transform !important;
+    }
+
+    .greeting__slide {
+      position: absolute !important;
+      width: 140px !important;
+      height: 140px !important;
+      transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+      transform: scale(0.6) translateX(0);
+      filter: blur(4px) grayscale(1);
+    }
+
+    .greeting__slide--active {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+      transform: scale(1) translateX(0) !important;
+      filter: blur(0) grayscale(0) !important;
+    }
+
+    .greeting__slide--prev {
+      opacity: 0.5 !important;
+      z-index: 5 !important;
+      transform: scale(0.8) translateX(-110px) !important;
+      filter: blur(2px) grayscale(0.5) !important;
+    }
+
+    .greeting__slide--next {
+      opacity: 0.5 !important;
+      z-index: 5 !important;
+      transform: scale(0.8) translateX(110px) !important;
+      filter: blur(2px) grayscale(0.5) !important;
+    }
+
+    .greeting__slide--far-prev {
+      opacity: 0 !important;
+      transform: scale(0.6) translateX(-200px) !important;
+    }
+
+    .greeting__slide--far-next {
+      opacity: 0 !important;
+      transform: scale(0.6) translateX(200px) !important;
+    }
+
+    .greeting__slide .greeting__guru-portrait {
+      width: 140px !important;
+      height: 140px !important;
+      margin: 0 !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+    }
+
+    .greeting__slide--active .greeting__guru-portrait {
+      box-shadow: 
+        0 15px 45px rgba(0,0,0,0.18), 
+        inset 0 0 0 1.5px rgba(255,255,255,0.3) !important;
+    }
+
+    /* Slider Glow Override */
+    .greeting__portrait-slider::before {
+      content: '' !important;
+      position: absolute !important;
+      width: 220px !important;
+      height: 220px !important;
+      background: 
+        radial-gradient(circle at 50% 50%, 
+          rgba(212, 148, 58, 0.25) 0%, 
+          rgba(255, 215, 0, 0.1) 45%, 
+          transparent 70%
+        ) !important;
+      filter: blur(30px) !important;
+      border-radius: 50% !important;
+      z-index: 0 !important;
+      animation: auraPulse 8s ease-in-out infinite !important;
+      pointer-events: none !important;
+    }
     .greeting__text {
       display: flex !important;
       flex-direction: column !important;
@@ -309,36 +396,47 @@
       margin-top: 0 !important;
       font-size: 1.5rem !important;
     }
-    #guruPortraitWrapper {
-      /* Order removed, relying on HTML order */
-    }
+    /* Guru portrait wrapper - order removed, relying on HTML order */
 
     .event-card__title {
       font-family: 'Cinzel', serif !important;
-      font-weight: 500 !important;
-      font-size: 0.75rem !important;
-      line-height: 1.35 !important;
-      letter-spacing: 0.5px !important;
+      font-weight: 700 !important;
+      font-size: 1rem !important;
+      line-height: 1.2 !important;
+      letter-spacing: 0.2px !important;
       text-transform: uppercase !important;
-      color: #8B6914 !important;
-      max-width: 130px !important;
+      color: var(--event-title-color, #72500A) !important;
+      max-width: 280px !important;
+      text-shadow: var(--event-title-shadow, 0 1px 1px rgba(255, 255, 255, 0.6)) !important;
     }
     .event-card__eyebrow {
       font-family: 'Inter', sans-serif !important;
-      font-weight: 500 !important;
+      font-weight: 700 !important;
       font-size: 0.55rem !important;
-      letter-spacing: 0.8px !important;
+      letter-spacing: 1.2px !important;
       text-transform: uppercase !important;
-      color: #B8860B !important;
-      margin-bottom: 2px !important;
+      color: #D4943A !important;
+      margin-bottom: 4px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+    }
+    .event-card__eyebrow::before {
+      content: '✦' !important;
+      color: #D4943A !important;
     }
     .event-card__date {
       font-family: 'Inter', sans-serif !important;
-      font-weight: 400 !important;
-      font-size: 0.7rem !important;
-      letter-spacing: 0.3px !important;
+      font-weight: 600 !important;
+      font-size: 0.75rem !important;
+      letter-spacing: 0.5px !important;
       color: #A67C00 !important;
-      margin: 2px 0 !important;
+      margin: 4px 0 !important;
+      opacity: 0.9 !important;
+      display: inline-block !important;
+      padding: 2px 6px !important;
+      background: rgba(212, 148, 58, 0.08) !important;
+      border-radius: 4px !important;
     }
     /* Countdown - minimal */
     .event-card__countdown {
@@ -362,6 +460,250 @@
       flex-direction: column !important;
       align-items: flex-start !important;
       gap: 0 !important;
+    }
+    
+    .event-card__learn-more {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      margin-top: 10px !important;
+      padding: 8px 16px !important;
+      background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%) !important;
+      color: #FFFFFF !important;
+      border: none !important;
+      border-radius: 20px !important;
+      font-size: 0.7rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.3px !important;
+      cursor: pointer !important;
+      box-shadow: 
+        0 4px 12px rgba(212, 148, 58, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+      transition: all 0.3s ease !important;
+    }
+    
+    .event-card__learn-more:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 
+        0 6px 16px rgba(212, 148, 58, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    }
+    
+    .event-card__learn-more svg {
+      transition: transform 0.3s ease !important;
+    }
+    
+    .event-card__learn-more:hover svg {
+      transform: translateX(3px) !important;
+    }
+
+    /* Hide the extra days badge on desktop */
+    .event-card__days-badge {
+      display: none;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════════
+       COMPACT VIEWPORT LAYOUT — Fit all content on single screen
+       ═══════════════════════════════════════════════════════════════════════════ */
+    @media screen and (max-width: 480px) {
+      /* Header - Compact */
+      .header {
+        padding: 8px 0 4px !important;
+        margin-bottom: 4px !important;
+      }
+      .header__title {
+        font-size: 18px !important;
+      }
+      .header__title-gurmukhi {
+        font-size: 14px !important;
+      }
+      
+      /* Greeting - Compact */
+      .greeting {
+        margin-bottom: 8px !important;
+        padding: 4px 0 0 !important;
+      }
+      .greeting__portrait-wrapper {
+        width: 140px !important;
+        height: 140px !important;
+        margin-bottom: 12px !important;
+      }
+      .greeting__guru-portrait {
+        width: 140px !important;
+        height: 140px !important;
+        min-width: 140px !important;
+        min-height: 140px !important;
+      }
+      .greeting__guru-img {
+        width: 100% !important;
+        height: 100% !important;
+      }
+      #greetingSalutation {
+        font-size: 1.1rem !important;
+        margin-bottom: 6px !important;
+      }
+      #greetingGurbani {
+        font-size: 1.35rem !important;
+      }
+      
+      /* Progress Bar - Compact */
+      .progress-inline {
+        height: 22px !important;
+        padding: 2px 8px !important;
+        margin: 4px 16px 8px !important;
+      }
+      .progress-inline__label {
+        font-size: 0.6rem !important;
+      }
+      .progress-inline__text {
+        font-size: 0.6rem !important;
+      }
+      
+      /* Hero Card - Compact */
+      body .hero-card {
+        min-height: 140px !important;
+        border-radius: 18px !important;
+        margin-bottom: 8px !important;
+      }
+      .hero-card__title {
+        font-size: 1.2rem !important;
+      }
+      .hero-card__subtitle {
+        font-size: 12px !important;
+      }
+      .hero-carousel__dots {
+        margin-top: 8px !important;
+      }
+      
+      /* Event Card - Compact */
+      .event-card {
+        min-height: 70px !important;
+        margin-top: 0 !important;
+        padding: 10px 14px !important;
+        margin-bottom: 8px !important;
+        background: var(--card-event-gradient) !important;
+        border: 2px solid rgba(212, 148, 58, 0.2) !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        position: relative !important;
+      }
+      .event-card__main {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+      .event-card__info {
+        flex: 1 !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+      }
+      .event-card__eyebrow {
+        font-size: 0.6rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 1.2px !important;
+        text-transform: uppercase !important;
+        color: #D4943A !important;
+        margin-bottom: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+      }
+      .event-card__eyebrow::before {
+        content: '✦' !important;
+        font-size: 0.7rem !important;
+        color: #D4943A !important;
+      }
+      .event-card__title {
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px !important;
+        color: var(--event-title-color, #72500A) !important;
+        margin-bottom: 6px !important;
+        line-height: 1.2 !important;
+        text-shadow: var(--event-title-shadow, 0 1px 2px rgba(255, 255, 255, 0.8)) !important;
+        max-width: 100% !important;
+      }
+      .event-card__date {
+        font-size: 0.8rem !important;
+        letter-spacing: 0.5px !important;
+        color: #A67C00 !important;
+        margin-bottom: 0 !important;
+        font-weight: 600 !important;
+        display: inline-block !important;
+        padding: 3px 8px !important;
+        background: rgba(212, 148, 58, 0.1) !important;
+        border-radius: 6px !important;
+      }
+      .event-card__countdown-wrapper {
+        display: none !important;
+      }
+      .event-card__days-badge {
+        position: absolute !important;
+        bottom: 8px !important;
+        right: 26px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        padding: 4px 12px !important;
+        background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%) !important;
+        color: #FFFFFF !important;
+        border-radius: 12px !important;
+        font-size: 0.65rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: none !important;
+        z-index: 10 !important;
+      }
+      .event-card__guru-img-wrapper {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+        padding: 4px !important;
+        background: linear-gradient(145deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #D4943A 75%, #B8860B 100%) !important;
+        border-radius: 50% !important;
+        box-shadow: 
+          0 0 0 2px rgba(255, 255, 255, 0.95),
+          0 0 0 4px rgba(212, 168, 83, 0.35),
+          0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        flex-shrink: 0 !important;
+      }
+      .event-card__guru-img {
+        width: 94% !important;
+        height: 94% !important;
+        border-radius: 50% !important;
+      }
+      .event-card__learn-more {
+        margin-top: 8px !important;
+        padding: 5px 12px !important;
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        background: rgba(212, 148, 58, 0.08) !important;
+        color: #B8860B !important;
+        border: 1px solid rgba(212, 148, 58, 0.3) !important;
+        border-radius: 12px !important;
+        letter-spacing: 0.5px !important;
+        box-shadow: none !important;
+      }
+      .event-card__learn-more svg {
+        width: 12px !important;
+        height: 12px !important;
+        stroke-width: 1.5 !important;
+      }
+      
+      /* Hide celebration badges in compact mode */
+      .gurpurab-celebration-badge,
+      .gurpurab-remembrance-badge {
+        display: none !important;
+      }
+      
+      /* Section spacing */
+      .section-header {
+        margin-bottom: 8px !important;
+      }
     }
 
     /* Prevent layout shifts - fixed dimensions */
@@ -504,7 +846,7 @@
     }
     /* FORCE Quick Access Cards - Cushion/puffy claymorphism */
     .quick-card--green {
-      background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+      background: var(--card-green-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -520,7 +862,7 @@
     }
     
     .quick-card--gold {
-      background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -536,7 +878,7 @@
     }
     
     .quick-card--purple {
-      background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+      background: var(--card-purple-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -552,7 +894,7 @@
     }
     
     .quick-card--blue {
-      background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+      background: var(--card-blue-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -568,7 +910,7 @@
     }
     
     .quick-card--rose {
-      background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
+      background: var(--card-rose-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -592,7 +934,7 @@
     
     /* Practice Cards - Cushion style with colors */
     .practice-card--nitnem {
-      background: linear-gradient(165deg, #FFF8E1 0%, #FFECB3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -608,7 +950,7 @@
     }
     
     .practice-card--sehaj {
-      background: linear-gradient(165deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+      background: var(--card-purple-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -624,7 +966,7 @@
     }
     
     .practice-card--hukam {
-      background: linear-gradient(165deg, #FFE4C4 0%, #FFD4A3 100%) !important;
+      background: var(--card-gold-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
       box-shadow: 
@@ -641,13 +983,10 @@
     
     /* Gurpurab Event Card - Clean without white shadows */
     .event-card {
-      background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%) !important;
+      background: var(--card-event-gradient) !important;
       border: 2px solid rgba(212, 148, 58, 0.15) !important;
       border-radius: 32px !important;
-      box-shadow:
-        /* Simple shadow without white highlights */
-        8px 8px 24px rgba(0, 0, 0, 0.1),
-        0 0 40px rgba(212, 148, 58, 0.1) !important;
+      box-shadow: none !important;
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
       position: relative;
       overflow: hidden;
@@ -816,26 +1155,56 @@
 
     /* iOS Liquid Glass Effect - Hero Card Badges */
     .hero-card__badge {
-      background: rgba(255, 255, 255, 0.15) !important;
-      backdrop-filter: blur(12px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      border-radius: 20px !important;
-      box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.1),
-        inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
-      padding: 4px 8px !important;
-      font-size: 0.65rem !important;
-      font-weight: 500 !important;
-      letter-spacing: 0.3px !important;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+      background: rgba(255, 255, 255, 0.12) !important;
+      backdrop-filter: blur(20px) saturate(2) !important;
+      -webkit-backdrop-filter: blur(20px) saturate(2) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-radius: 999px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+      padding: 5px 12px !important;
+      font-size: 0.7rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px !important;
       color: #FFFFFF !important;
+      cursor: pointer !important;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      margin-top: -8px !important; /* Shifted up as requested */
+      user-select: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      z-index: 10 !important;
     }
-    .hero-card__badge--live {
-      background: rgba(255, 59, 48, 0.2) !important;
-      border-color: rgba(255, 59, 48, 0.3) !important;
+    .hero-card__badge:hover {
+      transform: scale(1.06) translateY(-2px) !important;
+      background: rgba(255, 255, 255, 0.2) !important;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+    .hero-card__badge.is-behind {
+      background: rgba(212, 148, 58, 0.2) !important;
+      border-color: rgba(212, 148, 58, 0.4) !important;
+      color: #FFD700 !important;
+      box-shadow: 0 4px 15px rgba(212, 148, 58, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    }
+    .hero-card__badge-offset {
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      opacity: 0.9;
+    }
+    .hero-card__badge:active {
+      transform: scale(0.94) translateY(0) !important;
+      opacity: 0.8 !important;
+    }
+    .hero-card__badge--live, .hero-card__badge--dlive {
+      background: rgba(255, 59, 48, 0.15) !important;
+      border-color: rgba(255, 59, 48, 0.4) !important;
       color: #FF3B30 !important;
       text-shadow: none !important;
+    }
+    .hero-card__badge--live:hover, .hero-card__badge--dlive:hover {
+      background: rgba(255, 59, 48, 0.25) !important;
+      border-color: rgba(255, 59, 48, 0.6) !important;
     }
     .hero-card__badge--live .hero-card__badge-dot {
       background: #FF3B30 !important;
@@ -883,6 +1252,14 @@
         display: block !important;
       }
 
+      html.theme-changing,
+      html.theme-changing *,
+      html.theme-changing *::before,
+      html.theme-changing *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+
       /* Hide background image in dark mode to prevent dark appearance */
       html body.dark-mode::before,
       body.dark-mode::before {
@@ -908,12 +1285,12 @@
         display: block !important;
       }
 
-      /* Remove dark mode gradient - use same light gradient in both modes */
+      /* Dark mode desktop background */
       html body.dark-mode::after,
       body.dark-mode::after {
         background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.72) 0%,
-          rgba(248, 250, 252, 0.77) 100%) !important;
+          #000000 0%,
+          #111111 100%) !important;
       }
       
       /* Main content colors */
@@ -955,12 +1332,7 @@
           display: none !important;
         }
         
-        /* Notes card full width */
-        .quick-card:nth-child(5) {
-          width: 100% !important;
-          margin-right: 0 !important;
-          grid-column: 1 / -1 !important;
-        }
+        /* Removed full-width override for 6th card to maintain clean 3x2 grid */
         
         /* Hero card - NO CUT OFF */
         .hero-card {
@@ -1018,7 +1390,7 @@
         
         /* Quick Access Cards - Cushion/puffy claymorphism */
         .quick-card--green {
-          background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+          background: var(--card-green-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1028,7 +1400,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--gold {
-          background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1038,7 +1410,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--purple {
-          background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+          background: var(--card-purple-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1048,7 +1420,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--blue {
-          background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
+          background: var(--card-blue-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1058,7 +1430,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--rose {
-          background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
+          background: var(--card-rose-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1070,7 +1442,7 @@
         
         /* Practice Cards - Cushion style with colors */
         .practice-card--nitnem {
-          background: linear-gradient(165deg, #FFF8E1 0%, #FFECB3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1080,7 +1452,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--sehaj {
-          background: linear-gradient(165deg, #EDE7F6 0%, #D1C4E9 100%) !important;
+          background: var(--card-purple-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1090,7 +1462,7 @@
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--hukam {
-          background: linear-gradient(165deg, #FFE4C4 0%, #FFD4A3 100%) !important;
+          background: var(--card-gold-gradient) !important;
           border: none !important;
           border-radius: 24px !important;
           box-shadow: 
@@ -1102,7 +1474,7 @@
         
         /* Gurpurab Event Card - EXTREME PILLOW Claymorphism */
         .event-card {
-          background: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 50%, #FFF5E6 100%) !important;
+          background: var(--card-event-gradient) !important;
           border: 1px solid rgba(212, 148, 58, 0.12) !important;
           border-radius: 28px !important;
           box-shadow: 
@@ -1112,6 +1484,9 @@
           transition: all 0.3s ease !important;
           position: relative;
           overflow: hidden;
+          max-width: 850px !important;
+          margin: -20px auto 48px auto !important;
+          padding: 32px 48px !important;
         }
         .event-card::before {
           content: '';
@@ -1145,20 +1520,24 @@
         /* Guru image - AI-style decorative frame */
         .event-card__guru-img-wrapper {
           position: relative;
-          padding: 6px;
+          padding: 8px;
           background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #D4943A 75%, #B8860B 100%);
           border-radius: 50%;
           box-shadow: 
-            0 0 0 3px rgba(255, 255, 255, 0.8),
-            0 0 0 6px rgba(212, 148, 58, 0.3),
-            0 8px 24px rgba(0, 0, 0, 0.15),
-            0 0 30px rgba(255, 215, 0, 0.4);
+            0 0 0 4px rgba(255, 255, 255, 0.8),
+            0 0 0 8px rgba(212, 148, 58, 0.3),
+            0 12px 30px rgba(0, 0, 0, 0.2),
+            0 0 40px rgba(255, 215, 0, 0.5);
           animation: frameGlow 3s ease-in-out infinite;
+          width: 156px !important;
+          height: 156px !important;
+          min-width: 156px !important;
+          min-height: 156px !important;
         }
         
         .event-card__guru-img {
-          width: 98px !important;
-          height: 98px !important;
+          width: 140px !important;
+          height: 140px !important;
           object-fit: cover;
           border-radius: 50%;
           transition: opacity 0.3s ease, transform 0.3s ease;
@@ -1343,7 +1722,11 @@
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop
   ════════════════════════════════════════════════════════════════════════════ -->
-  <aside class="desktop-sidebar" aria-label="Desktop Navigation">
+  <!-- ANTI-FLASH: Desktop sidebar must be hidden inline before any external CSS
+       loads. desktop-responsive.css is loaded async (media=print) and arrives
+       AFTER first paint, causing the raw sidebar HTML to flash on mobile. -->
+  <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar"
+         style="display:none">
     <div class="desktop-sidebar__brand">
       <img src="assets/app-logo.png" alt="ANHAD" class="desktop-sidebar__logo">
       <div>
@@ -1390,6 +1773,12 @@
       </a>
     </div>
   </aside>
+  <script>
+    // Show sidebar only on desktop — replaces the async CSS we can't rely on for first paint
+    if (window.innerWidth >= 1024) {
+      document.getElementById('desktopSidebar').style.display = '';
+    }
+  </script>
 
   <!-- PERF: Mobile/reduce-motion detection — add classes before first paint -->
   <script>
@@ -1434,8 +1823,13 @@
     ════════════════════════════════════════════════════════════════════ -->
     <header class="header" role="banner" style="background: transparent !important;">
       <div class="header__left">
-        <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" aria-label="Go Back">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <!-- Back to Welcome/Splash screen -->
+        <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" id="homeBackBtn"
+           aria-label="Welcome Screen"
+           title="Back to Welcome"
+           style="text-decoration:none; display: flex; align-items: center; justify-content: center;"
+           onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
+          <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
       </div>
       <div class="header__center">
@@ -1458,17 +1852,18 @@
     ════════════════════════════════════════════════════════════════════ -->
     <section class="greeting ios-animate-in" aria-label="Personal Greeting">
       <div class="greeting__content">
-        <!-- Portrait First for clear layout -->
-        <div class="greeting__portrait-wrapper">
-          <div class="greeting__guru-portrait" id="guruPortraitWrapper">
-            <img class="greeting__guru-img" id="guruPortraitImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="140" height="140" loading="eager">
+        <!-- Portrait Slider for immersive experience -->
+        <div class="greeting__portrait-slider" id="guruSlider">
+          <div class="greeting__slider-track" id="guruSliderTrack">
+            <!-- Slides will be injected by trendora-app.js -->
           </div>
         </div>
         
         <!-- Text clearly below the image -->
         <div class="greeting__text">
-          <div class="greeting__salutation" id="greetingSalutation">Sri Guru Granth Sahib Ji</div>
-          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ</div>
+          <div class="greeting__salutation" id="greetingSalutation">&nbsp;</div>
+          <div class="greeting__gurbani" id="greetingGurbani" lang="pa">&nbsp;</div>
+          <div class="greeting__translation" id="greetingTranslation" style="font-size: 0.9rem; opacity: 0.8; margin-top: 4px;">&nbsp;</div>
         </div>
       </div>
     </section>
@@ -1476,12 +1871,12 @@
     <!-- ════════════════════════════════════════════════════════════════════
          DAILY PROGRESS — iOS-Style Inline Bar
     ════════════════════════════════════════════════════════════════════ -->
-    <div class="progress-inline ios-animate-in" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="11">
-      <span class="progress-inline__label" id="progressLabel">Today's Nitnem</span>
+    <div class="progress-inline ios-animate-in" role="progressbar" aria-label="Today's Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+      <span class="progress-inline__label" id="progressLabel">☀️ Continue morning Nitnem</span>
       <div class="progress-inline__bar">
         <div class="progress-inline__fill" id="progressFill"></div>
       </div>
-      <span class="progress-inline__text" id="progressText">0/11</span>
+      <span class="progress-inline__text" id="progressText">0/8 Banis</span>
     </div>
 
     <!-- ════════════════════════════════════════════════════════════════════
@@ -1501,7 +1896,8 @@
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
-              <span class="hero-card__badge-dot" aria-hidden="true"></span>LIVE
+              <span class="hero-card__badge-dot" aria-hidden="true"></span>
+              <span class="hero-card__badge-text">LIVE</span>
             </div>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
@@ -1523,10 +1919,14 @@
               <img class="hero-card__image" src="assets/Darbar-sahib-AMRITVELA.png" alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
             </picture>
-            <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">● D-LIVE</div>
+            <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">
+              <span class="hero-card__badge-dot" aria-hidden="true" style="background:var(--anhad-gold)"></span>
+              <span class="hero-card__badge-text">D-LIVE</span>
+            </div>
             <div class="hero-card__overlay">
               <div class="hero-card__overlay-info">
-                <div class="hero-card__title hero-card__title--thin">Amritvela Smagams</div>
+                <div class="hero-card__title">Amritvela Kirtan</div>
+                <div class="hero-card__subtitle" style="margin-right:75px;max-width:calc(100% - 75px);display:block;">Sacred Dawn Kirtan Collection</div>
               </div>
               <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn2" aria-label="Play Amritvela" data-action="play" data-stream="amritvela">
                 <svg id="heroPlayIcon2" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
@@ -1535,8 +1935,31 @@
           </div>
         </article>
 
-        <!-- Card 3: Today's Hukamnama -->
-        <article class="hero-card hero-card--hukam" id="heroCard3" data-color="#5B6AAE" data-color-rgb="91,106,174" aria-label="Today's Hukamnama" role="group" aria-roledescription="slide" onclick="window.location.href='Hukamnama/daily-hukamnama.html'">
+        <!-- Card 3: Waheguru Simran -->
+        <article class="hero-card" id="heroCard3" data-stream="simran" data-color="#B8860B" data-color-rgb="184,134,11" aria-label="Waheguru Simran" role="group" aria-roledescription="slide">
+          <div class="hero-card__image-wrapper">
+            <picture>
+              <img class="hero-card__image" src="assets/homepage-hero/hero-temple-night.png" alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" decoding="async"
+              onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+            </picture>
+            <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
+              <span class="hero-card__badge-dot" aria-hidden="true"></span>
+              <span class="hero-card__badge-text">LIVE</span>
+            </div>
+            <div class="hero-card__overlay">
+              <div class="hero-card__overlay-info">
+                <div class="hero-card__title">Waheguru Simran</div>
+                <div class="hero-card__subtitle" style="margin-right:75px;max-width:calc(100% - 75px);display:block;">Divine Meditation & Simran</div>
+              </div>
+              <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn3" aria-label="Play Simran" data-action="play" data-stream="simran">
+                <svg id="heroPlayIcon3" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4: Today's Hukamnama -->
+        <article class="hero-card hero-card--hukam" id="heroCard4" data-color="#5B6AAE" data-color-rgb="91,106,174" aria-label="Today's Hukamnama" role="group" aria-roledescription="slide" data-href="Hukamnama/daily-hukamnama.html">
           <div class="hero-card__image-wrapper">
             <picture>
               <source srcset="assets/HUKAMNAMA-SAHIB.webp" type="image/webp">
@@ -1549,6 +1972,9 @@
                 <div class="hero-card__title hero-card__title--thin" id="heroHukamTitle" style="font-family:var(--font-gurmukhi)">Today's Hukamnama</div>
                 <div class="hero-card__subtitle" id="heroHukamSubtitle" style="margin-right:75px !important;margin-left:12px !important;max-width:calc(100% - 87px) !important;display:block !important;font-size:15.5px !important;letter-spacing:0.3px !important;">Sri Guru Granth Sahib Ji</div>
               </div>
+              <button class="hero-card__play-btn ios-haptic" id="heroPlayBtn4" aria-label="Play Hukamnama" data-action="play" data-stream="hukamnama">
+                <svg id="heroPlayIcon4" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="7,3 21,12 7,21"/></svg>
+              </button>
             </div>
           </div>
         </article>
@@ -1558,6 +1984,7 @@
         <button class="hero-carousel__dot hero-carousel__dot--active" data-index="0" aria-label="Slide 1" role="tab" aria-selected="true"></button>
         <button class="hero-carousel__dot" data-index="1" aria-label="Slide 2" role="tab" aria-selected="false"></button>
         <button class="hero-carousel__dot" data-index="2" aria-label="Slide 3" role="tab" aria-selected="false"></button>
+        <button class="hero-carousel__dot" data-index="3" aria-label="Slide 4" role="tab" aria-selected="false"></button>
       </div>
     </section>
 
@@ -1595,24 +2022,31 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" onclick="window.location.href='Calendar/GurpurabCalendar-ios.html'" style="margin-top: -30px !important;">
+    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
       
       <div class="event-card__main">
         <div class="event-card__info">
-          <div class="event-card__eyebrow">Upcoming Gurpurab</div>
-          <div class="event-card__title skeleton" id="eventTitle">Loading...</div>
-          <div class="event-card__date" id="eventDate">—</div>
+          <div class="event-card__eyebrow">UPCOMING GURPURAB</div>
+          <div class="event-card__title" id="eventTitle">GURGADDI SRI GURU HARGOBIND SAHIB JI</div>
+          <div class="event-card__date" id="eventDate">19 JUNE 2025</div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown" id="eventCountdown">—</div>
-            <div class="event-card__countdown-label" id="eventCountdownLabel">days</div>
+            <div class="event-card__countdown" id="eventCountdown">5</div>
+            <div class="event-card__countdown-label" id="eventCountdownLabel">Days Remaining</div>
           </div>
+          <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
+            Learn More
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
+          <img class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/guruhargobindsahebji.jpeg" alt="Sri Guru Hargobind Sahib Ji" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
         </div>
+      </div>
+      <div class="event-card__days-badge">
+        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
       </div>
     </article>
 
@@ -1624,7 +2058,7 @@
     </div>
 
     <div class="practice-grid ios-stagger" role="list">
-      <button class="practice-card practice-card--nitnem ios-haptic" id="nitnemPractice" aria-label="Nitnem Paath" role="listitem" onclick="window.location.href='nitnem/index.html'">
+      <button class="practice-card practice-card--nitnem ios-haptic" id="nitnemPractice" aria-label="Nitnem Paath" role="listitem" data-href="nitnem/index.html">
         <div class="practice-card__check" id="nitnemCheck" aria-hidden="true">
           <svg><use href="#icon-check"/></svg>
         </div>
@@ -1639,7 +2073,7 @@
         <div class="practice-card__status" id="nitnemStatus">Daily Prayers</div>
       </button>
 
-      <button class="practice-card practice-card--sehaj ios-haptic" id="sehajPractice" aria-label="Sehaj Paath" role="listitem" onclick="window.location.href='SehajPaath/sehaj-paath.html'">
+      <button class="practice-card practice-card--sehaj ios-haptic" id="sehajPractice" aria-label="Sehaj Paath" role="listitem" data-href="SehajPaath/sehaj-paath.html">
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
@@ -1651,7 +2085,7 @@
         <div class="practice-card__status" id="sehajStatus">Begin journey</div>
       </button>
 
-      <button class="practice-card practice-card--hukam ios-haptic" id="hukamPractice" aria-label="Daily Hukamnama" role="listitem" onclick="window.location.href='Hukamnama/daily-hukamnama.html'">
+      <button class="practice-card practice-card--hukam ios-haptic" id="hukamPractice" aria-label="Daily Hukamnama" role="listitem" data-href="Hukamnama/daily-hukamnama.html">
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
@@ -1672,7 +2106,7 @@
     </div>
 
     <div class="quick-access-grid ios-stagger">
-      <article class="quick-card quick-card--green ios-haptic" id="nitnemTrackerCard" aria-label="Nitnem Tracker" onclick="window.location.href='NitnemTracker/nitnem-tracker.html'">
+      <article class="quick-card quick-card--green ios-haptic" id="nitnemTrackerCard" aria-label="Nitnem Tracker" data-href="NitnemTracker/nitnem-tracker.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="fire">🔥</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Nitnem Tracker</div>
@@ -1684,7 +2118,7 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas" onclick="window.location.href='NaamAbhyas/naam-abhyas.html'">
+    <article class="quick-card quick-card--gold ios-haptic" id="naamCard" aria-label="Naam Abhyas" data-href="NaamAbhyas/naam-abhyas.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer">🙏</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Naam Abhyas</div>
@@ -1696,7 +2130,9 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--purple ios-haptic" id="shabadVicharCard" aria-label="Shabad Vichar" onclick="window.location.href='ShabadVichar/shabad-vichar.html'">
+
+
+    <article class="quick-card quick-card--purple ios-haptic" id="shabadVicharCard" aria-label="Shabad Vichar" data-href="ShabadVichar/shabad-vichar.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="light">🪔</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Shabad Vichar</div>
@@ -1705,7 +2141,7 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--blue ios-haptic" id="searchCard" aria-label="Gurbani Khoj" onclick="window.location.href='GurbaniKhoj/gurbani-khoj.html'">
+    <article class="quick-card quick-card--blue ios-haptic" id="searchCard" aria-label="Gurbani Khoj" data-href="GurbaniKhoj/gurbani-khoj.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="search">🔍</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Gurbani Khoj</div>
@@ -1714,7 +2150,7 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <article class="quick-card quick-card--rose ios-haptic" id="notesCard" aria-label="Notes" onclick="window.location.href='Notes/notes.html'">
+    <article class="quick-card quick-card--rose ios-haptic" id="notesCard" aria-label="Notes" data-href="Notes/notes.html">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="notes">📝</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Notes</div>
@@ -1770,7 +2206,7 @@
   <div class="install-banner" id="installBanner" role="alert" style="display: none; transform:translateY(100%); opacity: 0;">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
-        <img src="/assets/app-logo.png" alt="ANHAD Logo">
+        <img src="assets/app-logo.png" alt="ANHAD Logo">
       </div>
       <div class="install-banner__text">
         <div class="install-banner__title">Install ANHAD</div>
@@ -1784,80 +2220,60 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════
-       SCRIPTS — Critical path first, non-critical lazy-loaded
+       SCRIPTS — PERFORMANCE OPTIMIZED: Only 3 sync, rest deferred/lazy
   ════════════════════════════════════════════════════════════════════════ -->
-  <!-- Critical: Unified Stats System (Single Source of Truth) -->
-  <script src="lib/unified-stats.js"></script>
-  
-  <!-- Critical: fetch timeout utility — must load before any module that calls fetch() -->
+  <!-- SYNC: Only scripts needed BEFORE first interaction -->
   <script src="lib/fetch-utils.js"></script>
-  <!-- Critical: bfcache recovery — must load first to clean stuck states on back-button -->
   <script src="lib/page-lifecycle.js"></script>
-  <!-- Critical: Capacitor Bridge — Native storage adapter for APK -->
-  <!-- <script src="js/capacitor-bridge.js"></script> -->
-  <!-- Critical: Capacitor initialization — Hardware back button handler -->
-  <!-- <script src="js/capacitor-init.js"></script> -->
-  <!-- Critical: Storage Manager — Quota monitoring with IndexedDB fallback -->
-  <script src="lib/storage-manager.js"></script>
-  <!-- Critical: Capacitor Haptics — Unified haptics API for iOS/Android -->
-  <!-- <script src="lib/capacitor-haptics.js"></script> -->
-  <!-- Critical: Capacitor Notifications — Unified notification API -->
-  <!-- <script src="lib/capacitor-notifications.js"></script> -->
-  
-  <!-- WIDGETS: Home Screen Widget Bridge — Syncs data to iOS/Android widgets -->
-  <script src="widgets/widget-bridge.js"></script>
-  
-  <!-- Cache Optimization for instant loading -->
-  <script src="lib/gurbani-db.js"></script>
-  <script src="lib/bani-cache-optimizer.js"></script>
-  <script src="lib/optimized-image-loader.js"></script>
-  
-  <script src="lib/audio-preload.js"></script>
-  <!-- CRITICAL: Audio System - Load IMMEDIATELY for seamless cross-page playback -->
-  <script src="lib/audio-coordinator.js"></script>
-  
-  <!-- UNIFIED AUDIO SINGLETON - Must load before overlay-player.js -->
-  <script src="lib/anhad-audio-singleton.js"></script>
-  
-  <!-- Overlay Player UI Wrapper - Thin UI layer over AnhadAudio singleton -->
-  <script src="lib/overlay-player.js"></script>
-  
-  <!-- CRITICAL: Smooth Navigation - AJAX Content Swapping (App Shell Engine) -->
   <script src="lib/smooth-navigation.js"></script>
   
-  <!-- DISABLED: Global Mini Player - Using overlay-player.js as single source instead -->
-  <!-- <script src="lib/global-mini-player.js"></script> -->
+  <!-- DEFERRED: Load after DOM parse, before DOMContentLoaded -->
+  <script src="lib/unified-stats.js" defer></script>
+  <script src="js/capacitor-bridge.js" defer></script>
+  <script src="js/capacitor-init.js" defer></script>
+  <script src="lib/storage-manager.js" defer></script>
+  <script src="lib/capacitor-notifications.js" defer></script>
+  <script src="lib/audio-coordinator.js" defer></script>
+  <script src="lib/anhad-audio-singleton.js" defer></script>
+  <script src="lib/overlay-player.js" defer></script>
   
-  <!-- Critical: Core UI logic -->
+  <!-- Core UI logic -->
   <script src="js/trendora-app.js" defer></script>
   <script src="js/homepage-data.js" defer></script>
-  <script src="pwa-register.js" defer></script>
+  <script src="pwa-register.js?v=2" defer></script>
   <script src="js/update-controller.js" defer></script>
 
-  <!-- Lazy-loaded: Non-critical scripts loaded after first paint -->
+  <!-- LAZY: Non-critical scripts loaded during idle time -->
   <script>
-    // PERF: Removed duplicate card navigation bindings (already handled by trendora-app.js Navigation)
-
-    // Lazy-load non-critical scripts — use idle callback for better main-thread scheduling
     var loadLazyScripts = function() {
       var lazyScripts = [
+        'widgets/widget-bridge.js',
+        'lib/gurbani-db.js',
+        'lib/bani-cache-optimizer.js',
+        'lib/optimized-image-loader.js',
+        'lib/audio-preload.js',
         'lib/user-stats.js',
         'lib/alarm-coordinator.js',
-        'lib/guaranteed-alarm-system.js', // CRITICAL: Ensures ALL notifications fire
+        'lib/guaranteed-alarm-system.js',
         'lib/global-alarm-system.js',
         'lib/ios-android-notifications.js'
       ];
-      lazyScripts.forEach(function(src) {
+      var i = 0;
+      function loadNext() {
+        if (i >= lazyScripts.length) return;
         var s = document.createElement('script');
-        s.src = src;
-        s.defer = true;
+        s.src = lazyScripts[i++];
+        s.onload = s.onerror = function() {
+          requestAnimationFrame(loadNext);
+        };
         document.head.appendChild(s);
-      });
+      }
+      loadNext();
     };
     if ('requestIdleCallback' in window) {
-      requestIdleCallback(loadLazyScripts, { timeout: 3000 });
+      requestIdleCallback(loadLazyScripts, { timeout: 2000 });
     } else {
-      setTimeout(loadLazyScripts, 2500);
+      setTimeout(loadLazyScripts, 1500);
     }
   </script>
 
@@ -1963,75 +2379,16 @@
       }
     })();
 
-    // Theme Toggle Button - Direct Implementation
+    // Theme Toggle Button - Unified with AnhadTheme System
     (function initThemeToggle() {
       const themeToggleBtn = document.getElementById('themeToggleBtn');
-      const themeIcon = document.getElementById('themeIcon');
-      const body = document.body;
-      const html = document.documentElement;
-
-      // Get saved theme or default to light
-      const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-      
-      function applyTheme(theme) {
-        // Save to localStorage
-        localStorage.setItem('anhad_theme', theme);
-
-        // Update classes
-        if (theme === 'dark') {
-          html.classList.add('dark-mode');
-          body.classList.add('dark-mode');
-          html.setAttribute('data-theme', 'dark');
-          html.style.colorScheme = 'dark';
-
-          // Remove inline styles to let CSS take over
-          body.style.backgroundColor = '';
-
-          // Update header background
-          const header = document.querySelector('.header');
-          if (header) {
-            header.style.background = 'transparent';
-          }
-          body.style.color = '';
-          
-          // Update icon
-          if (themeIcon) themeIcon.textContent = '☀️';
-        } else {
-          html.classList.remove('dark-mode');
-          body.classList.remove('dark-mode');
-          html.setAttribute('data-theme', 'light');
-          html.style.colorScheme = 'light';
-          
-          // Remove inline styles to let CSS take over
-          body.style.backgroundColor = '';
-          body.style.color = '';
-          
-          // Update icon
-          if (themeIcon) themeIcon.textContent = '🌙';
-        }
-        
-        // Update meta theme-color
-        const metaTheme = document.querySelector('meta[name="theme-color"]');
-        if (metaTheme) {
-          metaTheme.content = theme === 'dark' ? '#0D0D0F' : '#F1F3F6';
-        }
-      }
-
-      // Apply initial theme
-      applyTheme(savedTheme);
-
-      // Set initial header background based on theme
-      const header = document.querySelector('.header');
-      if (header) {
-        header.style.background = 'transparent';
-      }
-
-      // Add click handler
       if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', function() {
-          const currentTheme = localStorage.getItem('anhad_theme') || 'light';
-          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-          applyTheme(newTheme);
+          if (window.AnhadTheme) {
+            window.AnhadTheme.toggle();
+          } else if (window.toggleTheme) {
+            window.toggleTheme();
+          }
         });
       }
     })();
@@ -2057,56 +2414,113 @@
     </a>
   </nav>
 
-  <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->
+  <!-- Hero Card Badge Interactions — Direct Jump to Live -->
   <script>
-    /**
-     * SILENT AUTO-UPDATE SYSTEM
-     * =========================
-     * The primary auto-update logic lives in pwa-register.js (loaded above).
-     * This script registers service-worker.js as a backward-compat passthrough
-     * and ensures any waiting workers are activated immediately.
-     * 
-     * pwa-register.js polls version.json every 30 seconds.
-     * When a version change is detected → auto SW update → auto reload.
-     * No user interaction required. Updates propagate within seconds.
-     */
-    if ('serviceWorker' in navigator) {
-      // CRITICAL: Skip legacy SW in Capacitor — native apps don't need service workers
-      // Service workers inside Capacitor WebView cause controllerchange reload loops
-      var isCapNative = typeof window.Capacitor !== 'undefined' || navigator.userAgent.includes('Capacitor');
-      if (isCapNative) {
-        console.log('[SW-Legacy] Skipped — Capacitor native mode');
-      } else {
-        // Register the legacy service-worker.js as a passthrough
-        // (The main SW is sw.js, registered by pwa-register.js)
-        navigator.serviceWorker.register('./service-worker.js')
-          .then((reg) => {
-            console.log('[SW-Legacy] Registered passthrough service-worker.js');
-            
-            // If this SW has a waiting worker, activate it immediately
-            if (reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-            }
-            
-            // Listen for updates on the legacy SW
-            reg.addEventListener('updatefound', () => {
-              const newWorker = reg.installing;
-              if (newWorker) {
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // Auto-activate — no user prompt
-                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  }
-                });
+    document.addEventListener('DOMContentLoaded', function() {
+      // Small delay to ensure AnhadAudio is initialized
+      setTimeout(function() {
+        const badges = document.querySelectorAll('.hero-card__badge--live, .hero-card__badge--dlive');
+        
+        // 1. Click Handler for jumping to live
+        badges.forEach(badge => {
+          badge.addEventListener('click', function(e) {
+            e.stopPropagation(); // Don't trigger card click
+            if (window.AnhadAudio) {
+              const card = this.closest('.hero-card');
+              const stream = card ? card.dataset.stream : null;
+              
+              // If it's already playing this stream, jump to live
+              const state = window.AnhadAudio.getState();
+              if (state.isPlaying && state.currentStream === stream) {
+                console.log('[Homepage] Jumping to live for:', stream);
+                window.AnhadAudio.jumpToLive();
+                
+                // Visual feedback
+                this.style.transform = 'scale(0.9) translateY(0)';
+                setTimeout(() => this.style.transform = '', 200);
+              } else {
+                // If not playing, or playing something else, start playing this stream (which defaults to live)
+                console.log('[Homepage] Starting live stream for:', stream);
+                window.AnhadAudio.play(stream);
               }
-            });
-          })
-          .catch((error) => {
-            console.warn('[SW-Legacy] Registration failed (expected if sw.js handles it):', error.message);
+              
+              if (navigator.vibrate) navigator.vibrate(10);
+            }
           });
-      }
-    }
+        });
+
+        // 3. Play Button Handler for Hero Cards
+        const heroPlayButtons = document.querySelectorAll('.hero-card__play-btn');
+        heroPlayButtons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Don't trigger card navigation
+            if (window.AnhadAudio) {
+              const stream = this.dataset.stream;
+              console.log('[Homepage] Hero play button clicked for:', stream);
+              window.AnhadAudio.play(stream);
+              
+              if (window.CapacitorHaptics) {
+                window.CapacitorHaptics.impact({ style: 'medium' });
+              } else if (navigator.vibrate) {
+                navigator.vibrate(10);
+              }
+            }
+          });
+        });
+
+        // 2. Real-time Status Updates (DVR-style)
+        setInterval(function() {
+          if (!window.AnhadAudio) return;
+          const state = window.AnhadAudio.getState();
+          
+          badges.forEach(badge => {
+            const card = badge.closest('.hero-card');
+            const stream = card ? card.dataset.stream : null;
+            const badgeText = badge.querySelector('.hero-card__badge-text');
+            const dot = badge.querySelector('.hero-card__badge-dot');
+            
+            if (state.isPlaying && state.currentStream === stream && (stream === 'amritvela' || stream === 'simran')) {
+              const isBehind = state.isBehind;
+              const offset = state.liveOffset || 0;
+              
+              badge.classList.toggle('is-behind', isBehind);
+              if (dot) dot.classList.toggle('pulsing', isBehind);
+              
+              if (isBehind && badgeText) {
+                const totalSecs = Math.round(offset);
+                if (totalSecs >= 3600) {
+                  const h = Math.floor(totalSecs / 3600);
+                  const m = Math.floor((totalSecs % 3600) / 60);
+                  const s = totalSecs % 60;
+                  badgeText.textContent = `-${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                } else if (totalSecs >= 60) {
+                  const m = Math.floor(totalSecs / 60);
+                  const s = totalSecs % 60;
+                  badgeText.textContent = `-${m}:${s.toString().padStart(2,'0')}`;
+                } else {
+                  badgeText.textContent = `-${totalSecs}s`;
+                }
+              } else if (badgeText) {
+                badgeText.textContent = stream === 'amritvela' ? 'D-LIVE' : 'LIVE';
+              }
+            } else {
+              badge.classList.remove('is-behind');
+              if (dot) dot.classList.remove('pulsing');
+              if (badgeText) {
+                 if (badge.classList.contains('hero-card__badge--dlive')) badgeText.textContent = 'D-LIVE';
+                 else if (badge.classList.contains('hero-card__badge--curated')) {} // Skip Hukamnama
+                 else badgeText.textContent = 'LIVE';
+              }
+            }
+          });
+        }, 1000);
+      }, 1000);
+    });
   </script>
+
+  <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->
+
 
 </body>
 </html>

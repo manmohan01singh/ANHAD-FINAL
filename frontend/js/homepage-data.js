@@ -123,6 +123,7 @@ function getGuruNameForEvent(eventName, guruNumber) {
 document.addEventListener('DOMContentLoaded', function () {
 
   // FIX: Guard against duplicate initialization on SPA re-mount
+  // BUT: Allow re-initialization on SPA page change (back navigation)
   if (window._homepageDataInitialized) {
     console.log('[HomepageData] Already initialized, skipping duplicate init');
     return;
@@ -372,6 +373,14 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('statsInitialized', updateNitnemTracker);
   window.addEventListener('statsChanged', updateNitnemTracker);
   window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
+  
+  // Cross-page SPA synchronization
+  window.addEventListener('streakUpdated', updateNitnemTracker);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'anhad_streak_data' || e.key === 'nitnemTracker_nitnemLog') {
+        updateNitnemTracker();
+    }
+  });
 
   // ━━━ SEHAJ PAATH ━━━
   function updateSehajPaath() {
@@ -544,12 +553,33 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('pagehide', () => {
     _hpIntervals.forEach(id => clearInterval(id));
     _hpIntervals.length = 0;
+    // CRITICAL: Reset initialization flag so data re-initializes on SPA return
     window._homepageDataInitialized = false;
   });
 
   // ━━━ REFRESH ON RETURN ━━━
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
   window.addEventListener('pageshow', e => { if (e.persisted) { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
+
+  // ━━━ REFRESH ON SPA NAVIGATION BACK ━━━
+  // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh
+  // all dynamic data (especially Gurpurab) to prevent stale information.
+  window.addEventListener('anhad_page_changed', function() {
+    // Only run if we're on the homepage
+    if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('/frontend/')) {
+      console.log('[HomepageData] SPA page changed back to homepage, refreshing data');
+      updateNextGurpurab();
+      updateGreeting();
+      updateClock();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNextSession();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+      updateHukamDate();
+    }
+  });
 
   console.log('✨ ANHAD Premium Homepage Data Initialized');
 });

@@ -88,7 +88,7 @@
   }
   
   .hero-card {
-    min-width: 400px;
+    min-width: 320px;
   }
   
   /* Grid layouts for practice cards */
@@ -211,8 +211,8 @@
   html.dark-mode .desktop-sidebar,
   [data-theme="dark"] .desktop-sidebar {
     background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(248, 250, 252, 0.95) 100%) !important;
+      rgba(15, 15, 15, 0.95) 0%,
+      rgba(20, 20, 25, 0.95) 100%) !important;
     border-right: 1px solid rgba(255,255,255,0.08);
   }
   
@@ -530,7 +530,7 @@
   }
   
   .hero-card__image-wrapper {
-    aspect-ratio: 16/10;
+    aspect-ratio: 16/9;
     overflow: hidden;
     position: relative;
     border-radius: 0 !important;
@@ -549,7 +549,7 @@
   }
   
   .hero-card__content {
-    padding: 20px !important;
+    padding: 14px !important;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -566,17 +566,17 @@
   
   .hero-card__subtitle {
     color: rgba(255,255,255,0.8) !important;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     margin: 0;
   }
   
   .hero-card__badge {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    padding: 6px 12px;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -594,7 +594,7 @@
   }
   
   .hero-card__image-wrapper {
-    aspect-ratio: 16/10;
+    aspect-ratio: 16/9;
     overflow: hidden;
   }
   
@@ -606,7 +606,7 @@
   }
   
   .hero-card__title {
-    font-size: 1.5rem !important;
+    font-size: 1.125rem !important;
     font-weight: 700;
   }
   
@@ -615,6 +615,8 @@
   }
   
   .hero-card__play-btn {
+    width: 36px !important;
+    height: 36px !important;
     background: rgba(212, 148, 58, 0.95) !important;
     transition: all 0.3s ease;
   }
@@ -1126,8 +1128,8 @@
   }
   
   .hero-card {
-    min-width: 420px;
-    max-width: 480px;
+    min-width: 340px;
+    max-width: 380px;
   }
   
   /* 4-column practice grid on large screens */

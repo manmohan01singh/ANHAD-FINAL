@@ -1662,7 +1662,7 @@
 
                     body,
 
-                    icon: '../assets/favicon.svg',
+                    icon: '../assets/icon-192x192.png',
 
                     badge: '../assets/badge.png',
 
@@ -2512,7 +2512,7 @@
 
             }
 
-        });
+        }, { passive: true });
 
     }
 

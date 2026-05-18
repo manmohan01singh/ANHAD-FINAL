@@ -136,55 +136,73 @@
 
   /**
    * Navigate back intelligently.
-   * Priority: 
-   *   1. If browser history exists AND we have a same-origin referrer → history.back()
-   *   2. If we have a saved referrer → navigate to it directly
-   *   3. Fallback to specified URL (resolved via ANHAD_ROOT)
-   * 
-   * @param {string} [fallbackUrl] — URL to go to if no history or direct-load
+   * Priority:
+   *   1. Use history.back() if Capacitor OR browser history depth > 1
+   *      (In Capacitor WebView, document.referrer is always empty, but
+   *       history.length IS valid and history.back() works correctly)
+   *   2. SPA navigateTo() for the fallback target (no full-page reload)
+   *   3. Direct location.href as last resort
+   *
+   * CRITICAL: ALWAYS set session flags before going to index.html so
+   * welcome-check.js NEVER redirects to the splash screen.
+   *
+   * @param {string} [fallbackUrl] — URL to go to if no history
    */
   window.anhadGoBack = function(fallbackUrl) {
-    // 1. Prioritize browser history if we have a valid referrer from our own origin
-    // This matches the reliable pattern in smart-reminders-v7.js
-    if (document.referrer && window.history.length > 1) {
-      try {
-        var ref = new URL(document.referrer);
-        if (ref.origin === window.location.origin) {
-          console.log('[SmartBack] Navigating back via history.back()');
-          history.back();
-          return;
-        }
-      } catch (e) { /* ignore invalid referrer */ }
+    // Always ensure session is marked so index.html never triggers splash
+    try {
+      sessionStorage.setItem('anhad_welcomed', '1');
+      localStorage.setItem('anhad_welcome_seen', 'true');
+      localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+    } catch (e) {}
+
+    // 1. Use history.back() when we have real browser history.
+    //    In Capacitor WebView document.referrer is always empty, so we
+    //    rely solely on history.length (which IS correct in WebView).
+    var isCapacitor = !!(window.Capacitor || window.location.protocol === 'capacitor:');
+    var hasHistory  = window.history.length > 1;
+
+    if (hasHistory) {
+      // Extra guard: if referrer is available, verify it's same-origin
+      if (document.referrer) {
+        try {
+          var ref = new URL(document.referrer);
+          if (ref.origin === window.location.origin) {
+            console.log('[SmartBack] history.back() — referrer confirmed same-origin');
+            history.back();
+            return;
+          }
+          // Different-origin referrer → don't use history.back(), go to fallback
+        } catch (e) { /* ignore */ }
+      } else if (isCapacitor) {
+        // In Capacitor, referrer is always empty but history works fine
+        console.log('[SmartBack] history.back() — Capacitor WebView, no referrer');
+        history.back();
+        return;
+      }
     }
 
-    // 2. Resolve fallback URL
-    // Default to index.html if none provided
+    // 2. Resolve fallback URL to absolute path
     var target = fallbackUrl || '../index.html';
-    
-    // Determine if we should use absolute root for "Home Hub" targets.
-    // If the target is specifically pointing up a directory to index.html, it's likely a "Back to Home" intent.
-    const isBackToHome = target === '../index.html';
-    
+    var isBackToHome = (target === '../index.html' || target.endsWith('/index.html'));
+
     if (isBackToHome) {
-      let root = window.ANHAD_ROOT;
+      var root = window.ANHAD_ROOT;
       if (!root) {
-        // Robustly resolve root from the current location
-        const path = window.location.pathname;
-        const marker = '/frontend/';
-        const idx = path.indexOf(marker);
-        if (idx !== -1) {
-          root = path.substring(0, idx + marker.length);
-        } else {
-          // Fallback to origin root if /frontend/ not found
-          root = window.location.origin + '/';
-        }
+        var path   = window.location.pathname;
+        var marker = '/frontend/';
+        var idx    = path.indexOf(marker);
+        root = (idx !== -1)
+          ? path.substring(0, idx + marker.length)
+          : window.location.origin + '/';
       }
       target = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
-      console.log('[SmartBack] Back-to-Home detected, resolved to:', target);
+      console.log('[SmartBack] Back-to-Home → resolved to:', target);
     }
 
     console.log('[SmartBack] Navigating to fallback:', target);
-    
+
+    // Prefer SPA engine (no full-page reload, no flash)
     if (window.navigateTo) {
       window.navigateTo(target);
     } else {
@@ -203,7 +221,7 @@
       '#backBtn', '#bk', '#back-btn', '#navBack',
       '.header__back', '.header-back', '.nav-back',
       '.glass-nav__back', '.glass-back-btn', '.reader-back', '.back-btn',
-      '[data-anhad-back]'
+      '[data-anhad-back]', '[data-set-session]'
     ];
 
     var wired = new Set();
@@ -224,10 +242,12 @@
           fallback = el.getAttribute('href');
         }
 
-        // Remove any existing inline onclick that might conflict, 
-        // UNLESS it's already an anhadGoBack call
-        if (el.hasAttribute('onclick') && !el.getAttribute('onclick').includes('anhadGoBack')) {
-          el.removeAttribute('onclick');
+        // Only remove conflicting onclick handlers — preserve session-flag setters
+        if (el.hasAttribute('onclick')) {
+          var oc = el.getAttribute('onclick');
+          if (!oc.includes('anhadGoBack') && !oc.includes('anhad_welcome')) {
+            el.removeAttribute('onclick');
+          }
         }
 
         if (el._anhadClickWired) return;
@@ -236,9 +256,10 @@
         el.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          
+
           // Use data-attribute fallback if present, else A-tag href, else the detected fallback
           var customFallback = el.getAttribute('data-anhad-back') || fallback;
+          // anhadGoBack itself always stamps session flags before navigating
           window.anhadGoBack(customFallback);
         });
 

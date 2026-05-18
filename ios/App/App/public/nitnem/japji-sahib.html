@@ -17,6 +17,7 @@
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="bani-style.css">
+  <link rel="stylesheet" href="../css/background-image.css">
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="../css/theme-variables.css">
@@ -30,6 +31,19 @@
 </head>
 
 <body>
+  <!-- Background Orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Ik Onkar Background Image -->
+  <div class="ikonkar-background" id="ikonkarBackground">
+    <img src="../assets/icons/bg-nitnem.jpg" 
+         alt="Background" />
+  </div>
+
   <!-- Header -->
   <header class="bani-header">
     <button class="back-btn" id="backBtn">
@@ -684,5 +698,9 @@
   <script src="bani-setting-panel.js"></script>
   <!-- Liquid Glass Effects -->
 <script src="../Hukamnama/optical-glass-physics.js"></script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 
 <head>
@@ -107,7 +107,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            color: var(--ios-blue);
+            color: var(--text-accent);
             text-decoration: none;
             font-size: 17px;
         }
@@ -625,6 +625,10 @@
             updateThemeIcon(e.detail.theme);
         });
     </script>
+    <!-- Global Engine -->
+    <script src="../../lib/capacitor-notifications-global.js"></script>
+    <script src="../../lib/anhad-widget-bridge.js"></script>
+    <script src="../../lib/anhad-audio-singleton.js"></script>
 </body>
 
 </html>

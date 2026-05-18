@@ -47,28 +47,13 @@
     <script src="../js/anhad-core.js" defer></script>
 </head>
 <body>
-    <!-- iOS Blur Orbs Background -->
-    <div class="orbs-container" id="orbsContainer">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
+    <div class="app" id="app">
+    <!-- Premium Guru Background Layer -->
+    <div class="guru-bg-container" id="guruBgContainer">
+        <img src="../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Background" class="guru-bg-img active" id="guruBgImg" />
+        <div class="guru-bg-overlay"></div>
+        <div class="guru-bg-blur" id="guruBgBlur"></div>
     </div>
-
-    <!-- Extreme Visual Effects -->
-    <div class="particles-container">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-
-    <div class="light-leak light-leak-1"></div>
-    <div class="light-leak light-leak-2"></div>
     <div class="noise-overlay"></div>
     
     <!-- iOS Navigation -->
@@ -110,6 +95,12 @@
                 <path d="M21 21l-4.35-4.35"/>
             </svg>
             <input type="text" class="search-input-thin" id="searchInput" placeholder="Search Gurbani..." autocomplete="off" spellcheck="false" readonly>
+            <button type="button" class="clear-btn-thin" id="clearBtn" title="Clear Search" style="display: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
             <button type="button" class="keyboard-btn-thin" id="keyboardBtn" title="Punjabi Keyboard">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="4" width="20" height="16" rx="2"/>
@@ -219,22 +210,36 @@
             <p id="emptyMessage">Try searching with first letters</p>
         </div>
 
-        <!-- Welcome State -->
-        <div class="welcome-state active" id="welcomeState">
-            <div class="welcome-icon">&#x262c;</div>
-            <h2 class="welcome-title">Gurbani Khoj</h2>
-            <p class="welcome-desc">Search the sacred scriptures</p>
-            <div class="welcome-tips">
-                <div class="tip">
-                    <span class="tip-icon">&#x2328;</span>
-                    <span>Sing or speak a line</span>
+        <!-- Premium Welcome Hero State -->
+        <div class="welcome-state active glass-hero" id="welcomeState">
+            <div class="hero-content">
+                <div class="welcome-icon-wrapper">
+                    <div class="welcome-icon glass-icon">&#x262c;</div>
                 </div>
-                <div class="tip">
-                    <span class="tip-icon">&#x2328;</span>
-                    <span>Type first letters</span>
+                <h2 class="welcome-title">Gurbani Khoj</h2>
+                <p class="welcome-desc">Search the sacred scriptures with pure devotion</p>
+                
+                <div class="hero-tips-container">
+                    <div class="tip-card glass-card">
+                        <div class="tip-icon-wrapper">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            </svg>
+                        </div>
+                        <span>Sing or speak</span>
+                    </div>
+                    <div class="tip-card glass-card">
+                        <div class="tip-icon-wrapper">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M6 16h12"/>
+                            </svg>
+                        </div>
+                        <span>Type first letters</span>
+                    </div>
                 </div>
             </div>
-            
         </div>
     </main>
 

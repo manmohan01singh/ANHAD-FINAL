@@ -25,32 +25,39 @@
     
     
     <script>
+        // Module Version Check (Lightweight)
         (function() {
-            const APP_VERSION = '1.0.1'; // Increment this on every deploy
-            const storedVersion = localStorage.getItem('anhad_app_version');
+            const MOD_VERSION = '1.0.1';
+            const stored = localStorage.getItem('anhad_nitnem_version');
+            if (stored !== MOD_VERSION) {
+                localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
+            }
+        })();
+
+        // Theme Initialization (Instant)
+        (function() {
+            const theme = localStorage.getItem('anhad_theme') || 'light';
+            let effectiveTheme = theme;
+            if (theme === 'auto') {
+                const hour = new Date().getHours();
+                effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', effectiveTheme);
+            document.documentElement.style.colorScheme = effectiveTheme;
+            if (effectiveTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F8F9FA';
+            document.documentElement.style.backgroundColor = bg;
             
-            if (storedVersion !== APP_VERSION) {
-                localStorage.setItem('anhad_app_version', APP_VERSION);
-                // Force reload from server, not cache
-                if (storedVersion) {
-                    window.location.reload(true);
+            // Sync to body
+            const observer = new MutationObserver(() => {
+                if (document.body) {
+                    if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+                    observer.disconnect();
                 }
-            }
-            
-            // Service Worker registration for better cache control
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // New version available - force reload
-                                window.location.reload();
-                            }
-                        });
-                    });
-                });
-            }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
         })();
     </script>
     
@@ -168,10 +175,21 @@
             min-height: 100vh;
         }
 
-        /* Dark Mode Body Override */
+        /* Dark Mode Overrides */
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --ios-blue: #0A84FF;
+            --ios-orange: #FF9F0A;
+            --sacred-gold: #D4AF37;
+            --glass-bg: rgba(28, 28, 30, 0.85);
+            --separator: rgba(255, 255, 255, 0.15);
+        }
+        
         [data-theme="dark"] body {
-            background: #000000;
-            color: #FFFFFF;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -281,7 +299,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            padding: calc(var(--safe-top) + 8px) 20px 12px;
+            padding: calc(var(--safe-top) + 6px) 16px 8px;
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
@@ -292,19 +310,19 @@
         .back-btn {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             color: var(--ios-blue);
             text-decoration: none;
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 400;
             justify-self: start;
         }
         
-        .back-btn svg { width: 12px; height: 20px; }
+        .back-btn svg { width: 10px; height: 18px; }
         
         .header-title {
             font-family: var(--font-hastlikhat);
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
             background: linear-gradient(135deg, var(--sacred-gold), var(--sacred-saffron));
             -webkit-background-clip: text;
@@ -313,8 +331,8 @@
         }
         
         .theme-toggle {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -322,7 +340,7 @@
             background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
             border: 3px solid rgba(255, 255, 255, 0.7);
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             box-shadow:
                 8px 8px 25px rgba(60, 60, 70, 0.22),
@@ -351,22 +369,22 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .hero {
-            padding: 20px 20px 16px;
+            padding: 12px 16px 10px;
             text-align: center;
         }
         
         .hero-ikonkar {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 12px;
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 100px rgba(255, 165, 0, 0.3));
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 8px;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.4)) drop-shadow(0 0 70px rgba(255, 165, 0, 0.3));
             border-radius: 50%;
-            padding: 10px;
+            padding: 8px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #D4AF37 60%, #B8860B 100%);
             backdrop-filter: blur(10px);
             border: 3px solid rgba(255, 215, 0, 0.6);
             box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.2),
+                0 8px 30px rgba(0, 0, 0, 0.2),
                 inset 0 2px 6px rgba(255, 255, 255, 0.2),
                 inset 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -386,27 +404,27 @@
         
         .hero-title {
             font-family: var(--font-hastlikhat);
-            font-size: 36px;
+            font-size: 28px;
             text-align: center;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #D4AF37 50%, #B8860B 75%, #FFD700 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
         }
         
         .hero-subtitle {
-            font-size: 15px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .hero-greeting {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
+            gap: 8px;
+            padding: 8px 18px;
             background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 100px;
@@ -417,11 +435,11 @@
             transform: translateY(0);
         }
         
-        .greeting-icon { font-size: 22px; }
+        .greeting-icon { font-size: 18px; }
         
         .greeting-text {
             font-family: var(--font-gurmukhi);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
         }
         
@@ -430,20 +448,20 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .search-section {
-            padding: 0 20px 16px;
+            padding: 0 16px 12px;
         }
         
         .search-trigger {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            padding: 14px 18px;
+            padding: 10px 14px;
             background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
             border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 22px;
+            border-radius: 18px;
             color: var(--text-tertiary);
-            font-size: 17px;
+            font-size: 15px;
             cursor: pointer;
             box-shadow:
                 0 4px 16px rgba(60, 60, 70, 0.1),
@@ -475,8 +493,8 @@
         }
         
         .search-trigger svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             opacity: 0.5;
         }
         
@@ -486,23 +504,23 @@
         
         .main { padding: 0 16px; }
         
-        .section { margin-bottom: 20px; }
+        .section { margin-bottom: 16px; }
         
         .section-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 12px;
             padding-left: 4px;
         }
         
         .section-title h2 {
-            font-size: 22px;
+            font-size: 19px;
             font-weight: 700;
             letter-spacing: -0.3px;
         }
         
-        .section-icon { font-size: 24px; }
+        .section-icon { font-size: 20px; }
         
         /* ═══════════════════════════════════════════════════════════════
            STAGGERED ANIMATIONS - DISABLED for performance
@@ -522,7 +540,7 @@
         .quick-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
         
         .quick-card {
@@ -531,10 +549,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px 16px;
+            padding: 18px 12px;
             background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
             border: 2px solid rgba(255, 255, 255, 0.9);
-            border-radius: 28px;
+            border-radius: 22px;
             text-decoration: none;
             color: inherit;
             text-align: center;
@@ -559,10 +577,10 @@
         
         .quick-card-glow {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            filter: blur(40px);
+            filter: blur(30px);
             opacity: 0.4;
             top: 10%;
             right: 10%;
@@ -574,20 +592,20 @@
         .quick-card:nth-child(4) .quick-card-glow { background: var(--ios-teal); }
         
         .quick-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
+            font-size: 32px;
+            margin-bottom: 8px;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
         }
         
         .quick-name {
             font-family: var(--font-gurmukhi);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         
         .quick-english {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
         }
         
@@ -598,18 +616,18 @@
         .categories-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         
         .category-card {
             position: relative;
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 18px 16px;
+            gap: 12px;
+            padding: 14px 14px;
             background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
             border: 3px solid rgba(255, 255, 255, 0.7);
-            border-radius: 26px;
+            border-radius: 20px;
             text-decoration: none;
             color: inherit;
             overflow: hidden;
@@ -649,10 +667,10 @@
         
         .category-glow {
             position: absolute;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            filter: blur(50px);
+            filter: blur(40px);
             opacity: 0.3;
             right: -30px;
             top: 50%;
@@ -668,26 +686,26 @@
         .category-card.sarbloh .category-glow { background: var(--ios-indigo); }
         
         .category-icon {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
+            border-radius: 14px;
             flex-shrink: 0;
             overflow: hidden;
         }
         
         .category-icon img {
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             object-fit: contain;
         }
         
         .category-icon svg {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             stroke: var(--sacred-gold);
             fill: none;
             stroke-width: 1.5;
@@ -707,18 +725,18 @@
         
         .category-title .gurmukhi {
             font-family: var(--font-gurmukhi);
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
         }
         
         .category-title .english {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
             font-weight: 500;
         }
         
         .category-desc {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-tertiary);
             line-height: 1.4;
         }
@@ -726,18 +744,18 @@
         .category-badges {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 6px;
+            margin-top: 6px;
         }
         
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 4px 10px;
+            padding: 3px 8px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 100px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.3px;
@@ -749,8 +767,8 @@
         }
         
         .category-arrow {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             color: var(--text-tertiary);
             transition: transform 0.3s;
         }
@@ -762,7 +780,7 @@
         ═══════════════════════════════════════════════════════════════ */
         
         .footer {
-            padding: 12px 20px 8px;
+            padding: 10px 16px 8px;
             text-align: center;
         }
         
@@ -770,33 +788,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 10px;
         }
         
         .footer-divider .line {
             flex: 1;
-            max-width: 60px;
+            max-width: 50px;
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--separator), transparent);
         }
         
         .footer-divider .khanda {
-            font-size: 28px;
+            font-size: 24px;
             color: var(--sacred-gold);
             filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
         }
         
         .footer-text {
             font-family: var(--font-gurmukhi);
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-tertiary);
             line-height: 1.6;
         }
         
         .footer-version {
-            margin-top: 8px;
-            font-size: 12px;
+            margin-top: 6px;
+            font-size: 11px;
             color: var(--text-tertiary);
             opacity: 0.4;
         }
@@ -1026,11 +1044,25 @@
             background: #2C2C2E !important;
         }
     </style>
+    <link rel="stylesheet" href="../css/background-image.css">
 </head>
 
 <body>
-    <!-- Skeleton Loading -->
-    <div class="skeleton-container" id="skeletonContainer">
+    <!-- Background Orbs -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Ik Onkar Background Image -->
+    <div class="ikonkar-background" id="ikonkarBackground">
+        <img src="../assets/icons/bg-nitnem.jpg" 
+             alt="Background" />
+    </div>
+
+    <!-- Skeleton Loading — hidden immediately, only shown during real page loading -->
+    <div class="skeleton-container" id="skeletonContainer" style="display:none">
         <div class="skeleton skeleton-header"></div>
         <div class="skeleton skeleton-hero"></div>
         <div class="skeleton skeleton-search"></div>
@@ -1062,21 +1094,22 @@
         
         <!-- Header -->
         <header class="header">
-            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back">
+            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" data-anhad-back="../index.html"
+               onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now()+'');}catch(e){}">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
                 Home
             </a>
-            <span class="header-title">ਸੱਚੀ ਬਾਣੀ</span>
+            <span class="header-title">ਨਿਤਨੇਮ ਗੁਟਕਾ</span>
             <button class="theme-toggle" id="themeToggle">🌙</button>
         </header>
         
         <!-- Hero -->
         <section class="hero stagger-item">
             <div class="hero-greeting" id="greeting">
-                <span class="greeting-icon">☀️</span>
-                <span class="greeting-text">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ ਜੀ</span>
+                <span class="greeting-icon">🙏</span>
+                <span class="greeting-text">ਸਤਿਨਾਮ ਵਾਹਿਗੁਰੂ</span>
             </div>
         </section>
         
@@ -1121,7 +1154,7 @@
                     <a href="reader.html?id=31" class="quick-card stagger-item">
                         <div class="quick-card-glow"></div>
                         <span class="quick-icon">🕊️</span>
-                        <span class="quick-name">ਸੁਖਮਨੀ</span>
+                        <span class="quick-name">ਸੁਖਮਨੀ ਸਾਹਿਬ</span>
                         <span class="quick-english">Sukhmani Sahib</span>
                     </a>
                 </div>
@@ -1267,7 +1300,7 @@
     
     <!-- Floating Tab Bar -->
     <nav class="tab-bar">
-        <a href="../index.html" class="tab-item">
+        <a href="../index.html" class="tab-item" onclick="goHome(event)">
             <span class="tab-icon">🏠</span>
             <span class="tab-label">Home</span>
         </a>
@@ -1324,9 +1357,8 @@
         // SKELETON LOADING
         // ═══════════════════════════════════════════════════════════════
         
-        setTimeout(() => {
-            document.getElementById('skeletonContainer').classList.add('hidden');
-        }, 600);
+        // Hide skeleton immediately — content is static HTML, no need to wait
+        document.getElementById('skeletonContainer').classList.add('hidden');
         
         // ═══════════════════════════════════════════════════════════════
         // THEME TOGGLE - Using Global AnhadTheme API
@@ -1427,5 +1459,35 @@
             searchResults.innerHTML = '<p class="search-hint">Type to search for banis...</p>';
         });
     </script>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // GO HOME — Set ALL session flags so welcome-check.js NEVER
+        // redirects to the splash/welcome screen on any navigation path
+        // ═══════════════════════════════════════════════════════════════
+        function goHome(e) {
+            e.preventDefault();
+            // Mark session as active — prevents welcome-check.js splash redirect
+            try {
+                sessionStorage.setItem('anhad_welcomed', '1');
+                sessionStorage.setItem('anhad_session_active', 'true');
+                localStorage.setItem('anhad_welcome_seen', 'true');
+                localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+            } catch (_) {}
+
+            // USE STANDARDIZED NAVIGATION ENGINE (SPA — no full-page reload)
+            if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else if (window.navigateTo) {
+                window.navigateTo('../index.html');
+            } else {
+                window.location.href = '../index.html';
+            }
+        }
+    </script>
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
 </body>
 </html>

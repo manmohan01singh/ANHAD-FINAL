@@ -28,8 +28,8 @@
     const CONFIG = {
         // Notification Settings
         APP_NAME: 'ANHAD',
-        APP_ICON: '/assets/apple-touch-icon.png',
-        APP_BADGE: '/assets/favicon-32x32.png',
+        APP_ICON: '/assets/icon-192x192.png',
+        APP_BADGE: '/assets/icon-72x72.png',
 
         // Storage Keys
         NOTIFICATION_PERMISSION_KEY: 'anhad_notification_permission',

@@ -214,17 +214,21 @@ class OptimizedImageLoader {
     observeNewImages() {
         if (!('MutationObserver' in window)) return;
 
-        this.mutationObserver = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-                mutation.addedNodes.forEach(node => {
-                    if (node.nodeType === 1) { // Element node
-                        if (node.tagName === 'IMG' && (node.dataset.src || node.dataset.optimize)) {
-                            this.setupImage(node);
-                        }
-                        // Check children
-                        const images = node.querySelectorAll?.('img[data-src], img[data-optimize]');
-                        images?.forEach(img => this.setupImage(img));
-                    }
+        // BUG-06 FIX: Throttle with requestAnimationFrame so rapid DOM mutations
+        // (e.g. CSS animation class toggles) don't fire querySelectorAll 30-60x/sec.
+        let pendingCheck = false;
+        this.mutationObserver = new MutationObserver(() => {
+            if (pendingCheck) return; // Already scheduled for this frame
+            pendingCheck = true;
+            requestAnimationFrame(() => {
+                pendingCheck = false;
+                // Only select images not yet processed (data-observed prevents re-scan)
+                const images = document.querySelectorAll(
+                    'img[data-src]:not([data-observed]), img[data-optimize]:not([data-observed])'
+                );
+                images.forEach(img => {
+                    img.setAttribute('data-observed', '1');
+                    this.setupImage(img);
                 });
             });
         });

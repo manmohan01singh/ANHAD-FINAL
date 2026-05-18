@@ -103,56 +103,17 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.15) 0%, 
-                rgba(0,0,0,0) 50%, 
-                rgba(var(--hukam-gold-rgb), 0.02) 80%,
-                var(--ios-bg) 100%);
+                rgba(0,0,0,0.25) 0%, 
+                rgba(0,0,0,0) 100%);
             z-index: 2;
         }
 
-        /* Hero Play Button */
-        .hero-play-container {
-            position: absolute;
-            bottom: 30px;
-            right: 25px;
-            z-index: 10;
-        }
 
-        .hero-play-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFD700;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0;
-        }
-
-        .hero-play-btn:active {
-            transform: scale(0.92);
-            background: rgba(255, 215, 0, 0.2);
-        }
-
-        .hero-play-btn svg {
-            width: 28px;
-            height: 28px;
-            fill: currentColor;
-            margin-left: 3px; /* Optical centering for play triangle */
-        }
 
         [data-theme="light"] .hero-overlay {
             background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.05) 0%, 
-                rgba(0,0,0,0) 60%, 
-                var(--ios-bg) 100%);
+                rgba(0,0,0,0.1) 0%, 
+                rgba(0,0,0,0) 100%);
         }
 
         /* ═══════════════════════════════════════════════════════════════
@@ -724,7 +685,7 @@
 
     <!-- Header -->
     <header class="app-header" id="header">
-        <button class="header-btn" id="backBtn" onclick="if(window.anhadGoBack) window.anhadGoBack('../SehajPaath/sehaj-paath.html'); else window.location.href='../SehajPaath/sehaj-paath.html'">
+        <button class="header-btn" id="backBtn" onclick="if(window.anhadGoBack) window.anhadGoBack('../index.html'); else window.location.href='../index.html'">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M15 18l-6-6 6-6"/>
             </svg>
@@ -747,17 +708,11 @@
                 <img id="guruImage" src="../guruimages/gurugranthsahebji.jpeg" class="hero-image" alt="Guru Image">
             </div>
             <div class="hero-overlay"></div>
-            
-            <!-- Floating Play Button -->
-            <div class="hero-play-container">
-                <button class="hero-play-btn" id="heroPlayBtn" aria-label="Play Hukamnama">
-                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </button>
-            </div>
         </section>
 
         <!-- Content Area -->
         <div class="content-container">
+
             
             <!-- Meta Strip -->
             <div class="meta-strip">

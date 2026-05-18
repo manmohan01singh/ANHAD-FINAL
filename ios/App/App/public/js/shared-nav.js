@@ -20,6 +20,8 @@
   else if (path.includes('/favorites/')) activeTab = 'favorites';
   else if (path.includes('/profile/') || path.includes('/dashboard/')) activeTab = 'profile';
 
+  const isReader = path.includes('/reader.html');
+
   // Emoji nav items — matching index.html nav bar
   const navItems = [
     { id: 'home', emoji: '🏠', label: 'Home', href: `${basePath}${isRoot ? '#' : 'index.html'}` },
@@ -30,7 +32,7 @@
 
   // Build nav HTML
   const navHTML = `
-    <nav class="nav-pill shared-nav-pill" id="main-nav" aria-label="Main Navigation">
+    <nav class="nav-pill shared-nav-pill ${isReader ? 'hidden' : ''}" id="main-nav" aria-label="Main Navigation">
       ${navItems.map(item => `
         <a href="${item.href}" class="nav-item ${activeTab === item.id ? 'active' : ''}" data-tab="${item.id}" aria-label="${item.label}"${activeTab === item.id ? ' aria-current="page"' : ''}>
           <span class="nav-emoji" role="img" aria-label="${item.label}">${item.emoji}</span>
@@ -179,22 +181,32 @@
 
   // Wait for body to be available
   function inject() {
-    if (document.body && document.head) {
-      document.head.insertAdjacentHTML('beforeend', `<style>${navStyles}</style>`);
-      document.body.insertAdjacentHTML('beforeend', navHTML);
+    if (!document.body || !document.head) return;
+
+    // PREVENT DUPLICATES: If it already exists, just update the active tab
+    const existingNav = document.getElementById('main-nav');
+    if (existingNav) {
+      existingNav.querySelectorAll('.nav-item').forEach(item => {
+        const tab = item.getAttribute('data-tab');
+        if (tab === activeTab) {
+          item.classList.add('active');
+          item.setAttribute('aria-current', 'page');
+        } else {
+          item.classList.remove('active');
+          item.removeAttribute('aria-current');
+        }
+      });
+      return;
     }
+
+    document.head.insertAdjacentHTML('beforeend', `<style id="anhad-nav-styles">${navStyles}</style>`);
+    document.body.insertAdjacentHTML('beforeend', navHTML);
   }
 
-  if (document.body && document.head) {
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
     inject();
   } else {
-    const observer = new MutationObserver((mutations, obs) => {
-      if (document.body && document.head) {
-        inject();
-        obs.disconnect();
-      }
-    });
-    observer.observe(document.documentElement, { childList: true });
+    document.addEventListener('DOMContentLoaded', inject);
   }
 
 })();

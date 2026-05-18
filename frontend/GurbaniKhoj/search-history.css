@@ -500,26 +500,76 @@ html, body {
 }
 
 .confirm-delete {
-    color: var(--red);
+    color: var(--red) !important;
     font-weight: 600;
-    border-radius: 0 0 14px 14px;
+    border-radius: 0 0 20px 20px !important;
 }
 
 .confirm-cancel {
-    color: var(--accent);
+    color: var(--accent) !important;
     font-weight: 600;
-    border-radius: 14px;
+    border-radius: 20px !important;
     margin-top: 8px;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+[data-theme="dark"] .confirm-cancel {
+    background: rgba(36, 36, 40, 0.9) !important;
 }
 
 .confirm-btn:active {
     opacity: 0.6;
 }
 
+.confirm-backdrop {
+    background: rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.confirm-text {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(30px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(190%) !important;
+    color: var(--text) !important;
+    border-radius: 20px 20px 0 0 !important;
+}
+
+.confirm-btn {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(30px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(190%) !important;
+    color: var(--text) !important;
+}
+
+[data-theme="dark"] .confirm-text,
+[data-theme="dark"] .confirm-btn {
+    background: rgba(28, 28, 30, 0.85) !important;
+    color: #ffffff !important;
+}
+
+.section-list {
+    background: rgba(255, 255, 255, 0.45) !important;
+    backdrop-filter: blur(30px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 20px !important;
+    margin: 0 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .section-list {
+    background: rgba(24, 24, 26, 0.45) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    TOAST
    ═══════════════════════════════════════════════════════════════════════════════ */
-
+   
 .toast {
     position: fixed;
     bottom: calc(40px + var(--safe-bottom));
