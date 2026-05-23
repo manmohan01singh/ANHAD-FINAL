@@ -868,11 +868,37 @@
         setTimeout(() => { if (audio && audio.volume < 0.1) audio.volume = 0.8; }, 5000);
       } else {
         performSeek(false);
+        
+        // FADE-IN FIX: Smooth transition when starting a new track or playing from beginning
+        const isFromBeginning = seekPos <= 2;
+        if (isFromBeginning) {
+            audio.volume = 0;
+        } else {
+            audio.volume = 0.8;
+        }
+
         audio.play().then(() => {
           isPlaying = true;
           isLoading = false;
           emit('statechange', getPublicState());
           console.log(`[AnhadAudio] ▶️ Playing from ${Math.floor(audio.currentTime)}s (${reason})`);
+
+          if (isFromBeginning) {
+              const targetVol = 0.8;
+              const fadeMs = 2000;
+              const steps = 20;
+              let step = 0;
+              const interval = setInterval(() => {
+                  step++;
+                  if (audio) {
+                      audio.volume = targetVol * (step / steps);
+                  }
+                  if (step >= steps) {
+                      clearInterval(interval);
+                      if (audio) audio.volume = targetVol;
+                  }
+              }, fadeMs / steps);
+          }
         }).catch(e => {
           console.warn('[AnhadAudio] ❌ Play failed:', e.message);
           isPlaying = false;
@@ -1555,8 +1581,24 @@
       const now = Date.now();
       if (now - lastPlaylistEndedAt < 3000) return; // ended handler already handled this
       lastPlaylistEndedAt = now;
-      console.log('[AnhadAudio] 🕐 Watchdog: near end of track, advancing...');
-      advanceToNextTrack();
+      console.log('[AnhadAudio] 🕐 Watchdog: near end of track, advancing with fade-out...');
+      
+      // FADE OUT OVER 3 SECONDS BEFORE ADVANCING
+      const fadeOutMs = 3000;
+      const steps = 15;
+      let step = 0;
+      const startVol = audio.volume;
+      const interval = setInterval(() => {
+          step++;
+          if (audio) {
+              audio.volume = Math.max(0, startVol * (1 - step / steps));
+          }
+          if (step >= steps) {
+              clearInterval(interval);
+              advanceToNextTrack();
+          }
+      }, fadeOutMs / steps);
+      
       return;
     }
 

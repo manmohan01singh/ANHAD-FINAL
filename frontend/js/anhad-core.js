@@ -14,10 +14,10 @@
         const marker = '/frontend/';
         const idx = path.indexOf(marker);
         if (idx !== -1) {
-            window.ANHAD_ROOT = path.substring(0, idx + marker.length);
+            window.ANHAD_ROOT = window.location.origin + path.substring(0, idx + marker.length);
         } else {
             // Fallback for local development
-            window.ANHAD_ROOT = '/';
+            window.ANHAD_ROOT = window.location.origin + '/';
         }
         console.log('[ANHAD] Global Root Resolved:', window.ANHAD_ROOT);
     }

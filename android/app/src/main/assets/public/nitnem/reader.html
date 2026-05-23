@@ -70,7 +70,7 @@
 
         <!-- iOS Navigation Bar -->
         <header class="reader-header">
-            <a href="index.html" class="reader-back">
+            <a href="index.html" class="reader-back" data-anhad-back="index.html">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -105,8 +105,8 @@
         <!-- Display Toggles (Hide on scroll) -->
         <nav class="reader-toggles">
             <button class="toggle-btn active" id="toggleGurmukhi">ਗੁਰਮੁਖੀ</button>
-            <button class="toggle-btn active" id="toggleRoman">Roman</button>
-            <button class="toggle-btn active" id="toggleEnglish">English</button>
+            <button class="toggle-btn" id="toggleRoman">Roman</button>
+            <button class="toggle-btn" id="toggleEnglish">English</button>
             <button class="toggle-btn" id="togglePunjabi">ਪੰਜਾਬੀ</button>
         </nav>
 
@@ -146,7 +146,7 @@
                 
                 <div class="end-actions">
                     <button class="end-btn primary" id="readAgainBtn">Read Again</button>
-                    <a href="index.html" class="end-btn secondary">Browse Banis</a>
+                    <a href="../index.html" class="end-btn secondary">Browse Banis</a>
                 </div>
             </div>
         </main>
@@ -242,6 +242,17 @@
                             <span class="setting-desc">Classic paper reading feel</span>
                         </div>
                         <button class="ios-toggle" id="paperBackgroundToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Show Visraams (Pauses)</span>
+                            <span class="setting-desc">Enable highlight to show where to pause</span>
+                        </div>
+                        <button class="ios-toggle" id="showVisraamsToggle" aria-checked="false">
                             <span class="toggle-track"></span>
                             <span class="toggle-thumb"></span>
                         </button>
@@ -345,13 +356,56 @@
                     <div class="setting-row slider-row">
                         <div class="setting-info">
                             <span class="setting-label">Ik Onkar Background</span>
-                            <span class="setting-desc">Adjust transparency (default: 10% light, 30% dark)</span>
+                            <span class="setting-desc">Adjust transparency (default: 0% off)</span>
                         </div>
                         <div class="slider-container">
                             <input type="range" class="transparency-slider" id="ikonkarTransparency" 
-                                   min="0" max="100" value="10" step="5">
-                            <span class="slider-value" id="transparencyValue">10%</span>
+                                   min="0" max="100" value="0" step="5">
+                            <span class="slider-value" id="transparencyValue">0%</span>
                         </div>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <!-- Light Orbs Background Opacity -->
+                    <div class="setting-row slider-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Light Orbs Background</span>
+                            <span class="setting-desc">Adjust orbs visibility (default: 0% off)</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" class="transparency-slider" id="orbsOpacitySlider" 
+                                   min="0" max="100" value="0" step="5">
+                            <span class="slider-value" id="orbsOpacityValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLORS -->
+            <section class="setting-section">
+                <h3 class="setting-section-title">Colors</h3>
+                <div class="setting-card">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Gurbani Text Color</span>
+                            <span class="setting-desc">Sacred Gurmukhi text color</span>
+                        </div>
+                        <button class="color-circle" id="gurmukhiColor" aria-label="Change Gurbani Color"></button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Translation Text Color</span>
+                            <span class="setting-desc">English / Punjabi translation color</span>
+                        </div>
+                        <button class="color-circle" id="translationColor" aria-label="Change Translation Color"></button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <span class="setting-label">Transliteration Text Color</span>
+                            <span class="setting-desc">Roman/English transliterated color</span>
+                        </div>
+                        <button class="color-circle" id="translitColor" aria-label="Change Transliteration Color"></button>
                     </div>
                 </div>
             </section>

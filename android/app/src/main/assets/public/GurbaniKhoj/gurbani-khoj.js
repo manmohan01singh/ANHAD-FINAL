@@ -46,6 +46,7 @@ const DOM = {
     searchBar: $('#searchBar'),
     keyboardBtn: $('#keyboardBtn'),
     micBtn: $('#micBtn'),
+    clearBtn: $('#clearBtn'),
     voicePanel: $('#voicePanel'),
     voiceCancel: $('#voiceCancel'),
     voiceStatus: $('#voiceStatus'),
@@ -77,7 +78,24 @@ const DOM = {
     toastText: $('#toastText'),
 
     // Live Kirtan Tracker
-    liveKirtanCard: $('#liveKirtanCard')
+    liveKirtanCard: $('#liveKirtanCard'),
+
+    // Background Layers
+    guruBgContainer: $('#guruBgContainer'),
+    guruBgImg1: $('#guruBgImg1'),
+    guruBgImg2: $('#guruBgImg2'),
+
+    // New Navigation and Screen Controls
+    backBtn: $('#backBtn'),
+    menuBtn: $('#menuBtn'),
+    notificationBtn: $('#notificationBtn'),
+    filterBtn: $('#filterBtn'),
+    tabHome: $('#tabHome'),
+    tabSearch: $('#tabSearch'),
+    tabBookmarks: $('#tabBookmarks'),
+    tabMore: $('#tabMore'),
+    actionBarMic: $('#actionBarMic'),
+    actionBarKeyboard: $('#actionBarKeyboard')
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -190,6 +208,81 @@ function extractFirstLetters(text) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// BACKGROUND MANAGER & SEARCH SYNC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const BackgroundManager = {
+    images: [
+        'gurunanakdevsahebji.jpeg',
+        'gurugranthsahebji.jpeg',
+        'gurugobindsinghsahebji.jpeg',
+        'guruangaddevsahebji.jpeg',
+        'guruamardasji.jpeg',
+        'gururamdassahebji.jpeg',
+        'guruarjanddevsahebji.jpeg',
+        'guruhargobindsahebji.jpeg',
+        'guruharraisahebji.jpeg',
+        'guruharkrishansahebji.jpeg',
+        'gurutegbahadursahebji.jpeg'
+    ],
+    currentIndex: 0,
+    timer: null,
+
+    init() {
+        // Start background image cycling
+        this.start();
+        this.updateBlurState();
+    },
+
+    start() {
+        if (this.timer) clearInterval(this.timer);
+        this.timer = setInterval(() => {
+            this.next();
+        }, 15000); // 15 seconds cycle for richer active feel
+    },
+
+    stop() {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+    },
+
+    next() {
+        if (!DOM.guruBgImg1 || !DOM.guruBgImg2) return;
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+        const newImageSrc = `../guruimages/${this.images[this.currentIndex]}`;
+
+        const activeImg = DOM.guruBgImg1.classList.contains('active') ? DOM.guruBgImg1 : DOM.guruBgImg2;
+        const inactiveImg = activeImg === DOM.guruBgImg1 ? DOM.guruBgImg2 : DOM.guruBgImg1;
+
+        inactiveImg.src = newImageSrc;
+        inactiveImg.onload = () => {
+            inactiveImg.classList.add('active');
+            activeImg.classList.remove('active');
+        };
+    },
+
+    updateBlurState() {
+        const hasText = !!(DOM.searchInput && DOM.searchInput.value.trim());
+        if (DOM.guruBgContainer) {
+            DOM.guruBgContainer.classList.toggle('blurred', hasText);
+        }
+    }
+};
+
+function updateSearchInput(value) {
+    if (DOM.searchInput) {
+        DOM.searchInput.value = value;
+    }
+    State.keyboardText = value;
+    if (DOM.clearBtn) {
+        DOM.clearBtn.style.display = value.trim() ? 'block' : 'none';
+    }
+    BackgroundManager.updateBlurState();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // THEME
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -234,6 +327,137 @@ const Theme = {
         }
     }
 };
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HISTORY TRACKER (RECENT SHABAD HISTORY)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const HistoryTracker = {
+    addShabad(shabadId, gurmukhiText, angText) {
+        try {
+            const raw = localStorage.getItem('gurbani_shabad_history');
+            let history = raw ? JSON.parse(raw) : [];
+            
+            // Remove if already exists
+            history = history.filter(h => String(h.id) !== String(shabadId));
+            
+            // Add to front
+            history.unshift({
+                id: shabadId,
+                ang: parseInt(angText) || angText || '',
+                firstLine: gurmukhiText || '',
+                timestamp: Date.now()
+            });
+            
+            // Keep only last 20
+            history = history.slice(0, 20);
+            
+            localStorage.setItem('gurbani_shabad_history', JSON.stringify(history));
+        } catch (e) {
+            console.error('Error saving shabad history:', e);
+        }
+    }
+};
+
+const WelcomeScreen = {
+    init() {
+        this.renderRecent();
+        this.renderBookmarks();
+    },
+
+    renderRecent() {
+        const container = document.getElementById('welcomeRecentList');
+        const section = document.getElementById('welcomeRecentSection');
+        if (!container || !section) return;
+
+        try {
+            const raw = localStorage.getItem('gurbani_shabad_history');
+            const history = raw ? JSON.parse(raw) : [];
+
+            if (history.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = history.slice(0, 10).map(item => {
+                const angText = item.ang ? `Ang ${item.ang}` : '';
+                return `
+                    <div class="scroll-card" data-shabad="${item.id}">
+                        <div class="scroll-card-header">
+                            <span class="scroll-card-title">Recent Shabad</span>
+                            <span class="scroll-card-source">${angText}</span>
+                        </div>
+                        <div class="scroll-card-text">${item.firstLine || 'Click to view'}</div>
+                        <div class="scroll-card-footer">
+                            <span>Open Shabad</span>
+                            <span style="font-size: 14px;">›</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Bind click events
+            container.querySelectorAll('.scroll-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    haptic();
+                    const shabadId = card.dataset.shabad;
+                    window.location.href = `shabad-reader.html?shabad=${shabadId}`;
+                });
+            });
+        } catch (e) {
+            console.error('Error rendering recent on welcome screen:', e);
+        }
+    },
+
+    renderBookmarks() {
+        const container = document.getElementById('welcomeBookmarksList');
+        const section = document.getElementById('welcomeBookmarksSection');
+        if (!container || !section) return;
+
+        try {
+            const raw = localStorage.getItem('gurbani_favorite_shabads');
+            const favorites = raw ? JSON.parse(raw) : [];
+
+            if (favorites.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = favorites.slice(0, 10).map(item => {
+                const angText = item.ang ? `Ang ${item.ang}` : '';
+                const source = item.source || 'Gurbani';
+                return `
+                    <div class="scroll-card" data-shabad="${item.shabadId || item.id}">
+                        <div class="scroll-card-header">
+                            <span class="scroll-card-title" style="color: #c8a96a;">Saved Shabad</span>
+                            <span class="scroll-card-source">${source}</span>
+                        </div>
+                        <div class="scroll-card-text">${item.gurmukhi || 'Click to view'}</div>
+                        <div class="scroll-card-footer">
+                            <span>${angText}</span>
+                            <span style="font-size: 14px; color: #ff2d55;">❤️</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Bind click events
+            container.querySelectorAll('.scroll-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    haptic();
+                    const shabadId = card.dataset.shabad;
+                    window.location.href = `shabad-reader.html?shabad=${shabadId}`;
+                });
+            });
+        } catch (e) {
+            console.error('Error rendering bookmarks on welcome screen:', e);
+        }
+    }
+};
+
+window.WelcomeScreen = WelcomeScreen;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FAVORITES
@@ -428,27 +652,36 @@ function hideAllViews() {
     DOM.loadingState?.classList.remove('active');
     DOM.emptyState?.classList.remove('active');
     DOM.welcomeState?.classList.remove('active');
+    document.body.classList.remove('has-results');
 }
 
 function showLoading() {
     hideAllViews();
     DOM.loadingState?.classList.add('active');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 function showEmpty(message = 'Try searching with first letters') {
     hideAllViews();
     if (DOM.emptyMessage) DOM.emptyMessage.textContent = message;
     DOM.emptyState?.classList.add('active');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 function showWelcome() {
     hideAllViews();
     DOM.welcomeState?.classList.add('active');
+    DOM.guruBgContainer?.classList.remove('blurred');
+    if (window.WelcomeScreen) {
+        WelcomeScreen.init();
+    }
 }
 
 function showResults() {
     hideAllViews();
     DOM.resultsView?.classList.add('active');
+    document.body.classList.add('has-results');
+    DOM.guruBgContainer?.classList.add('blurred');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -459,6 +692,7 @@ async function performSearch(append = false) {
     const query = DOM.searchInput.value.trim();
 
     if (!query) {
+        sessionStorage.removeItem('gurbaniKhoj_state');
         showWelcome();
         return;
     }
@@ -547,8 +781,6 @@ async function performSearch(append = false) {
 
         displayResults(filteredResults, append);
         updateResultsCount(filteredResults.length, State.allResults.length);
-
-        DOM.loadMoreBtn.style.display = State.page < State.totalPages ? 'block' : 'none';
         showResults();
 
         if (fromCache) {
@@ -584,12 +816,12 @@ function filterResultsBySource(results, sourceFilter) {
 }
 
 function updateResultsCount(filtered, total) {
-    if (State.sourceFilter === 'all') {
-        DOM.resultsCount.textContent = `${total} results`;
-    } else {
-        const sourceName = GURBANI_SOURCES[State.sourceFilter]?.shortName || State.sourceFilter;
-        DOM.resultsCount.textContent = `${filtered} / ${total} results (${sourceName})`;
-    }
+    const sourceName = State.sourceFilter === 'all'
+        ? 'All Sources'
+        : (GURBANI_SOURCES[State.sourceFilter]?.name || State.sourceFilter);
+    DOM.resultsCount.textContent = `Found ${filtered} Results`;
+    const detail = document.getElementById('resultsSourceDetail');
+    if (detail) detail.textContent = `Shabads from ${sourceName}`;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -618,26 +850,51 @@ function displayResults(verses, append = false) {
         const shabadId = verse.shabadId;
         const verseId = verse.verseId;
 
-        // Get source info for badge
+        // Get source info
         const source = verse._source || GURBANI_SOURCES.G;
 
         // Apply search highlighting
         const gurmukhi = query ? highlightSearchTerm(gurmukhiRaw, query) : gurmukhiRaw;
 
+        // Check if shabad is in favorites
+        const isFav = Favorites.isFavorite(shabadId);
+
         // Stagger animation delay
-        const animDelay = Math.min(index * 40, 360);
+        const animDelay = Math.min(index * 35, 350);
+
+        // Build title from raag + writer like the reference image: "ਰਾਮਕਲੀ ਮਹਲਾ ੫"
+        const writer = verse.writer?.unicode || verse.writer?.english || '';
+        const raag = verse.raag?.unicode || verse.raag?.english || '';
+        let cardTitle = '';
+        if (raag && writer) {
+            cardTitle = `${raag} ${writer}`;
+        } else if (raag) {
+            cardTitle = raag;
+        } else if (writer) {
+            cardTitle = writer;
+        } else {
+            cardTitle = source.shortName;
+        }
+
+        const bookmarkSvgFill = isFav ? 'currentColor' : 'none';
 
         return `
-            <article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}" style="animation-delay: ${animDelay}ms">
-                <div class="result-meta">
-                    <span class="result-source-badge" style="background: ${source.color}15; color: ${source.color}">
-                        ${source.shortName}
-                    </span>
-                    <span class="result-ang">Ang ${ang}</span>
-                </div>
-                <p class="result-gurmukhi">${gurmukhi}</p>
-            </article>
-        `;
+<article class="result-card" data-shabad="${shabadId}" data-verse="${verseId}" data-source="${source.id}" style="animation-delay:${animDelay}ms">
+  <div class="result-card-header">
+    <span class="result-gurmukhi-title">${cardTitle}</span>
+    <button class="result-bookmark-btn ${isFav ? 'active' : ''}" data-shabad="${shabadId}" aria-label="Bookmark">
+      <svg viewBox="0 0 24 24" fill="${bookmarkSvgFill}" stroke="currentColor" stroke-width="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+      </svg>
+    </button>
+  </div>
+  <p class="result-gurmukhi">${gurmukhi}</p>
+  <div class="result-meta">
+    <span class="result-source-text">${source.name}</span>
+    <span class="result-meta-dot"></span>
+    <span class="result-ang">Ang ${ang}</span>
+  </div>
+</article>`;
     }).join('');
 
     if (append) {
@@ -646,14 +903,43 @@ function displayResults(verses, append = false) {
         DOM.resultsList.innerHTML = html;
     }
 
-    // Add click handlers for navigation
+    // Show/hide load more
+    if (DOM.loadMoreBtn) {
+        DOM.loadMoreBtn.classList.toggle('visible', State.page < State.totalPages);
+    }
+
+    // Add click handlers for navigation and bookmarking
     DOM.resultsList.querySelectorAll('.result-card').forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            const bookmarkBtn = e.target.closest('.result-bookmark-btn');
+            if (bookmarkBtn) {
+                e.stopPropagation();
+                haptic();
+                const shabadId = bookmarkBtn.dataset.shabad;
+                const svg = bookmarkBtn.querySelector('svg');
+                if (Favorites.isFavorite(shabadId)) {
+                    Favorites.remove(shabadId);
+                    bookmarkBtn.classList.remove('active');
+                    svg.setAttribute('fill', 'none');
+                } else {
+                    const gurmukhiText = card.querySelector('.result-gurmukhi')?.textContent || '';
+                    const angText = card.querySelector('.result-ang')?.textContent.replace('Ang ', '') || '';
+                    Favorites.add({ shabadId, gurmukhi: gurmukhiText, ang: angText, translation: '' });
+                    bookmarkBtn.classList.add('active');
+                    svg.setAttribute('fill', 'currentColor');
+                }
+                return;
+            }
+
             haptic();
             const shabadId = card.dataset.shabad;
             const verseId = card.dataset.verse;
+            
+            // Track in recent shabad history
+            const gurmukhiText = card.querySelector('.result-gurmukhi')?.textContent || '';
+            const angText = card.querySelector('.result-ang')?.textContent.replace('Ang ', '') || '';
+            HistoryTracker.addShabad(shabadId, gurmukhiText, angText);
 
-            // Save full search state to sessionStorage for back-navigation
             try {
                 sessionStorage.setItem('gurbaniKhoj_state', JSON.stringify({
                     query: State.query,
@@ -664,11 +950,7 @@ function displayResults(verses, append = false) {
                     page: State.page,
                     totalPages: State.totalPages
                 }));
-            } catch (e) {
-                console.warn('Could not save search state:', e);
-            }
-
-            // Navigate to full Shabad reader
+            } catch (err) {}
             window.location.href = `shabad-reader.html?shabad=${shabadId}&verse=${verseId}`;
         });
     });
@@ -872,7 +1154,7 @@ const VoiceSearch = {
 
         if (firstLetters.length >= 2) {
             console.log('Extracted first letters:', firstLetters);
-            DOM.searchInput.value = firstLetters;
+            updateSearchInput(firstLetters);
             showToast(`Searching: ${firstLetters}`);
             await performSearch();
         } else {
@@ -897,32 +1179,32 @@ const Keyboard = {
     close() {
         DOM.keyboardOverlay.classList.remove('active');
         document.body.classList.remove('keyboard-open');
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
     },
 
     addChar(char) {
         State.keyboardText += char;
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     backspace() {
         State.keyboardText = State.keyboardText.slice(0, -1);
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     space() {
         State.keyboardText += ' ';
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.updatePreview();
         haptic();
     },
 
     search() {
-        DOM.searchInput.value = State.keyboardText;
+        updateSearchInput(State.keyboardText);
         this.close();
         performSearch();
         haptic('medium');
@@ -1011,7 +1293,7 @@ const History = {
     select(index) {
         const item = this.items[index];
         if (item && item.query) {
-            DOM.searchInput.value = item.query;
+            updateSearchInput(item.query);
             this.close();
             performSearch();
             haptic();
@@ -1037,14 +1319,36 @@ function updateFilterUI() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function initEventListeners() {
+    // Nav bar actions
+    DOM.menuBtn?.addEventListener('click', () => {
+        haptic();
+        window.location.href = '../index.html';
+    });
+
+    DOM.notificationBtn?.addEventListener('click', () => {
+        haptic();
+        window.location.href = '../reminders/smart-reminders-v7.html';
+    });
+
     // Theme toggle
     DOM.themeToggle?.addEventListener('click', () => Theme.toggle());
+
+    // Clear search button
+    DOM.clearBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateSearchInput('');
+        sessionStorage.removeItem('gurbaniKhoj_state');
+        showWelcome();
+        haptic();
+    });
 
     // Search input with debounced search
     let searchTimeout;
     DOM.searchInput.addEventListener('input', (e) => {
-        // Update keyboard text state when typing directly
-        State.keyboardText = e.target.value;
+        const val = e.target.value;
+        State.keyboardText = val;
+        DOM.clearBtn.style.display = val.trim() ? 'block' : 'none';
+        BackgroundManager.updateBlurState();
 
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
@@ -1063,7 +1367,7 @@ function initEventListeners() {
         }
     });
 
-    // Mic button
+    // Mic buttons
     DOM.micBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         if (!VoiceSearch.isListening) {
@@ -1071,8 +1375,28 @@ function initEventListeners() {
         }
     });
 
-    // Keyboard button
+    DOM.actionBarMic?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        VoiceSearch.start();
+    });
+
+    $('#voiceMicTrigger')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        haptic();
+        if (VoiceSearch.isListening) {
+            VoiceSearch.stop();
+        } else {
+            VoiceSearch.start();
+        }
+    });
+
+    // Keyboard buttons
     DOM.keyboardBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        Keyboard.open();
+    });
+
+    DOM.actionBarKeyboard?.addEventListener('click', (e) => {
         e.stopPropagation();
         Keyboard.open();
     });
@@ -1081,15 +1405,23 @@ function initEventListeners() {
     DOM.searchBar?.addEventListener('click', (e) => {
         // Don't open if clicking mic button or keyboard button
         if (e.target.closest('#micBtn') || e.target.closest('#keyboardBtn')) return;
-        // Open Gurmukhi keyboard
-        Keyboard.open();
+        
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+        if (!isMobile) {
+            DOM.searchInput?.focus();
+        } else {
+            // Open Gurmukhi keyboard
+            Keyboard.open();
+        }
     });
 
     DOM.voiceCancel?.addEventListener('click', () => {
         VoiceSearch.stop();
     });
 
-    // Keyboard - closes when clicking backdrop or after search
+    $('#voiceBackBtn')?.addEventListener('click', () => {
+        VoiceSearch.stop();
+    });
 
     // Click on backdrop closes keyboard
     DOM.keyboardOverlay?.querySelector('.keyboard-backdrop')?.addEventListener('click', (e) => {
@@ -1098,38 +1430,105 @@ function initEventListeners() {
     });
 
     // Keyboard keys - use both click and touch events for mobile
+    // Premium iOS Virtual Keyboard Event Handler
     const keyboardBody = DOM.keyboardOverlay?.querySelector('.keyboard-body');
-    console.log('Keyboard body found:', keyboardBody);
     if (keyboardBody) {
-        const handleKeyPress = (e) => {
-            console.log('Key press event:', e.type, e.target);
-            const key = e.target.closest('.kb-key');
-            if (!key) {
-                console.log('No .kb-key found for click');
-                return;
+        // Strip inline onclick handlers dynamically to guarantee zero double-typing bugs
+        DOM.keyboardOverlay.querySelectorAll('.kb-key').forEach(key => {
+            key.removeAttribute('onclick');
+        });
+
+        let activePreviewBubble = null;
+        let activeKeyEl = null;
+
+        const removeBubble = () => {
+            if (activePreviewBubble) {
+                activePreviewBubble.remove();
+                activePreviewBubble = null;
             }
+            if (activeKeyEl) {
+                activeKeyEl.classList.remove('pressed');
+                activeKeyEl = null;
+            }
+        };
+
+        const handleKeyPointerDown = (e) => {
+            const key = e.target.closest('.kb-key');
+            if (!key) return;
 
             e.preventDefault();
             e.stopPropagation();
 
-            console.log('Key clicked:', key.textContent.trim(), 'action:', key.dataset.action);
-            const action = key.dataset.action;
+            removeBubble();
+
+            let action = key.dataset.action;
+            if (!action) {
+                if (key.classList.contains('backspace-key') || key.closest('.backspace-key')) {
+                    action = 'backspace';
+                } else if (key.classList.contains('space-key') || key.closest('.space-key')) {
+                    action = 'space';
+                } else if (key.classList.contains('search-action') || key.closest('.search-action')) {
+                    action = 'search';
+                }
+            }
+            const text = key.textContent.trim();
+
+            // Tactile key press effect
+            key.classList.add('pressed');
+            activeKeyEl = key;
+
+            // Trigger action
             if (action === 'backspace') {
                 Keyboard.backspace();
-            } else if (action === 'space') {
+            } else if (action === 'space' || text.toLowerCase() === 'space') {
                 Keyboard.space();
             } else if (action === 'search') {
                 Keyboard.search();
             } else {
-                Keyboard.addChar(key.textContent.trim());
+                Keyboard.addChar(text);
+
+                // Show native iOS style Key Preview Bubble above character keys
+                const rect = key.getBoundingClientRect();
+                const bubble = document.createElement('div');
+                bubble.className = 'kb-key-preview-bubble';
+                bubble.textContent = text;
+                document.body.appendChild(bubble);
+
+                const bubbleWidth = 56;
+                const bubbleHeight = 68;
+                const top = rect.top - bubbleHeight - 6;
+                const left = rect.left + (rect.width / 2) - (bubbleWidth / 2);
+
+                bubble.style.cssText = `
+                    position: fixed;
+                    top: ${top}px;
+                    left: ${left}px;
+                    width: ${bubbleWidth}px;
+                    height: ${bubbleHeight}px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: var(--ios-glass-key-preview, rgba(255, 255, 255, 0.98));
+                    color: #000;
+                    font-size: 26px;
+                    font-weight: 600;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                    pointer-events: none;
+                    z-index: 100000;
+                    transform-origin: bottom center;
+                    animation: kbPreviewPop 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                `;
+                activePreviewBubble = bubble;
             }
         };
 
-        keyboardBody.addEventListener('click', handleKeyPress);
-        keyboardBody.addEventListener('touchstart', handleKeyPress, { passive: false });
-        console.log('Keyboard event listeners attached');
-    } else {
-        console.error('Keyboard body not found!');
+        keyboardBody.addEventListener('pointerdown', handleKeyPointerDown);
+        
+        // Clean up preview bubbles on lift/leave
+        window.addEventListener('pointerup', removeBubble);
+        window.addEventListener('pointercancel', removeBubble);
+        keyboardBody.addEventListener('pointerleave', removeBubble);
     }
 
     // Live Kirtan Tracker
@@ -1172,6 +1571,125 @@ function initEventListeners() {
         });
     });
 
+    // Quick search grid cards
+    $$('.quick-card[data-source]').forEach(card => {
+        card.addEventListener('click', () => {
+            const source = card.dataset.source;
+            haptic();
+            // Set active chip in sourceFilters
+            const chip = $(`.source-chip[data-source="${source}"]`);
+            if (chip) {
+                $$('.source-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                State.sourceFilter = source;
+            }
+            // Focus search
+            DOM.searchInput?.focus();
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+            if (isMobile) {
+                Keyboard.open();
+            }
+        });
+    });
+
+    // Raag button - navigate to raag selection page (register BEFORE generic quick-card handlers)
+    const raagBtn = document.getElementById('raagBtn');
+    if (raagBtn) {
+        raagBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            haptic();
+            window.location.href = 'raag-selection.html';
+        });
+    }
+
+    $$('.quick-card[data-query]').forEach(card => {
+        card.addEventListener('click', () => {
+            const query = card.dataset.query;
+            haptic();
+            
+            // Special handling for Simran button - navigate to specific shabad
+            if (card.classList.contains('card-simran')) {
+                // Navigate to Waheguru Gurmantar shabad
+                // This is a placeholder - you'll need to find the actual shabad ID
+                window.location.href = 'shabad-reader.html?search=ਵਾਹਿਗੁਰੂ ਗੁਰਮੰਤ੍ਰ ਹੈ ਜਪਿ ਹਉਮੈ ਖੋਇ';
+                return;
+            }
+            
+            updateSearchInput(query);
+            performSearch();
+        });
+    });
+
+    // View All links to search history
+    $('#viewAllHistory')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        History.open();
+    });
+
+    // Bottom Navigation tab bar clicks
+    DOM.tabHome?.addEventListener('click', () => {
+        haptic();
+        updateSearchInput('');
+        sessionStorage.removeItem('gurbaniKhoj_state');
+        showWelcome();
+        $$('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        DOM.tabHome.classList.add('active');
+    });
+
+    DOM.tabSearch?.addEventListener('click', () => {
+        haptic();
+        DOM.searchInput?.focus();
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+        if (isMobile) {
+            Keyboard.open();
+        }
+        $$('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        DOM.tabSearch.classList.add('active');
+    });
+
+    DOM.tabBookmarks?.addEventListener('click', () => {
+        haptic();
+        window.location.href = '../Favorites/favorites.html';
+    });
+
+    DOM.tabMore?.addEventListener('click', () => {
+        haptic();
+        window.location.href = 'search-history.html';
+    });
+
+    // Dynamic header back button
+    DOM.backBtn?.addEventListener('click', (e) => {
+        if (document.body.classList.contains('has-results')) {
+            e.preventDefault();
+            updateSearchInput('');
+            sessionStorage.removeItem('gurbaniKhoj_state');
+            showWelcome();
+            $$('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            DOM.tabHome.classList.add('active');
+            haptic();
+        }
+    });
+
+    // Filter button toggles source filters
+    DOM.filterBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        haptic();
+        const filters = $('#sourceFilters');
+        if (filters) {
+            filters.classList.toggle('visible-search');
+        }
+    });
+
+    // Sub tabs inside results view
+    $$('.sub-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            $$('.sub-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            haptic();
+        });
+    });
+
     // Load more
     DOM.loadMoreBtn.addEventListener('click', () => {
         State.page++;
@@ -1186,8 +1704,6 @@ function initEventListeners() {
             History.open();
         });
         console.log('History button event listener attached');
-    } else {
-        console.error('History button not found');
     }
     DOM.historyClose?.addEventListener('click', () => History.close());
     DOM.historyClearAll?.addEventListener('click', () => History.clear());
@@ -1213,16 +1729,31 @@ document.addEventListener('DOMContentLoaded', () => {
     Favorites.load();
     VoiceSearch.init();
     initEventListeners();
+    BackgroundManager.init();
+
+    // Enable direct keyboard input for desktop users by removing readonly attribute
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+    if (!isMobile && DOM.searchInput) {
+        DOM.searchInput.removeAttribute('readonly');
+        DOM.searchInput.focus();
+    }
 
     // Try to restore full search state from sessionStorage (back-navigation)
     let restored = false;
     try {
+        // Clear saved search state if we didn't come from Shabad Reader or Search History (or if referrer is index.html)
+        const referrer = document.referrer || '';
+        const isFromReader = referrer.includes('shabad-reader.html');
+        const isFromHistory = referrer.includes('search-history.html');
+        if (!isFromReader && !isFromHistory) {
+            sessionStorage.removeItem('gurbaniKhoj_state');
+        }
+
         // Check if coming from history page with a query
         const historyQuery = sessionStorage.getItem('gurbaniKhoj_historyQuery');
         if (historyQuery) {
             sessionStorage.removeItem('gurbaniKhoj_historyQuery');
-            DOM.searchInput.value = historyQuery;
-            State.keyboardText = historyQuery;
+            updateSearchInput(historyQuery);
             performSearch();
             restored = true;
         }
@@ -1231,9 +1762,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedRaw = sessionStorage.getItem('gurbaniKhoj_state');
             if (savedRaw) {
                 const saved = JSON.parse(savedRaw);
-                // Clear it so it only restores once
-                // Keep state in storage so it persists for multiple back/forth navigations
-                // sessionStorage.removeItem('gurbaniKhoj_state');
 
                 if (saved.allResults && saved.allResults.length > 0) {
                     // Restore state
@@ -1242,8 +1770,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     State.sourceFilter = saved.sourceFilter || 'all';
                     State.page = saved.page || 1;
                     State.totalPages = saved.totalPages || 1;
-                    DOM.searchInput.value = saved.inputValue || saved.query || '';
-                    State.keyboardText = DOM.searchInput.value;
+                    updateSearchInput(saved.inputValue || saved.query || '');
 
                     // Restore active source chip
                     document.querySelectorAll('.source-chip').forEach(c => {

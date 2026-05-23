@@ -19,9 +19,16 @@
   const PAGE_CACHE = new Map();
   const DOM_CACHE = new Map(); // For keepAlive strategy
   const FETCH_QUEUE = new Set();
+  // Tracks which pages have had their inline body scripts executed.
+  // Inline scripts declaring top-level 'const'/'let' can only run once per session.
+  // Re-visits rely on anhad_page_changed event for re-initialization.
+  const EXECUTED_INLINE_PAGES = new Set();
   
   /**
-   * Normalizes a URL for caching and comparison
+   * Normalizes a URL for caching and history comparison ONLY.
+   * IMPORTANT: Do NOT use this URL for fetch() — it may strip index.html which
+   * causes a directory listing to be served instead of the actual page.
+   * Use toFetchUrl() for the actual network request.
    */
   function normalizeUrl(url) {
     try {
@@ -29,11 +36,34 @@
       let path = u.pathname;
       // Remove trailing slash if not root
       if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
-      // Remove index.html for root comparison consistency
-      if (path.endsWith('/index.html')) path = path.slice(0, -11) || '/';
+      // Only strip /index.html from the root (e.g. /index.html → /)
+      // Do NOT strip from subdirectories — /nitnem/index.html must stay as /nitnem/index.html
+      // otherwise Python's http.server returns a directory listing
+      if (path === '/index.html') path = '/';
       return u.origin + path + u.search;
     } catch (e) {
       return url;
+    }
+  }
+
+  /**
+   * Returns the actual URL to use for fetch().
+   * If the path ends with a bare directory (trailing slash or no extension),
+   * appends index.html so the server serves the file, not a directory listing.
+   */
+  function toFetchUrl(normalizedUrl) {
+    try {
+      const u = new URL(normalizedUrl, window.location.origin);
+      let path = u.pathname;
+      // If URL points to a directory (ends with / or has no file extension at end)
+      if (path.endsWith('/')) {
+        path = path + 'index.html';
+        u.pathname = path;
+        return u.href;
+      }
+      return normalizedUrl;
+    } catch (e) {
+      return normalizedUrl;
     }
   }
 
@@ -61,12 +91,24 @@
     'smart-back.js',
     'page-lifecycle.js',
     'welcome-check.js',
-    'hub-app.js',
+    'state-preservation.js',
+    // NOTE: hub-app.js is NOT here - it's nitnem/js/hub-app.js (page-specific, must re-run)
     'trendora-app.js',
     'ultra-welcome-loader.js',
     'homepage-data.js',
-    'capacitor-bridge.js'
+    'capacitor-bridge.js',
+    // Library singletons - lazy-loaded by nitnem but define global classes:
+    'storage-manager.js',      // declares class StorageManager
+    'widget-bridge.js',        // declares class WidgetBridge / WidgetBridge identifier
+    'anhad-widget-bridge.js',  // same
+    'gurbani-db.js',           // declares class GurbaniDB
+    'bani-cache-optimizer.js', // declares class BaniCacheOptimizer
+    'optimized-image-loader.js', // declares class OptimizedImageLoader
+    'gurbani-local-db.js',     // global singleton
+    'gurbani-download-manager.js', // global singleton
+    'capacitor-notifications-global.js', // global singleton
   ];
+
 
   // Resolve App Root once on load (robustly handles query strings)
   const navScriptTag = document.querySelector('script[src*="smooth-navigation.js"]');
@@ -75,7 +117,15 @@
     const parts = url.pathname.split('lib/smooth-navigation.js');
     window.ANHAD_ROOT = url.origin + parts[0];
   } else {
-    window.ANHAD_ROOT = '/ANHAD-FINAL/frontend/';
+    // Dynamic resolution fallback with protocol/origin
+    const path = window.location.pathname;
+    const marker = '/frontend/';
+    const idx = path.indexOf(marker);
+    if (idx !== -1) {
+      window.ANHAD_ROOT = window.location.origin + path.substring(0, idx + marker.length);
+    } else {
+      window.ANHAD_ROOT = window.location.origin + '/ANHAD-FINAL/frontend/';
+    }
   }
   console.log('[SmoothNav] App Root resolved to:', window.ANHAD_ROOT);
 
@@ -95,15 +145,16 @@
   window.navigateTo = async function(url, options = {}) {
     if (!url || typeof url !== 'string') return;
 
-    // Resolve to absolute URL using document.baseURI for correct relative path handling
-    const absoluteUrl = new URL(url, document.baseURI).href;
+    // Resolve to absolute URL using window.location.href for correct relative path handling
+    const absoluteUrl = new URL(url, window.location.href).href;
     const normalized = normalizeUrl(absoluteUrl);
     
     if (normalized === currentActiveUrl && !options.force) return;
 
     // CRITICAL: Before navigating to index.html, always stamp session flags so
     // welcome-check.js NEVER triggers the splash/welcome screen redirect.
-    if (absoluteUrl.endsWith('/index.html') || absoluteUrl.endsWith('/index')) {
+    if (absoluteUrl.endsWith('/index.html') || absoluteUrl.endsWith('/index') ||
+        absoluteUrl.endsWith('/') || absoluteUrl === window.ANHAD_ROOT) {
       try {
         sessionStorage.setItem('anhad_welcomed', '1');
         localStorage.setItem('anhad_welcome_seen', 'true');
@@ -111,16 +162,43 @@
       } catch(e) {}
     }
 
-    // NOTE: We no longer serialize outerHTML (expensive string, causes jank).
-    // Back navigation uses the PAGE_CACHE HTML fetched at load time instead.
-    performSwap(normalized, options);
+    // ─── ALWAYS FULL RELOAD ─────────────────────────────────────────────────
+    // Every page in the ANHAD app (Nitnem, GurbaniKhoj, SehajPaath, Hukamnama,
+    // readers, etc.) is a standalone app with its own complete CSS system,
+    // DOM structure, and JS initialization. SPA partial-swap between these
+    // pages causes CSS pollution, missing DOM elements, and script failures.
+    //
+    // Full page reload is what already makes SehajPaath and Hukamnama work
+    // perfectly. We now make this the default for ALL inter-page navigation.
+    // ───────────────────────────────────────────────────────────────────────
+    console.log('[SmoothNav] Navigating to:', absoluteUrl, '— full page reload');
+    window.location.href = absoluteUrl;
   };
+
+  /**
+   * Extracts the "module" directory from a pathname.
+   * e.g. "/nitnem/index.html" → "nitnem"
+   *      "/GurbaniKhoj/gurbani-khoj.html" → "GurbaniKhoj"
+   *      "/index.html" → ""  (root)
+   *      "/" → ""  (root)
+   */
+  function getModulePath(pathname) {
+    // Strip leading slash and split
+    const parts = pathname.replace(/^\/+/, '').split('/');
+    // If there's only one part (e.g. "index.html") or empty, it's root
+    if (parts.length <= 1) return '';
+    // Otherwise return the first directory segment
+    return parts[0];
+  }
 
   /**
    * Fetch new page and swap content
    */
   async function performSwap(url, options = {}) {
+    // Normalize for caching/history — but fetch the actual file URL
     url = normalizeUrl(url);
+    const fetchUrl = toFetchUrl(url); // e.g. /nitnem/ → /nitnem/index.html
+    
     const loader = ensureLoader();
     let loaderTimeout = null;
     let transitionFinished = false;
@@ -134,11 +212,12 @@
         }
       }, 120); // Reduced from 250ms for snappier feel
 
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      // Use fetchUrl (with index.html) to avoid directory listing responses
+      const response = await fetch(fetchUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status} for ${fetchUrl}`);
       const text = await response.text();
       
-      // Cache it for next time
+      // Cache under the normalized URL (canonical key)
       PAGE_CACHE.set(url, text);
       
       transitionFinished = true;
@@ -153,7 +232,8 @@
     } catch (e) {
       console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
       clearTimeout(loaderTimeout);
-      window.location.href = url;
+      // Fall back to the fetch URL (the actual file) not the normalized one
+      window.location.href = fetchUrl;
     } finally {
       // ROBUST: Always clean up loader state
       clearTimeout(loaderTimeout);
@@ -209,10 +289,34 @@
     shellSelectors.forEach(selector => {
       const newNode = newDoc.querySelector(selector);
       const currentNode = document.querySelector(selector);
+      
       if (newNode && currentNode) {
+        // Sync contents if present in both
         if (newNode.innerHTML !== currentNode.innerHTML) {
           currentNode.innerHTML = newNode.innerHTML;
         }
+      } else if (newNode && !currentNode) {
+        // Inject shell element if it exists in the incoming page but is missing from active DOM
+        console.log('[SPA] Dynamic Shell Sync — Injecting missing shell element:', selector);
+        const clonedNode = newNode.cloneNode(true);
+        
+        // Find correct placement
+        if (selector === '.desktop-sidebar') {
+          const appEl = document.getElementById(MAIN_TARGET_ID);
+          if (appEl) {
+            appEl.parentNode.insertBefore(clonedNode, appEl);
+          } else {
+            document.body.prepend(clonedNode);
+          }
+        } else if (selector === '.tab-bar' || selector === '#bottomNav') {
+          document.body.appendChild(clonedNode);
+        } else {
+          document.body.appendChild(clonedNode);
+        }
+      } else if (!newNode && currentNode) {
+        // Remove shell element if it does not exist in the incoming page but exists in active DOM
+        console.log('[SPA] Dynamic Shell Sync — Removing shell element:', selector);
+        currentNode.remove();
       }
     });
 
@@ -259,8 +363,9 @@
       }
     });
 
-    // Sync Head Assets
-    syncHeadAssets(newDoc, url);
+    // Sync Head Assets and WAIT for new CSS to load before swapping content
+    // This prevents the Flash Of Unstyled Content (FOUC) seen on SPA navigation
+    await syncHeadAssets(newDoc, url);
     
     // SWAP CONTENT
     currentApp.innerHTML = newApp.innerHTML;
@@ -290,6 +395,7 @@
     
     // Force absolute path resolution on newly swapped content
     resolveRelativePaths(currentApp, url);
+    absoluteifyShellLinks();
 
     // Re-init any core components
     if (window.AnhadCore && window.AnhadCore.init) {
@@ -316,9 +422,40 @@
       if (!val || val.startsWith('http') || val.startsWith('/') || val.startsWith('#') || val.startsWith('data:')) return;
       
       try {
-        const resolved = new URL(val, base).pathname;
-        el.setAttribute(attr, resolved);
+        const resolved = new URL(val, base);
+        const resolvedStr = resolved.pathname + resolved.search + resolved.hash;
+        el.setAttribute(attr, resolvedStr);
       } catch(e) {}
+    });
+  }
+
+  /**
+   * Resolves relative links inside shell elements (.desktop-sidebar, .tab-bar)
+   * to absolute pathnames relative to window.ANHAD_ROOT.
+   * This prevents directory nesting from corrupting links.
+   */
+  function absoluteifyShellLinks() {
+    const root = window.ANHAD_ROOT;
+    if (!root) return;
+    
+    const shellSelectors = ['.desktop-sidebar', '.tab-bar', '#bottomNav'];
+    shellSelectors.forEach(selector => {
+      const shellEl = document.querySelector(selector);
+      if (!shellEl) return;
+      
+      shellEl.querySelectorAll('a[href]').forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('#')) return;
+        
+        try {
+          // Resolve relative to the app root
+          const resolved = new URL(href, root).pathname;
+          link.setAttribute('href', resolved);
+          console.log(`[SmoothNav] Resolved shell link: ${href} -> ${resolved}`);
+        } catch (e) {
+          console.warn('[SmoothNav] Failed to resolve shell link:', href, e);
+        }
+      });
     });
   }
 
@@ -340,37 +477,109 @@
   }
 
   /**
-   * Syncs new CSS links from the target document
+   * Syncs new CSS links AND inline style blocks from the target document.
+   * Returns a Promise that resolves ONLY after all new stylesheets have loaded.
+   * This prevents Flash Of Unstyled Content (FOUC) during SPA transitions.
+   *
+   * CRITICAL: Pages like nitnem/index.html embed all their CSS in a massive
+   * inline <style> block in <head>. Without syncing these, the SPA swap
+   * renders completely unstyled content.
    */
-  function syncHeadAssets(newDoc, sourceUrl) {
+  async function syncHeadAssets(newDoc, sourceUrl) {
+    // ─── 1. Sync external <link rel="stylesheet"> ───────────────────────────
     const currentStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
       .map(l => new URL(l.getAttribute('href') || '', document.baseURI).href);
     const newStyles = Array.from(newDoc.querySelectorAll('link[rel="stylesheet"]'));
+
+    const loadPromises = [];
 
     newStyles.forEach(style => {
       const href = style.getAttribute('href');
       if (href) {
         const absoluteHref = new URL(href, sourceUrl).href;
         if (!currentStyles.includes(absoluteHref)) {
-          console.log('[SmoothNav] Adding stylesheet:', absoluteHref);
+          console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = absoluteHref;
+          // Track each new stylesheet load so we can wait for it
+          const p = new Promise(resolve => {
+            link.onload = resolve;
+            link.onerror = resolve; // Don't block on errors (e.g. missing optional sheet)
+          });
+          loadPromises.push(p);
           document.head.appendChild(link);
         }
       }
     });
+
+    // ─── 2. Sync inline <style> blocks from <head> ───────────────────────────
+    // Pages like nitnem/index.html embed ALL their CSS in inline <style> blocks.
+    // We use a page-key attribute to avoid re-injecting on subsequent navigations.
+    const pageKey = new URL(sourceUrl).pathname; // e.g. /nitnem/index.html
+    const existingPageStyle = document.querySelector(`style[data-spa-page="${pageKey}"]`);
+
+    if (!existingPageStyle) {
+      const headStyles = Array.from(newDoc.head.querySelectorAll('style'));
+      if (headStyles.length > 0) {
+        // Merge all head <style> blocks into one tagged <style> element.
+        // CRITICAL: Absolutize all url() values in the CSS before injecting.
+        // Without this, @font-face paths like url('g-fonts/foo.woff') resolve
+        // against document.baseURI (which may still be the previous page URL)
+        // causing double-path errors like /nitnem/nitnem/g-fonts/foo.woff.
+        const combinedCSS = headStyles.map(s => s.textContent).join('\n');
+        const absoluteCSS = combinedCSS.replace(
+          /url\(['"]?([^'")\s]+)['"]?\)/g,
+          (match, relUrl) => {
+            // Skip already-absolute URLs and data URIs
+            if (!relUrl || relUrl.startsWith('http') || relUrl.startsWith('/') ||
+                relUrl.startsWith('data:') || relUrl.startsWith('#')) {
+              return match;
+            }
+            try {
+              return `url('${new URL(relUrl, sourceUrl).href}')`;
+            } catch(e) {
+              return match;
+            }
+          }
+        );
+        const styleEl = document.createElement('style');
+        styleEl.setAttribute('data-spa-page', pageKey);
+        styleEl.textContent = absoluteCSS;
+        document.head.appendChild(styleEl);
+        console.log(`[SmoothNav] Injected ${headStyles.length} inline style block(s) for: ${pageKey}`);
+      }
+    }
+
+    // Wait for all new external stylesheets to load, max 600ms
+    if (loadPromises.length > 0) {
+      await Promise.race([
+        Promise.all(loadPromises),
+        new Promise(resolve => setTimeout(resolve, 600))
+      ]);
+      console.log('[SmoothNav] All new stylesheets ready.');
+    }
   }
 
+
   /**
-   * Finds and executes scripts from the new document
+   * Finds and executes scripts from the new document.
+   *
+   * KEY RULES:
+   * - Inline scripts are executed ONLY on first visit to each page (tracked by EXECUTED_INLINE_PAGES).
+   *   Reason: they declare top-level `const`/`let` (e.g. themeToggle, banis) that cannot be
+   *   redeclared. Re-visits rely on the 'anhad_page_changed' event for re-initialization.
+   * - External scripts: skip if already in DOM (prevents duplicate class/identifier declarations).
+   * - Shell scripts (global utilities) are always skipped.
    */
   async function executePageScripts(newDoc, sourceUrl) {
     // CRITICAL: Only execute scripts from <body>, never from <head>.
-    // Head scripts like welcome-check.js, global-theme.js, anhad-core.js
-    // are shell-level and MUST NOT re-run on every SPA swap.
     const scripts = Array.from(newDoc.body.querySelectorAll('script'));
     const externalScripts = [];
+
+    const pageKey = new URL(sourceUrl, window.location.origin).pathname;
+    const isFirstVisit = !EXECUTED_INLINE_PAGES.has(pageKey);
+    if (isFirstVisit) EXECUTED_INLINE_PAGES.add(pageKey);
     
     for (const script of scripts) {
       const src = script.getAttribute('src');
@@ -382,7 +591,7 @@
 
       if (src) {
         const absoluteSrc = new URL(src, sourceUrl).href;
-        // Skip already-loaded scripts to prevent double-init
+        // Skip already-loaded scripts — their init() is triggered via anhad_page_changed event
         if (document.querySelector(`script[src="${absoluteSrc}"]`)) continue;
         externalScripts.push(new Promise((resolve) => {
           const newScript = document.createElement('script');
@@ -395,20 +604,58 @@
           document.body.appendChild(newScript);
         }));
       } else {
-        // Inline scripts — skip dangerous patterns
+        // ── Inline scripts ────────────────────────────────────────────────────────
+        // Wrap in block scope to avoid "already declared" SyntaxErrors for top-level const/let.
+        // This allows event listeners and initializers to bind to the new DOM elements on every visit.
         const content = script.textContent;
+        // Skip dangerous patterns regardless
         if (content.includes('serviceWorker.register') || content.includes('location.reload')) {
           continue;
         }
         
         const newScript = document.createElement('script');
-        newScript.textContent = content;
+        newScript.textContent = "(function(){\n" + content + "\n})();";
         document.body.appendChild(newScript);
       }
     }
     
     if (externalScripts.length > 0) {
       await Promise.all(externalScripts);
+    }
+
+    // After scripts load, re-bind global DOM variables that inline scripts set up
+    // on first visit. After each SPA swap these point to detached elements and must
+    // be updated so inline onclick handlers (onclick="themeToggle.click()") still work.
+    rebindPageGlobals(pageKey);
+  }
+
+  /**
+   * Re-binds known global DOM variables set by inline scripts on first page visit.
+   * These must be updated after each SPA swap to point to the current DOM elements.
+   */
+  function rebindPageGlobals(pageKey) {
+    if (pageKey.includes('/nitnem/')) {
+      // 're-bind themeToggle' - declared as top-level const by nitnem/index.html inline script.
+      // After DOM swap the element is a new node; we update window.themeToggle to point to it
+      // and re-attach the click handler (since the original closure is gone on re-visit).
+      const newThemeToggle = document.getElementById('themeToggle');
+      if (newThemeToggle) {
+        try { window.themeToggle = newThemeToggle; } catch(e) {}
+
+        // Apply current theme icon (updateThemeUI won't run on re-visit)
+        const currentTheme = window.AnhadTheme ? AnhadTheme.get() : 
+                             (document.documentElement.getAttribute('data-theme') || 'light');
+        newThemeToggle.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+
+        // Re-attach click handler
+        newThemeToggle.onclick = function() {
+          if (window.AnhadTheme) {
+            const newTheme = AnhadTheme.toggle();
+            document.documentElement.setAttribute('data-theme', newTheme);
+            newThemeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+          }
+        };
+      }
     }
   }
 
@@ -421,7 +668,7 @@
   
   async function prefetchPage(url) {
     if (!url || url.includes('#')) return;
-    const normalized = normalizeUrl(new URL(url, document.baseURI).href);
+    const normalized = normalizeUrl(new URL(url, window.location.href).href);
     if (PAGE_CACHE.has(normalized) || FETCH_QUEUE.has(normalized)) return;
     if (FETCH_QUEUE.size >= MAX_CONCURRENT_PREFETCH) return;
     
@@ -505,10 +752,18 @@
       }
     }, { passive: true });
 
-    // Handle browser back/forward buttons
+    // Handle browser back/forward buttons — always full reload
     window.addEventListener('popstate', (e) => {
-      const normalized = normalizeUrl(window.location.href);
-      performSwap(normalized, { replace: true, instant: true, isBack: true });
+      // Stamp session flags for index.html to prevent splash screen
+      if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
+        try {
+          sessionStorage.setItem('anhad_welcomed', '1');
+          localStorage.setItem('anhad_welcome_seen', 'true');
+          localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+        } catch(e) {}
+      }
+      console.log('[SmoothNav] Popstate — full page reload for:', window.location.href);
+      window.location.reload();
     });
 
     // Integrate with Capacitor native back button
@@ -607,6 +862,7 @@
   // Self-initialize
   setupLinkInterception();
   convertOnclickToDataHref();
+  absoluteifyShellLinks();
   
   // Also run conversion on page change
   window.addEventListener('anhad_page_changed', convertOnclickToDataHref);

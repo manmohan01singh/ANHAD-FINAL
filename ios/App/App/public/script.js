@@ -36,7 +36,7 @@ if (shouldReduceAnimations) {
 const NAV_PATHS = {
     // All paths relative to frontend root
     dailyHukamnama: './Hukamnama/daily-hukamnama.html',
-    nitnem: './nitnem/indexbani.html',
+    nitnem: './nitnem/index.html',
     nitnemTracker: './NitnemTracker/nitnem-tracker.html',
     sehajPaath: './SehajPaath/sehaj-paath.html',
     gurbaniKhoj: './GurbaniKhoj/gurbani-khoj.html',

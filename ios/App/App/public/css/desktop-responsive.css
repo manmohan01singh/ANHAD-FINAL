@@ -153,7 +153,21 @@
       rgba(248, 250, 252, 0.99) 100%) !important;
     border-right: 1px solid rgba(0,0,0,0.06);
     z-index: 1000;
-    padding: 32px 20px 100px 20px;
+    padding: 32px 20px 180px 20px; /* Increased bottom padding to prevent overlap with pinned footer */
+    overflow-y: auto; /* Enable scrollbar if content overflows */
+    scrollbar-width: thin; /* Thin clean scrollbar */
+  }
+
+  .desktop-sidebar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .desktop-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+  }
+  html.dark-mode .desktop-sidebar::-webkit-scrollbar-thumb,
+  [data-theme="dark"] .desktop-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
   }
   
   .desktop-sidebar__brand-text {

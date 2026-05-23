@@ -93,6 +93,8 @@ body {
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
+    opacity: 0; /* Default: hidden — controlled by reader-engine.js orbsOpacity setting */
+    transition: opacity 0.4s ease;
 }
 
 /* Subtle noise texture */
@@ -549,7 +551,7 @@ body {
     font-size: var(--gurmukhi-size);
     font-weight: normal;
     line-height: var(--line-spacing);
-    color: var(--text-primary);
+    color: var(--gurmukhi-text-color, var(--text-primary));
     margin-bottom: 8px;
     transition: font-family 0.3s, font-size 0.3s;
     letter-spacing: 0.5px;
@@ -597,7 +599,7 @@ body {
     font-size: var(--roman-size);
     font-style: italic;
     line-height: 1.7;
-    color: var(--text-secondary);
+    color: var(--translit-text-color, var(--text-secondary));
     margin-bottom: 6px;
 }
 
@@ -605,7 +607,7 @@ body {
 .verse-english {
     font-size: var(--translation-size);
     line-height: 1.7;
-    color: var(--text-tertiary);
+    color: var(--translation-text-color, var(--text-tertiary));
     margin-top: 8px;
     padding-top: 8px;
     border-top: 0.5px solid var(--separator);
@@ -616,7 +618,7 @@ body {
     font-family: var(--font-gurmukhi);
     font-size: var(--translation-size);
     line-height: 1.8;
-    color: var(--text-tertiary);
+    color: var(--translation-text-color, var(--text-tertiary));
     margin-top: 6px;
 }
 
@@ -1461,9 +1463,10 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     height: 100vh;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.4;
+    opacity: 0; /* Default: hidden — controlled by reader-engine.js ikonkarTransparency setting */
     display: block;
     visibility: visible;
+    transition: opacity 0.4s ease;
 }
 
 .ikonkar-background img {
@@ -1475,15 +1478,15 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 }
 
 [data-theme="light"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.10);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 [data-theme="dark"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.30);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 html.dark-mode .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0.30);
+    opacity: var(--ikonkar-opacity, 0);
 }
 
 .ikonkar-background.hidden {
@@ -1554,4 +1557,68 @@ html.dark-mode .ikonkar-background {
 .reader-app {
     position: relative;
     z-index: 1;
+}
+
+/* Color Circle buttons inside the Settings Drawer */
+.color-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.4));
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
+    background: #8E8E93; /* Default gray */
+    padding: 0;
+}
+
+.color-circle:active {
+    transform: scale(0.85);
+}
+
+/* Color Picker Buttons inside Modal */
+.picker-color {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    padding: 0;
+}
+
+.picker-color:active {
+    transform: scale(0.9);
+}
+
+.picker-color.selected {
+    border-color: var(--accent);
+    transform: scale(1.1);
+}
+
+/* Visraams / Pauses Highlight Underlines */
+.visraam-long {
+    color: #F59E0B !important; /* Sacred Amber / Gold */
+    font-weight: 600;
+    border-bottom: 2px dashed rgba(245, 158, 11, 0.5);
+    padding-bottom: 1px;
+}
+
+.visraam-short {
+    color: #3B82F6 !important; /* Ocean Blue */
+    font-weight: 600;
+    border-bottom: 2px dashed rgba(59, 130, 246, 0.5);
+    padding-bottom: 1px;
+}
+
+/* Visraam light mode overrides for peak readability */
+[data-theme="light"] .visraam-long {
+    color: #D97706 !important; /* Darker Gold */
+    border-bottom-color: rgba(217, 119, 6, 0.5);
+}
+
+[data-theme="light"] .visraam-short {
+    color: #2563EB !important; /* Darker Blue */
+    border-bottom-color: rgba(37, 99, 235, 0.5);
 }

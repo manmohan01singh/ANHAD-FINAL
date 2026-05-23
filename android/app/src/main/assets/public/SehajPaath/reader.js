@@ -754,7 +754,7 @@ class SehajPaathReader {
                             </svg>
                             Retry
                         </button>
-                        <button class="back-btn-error" onclick="window.location.href='sehaj-paath.html'">
+                        <button class="back-btn-error" onclick="if(window.navigateTo) window.navigateTo('sehaj-paath.html'); else window.location.href='sehaj-paath.html'">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 18l-6-6 6-6"/>
                             </svg>
@@ -946,7 +946,8 @@ class SehajPaathReader {
         } else if (document.referrer && document.referrer.includes(window.location.origin)) {
             window.history.back();
         } else {
-            window.location.href = 'sehaj-paath.html';
+            if (window.navigateTo) window.navigateTo('sehaj-paath.html');
+            else window.location.href = 'sehaj-paath.html';
         }
     }
 

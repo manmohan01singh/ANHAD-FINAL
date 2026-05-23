@@ -11,193 +11,191 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.1.7';
+const CACHE_VERSION = 'anhad-v5.8.3'; // Bumped: Fix Gurpurab calendar flash
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
 // Files to cache immediately
 const STATIC_FILES = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/manifest.json',
-  '/version.json',
-  '/css/nav-glass.css',
-  '/pwa-register.js',
-  '/enhanced-functionality.js',
-  '/js/audio-core.js',
-  '/lib/global-alarm-system.js',
+  './',
+  'index.html',
+  'style.css',
+  'script.js',
+  'manifest.json',
+  'version.json',
+  'css/nav-glass.css',
+  'pwa-register.js',
+  'enhanced-functionality.js',
+  'js/audio-core.js',
+  'lib/global-alarm-system.js',
 
   // Assets - Icons (CRITICAL: All manifest icons must be listed for cache bust)
-  '/assets/icon-72x72.png',
-  '/assets/icon-96x96.png',
-  '/assets/icon-128x128.png',
-  '/assets/icon-144x144.png',
-  '/assets/icon-152x152.png',
-  '/assets/icon-192x192.png',
-  '/assets/icon-384x384.png',
-  '/assets/icon-512x512.png',
-  '/assets/icon-1024x1024.png',
-  '/assets/apple-touch-icon.png',
-  '/assets/favicon-16x16.png',
-  '/assets/favicon-32x32.png',
+  'assets/icon-72x72.png',
+  'assets/icon-96x96.png',
+  'assets/icon-128x128.png',
+  'assets/icon-144x144.png',
+  'assets/icon-152x152.png',
+  'assets/icon-192x192.png',
+  'assets/icon-384x384.png',
+  'assets/icon-512x512.png',
+  'assets/icon-1024x1024.png',
+  'assets/apple-touch-icon.png',
+  'assets/favicon-16x16.png',
+  'assets/favicon-32x32.png',
 
   // Audio files for alarms
-  '/Audio/audio1.mp3',
-  '/Audio/audio2.mp3',
-  '/Audio/audio3.mpeg',
-  '/Audio/audio4.mpeg',
-  '/Audio/audio5.mpeg',
-  '/Audio/audio6.mpeg',
+  'Audio/audio1.mp3',
+  'Audio/audio2.mp3',
+  'Audio/audio3.mpeg',
+  'Audio/audio4.mpeg',
+  'Audio/audio5.mpeg',
+  'Audio/audio6.mpeg',
 
   // CSS
-  '/css/nav-glass.css',
-  '/css/install-button.css',
-  '/css/anhad-core.css',
-  '/js/anhad-core.js',
-  '/offline.html',
+  'css/install-button.css',
+  'css/anhad-core.css',
+  'js/anhad-core.js',
+  'offline.html',
 
   // Library files
-  '/lib/unified-storage.js',
-  '/lib/banidb.js',
-  '/lib/notifications.js',
-  '/lib/sehajPaathProgress.js',
-  '/lib/native-notifications.js',
-  '/lib/ios-android-notifications.js',
-  '/lib/alarm-persistence.js',
-  '/lib/keep-alive-worker.js',
-  '/lib/user-stats.js',
-  '/lib/share-card.js',
-  '/lib/smart-back.js',
-  '/lib/gurbani-db.js',
-  '/lib/global-mini-player.js',
-  '/css/global-mini-player.css',
+  'lib/unified-storage.js',
+  'lib/banidb.js',
+  'lib/notifications.js',
+  'lib/sehajPaathProgress.js',
+  'lib/native-notifications.js',
+  'lib/ios-android-notifications.js',
+  'lib/alarm-persistence.js',
+  'lib/keep-alive-worker.js',
+  'lib/user-stats.js',
+  'lib/share-card.js',
+  'lib/smart-back.js',
+  'lib/gurbani-db.js',
+  'lib/global-mini-player.js',
+  'css/global-mini-player.css',
   
   // Offline-First Gurbani Cache Modules
-  '/lib/gurbani-local-db.js',
-  '/lib/gurbani-download-manager.js',
-  '/lib/bani-cache-optimizer.js',
-  '/lib/optimized-image-loader.js',
-  '/lib/sehaj-paath-cache.js',
-  '/lib/hukamnama-cache.js',
+  'lib/gurbani-local-db.js',
+  'lib/gurbani-download-manager.js',
+  'lib/bani-cache-optimizer.js',
+  'lib/optimized-image-loader.js',
+  'lib/sehaj-paath-cache.js',
+  'lib/hukamnama-cache.js',
 
   // Dashboard
-  '/Dashboard/dashboard.html',
+  'Dashboard/dashboard.html',
 
   // Favorites
-  '/Favorites/favorites.html',
+  'Favorites/favorites.html',
 
   // Nitnem v2.1 - RENOVATED MODULE (iOS 26++ Design)
-  '/nitnem/index.html',
-  '/nitnem/indexbani.html',
-  '/nitnem/reader.html',
-  '/nitnem/css/main.css',
-  '/nitnem/css/category.css',
-  '/nitnem/css/reader.css',
-  '/nitnem/js/bani-metadata.js',
-  '/nitnem/js/banidb-api.js',
-  '/nitnem/js/hub-app.js',
-  '/nitnem/js/reader-engine.js',
-  '/nitnem/data/bani-catalog.json',
-  '/nitnem/category/nitnem.html',
-  '/nitnem/category/sggs.html',
-  '/nitnem/category/dasam.html',
-  '/nitnem/category/favorites.html',
+  'nitnem/index.html',
+  'nitnem/reader.html',
+  'nitnem/css/main.css',
+  'nitnem/css/category.css',
+  'nitnem/css/reader.css',
+  'nitnem/js/bani-metadata.js',
+  'nitnem/js/banidb-api.js',
+  'nitnem/js/hub-app.js',
+  'nitnem/js/reader-engine.js',
+  'nitnem/data/bani-catalog.json',
+  'nitnem/category/nitnem.html',
+  'nitnem/category/sggs.html',
+  'nitnem/category/dasam.html',
+  'nitnem/category/favorites.html',
 
   // Nitnem legacy files (preserved for backwards compatibility)
-  '/nitnem/japji-sahib.html',
-  '/nitnem/jaap-sahib.html',
-  '/nitnem/anand-sahib.html',
-  '/nitnem/rehras-sahib.html',
-  '/nitnem/sohila-sahib.html',
-  '/nitnem/chaupai-sahib.html',
-  '/nitnem/tav-prasad-savaiye.html',
-  '/nitnem/css/nitnem.css',
-  '/nitnem/css/themes.css',
-  '/nitnem/css/liquid-glass.css',
-  '/nitnem/css/setting-panel.css',
-  '/nitnem/bani-setting-panel.js',
-  '/nitnem/bani-style.css',
+  'nitnem/japji-sahib.html',
+  'nitnem/jaap-sahib.html',
+  'nitnem/anand-sahib.html',
+  'nitnem/rehras-sahib.html',
+  'nitnem/sohila-sahib.html',
+  'nitnem/chaupai-sahib.html',
+  'nitnem/tav-prasad-savaiye.html',
+  'nitnem/css/nitnem.css',
+  'nitnem/css/themes.css',
+  'nitnem/css/liquid-glass.css',
+  'nitnem/css/setting-panel.css',
+  'nitnem/bani-setting-panel.js',
+  'nitnem/bani-style.css',
 
   // NitnemTracker
-  '/NitnemTracker/nitnem-tracker.html',
-  '/NitnemTracker/nitnem-tracker.css',
-  '/NitnemTracker/nitnem-tracker.js',
-  '/NitnemTracker/components/mala-counter.js',
-  '/NitnemTracker/components/statistics-engine.js',
-  '/NitnemTracker/components/streak-engine.js',
-  '/NitnemTracker/components/report-generator.js',
-  '/NitnemTracker/data/banis.json',
-  '/NitnemTracker/data/achievements.json',
-  '/NitnemTracker/data/maryada-schedule.json',
+  'NitnemTracker/nitnem-tracker.html',
+  'NitnemTracker/nitnem-tracker.css',
+  'NitnemTracker/nitnem-tracker.js',
+  'NitnemTracker/components/mala-counter.js',
+  'NitnemTracker/components/statistics-engine.js',
+  'NitnemTracker/components/streak-engine.js',
+  'NitnemTracker/components/report-generator.js',
+  'NitnemTracker/data/banis.json',
+  'NitnemTracker/data/achievements.json',
+  'NitnemTracker/data/maryada-schedule.json',
 
   // NaamAbhyas
-  '/NaamAbhyas/naam-abhyas.html',
-  '/NaamAbhyas/naam-abhyas.css',
-  '/NaamAbhyas/naam-abhyas.js',
-  '/NaamAbhyas/naam-abhyas-widget.js',
-  '/NaamAbhyas/components/ritual-engine.js',
-  '/NaamAbhyas/components/ritual-overlay.css',
-  '/NaamAbhyas/components/discipline-metrics.js',
-  '/NaamAbhyas/components/notification-engine.js',
-  '/NaamAbhyas/components/audio-manager.js',
-  '/NaamAbhyas/components/stats-tracker.js',
-  '/NaamAbhyas/components/timer-engine.js',
-  '/NaamAbhyas/data/quotes.json',
+  'NaamAbhyas/naam-abhyas.html',
+  'NaamAbhyas/naam-abhyas.css',
+  'NaamAbhyas/naam-abhyas.js',
+  'NaamAbhyas/naam-abhyas-widget.js',
+  'NaamAbhyas/components/ritual-engine.js',
+  'NaamAbhyas/components/ritual-overlay.css',
+  'NaamAbhyas/components/discipline-metrics.js',
+  'NaamAbhyas/components/notification-engine.js',
+  'NaamAbhyas/components/audio-manager.js',
+  'NaamAbhyas/components/stats-tracker.js',
+  'NaamAbhyas/components/timer-engine.js',
+  'NaamAbhyas/data/quotes.json',
 
   // SehajPaath
-  '/SehajPaath/sehaj-paath.html',
-  '/SehajPaath/reader.html',
-  '/SehajPaath/sehaj-paath.css',
-  '/SehajPaath/sehaj-paath.js',
+  'SehajPaath/sehaj-paath.html',
+  'SehajPaath/reader.html',
+  'SehajPaath/sehaj-paath.css',
+  'SehajPaath/sehaj-paath.js',
 
   // Calendar
-  '/Calendar/GurpurabCalendar-ios.html',
-  '/Calendar/gurpurab-calendar-ios.css',
-  '/Calendar/gurpurab-calendar-ios.js',
-  '/Calendar/gurupurab-reminders.js',
-  '/Calendar/nanakshahi-calendar.js',
+  'Calendar/GurpurabCalendar-ios.html',
+  'Calendar/gurpurab-calendar-ios.css',
+  'Calendar/gurpurab-calendar-ios.js',
+  'Calendar/gurupurab-reminders.js',
+  'Calendar/nanakshahi-calendar.js',
 
   // Hukamnama
-  '/Hukamnama/daily-hukamnama.html',
-  '/Hukamnama/daily-hukamnama.css',
-  '/Hukamnama/daily-hukamnama.js',
-  '/Hukamnama/optical-glass-physics.js',
+  'Hukamnama/daily-hukamnama.html',
+  'Hukamnama/daily-hukamnama.css',
+  'Hukamnama/daily-hukamnama.js',
+  'Hukamnama/optical-glass-physics.js',
 
   // Reminders
-  '/reminders/smart-reminders-v7.html',
-  '/reminders/smart-reminders-v6.css',
-  '/reminders/smart-reminders-v6.js',
-  '/reminders/smart-reminders-ui.js',
-  '/reminders/alarm.html',
-  '/reminders/css/alarm.css',
-  '/reminders/js/alarm.js',
-  '/reminders/js/alarm-controller.js',
-  '/reminders/js/reliable-alarm.js',
-  '/reminders/js/bg-alarm.js',
-  '/reminders/js/nitnem-sync.js',
+  'reminders/smart-reminders-v7.html',
+  'reminders/smart-reminders-v6.css',
+  'reminders/smart-reminders-v6.js',
+  'reminders/smart-reminders-ui.js',
+  'reminders/alarm.html',
+  'reminders/css/alarm.css',
+  'reminders/js/alarm.js',
+  'reminders/js/alarm-controller.js',
+  'reminders/js/reliable-alarm.js',
+  'reminders/js/bg-alarm.js',
+  'reminders/js/nitnem-sync.js',
 
   // Gurbani Radio — Phase 11 rebuild
-  '/GurbaniRadio/gurbani-radio-new.html',
-  '/GurbaniRadio/gurbani-radio-new.css',
-  '/GurbaniRadio/gurbani-radio-new.js',
+  'GurbaniRadio/gurbani-radio-new.html',
+  'GurbaniRadio/gurbani-radio-new.css',
+  'GurbaniRadio/gurbani-radio-new.js',
 
   // Notes
-  '/Notes/notes.html',
-  '/Notes/notes-app.css',
-  '/Notes/notes-manager.js',
-  '/Notes/notes-ui.js',
-  '/Notes/notes-integration.js'
+  'Notes/notes.html',
+  'Notes/notes-app.css',
+  'Notes/notes-manager.js',
+  'Notes/notes-ui.js',
+  'Notes/notes-integration.js'
 ];
 
 // Data URLs that need special caching
 const DATA_URLS = [
-  '/data/gurpurab-events.json',
-  '/data/guru-purabs.json',
-  '/NitnemTracker/data/banis.json',
-  '/NitnemTracker/data/achievements.json'
+  'data/gurpurab-events.json',
+  'data/guru-purabs.json',
+  'NitnemTracker/data/banis.json',
+  'NitnemTracker/data/achievements.json'
 ];
 
 // IndexedDB for notification scheduling (Service Worker scope)
@@ -213,6 +211,23 @@ const timers = new Map();
 
 // Recurring alarm schedules (merged from sw-alarm.js)
 const scheduledAlarms = new Map();
+
+// PERF: In-memory dedup set for fired notifications (keyed by 'id_date')
+// Replaces the MessageChannel round-trip per notification per sync check.
+const _shownToday = new Set();
+let _shownTodayDate = '';
+function _hasShownToday(id) {
+  const today = new Date().toLocaleDateString('en-CA');
+  if (today !== _shownTodayDate) {
+    _shownToday.clear();
+    _shownTodayDate = today;
+  }
+  return _shownToday.has(id + '_' + today);
+}
+function _markShownToday(id) {
+  const today = new Date().toLocaleDateString('en-CA');
+  _shownToday.add(id + '_' + today);
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INSTALL EVENT - Cache static files but DON'T skip waiting automatically
@@ -337,6 +352,12 @@ self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('/Audio/') ||
       url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
     event.respondWith(cacheFirst(event.request));
+    return;
+  }
+
+  // CRITICAL FIX: Use NETWORK-FIRST for index.html to prevent broken UI when returning from nitnem
+  if (url.pathname === '/' || url.pathname.endsWith('/index.html')) {
+    event.respondWith(networkFirst(event.request));
     return;
   }
 
@@ -610,92 +631,67 @@ self.addEventListener('periodicsync', (event) => {
 
 // Check scheduled notifications and fire any that are due
 async function checkAndFireScheduledNotifications() {
-  console.log('[SW] Checking scheduled notifications...');
-
-  // In Capacitor native apps, notifications are handled by the native plugin
-  // Service worker notifications are unreliable in native mode
-  // This function is kept for PWA/web builds only
-  const clients = await self.clients.matchAll();
+  // PERF FIX: Replaced per-notification MessageChannel round-trips (was blocking
+  // the SW thread for up to 7 * N_clients * 100ms per periodic sync) with a
+  // fast in-memory Set check that is O(1) and purely synchronous.
   
-  // Check if running in Capacitor native mode
-  for (const client of clients) {
-    try {
-      const response = await new Promise((resolve) => {
-        const channel = new MessageChannel();
-        channel.port1.onmessage = (e) => resolve(e.data);
-        client.postMessage({ type: 'CHECK_CAPACITOR_MODE' }, [channel.port2]);
-        setTimeout(() => resolve({ isCapacitor: false }), 100);
-      });
-      
-      if (response.isCapacitor) {
-        console.log('[SW] Running in Capacitor mode - skipping service worker notifications');
-        return; // Let Capacitor handle notifications
-      }
-    } catch (e) {
-      // Continue with service worker notifications
-    }
-  }
+  // Quick Capacitor check — if any client URL contains 'capacitor://' skip SW notifs
+  const clients = await self.clients.matchAll({ type: 'window' });
+  const isCapacitor = clients.some(c => c.url && c.url.startsWith('capacitor://'));
+  if (isCapacitor) return;
 
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
 
-  // Default daily notifications (like in the Gurbani Kirtan Darbar app)
   const defaultNotifications = [
     {
       id: 'amritvela',
       title: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ | Amrit Vela',
       body: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ॥ Wake up for Amrit Vela meditation',
-      hour: 4,
-      minute: 0,
-      icon: '/assets/Darbar-sahib-AMRITVELA.webp'
+      hour: 4, minute: 0,
+      icon: 'assets/Darbar-sahib-AMRITVELA.webp'
     },
     {
       id: 'hukamnama',
       title: 'ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Daily Hukamnama',
       body: 'Read today\'s sacred command from Sri Guru Granth Sahib Ji',
-      hour: 6,
-      minute: 0,
-      icon: '/assets/icon-192x192.png'
+      hour: 6, minute: 0,
+      icon: 'assets/icon-192x192.png'
     },
     {
       id: 'rehras',
       title: 'ਰਹਿਰਾਸ ਸਾਹਿਬ | Rehras Sahib',
       body: 'Time for evening prayers - ਸੰਝ ਦੀ ਬੰਦਗੀ ਦਾ ਸਮਾਂ',
-      hour: 18,
-      minute: 30,
-      icon: '/assets/icon-192x192.png'
+      hour: 18, minute: 30,
+      icon: 'assets/icon-192x192.png'
     },
     {
       id: 'nitnem_morning',
       title: 'ਨਿਤਨੇਮ ਦਾ ਸਮਾਂ | Nitnem Time',
       body: 'ਸਵੇਰ ਦੀ ਬਾਣੀ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ — Start your morning Nitnem',
-      hour: 4,
-      minute: 30,
-      icon: '/assets/icon-192x192.png'
+      hour: 4, minute: 30,
+      icon: 'assets/icon-192x192.png'
     },
     {
       id: 'kirtan',
       title: 'ਕੀਰਤਨ ਦਰਬਾਰ | Evening Kirtan',
       body: 'ਸ਼ਾਮ ਦੇ ਕੀਰਤਨ ਸੁਣੋ — Listen to evening kirtan and feel divine peace',
-      hour: 17,
-      minute: 0,
-      icon: '/assets/Darbar-sahib-AMRITVELA.webp'
+      hour: 17, minute: 0,
+      icon: 'assets/Darbar-sahib-AMRITVELA.webp'
     },
     {
       id: 'sohila',
       title: 'ਸੋਹਿਲਾ ਸਾਹਿਬ | Sohila Sahib',
       body: 'Time for night prayers before sleep - ਸੌਣ ਤੋਂ ਪਹਿਲਾਂ ਸੋਹਿਲਾ ਸਾਹਿਬ',
-      hour: 21,
-      minute: 30,
-      icon: '/assets/icon-192x192.png'
+      hour: 21, minute: 30,
+      icon: 'assets/icon-192x192.png'
     },
     {
       id: 'nitnem_pending',
       title: 'ਨਿਤਨੇਮ ਬਾਕੀ | Nitnem Pending',
       body: 'ਅੱਜ ਦਾ ਨਿਤਨੇਮ ਅਜੇ ਬਾਕੀ ਹੈ — Complete your Nitnem before the day ends',
-      hour: 19,
-      minute: 0,
-      icon: '/assets/icon-192x192.png'
+      hour: 19, minute: 0,
+      icon: 'assets/icon-192x192.png'
     }
   ];
 
@@ -703,50 +699,27 @@ async function checkAndFireScheduledNotifications() {
   const currentMinute = new Date().getMinutes();
 
   for (const notif of defaultNotifications) {
-    const shownKey = `anhad_${notif.id}_shown_${today}`;
-
-    // Check if it's time for this notification (within 15 min window)
     const notifTime = notif.hour * 60 + notif.minute;
     const currentTime = currentHour * 60 + currentMinute;
     const timeDiff = currentTime - notifTime;
 
-    // Fire if within 0-15 minute window and not already shown today
+    // Fire if within 0-15 minute window
     if (timeDiff >= 0 && timeDiff <= 15) {
-      // Use a simple check via indexed clients
-      let alreadyShown = false;
-
-      // Check with clients if notification was shown
-      for (const client of clients) {
-        try {
-          const response = await new Promise((resolve) => {
-            const channel = new MessageChannel();
-            channel.port1.onmessage = (e) => resolve(e.data);
-            client.postMessage({ type: 'CHECK_NOTIFICATION_SHOWN', key: shownKey }, [channel.port2]);
-            setTimeout(() => resolve({ shown: false }), 100);
-          });
-          if (response.shown) {
-            alreadyShown = true;
-            break;
-          }
-        } catch (e) {
-          // Ignore errors
-        }
-      }
-
-      if (!alreadyShown) {
+      // O(1) in-memory check — no MessageChannel round-trips
+      if (!_hasShownToday(notif.id)) {
         await self.registration.showNotification(notif.title, {
           body: notif.body,
-          icon: notif.icon || '/assets/icon-192x192.png',
-          badge: '/assets/icon-72x72.png',
+          icon: notif.icon || 'assets/icon-192x192.png',
+          badge: 'assets/icon-72x72.png',
           tag: `anhad-${notif.id}`,
           renotify: true,
           requireInteraction: true,
           vibrate: [200, 100, 200, 100, 400],
           data: {
-            url: notif.id === 'hukamnama' ? '/Hukamnama/daily-hukamnama.html'
-               : notif.id === 'kirtan' ? '/index.html'
-               : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? '/NitnemTracker/nitnem-tracker.html'
-               : '/reminders/smart-reminders-v7.html',
+            url: notif.id === 'hukamnama' ? 'Hukamnama/daily-hukamnama.html'
+               : notif.id === 'kirtan' ? 'index.html'
+               : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? 'NitnemTracker/nitnem-tracker.html'
+               : 'reminders/smart-reminders-v7.html',
             id: notif.id,
             timestamp: now
           },
@@ -756,12 +729,10 @@ async function checkAndFireScheduledNotifications() {
           ]
         });
 
-        console.log(`[SW] Fired notification: ${notif.id}`);
-
-        // Notify clients that notification was shown
-        clients.forEach(client => {
-          client.postMessage({ type: 'NOTIFICATION_SHOWN', key: shownKey, id: notif.id });
-        });
+        _markShownToday(notif.id);
+        // Inform open clients (fire-and-forget, no await)
+        const shownKey = `anhad_${notif.id}_shown_${today}`;
+        clients.forEach(c => c.postMessage({ type: 'NOTIFICATION_SHOWN', key: shownKey, id: notif.id }));
       }
     }
   }
@@ -1212,7 +1183,7 @@ function checkAndTriggerAlarms() {
 // Fallback: check recurring alarms every minute in case setTimeout drifted
 setInterval(checkAndTriggerAlarms, 60000);
 
-console.log('[SW] ANHAD Service Worker v3.0.0 loaded - iOS/Android optimized');
+console.log('[SW] ANHAD Service Worker v5.8.0 loaded - iOS/Android optimized');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INDEXEDDB HELPERS - Naam Abhyas Alarm Persistence

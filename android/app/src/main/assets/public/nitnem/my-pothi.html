@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 
 <head>
@@ -16,9 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <!-- GurbaniDB — IndexedDB offline cache -->
-    <script src="../lib/gurbani-db.js"></script>
-    
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
     <script src="../lib/global-theme.js"></script>
@@ -347,7 +344,7 @@
         <div class="orb orb-2"></div>
     </div>
 
-    <div class="app">
+    <div class="app" id="app">
         <header class="header">
             <button class="back-btn" id="backBtn">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 2L2 10L10 18" /></svg>
@@ -398,13 +395,16 @@
         <footer class="footer">
             <p>ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖ਼ਾਲਸਾ ॥ ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਿਹ ॥</p>
         </footer>
+
+        <div class="save-section hidden" id="saveSection">
+            <button class="save-btn" id="saveBtn">✅ Save My Pothi</button>
+        </div>
+
+        <div class="toast" id="toast">✅ Pothi Saved!</div>
     </div>
 
-    <div class="save-section hidden" id="saveSection">
-        <button class="save-btn" id="saveBtn">✅ Save My Pothi</button>
-    </div>
-
-    <div class="toast" id="toast">✅ Pothi Saved!</div>
+    <!-- GurbaniDB — IndexedDB offline cache -->
+    <script src="../lib/gurbani-db.js"></script>
 
     <script>
         // ═══════════════════════════════════════════════════════════════

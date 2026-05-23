@@ -7,29 +7,52 @@
 (function() {
   'use strict';
 
-  // Pages to preload when on the hub page
+  // Helper to resolve paths relative to app root
+  function getAbsoluteUrl(url) {
+    if (url.startsWith('http') || url.startsWith('//') || url.startsWith('data:')) return url;
+    // Strip leading slash if any
+    const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+    let root = window.ANHAD_ROOT;
+    if (!root) {
+      const path = window.location.pathname;
+      const marker = '/frontend/';
+      const idx = path.indexOf(marker);
+      if (idx !== -1) {
+        root = window.location.origin + path.substring(0, idx + marker.length);
+      } else {
+        root = window.location.origin + '/';
+      }
+    }
+    // Ensure root has a protocol to prevent URL construction errors
+    if (root && !root.startsWith('http://') && !root.startsWith('https://')) {
+      root = window.location.origin + (root.startsWith('/') ? '' : '/') + root;
+    }
+    return new URL(cleanUrl, root).href;
+  }
+
+  // Pages to preload when on the hub page (relative to app root)
   const NITNEM_PAGES = [
-    '/nitnem/reader.html',
-    '/nitnem/japji-sahib.html',
-    '/nitnem/jaap-sahib.html',
-    '/nitnem/chaupai-sahib.html',
-    '/nitnem/anand-sahib.html',
-    '/nitnem/rehras-sahib.html',
-    '/nitnem/sohila-sahib.html',
-    '/nitnem/tav-prasad-savaiye.html',
-    '/nitnem/category/sggs.html',
-    '/nitnem/category/dasam.html',
-    '/nitnem/category/nitnem.html',
-    '/nitnem/category/sarbloh.html'
+    'nitnem/reader.html',
+    'nitnem/japji-sahib.html',
+    'nitnem/jaap-sahib.html',
+    'nitnem/chaupai-sahib.html',
+    'nitnem/anand-sahib.html',
+    'nitnem/rehras-sahib.html',
+    'nitnem/sohila-sahib.html',
+    'nitnem/tav-prasad-savaiye.html',
+    'nitnem/category/sggs.html',
+    'nitnem/category/dasam.html',
+    'nitnem/category/nitnem.html',
+    'nitnem/category/sarbloh.html'
   ];
 
-  // Critical CSS and JS to preload
+  // Critical CSS and JS to preload (relative to app root)
   const CRITICAL_ASSETS = [
-    '/data/banis-chunks/index.json',
-    '/data/banis-chunks/nitnem-banis.json',
-    '/nitnem/js/banidb-api.js',
-    '/nitnem/js/reader-engine.js',
-    '/nitnem/css/reader.css'
+    'data/banis-chunks/index.json',
+    'data/banis-chunks/nitnem-banis.json',
+    'nitnem/js/banidb-api.js',
+    'nitnem/js/reader-engine.js',
+    'nitnem/css/reader.css'
   ];
 
   // Check if we're on the hub/main page
@@ -40,12 +63,14 @@
 
   // Preload a single URL using link rel=prefetch
   function prefetchUrl(url) {
+    const absUrl = getAbsoluteUrl(url);
+    const pathname = new URL(absUrl, window.location.origin).pathname;
     return new Promise((resolve) => {
       const link = document.createElement('link');
       link.rel = 'prefetch';
-      link.href = url;
-      link.as = url.endsWith('.css') ? 'style' : 
-                url.endsWith('.js') ? 'script' : 
+      link.href = absUrl;
+      link.as = pathname.endsWith('.css') ? 'style' : 
+                pathname.endsWith('.js') ? 'script' : 
                 'document';
       
       link.onload = () => resolve(true);
@@ -60,7 +85,8 @@
 
   // Preload using fetch API (more reliable for JS/CSS)
   function prefetchWithFetch(url) {
-    return fetch(url, { mode: 'no-cors', cache: 'force-cache' })
+    const absUrl = getAbsoluteUrl(url);
+    return fetch(absUrl, { mode: 'no-cors', cache: 'force-cache' })
       .then(() => true)
       .catch(() => false);
   }
@@ -114,13 +140,13 @@
   // Preload images that are likely to be needed
   function preloadCriticalImages() {
     const images = [
-      '/assets/sggs-transparent.webp',
-      '/assets/icons/bg-nitnem.jpg'
+      'assets/sggs-transparent.webp',
+      'assets/icons/bg-nitnem.jpg'
     ];
     
     images.forEach(src => {
       const img = new Image();
-      img.src = src;
+      img.src = getAbsoluteUrl(src);
     });
   }
 

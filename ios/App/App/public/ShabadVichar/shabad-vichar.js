@@ -369,30 +369,18 @@ class ShabadVichar {
         const verse = data.verses[0] || {};
 
         // Ang number
-        if (this.$.angNumber) {
-            this.$.angNumber.textContent = info.pageNo || verse.pageNo || '---';
-        }
+        this.$.angNumber.textContent = info.pageNo || verse.pageNo || '---';
 
         // Source info
-        if (this.$.sourceInfo) {
-            const source = info.source?.english || 'Sri Guru Granth Sahib Ji';
-            const raag = info.raag?.english || '';
-            const writer = info.writer?.english || '';
-            
-            let html = `<span class="meta-badge source-badge">${source}</span>`;
-            if (raag) {
-                html += `<span class="meta-badge raag-badge">` +
-                    `<svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">` +
-                    `<path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>${raag}</span>`;
-            }
-            if (writer) {
-                html += `<span class="meta-badge writer-badge">` +
-                    `<svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">` +
-                    `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>${writer}</span>`;
-            }
-            
-            this.$.sourceInfo.innerHTML = html;
-        }
+        const parts = [
+            info.source?.english,
+            info.raag?.english,
+            info.writer?.english
+        ].filter(Boolean);
+
+        this.$.sourceInfo.textContent = parts.length
+            ? parts.join(' • ')
+            : 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ';
     }
 
     // ═══════════════════════════════════════════════════════════════

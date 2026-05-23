@@ -25,32 +25,39 @@
     
     
     <script>
+        // Module Version Check (Lightweight)
         (function() {
-            const APP_VERSION = '1.0.1'; // Increment this on every deploy
-            const storedVersion = localStorage.getItem('anhad_app_version');
+            const MOD_VERSION = '1.0.1';
+            const stored = localStorage.getItem('anhad_nitnem_version');
+            if (stored !== MOD_VERSION) {
+                localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
+            }
+        })();
+
+        // Theme Initialization (Instant)
+        (function() {
+            const theme = localStorage.getItem('anhad_theme') || 'light';
+            let effectiveTheme = theme;
+            if (theme === 'auto') {
+                const hour = new Date().getHours();
+                effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+            }
+            document.documentElement.setAttribute('data-theme', effectiveTheme);
+            document.documentElement.style.colorScheme = effectiveTheme;
+            if (effectiveTheme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F8F9FA';
+            document.documentElement.style.backgroundColor = bg;
             
-            if (storedVersion !== APP_VERSION) {
-                localStorage.setItem('anhad_app_version', APP_VERSION);
-                // Force reload from server, not cache
-                if (storedVersion) {
-                    window.location.reload(true);
+            // Sync to body
+            const observer = new MutationObserver(() => {
+                if (document.body) {
+                    if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+                    observer.disconnect();
                 }
-            }
-            
-            // Service Worker registration for better cache control
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // New version available - force reload
-                                window.location.reload();
-                            }
-                        });
-                    });
-                });
-            }
+            });
+            observer.observe(document.documentElement, { childList: true, subtree: true });
         })();
     </script>
     
@@ -168,10 +175,21 @@
             min-height: 100vh;
         }
 
-        /* Dark Mode Body Override */
+        /* Dark Mode Overrides */
+        [data-theme="dark"] {
+            --bg-primary: #000000;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --ios-blue: #0A84FF;
+            --ios-orange: #FF9F0A;
+            --sacred-gold: #D4AF37;
+            --glass-bg: rgba(28, 28, 30, 0.85);
+            --separator: rgba(255, 255, 255, 0.15);
+        }
+        
         [data-theme="dark"] body {
-            background: #000000;
-            color: #FFFFFF;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -1043,8 +1061,8 @@
              alt="Background" />
     </div>
 
-    <!-- Skeleton Loading -->
-    <div class="skeleton-container" id="skeletonContainer">
+    <!-- Skeleton Loading — hidden immediately, only shown during real page loading -->
+    <div class="skeleton-container" id="skeletonContainer" style="display:none">
         <div class="skeleton skeleton-header"></div>
         <div class="skeleton skeleton-hero"></div>
         <div class="skeleton skeleton-search"></div>
@@ -1076,7 +1094,8 @@
         
         <!-- Header -->
         <header class="header">
-            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back">
+            <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" data-anhad-back="../index.html"
+               onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now()+'');}catch(e){}">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -1281,7 +1300,7 @@
     
     <!-- Floating Tab Bar -->
     <nav class="tab-bar">
-        <a href="../index.html" class="tab-item">
+        <a href="../index.html" class="tab-item" onclick="goHome(event)">
             <span class="tab-icon">🏠</span>
             <span class="tab-label">Home</span>
         </a>
@@ -1338,9 +1357,8 @@
         // SKELETON LOADING
         // ═══════════════════════════════════════════════════════════════
         
-        setTimeout(() => {
-            document.getElementById('skeletonContainer').classList.add('hidden');
-        }, 600);
+        // Hide skeleton immediately — content is static HTML, no need to wait
+        document.getElementById('skeletonContainer')?.classList.add('hidden');
         
         // ═══════════════════════════════════════════════════════════════
         // THEME TOGGLE - Using Global AnhadTheme API
@@ -1440,6 +1458,34 @@
             searchInput.value = '';
             searchResults.innerHTML = '<p class="search-hint">Type to search for banis...</p>';
         });
+    </script>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // GO HOME — Set ALL session flags so welcome-check.js NEVER
+        // redirects to the splash/welcome screen on any navigation path
+        // Exposed on window so it works both in SPA IIFE context and
+        // direct inline onclick="goHome(event)" calls.
+        // ═══════════════════════════════════════════════════════════════
+        window.goHome = function goHome(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            // Mark session as active — prevents welcome-check.js splash redirect
+            try {
+                sessionStorage.setItem('anhad_welcomed', '1');
+                sessionStorage.setItem('anhad_session_active', 'true');
+                localStorage.setItem('anhad_welcome_seen', 'true');
+                localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+            } catch (_) {}
+
+            // USE STANDARDIZED NAVIGATION ENGINE (SPA — no full-page reload)
+            if (window.navigateTo) {
+                window.navigateTo('../index.html');
+            } else if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
+            } else {
+                window.location.href = '../index.html';
+            }
+        };
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>

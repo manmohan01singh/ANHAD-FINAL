@@ -51,9 +51,9 @@
     // ═══════════════════════════════════════════════════════════════
 
     const elements = {
-        loading: document.getElementById('readerLoading'),
+        loading: document.getElementById('loadingOverlay') || document.getElementById('readerLoading'),
         loadingText: document.getElementById('loadingText'),
-        error: document.getElementById('readerError'),
+        error: document.getElementById('errorState') || document.getElementById('readerError'),
         errorMessage: document.getElementById('errorMessage'),
         retryBtn: document.getElementById('retryBtn'),
         headerTitle: document.getElementById('headerTitle'),

@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.8.0'; // Bumped: Hukamnama Punjabi translation fix (2026-05-18)
+const CACHE_VERSION = 'anhad-v5.9.3'; // Bumped: Fix raag ang-loading + keyboard ghost-tap
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -1183,7 +1183,7 @@ function checkAndTriggerAlarms() {
 // Fallback: check recurring alarms every minute in case setTimeout drifted
 setInterval(checkAndTriggerAlarms, 60000);
 
-console.log('[SW] ANHAD Service Worker v3.0.0 loaded - iOS/Android optimized');
+console.log('[SW] ANHAD Service Worker v5.8.0 loaded - iOS/Android optimized');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INDEXEDDB HELPERS - Naam Abhyas Alarm Persistence

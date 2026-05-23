@@ -85,14 +85,19 @@
         }
     }
 
+    let _saveDebounceTimer = null;
     function saveStats(stats) {
-        try {
-            localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-            // Dispatch event for dashboard updates
-            window.dispatchEvent(new CustomEvent('statsUpdated', { detail: stats }));
-        } catch (e) {
-            console.error('[UserStats] Error saving stats:', e);
-        }
+        // PERFORMANCE FIX: Debounce localStorage writes to prevent jank and QuotaExceeded
+        clearTimeout(_saveDebounceTimer);
+        _saveDebounceTimer = setTimeout(() => {
+            try {
+                localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+                // Dispatch event for dashboard updates
+                window.dispatchEvent(new CustomEvent('statsUpdated', { detail: stats }));
+            } catch (e) {
+                console.error('[UserStats] Error saving stats:', e);
+            }
+        }, 300);
     }
 
     function getStreak() {

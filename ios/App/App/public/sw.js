@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.7.0'; // Bumped: golden radio logo styling (2026-05-18)
+const CACHE_VERSION = 'anhad-v5.8.3'; // Bumped: Fix Gurpurab calendar flash
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -90,7 +90,6 @@ const STATIC_FILES = [
 
   // Nitnem v2.1 - RENOVATED MODULE (iOS 26++ Design)
   'nitnem/index.html',
-  'nitnem/indexbani.html',
   'nitnem/reader.html',
   'nitnem/css/main.css',
   'nitnem/css/category.css',
@@ -1184,7 +1183,7 @@ function checkAndTriggerAlarms() {
 // Fallback: check recurring alarms every minute in case setTimeout drifted
 setInterval(checkAndTriggerAlarms, 60000);
 
-console.log('[SW] ANHAD Service Worker v3.0.0 loaded - iOS/Android optimized');
+console.log('[SW] ANHAD Service Worker v5.8.0 loaded - iOS/Android optimized');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // INDEXEDDB HELPERS - Naam Abhyas Alarm Persistence

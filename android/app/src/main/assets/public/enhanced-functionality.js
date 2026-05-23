@@ -204,7 +204,7 @@ class GurbaniRadioEnhancements {
   }
 
   openNitnemPaath() {
-    window.location.href = '../nitnem/indexbani.html';
+    window.location.href = '../nitnem/index.html';
   }
 
   openNotes() {
@@ -898,7 +898,7 @@ class GurbaniRadioEnhancements {
     
     // Use Kirtan cover image for album art when playing Kirtan
     const notificationIcon = useKirtanArt ? 
-      '<img src="/assets/Darbar-sahib-AMRITVELA.webp" alt="Kirtan Cover" style="width: 24px; height: 24px; border-radius: 4px;" />' :
+      '<img src="assets/Darbar-sahib-AMRITVELA.webp" alt="Kirtan Cover" style="width: 24px; height: 24px; border-radius: 4px;" />' :
       this.getNotificationIcon(type);
     
     notification.innerHTML = `

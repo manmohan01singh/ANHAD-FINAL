@@ -8,7 +8,7 @@
 	},
 	"android": {
 		"allowMixedContent": true,
-		"webContentsDebuggingEnabled": true,
+		"webContentsDebuggingEnabled": false,
 		"backgroundColor": "#000000"
 	},
 	"plugins": {
@@ -19,11 +19,12 @@
 		},
 		"StreakSaverPlugin": {},
 		"SplashScreen": {
-			"launchShowDuration": 2000,
-			"backgroundColor": "#FFFFFF",
-			"showSpinner": false,
-			"androidSpinnerStyle": "small",
+			"launchShowDuration": 0,
+			"launchAutoHide": true,
+			"backgroundColor": "#000000",
+			"showSpinner": true,
 			"spinnerColor": "#f7c634",
+			"androidSpinnerStyle": "small",
 			"androidSplashResourceName": "splash",
 			"androidScaleType": "CENTER_CROP"
 		},

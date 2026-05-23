@@ -1358,7 +1358,7 @@
         // ═══════════════════════════════════════════════════════════════
         
         // Hide skeleton immediately — content is static HTML, no need to wait
-        document.getElementById('skeletonContainer').classList.add('hidden');
+        document.getElementById('skeletonContainer')?.classList.add('hidden');
         
         // ═══════════════════════════════════════════════════════════════
         // THEME TOGGLE - Using Global AnhadTheme API
@@ -1464,9 +1464,11 @@
         // ═══════════════════════════════════════════════════════════════
         // GO HOME — Set ALL session flags so welcome-check.js NEVER
         // redirects to the splash/welcome screen on any navigation path
+        // Exposed on window so it works both in SPA IIFE context and
+        // direct inline onclick="goHome(event)" calls.
         // ═══════════════════════════════════════════════════════════════
-        function goHome(e) {
-            e.preventDefault();
+        window.goHome = function goHome(e) {
+            if (e && e.preventDefault) e.preventDefault();
             // Mark session as active — prevents welcome-check.js splash redirect
             try {
                 sessionStorage.setItem('anhad_welcomed', '1');
@@ -1476,14 +1478,14 @@
             } catch (_) {}
 
             // USE STANDARDIZED NAVIGATION ENGINE (SPA — no full-page reload)
-            if (window.anhadGoBack) {
-                window.anhadGoBack('../index.html');
-            } else if (window.navigateTo) {
+            if (window.navigateTo) {
                 window.navigateTo('../index.html');
+            } else if (window.anhadGoBack) {
+                window.anhadGoBack('../index.html');
             } else {
                 window.location.href = '../index.html';
             }
-        }
+        };
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>

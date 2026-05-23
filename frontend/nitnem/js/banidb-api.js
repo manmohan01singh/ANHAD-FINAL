@@ -9,7 +9,29 @@ const BaniDB = (function () {
 
     // Configuration
     const CONFIG = {
-        chunksPath: '../data/banis-chunks',
+        get chunksPath() {
+            // ANHAD_ROOT may not be set yet (smooth-navigation.js loads after this script).
+            // Build a robust base from the current page location.
+            let root = window.ANHAD_ROOT;
+            if (!root) {
+                // Derive root from current page: nitnem/index.html → parent is frontend/
+                const loc = window.location;
+                const pathParts = loc.pathname.split('/');
+                // Remove last two segments (e.g. "nitnem" and "index.html") to get base
+                pathParts.splice(-2);
+                root = loc.origin + pathParts.join('/') + '/';
+            }
+            // Ensure root has a protocol to prevent URL construction errors
+            if (root && !root.startsWith('http://') && !root.startsWith('https://')) {
+                root = window.location.origin + (root.startsWith('/') ? '' : '/') + root;
+            }
+            try {
+                return new URL('data/banis-chunks', root).href;
+            } catch(e) {
+                // Absolute fallback
+                return window.location.origin + '/data/banis-chunks';
+            }
+        },
         cacheVersion: 'v5',
         offlineFirst: true
     };

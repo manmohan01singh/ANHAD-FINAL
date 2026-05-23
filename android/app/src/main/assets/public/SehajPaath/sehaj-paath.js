@@ -372,7 +372,7 @@ class SehajPaathApp {
 
         // Search button (header) - go to dedicated search page
         document.getElementById('searchBtn')?.addEventListener('click', () => {
-            window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
+            if (window.navigateTo) window.navigateTo('../GurbaniKhoj/gurbani-khoj.html'); else window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
         });
 
         // Settings button (header)
@@ -659,13 +659,13 @@ class SehajPaathApp {
         if (window.anhadGoBack) {
             window.anhadGoBack('../index.html');
         } else {
-            window.location.href = '../index.html';
+            if (window.navigateTo) window.navigateTo('../index.html'); else window.location.href = '../index.html';
         }
     }
 
     openReader(ang = null) {
         const targetAng = ang || this.state.currentPaath?.currentAng || 1;
-        window.location.href = `reader.html?ang=${targetAng}`;
+        if (window.navigateTo) window.navigateTo(`reader.html?ang=${targetAng}`); else window.location.href = `reader.html?ang=${targetAng}`;
     }
 
     /**
@@ -675,7 +675,7 @@ class SehajPaathApp {
      * @param {string} source - The source: 'random', 'search', 'bookmark', 'hukamnama'
      */
     openReaderDetached(ang, source = 'random') {
-        window.location.href = `reader.html?ang=${ang}&source=${source}`;
+        if (window.navigateTo) window.navigateTo(`reader.html?ang=${ang}&source=${source}`); else window.location.href = `reader.html?ang=${ang}&source=${source}`;
     }
 
     onAngSliderChange(e) {
@@ -753,7 +753,7 @@ class SehajPaathApp {
                 break;
             case 'search':
                 // Open dedicated Gurmukhi search page
-                window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
+                if (window.navigateTo) window.navigateTo('../GurbaniKhoj/gurbani-khoj.html'); else window.location.href = '../GurbaniKhoj/gurbani-khoj.html';
                 break;
             case 'bookmarks':
                 this.renderBookmarksModal();

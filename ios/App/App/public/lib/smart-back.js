@@ -157,56 +157,96 @@
     } catch (e) {}
 
     // 1. Use history.back() when we have real browser history.
-    //    In Capacitor WebView document.referrer is always empty, so we
-    //    rely solely on history.length (which IS correct in WebView).
     var isCapacitor = !!(window.Capacitor || window.location.protocol === 'capacitor:');
     var hasHistory  = window.history.length > 1;
 
     if (hasHistory) {
-      // Extra guard: if referrer is available, verify it's same-origin
-      if (document.referrer) {
+      var shouldHistoryBack = false;
+
+      var referrer = document.referrer || getSavedReferrer();
+      if (referrer) {
+        // If referrer exists, ensure it's from our own app
         try {
-          var ref = new URL(document.referrer);
+          var ref = new URL(referrer);
           if (ref.origin === window.location.origin) {
-            console.log('[SmartBack] history.back() — referrer confirmed same-origin');
-            history.back();
-            return;
+            // Check if referrer is a child page of current page
+            // (e.g. current = /nitnem/index.html, referrer = /nitnem/reader.html)
+            var currPath = window.location.pathname;
+            var refPath = ref.pathname;
+            
+            // Normalize paths: remove trailing slashes and index.html
+            var cleanCurr = currPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            var cleanRef = refPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            
+            var isCurrHub = currPath.endsWith('/') || currPath.endsWith('/index.html') || currPath.endsWith('/index');
+            
+            if (isCurrHub && cleanRef.startsWith(cleanCurr + '/')) {
+              // Referrer is a sub-page/child of this hub page. Do NOT use history.back()
+              // as it would lead to a navigation loop between index and reader pages.
+              shouldHistoryBack = false;
+              console.log('[SmartBack] Referrer is a child page, skipping history.back:', refPath);
+            } else {
+              shouldHistoryBack = true;
+            }
           }
-          // Different-origin referrer → don't use history.back(), go to fallback
-        } catch (e) { /* ignore */ }
-      } else if (isCapacitor) {
-        // In Capacitor, referrer is always empty but history works fine
-        console.log('[SmartBack] history.back() — Capacitor WebView, no referrer');
+        } catch (e) {
+          shouldHistoryBack = false;
+        }
+      } else {
+        // If no referrer exists (common in PWA standalone or Capacitor), it's safe to go back
+        shouldHistoryBack = true;
+      }
+
+      if (shouldHistoryBack) {
+        console.log('[SmartBack] history.back() executed');
         history.back();
         return;
       }
     }
 
-    // 2. Resolve fallback URL to absolute path
+    // 2. Resolve fallback URL to absolute path relative to current page location first
     var target = fallbackUrl || '../index.html';
-    var isBackToHome = (target === '../index.html' || target.endsWith('/index.html'));
-
-    if (isBackToHome) {
-      var root = window.ANHAD_ROOT;
-      if (!root) {
-        var path   = window.location.pathname;
-        var marker = '/frontend/';
-        var idx    = path.indexOf(marker);
-        root = (idx !== -1)
-          ? path.substring(0, idx + marker.length)
-          : window.location.origin + '/';
-      }
-      target = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
-      console.log('[SmartBack] Back-to-Home → resolved to:', target);
+    var resolvedTarget;
+    try {
+      resolvedTarget = new URL(target, window.location.href).href;
+    } catch (_) {
+      resolvedTarget = target;
     }
 
-    console.log('[SmartBack] Navigating to fallback:', target);
+    // Determine if resolvedTarget points to the global App Home page
+    var root = window.ANHAD_ROOT;
+    if (!root) {
+      var path   = window.location.pathname;
+      var marker = '/frontend/';
+      var idx    = path.indexOf(marker);
+      root = (idx !== -1)
+        ? window.location.origin + path.substring(0, idx + marker.length)
+        : window.location.origin + '/';
+    }
+    // Make sure root has origin/protocol
+    if (root && !root.startsWith('http://') && !root.startsWith('https://')) {
+      root = window.location.origin + (root.startsWith('/') ? '' : '/') + root;
+    }
+    
+    var globalHome1 = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
+    var globalHome2 = root.endsWith('/') ? root : root + '/';
+    
+    var isBackToHome = (resolvedTarget === globalHome1 || resolvedTarget === globalHome2);
+
+    if (isBackToHome) {
+      resolvedTarget = globalHome1;
+      console.log('[SmartBack] Back-to-Home → resolved to:', resolvedTarget);
+    } else {
+      console.log('[SmartBack] Local Back → resolved to:', resolvedTarget);
+    }
+
+    console.log('[SmartBack] Navigating to fallback:', resolvedTarget);
 
     // Prefer SPA engine (no full-page reload, no flash)
     if (window.navigateTo) {
-      window.navigateTo(target);
+      window.navigateTo(resolvedTarget);
     } else {
-      window.location.href = target;
+      window.location.href = resolvedTarget;
     }
   };
 

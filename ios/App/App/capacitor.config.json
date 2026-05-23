@@ -1,14 +1,15 @@
 {
 	"appId": "com.gurbaniradio.app",
-	"appName": "ANHAD",
+	"appName": "Anhad",
 	"webDir": "frontend",
 	"server": {
 		"androidScheme": "https",
 		"cleartext": false
 	},
 	"android": {
-		"allowMixedContent": false,
-		"webContentsDebuggingEnabled": false
+		"allowMixedContent": true,
+		"webContentsDebuggingEnabled": false,
+		"backgroundColor": "#000000"
 	},
 	"plugins": {
 		"LocalNotifications": {
@@ -16,16 +17,23 @@
 			"iconColor": "#f7c634",
 			"sound": "notification.wav"
 		},
+		"StreakSaverPlugin": {},
 		"SplashScreen": {
-			"launchShowDuration": 2000,
+			"launchShowDuration": 0,
+			"launchAutoHide": true,
 			"backgroundColor": "#000000",
-			"showSpinner": false,
+			"showSpinner": true,
+			"spinnerColor": "#f7c634",
 			"androidSpinnerStyle": "small",
-			"spinnerColor": "#f7c634"
+			"androidSplashResourceName": "splash",
+			"androidScaleType": "CENTER_CROP"
 		},
 		"WidgetDataBridge": {
 			"updateInterval": 15,
 			"debug": false
+		},
+		"CapacitorHttp": {
+			"enabled": false
 		}
 	},
 	"packageClassList": [

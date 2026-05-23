@@ -122,12 +122,23 @@ function getGuruNameForEvent(eventName, guruNumber) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  // FIX: Guard against duplicate initialization on SPA re-mount
+  // BUT: Allow re-initialization on SPA page change (back navigation)
+  if (window._homepageDataInitialized) {
+    console.log('[HomepageData] Already initialized, skipping duplicate init');
+    return;
+  }
+  window._homepageDataInitialized = true;
+
+  // FIX: Track intervals for cleanup
+  const _hpIntervals = [];
+
   // ━━━ NAVIGATION PATHS ━━━
   const NAV_PATHS = {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
     shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
-    nitnemCard: 'nitnem/indexbani.html',
+    nitnemCard: 'nitnem/index.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
@@ -143,7 +154,11 @@ document.addEventListener('DOMContentLoaded', function () {
       el.addEventListener('click', () => {
         el.style.transform = 'scale(0.97)';
         if (navigator.vibrate) navigator.vibrate(10);
-        setTimeout(() => window.location.href = path, 100);
+        const destination = path;
+        setTimeout(() => {
+          if (window.navigateTo) window.navigateTo(destination);
+          else window.location.href = destination;
+        }, 100);
       });
       el.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
@@ -201,7 +216,8 @@ document.addEventListener('DOMContentLoaded', function () {
     
     if (!subtitleEl || !dateEl) return;
     try {
-      const response = await fetch('data/gurpurab-events-2026.json');
+      const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
+      const response = await fetch(dataUrl);
       const data = await response.json();
       const events2026 = data.years['2026'] || [];
       const gurpurabs = events2026.map(e => {
@@ -329,9 +345,16 @@ document.addEventListener('DOMContentLoaded', function () {
       const today = new Date().toLocaleDateString('en-CA');
       const nl = localStorage.getItem('nitnemTracker_nitnemLog');
       if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completedToday = p[today].length; else if (typeof p[today] === 'object') { const td = p[today]; completedToday = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } }
-      const sd = localStorage.getItem('nitnemTracker_streakData');
-      if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
-      if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
+      
+      // SYNC: Use UnifiedStats for streak data
+      if (window.UnifiedStats) {
+        const streaks = window.UnifiedStats.getStreaks();
+        streak = streaks.nitnem || 0;
+      } else {
+        const sd = localStorage.getItem('anhad_streak_data');
+        if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
+        if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
+      }
     } catch (e) {}
     const streakEl = document.getElementById('streakDays'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
     const circumference = 163.36, progress = completedToday / totalBanis, offset = circumference * (1 - progress);
@@ -345,6 +368,19 @@ document.addEventListener('DOMContentLoaded', function () {
       if (streakEl) streakEl.textContent = `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak`;
     } else { if (textEl) textEl.textContent = 'Track your daily Nitnem practice'; if (streakEl) streakEl.textContent = '📿 Start Today'; }
   }
+
+  // Bind to UnifiedStats events for real-time updates
+  window.addEventListener('statsInitialized', updateNitnemTracker);
+  window.addEventListener('statsChanged', updateNitnemTracker);
+  window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
+  
+  // Cross-page SPA synchronization
+  window.addEventListener('streakUpdated', updateNitnemTracker);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'anhad_streak_data' || e.key === 'nitnemTracker_nitnemLog') {
+        updateNitnemTracker();
+    }
+  });
 
   // ━━━ SEHAJ PAATH ━━━
   function updateSehajPaath() {
@@ -401,7 +437,9 @@ document.addEventListener('DOMContentLoaded', function () {
     notifBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      window.location.href = 'reminders/smart-reminders-v7.html';
+      // FIX: Use SPA navigation instead of direct href
+      if (window.navigateTo) window.navigateTo('reminders/smart-reminders-v7.html');
+      else window.location.href = 'reminders/smart-reminders-v7.html';
     });
   }
 
@@ -421,7 +459,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return;
       }
-      window.location.href = 'Homepage/ios-homepage.html';
+      
+      const destination = 'Homepage/ios-homepage.html';
+      if (window.navigateTo) window.navigateTo(destination);
+      else window.location.href = destination;
     });
   }
 
@@ -499,11 +540,46 @@ document.addEventListener('DOMContentLoaded', function () {
   // ━━━ INIT ALL ━━━
   updateGreeting(); updateClock(); updateListenerCount(); updateHukamDate(); updateNextGurpurab();
   updateNextSession(); updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNitnemSubtitle(); updateNotificationBadge();
-  setInterval(updateClock, 1000); setInterval(updateListenerCount, 5000); setInterval(updateGreeting, 60000); setInterval(updateNitnemSubtitle, 60000); setInterval(updateNotificationBadge, 60000);
+  // FIX: Store interval IDs so they can be cleaned up on page unload
+  _hpIntervals.push(
+    setInterval(updateClock, 1000),
+    setInterval(updateListenerCount, 5000),
+    setInterval(updateGreeting, 60000),
+    setInterval(updateNitnemSubtitle, 60000),
+    setInterval(updateNotificationBadge, 60000)
+  );
+
+  // FIX: Clean up intervals on page unload to prevent memory leaks
+  window.addEventListener('pagehide', () => {
+    _hpIntervals.forEach(id => clearInterval(id));
+    _hpIntervals.length = 0;
+    // CRITICAL: Reset initialization flag so data re-initializes on SPA return
+    window._homepageDataInitialized = false;
+  });
 
   // ━━━ REFRESH ON RETURN ━━━
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
   window.addEventListener('pageshow', e => { if (e.persisted) { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
+
+  // ━━━ REFRESH ON SPA NAVIGATION BACK ━━━
+  // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh
+  // all dynamic data (especially Gurpurab) to prevent stale information.
+  window.addEventListener('anhad_page_changed', function() {
+    // Only run if we're on the homepage
+    if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('/frontend/')) {
+      console.log('[HomepageData] SPA page changed back to homepage, refreshing data');
+      updateNextGurpurab();
+      updateGreeting();
+      updateClock();
+      updateNitnemTracker();
+      updateSehajPaath();
+      updateProgressCard();
+      updateNextSession();
+      updateNitnemSubtitle();
+      updateNotificationBadge();
+      updateHukamDate();
+    }
+  });
 
   console.log('✨ ANHAD Premium Homepage Data Initialized');
 });

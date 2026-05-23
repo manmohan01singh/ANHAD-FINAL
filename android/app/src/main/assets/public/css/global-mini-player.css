@@ -14,7 +14,7 @@
 .gmp {
   position: fixed;
   /* Position above the nav bar with a small gap */
-  bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 0px) + 8px);
+  bottom: calc(var(--nav-height, 84px) + env(safe-area-inset-bottom, 0px) + 24px);
   left: 12px;
   right: 12px;
   z-index: 9000;

@@ -30,7 +30,7 @@
         // Nitnem Tracker
         NITNEM_LOG: 'nitnemTracker_nitnemLog',
         AMRITVELA_LOG: 'nitnemTracker_amritvelaLog',
-        STREAK_DATA: 'nitnemTracker_streakData',
+        STREAK_DATA: 'anhad_streak_data',
         SELECTED_BANIS: 'nitnemTracker_selectedBanis',
 
         // Naam Abhyas

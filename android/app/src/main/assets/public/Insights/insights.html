@@ -38,7 +38,7 @@
   <script src="../lib/page-lifecycle.js"></script>
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/smooth-navigation.js?v=2"></script>
   
   <script src="../js/anhad-core.js" defer></script>
   
@@ -64,7 +64,8 @@
 
   <!-- Header -->
   <header class="insights-header" id="pageHeader">
-    <button class="back-btn glass-nav__back" id="backBtn" aria-label="Go back">
+    <button class="back-btn glass-nav__back" id="backBtn" aria-label="Go back"
+            data-set-session="1" data-anhad-back="../index.html">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
     <h1 class="insights-header__title">Library</h1>
@@ -264,10 +265,9 @@
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script src="../lib/global-theme.js"></script>
+  <!-- global-theme.js already loaded in <head> -->
   <script src="../lib/smart-back.js"></script>
-  <script src="../pwa-register.js"></script>
+  <script src="../pwa-register.js?v=2"></script>
   
   <!-- User Stats Library -->
   <script src="../lib/user-stats.js"></script>
@@ -277,7 +277,7 @@
 
   <!-- Floating Tab Bar — Same as Home Page -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-    <a href="../index.html" class="tab-item">
+    <a href="../index.html" class="tab-item" data-set-session="1" data-anhad-back="../index.html">
       <span class="tab-icon">🏠</span>
       <span class="tab-label">Home</span>
     </a>

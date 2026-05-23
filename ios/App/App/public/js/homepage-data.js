@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
     shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
-    nitnemCard: 'nitnem/indexbani.html',
+    nitnemCard: 'nitnem/index.html',
     sehajPaathCard: 'SehajPaath/sehaj-paath.html',
     gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
@@ -373,6 +373,14 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('statsInitialized', updateNitnemTracker);
   window.addEventListener('statsChanged', updateNitnemTracker);
   window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
+  
+  // Cross-page SPA synchronization
+  window.addEventListener('streakUpdated', updateNitnemTracker);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'anhad_streak_data' || e.key === 'nitnemTracker_nitnemLog') {
+        updateNitnemTracker();
+    }
+  });
 
   // ━━━ SEHAJ PAATH ━━━
   function updateSehajPaath() {

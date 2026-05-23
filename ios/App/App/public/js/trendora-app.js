@@ -70,7 +70,7 @@
     gurbaniRadioSimran: 'GurbaniRadio/gurbani-radio.html?stream=simran&autoplay=true',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
     shabadVichar: 'ShabadVichar/shabad-vichar.html',
-    nitnem: 'nitnem/indexbani.html',
+    nitnem: 'nitnem/index.html',
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',
@@ -216,6 +216,54 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // § 5.1 PORTRAIT SLIDER — Interactive All-Guru Carousel
   // ═══════════════════════════════════════════════════════════════════════════
+  // Helper to resolve Guru ID from Gurpurab event
+  function getGuruIdFromEvent(event) {
+    if (!event) return null;
+    const evName = (event.name || '').toLowerCase();
+    const evId = (event.id || '').toLowerCase();
+    const searchStrings = [evName, evId];
+
+    const mapping = {
+      'guru-nanak':      'guru-nanak',
+      'nanak':           'guru-nanak',
+      'guru-angad':      'guru-angad',
+      'angad':           'guru-angad',
+      'guru-amar-das':   'guru-amar-das',
+      'amar-das':        'guru-amar-das',
+      'guru-ram-das':    'guru-ram-das',
+      'ram-das':         'guru-ram-das',
+      'guru-arjan':      'guru-arjan',
+      'arjan':           'guru-arjan',
+      'guru-hargobind':  'guru-hargobind',
+      'hargobind':       'guru-hargobind',
+      'bandi-chhor':     'guru-hargobind',
+      'miri-piri':       'guru-hargobind',
+      'guru-har-rai':    'guru-har-rai',
+      'har-rai':         'guru-har-rai',
+      'guru-harkrishan':  'guru-harkrishan',
+      'guru-har-krishan': 'guru-harkrishan',
+      'harkrishan':      'guru-harkrishan',
+      'har-krishan':     'guru-harkrishan',
+      'guru-teg-bahadur': 'guru-teg-bahadur',
+      'teg-bahadur':     'guru-teg-bahadur',
+      'guru-gobind':     'guru-gobind',
+      'gobind':          'guru-gobind',
+      'gobind-singh':    'guru-gobind',
+      'sahibzad':        'guru-gobind',
+      'vaisakhi':        'guru-gobind',
+      'khalsa':          'guru-gobind',
+      'sggs':            'sggs',
+      'guru-granth':     'sggs'
+    };
+
+    for (const [key, guruId] of Object.entries(mapping)) {
+      if (searchStrings.some(s => s.includes(key))) {
+        return guruId;
+      }
+    }
+    return null;
+  }
+
   const PortraitSlider = {
     _currentIndex: 4, // Default to Guru Arjan Dev Ji
     _startX: 0,
@@ -239,6 +287,24 @@
       if (!track) {
         console.log('[PortraitSlider] Track element not found, skipping init');
         return;
+      }
+
+      // Check cached upcoming gurpurab in localStorage to set initial index synchronously
+      try {
+        const cachedStr = localStorage.getItem('anhad_cached_upcoming_gurpurab');
+        if (cachedStr) {
+          const cached = JSON.parse(cachedStr);
+          const event = cached.events && cached.events[0];
+          const guruId = getGuruIdFromEvent(event);
+          if (guruId) {
+            const idx = this._gurus.findIndex(g => g.id === guruId);
+            if (idx !== -1) {
+              this._currentIndex = idx;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[PortraitSlider] Failed to parse cached upcoming gurpurab on init:', e);
       }
 
       // Clear track and inject slides
@@ -302,8 +368,19 @@
       this.update();
     },
 
-    setGuruById(id) {
-      const idx = this._gurus.findIndex(g => id.includes(g.id) || g.id.includes(id));
+    setGuruById(idOrEvent) {
+      let guruId = null;
+      if (idOrEvent && typeof idOrEvent === 'object') {
+        guruId = getGuruIdFromEvent(idOrEvent);
+      } else if (typeof idOrEvent === 'string') {
+        guruId = getGuruIdFromEvent({ id: idOrEvent });
+        if (!guruId) {
+          guruId = idOrEvent; // fallback
+        }
+      }
+      if (!guruId) return;
+
+      const idx = this._gurus.findIndex(g => g.id === guruId);
       if (idx !== -1 && idx !== this._currentIndex) {
         this._currentIndex = idx;
         this.update(true);
@@ -707,7 +784,7 @@
       }
     },
 
-    async updateEventCard() {
+    _renderEventData(data) {
       const titleEl = document.getElementById('eventTitle');
       const dateEl = document.getElementById('eventDate');
       const countEl = document.getElementById('eventCountdown');
@@ -715,158 +792,169 @@
       const eyebrowEl = document.querySelector('.event-card__eyebrow');
       const card = document.getElementById('eventCard');
 
+      if (!data || !data.events || data.events.length === 0) {
+        if (card) card.style.display = 'none';
+        return;
+      }
+
+      // Clear any existing rotation interval
+      if (card && card._rotationInterval) {
+        clearInterval(card._rotationInterval);
+        card._rotationInterval = null;
+      }
+
+      if (!card) return;
+      card.style.display = '';
+
+      const events = data.events;
+      let currentIndex = 0;
+
+      // Function to update display for current event
+      const updateEventDisplay = (event) => {
+        if (titleEl) {
+          titleEl.textContent = event.name;
+          titleEl.classList.remove('skeleton');
+          titleEl.style.fontSize = '';  // Reset any inline styles
+          titleEl.style.lineHeight = '';
+          titleEl.style.letterSpacing = '';
+        }
+
+        // Apply event category styling
+        card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
+        
+        if (event.eventCategory === 'remembrance') {
+          card.classList.add('event-remembrance');
+        } else if (event.eventCategory === 'celebration') {
+          card.classList.add('event-celebration');
+        } else {
+          card.classList.add('event-neutral');
+        }
+        
+        if (event.isToday) {
+          card.classList.add('event-today');
+        }
+
+        // Update eyebrow text
+        if (eyebrowEl) {
+          eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
+        }
+
+        const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
+        const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
+
+        // Update date/countdown display
+        if (event.isToday) {
+          if (event.eventCategory === 'remembrance') {
+            if (dateEl) dateEl.textContent = '🕯️ In remembrance';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else if (event.eventCategory === 'celebration') {
+            if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
+            if (countEl) countEl.textContent = '✨';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else {
+            if (dateEl) dateEl.textContent = 'Today';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          }
+          if (badgeValueEl) badgeValueEl.textContent = 'Today';
+          if (badgeLabelEl) badgeLabelEl.textContent = '';
+        } else {
+          if (dateEl) dateEl.textContent = event.dateStr;
+          if (countEl) countEl.textContent = event.daysLeft;
+          if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+          if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
+          if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
+        }
+
+        // Update Guru image
+        this._updateGuruImage(event);
+        
+        // Update greeting section with Guru Sahib info if filter is active
+        this._updateGreetingForGuruSahib(event);
+      };
+
+      // Display first event
+      updateEventDisplay(events[0]);
+      card.style.opacity = '1';
+      
+      // Apply progressive decoration based on days until event (5-day buildup)
+      this._applyProgressiveDecoration(events[0]);
+
+      // ═══════════════════════════════════════════════════════════════════
+      // GURPURAB SPECIAL MODE — Activate divine visual effects
+      // ═══════════════════════════════════════════════════════════════════
+      if (data.isToday && events.length > 0) {
+        const firstEvent = events[0];
+        const isCelebration = firstEvent.eventCategory === 'celebration' || 
+                              ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
+        
+        // Add appropriate mode class to body
+        document.body.classList.add(
+          isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
+        );
+      } else {
+        // Remove any existing Gurpurab mode classes
+        document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
+      }
+
+      // Setup auto-rotation for multiple events with smooth spring physics
+      if (data.isMultiple && events.length > 1) {
+        card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
+        if (titleEl) {
+          titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        }
+        
+        card._rotationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % events.length;
+          
+          if (titleEl) {
+            titleEl.style.opacity = '0';
+            titleEl.style.transform = 'translateY(-10px)';
+          }
+          card.style.transform = 'scale(0.96) translateY(-4px)';
+          card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
+          
+          setTimeout(() => {
+            updateEventDisplay(events[currentIndex]);
+            
+            if (titleEl) {
+              titleEl.style.opacity = '1';
+              titleEl.style.transform = 'translateY(0)';
+            }
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+            card.style.boxShadow = '';
+          }, 500);
+        }, 6000);
+      }
+    },
+
+    async updateEventCard() {
+      // 1. Synchronously render cached event if available
+      try {
+        const cached = localStorage.getItem('anhad_cached_upcoming_gurpurab');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          this._renderEventData(parsed);
+        }
+      } catch (e) {
+        console.warn('[EventCard] Failed to parse cached event on init:', e);
+      }
+
+      // 2. Fetch fresh data asynchronously
       try {
         const data = await DataManager.getNextGurpurab();
-
-        if (!data || !data.events || data.events.length === 0) {
-          if (card) card.style.display = 'none';
-          return;
-        }
-
-        // Clear any existing rotation interval
-        if (card && card._rotationInterval) {
-          clearInterval(card._rotationInterval);
-          card._rotationInterval = null;
-        }
-
-        if (!card) return;
-
-        const events = data.events;
-        let currentIndex = 0;
-
-        // Function to update display for current event
-        const updateEventDisplay = (event) => {
-          if (titleEl) {
-            titleEl.textContent = event.name;
-            titleEl.classList.remove('skeleton');
-            titleEl.style.fontSize = '';  // Reset any inline styles
-            titleEl.style.lineHeight = '';
-            titleEl.style.letterSpacing = '';
-          }
-
-          // Apply event category styling
-          if (card) {
-            card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
-            
-            if (event.eventCategory === 'remembrance') {
-              card.classList.add('event-remembrance');
-            } else if (event.eventCategory === 'celebration') {
-              card.classList.add('event-celebration');
-            } else {
-              card.classList.add('event-neutral');
-            }
-            
-            if (event.isToday) {
-              card.classList.add('event-today');
-            }
-          }
-
-          // Update eyebrow text
-          if (eyebrowEl) {
-            eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
-          }
-
-          const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
-          const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
-
-          // Update date/countdown display
-          if (event.isToday) {
-            if (event.eventCategory === 'remembrance') {
-              if (dateEl) dateEl.textContent = '🕯️ In remembrance';
-              if (countEl) countEl.textContent = '🙏';
-              if (labelEl) labelEl.textContent = 'Today';
-            } else if (event.eventCategory === 'celebration') {
-              if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
-              if (countEl) countEl.textContent = '✨';
-              if (labelEl) labelEl.textContent = 'Today';
-            } else {
-              if (dateEl) dateEl.textContent = 'Today';
-              if (countEl) countEl.textContent = '🙏';
-              if (labelEl) labelEl.textContent = 'Today';
-            }
-            if (badgeValueEl) badgeValueEl.textContent = 'Today';
-            if (badgeLabelEl) badgeLabelEl.textContent = '';
-          } else {
-            if (dateEl) dateEl.textContent = event.dateStr;
-            if (countEl) countEl.textContent = event.daysLeft;
-            if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
-            if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
-            if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
-          }
-
-          // Update Guru image
-          this._updateGuruImage(event);
-          
-          // Update greeting section with Guru Sahib info if filter is active
-          this._updateGreetingForGuruSahib(event);
-        };
-
-        // Display first event
-        updateEventDisplay(events[0]);
-        
-        // Apply progressive decoration based on days until event (5-day buildup)
-        this._applyProgressiveDecoration(events[0]);
-
-        // ═══════════════════════════════════════════════════════════════════
-        // GURPURAB SPECIAL MODE — Activate divine visual effects
-        // ═══════════════════════════════════════════════════════════════════
-        if (data.isToday && events.length > 0) {
-          const firstEvent = events[0];
-          const isCelebration = firstEvent.eventCategory === 'celebration' || 
-                                ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
-          
-          // Add appropriate mode class to body
-          document.body.classList.add(
-            isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
-          );
-          
-          
+        if (data) {
+          localStorage.setItem('anhad_cached_upcoming_gurpurab', JSON.stringify(data));
+          this._renderEventData(data);
         } else {
-          // Remove any existing Gurpurab mode classes
-          document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
-        }
-
-        // Setup auto-rotation for multiple events with smooth spring physics
-        if (data.isMultiple && events.length > 1) {
-          // Add smooth transition styles to card and title
-          if (card) {
-            card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
-          }
-          if (titleEl) {
-            titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          }
-          
-          card._rotationInterval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % events.length;
-            
-            // Dramatic exit: fade out, lift card, and scale down slightly
-            if (titleEl) {
-              titleEl.style.opacity = '0';
-              titleEl.style.transform = 'translateY(-10px)';
-            }
-            if (card) {
-              card.style.transform = 'scale(0.96) translateY(-4px)';
-              card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
-            }
-            
-            // Wait for exit animation then update and enter
-            setTimeout(() => {
-              updateEventDisplay(events[currentIndex]);
-              
-              // Dramatic entrance: fade in with spring bounce
-              if (titleEl) {
-                titleEl.style.opacity = '1';
-                titleEl.style.transform = 'translateY(0)';
-              }
-              if (card) {
-                card.style.transform = 'scale(1) translateY(0)';
-                card.style.boxShadow = '';
-              }
-            }, 500); // 500ms for smooth exit before content change
-          }, 6000); // 6 seconds for dramatic effect
+          const card = document.getElementById('eventCard');
+          if (card) card.style.display = 'none';
         }
       } catch (error) {
         console.error('[EventCard] Error loading event data:', error);
+        const card = document.getElementById('eventCard');
         if (card) card.style.display = 'none';
       }
     },
@@ -1072,7 +1160,7 @@
       updateImg(eventImgEl, finalImg, finalName);
 
       // Sync Slider to this Guru
-      PortraitSlider.setGuruById(evId || evName);
+      PortraitSlider.setGuruById(event);
     },
 
     _updateGreetingForGuruSahib(event) {

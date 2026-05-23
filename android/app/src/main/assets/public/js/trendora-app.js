@@ -39,7 +39,7 @@
   // ═══════════════════════════════════════════════════════════════════════════
   const KEYS = {
     NITNEM_LOG: 'nitnemTracker_nitnemLog',
-    NITNEM_STREAK: 'nitnemTracker_streakData',
+    NITNEM_STREAK: 'anhad_streak_data',
     NITNEM_USER: 'nitnemTracker_userData',
     NITNEM_SELECTED: 'nitnemTracker_selectedBanis',
     SEHAJ_STATE: 'sehajPaathState',
@@ -57,18 +57,20 @@
     HUKAM_CACHE: 'gurbani_hukamnama_cache',
     HUKAM_FAVORITES: 'gurbani_hukamnama_favorites',
     NOTES: 'gurbani_notes_v2',
-    USER_PROFILE: 'anhad_user_profile'
+    USER_PROFILE: 'anhad_user_profile',
+    STREAK_SAVER: 'nitnemTracker_streakSaver'
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 3. NAVIGATION PATHS
   // ═══════════════════════════════════════════════════════════════════════════
   const NAV_PATHS = {
-    gurbaniRadio: 'GurbaniRadio/gurbani-radio.html',
-    gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+    gurbaniRadio: 'GurbaniRadio/gurbani-radio.html?stream=darbar&autoplay=true',
+    gurbaniRadioAlt: 'GurbaniRadio/gurbani-radio.html?stream=amritvela&autoplay=true',
+    gurbaniRadioSimran: 'GurbaniRadio/gurbani-radio.html?stream=simran&autoplay=true',
     hukamnama: 'Hukamnama/daily-hukamnama.html',
     shabadVichar: 'ShabadVichar/shabad-vichar.html',
-    nitnem: 'nitnem/indexbani.html',
+    nitnem: 'nitnem/index.html',
     sehajPaath: 'SehajPaath/sehaj-paath.html',
     gurbaniKhoj: 'GurbaniKhoj/gurbani-khoj.html',
     naamAbhyas: 'NaamAbhyas/naam-abhyas.html',
@@ -90,13 +92,10 @@
     _safetyTimer: null,
 
     navigateTo(path) {
-      // Use the shell's smooth navigation if available
       if (window.navigateTo) {
         window.navigateTo(path);
         return;
       }
-
-      // Fallback for standalone pages
       const app = document.querySelector('.app');
       if (app) {
         app.classList.add('app--exiting');
@@ -120,15 +119,11 @@
     bindCard(elementId, path) {
       const el = document.getElementById(elementId);
       if (!el) return;
-      
       el.addEventListener('click', (e) => {
-        // Don't navigate if clicking on interactive children
         if (e.target.closest('button[data-action]') || e.target.closest('a[href]')) return;
         e.preventDefault();
         this.navigateTo(path);
       });
-
-      // Keyboard accessibility
       if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
       el.setAttribute('role', 'button');
       el.addEventListener('keydown', (e) => {
@@ -140,7 +135,6 @@
     }
   };
 
-  // Clear navigation timers on pagehide to prevent memory leaks
   window.addEventListener('pagehide', () => {
     if (Navigation._exitTimer) {
       clearTimeout(Navigation._exitTimer);
@@ -154,8 +148,6 @@
 
   // ═══════════════════════════════════════════════════════════════════════════
   // § 5. CONTEXTUAL GURBANI GREETING
-  // Not "Good Morning ☀️" — every weather app does that.
-  // Instead: rotating Gurbani tuks with translations.
   // ═══════════════════════════════════════════════════════════════════════════
   const Greeting = {
     _tuks: {
@@ -189,10 +181,7 @@
     getSalutation() {
       const hour = new Date().getHours();
       if (hour >= 4 && hour < 6) return 'ਵਾਹਿਗੁਰੂ ਜੀ';
-      if (hour >= 6 && hour < 12) return 'Sat Sri Akal';
-      if (hour >= 12 && hour < 17) return 'Sat Sri Akal';
-      if (hour >= 17 && hour < 21) return 'Sat Sri Akal';
-      return 'ਵਾਹਿਗੁਰੂ ਜੀ';
+      return 'Sat Sri Akal';
     },
 
     getTimeSlot() {
@@ -207,7 +196,6 @@
     getTuk() {
       const slot = this.getTimeSlot();
       const tuks = this._tuks[slot];
-      // Randomize on every render for a dynamic and refreshing experience
       const randomIndex = Math.floor(Math.random() * tuks.length);
       return tuks[randomIndex];
     },
@@ -216,15 +204,228 @@
       const salEl = document.getElementById('greetingSalutation');
       const gurEl = document.getElementById('greetingGurbani');
       const transEl = document.getElementById('greetingTranslation');
-
-      // Set greeting with user name if available
       const name = DataManager.getUserName();
       const sal = this.getSalutation();
       if (salEl) salEl.textContent = name ? `${sal}, ${name}` : sal;
-      
       const tuk = this.getTuk();
       if (gurEl) gurEl.textContent = tuk.gurmukhi;
       if (transEl) transEl.textContent = tuk.translation;
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // § 5.1 PORTRAIT SLIDER — Interactive All-Guru Carousel
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Helper to resolve Guru ID from Gurpurab event
+  function getGuruIdFromEvent(event) {
+    if (!event) return null;
+    const evName = (event.name || '').toLowerCase();
+    const evId = (event.id || '').toLowerCase();
+    const searchStrings = [evName, evId];
+
+    const mapping = {
+      'guru-nanak':      'guru-nanak',
+      'nanak':           'guru-nanak',
+      'guru-angad':      'guru-angad',
+      'angad':           'guru-angad',
+      'guru-amar-das':   'guru-amar-das',
+      'amar-das':        'guru-amar-das',
+      'guru-ram-das':    'guru-ram-das',
+      'ram-das':         'guru-ram-das',
+      'guru-arjan':      'guru-arjan',
+      'arjan':           'guru-arjan',
+      'guru-hargobind':  'guru-hargobind',
+      'hargobind':       'guru-hargobind',
+      'bandi-chhor':     'guru-hargobind',
+      'miri-piri':       'guru-hargobind',
+      'guru-har-rai':    'guru-har-rai',
+      'har-rai':         'guru-har-rai',
+      'guru-harkrishan':  'guru-harkrishan',
+      'guru-har-krishan': 'guru-harkrishan',
+      'harkrishan':      'guru-harkrishan',
+      'har-krishan':     'guru-harkrishan',
+      'guru-teg-bahadur': 'guru-teg-bahadur',
+      'teg-bahadur':     'guru-teg-bahadur',
+      'guru-gobind':     'guru-gobind',
+      'gobind':          'guru-gobind',
+      'gobind-singh':    'guru-gobind',
+      'sahibzad':        'guru-gobind',
+      'vaisakhi':        'guru-gobind',
+      'khalsa':          'guru-gobind',
+      'sggs':            'sggs',
+      'guru-granth':     'sggs'
+    };
+
+    for (const [key, guruId] of Object.entries(mapping)) {
+      if (searchStrings.some(s => s.includes(key))) {
+        return guruId;
+      }
+    }
+    return null;
+  }
+
+  const PortraitSlider = {
+    _currentIndex: 4, // Default to Guru Arjan Dev Ji
+    _startX: 0,
+    _isDragging: false,
+    _gurus: [
+      { id: 'guru-nanak', name: 'Sri Guru Nanak Dev Sahib Ji', img: 'guruimages/gurunanakdevsahebji.jpeg', pos: 'center 20%' },
+      { id: 'guru-angad', name: 'Sri Guru Angad Dev Sahib Ji', img: 'guruimages/guruangaddevsahebji.jpeg', pos: 'center 25%' },
+      { id: 'guru-amar-das', name: 'Sri Guru Amar Das Sahib Ji', img: 'guruimages/guruamardasji.jpeg', pos: 'center 25%' },
+      { id: 'guru-ram-das', name: 'Sri Guru Ram Das Sahib Ji', img: 'guruimages/gururamdassahebji.jpeg', pos: 'center 25%' },
+      { id: 'guru-arjan', name: 'Sri Guru Arjan Dev Sahib Ji', img: 'guruimages/guruarjanddevsahebji.jpeg', gurbani: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥', translation: 'In the Amrit Vela, chant the True Name, and contemplate His Glorious Greatness.', pos: 'center 25%' },
+      { id: 'guru-hargobind', name: 'Sri Guru Hargobind Sahib Ji', img: 'guruimages/guruhargobindsahebji.jpeg', pos: 'center 25%' },
+      { id: 'guru-har-rai', name: 'Sri Guru Har Rai Sahib Ji', img: 'guruimages/guruharraisahebji.jpeg', pos: 'center 25%' },
+      { id: 'guru-harkrishan', name: 'Sri Guru Har Krishan Sahib Ji', img: 'guruimages/guruharkrishansahebji.jpeg', pos: 'center 25%' },
+      { id: 'guru-teg-bahadur', name: 'Sri Guru Tegh Bahadur Sahib Ji', img: 'guruimages/gurutegbahadursahebji.jpeg', pos: 'center 45%' },
+      { id: 'guru-gobind', name: 'Sri Guru Gobind Singh Sahib Ji', img: 'guruimages/gurugobindsinghsahebji.jpeg', pos: 'center 25%' },
+      { id: 'sggs', name: 'Sri Guru Granth Sahib Ji', img: 'guruimages/gurugranthsahebji.jpeg', pos: 'center 25%' }
+    ],
+
+    init() {
+      const track = document.getElementById('guruSliderTrack');
+      if (!track) {
+        console.log('[PortraitSlider] Track element not found, skipping init');
+        return;
+      }
+
+      // Check cached upcoming gurpurab in localStorage to set initial index synchronously
+      try {
+        const cachedStr = localStorage.getItem('anhad_cached_upcoming_gurpurab');
+        if (cachedStr) {
+          const cached = JSON.parse(cachedStr);
+          const event = cached.events && cached.events[0];
+          const guruId = getGuruIdFromEvent(event);
+          if (guruId) {
+            const idx = this._gurus.findIndex(g => g.id === guruId);
+            if (idx !== -1) {
+              this._currentIndex = idx;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[PortraitSlider] Failed to parse cached upcoming gurpurab on init:', e);
+      }
+
+      // Clear track and inject slides
+      track.innerHTML = '';
+      this._gurus.forEach((guru, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'greeting__slide';
+        slide.dataset.index = i;
+        slide.innerHTML = `
+          <div class="greeting__guru-portrait">
+            <img class="greeting__guru-img" src="${guru.img}" alt="${guru.name}" loading="lazy" style="object-position: ${guru.pos || 'center 25%'} !important;">
+          </div>
+        `;
+        track.appendChild(slide);
+      });
+
+      this._bindEvents();
+      this.update(true);
+    },
+
+    _bindEvents() {
+      const slider = document.getElementById('guruSlider');
+      if (!slider) return;
+
+      slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
+      slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
+      
+      window.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: false });
+      window.addEventListener('mousemove', (e) => this._onDragMove(e.clientX));
+      
+      window.addEventListener('touchend', () => this._onDragEnd());
+      window.addEventListener('mouseup', () => this._onDragEnd());
+    },
+
+    _onDragStart(x) {
+      this._startX = x;
+      this._isDragging = true;
+    },
+
+    _onDragMove(x) {
+      if (!this._isDragging) return;
+      const diff = this._startX - x;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) this.next();
+        else this.prev();
+        this._isDragging = false;
+      }
+    },
+
+    _onDragEnd() {
+      this._isDragging = false;
+    },
+
+    next() {
+      this._currentIndex = (this._currentIndex + 1) % this._gurus.length;
+      this.update();
+    },
+
+    prev() {
+      this._currentIndex = (this._currentIndex - 1 + this._gurus.length) % this._gurus.length;
+      this.update();
+    },
+
+    setGuruById(idOrEvent) {
+      let guruId = null;
+      if (idOrEvent && typeof idOrEvent === 'object') {
+        guruId = getGuruIdFromEvent(idOrEvent);
+      } else if (typeof idOrEvent === 'string') {
+        guruId = getGuruIdFromEvent({ id: idOrEvent });
+        if (!guruId) {
+          guruId = idOrEvent; // fallback
+        }
+      }
+      if (!guruId) return;
+
+      const idx = this._gurus.findIndex(g => g.id === guruId);
+      if (idx !== -1 && idx !== this._currentIndex) {
+        this._currentIndex = idx;
+        this.update(true);
+      }
+    },
+
+    update(immediate = false) {
+      const slides = document.querySelectorAll('.greeting__slide');
+      const total = this._gurus.length;
+
+      slides.forEach((slide, i) => {
+        slide.classList.remove('greeting__slide--active', 'greeting__slide--prev', 'greeting__slide--next', 'greeting__slide--far-prev', 'greeting__slide--far-next');
+        
+        let diff = i - this._currentIndex;
+        // Handle wrap around
+        if (diff < -total / 2) diff += total;
+        if (diff > total / 2) diff -= total;
+
+        if (diff === 0) slide.classList.add('greeting__slide--active');
+        else if (diff === -1) slide.classList.add('greeting__slide--prev');
+        else if (diff === 1) slide.classList.add('greeting__slide--next');
+        else if (diff < -1) slide.classList.add('greeting__slide--far-prev');
+        else if (diff > 1) slide.classList.add('greeting__slide--far-next');
+      });
+
+      this._syncText();
+    },
+
+    _syncText() {
+      const guru = this._gurus[this._currentIndex];
+      const salEl = document.getElementById('greetingSalutation');
+      const gurEl = document.getElementById('greetingGurbani');
+      const transEl = document.getElementById('greetingTranslation');
+
+      if (salEl) salEl.textContent = guru.name;
+      if (gurEl) {
+        if (guru.gurbani) {
+          gurEl.textContent = guru.gurbani;
+          if (transEl) transEl.textContent = guru.translation;
+        } else {
+          const tuk = Greeting.getTuk();
+          gurEl.textContent = tuk.gurmukhi;
+          if (transEl) transEl.textContent = tuk.translation;
+        }
+      }
     }
   };
 
@@ -245,7 +446,6 @@
       const today = new Date().toLocaleDateString('en-CA');
       const log = Store.get(KEYS.NITNEM_LOG);
       if (!log || !log[today]) return 0;
-
       const todayData = log[today];
       if (Array.isArray(todayData)) return todayData.length;
       if (typeof todayData === 'object') {
@@ -257,78 +457,63 @@
     },
 
     getStreak() {
-      // Try streakData first
+      // 1. Check for active streak saver (highest priority)
+      const saverData = Store.get(KEYS.STREAK_SAVER);
+      if (saverData && !saverData.completed) {
+        return {
+          count: saverData.brokenStreak || 0,
+          isSaved: true,
+          isPending: true
+        };
+      }
+      let streak = 0;
       const streakData = Store.get(KEYS.NITNEM_STREAK);
       if (streakData) {
-        const s = streakData.current || streakData.currentStreak || 0;
-        if (s > 0) return s;
+        streak = streakData.current || streakData.currentStreak || 0;
       }
-      // Fallback to userData
-      const userData = Store.get(KEYS.NITNEM_USER);
-      if (userData) {
-        return userData.streaks?.current || userData.streak?.current || 0;
+      if (streak === 0) {
+        const userData = Store.get(KEYS.NITNEM_USER);
+        if (userData) {
+          streak = userData.streaks?.current || userData.streak?.current || 0;
+        }
       }
-      return 0;
+      return { count: streak, isSaved: false, isPending: false };
     },
 
     getSehajPaath() {
       let currentAng = 1;
-
-      // Primary: sehajPaathState
       const state = Store.get(KEYS.SEHAJ_STATE);
-      if (state) {
-        currentAng = state.currentPaath?.currentAng || state.currentAng || 1;
-      }
-
-      // Fallback: backup
+      if (state) currentAng = state.currentPaath?.currentAng || state.currentAng || 1;
       if (currentAng <= 1) {
         const backup = Store.get(KEYS.SEHAJ_BACKUP);
-        if (backup) {
-          currentAng = backup.data?.currentAng || backup.currentAng || 1;
-        }
+        if (backup) currentAng = backup.data?.currentAng || backup.currentAng || 1;
       }
-
       const totalAngs = 1430;
       const progress = ((currentAng / totalAngs) * 100).toFixed(1);
       const remaining = totalAngs - currentAng + 1;
-
       return { currentAng, totalAngs, progress, remaining, hasStarted: currentAng > 1 };
     },
 
     getNaamAbhyas() {
-      let lastSession = null;
-      let completedToday = 0;
-      let totalSessions = 0;
-      let nextHour = null;
-
+      let lastSession = null, completedToday = 0, totalSessions = 0, nextHour = null;
       const history = Store.get(KEYS.NAAM_HISTORY);
       if (history) {
         const today = new Date().toLocaleDateString('en-CA');
-        if (history.daily && history.daily[today]) {
-          completedToday = history.daily[today].completed || 0;
-        }
+        if (history.daily && history.daily[today]) completedToday = history.daily[today].completed || 0;
         if (history.sessions && history.sessions.length > 0) {
-          const sorted = [...history.sessions].sort((a, b) =>
-            new Date(b.endTime || b.date) - new Date(a.endTime || a.date)
-          );
+          const sorted = [...history.sessions].sort((a, b) => new Date(b.endTime || b.date) - new Date(a.endTime || a.date));
           lastSession = sorted[0];
         }
         totalSessions = history.totalCompleted || 0;
       }
-
-      // Check schedule for next session
       const schedule = Store.get(KEYS.NAAM_SCHEDULE);
       if (schedule && typeof schedule === 'object') {
         const now = new Date();
         const startHour = now.getMinutes() >= 30 ? now.getHours() + 1 : now.getHours();
         for (let h = startHour; h < 24; h++) {
-          if (schedule[h] && schedule[h].status === 'pending') {
-            nextHour = h;
-            break;
-          }
+          if (schedule[h] && schedule[h].status === 'pending') { nextHour = h; break; }
         }
       }
-
       return { lastSession, completedToday, totalSessions, nextHour };
     },
 
@@ -338,137 +523,50 @@
 
     async getNextGurpurab() {
       try {
-        // Get filter preference from localStorage first (default to guru-sahib)
         const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'guru-sahib';
-
-        const response = await fetch('data/gurpurab-events-2026.json');
+        const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
+        const response = await fetch(dataUrl);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
-        
-        // List of the 10 Gurus' names to match (include variations)
-        const guruNames = [
-          'guru nanak', 'ਗੁਰੂ ਨਾਨਕ',
-          'guru angad', 'ਗੁਰੂ ਅੰਗਦ',
-          'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ',
-          'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ',
-          'guru arjan', 'ਗੁਰੂ ਅਰਜਨ',
-          'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ',
-          'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ',
-          'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ',
-          'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ',
-          'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ',
-          'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ',
-          'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'
-        ];
-        
+        const guruNames = ['guru nanak', 'ਗੁਰੂ ਨਾਨਕ', 'guru angad', 'ਗੁਰੂ ਅੰਗਦ', 'guru amar das', 'ਗੁਰੂ ਅਮਰ ਦਾਸ', 'guru ram das', 'ਗੁਰੂ ਰਾਮ ਦਾਸ', 'guru arjan', 'ਗੁਰੂ ਅਰਜਨ', 'guru har gobind', 'ਗੁਰੂ ਹਰਿਗੋਬਿੰਦ', 'guru hargobind', 'ਗੁਰੂ ਹਰਗੋਬਿੰਦ', 'guru har rai', 'ਗੁਰੂ ਹਰਿ ਰਾਇ', 'guru har krishan', 'ਗੁਰੂ ਹਰਿ ਕ੍ਰਿਸ਼ਨ', 'guru harkrishan', 'ਗੁਰੂ ਹਰਿਕ੍ਰਿਸ਼ਨ', 'guru tegh bahadur', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦੁਰ', 'guru gobind singh', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ'];
         const events = (data.years['2026'] || [])
           .filter(e => {
-            // Filter out dastar events
-            if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) {
-              return false;
-            }
-            
-            // Apply name filter if set to guru-sahib
+            if (e.type?.toLowerCase().includes('dastar') || e.name_en?.toLowerCase().includes('dastar')) return false;
             if (nameFilter === 'guru-sahib') {
               const name = String(e.name_en || '').toLowerCase();
               const namePa = String(e.name_pa || '').toLowerCase();
-              return guruNames.some(guruName => 
-                name.includes(guruName) || namePa.includes(guruName)
-              );
+              return guruNames.some(guruName => name.includes(guruName) || namePa.includes(guruName));
             }
-            
             return true;
           })
           .map(e => {
             const [y, m, d] = e.gregorian_date.split('-');
-            return {
-              name: e.name_en,
-              name_pa: e.name_pa,
-              id: e.id,
-              date: new Date(y, m - 1, d), // Local midnight
-              type: e.type,
-              eventCategory: this.classifyEventType(e.type, e.name_en)
-            };
+            return { name: e.name_en, name_pa: e.name_pa, id: e.id, date: new Date(y, m - 1, d), type: e.type, eventCategory: this.classifyEventType(e.type, e.name_en) };
           })
           .sort((a, b) => a.date - b.date);
-
         const now = new Date();
         const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-        // Find ALL events for today (multiple Gurpurabs possible)
         const todayEvents = events.filter(g => g.date.getTime() === todayMidnight.getTime());
-        
-        let result = null;
         if (todayEvents.length > 0) {
-          // Multiple events today - return array
-          result = {
-            events: todayEvents.map(e => ({
-              name: e.name,
-              id: e.id,
-              daysLeft: 0,
-              dateStr: 'Today',
-              isToday: true,
-              eventCategory: e.eventCategory,
-              type: e.type
-            })),
-            isToday: true,
-            isMultiple: todayEvents.length > 1
-          };
+          return { events: todayEvents.map(e => ({ name: e.name, id: e.id, daysLeft: 0, dateStr: 'Today', isToday: true, eventCategory: e.eventCategory, type: e.type })), isToday: true, isMultiple: todayEvents.length > 1 };
         } else {
           const upcoming = events.find(g => g.date > todayMidnight);
           if (upcoming) {
             const daysLeft = Math.round((upcoming.date - todayMidnight) / 86400000);
-            const dateStr = upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            result = {
-              events: [{
-                name: upcoming.name,
-                id: upcoming.id,
-                daysLeft,
-                dateStr,
-                isToday: false,
-                eventCategory: upcoming.eventCategory,
-                type: upcoming.type
-              }],
-              isToday: false,
-              isMultiple: false
-            };
+            return { events: [{ name: upcoming.name, id: upcoming.id, daysLeft, dateStr: upcoming.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), isToday: false, eventCategory: upcoming.eventCategory, type: upcoming.type }], isToday: false, isMultiple: false };
           }
         }
-
-        // We bypass sessionStorage here so daysLeft properly counts down automatically on midnight rolls.
-        // The fetch request to the local JSON is already cached by the browser and service worker.
-        return result;
-      } catch (e) {
         return null;
-      }
+      } catch (e) { return null; }
     },
 
     classifyEventType(type, eventName = '') {
       const name = String(eventName || '').toLowerCase();
-      
-      // PRIORITY 1: Check event name for explicit memorial indicators
-      if (name.includes('jyoti jot') || name.includes('joti jot') || 
-          name.includes('ਜੋਤੀ ਜੋਤ') || name.includes('shaheedi') || 
-          name.includes('ਸ਼ਹੀਦੀ') || name.includes('barsi')) {
-        return 'remembrance';
-      }
-      
-      // PRIORITY 2: Check type for memorial events
+      if (name.includes('jyoti jot') || name.includes('joti jot') || name.includes('ਜੋਤੀ ਜੋਤ') || name.includes('shaheedi') || name.includes('ਸ਼ਹੀਦੀ') || name.includes('barsi')) return 'remembrance';
       const memorialTypes = ['shaheedi', 'historical', 'joti-jot', 'jyoti-jot', 'barsi'];
-      if (memorialTypes.includes(String(type).toLowerCase())) {
-        return 'remembrance';
-      }
-      
-      // PRIORITY 3: Check for celebration events
+      if (memorialTypes.includes(String(type).toLowerCase())) return 'remembrance';
       const celebrationTypes = ['prakash', 'gurgaddi', 'janam', 'vaisakhi', 'dastar'];
-      if (celebrationTypes.includes(String(type).toLowerCase()) || 
-          name.includes('prakash') || name.includes('gurgaddi') || 
-          name.includes('ਪ੍ਰਕਾਸ਼') || name.includes('ਗੁਰਗੱਦੀ') ||
-          name.includes('vaisakhi') || name.includes('ਵੈਸਾਖੀ')) {
-        return 'celebration';
-      }
-      
-      // Default to neutral
+      if (celebrationTypes.includes(String(type).toLowerCase()) || name.includes('prakash') || name.includes('gurgaddi') || name.includes('ਪ੍ਰਕਾਸ਼') || name.includes('ਗੁਰਗੱਦੀ') || name.includes('vaisakhi') || name.includes('ਵੈਸਾਖੀ')) return 'celebration';
       return 'neutral';
     },
 
@@ -476,10 +574,8 @@
       let count = 0;
       try {
         const reminders = Store.get(KEYS.REMINDERS);
-        if (reminders) {
-          count += reminders.custom?.filter(r => !r.completed)?.length || 0;
-        }
-      } catch (e) { /* silent */ }
+        if (reminders) count += reminders.custom?.filter(r => !r.completed)?.length || 0;
+      } catch (e) {}
       return count;
     },
 
@@ -492,16 +588,11 @@
     },
 
     getNextBani() {
-      const hour = new Date().getHours();
-      const completed = this.getCompletedToday();
-      const total = this.getTotalBanis();
+      const hour = new Date().getHours(), completed = this.getCompletedToday(), total = this.getTotalBanis();
       if (completed >= total) return 'All Complete ✓';
-      const today = new Date().toLocaleDateString('en-CA');
-      const log = Store.get(KEYS.NITNEM_LOG);
-      const todayData = log ? log[today] : null;
+      const today = new Date().toLocaleDateString('en-CA'), log = Store.get(KEYS.NITNEM_LOG), todayData = log ? log[today] : null;
       const doneAmritvela = todayData?.amritvela?.length || (Array.isArray(todayData) ? todayData.length : 0);
-      const doneRehras = todayData?.rehras?.length || 0;
-      const doneSohila = todayData?.sohila?.length || 0;
+      const doneRehras = todayData?.rehras?.length || 0, doneSohila = todayData?.sohila?.length || 0;
       if (hour >= 4 && hour < 17 && doneAmritvela === 0) return 'Morning Banis due';
       if (hour >= 17 && hour < 21 && doneRehras === 0) return 'Rehras Sahib Ji due';
       if ((hour >= 21 || hour < 4) && doneSohila === 0) return 'Sohila Sahib Ji due';
@@ -510,11 +601,8 @@
 
     async getHukamnamaPreview() {
       try {
-        const cache = Store.get(KEYS.HUKAM_CACHE);
-        const today = new Date().toLocaleDateString('en-CA');
-        if (cache && cache.date === today && cache.firstLine) {
-          return cache;
-        }
+        const cache = Store.get(KEYS.HUKAM_CACHE), today = new Date().toLocaleDateString('en-CA');
+        if (cache && cache.date === today && cache.firstLine) return cache;
         const resp = await fetch('https://api.banidb.com/v2/hukamnamas/today');
         if (!resp.ok) return null;
         const data = await resp.json();
@@ -524,9 +612,7 @@
           const verses = data.hukamnama || [];
           for (const v of verses) {
             const text = (v.verse || '').trim();
-            if (text && text.length > 10 && !text.includes('ਮਹਲਾ') && !text.includes('ਸਲੋਕ')) {
-              firstLine = text; break;
-            }
+            if (text && text.length > 10 && !text.includes('ਮਹਲਾ') && !text.includes('ਸਲੋਕ')) { firstLine = text; break; }
           }
           if (!firstLine && verses.length > 0) firstLine = (verses[0].verse || '').trim();
           if (verses[0]?.writerId) {
@@ -535,8 +621,7 @@
           }
         } else if (data.shabads && data.shabads.length > 0) {
           const info = data.shabads[0]?.shabadInfo || {};
-          ang = info.pageNo;
-          writer = info?.writer?.english || '';
+          ang = info.pageNo; writer = info?.writer?.english || '';
           const verses = data.shabads[0]?.verses || [];
           for (const v of verses) {
             const text = (v?.verse?.unicode || '').trim();
@@ -566,9 +651,7 @@
       let totalMinutes = 0;
       for (const s of history.sessions) {
         const sDate = (s.endTime || s.date || '').split('T')[0];
-        if (sDate === today) {
-          totalMinutes += (s.duration || s.durationMinutes || 0);
-        }
+        if (sDate === today) totalMinutes += (s.duration || s.durationMinutes || 0);
       }
       return Math.round(totalMinutes);
     },
@@ -584,15 +667,9 @@
     },
 
     getNanakshahiDate() {
-      const date = new Date();
-      const year = date.getFullYear();
-      const nanakshahiEpoch = new Date(year, 2, 14);
-      const diffTime = date - nanakshahiEpoch;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const monthNames = ['ਚੇਤ','ਵੈਸਾਖ','ਜੇਠ','ਹਾੜ','ਸਾਵਣ','ਭਾਦੋਂ','ਅੱਸੂ','ਕੱਤਕ','ਮੱਘਰ','ਪੋਹ','ਮਾਘ','ਫੱਗਣ'];
-      const monthLengths = [31,31,31,31,31,30,30,30,30,30,30,30];
-      let nanakshahiYear = year - 1468;
-      let nMonth = 0, nDay = 1;
+      const date = new Date(), year = date.getFullYear(), nanakshahiEpoch = new Date(year, 2, 14), diffTime = date - nanakshahiEpoch, diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const monthNames = ['ਚੇਤ','ਵੈਸਾਖ','ਜੇਠ','ਹਾੜ','ਸਾਵਣ','ਭਾਦੋਂ','ਅੱਸੂ','ਕੱਤਕ','ਮੱਘਰ','ਪੋਹ','ਮਾਘ','ਫੱਗਣ'], monthLengths = [31,31,31,31,31,30,30,30,30,30,30,30];
+      let nanakshahiYear = year - 1468, nMonth = 0, nDay = 1;
       if (diffDays < 0) {
         nanakshahiYear--;
         let rem = 365 + diffDays;
@@ -615,11 +692,10 @@
   // § 7. UI CONTROLLER — Minimal DOM Updates
   // ═══════════════════════════════════════════════════════════════════════════
   const UIController = {
-    // Progress ring helper (circumference = 2*PI*26 = 163.4)
     _setRing(id, progress) {
       const ring = document.getElementById(id);
       if (!ring) return;
-      const circumference = 163.4; // 2 * PI * 26 (SVG r=26)
+      const circumference = 163.4;
       ring.style.strokeDasharray = circumference;
       const offset = circumference * (1 - Math.min(progress, 1));
       requestAnimationFrame(() => { ring.style.strokeDashoffset = offset; });
@@ -628,9 +704,10 @@
     updateNitnemCard() {
       const completed = DataManager.getCompletedToday();
       const total = DataManager.getTotalBanis();
-      const streak = DataManager.getStreak();
+      const streakInfo = DataManager.getStreak();
+      const streak = streakInfo.count;
+      const isSaved = streakInfo.isSaved;
       const suggestion = DataManager.getNitnemTimeSuggestion();
-
       const statusEl = document.getElementById('nitnemStatus');
       const streakEl = document.getElementById('nitnemStreak');
       const checkEl = document.getElementById('nitnemCheck');
@@ -657,8 +734,14 @@
 
       // Streak in quick access
       if (streakEl) {
-        if (streak > 0) {
+        if (isSaved) {
+          streakEl.innerHTML = `<span class="quick-card__streak saved">🛡️ ${streak} Day Streak</span>`;
+          const card = document.getElementById('nitnemTrackerCard');
+          if (card) card.classList.add('streak-saved');
+        } else if (streak > 0) {
           streakEl.innerHTML = `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>`;
+          const card = document.getElementById('nitnemTrackerCard');
+          if (card) card.classList.remove('streak-saved');
         } else if (completed > 0) {
           streakEl.innerHTML = `<span class="quick-card__progress">${completed}/${total}</span>`;
         } else {
@@ -701,8 +784,7 @@
       }
     },
 
-    async updateEventCard() {
-      console.log('[EventCard] Starting update...');
+    _renderEventData(data) {
       const titleEl = document.getElementById('eventTitle');
       const dateEl = document.getElementById('eventDate');
       const countEl = document.getElementById('eventCountdown');
@@ -710,159 +792,169 @@
       const eyebrowEl = document.querySelector('.event-card__eyebrow');
       const card = document.getElementById('eventCard');
 
+      if (!data || !data.events || data.events.length === 0) {
+        if (card) card.style.display = 'none';
+        return;
+      }
+
+      // Clear any existing rotation interval
+      if (card && card._rotationInterval) {
+        clearInterval(card._rotationInterval);
+        card._rotationInterval = null;
+      }
+
+      if (!card) return;
+      card.style.display = '';
+
+      const events = data.events;
+      let currentIndex = 0;
+
+      // Function to update display for current event
+      const updateEventDisplay = (event) => {
+        if (titleEl) {
+          titleEl.textContent = event.name;
+          titleEl.classList.remove('skeleton');
+          titleEl.style.fontSize = '';  // Reset any inline styles
+          titleEl.style.lineHeight = '';
+          titleEl.style.letterSpacing = '';
+        }
+
+        // Apply event category styling
+        card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
+        
+        if (event.eventCategory === 'remembrance') {
+          card.classList.add('event-remembrance');
+        } else if (event.eventCategory === 'celebration') {
+          card.classList.add('event-celebration');
+        } else {
+          card.classList.add('event-neutral');
+        }
+        
+        if (event.isToday) {
+          card.classList.add('event-today');
+        }
+
+        // Update eyebrow text
+        if (eyebrowEl) {
+          eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
+        }
+
+        const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
+        const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
+
+        // Update date/countdown display
+        if (event.isToday) {
+          if (event.eventCategory === 'remembrance') {
+            if (dateEl) dateEl.textContent = '🕯️ In remembrance';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else if (event.eventCategory === 'celebration') {
+            if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
+            if (countEl) countEl.textContent = '✨';
+            if (labelEl) labelEl.textContent = 'Today';
+          } else {
+            if (dateEl) dateEl.textContent = 'Today';
+            if (countEl) countEl.textContent = '🙏';
+            if (labelEl) labelEl.textContent = 'Today';
+          }
+          if (badgeValueEl) badgeValueEl.textContent = 'Today';
+          if (badgeLabelEl) badgeLabelEl.textContent = '';
+        } else {
+          if (dateEl) dateEl.textContent = event.dateStr;
+          if (countEl) countEl.textContent = event.daysLeft;
+          if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
+          if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
+          if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
+        }
+
+        // Update Guru image
+        this._updateGuruImage(event);
+        
+        // Update greeting section with Guru Sahib info if filter is active
+        this._updateGreetingForGuruSahib(event);
+      };
+
+      // Display first event
+      updateEventDisplay(events[0]);
+      card.style.opacity = '1';
+      
+      // Apply progressive decoration based on days until event (5-day buildup)
+      this._applyProgressiveDecoration(events[0]);
+
+      // ═══════════════════════════════════════════════════════════════════
+      // GURPURAB SPECIAL MODE — Activate divine visual effects
+      // ═══════════════════════════════════════════════════════════════════
+      if (data.isToday && events.length > 0) {
+        const firstEvent = events[0];
+        const isCelebration = firstEvent.eventCategory === 'celebration' || 
+                              ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
+        
+        // Add appropriate mode class to body
+        document.body.classList.add(
+          isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
+        );
+      } else {
+        // Remove any existing Gurpurab mode classes
+        document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
+      }
+
+      // Setup auto-rotation for multiple events with smooth spring physics
+      if (data.isMultiple && events.length > 1) {
+        card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
+        if (titleEl) {
+          titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        }
+        
+        card._rotationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % events.length;
+          
+          if (titleEl) {
+            titleEl.style.opacity = '0';
+            titleEl.style.transform = 'translateY(-10px)';
+          }
+          card.style.transform = 'scale(0.96) translateY(-4px)';
+          card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
+          
+          setTimeout(() => {
+            updateEventDisplay(events[currentIndex]);
+            
+            if (titleEl) {
+              titleEl.style.opacity = '1';
+              titleEl.style.transform = 'translateY(0)';
+            }
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+            card.style.boxShadow = '';
+          }, 500);
+        }, 6000);
+      }
+    },
+
+    async updateEventCard() {
+      // 1. Synchronously render cached event if available
+      try {
+        const cached = localStorage.getItem('anhad_cached_upcoming_gurpurab');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          this._renderEventData(parsed);
+        }
+      } catch (e) {
+        console.warn('[EventCard] Failed to parse cached event on init:', e);
+      }
+
+      // 2. Fetch fresh data asynchronously
       try {
         const data = await DataManager.getNextGurpurab();
-        console.log('[EventCard] Data received:', data);
-
-        if (!data || !data.events || data.events.length === 0) {
-          console.log('[EventCard] No events found, hiding card');
-          if (card) card.style.display = 'none';
-          return;
-        }
-
-        // Clear any existing rotation interval
-        if (card._rotationInterval) {
-          clearInterval(card._rotationInterval);
-          card._rotationInterval = null;
-        }
-
-        const events = data.events;
-        let currentIndex = 0;
-
-        // Function to update display for current event
-        const updateEventDisplay = (event) => {
-          console.log('[EventCard] Updating display for:', event.name);
-          if (titleEl) {
-            titleEl.textContent = event.name;
-            titleEl.classList.remove('skeleton');
-            titleEl.style.fontSize = '';  // Reset any inline styles
-            titleEl.style.lineHeight = '';
-            titleEl.style.letterSpacing = '';
-          }
-
-          // Apply event category styling
-          if (card) {
-            card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
-            
-            if (event.eventCategory === 'remembrance') {
-              card.classList.add('event-remembrance');
-            } else if (event.eventCategory === 'celebration') {
-              card.classList.add('event-celebration');
-            } else {
-              card.classList.add('event-neutral');
-            }
-            
-            if (event.isToday) {
-              card.classList.add('event-today');
-            }
-          }
-
-          // Update eyebrow text
-          if (eyebrowEl) {
-            eyebrowEl.textContent = event.isToday ? 'TODAY' : 'Upcoming Gurpurab';
-          }
-
-          const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
-          const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
-
-          // Update date/countdown display
-          if (event.isToday) {
-            if (event.eventCategory === 'remembrance') {
-              if (dateEl) dateEl.textContent = '🕯️ In remembrance';
-              if (countEl) countEl.textContent = '🙏';
-              if (labelEl) labelEl.textContent = 'Today';
-            } else if (event.eventCategory === 'celebration') {
-              if (dateEl) dateEl.textContent = '🎉 Celebrate today!';
-              if (countEl) countEl.textContent = '✨';
-              if (labelEl) labelEl.textContent = 'Today';
-            } else {
-              if (dateEl) dateEl.textContent = 'Today';
-              if (countEl) countEl.textContent = '🙏';
-              if (labelEl) labelEl.textContent = 'Today';
-            }
-            if (badgeValueEl) badgeValueEl.textContent = 'Today';
-            if (badgeLabelEl) badgeLabelEl.textContent = '';
-          } else {
-            if (dateEl) dateEl.textContent = event.dateStr;
-            if (countEl) countEl.textContent = event.daysLeft;
-            if (labelEl) labelEl.textContent = event.daysLeft === 1 ? 'day' : 'days';
-            if (badgeValueEl) badgeValueEl.textContent = event.daysLeft;
-            if (badgeLabelEl) badgeLabelEl.textContent = event.daysLeft === 1 ? 'day left' : 'days left';
-          }
-
-          // Update Guru image
-          this._updateGuruImage(event);
-          
-          // Update greeting section with Guru Sahib info if filter is active
-          this._updateGreetingForGuruSahib(event);
-        };
-
-        // Display first event
-        updateEventDisplay(events[0]);
-        
-        // Apply progressive decoration based on days until event (5-day buildup)
-        this._applyProgressiveDecoration(events[0]);
-
-        // ═══════════════════════════════════════════════════════════════════
-        // GURPURAB SPECIAL MODE — Activate divine visual effects
-        // ═══════════════════════════════════════════════════════════════════
-        if (data.isToday && events.length > 0) {
-          const firstEvent = events[0];
-          const isCelebration = firstEvent.eventCategory === 'celebration' || 
-                                ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
-          
-          // Add appropriate mode class to body
-          document.body.classList.add(
-            isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
-          );
-          
-          console.log(`🙏 Gurpurab Special Mode activated: ${isCelebration ? 'Celebration' : 'Remembrance'}`);
+        if (data) {
+          localStorage.setItem('anhad_cached_upcoming_gurpurab', JSON.stringify(data));
+          this._renderEventData(data);
         } else {
-          // Remove any existing Gurpurab mode classes
-          document.body.classList.remove('gurpurab-mode--celebration', 'gurpurab-mode--remembrance');
-        }
-
-        // Setup auto-rotation for multiple events with smooth spring physics
-        if (data.isMultiple && events.length > 1) {
-          // Add smooth transition styles to card and title
-          if (card) {
-            card.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease';
-          }
-          if (titleEl) {
-            titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
-          }
-          
-          card._rotationInterval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % events.length;
-            
-            // Dramatic exit: fade out, lift card, and scale down slightly
-            if (titleEl) {
-              titleEl.style.opacity = '0';
-              titleEl.style.transform = 'translateY(-10px)';
-            }
-            if (card) {
-              card.style.transform = 'scale(0.96) translateY(-4px)';
-              card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
-            }
-            
-            // Wait for exit animation then update and enter
-            setTimeout(() => {
-              updateEventDisplay(events[currentIndex]);
-              
-              // Dramatic entrance: fade in with spring bounce
-              if (titleEl) {
-                titleEl.style.opacity = '1';
-                titleEl.style.transform = 'translateY(0)';
-              }
-              if (card) {
-                card.style.transform = 'scale(1) translateY(0)';
-                card.style.boxShadow = '';
-              }
-            }, 500); // 500ms for smooth exit before content change
-          }, 6000); // 6 seconds for dramatic effect
+          const card = document.getElementById('eventCard');
+          if (card) card.style.display = 'none';
         }
       } catch (error) {
         console.error('[EventCard] Error loading event data:', error);
+        const card = document.getElementById('eventCard');
         if (card) card.style.display = 'none';
       }
     },
@@ -892,7 +984,6 @@
     },
 
     _updateGuruImage(event) {
-      console.log('[GuruImage] Updating for event:', event.name, event.id);
       
       // ── Guru Image Mapping ──
       // Using guruimages/ folder with .jpeg files as requested
@@ -990,32 +1081,69 @@
       console.log('[GuruImage] Final image:', finalImg, 'Final name:', finalName);
 
       /**
-       * Helper to perform optimized image update
+       * Helper to perform optimized image update with retries
        */
-      const updateImg = (el, src, alt, classToApply = 'loaded') => {
+      const updateImg = (el, src, alt, classToApply = 'loaded', retries = 2) => {
         if (!el) {
           console.log('[GuruImage] Element not found for:', src);
           return;
         }
-        if (el.getAttribute('src') === src) {
-          console.log('[GuruImage] Image already set to:', src);
+        // FIX: Normalize src comparison — getAttribute returns raw attribute while
+        // el.src returns absolute URL. Compare filename tails to avoid false positives
+        // that would leave the portrait invisible after a cache hit.
+        const currentSrcRaw = el.getAttribute('src') || '';
+        const srcTail = src.split('/').pop().split('?')[0];
+        const alreadyLoaded = currentSrcRaw.split('/').pop().split('?')[0] === srcTail
+                              && el.complete && el.naturalWidth > 0;
+        if (alreadyLoaded) {
+          el.style.opacity = '1';
+          el.classList.add(classToApply);
+          console.log('[GuruImage] Image already set and loaded:', src);
           return;
         }
 
-        console.log('[GuruImage] Updating image to:', src, 'alt:', alt);
+        console.log('[GuruImage] Updating image to:', src, 'alt:', alt, 'retries left:', retries);
         
-        // Reset visibility for fresh loading
+        // Reset visibility for fresh loading (with smooth transition)
         el.style.opacity = '0';
+        el.style.transition = 'opacity 0.35s ease';
         el.classList.remove(classToApply);
 
         // Define load handler
         const onLoad = () => {
           el.style.opacity = '1';
           el.classList.add(classToApply);
-          el.removeEventListener('load', onLoad);
+          cleanup();
           console.log('[GuruImage] Image loaded successfully:', src);
         };
+        
+        // Define error handler for retry and fallback
+        const onError = () => {
+          console.warn('[GuruImage] Image failed to load:', src);
+          if (retries > 0) {
+            console.log(`[GuruImage] Retrying... (${retries} attempts left)`);
+            setTimeout(() => {
+              // Append a cache buster parameter to force a refetch
+              const retrySrc = src.includes('?') ? `${src}&retry=${retries}` : `${src}?retry=${retries}`;
+              updateImg(el, retrySrc, alt, classToApply, retries - 1);
+            }, 500); // Wait 500ms before retry
+          } else {
+            console.error('[GuruImage] All retries failed. Using fallback.');
+            cleanup();
+            if (el.src !== defaultImg) {
+              el.src = defaultImg; // Fallback to Sri Guru Granth Sahib Ji
+              el.style.opacity = '1';
+            }
+          }
+        };
+
+        const cleanup = () => {
+          el.removeEventListener('load', onLoad);
+          el.removeEventListener('error', onError);
+        };
+
         el.addEventListener('load', onLoad);
+        el.addEventListener('error', onError);
         
         // Execute update
         el.src = src;
@@ -1027,52 +1155,16 @@
         }
       };
 
-      // 1. Update event card image
+      // Update event card image only (greeting portrait now handled by Slider)
       const eventImgEl = document.getElementById('eventGuruImg');
       updateImg(eventImgEl, finalImg, finalName);
 
-      // 2. Update greeting portrait
-      const portraitImgEl = document.getElementById('guruPortraitImg');
-      updateImg(portraitImgEl, finalImg, finalName);
-      
-      // 3. Update salutation text
-      const salEl = document.getElementById('greetingSalutation');
-      if (salEl) {
-        console.log('[GuruImage] Updating salutation to:', finalName);
-        salEl.textContent = finalName;
-      } else {
-        console.log('[GuruImage] Salutation element not found');
-      }
+      // Sync Slider to this Guru
+      PortraitSlider.setGuruById(event);
     },
 
     _updateGreetingForGuruSahib(event) {
-      // Only update greeting if filter is set to guru-sahib
-      const nameFilter = localStorage.getItem('gurpurab_name_filter') || 'all';
-      
-      if (nameFilter !== 'guru-sahib') {
-        console.log('[Greeting] Filter not set to guru-sahib, skipping greeting update');
-        return;
-      }
-
-      console.log('[Greeting] Updating greeting for Guru Sahib event:', event.name);
-      
-      // Get Guru image and name
-      const guruInfo = this._getGuruInfoFromEvent(event);
-      
-      if (guruInfo) {
-        // Update greeting portrait
-        const portraitImgEl = document.getElementById('guruPortraitImg');
-        if (portraitImgEl) {
-          portraitImgEl.src = guruInfo.image;
-          portraitImgEl.alt = guruInfo.name;
-        }
-        
-        // Update salutation text
-        const salEl = document.getElementById('greetingSalutation');
-        if (salEl) {
-          salEl.textContent = guruInfo.name;
-        }
-      }
+      // Handled by PortraitSlider.setGuruById call in _updateGuruImage
     },
 
     _getGuruInfoFromEvent(event) {
@@ -1187,6 +1279,14 @@
       this.updateNotesCard();
       this.updateNitnemQuickAccess();
       this.autoRemindUpcomingGurpurab();
+      
+      // RE-INIT HOMEPAGE COMPONENTS
+      // These elements only exist on index.html, but refreshAll is called 
+      // on every SPA swap. The internal guards in these init methods 
+      // will prevent errors if the elements are missing.
+      if (typeof Greeting !== 'undefined') Greeting.update();
+      if (typeof PortraitSlider !== 'undefined') PortraitSlider.init();
+      if (typeof CarouselController !== 'undefined') CarouselController.init();
     },
 
     async autoRemindUpcomingGurpurab() {
@@ -1320,6 +1420,9 @@
       const root = document.documentElement;
       const body = document.body;
 
+      // INSTANT THEME CHANGE: Disable transitions temporarily
+      root.classList.add('theme-changing');
+
       if (isDark) {
         root.classList.add('dark-mode');
         if (body) body.classList.add('dark-mode');
@@ -1338,6 +1441,14 @@
       if (toggleBtn) {
         toggleBtn.setAttribute('aria-checked', String(isDark));
       }
+
+      // FORCE SYNCHRONOUS LAYOUT to ensure the transition skip applies immediately
+      const _ = root.offsetHeight;
+
+      // Remove the class to re-enable transitions for normal interactions
+      setTimeout(() => {
+        root.classList.remove('theme-changing');
+      }, 100);
     }
   };
 
@@ -1436,12 +1547,19 @@
   const AudioSync = {
     _info: {
       darbar: { title: 'Darbar Sahib Ji Live', subtitle: 'Sri Harmandir Sahib Ji' },
-      amritvela: { title: 'Amritvela Kirtan', subtitle: 'Curated Smagam Tracks' }
+      amritvela: { title: 'Amritvela Kirtan', subtitle: 'Curated Smagam Tracks' },
+      simran: { title: 'Waheguru Simran', subtitle: 'Divine Meditation & Simran' }
     },
 
     init() {
+      // FIX: Guard against duplicate listener binding on re-init
+      if (this._initialized) {
+        console.log('[AudioSync] Already initialized, skipping re-bind');
+        return;
+      }
+      this._initialized = true;
       // Both hero play buttons - trigger mini player directly instead of navigating
-      ['heroPlayBtn1', 'heroPlayBtn2'].forEach(id => {
+      ['heroPlayBtn1', 'heroPlayBtn2', 'heroPlayBtn3', 'heroPlayBtn4'].forEach(id => {
         const btn = document.getElementById(id);
         if (!btn) return;
         btn.addEventListener('click', (e) => {
@@ -1498,7 +1616,7 @@
       const playIcon = '<polygon points="6,3 20,12 6,21"/>';
 
       // Hero cards
-      ['1', '2'].forEach(n => {
+      ['1', '2', '3', '4'].forEach(n => {
         const card = document.getElementById('heroCard' + n);
         const icon = document.getElementById('heroPlayIcon' + n);
         const cardStream = card?.dataset.stream;
@@ -1729,6 +1847,12 @@
     _visible: true,
 
     init() {
+      // FIX: Clean up existing intervals before re-init to prevent memory leaks
+      if (this._intervals.length > 0) {
+        console.log('[Scheduler] Cleaning up', this._intervals.length, 'existing intervals');
+        this.destroy();
+      }
+
       // Only 2 timers. Not 6.
       // Greeting.update() removed - now handled by gurpurab event system
       this._add(() => UIController.updateNotificationBadge(), 300000); // Notifs: 5 min
@@ -1848,10 +1972,21 @@
 
   // ═ APP ORCHESTRATOR ═
   const App = {
+    _isInitialized: false,
+
     init() {
+      // FIX: Guard against duplicate init() calls from SPA page changes
+      // On re-entry, only refresh data — don't re-bind all listeners
+      if (this._isInitialized) {
+        console.log('[App] Already initialized, running refreshAll() only');
+        requestAnimationFrame(() => UIController.refreshAll());
+        return;
+      }
+      this._isInitialized = true;
+
       ThemeController.init();
       CarouselController.init();
-      // Greeting.update() removed - now handled by gurpurab event system
+      PortraitSlider.init();
       this._bindNavigation();
 
       // PERF: Batch all DOM updates into a single rAF
@@ -1917,6 +2052,7 @@
       // Hero cards -> Radio
       Navigation.bindCard('heroCard1', NAV_PATHS.gurbaniRadio);
       Navigation.bindCard('heroCard2', NAV_PATHS.gurbaniRadioAlt);
+      Navigation.bindCard('heroCard3', NAV_PATHS.gurbaniRadioSimran);
 
       // Notification button
       document.getElementById('notifBtn')?.addEventListener('click', () => {
@@ -2009,8 +2145,11 @@
 
   // Handle SPA page changes from the shell
   window.addEventListener('anhad_page_changed', () => {
-    console.log('[Trendora] Page change detected, re-initializing UI...');
-    App.init();
+    console.log('[Trendora] Page change detected, refreshing UI data...');
+    // FIX: Don't re-init the entire app — only refresh data to prevent
+    // duplicate event listeners and memory leaks
+    Store.clearCache();
+    requestAnimationFrame(() => UIController.refreshAll());
   });
 
 })();

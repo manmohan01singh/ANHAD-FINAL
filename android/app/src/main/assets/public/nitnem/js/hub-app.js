@@ -24,12 +24,12 @@
     };
 
     // ═══════════════════════════════════════════════════════════════
-    // DOM ELEMENTS
+    // DOM ELEMENTS - Lazy initialization to avoid race conditions
     // ═══════════════════════════════════════════════════════════════
 
-    const elements = {
-        // Updated to match actual HTML element IDs
-        loadingOverlay: document.getElementById('loadingOverlay'),
+    const getElements = () => ({
+        // Match actual HTML IDs in nitnem/index.html
+        loadingOverlay: document.getElementById('skeletonContainer') || document.getElementById('loadingOverlay'),
         greeting: document.getElementById('greeting'),
         searchTrigger: document.getElementById('searchTrigger'),
         settingsBtn: document.getElementById('settingsBtn'),
@@ -43,7 +43,10 @@
         settingsClose: document.getElementById('settingsClose'),
         recentSection: document.getElementById('recentSection'),
         recentList: document.getElementById('recentList')
-    };
+    });
+
+    // Cache elements after DOM is ready
+    let elements = {};
 
     // ═══════════════════════════════════════════════════════════════
     // BANI METADATA (Extended info not in API)
@@ -70,6 +73,15 @@
     async function init() {
         console.log('🙏 Initializing Nitnem Hub...');
 
+        // CRITICAL: Only run on nitnem page, not main index.html
+        if (!window.location.pathname.includes('/nitnem/')) {
+            console.log('[HubApp] Not on nitnem page, skipping initialization');
+            return;
+        }
+
+        // CRITICAL: Initialize elements after DOM is ready
+        elements = getElements();
+
         // Load saved state
         loadState();
 
@@ -94,21 +106,8 @@
         // Hide loading - IMMEDIATE to prevent persistent overlay
         hideLoadingScreen();
 
-        // CRITICAL: Re-apply greeting after everything else loads
-        setTimeout(updateGreeting, 500);
-        setTimeout(updateGreeting, 1500);
-        setTimeout(updateGreeting, 3000);
-
-        // Start protecting greeting from overwrites
-        protectGreeting();
-
-        // AGGRESSIVE: Keep re-applying greeting every 500ms for 10 seconds
-        let attempts = 0;
-        const interval = setInterval(() => {
-            updateGreeting();
-            attempts++;
-            if (attempts >= 20) clearInterval(interval);
-        }, 500);
+        // Simple: Update greeting once more after everything settles
+        setTimeout(updateGreeting, 1000);
 
         console.log('✓ Nitnem Hub initialized');
     }
@@ -142,56 +141,18 @@
         }
 
         console.log('[HubApp] Setting greeting:', greeting);
-        // Re-query element each time to avoid stale reference
+        // Get fresh element reference each time
         const greetingEl = document.getElementById('greeting');
         if (greetingEl) {
             const html = `<span class="greeting-icon">${icon}</span><span class="greeting-text">${greeting}</span>`;
             greetingEl.innerHTML = html;
-            // Store current greeting to detect changes
-            greetingEl.dataset.expectedHtml = html;
-            console.log('[HubApp] Greeting element updated:', greetingEl.id, greetingEl.className);
-            // DEBUG: Check what's actually in the DOM after setting
-            setTimeout(() => {
-                const checkEl = document.getElementById('greeting');
-                if (checkEl) {
-                    const actualText = checkEl.textContent;
-                    const expectedText = icon + greeting;
-                    console.log('[HubApp] DEBUG - Expected:', expectedText);
-                    console.log('[HubApp] DEBUG - Actual:', actualText);
-                    console.log('[HubApp] DEBUG - Match:', actualText === expectedText);
-                    console.log('[HubApp] DEBUG - innerHTML:', checkEl.innerHTML.substring(0, 100));
-                }
-            }, 100);
+            console.log('[HubApp] Greeting updated successfully');
         } else {
-            console.error('[HubApp] Greeting element NOT FOUND!');
+            console.warn('[HubApp] Greeting element not found, will retry...');
         }
     }
 
-    // Protect greeting from being overwritten by other scripts
-    function protectGreeting() {
-        if (!elements.greeting) return;
-        
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                    const expected = elements.greeting.dataset.expectedHtml;
-                    if (expected && elements.greeting.innerHTML !== expected) {
-                        console.log('[HubApp] Greeting was overwritten! Re-applying...');
-                        updateGreeting();
-                    }
-                }
-            });
-        });
-        
-        observer.observe(elements.greeting, {
-            childList: true,
-            characterData: true,
-            subtree: true
-        });
-        
-        console.log('[HubApp] Greeting protected from overwrites');
-    }
-
+    
     // ═══════════════════════════════════════════════════════════════
     // LOAD BANIS FROM API
     // ═══════════════════════════════════════════════════════════════
@@ -323,15 +284,18 @@
     }
 
     function renderRecentlyRead() {
-        if (!elements.recentSection || !elements.recentList) return;
+        const recentSection = document.getElementById('recentSection');
+        const recentList = document.getElementById('recentList');
+        
+        if (!recentSection || !recentList) return;
 
         if (state.recentlyRead.length === 0) {
-            elements.recentSection.style.display = 'none';
+            recentSection.style.display = 'none';
             return;
         }
 
-        elements.recentSection.style.display = 'block';
-        elements.recentList.innerHTML = '';
+        recentSection.style.display = 'block';
+        recentList.innerHTML = '';
 
         state.recentlyRead.slice(0, 5).forEach(bani => {
             const item = document.createElement('a');
@@ -341,7 +305,7 @@
                 <span class="recent-name">${bani.nameGurmukhi || bani.nameEnglish}</span>
                 <span class="recent-arrow">→</span>
             `;
-            elements.recentList.appendChild(item);
+            recentList.appendChild(item);
         });
     }
 
@@ -388,9 +352,14 @@
 
     function openSearch() {
         state.isSearchOpen = true;
-        elements.searchModal.setAttribute('aria-hidden', 'false');
-        elements.searchModal.classList.add('visible');
-        elements.searchInput.focus();
+        const searchModal = document.getElementById('searchModal');
+        const searchInput = document.getElementById('searchInput');
+        
+        if (searchModal) {
+            searchModal.setAttribute('aria-hidden', 'false');
+            searchModal.classList.add('visible');
+        }
+        if (searchInput) searchInput.focus();
         document.body.style.overflow = 'hidden';
         // Pause liquid glass orbs for performance
         document.querySelectorAll('.liquid-orb').forEach(orb => {
@@ -400,10 +369,16 @@
 
     function closeSearch() {
         state.isSearchOpen = false;
-        elements.searchModal.setAttribute('aria-hidden', 'true');
-        elements.searchModal.classList.remove('visible');
-        elements.searchInput.value = '';
-        elements.searchResults.innerHTML = '<p class="search-hint">Search by name in Gurmukhi, English, or Hindi...</p>';
+        const searchModal = document.getElementById('searchModal');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        
+        if (searchModal) {
+            searchModal.setAttribute('aria-hidden', 'true');
+            searchModal.classList.remove('visible');
+        }
+        if (searchInput) searchInput.value = '';
+        if (searchResults) searchResults.innerHTML = '<p class="search-hint">Search by name in Gurmukhi, English, or Hindi...</p>';
         document.body.style.overflow = '';
         // Resume liquid glass orbs
         document.querySelectorAll('.liquid-orb').forEach(orb => {
@@ -412,8 +387,10 @@
     }
 
     function handleSearch(query) {
+        const searchResults = document.getElementById('searchResults');
+        
         if (!query || query.length < 2) {
-            elements.searchResults.innerHTML = '<p class="search-hint">Type at least 2 characters...</p>';
+            if (searchResults) searchResults.innerHTML = '<p class="search-hint">Type at least 2 characters...</p>';
             return;
         }
 
@@ -428,16 +405,18 @@
         });
 
         if (results.length === 0) {
-            elements.searchResults.innerHTML = '<p class="search-hint">No Banis found matching your search.</p>';
+            if (searchResults) searchResults.innerHTML = '<p class="search-hint">No Banis found matching your search.</p>';
             return;
         }
 
-        elements.searchResults.innerHTML = '';
-        results.forEach(bani => {
-            const card = createBaniCard(bani);
-            card.addEventListener('click', closeSearch);
-            elements.searchResults.appendChild(card);
-        });
+        if (searchResults) {
+            searchResults.innerHTML = '';
+            results.forEach(bani => {
+                const card = createBaniCard(bani);
+                card.addEventListener('click', closeSearch);
+                searchResults.appendChild(card);
+            });
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -446,8 +425,11 @@
 
     function openSettings() {
         state.isSettingsOpen = true;
-        elements.settingsModal?.setAttribute('aria-hidden', 'false');
-        elements.settingsModal?.classList.add('visible');
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal) {
+            settingsModal.setAttribute('aria-hidden', 'false');
+            settingsModal.classList.add('visible');
+        }
         document.body.style.overflow = 'hidden';
         // Pause liquid glass orbs for performance
         document.querySelectorAll('.liquid-orb').forEach(orb => {
@@ -457,8 +439,11 @@
 
     function closeSettings() {
         state.isSettingsOpen = false;
-        elements.settingsModal?.setAttribute('aria-hidden', 'true');
-        elements.settingsModal?.classList.remove('visible');
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal) {
+            settingsModal.setAttribute('aria-hidden', 'true');
+            settingsModal.classList.remove('visible');
+        }
         document.body.style.overflow = '';
         // Resume liquid glass orbs
         document.querySelectorAll('.liquid-orb').forEach(orb => {
@@ -467,9 +452,10 @@
     }
 
     function renderSettingsPanel() {
-        if (!elements.settingsBody) return;
+        const settingsBody = document.getElementById('settingsBody');
+        if (!settingsBody) return;
 
-        elements.settingsBody.innerHTML = `
+        settingsBody.innerHTML = `
       <div class="setting-group">
         <label class="setting-label">Theme</label>
         <div class="theme-grid">
@@ -504,7 +490,7 @@
     `;
 
         // Theme buttons
-        elements.settingsBody.querySelectorAll('.theme-btn').forEach(btn => {
+        settingsBody.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const theme = btn.dataset.theme;
                 state.settings.theme = theme;
@@ -636,18 +622,21 @@
     // ═══════════════════════════════════════════════════════════════
 
     function setupEventListeners() {
+        // Get fresh element references
+        const els = getElements();
+        
         // Search trigger opens modal
-        elements.searchTrigger?.addEventListener('click', openSearch);
-        elements.searchCancel?.addEventListener('click', closeSearch);
-        elements.searchInput?.addEventListener('input', (e) => {
+        els.searchTrigger?.addEventListener('click', openSearch);
+        els.searchCancel?.addEventListener('click', closeSearch);
+        els.searchInput?.addEventListener('input', (e) => {
             handleSearch(e.target.value);
         });
-        elements.searchModal?.querySelector('.modal-backdrop')?.addEventListener('click', closeSearch);
+        els.searchModal?.querySelector('.modal-backdrop')?.addEventListener('click', closeSearch);
 
         // Settings
-        elements.settingsBtn?.addEventListener('click', openSettings);
-        elements.settingsClose?.addEventListener('click', closeSettings);
-        elements.settingsModal?.querySelector('.modal-backdrop')?.addEventListener('click', closeSettings);
+        els.settingsBtn?.addEventListener('click', openSettings);
+        els.settingsClose?.addEventListener('click', closeSettings);
+        els.settingsModal?.querySelector('.modal-backdrop')?.addEventListener('click', closeSettings);
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -667,11 +656,12 @@
     // ═══════════════════════════════════════════════════════════════
 
     function hideLoadingScreen() {
-        if (elements.loadingOverlay) {
-            elements.loadingOverlay.classList.add('hidden');
+        const loadingOverlay = document.getElementById('skeletonContainer') || document.getElementById('loadingOverlay');
+        if (loadingOverlay) {
+            loadingOverlay.classList.add('hidden');
             // Immediate hide to prevent persistent overlay
             setTimeout(() => {
-                elements.loadingOverlay.style.display = 'none';
+                loadingOverlay.style.display = 'none';
             }, 300);
         }
     }
@@ -685,5 +675,17 @@
     // INITIALIZE
     // ═══════════════════════════════════════════════════════════════
 
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        init();
+    } else {
+        document.addEventListener('DOMContentLoaded', init);
+    }
+
+    // SPA integration
+    window.addEventListener('anhad_page_changed', function() {
+        if (window.location.pathname.includes('/nitnem/')) {
+            console.log('[HubApp] Re-initializing for SPA navigation...');
+            init();
+        }
+    });
 })();

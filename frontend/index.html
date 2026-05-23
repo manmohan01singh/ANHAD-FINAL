@@ -5,6 +5,7 @@
   
   <script>
     (function() {
+      try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
       const theme = localStorage.getItem('anhad_theme') || 'light';
       let effectiveTheme = theme;
       if (theme === 'auto') {
@@ -2022,19 +2023,19 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
+    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important; opacity: 0; transition: opacity 0.3s ease-in-out;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
       
       <div class="event-card__main">
         <div class="event-card__info">
-          <div class="event-card__eyebrow">UPCOMING GURPURAB</div>
-          <div class="event-card__title" id="eventTitle">GURGADDI SRI GURU HARGOBIND SAHIB JI</div>
-          <div class="event-card__date" id="eventDate">19 JUNE 2025</div>
+          <div class="event-card__eyebrow">UPCOMING EVENT</div>
+          <div class="event-card__title" id="eventTitle"></div>
+          <div class="event-card__date" id="eventDate"></div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown" id="eventCountdown">5</div>
-            <div class="event-card__countdown-label" id="eventCountdownLabel">Days Remaining</div>
+            <div class="event-card__countdown" id="eventCountdown"></div>
+            <div class="event-card__countdown-label" id="eventCountdownLabel"></div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
             Learn More
@@ -2042,7 +2043,7 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img class="event-card__guru-img loaded" id="eventGuruImg" src="guruimages/guruhargobindsahebji.jpeg" alt="Sri Guru Hargobind Sahib Ji" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%; opacity: 1;">
+          <img class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
         </div>
       </div>
       <div class="event-card__days-badge">

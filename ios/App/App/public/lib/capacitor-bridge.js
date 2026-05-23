@@ -106,7 +106,7 @@ class CapacitorBridge {
 
             // Handle deep link paths
             if (path.includes('/nitnem')) {
-                window.location.href = './nitnem/indexbani.html';
+                window.location.href = './nitnem/index.html';
             } else if (path.includes('/tracker')) {
                 window.location.href = './NitnemTracker/nitnem-tracker.html';
             }

@@ -93,6 +93,10 @@
     // ══════════════════════════════════════════════════════════════════════════
     function initBroadcastChannel() {
         try {
+            // FIX: Close previous channel to prevent memory leak
+            if (State.broadcastChannel) {
+                State.broadcastChannel.close();
+            }
             State.broadcastChannel = new BroadcastChannel(CONFIG.CHANNEL_NAME);
 
             State.broadcastChannel.onmessage = (event) => {
@@ -201,7 +205,25 @@
     // ══════════════════════════════════════════════════════════════════════════
     // LOAD REMINDERS FROM STORAGE
     // ══════════════════════════════════════════════════════════════════════════
+
+    // BUG-07 FIX: Cache reminder reads for 5 seconds to prevent 5 localStorage
+    // reads + JSON.parse on every 5-second checkMissedAlarms() call.
+    let _reminderCache = null;
+    let _reminderCacheTime = 0;
+
+    // Invalidate cache when another tab updates reminders
+    window.addEventListener('storage', (e) => {
+        if (CONFIG.REMINDERS_KEYS.includes(e.key)) {
+            _reminderCache = null;
+            _reminderCacheTime = 0;
+        }
+    });
+
     function loadReminders() {
+        const now = Date.now();
+        if (_reminderCache && (now - _reminderCacheTime) < 5000) {
+            return _reminderCache;
+        }
         try {
             let raw = null;
             let storageKey = null;
@@ -256,7 +278,10 @@
             const settings = settingsRaw ? JSON.parse(settingsRaw) : (data.options || {});
             State.isNeverMissMode = settings?.neverMissMode || false;
 
-            return { reminders, settings };
+            const result = { reminders, settings };
+            _reminderCache = result;
+            _reminderCacheTime = Date.now();
+            return result;
         } catch (e) {
             console.error('Error loading reminders:', e);
             return null;
@@ -694,8 +719,13 @@
                     inset: 0;
                     z-index: 999999;
                     background: linear-gradient(180deg, rgba(0,0,0,0.97) 0%, rgba(20,20,25,0.98) 100%);
-                    backdrop-filter: blur(50px) saturate(200%);
-                    -webkit-backdrop-filter: blur(50px) saturate(200%);
+                    /* PERFORMANCE FIX: Remove CPU-expensive backdrop-filter on mobile WebView */
+                    backdrop-filter: none;
+                    -webkit-backdrop-filter: none;
+                    /* Force GPU acceleration instead */
+                    will-change: transform, opacity;
+                    transform: translateZ(0);
+                    backface-visibility: hidden;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -1208,6 +1238,12 @@
     // INITIALIZATION
     // ══════════════════════════════════════════════════════════════════════════
     function init() {
+        // FIX: Prevent duplicate init if GuaranteedAlarmSystem is already active
+        if (window.GuaranteedAlarmSystem && window.GuaranteedAlarmSystem._isActive) {
+            console.log('🔔 GlobalAlarmSystem: GuaranteedAlarmSystem active, skipping to avoid duplicate polling');
+            return;
+        }
+        
         console.log('🔔 Global Alarm System v3.0 Initializing...');
 
         // Initialize broadcast channel
@@ -1301,6 +1337,43 @@
         console.log('✅ Global Alarm System Ready!');
         console.log(`   📍 Current page: ${window.location.pathname}`);
         console.log(`   🔊 Audio path: ${CONFIG.AUDIO_BASE_PATH}`);
+
+        // ── POST-BOOT RESCHEDULE ──
+        // ReminderForegroundService.java writes needs_alarm_reschedule=true into
+        // SharedPreferences after a device reboot. On the next cold start we pick
+        // up that flag here and re-register all alarms + spiritual notifications.
+        checkAndRecoverPostBootAlarms();
+    }
+
+    async function checkAndRecoverPostBootAlarms() {
+        try {
+            if (!window.Capacitor?.Plugins?.Preferences) return;
+            const { Preferences } = window.Capacitor.Plugins;
+
+            const { value } = await Preferences.get({ key: 'needs_alarm_reschedule' });
+            if (value !== 'true') return;
+
+            console.log('[GlobalAlarmSystem] 🔄 Post-boot alarm reschedule triggered');
+
+            // Clear the flag first so we don't re-run on next normal launch
+            await Preferences.remove({ key: 'needs_alarm_reschedule' });
+
+            // Re-register all in-app alarms
+            scheduleAllAlarms();
+
+            // Also re-schedule spiritual notifications (they use Capacitor LocalNotifications)
+            if (window.SpiritualNotifications && typeof window.SpiritualNotifications.scheduleAll === 'function') {
+                // Force re-schedule by clearing the once-per-day guard
+                localStorage.removeItem('spiritual_last_scheduled_date');
+                localStorage.removeItem('spiritual_kirtan_reminder_date');
+                await window.SpiritualNotifications.scheduleAll();
+                localStorage.setItem('spiritual_last_scheduled_date', new Date().toDateString());
+                localStorage.setItem('spiritual_kirtan_reminder_date', new Date().toDateString());
+                console.log('[GlobalAlarmSystem] ✅ Spiritual notifications rescheduled after boot');
+            }
+        } catch (e) {
+            console.warn('[GlobalAlarmSystem] Post-boot reschedule check failed:', e.message);
+        }
     }
 
     // Start when DOM is ready

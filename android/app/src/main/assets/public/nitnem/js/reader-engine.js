@@ -49,14 +49,15 @@
         autoPlay: false,
         playbackSpeed: 1,
 
-        // Display toggles
+        // Display toggles - Gurmukhi only selected by default on first open
         showGurmukhi: true,
-        showRoman: true,
-        showEnglish: true,
-        showPunjabi: true,
+        showRoman: false,
+        showEnglish: false,
+        showPunjabi: false,
 
-        // Ik Onkar Background - default (will be adjusted by theme in loadSettings)
-        ikonkarTransparency: 10
+        // Backgrounds - both off (0) by default in light AND dark mode
+        ikonkarTransparency: 0,
+        orbsOpacity: 0
     };
 
     // Color Palette
@@ -197,6 +198,10 @@
             // Ik Onkar Background
             ikonkarTransparency: $('ikonkarTransparency'),
             transparencyValue: $('transparencyValue'),
+
+            // Orbs Background
+            orbsOpacitySlider: $('orbsOpacitySlider'),
+            orbsOpacityValue: $('orbsOpacityValue'),
 
             // Color Picker
             colorPickerModal: $('colorPickerModal'),
@@ -616,7 +621,7 @@
             }
         }
 
-        return { gurmukhi, roman, english, punjabi };
+        return { gurmukhi, roman, english, punjabi, visraam: verse.visraam };
     }
 
     function createVerseElement(parsed, index) {
@@ -627,14 +632,18 @@
         // Get current font class
         const fontClass = `font-${state.settings.fontFamily}`;
 
-        // Apply Larivaar
-        let gurmukhiHTML = escapeHtml(parsed.gurmukhi);
+        // Apply Larivaar or Visraam highlighting
+        let gurmukhiHTML = '';
         if (state.settings.larivaar) {
             if (state.settings.larivaarAssist) {
                 gurmukhiHTML = applyLarivaarAssist(parsed.gurmukhi);
             } else {
                 gurmukhiHTML = escapeHtml(parsed.gurmukhi.replace(/\s+/g, ''));
             }
+        } else if (state.settings.showVisraams) {
+            gurmukhiHTML = applyVisraams(parsed.gurmukhi, parsed.visraam);
+        } else {
+            gurmukhiHTML = escapeHtml(parsed.gurmukhi);
         }
 
         el.innerHTML = `
@@ -645,6 +654,52 @@
         `;
 
         return el;
+    }
+
+    function applyVisraams(gurmukhiText, visraamObj) {
+        if (!visraamObj) return escapeHtml(gurmukhiText);
+
+        let visraamArray = null;
+        for (const src of ['ss', 'bdb', 'ms', 'ft']) {
+            if (visraamObj[src] && Array.isArray(visraamObj[src])) {
+                visraamArray = visraamObj[src];
+                break;
+            }
+        }
+
+        if (!visraamArray || visraamArray.length === 0) {
+            return escapeHtml(gurmukhiText);
+        }
+
+        const words = gurmukhiText.split(/\s+/);
+        const visraamMap = {};
+        visraamArray.forEach(v => {
+            if (v.p !== undefined) {
+                visraamMap[v.p] = v.t || 'y';
+            }
+        });
+
+        let result = '';
+        words.forEach((word, idx) => {
+            const escapedWord = escapeHtml(word);
+            const pauseType = visraamMap[idx];
+
+            if (pauseType) {
+                if (pauseType === 'y' || pauseType === 'v') {
+                    result += `<span class="visraam-long">${escapedWord}</span>`;
+                } else {
+                    result += `<span class="visraam-short">${escapedWord}</span>`;
+                }
+            } else {
+                result += escapedWord;
+            }
+
+            if (idx < words.length - 1) {
+                result += ' ';
+            }
+        });
+
+        return result;
     }
 
     function applyLarivaarAssist(text) {
@@ -682,8 +737,6 @@
         const fontSize = state.settings.gurbaniFontSize || 28;
         const textAlign = state.settings.textAlign || 'center';
 
-        console.log('🔤 Applying font:', fontKey, fontFamily);
-
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
             el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
@@ -691,12 +744,11 @@
             // Add current font class
             el.classList.add(`font-${fontKey}`);
 
-            // FORCE apply inline styles with cssText for maximum priority
-            el.style.cssText = `
-                font-family: ${fontFamily} !important;
-                font-weight: ${fontWeight} !important;
-                font-size: ${fontSize}px !important;
-            `;
+            // FIX: Use individual property assignment instead of cssText
+            // cssText wipes ALL inline styles (including color settings from color picker)
+            el.style.setProperty('font-family', fontFamily, 'important');
+            el.style.setProperty('font-weight', fontWeight, 'important');
+            el.style.setProperty('font-size', `${fontSize}px`, 'important');
         });
 
         // Apply text alignment
@@ -707,7 +759,7 @@
         // Update font preview
         const preview = document.querySelector('.font-preview-text');
         if (preview) {
-            preview.style.cssText = `font-family: ${fontFamily} !important;`;
+            preview.style.fontFamily = fontFamily;
         }
 
         // Update font select value
@@ -740,8 +792,9 @@
         document.querySelectorAll('.verse-english').forEach(el => {
             el.classList.toggle('hidden', !s.showEnglish);
         });
+        // Punjabi: only check showPunjabi toggle (punjabiTranslation is a secondary setting in the drawer)
         document.querySelectorAll('.verse-punjabi').forEach(el => {
-            el.classList.toggle('hidden', !s.showPunjabi || !s.punjabiTranslation);
+            el.classList.toggle('hidden', !s.showPunjabi);
         });
     }
 
@@ -769,22 +822,33 @@
     function updateIkonkarBackground() {
         const opacity = state.settings.ikonkarTransparency / 100;
         if (els.ikonkarBackground) {
-            // Use CSS variable for theme-aware opacity
             els.ikonkarBackground.style.setProperty('--ikonkar-opacity', opacity);
             els.ikonkarBackground.style.opacity = opacity;
             els.ikonkarBackground.style.display = 'block';
             els.ikonkarBackground.style.visibility = 'visible';
-            // Remove hidden class if opacity > 0
             if (opacity > 0) {
                 els.ikonkarBackground.classList.remove('hidden');
             }
-            console.log('[ReaderEngine] Ik Onkar opacity set to:', opacity);
         }
         if (els.ikonkarTransparency) {
             els.ikonkarTransparency.value = state.settings.ikonkarTransparency;
         }
         if (els.transparencyValue) {
             els.transparencyValue.textContent = `${state.settings.ikonkarTransparency}%`;
+        }
+    }
+
+    function updateOrbsBackground() {
+        const orbs = document.querySelector('.bg-orbs');
+        if (orbs) {
+            const opacity = (state.settings.orbsOpacity ?? 0) / 100;
+            orbs.style.opacity = opacity;
+        }
+        if (els.orbsOpacitySlider) {
+            els.orbsOpacitySlider.value = state.settings.orbsOpacity ?? 0;
+        }
+        if (els.orbsOpacityValue) {
+            els.orbsOpacityValue.textContent = `${state.settings.orbsOpacity ?? 0}%`;
         }
     }
 
@@ -809,6 +873,29 @@
         root.style.setProperty('--font-weight', s.fontWeight);
         root.style.setProperty('--line-spacing', '1.8');
 
+        // Text Colors
+        const gColor = COLOR_PALETTE[s.gurmukhiColorIdx] || 'currentColor';
+        const tColor = COLOR_PALETTE[s.translationColorIdx] || 'currentColor';
+        const rColor = COLOR_PALETTE[s.translitColorIdx] || 'currentColor';
+
+        if (gColor !== 'currentColor') {
+            root.style.setProperty('--gurmukhi-text-color', gColor);
+        } else {
+            root.style.removeProperty('--gurmukhi-text-color');
+        }
+
+        if (tColor !== 'currentColor') {
+            root.style.setProperty('--translation-text-color', tColor);
+        } else {
+            root.style.removeProperty('--translation-text-color');
+        }
+
+        if (rColor !== 'currentColor') {
+            root.style.setProperty('--translit-text-color', rColor);
+        } else {
+            root.style.removeProperty('--translit-text-color');
+        }
+
         // Theme
         if (s.paperBackground) {
             root.setAttribute('data-theme', 'sepia');
@@ -832,6 +919,9 @@
 
         // Apply Ik Onkar background
         updateIkonkarBackground();
+
+        // Apply Orbs background
+        updateOrbsBackground();
 
         // Update UI
         updateSettingsUI();
@@ -967,6 +1057,11 @@
         state.settings.paperBackground = false;
         applyAllSettings();
         saveSettings();
+        // Propagate to global theme system so other pages stay in sync
+        try {
+            localStorage.setItem('anhad_theme', normalizedTheme);
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: normalizedTheme } }));
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1016,8 +1111,8 @@
     function toggleSetting(key) {
         state.settings[key] = !state.settings[key];
 
-        // Re-render for larivaar changes
-        if ((key === 'larivaar' || key === 'larivaarAssist') && state.baniData?.verses) {
+        // Re-render for larivaar or visraam changes
+        if ((key === 'larivaar' || key === 'larivaarAssist' || key === 'showVisraams') && state.baniData?.verses) {
             renderVerses(state.baniData.verses);
         }
 
@@ -1092,15 +1187,19 @@
 
     function loadSettings() {
         try {
+            // ─── Migration: v5 → v5.1 clears old defaults ──────────────────
+            // Old v5 had showRoman=true, showEnglish=true, ikonkarTransparency=10/30
+            // New v5.1 defaults: Gurmukhi-only, both backgrounds off (0)
+            const SETTINGS_VERSION = 'v5.1';
+            const storedVersion = localStorage.getItem('anhad_reader_settings_version');
+            if (storedVersion !== SETTINGS_VERSION) {
+                // Clear old settings so DEFAULTS apply cleanly
+                localStorage.removeItem('anhad_reader_v5');
+                localStorage.setItem('anhad_reader_settings_version', SETTINGS_VERSION);
+            }
+            // ────────────────────────────────────────────────────────────────
+
             const saved = localStorage.getItem('anhad_reader_v5');
-            // Get current theme for default transparency
-            const currentTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) 
-                || localStorage.getItem('anhad_theme') 
-                || 'light';
-            
-            // Theme-aware default transparency
-            const defaultTransparency = currentTheme === 'dark' ? 30 : 10;
-            
             if (saved) {
                 const parsed = JSON.parse(saved);
                 // Sync with global theme on load - prefer global theme
@@ -1108,32 +1207,19 @@
                 if (globalTheme) {
                     parsed.theme = globalTheme;
                 } else if (!parsed.theme) {
-                    parsed.theme = 'light'; // Default to light
-                }
-                // If no saved transparency, use theme-based default
-                if (parsed.ikonkarTransparency === undefined) {
-                    parsed.ikonkarTransparency = defaultTransparency;
-                }
-                // Migration: Reset old default 50 to new theme-based defaults
-                if (parsed.ikonkarTransparency === 50) {
-                    parsed.ikonkarTransparency = defaultTransparency;
+                    parsed.theme = 'light';
                 }
                 state.settings = { ...DEFAULTS, ...parsed };
             } else {
-                // No saved settings - use defaults but sync with global theme
+                // No saved settings — use DEFAULTS (both backgrounds are 0 by default)
                 const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
                 state.settings = { ...DEFAULTS };
                 if (globalTheme) {
                     state.settings.theme = globalTheme;
                 }
-                // Set theme-based default transparency
-                state.settings.ikonkarTransparency = defaultTransparency;
             }
-        } catch (e) { 
+        } catch (e) {
             state.settings = { ...DEFAULTS };
-            // Set theme-based default on error too
-            const currentTheme = localStorage.getItem('anhad_theme') || 'light';
-            state.settings.ikonkarTransparency = currentTheme === 'dark' ? 30 : 10;
         }
     }
 
@@ -1278,6 +1364,12 @@
                 }
                 els.tickBtn?.classList.add('ticked');
                 console.log('[Reader] Bani ticked in Nitnem Tracker for period:', period);
+
+                // SYNC: Record in UnifiedStats for streak tracking
+                if (window.UnifiedStats) {
+                    const baniName = state.baniMeta?.nameEnglish || 'Bani';
+                    window.UnifiedStats.recordNitnemBani(baniName);
+                }
             }
 
             // Save back to localStorage
@@ -1380,6 +1472,13 @@
         els.toggleRoman?.addEventListener('click', () => toggleDisplay('roman'));
         els.toggleEnglish?.addEventListener('click', () => toggleDisplay('english'));
         els.togglePunjabi?.addEventListener('click', () => toggleDisplay('punjabi'));
+
+        // Orbs opacity slider
+        els.orbsOpacitySlider?.addEventListener('input', (e) => {
+            state.settings.orbsOpacity = parseInt(e.target.value, 10);
+            updateOrbsBackground();
+            saveSettings();
+        });
 
         // Bookmark & actions
         els.bookmarkBtn?.addEventListener('click', toggleBookmark);

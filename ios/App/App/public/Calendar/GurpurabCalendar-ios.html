@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <!-- Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'light';
+        const html = document.documentElement;
+        if (theme === 'dark') {
+          html.classList.add('dark', 'dark-mode');
+          html.setAttribute('data-theme', 'dark');
+          html.style.colorScheme = 'dark';
+        } else {
+          html.classList.remove('dark', 'dark-mode');
+          html.setAttribute('data-theme', 'light');
+          html.style.colorScheme = 'light';
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#F2F2F7" id="themeColorMeta">
+
+  <title>Gurpurab Calendar</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="gurpurab-calendar-ios.css?v=1">
+
+  <!-- Global Theme System -->
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+    <div class="loader-text">Loading Calendar...</div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav-bar">
+    <button class="nav-btn" id="backBtn" type="button" aria-label="Back">
+      <span class="chevron">&#8249;</span>
+    </button>
+    <h1 class="nav-title">Gurpurab Calendar</h1>
+    <button class="nav-btn primary" id="btnToday" type="button" aria-label="Today">Today</button>
+  </header>
+
+  <main class="container">
+
+    <!-- Today Section -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-title">Today</span>
+      </div>
+      <div class="today-card">
+        <div class="today-nk" id="todayNk">—</div>
+        <div class="today-g" id="todayG">—</div>
+      </div>
+    </section>
+
+    <!-- Calendar Section -->
+    <section class="section calendar-section">
+      <div class="calendar-header">
+        <div class="month-nav">
+          <button class="month-btn" id="btnPrev" type="button" aria-label="Previous month">
+            <span class="chevron">&#8249;</span>
+          </button>
+          <div class="month-label" id="monthLabel">—</div>
+          <button class="month-btn" id="btnNext" type="button" aria-label="Next month">
+            <span class="chevron">&#8250;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="weekday-header" aria-hidden="true">
+        <div class="weekday-label">Mon</div>
+        <div class="weekday-label">Tue</div>
+        <div class="weekday-label">Wed</div>
+        <div class="weekday-label">Thu</div>
+        <div class="weekday-label">Fri</div>
+        <div class="weekday-label">Sat</div>
+        <div class="weekday-label">Sun</div>
+      </div>
+
+      <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Calendar"></div>
+    </section>
+
+    <!-- Upcoming Events Section -->
+    <section class="section upcoming-section">
+      <div class="section-header">
+        <span class="section-title" id="upcomingTitle">Upcoming</span>
+      </div>
+      <div class="upcoming-list" id="upcomingList" role="list"></div>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="../lib/global-theme.js"></script>
+  <script src="gurpurab-calendar-ios.js?v=1"></script>
+
+    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
+    <script src="../lib/capacitor-notifications-global.js"></script>
+    <script src="../lib/anhad-widget-bridge.js"></script>
+    <script src="../lib/anhad-audio-singleton.js"></script>
+</body>
+</html>

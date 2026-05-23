@@ -1,20 +1,20 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
-   ✦✦✦ ANHAD — TRENDORA-EXTREME iOS PREMIUM DESIGN SYSTEM ✦✦✦
+﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   âœ¦âœ¦âœ¦ ANHAD â€” TRENDORA-EXTREME iOS PREMIUM DESIGN SYSTEM âœ¦âœ¦âœ¦
    
-   Design Philosophy: RADICAL RESTRAINT × TRENDORA WARMTH
+   Design Philosophy: RADICAL RESTRAINT Ã— TRENDORA WARMTH
    - ONE accent color (warm spiritual gold)
    - 60%+ whitespace ratio
    - Maximum 3 information layers per card
    - iOS 18/26 SF Pro typography system
    - Trendora-inspired warm surfaces with depth
-   - Zero decorative clutter — only functional beauty
+   - Zero decorative clutter â€” only functional beauty
    
    "The pinnacle of sophistication is simplicity."
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
-/* ═══════════════════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    @FONT-FACE CUSTOM IMPORTS
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @font-face {
   font-family: 'Trajan Pro';
   src: url('../assets/fonts/TrajanPro-Regular.ttf') format('truetype');
@@ -44,11 +44,11 @@
   font-display: swap;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 1. DESIGN TOKENS — TRENDORA ONE-ACCENT SYSTEM
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 1. DESIGN TOKENS â€” TRENDORA ONE-ACCENT SYSTEM
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 :root {
-  /* ── Surface System (Trendora-inspired warm grays) ── */
+  /* â”€â”€ Surface System (Trendora-inspired warm grays) â”€â”€ */
   --surface-primary: #F1F3F6;
   --surface-secondary: #F1F3F6;
   --surface-tertiary: #E8EAED;
@@ -56,14 +56,14 @@
   --surface-sunken: #E2E4E8;
   --surface-warm: #FFFDF9;
 
-  /* ── Text System (iOS HIG precise) ── */
+  /* â”€â”€ Text System (iOS HIG precise) â”€â”€ */
   --text-primary: #1A1A1F;
   --text-secondary: #6E6E73;
   --text-tertiary: #AEAEB2;
   --text-quaternary: #C7C7CC;
   --text-inverse: #FFFFFF;
 
-  /* ── ONE Spiritual Accent — Trendora Warm Gold ── */
+  /* â”€â”€ ONE Spiritual Accent â€” Trendora Warm Gold â”€â”€ */
   --accent: #D4943A;
   --accent-hover: #C4842A;
   --accent-pressed: #B47420;
@@ -76,7 +76,7 @@
   --accent-shadow-sm: 0 4px 16px rgba(212, 148, 58, 0.18);
   --accent-glow: 0 0 40px rgba(212, 148, 58, 0.15);
 
-  /* ── Semantic Colors (surgically applied) ── */
+  /* â”€â”€ Semantic Colors (surgically applied) â”€â”€ */
   --live: #FF3B30;
   --live-bg: rgba(255, 59, 48, 0.08);
   --live-shadow: 0 4px 16px rgba(255, 59, 48, 0.25);
@@ -89,23 +89,23 @@
   --blue-bg: rgba(0, 122, 255, 0.06);
   --streak: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
 
-  /* ── Shadow System (Trendora depth layers) ── */
+  /* â”€â”€ Shadow System (Trendora depth layers) â”€â”€ */
   --shadow-0: none;
-  --shadow-xs: 4px 4px 10px rgba(0, 0, 0, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8), inset 2px 2px 5px rgba(255, 255, 255, 0.8), inset -2px -2px 5px rgba(0, 0, 0, 0.03);
-  --shadow-sm: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 12px 12px 24px rgba(0, 0, 0, 0.08), -12px -12px 24px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 1), inset -6px -6px 12px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 16px 16px 32px rgba(0, 0, 0, 0.08), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.06);
-  --shadow-xl: 20px 20px 40px rgba(0, 0, 0, 0.1), -20px -20px 40px rgba(255, 255, 255, 1), inset 10px 10px 20px rgba(255, 255, 255, 1), inset -10px -10px 20px rgba(0, 0, 0, 0.08);
-  --shadow-2xl: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.08);
-  --shadow-card: 16px 16px 32px rgba(0, 0, 0, 0.07), -16px -16px 32px rgba(255, 255, 255, 1), inset 8px 8px 16px rgba(255, 255, 255, 1), inset -8px -8px 16px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 22px 22px 44px rgba(0, 0, 0, 0.09), -22px -22px 44px rgba(255, 255, 255, 1), inset 12px 12px 24px rgba(255, 255, 255, 1), inset -12px -12px 24px rgba(0, 0, 0, 0.06);
-  --shadow-float: 24px 24px 48px rgba(0, 0, 0, 0.12), -24px -24px 48px rgba(255, 255, 255, 1), inset 6px 6px 12px rgba(255, 255, 255, 0.8), inset -6px -6px 12px rgba(0, 0, 0, 0.04);
-  --shadow-inset: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
-  --shadow-clay-btn: 8px 8px 16px rgba(0, 0, 0, 0.06), -8px -8px 16px rgba(255, 255, 255, 0.9), inset 4px 4px 8px rgba(255, 255, 255, 0.9), inset -4px -4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-clay-btn-active: inset 8px 8px 16px rgba(0, 0, 0, 0.08), inset -8px -8px 16px rgba(255, 255, 255, 1);
-  --shadow-clay-nav: 0 -8px 24px rgba(255,255,255,1), 0 8px 24px rgba(0, 0, 0, 0.08), inset 4px 4px 12px rgba(255,255,255,1), inset -4px -4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-float: none;
+  --shadow-inset: none;
+  --shadow-clay-btn: none;
+  --shadow-clay-btn-active: none;
+  --shadow-clay-nav: none;
 
-  /* ── Radii (Trendora generous curves) ── */
+  /* â”€â”€ Radii (Trendora generous curves) â”€â”€ */
   --radius-xs: 16px;
   --radius-sm: 20px;
   --radius-md: 26px;
@@ -115,25 +115,25 @@
   --radius-3xl: 56px;
   --radius-full: 9999px;
 
-  /* ── Typography Scale (iOS 18 HIG — SF Pro) ── */
+  /* â”€â”€ Typography Scale (iOS 18 HIG â€” SF Pro) â”€â”€ */
   --font-system: 'SF Pro Display', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-rounded: -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'SF Pro Display', 'Inter', system-ui, sans-serif;
   --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
   --font-mono: 'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace;
 
-  --text-jumbo: 2.5rem;           /* 40px — Hero moments */
-  --text-large-title: 2.125rem;   /* 34px — Page titles */
-  --text-title-1: 1.75rem;        /* 28px — Section titles */
-  --text-title-2: 1.375rem;       /* 22px — Card titles */
-  --text-title-3: 1.25rem;        /* 20px — Subsection */
-  --text-headline: 1.0625rem;     /* 17px — Headlines */
-  --text-body: 1.0625rem;         /* 17px — Body text */
-  --text-callout: 1rem;           /* 16px — Callouts */
-  --text-subhead: 0.9375rem;      /* 15px — Subheadlines */
-  --text-footnote: 0.8125rem;     /* 13px — Secondary info */
-  --text-caption: 0.75rem;        /* 12px — Captions */
-  --text-caption-2: 0.6875rem;    /* 11px — Small captions */
-  --text-micro: 0.625rem;         /* 10px — Badges */
+  --text-jumbo: 2.5rem;           /* 40px â€” Hero moments */
+  --text-large-title: 2.125rem;   /* 34px â€” Page titles */
+  --text-title-1: 1.75rem;        /* 28px â€” Section titles */
+  --text-title-2: 1.375rem;       /* 22px â€” Card titles */
+  --text-title-3: 1.25rem;        /* 20px â€” Subsection */
+  --text-headline: 1.0625rem;     /* 17px â€” Headlines */
+  --text-body: 1.0625rem;         /* 17px â€” Body text */
+  --text-callout: 1rem;           /* 16px â€” Callouts */
+  --text-subhead: 0.9375rem;      /* 15px â€” Subheadlines */
+  --text-footnote: 0.8125rem;     /* 13px â€” Secondary info */
+  --text-caption: 0.75rem;        /* 12px â€” Captions */
+  --text-caption-2: 0.6875rem;    /* 11px â€” Small captions */
+  --text-micro: 0.625rem;         /* 10px â€” Badges */
 
   --weight-ultralight: 100;
   --weight-thin: 200;
@@ -145,7 +145,7 @@
   --weight-heavy: 800;
   --weight-black: 900;
 
-  /* ── Spacing (4px micro-grid, 8px base grid) ── */
+  /* â”€â”€ Spacing (4px micro-grid, 8px base grid) â”€â”€ */
   --space-0: 0px;
   --space-0-5: 2px;
   --space-1: 4px;
@@ -167,13 +167,13 @@
   --space-16: 64px;
   --space-20: 80px;
 
-  /* ── Layout ── */
+  /* â”€â”€ Layout â”€â”€ */
   --page-margin: 20px;
   --max-width: 430px;
   --nav-height: 84px;
   --mini-player-height: 68px;
 
-  /* ── Animation (iOS-native spring physics) ── */
+  /* â”€â”€ Animation (iOS-native spring physics) â”€â”€ */
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -191,13 +191,13 @@
   --duration-slower: 0.7s;
   --duration-slowest: 1s;
 
-  /* ── Safe Areas ── */
+  /* â”€â”€ Safe Areas â”€â”€ */
   --safe-top: env(safe-area-inset-top, 20px);
   --safe-bottom: env(safe-area-inset-bottom, 34px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  /* ── Z-Index Scale ── */
+  /* â”€â”€ Z-Index Scale â”€â”€ */
   --z-base: 0;
   --z-above: 10;
   --z-sticky: 100;
@@ -209,23 +209,23 @@
   --z-toast: 2000;
   --z-banner: 100001;
 
-  /* ── Blur Tokens ── */
+  /* â”€â”€ Blur Tokens â”€â”€ */
   --blur-sm: 8px;
   --blur-md: 20px;
   --blur-lg: 40px;
   --blur-xl: 60px;
   --blur-2xl: 80px;
 
-  /* ── Border ── */
+  /* â”€â”€ Border â”€â”€ */
   --border-hairline: 0.33px solid rgba(0, 0, 0, 0.08);
   --border-thin: 0.5px solid rgba(0, 0, 0, 0.06);
   --border-light: 1px solid rgba(0, 0, 0, 0.04);
   --border-card: 1px solid rgba(0, 0, 0, 0.03);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 2. RESET & BASE — Surgical Foundation
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 2. RESET & BASE â€” Surgical Foundation
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 *,
 *::before,
 *::after {
@@ -239,8 +239,8 @@
 }
 
 html {
-  font-size: 16px !important; /* Lock base rem — immune to system Display Size */
-  /* scroll-behavior: smooth — REMOVED: interferes with native iOS momentum scrolling, causes jank */
+  font-size: 16px !important; /* Lock base rem â€” immune to system Display Size */
+  /* scroll-behavior: smooth â€” REMOVED: interferes with native iOS momentum scrolling, causes jank */
   text-size-adjust: 100% !important;
   -webkit-text-size-adjust: 100% !important;
   -moz-text-size-adjust: 100% !important;
@@ -272,7 +272,7 @@ body {
   z-index: -2;
 } */
 
-/* Blue-gold ambient atmosphere — REMOVED to prevent visible bar beside header */
+/* Blue-gold ambient atmosphere â€” REMOVED to prevent visible bar beside header */
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -353,9 +353,9 @@ a:active {
   opacity: 0.88;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 3. APP CONTAINER — Trendora-Inspired Layout
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 3. APP CONTAINER â€” Trendora-Inspired Layout
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .app {
   position: relative;
   max-width: var(--max-width);
@@ -365,7 +365,7 @@ a:active {
   margin-bottom: 0;
 }
 
-/* Staggered entrance — PERF: reduced to 6 children, removed blur filter */
+/* Staggered entrance â€” PERF: reduced to 6 children, removed blur filter */
 .app > * {
   animation: anhad-enter 0.4s var(--ease-out-expo) backwards;
 }
@@ -382,7 +382,7 @@ a:active {
   from {
     opacity: 0;
     transform: translateY(16px);
-    /* PERF: blur filter REMOVED — forces GPU composition on every animating element */
+    /* PERF: blur filter REMOVED â€” forces GPU composition on every animating element */
   }
   to {
     opacity: 1;
@@ -405,7 +405,7 @@ a:active {
   animation: glassReveal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Page exit — GPU-composited ONLY (opacity + transform), no filter:blur for 120fps */
+/* Page exit â€” GPU-composited ONLY (opacity + transform), no filter:blur for 120fps */
 .app--exiting {
   animation: anhad-exit 0.18s var(--ease-smooth) forwards;
   will-change: opacity, transform;
@@ -420,7 +420,7 @@ a:active {
   100% {
     opacity: 0;
     transform: translateY(-8px) scale(0.985) translateZ(0);
-    /* NO filter:blur — forces main-thread repaint, kills 60fps */
+    /* NO filter:blur â€” forces main-thread repaint, kills 60fps */
   }
 }
 
@@ -433,10 +433,10 @@ a:active {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 4. HEADER — Trendora-Inspired: Avatar | Brand | Actions
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 4. HEADER â€” Trendora-Inspired: Avatar | Brand | Actions
    Clean grid. Avatar with theme indicator. Centered brand. Right actions.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -450,7 +450,7 @@ a:active {
   background: transparent !important;
 }
 
-/* Compact header on scroll — frosted glass with golden accent */
+/* Compact header on scroll â€” frosted glass with golden accent */
 .header--compact {
   background: transparent !important;
   backdrop-filter: blur(var(--blur-lg)) saturate(200%);
@@ -461,7 +461,7 @@ a:active {
 }
 
 
-body.dark-mode .header--compact {
+.dark-mode .header--compact {
   background: transparent !important;
   border-bottom-color: rgba(212, 148, 58, 0.12);
 }
@@ -519,7 +519,7 @@ body.dark-mode .header--compact {
   transform: scale(1.6);
 }
 
-/* Theme indicator — glowing dot */
+/* Theme indicator â€” glowing dot */
 .header__theme-dot {
   position: absolute;
   bottom: -3px;
@@ -534,7 +534,7 @@ body.dark-mode .header--compact {
   box-shadow: 0 2px 8px rgba(255, 214, 10, 0.4);
 }
 
-body.dark-mode .header__theme-dot {
+.dark-mode .header__theme-dot {
   background: #BF5AF2;
   box-shadow: 0 2px 8px rgba(191, 90, 242, 0.4);
 }
@@ -547,7 +547,7 @@ body.dark-mode .header__theme-dot {
   gap: 3px;
 }
 
-/* ANHAD — iOS Clean Typography */
+/* ANHAD â€” iOS Clean Typography */
 .header__title {
   font-family: 'Optimus Princeps', 'Trajan Pro', serif; /* Custom imperial font */
   font-size: 1.45rem; /* Adjusted slightly larger to account for Optimus sizing */
@@ -561,7 +561,7 @@ body.dark-mode .header__theme-dot {
 }
 
 /* Dark mode: golden text */
-body.dark-mode .header__title {
+.dark-mode .header__title {
   color: #D4943A;
 }
 
@@ -644,10 +644,10 @@ body.dark-mode .header__title {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 4.5. DECORATIVE LOGO — Floating Brand Accent (Home Screen)
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 4.5. DECORATIVE LOGO â€” Floating Brand Accent (Home Screen)
    Subtle watermark-style logo between header and greeting.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .deco-logo-home {
   display: flex;
   align-items: center;
@@ -669,7 +669,7 @@ body.dark-mode .header__title {
   transition: opacity 0.5s ease;
 }
 
-body.dark-mode .deco-logo-home img {
+.dark-mode .deco-logo-home img {
   opacity: 0.92;
   filter: drop-shadow(0 0 18px rgba(212, 160, 74, 0.45))
           drop-shadow(0 0 44px rgba(245, 200, 66, 0.2))
@@ -687,11 +687,11 @@ body.dark-mode .deco-logo-home img {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 5. GREETING — Premium Centered Hero Layout
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 5. GREETING â€” Premium Centered Hero Layout
    Guru portrait as the centred hero. Name below. Gurbani wisdom below that.
-   Breathable, vertical, premium — like a spiritual profile card.
-═══════════════════════════════════════════════════════════════════════════════ */
+   Breathable, vertical, premium â€” like a spiritual profile card.
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .greeting {
   margin-bottom: var(--space-4);
   padding: var(--space-2) 0 var(--space-1);
@@ -713,7 +713,7 @@ body.dark-mode .deco-logo-home img {
   width: 100%;
 }
 
-/* ── Guru Portrait — Perfect Circular Frame ── */
+/* â”€â”€ Guru Portrait â€” Perfect Circular Frame â”€â”€ */
 .greeting__guru-portrait {
   order: -1; /* Always render portrait first (above text) */
   width: 140px;
@@ -743,7 +743,7 @@ body.dark-mode .deco-logo-home img {
   object-position: center center; /* JS overrides per-image for best crop */
   image-orientation: from-image;
   display: block;
-  /* Elegant thin gold border — inside the overflow circle */
+  /* Elegant thin gold border â€” inside the overflow circle */
   border: 2.5px solid #D4A84B;
   box-sizing: border-box;
   transition: transform 0.4s ease, opacity 0.3s ease;
@@ -751,7 +751,7 @@ body.dark-mode .deco-logo-home img {
   z-index: 1;
 }
 
-/* Unique royal frame — gradient ring behind the image */
+/* Unique royal frame â€” gradient ring behind the image */
 .greeting__guru-portrait::before {
   content: '';
   position: absolute;
@@ -787,7 +787,7 @@ body.dark-mode .deco-logo-home img {
   transform: scale(1.03);
 }
 
-/* ── Salutation / Guru Name ── */
+/* â”€â”€ Salutation / Guru Name â”€â”€ */
 .greeting__salutation {
   font-size: 1.15rem;
   font-weight: 700;
@@ -824,7 +824,7 @@ body.dark-mode .deco-logo-home img {
 }
 
 /* Dark mode: Rich gold with glow */
-body.dark-mode .greeting__salutation {
+.dark-mode .greeting__salutation {
   background: linear-gradient(
     135deg,
     #E6B545 0%,
@@ -840,7 +840,7 @@ body.dark-mode .greeting__salutation {
   filter: drop-shadow(0 0 15px rgba(230, 181, 69, 0.5));
 }
 
-/* ── Gurbani Quote ── */
+/* â”€â”€ Gurbani Quote â”€â”€ */
 .greeting__gurbani {
   font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif;
   font-size: 1.5rem;
@@ -893,9 +893,9 @@ body.dark-mode .greeting__salutation {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 5.4.1. SCATTERED PETALS — Floating around portrait (No Rose)
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 5.4.1. SCATTERED PETALS â€” Floating around portrait (No Rose)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 /* Petals decoration - concentrated cluster at center-bottom of portrait */
 .greeting__rose-decoration {
   position: absolute;
@@ -1015,17 +1015,17 @@ body.dark-mode .greeting__salutation {
 /* @keyframes petalFloat removed */
 
 /* Dark mode adjustments */
-body.dark-mode .greeting__rose-decoration .petal-1,
-body.dark-mode .greeting__rose-decoration .petal-2,
-body.dark-mode .greeting__rose-decoration .petal-3 {
+.dark-mode .greeting__rose-decoration .petal-1,
+.dark-mode .greeting__rose-decoration .petal-2,
+.dark-mode .greeting__rose-decoration .petal-3 {
   opacity: 0.9;
   filter: drop-shadow(0 2px 6px rgba(255, 105, 180, 0.3));
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 5.5. DAILY PROGRESS — Elegant Inline Progress Bar
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 5.5. DAILY PROGRESS â€” Elegant Inline Progress Bar
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .progress-inline {
   display: flex;
   align-items: center;
@@ -1084,9 +1084,67 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   position: relative;
 }
 
-/* PERF: Shimmer animation REMOVED — was running 24/7 even when fill is 0% */
+/* PERF: Shimmer animation REMOVED â€” was running 24/7 even when fill is 0% */
 .progress-inline__fill::after {
   content: none;
+}
+
+.quick-card__streak {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  color: #ff3b30;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Streak Saved State for Nitnem Tracker Card */
+.quick-card.streak-saved {
+  background: linear-gradient(145deg, #f0f4f8 0%, #d9e2ec 100%) !important;
+  border: 2px solid rgba(82, 110, 150, 0.4) !important;
+  box-shadow: 
+    0 10px 30px rgba(82, 110, 150, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.quick-card__streak.saved {
+  color: #243b53 !important;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.quick-card.streak-saved::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 55%
+  );
+  animation: saved-shimmer 6s infinite linear;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes saved-shimmer {
+  0% { transform: translateX(-30%) translateY(-30%); }
+  100% { transform: translateX(30%) translateY(30%); }
+}
+
+.quick-card.streak-saved .quick-card__icon {
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(82, 110, 150, 0.2);
+}
+
+.quick-card.streak-saved .quick-card__icon svg {
+  color: #486581;
 }
 
 .progress-inline__text {
@@ -1100,21 +1158,21 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 6. HERO CAROUSEL — Trendora-Inspired Premium Cards
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 6. HERO CAROUSEL â€” Trendora-Inspired Premium Cards
    Full-bleed images. Warm overlays. Generous radius. Spring physics.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .hero-carousel {
   position: relative;
   margin-bottom: 0;
 }
 
-/* Golden Orb — REMOVED per user request, replaced with rose decoration */
+/* Golden Orb â€” REMOVED per user request, replaced with rose decoration */
 .golden-orb-bg {
   display: none;
 }
 
-/* Legacy glow fallback — hidden */
+/* Legacy glow fallback â€” hidden */
 .hero-carousel__glow {
   display: none;
 }
@@ -1139,7 +1197,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   border-radius: 24px;
   overflow: hidden;
   background: var(--surface-primary);
-  box-shadow: var(--shadow-float);
+  box-shadow: none !important;
   cursor: pointer;
   transition: transform var(--duration-normal) var(--ease-spring),
               box-shadow var(--duration-normal) ease;
@@ -1150,7 +1208,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 
 .hero-card:active {
   transform: scale(0.975);
-  box-shadow: var(--shadow-card);
+  box-shadow: none !important;
 }
 
 .hero-card__image-wrapper {
@@ -1166,7 +1224,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* PERF: removed permanent will-change + 10s hover zoom — kept GPU layer allocated forever */
+  /* PERF: removed permanent will-change + 10s hover zoom â€” kept GPU layer allocated forever */
 }
 
 /* Hover zoom only on non-touch devices */
@@ -1201,9 +1259,9 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   z-index: 3;
 }
 
-/* ═════════════════════════════════════════════════════════════════════════════
-   HERO CARD — FROSTED GLASS BOTTOM BLUR (blur the IMAGE, not text)
-   ════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   HERO CARD â€” FROSTED GLASS BOTTOM BLUR (blur the IMAGE, not text)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Disabled blur layer for cleaner images */
 .hero-card__image-wrapper::after {
@@ -1211,7 +1269,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   display: none;
 }
 
-/* The text container — sits on TOP of the blur */
+/* The text container â€” sits on TOP of the blur */
 .hero-card__overlay {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -1256,7 +1314,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   letter-spacing: 0;
 }
 
-/* Badge — Trendora pill style */
+/* Badge â€” Trendora pill style */
 .hero-card__badge {
   display: inline-flex;
   align-items: center;
@@ -1311,7 +1369,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   50% { opacity: 0.3; transform: scale(0.85); }
 }
 
-/* Play button — Trendora glassmorphic circle */
+/* Play button â€” Trendora glassmorphic circle */
 .hero-card__play-btn {
   width: 64px; height: 64px;
   border-radius: var(--radius-full);
@@ -1372,7 +1430,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   50% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
 }
 
-/* Carousel Dots — iOS Capsule Style (like reference image) */
+/* Carousel Dots â€” iOS Capsule Style (like reference image) */
 .hero-carousel__dots {
   display: flex;
   justify-content: center;
@@ -1398,13 +1456,13 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   border-radius: var(--radius-full);
   opacity: 1;
   background: var(--accent);
-  box-shadow: 0 2px 8px rgba(212, 148, 58, 0.35);
+  box-shadow: none !important;
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 7. SECTION HEADERS — Trendora Clean Typography
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 7. SECTION HEADERS â€” Trendora Clean Typography
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -1434,10 +1492,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 8. PRACTICE GRID — Trendora Premium Cards with Progress Rings
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 8. PRACTICE GRID â€” Trendora Premium Cards with Progress Rings
    Warm tinted surfaces. Generous padding. Meaningful motion.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .practice-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1579,7 +1637,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 .practice-card__status--active { color: var(--success); font-weight: var(--weight-semibold); }
 .practice-card__status--accent { color: var(--accent); font-weight: var(--weight-semibold); }
 
-/* Completion checkmark — spring animation */
+/* Completion checkmark â€” spring animation */
 .practice-card__check {
   position: absolute;
   top: var(--space-2); right: var(--space-2);
@@ -1605,10 +1663,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 9. QUICK ACCESS CARDS — Trendora Light Tinted Surfaces
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 9. QUICK ACCESS CARDS â€” Trendora Light Tinted Surfaces
    Each card has a unique warm/cool tint. Generous touch targets.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 /* PERF: Cards render persistently */
 .quick-card,
 .event-card {
@@ -1770,7 +1828,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   color: var(--text-tertiary);
 }
 
-/* Streak badge — Trendora warm pill */
+/* Streak badge â€” Trendora warm pill */
 .quick-card__streak {
   display: inline-flex;
   align-items: center;
@@ -1798,10 +1856,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 10. CONTEXTUAL EVENT CARD — Upcoming Gurpurab
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 10. CONTEXTUAL EVENT CARD â€” Upcoming Gurpurab
    Warm accent surface. Clean countdown. Elegant simplicity.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .event-card {
   position: relative;
   padding: var(--space-5) var(--space-5);
@@ -1813,7 +1871,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   transition: transform var(--duration-fast) var(--ease-spring);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none !important;
 }
 
 .event-card:active {
@@ -1879,10 +1937,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 11. MINI PLAYER — Trendora Floating Bar
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 11. MINI PLAYER â€” Trendora Floating Bar
    Persistent. Premium glass. Musical warmth.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .mini-player {
   position: fixed;
   bottom: calc(var(--nav-height) + var(--safe-bottom) + 8px);
@@ -2024,10 +2082,10 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 12. BOTTOM NAVIGATION — iOS 26 Liquid Glass Floating Pill
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 12. BOTTOM NAVIGATION â€” iOS 26 Liquid Glass Floating Pill
    Trendora-inspired floating tab bar. Refraction. Spring physics.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .bottom-nav {
   position: relative;
   bottom: 0; left: 0; right: 0;
@@ -2049,7 +2107,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   padding: var(--space-2) var(--space-2);
   height: 64px;
 
-  /* iOS Floating Pill — Premium Frosted Glass */
+  /* iOS Floating Pill â€” Premium Frosted Glass */
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(var(--blur-2xl)) saturate(260%) brightness(1.08);
   -webkit-backdrop-filter: blur(var(--blur-2xl)) saturate(260%) brightness(1.08);
@@ -2144,7 +2202,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   letter-spacing: -0.01em;
 }
 
-/* Active tab — warm accent highlight */
+/* Active tab â€” warm accent highlight */
 .nav-tab--active svg {
   color: var(--accent);
   transform: translateY(-1px) scale(1.08);
@@ -2157,7 +2215,7 @@ body.dark-mode .greeting__rose-decoration .petal-3 {
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-body.dark-mode .nav-tab--active .ios-emoji--nav {
+.dark-mode .nav-tab--active .ios-emoji--nav {
   filter: none !important;
 }
 
@@ -2167,10 +2225,10 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 13. BOTTOM SHEET — iOS-Native Pattern
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 13. BOTTOM SHEET â€” iOS-Native Pattern
    Clean. Spring-driven. Backdrop blur. Handle indicator.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .sheet-overlay {
   position: fixed;
   inset: 0;
@@ -2322,9 +2380,9 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 14. INSTALL BANNER — Trendora Minimal Floating
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 14. INSTALL BANNER â€” Trendora Minimal Floating
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .install-banner {
   position: fixed;
   bottom: 0;
@@ -2427,9 +2485,9 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 15. SVG ICON SYSTEM
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 15. SVG ICON SYSTEM
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .icon {
   display: inline-flex;
   align-items: center;
@@ -2454,9 +2512,9 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 .icon--lg { width: 24px; height: 24px; }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 16. UTILITY CLASSES
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 16. UTILITY CLASSES
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .sr-only {
   position: absolute;
   width: 1px; height: 1px;
@@ -2496,11 +2554,11 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 17. AMBIENT BACKGROUND — Trendora Warm Atmospheric
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 17. AMBIENT BACKGROUND â€” Trendora Warm Atmospheric
    Barely-there. Warm. Spiritual. Not a light show.
-═══════════════════════════════════════════════════════════════════════════════ */
-/* PERF: ambient-bg — made static. Removed all 3 infinite animations + will-change.
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* PERF: ambient-bg â€” made static. Removed all 3 infinite animations + will-change.
    The radial gradients provide the same warm atmosphere without GPU compositing overhead. */
 .ambient-bg {
   position: fixed;
@@ -2512,21 +2570,21 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
     radial-gradient(ellipse 600px 600px at -5% 50%, rgba(88, 86, 214, 0.035) 0%, transparent 55%),
     radial-gradient(ellipse 700px 400px at 50% 105%, rgba(0, 122, 255, 0.025) 0%, transparent 55%),
     radial-gradient(ellipse 400px 400px at 80% 60%, rgba(48, 209, 88, 0.015) 0%, transparent 50%);
-  /* animation REMOVED — ran 25s infinite on fixed element */
+  /* animation REMOVED â€” ran 25s infinite on fixed element */
 }
 
 .ambient-bg::before {
-  content: none; /* PERF: removed animated pseudo-element — saved GPU composite layer */
+  content: none; /* PERF: removed animated pseudo-element â€” saved GPU composite layer */
 }
 
 .ambient-bg::after {
-  content: none; /* PERF: removed animated pseudo-element — saved GPU composite layer */
+  content: none; /* PERF: removed animated pseudo-element â€” saved GPU composite layer */
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 18. RESPONSIVE & DARK MODE
-═══════════════════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 18. RESPONSIVE & DARK MODE
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media (max-width: 380px) {
   :root {
     --page-margin: 16px;
@@ -2595,8 +2653,8 @@ body.dark-mode .nav-tab--active .ios-emoji--nav {
   }
 }
 
-/* ── Dark Mode — Full System ── */
-body.dark-mode {
+/* â”€â”€ Dark Mode â€” Full System â”€â”€ */
+.dark-mode {
   --surface-primary: #1C1C1E;
   --surface-secondary: #000000;
   --surface-tertiary: #2C2C2E;
@@ -2627,78 +2685,121 @@ body.dark-mode {
   --shadow-card: 0 2px 24px rgba(0, 0, 0, 0.2);
 }
 
-body.dark-mode .practice-card--nitnem {
+.dark-mode .practice-card--nitnem {
   background: linear-gradient(165deg, #2A2215 0%, #302818 100%);
 }
-body.dark-mode .practice-card--sehaj {
+.dark-mode .practice-card--sehaj {
   background: linear-gradient(165deg, #1D1C2E 0%, #23213E 100%);
 }
-body.dark-mode .practice-card--hukam {
+.dark-mode .practice-card--hukam {
   background: linear-gradient(165deg, #2C2215 0%, #312718 100%);
 }
 
-body.dark-mode .practice-card::before {
+.dark-mode .practice-card::before {
   background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%);
 }
+/* --- Practice Card Dark Mode Overrides --- */
+.dark-mode .practice-card--nitnem {
+  background: linear-gradient(165deg, #2D251C 0%, #3D3325 50%, #2A2215 100%) !important;
+  box-shadow: 
+    20px 20px 60px rgba(0, 0, 0, 0.45),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(212, 148, 58, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
 
-body.dark-mode .quick-card--green {
+.dark-mode .practice-card--sehaj {
+  background: linear-gradient(165deg, #1D1C2E 0%, #23213E 50%, #1A192A 100%) !important;
+  box-shadow: 
+    20px 20px 60px rgba(0, 0, 0, 0.45),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(88, 86, 214, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode .practice-card--hukam {
+  background: linear-gradient(165deg, #2D1C1C 0%, #3D2525 50%, #2A1A1A 100%) !important;
+  box-shadow: 
+    20px 20px 60px rgba(0, 0, 0, 0.45),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(255, 149, 0, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode .practice-card__ring-bg {
+  stroke: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .practice-card__title {
+  color: #F5F5F7;
+}
+
+.dark-mode .practice-card__status {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dark-mode .practice-card__status--active { color: #30D158; }
+.dark-mode .practice-card__status--accent { color: #E8B84A; }
+
+
+.dark-mode .quick-card--green {
   background: linear-gradient(140deg, #0C2616 0%, #11301C 100%);
 }
-body.dark-mode .quick-card--gold {
+.dark-mode .quick-card--gold {
   background: linear-gradient(140deg, #2A2215 0%, #302818 100%);
 }
-body.dark-mode .quick-card--purple {
+.dark-mode .quick-card--purple {
   background: linear-gradient(140deg, #1D1C2E 0%, #23213E 100%);
 }
-body.dark-mode .quick-card--blue {
+.dark-mode .quick-card--blue {
   background: linear-gradient(140deg, #0C1D2C 0%, #112434 100%);
 }
-body.dark-mode .quick-card--teal {
+.dark-mode .quick-card--teal {
   background: linear-gradient(140deg, #0A2520 0%, #0F302A 100%);
 }
-body.dark-mode .quick-card--rose {
+.dark-mode .quick-card--rose {
   background: linear-gradient(140deg, #2C1515 0%, #351A1A 100%);
 }
 
-body.dark-mode .quick-card::before {
+.dark-mode .quick-card::before {
   background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
 }
 
-body.dark-mode .quick-card__icon {
+.dark-mode .quick-card__icon {
   background: rgba(0, 0, 0, 0.3);
   border-color: rgba(255, 255, 255, 0.05);
 }
 
-body.dark-mode .ambient-bg {
+.dark-mode .ambient-bg {
   background:
     radial-gradient(ellipse 700px 500px at 85% -5%, rgba(212, 148, 58, 0.03) 0%, transparent 65%),
     radial-gradient(ellipse 500px 500px at 5% 55%, rgba(88, 86, 214, 0.02) 0%, transparent 65%);
 }
 
-body.dark-mode .event-card {
+.dark-mode .event-card {
   background: linear-gradient(160deg, rgba(212,148,58,0.06) 0%, rgba(212,148,58,0.03) 100%);
   border-color: rgba(212, 148, 58, 0.12);
 }
 
-body.dark-mode .event-card::before {
+.dark-mode .event-card::before {
   opacity: 0.3;
 }
 
-body.dark-mode .progress-inline {
+.dark-mode .progress-inline {
   border-color: rgba(255, 255, 255, 0.04);
 }
 
-body.dark-mode .progress-inline::before {
+.dark-mode .progress-inline::before {
   opacity: 0.3;
 }
 
-body.dark-mode .mini-player {
+.dark-mode .mini-player {
   background: rgba(44, 44, 46, 0.88);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* ═══ Dark Mode Nav — Premium Clean Glass (mirrors light mode structure) ═══ */
-body.dark-mode .bottom-nav__glass {
+/* â•â•â• Dark Mode Nav â€” Premium Clean Glass (mirrors light mode structure) â•â•â• */
+.dark-mode .bottom-nav__glass {
   background: rgba(22, 22, 24, 0.98) !important;
   backdrop-filter: blur(var(--blur-2xl)) saturate(220%) brightness(0.95) !important;
   -webkit-backdrop-filter: blur(var(--blur-2xl)) saturate(220%) brightness(0.95) !important;
@@ -2710,7 +2811,7 @@ body.dark-mode .bottom-nav__glass {
     inset 0 -0.5px 0 rgba(0, 0, 0, 0.15) !important;
 }
 
-body.dark-mode .bottom-nav__glass::before {
+.dark-mode .bottom-nav__glass::before {
   background: linear-gradient(90deg,
     transparent 0%,
     rgba(255, 255, 255, 0.06) 30%,
@@ -2720,15 +2821,15 @@ body.dark-mode .bottom-nav__glass::before {
   ) !important;
 }
 
-body.dark-mode .nav-tab .ios-emoji--nav { opacity: 0.45; }
-body.dark-mode .nav-tab__label { color: rgba(255, 255, 255, 0.35); }
-body.dark-mode .nav-tab--active .ios-emoji--nav {
+.dark-mode .nav-tab .ios-emoji--nav { opacity: 0.45; }
+.dark-mode .nav-tab__label { color: rgba(255, 255, 255, 0.35); }
+.dark-mode .nav-tab--active .ios-emoji--nav {
   opacity: 1 !important;
   transform: scale(1.35) translateY(-3px);
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   filter: drop-shadow(0 0 14px rgba(212, 168, 74, 0.7)) drop-shadow(0 4px 8px rgba(0,0,0,0.4)) !important;
 }
-body.dark-mode .nav-tab--active .nav-tab__label {
+.dark-mode .nav-tab--active .nav-tab__label {
   color: #E8B84A !important;
   font-weight: 700;
   text-shadow: 0 0 10px rgba(212, 148, 58, 0.4);
@@ -2736,29 +2837,29 @@ body.dark-mode .nav-tab--active .nav-tab__label {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Explore removed — spacing retained */
+/* Explore removed â€” spacing retained */
 
-body.dark-mode .sheet {
+.dark-mode .sheet {
   background: var(--surface-elevated);
 }
 
-body.dark-mode .sheet__handle {
+.dark-mode .sheet__handle {
   background: rgba(255, 255, 255, 0.15);
 }
 
-body.dark-mode .install-banner {
+.dark-mode .install-banner {
   background: rgba(28, 28, 30, 0.94);
   border-top-color: rgba(255, 255, 255, 0.06);
 }
 
 
-/* § 19. EXPLORE GRID — REMOVED (functionality consolidated into Quick Access) */
+/* Â§ 19. EXPLORE GRID â€” REMOVED (functionality consolidated into Quick Access) */
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § 20. MICRO-INTERACTIONS & PREMIUM POLISH
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ 20. MICRO-INTERACTIONS & PREMIUM POLISH
    The details that make it feel native iOS.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Smooth scroll snap indicator */
 @supports (animation-timeline: scroll()) {
@@ -2791,7 +2892,7 @@ body.dark-mode .install-banner {
   }
 }
 
-/* ── Scroll Reveal — Staggered Entrance ── */
+/* â”€â”€ Scroll Reveal â€” Staggered Entrance â”€â”€ */
 .scroll-revealed {
   animation: fadeSlideUp 0.5s var(--ease-ios-spring) both;
 }
@@ -2839,10 +2940,10 @@ body.dark-mode .install-banner {
   }
 }
 
-/* PERF: Chevron idle animation REMOVED — was infinite animation on every card */
+/* PERF: Chevron idle animation REMOVED â€” was infinite animation on every card */
 /* Visual hint now via CSS transition on hover/active only */
 
-/* ── Practice Card — Enhanced Touch Depth ── */
+/* â”€â”€ Practice Card â€” Enhanced Touch Depth â”€â”€ */
 .practice-card:active {
   box-shadow: var(--shadow-xs) !important;
 }
@@ -2856,7 +2957,7 @@ body.dark-mode .install-banner {
   filter: brightness(1.15);
 }
 
-/* ── Section Headers — Premium Styling ── */
+/* â”€â”€ Section Headers â€” Premium Styling â”€â”€ */
 .section-header {
   margin-bottom: var(--space-1);
 }
@@ -2870,7 +2971,7 @@ body.dark-mode .install-banner {
   display: inline-block;
 }
 
-/* ── Last Quick Card — Bottom Breathing Room ── */
+/* â”€â”€ Last Quick Card â€” Bottom Breathing Room â”€â”€ */
 .quick-card:last-of-type {
   margin-bottom: 0;
 }
@@ -2952,10 +3053,10 @@ body.dark-mode .install-banner {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   § PERF: MOBILE PERFORMANCE KILL-SWITCHES
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   Â§ PERF: MOBILE PERFORMANCE KILL-SWITCHES
    Disable expensive GPU effects on mobile devices for 60 FPS scrolling.
-═══════════════════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* Mobile: kill expensive effects */
 .reduce-motion .ambient-bg {
@@ -2964,7 +3065,7 @@ body.dark-mode .install-banner {
 
 /* Mobile: simplified shadows (single layer) */
 .is-mobile .hero-card {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: none !important;
 }
 
 .is-mobile .bottom-nav__glass {
@@ -3011,9 +3112,9 @@ body.dark-mode .install-banner {
   animation: none !important;
 }
 
-/* ═════════════════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DESKTOP: Clean hero card images without dark overlays
-   ════════════════════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @media screen and (min-width: 1024px) {
   /* COMPLETELY remove the extreme cinematic dark gradient */
   .hero-card__image-wrapper::after {

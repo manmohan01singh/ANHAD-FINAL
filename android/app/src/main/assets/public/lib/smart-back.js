@@ -136,32 +136,117 @@
 
   /**
    * Navigate back intelligently.
-   * Priority: 
-   *   1. If browser history exists AND we have a same-origin referrer → history.back()
-   *   2. If we have a saved referrer → navigate to it directly
-   *   3. Fallback to specified URL (default: ../index.html)
-   * 
-   * @param {string} [fallbackUrl] — URL to go to if no history or direct-load
+   * Priority:
+   *   1. Use history.back() if Capacitor OR browser history depth > 1
+   *      (In Capacitor WebView, document.referrer is always empty, but
+   *       history.length IS valid and history.back() works correctly)
+   *   2. SPA navigateTo() for the fallback target (no full-page reload)
+   *   3. Direct location.href as last resort
+   *
+   * CRITICAL: ALWAYS set session flags before going to index.html so
+   * welcome-check.js NEVER redirects to the splash screen.
+   *
+   * @param {string} [fallbackUrl] — URL to go to if no history
    */
   window.anhadGoBack = function(fallbackUrl) {
-    fallbackUrl = fallbackUrl || '../index.html';
+    // Always ensure session is marked so index.html never triggers splash
+    try {
+      sessionStorage.setItem('anhad_welcomed', '1');
+      localStorage.setItem('anhad_welcome_seen', 'true');
+      localStorage.setItem('anhad_session_active_ts', Date.now().toString());
+    } catch (e) {}
 
-    // Save scroll state of the page we're leaving
-    // (the destination page will restore its own scroll on load)
+    // 1. Use history.back() when we have real browser history.
+    var isCapacitor = !!(window.Capacitor || window.location.protocol === 'capacitor:');
+    var hasHistory  = window.history.length > 1;
 
-    // Check if we have meaningful history to go back to
-    var savedRef = getSavedReferrer();
+    if (hasHistory) {
+      var shouldHistoryBack = false;
+
+      var referrer = document.referrer || getSavedReferrer();
+      if (referrer) {
+        // If referrer exists, ensure it's from our own app
+        try {
+          var ref = new URL(referrer);
+          if (ref.origin === window.location.origin) {
+            // Check if referrer is a child page of current page
+            // (e.g. current = /nitnem/index.html, referrer = /nitnem/reader.html)
+            var currPath = window.location.pathname;
+            var refPath = ref.pathname;
+            
+            // Normalize paths: remove trailing slashes and index.html
+            var cleanCurr = currPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            var cleanRef = refPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+            
+            var isCurrHub = currPath.endsWith('/') || currPath.endsWith('/index.html') || currPath.endsWith('/index');
+            
+            if (isCurrHub && cleanRef.startsWith(cleanCurr + '/')) {
+              // Referrer is a sub-page/child of this hub page. Do NOT use history.back()
+              // as it would lead to a navigation loop between index and reader pages.
+              shouldHistoryBack = false;
+              console.log('[SmartBack] Referrer is a child page, skipping history.back:', refPath);
+            } else {
+              shouldHistoryBack = true;
+            }
+          }
+        } catch (e) {
+          shouldHistoryBack = false;
+        }
+      } else {
+        // If no referrer exists (common in PWA standalone or Capacitor), it's safe to go back
+        shouldHistoryBack = true;
+      }
+
+      if (shouldHistoryBack) {
+        console.log('[SmartBack] history.back() executed');
+        history.back();
+        return;
+      }
+    }
+
+    // 2. Resolve fallback URL to absolute path relative to current page location first
+    var target = fallbackUrl || '../index.html';
+    var resolvedTarget;
+    try {
+      resolvedTarget = new URL(target, window.location.href).href;
+    } catch (_) {
+      resolvedTarget = target;
+    }
+
+    // Determine if resolvedTarget points to the global App Home page
+    var root = window.ANHAD_ROOT;
+    if (!root) {
+      var path   = window.location.pathname;
+      var marker = '/frontend/';
+      var idx    = path.indexOf(marker);
+      root = (idx !== -1)
+        ? window.location.origin + path.substring(0, idx + marker.length)
+        : window.location.origin + '/';
+    }
+    // Make sure root has origin/protocol
+    if (root && !root.startsWith('http://') && !root.startsWith('https://')) {
+      root = window.location.origin + (root.startsWith('/') ? '' : '/') + root;
+    }
     
-    if (document.referrer && history.length > 1) {
-      // We came here from another page in this tab — use history.back()
-      // This is the smoothest option: preserves form state, bfcache, etc.
-      history.back();
-    } else if (savedRef) {
-      // We have a recorded referrer from a previous visit
-      window.location.href = savedRef;
+    var globalHome1 = root.endsWith('/') ? root + 'index.html' : root + '/index.html';
+    var globalHome2 = root.endsWith('/') ? root : root + '/';
+    
+    var isBackToHome = (resolvedTarget === globalHome1 || resolvedTarget === globalHome2);
+
+    if (isBackToHome) {
+      resolvedTarget = globalHome1;
+      console.log('[SmartBack] Back-to-Home → resolved to:', resolvedTarget);
     } else {
-      // Direct load or no history — go to fallback
-      window.location.href = fallbackUrl;
+      console.log('[SmartBack] Local Back → resolved to:', resolvedTarget);
+    }
+
+    console.log('[SmartBack] Navigating to fallback:', resolvedTarget);
+
+    // Prefer SPA engine (no full-page reload, no flash)
+    if (window.navigateTo) {
+      window.navigateTo(resolvedTarget);
+    } else {
+      window.location.href = resolvedTarget;
     }
   };
 
@@ -175,8 +260,8 @@
     var selectors = [
       '#backBtn', '#bk', '#back-btn', '#navBack',
       '.header__back', '.header-back', '.nav-back',
-      '.glass-nav__back', '.glass-back-btn',
-      '[data-anhad-back]'
+      '.glass-nav__back', '.glass-back-btn', '.reader-back', '.back-btn',
+      '[data-anhad-back]', '[data-set-session]'
     ];
 
     var wired = new Set();
@@ -197,15 +282,25 @@
           fallback = el.getAttribute('href');
         }
 
-        // Remove any existing inline onclick that might conflict
+        // Only remove conflicting onclick handlers — preserve session-flag setters
         if (el.hasAttribute('onclick')) {
-          el.removeAttribute('onclick');
+          var oc = el.getAttribute('onclick');
+          if (!oc.includes('anhadGoBack') && !oc.includes('anhad_welcome')) {
+            el.removeAttribute('onclick');
+          }
         }
+
+        if (el._anhadClickWired) return;
+        el._anhadClickWired = true;
 
         el.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          window.anhadGoBack(fallback);
+
+          // Use data-attribute fallback if present, else A-tag href, else the detected fallback
+          var customFallback = el.getAttribute('data-anhad-back') || fallback;
+          // anhadGoBack itself always stamps session flags before navigating
+          window.anhadGoBack(customFallback);
         });
 
         // Set cursor for non-anchor elements
@@ -229,6 +324,13 @@
     autoWire();
     restoreScrollState();
   }
+
+  // SPA INTEGRATION: Re-wire when page content changes via smooth-navigation
+  window.addEventListener('anhad_page_changed', function() {
+    console.log('[SmartBack] Page changed, re-wiring back buttons...');
+    autoWire();
+    restoreScrollState();
+  });
 
   // Save scroll state before navigating away
   window.addEventListener('beforeunload', function() {

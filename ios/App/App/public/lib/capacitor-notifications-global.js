@@ -505,11 +505,11 @@
                         });
                         // ═══ FIX 5: Native full-screen alarm for locked screen ═══
                         // Fires even when phone is locked or app is closed.
-                        // Only schedule day-0 to stay within AlarmManager quota.
-                        if (reliabilityPlugin && d === 0) {
-                            (function(lbl, alTime, ts, hourStr, minStr) {
+                        // Schedule for days 0-1 to extend coverage without exceeding AlarmManager quota.
+                        if (reliabilityPlugin && d <= 1) {
+                            (function(lbl, alTime, ts, hourStr, minStr, dayIdx) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
-                                    id: hash('fs_' + (alarm.id || 'a') + '_d0'),
+                                    id: hash('fs_' + (alarm.id || 'a') + '_d' + dayIdx),
                                     timestamp: ts,
                                     title: lbl,
                                     message: alTime + ' \u2014 Tera alarm aa gya! \ud83d\ude4f',
@@ -518,7 +518,7 @@
                                 }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
-                            })(alarmLabel, alarmTime, st.getTime(), tp[0], tp[1]);
+                            })(alarmLabel, alarmTime, st.getTime(), tp[0], tp[1], d);
                         }
                     }
                 });
@@ -584,7 +584,10 @@
                         ndt.setDate(ndt.getDate() + nd); 
                         ndt.setHours(nh, sessionMinute, 0, 0);
                         
-                        var alertTime = new Date(ndt.getTime() - 30000);
+                        // PRECISION FIX: Fire at exact session time (no 30s early offset)
+                        // The previous 30s offset compounded with Android's Doze-mode batching,
+                        // causing notifications to fire 1-7 minutes late.
+                        var alertTime = new Date(ndt.getTime());
                         if (ndt <= now) continue;
                         if (alertTime <= now) alertTime = new Date(now.getTime() + 1000);
                         
@@ -626,10 +629,12 @@
                         });
 
                         // ═══ FIX 5: Native full-screen alarm for locked screen (Naam Abhyas) ═══
-                        if (reliabilityPlugin && nd === 0) {
-                            (function(lbl, alTime, ts, hStr, mStr) {
+                        // Extended to days 0-2 for better coverage when app isn't opened daily.
+                        // ~18 hours × 3 days = ~54 alarms, within Android's 50+ exact alarm quota.
+                        if (reliabilityPlugin && nd <= 2) {
+                            (function(lbl, alTime, ts, hStr, mStr, dayIdx) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
-                                    id: hash('fs_naam_' + nh + '_d0'),
+                                    id: hash('fs_naam_' + nh + '_d' + dayIdx),
                                     timestamp: ts,
                                     title: lbl,
                                     message: alTime + ' \u2014 ' + bodyText,
@@ -638,7 +643,7 @@
                                 }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
-                            })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute));
+                            })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute), nd);
                         }
                     }
                 }
@@ -808,6 +813,21 @@
                 if (trackerPath) window.location.href = trackerPath;
             }
             else if (ex.action === 'show_streak_saver') {
+                // ═══ AUTO-PERSIST STREAK CHECK: Run inline before navigating ═══
+                // This ensures streak data is saved even if the user only taps the notification
+                // briefly. The streak saver page will pick up the persisted state.
+                try {
+                    var _streakRaw = localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData');
+                    var _streakObj = _streakRaw ? JSON.parse(_streakRaw) : {};
+                    var _today = new Date().toLocaleDateString('en-CA');
+                    var _amritLog = JSON.parse(localStorage.getItem('nitnemTracker_amritvelaLog') || '{}');
+                    if (!_amritLog[_today] && (_streakObj.current || _streakObj.currentStreak || 0) > 0) {
+                        _streakObj.lastAutoSaveCheck = _today;
+                        _streakObj.autoSaveTriggered = true;
+                        localStorage.setItem('anhad_streak_data', JSON.stringify(_streakObj));
+                        console.log('[StreakSaver] Auto-persisted streak check for', _today);
+                    }
+                } catch(streakErr) { console.warn('[StreakSaver] Auto-persist failed:', streakErr); }
                 var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? 'nitnem-tracker.html' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
                 if (trackerPath) window.location.href = trackerPath + '?streakSaver=activate';
             }

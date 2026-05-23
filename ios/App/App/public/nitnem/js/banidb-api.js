@@ -9,7 +9,29 @@ const BaniDB = (function () {
 
     // Configuration
     const CONFIG = {
-        chunksPath: '../data/banis-chunks',
+        get chunksPath() {
+            // ANHAD_ROOT may not be set yet (smooth-navigation.js loads after this script).
+            // Build a robust base from the current page location.
+            let root = window.ANHAD_ROOT;
+            if (!root) {
+                // Derive root from current page: nitnem/index.html → parent is frontend/
+                const loc = window.location;
+                const pathParts = loc.pathname.split('/');
+                // Remove last two segments (e.g. "nitnem" and "index.html") to get base
+                pathParts.splice(-2);
+                root = loc.origin + pathParts.join('/') + '/';
+            }
+            // Ensure root has a protocol to prevent URL construction errors
+            if (root && !root.startsWith('http://') && !root.startsWith('https://')) {
+                root = window.location.origin + (root.startsWith('/') ? '' : '/') + root;
+            }
+            try {
+                return new URL('data/banis-chunks', root).href;
+            } catch(e) {
+                // Absolute fallback
+                return window.location.origin + '/data/banis-chunks';
+            }
+        },
         cacheVersion: 'v5',
         offlineFirst: true
     };
@@ -199,19 +221,45 @@ const BaniDB = (function () {
      */
 
     /**
-     * Get list of all Banis from index
+     * Get list of all Banis (resolves bundle items offline)
      */
     async function getAllBanis() {
-        await loadIndex();
-        if (!indexData) return [];
+        await loadNitnemBundle();
+        await loadPopularBundle();
         
-        // Return index info without loading all banis
-        return {
-            version: indexData.version,
-            lastUpdated: indexData.lastUpdated,
-            totalBanis: indexData.totalBanis,
-            chunks: indexData.chunks
+        const results = [];
+        const seenIds = new Set();
+        
+        const collectFromBundle = (bundle) => {
+            if (!bundle || !bundle.banis) return;
+            for (const [idStr, bani] of Object.entries(bundle.banis)) {
+                const id = parseInt(idStr);
+                if (seenIds.has(id)) continue;
+                seenIds.add(id);
+                
+                const info = bani.baniInfo || {};
+                results.push({
+                    ID: id,
+                    id: id,
+                    token: info.token || `bani_${id}`,
+                    gurmukhiUni: info.unicode || info.gurmukhi || '',
+                    gurmukhi: info.gurmukhi || info.unicode || '',
+                    transliteration: info.english || info.transliteration || '',
+                    transliterations: {
+                        hindi: info.hindi || info.transliterationHindi || ''
+                    }
+                });
+            }
         };
+        
+        collectFromBundle(nitnemBundle);
+        collectFromBundle(popularBundle);
+        
+        // Sort by ID
+        results.sort((a, b) => a.id - b.id);
+        
+        console.log(`[BaniDB] getAllBanis returned ${results.length} banis`);
+        return results;
     }
 
     /**

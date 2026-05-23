@@ -576,7 +576,7 @@ class NaamAbhyas {
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                window.location.href = '../index.html';
+                if (window.navigateTo) window.navigateTo('../index.html'); else window.location.href = '../index.html';
             });
         }
 
@@ -2338,6 +2338,10 @@ class NaamAbhyas {
         }
 
         this.saveHistory();
+
+        if (session.status === 'completed' && typeof this._syncToNitemTracker === 'function') {
+            this._syncToNitemTracker(session);
+        }
     }
 
     updateStreak() {
@@ -3309,9 +3313,10 @@ NaamAbhyas.prototype.playIosChime = function(type) {
 
 NaamAbhyas.prototype._syncToNitemTracker = function(sessionData) {
     try {
-        const trackerData = JSON.parse(localStorage.getItem('nitnem_tracker_data') || '{}');
         const today = this.getTodayString();
-        
+
+        // ── 1. Save to nitnem_tracker_data (DashboardAnalytics format) ──
+        const trackerData = JSON.parse(localStorage.getItem('nitnem_tracker_data') || '{}');
         if (!trackerData[today]) trackerData[today] = { naam_abhyas: 0, sessions: [] };
         trackerData[today].naam_abhyas = (trackerData[today].naam_abhyas || 0) + 1;
         trackerData[today].sessions.push({
@@ -3319,8 +3324,34 @@ NaamAbhyas.prototype._syncToNitemTracker = function(sessionData) {
             duration: sessionData.duration,
             isScheduled: sessionData.isScheduled
         });
-        
         localStorage.setItem('nitnem_tracker_data', JSON.stringify(trackerData));
+
+        // ── 2. Persist to canonical naamAbhyas_sessions key ──
+        // global-alarm-system.js and other readers use this key.
+        const existingSessions = JSON.parse(localStorage.getItem('naamAbhyas_sessions') || '[]');
+        existingSessions.push({
+            date: today,
+            timestamp: new Date().toISOString(),
+            duration: sessionData.duration || 0,
+            count: sessionData.count || 0,
+            isScheduled: !!sessionData.isScheduled
+        });
+        // Keep last 365 sessions only
+        if (existingSessions.length > 365) existingSessions.splice(0, existingSessions.length - 365);
+        localStorage.setItem('naamAbhyas_sessions', JSON.stringify(existingSessions));
+
+        // ── 3. Update AnhadStats streak (if available) ──
+        if (window.AnhadStats && typeof window.AnhadStats.addNitnemCompleted === 'function') {
+            window.AnhadStats.addNitnemCompleted(1);
+        }
+
+        // ── 4. Broadcast to other tabs + global alarm system ──
+        window.dispatchEvent(new CustomEvent('naamAbhyasSessionComplete', { detail: sessionData }));
         window.dispatchEvent(new CustomEvent('naamAbhyasComplete', { detail: sessionData }));
-    } catch(e) { console.error('Nitnem sync failed', e); }
+
+        console.log('[NaamAbhyas] ✅ Session saved and synced:', {
+            date: today, duration: sessionData.duration
+        });
+    } catch(e) { console.error('[NaamAbhyas] Nitnem sync failed', e); }
 };
+

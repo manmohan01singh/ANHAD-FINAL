@@ -108,41 +108,7 @@
             z-index: 2;
         }
 
-        /* Hero Play Button */
-        .hero-play-container {
-            position: absolute;
-            top: -30px;
-            right: 25px;
-            z-index: 20;
-        }
 
-        .hero-play-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--hukam-gold);
-            border: 2px solid #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFFFFF;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 0;
-        }
-
-        .hero-play-btn:active {
-            transform: scale(0.92);
-            background: var(--hukam-accent);
-        }
-
-        .hero-play-btn svg {
-            width: 28px;
-            height: 28px;
-            fill: currentColor;
-            margin-left: 4px; /* Optical centering for play triangle */
-        }
 
         [data-theme="light"] .hero-overlay {
             background: linear-gradient(to bottom, 
@@ -746,12 +712,7 @@
 
         <!-- Content Area -->
         <div class="content-container">
-            <!-- Floating Play Button -->
-            <div class="hero-play-container">
-                <button class="hero-play-btn" id="heroPlayBtn" aria-label="Play Hukamnama">
-                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </button>
-            </div>
+
             
             <!-- Meta Strip -->
             <div class="meta-strip">

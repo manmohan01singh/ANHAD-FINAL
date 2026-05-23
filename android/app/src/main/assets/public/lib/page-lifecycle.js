@@ -148,4 +148,21 @@
     clean: cleanBeforeCache
   };
 
+  // ─── NATIVE FEEL: Global haptic feedback on all button taps ───
+  // Uses Capacitor Haptics plugin for Android native feel instead of web vibrate
+  document.addEventListener('pointerdown', function(e) {
+    try {
+      var interactive = e.target.closest('button, a, [role="button"], .interactive');
+      if (interactive && window.CapacitorHaptics) {
+        window.CapacitorHaptics.impact('light').catch(function(){});
+      }
+    } catch (ex) {}
+  }, { passive: true });
+
+  // ─── NATIVE FEEL: Restore native Android overscroll-behavior ───
+  try {
+    document.documentElement.style.overscrollBehaviorY = 'auto';
+    document.body.style.overscrollBehaviorY = 'auto';
+  } catch(e) {}
+
 })();

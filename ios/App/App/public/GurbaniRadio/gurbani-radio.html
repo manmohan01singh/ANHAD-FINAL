@@ -400,6 +400,12 @@
         dom.liveJumpBtn.classList.toggle('is-behind', isBehind);
         dom.liveJumpBtn.classList.toggle('is-synced', !isBehind);
         
+        // ═══ ENHANCED LIVE UI: Dynamic pill text ═══
+        const textSpan = dom.liveJumpBtn.querySelector('span:nth-child(2)');
+        if (textSpan) {
+            textSpan.textContent = isBehind ? 'Jump to Live' : 'LIVE';
+        }
+        
         if (dom.liveBehindText) {
             if (isBehind) {
                 const totalSecs = Math.round(offset);

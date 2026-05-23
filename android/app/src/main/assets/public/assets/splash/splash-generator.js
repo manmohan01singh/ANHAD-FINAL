@@ -37,7 +37,7 @@ const iconSizes = [
 /**
  * Generate a splash screen canvas
  */
-function generateSplash(width, height, bgColor = '#020205', logoUrl = '/assets/app-logo.png') {
+function generateSplash(width, height, bgColor = '#020205', logoUrl = '../assets/app-logo.png') {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;

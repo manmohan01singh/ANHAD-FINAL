@@ -95,7 +95,6 @@
 
         // Audio Buttons — opens the self-contained Hukam player
         const audioBtn = document.getElementById('audioBtn');
-        const heroPlayBtn = document.getElementById('heroPlayBtn');
         
         const triggerHukam = () => {
             hapticFeedback();
@@ -103,7 +102,6 @@
         };
 
         if (audioBtn) audioBtn.addEventListener('click', triggerHukam);
-        if (heroPlayBtn) heroPlayBtn.addEventListener('click', triggerHukam);
 
         // Share Button
         const shareBtn = document.getElementById('shareBtn');
@@ -403,7 +401,7 @@
                 gurmukhi: v.verse.unicode,
                 translit: v.transliteration?.en || '',
                 english: extractText(v.translation?.en),
-                punjabi: extractText(v.translation?.pu)
+                punjabi: extractPunjabiText(v.translation?.pu)
             }))
         };
     }
@@ -421,6 +419,36 @@
             if (!first) return '';
             return typeof first === 'string' ? first : (first.unicode || first.text || '');
         }
+        return '';
+    }
+
+    function extractPunjabiText(pu) {
+        if (!pu) return '';
+        if (typeof pu === 'string') return pu;
+        
+        // Priority: Shiromani Committee/Sahib Singh (ss) -> Manmohan Singh (ms) -> BaniDB (bdb) -> Faridkot Teeka (ft)
+        const priority = ['ss', 'ms', 'bdb', 'ft'];
+        for (const source of priority) {
+            const translation = pu[source];
+            if (translation) {
+                const text = typeof translation === 'string' ? translation : (translation.unicode || translation.text);
+                if (text && text.trim().length > 0) {
+                    return text.trim();
+                }
+            }
+        }
+        
+        // Fallback to any other key
+        for (const key in pu) {
+            const translation = pu[key];
+            if (translation) {
+                const text = typeof translation === 'string' ? translation : (translation.unicode || translation.text);
+                if (text && text.trim().length > 0) {
+                    return text.trim();
+                }
+            }
+        }
+        
         return '';
     }
 
