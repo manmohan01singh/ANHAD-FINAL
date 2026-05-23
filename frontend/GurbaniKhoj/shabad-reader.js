@@ -458,7 +458,7 @@ let lastTickTime = 0;
 
 const Autoscroll = {
     init() {
-        const enabled = localStorage.getItem('reader_autoscroll_enabled') !== 'false'; // default true
+        const enabled = localStorage.getItem('reader_autoscroll_enabled') === 'true'; // default false
         const speed = parseFloat(localStorage.getItem('reader_autoscroll_speed')) || 1.0;
         
         State.autoscrollVisible = enabled;
