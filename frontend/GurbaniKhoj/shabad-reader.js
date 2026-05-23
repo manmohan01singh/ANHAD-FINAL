@@ -305,11 +305,19 @@ function renderShabad(data) {
     State.verses = data.verses;
     const firstVerse = data.verses[0];
 
+    // Find the highlighted verse if any, else default to first
+    let targetVerse = firstVerse;
+    if (State.highlightVerseId) {
+        const found = data.verses.find(v => String(v.verseId) === String(State.highlightVerseId));
+        if (found) targetVerse = found;
+    }
+
     State.shabadInfo = {
         shabadId: State.shabadId,
-        ang: firstVerse.pageNo,
-        raag: firstVerse.raag?.english || '',
-        gurmukhi: firstVerse.verse?.unicode || ''
+        ang: targetVerse.pageNo || firstVerse.pageNo,
+        raag: targetVerse.raag?.english || firstVerse.raag?.english || '',
+        gurmukhi: targetVerse.verse?.unicode || '',
+        translation: targetVerse.translation?.en?.bdb || targetVerse.translation?.en?.ms || targetVerse.translation?.en?.ssk || ''
     };
 
     // Header metadata update
