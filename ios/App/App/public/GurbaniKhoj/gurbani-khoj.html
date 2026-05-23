@@ -7,9 +7,16 @@
       var t = localStorage.getItem('anhad_theme') || 'light';
       document.documentElement.setAttribute('data-theme', t);
     } catch(e){}
+    // Force reload new SW + clear stale caches
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(reg) { reg.update(); });
+      });
+    }
   })();
   </script>
   <meta charset="UTF-8">
+  <link rel="icon" href="data:image/x-icon;base64,">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f5f1eb">
@@ -38,9 +45,8 @@
   <script src="../lib/smooth-navigation.js"></script>
   <script src="../lib/state-preservation.js"></script>
 
-  <script src="../js/anhad-core.js" defer></script>
   <!-- Cache bust version to enforce reload -->
-  <link rel="stylesheet" href="gurbani-khoj.css?v=26">
+  <link rel="stylesheet" href="gurbani-khoj.css?v=37">
 </head>
 <body>
 <div class="app" id="app">
@@ -49,12 +55,10 @@
        iOS Navigation Bar
   ══════════════════════════════════════════ -->
   <nav class="gk-nav">
-    <!-- Welcome state: hamburger menu -->
-    <button class="gk-icon-btn menu-btn" id="menuBtn" aria-label="Menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="4" y1="12" x2="20" y2="12"/>
-        <line x1="4" y1="18" x2="20" y2="18"/>
+    <!-- Welcome state: back icon -->
+    <button class="gk-icon-btn menu-btn" id="menuBtn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
       </svg>
     </button>
 
@@ -75,16 +79,25 @@
     <div class="gk-nav-actions">
       <!-- Theme toggle button -->
       <button class="gk-icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
-        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
       
       <!-- Bell Notification Button -->
-      <button class="gk-icon-btn notification-btn" id="notificationBtn" aria-label="Notifications">
+      <button class="gk-icon-btn notification-btn" id="notificationBtn" aria-label="Notifications"
+              onclick="if(window.DailySuggestions){window.DailySuggestions.open();}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -217,7 +230,7 @@
         </div>
       </div>
 
-      <!-- Quick Search Grid -->
+      <!-- Quick Search Grid (2 rows of 3 columns) -->
       <div class="welcome-suggestions">
         <div class="suggestions-header-row">
           <span class="suggestions-label">Quick Search</span>
@@ -225,10 +238,10 @@
         </div>
 
         <div class="quick-search-grid">
-          <!-- Row 1: 4 cards -->
+          <!-- Row 1: 3 cards -->
           <button class="quick-card card-sggs" data-source="G">
             <div class="card-icon-wrapper color-blue">
-              <img src="../assets/icons/guru-granth-sahib-ji.png" class="card-icon-img" alt="Sri Guru Granth Sahib Ji">
+              <img src="../assets/sggs-transparent.webp" class="card-icon-img" alt="Sri Guru Granth Sahib Ji">
             </div>
             <span class="card-title-punjabi">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ</span>
           </button>
@@ -242,20 +255,23 @@
           
           <button class="quick-card card-bhai" data-source="B">
             <div class="card-icon-wrapper color-green">
-              <img src="../assets/sarbloh-granth-transparent.webp" class="card-icon-img" alt="Bhai Gurdas Ji">
+              <img src="../assets/sarbloh-granth-transparent.webp" class="card-icon-img" alt="ਭਾਈ ਗੁਰਦਾਸ ਜੀ">
             </div>
             <span class="card-title-punjabi">ਭਾਈ ਗੁਰਦਾਸ ਜੀ</span>
           </button>
           
+          <!-- Row 2: 3 cards -->
           <button class="quick-card card-nand" data-source="N">
             <div class="card-icon-wrapper color-pink">
-              <img src="../assets/sggs-transparent.webp" class="card-icon-img" alt="Bhai Nand Lal Ji">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
             </div>
             <span class="card-title-punjabi">ਭਾਈ ਨੰਦ ਲਾਲ ਜੀ</span>
           </button>
 
-          <!-- Row 2: 3 cards (centered in grid style) -->
-          <button class="quick-card card-raag" data-query="ਰਾਗ">
+          <button class="quick-card card-raag" id="quickCardRaag" onclick="if(window.RaagManager){window.RaagManager.open();}">
             <div class="card-icon-wrapper color-purple">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
                 <path d="M9 18V5l12-2v13"/>
@@ -266,22 +282,13 @@
             <span class="card-title-punjabi">ਰਾਗ</span>
           </button>
           
-          <button class="quick-card card-simran" data-query="ਸਿਮਰਨ">
+          <button class="quick-card card-simran" id="quickCardSimran" onclick="window.location.href='shabad-reader.html?shabad=6140'">
             <div class="card-icon-wrapper color-red">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
             <span class="card-title-punjabi">ਸਿਮਰਨ</span>
-          </button>
-          
-          <button class="quick-card card-kirtan" data-query="ਕੀਰਤਨ ਸੋਹਿਲਾ">
-            <div class="card-icon-wrapper color-purple-dark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="card-icon">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </div>
-            <span class="card-title-punjabi">ਕੀਰਤਨ ਸੋਹਿਲਾ</span>
           </button>
         </div>
       </div>
@@ -290,7 +297,7 @@
       <div class="welcome-section welcome-recent-section" id="welcomeRecentSection" style="display:none;">
         <div class="suggestions-header-row">
           <span class="suggestions-label">Recent Shabads</span>
-          <a href="search-history.html" class="view-all-link">View All &gt;</a>
+          <a href="search-history.html" class="view-all-link" onclick="event.preventDefault();window.location.href='search-history.html'">View All &gt;</a>
         </div>
         <div class="horizontal-scroll-list" id="welcomeRecentList"></div>
       </div>
@@ -372,14 +379,27 @@
       </svg>
       <span>Search</span>
     </button>
-    
-    <!-- Central raised ੴ crest button -->
-    <a href="../index.html" class="tab-crest-btn" aria-label="Anhad Home">
-      <div class="crest-gold-frame">
-        <span class="crest-symbol">ੴ</span>
+    <!-- Central raised Magic Offline Download button -->
+    <button class="tab-crest-btn offline-magic-btn" id="offlineMagicBtn" aria-label="Offline Download">
+      <div class="crest-gold-frame" style="position:relative; overflow:visible;">
+        <svg class="offline-ring-svg" viewBox="0 0 120 120" style="position:absolute; inset:-8px; width:calc(100% + 16px); height:calc(100% + 16px);">
+          <circle class="offline-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="offline-ring-track" cx="60" cy="60" r="52" id="offlineRingTrack"/>
+        </svg>
+        <div class="offline-btn-inner" id="offlineBtnIdle">
+          <span class="crest-symbol">ੴ</span>
+        </div>
+        <div class="offline-btn-inner" id="offlineBtnLoading" style="display:none; background:transparent; border:none; box-shadow:none;">
+          <span class="offline-pct-text" id="offlinePct" style="font-size:14px;">0%</span>
+        </div>
+        <div class="offline-btn-inner" id="offlineBtnDone" style="display:none; background:transparent; border:none; box-shadow:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
       </div>
-    </a>
-    
+    </button>
+
     <button class="tab-btn" id="tabBookmarks">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -682,6 +702,67 @@
   </div>
 </div>
 
+<!-- Daily Suggestions Bottom Sheet -->
+<div class="history-overlay" id="rareSuggestionsOverlay" style="display:none;">
+  <div class="history-backdrop" id="rareSuggestionsBackdrop"></div>
+  <div class="history-sheet">
+    <div class="sheet-handle"></div>
+    <div class="history-header">
+      <div class="modal-title-wrapper">
+        <h2 class="history-title-modal">Daily Rare Suggestions</h2>
+        <span class="modal-subtitle-punjabi" style="font-size: 13px; color: var(--text-secondary); display: block; margin-top: 2px;">ਰੋਜ਼ਾਨਾ ਅਨਮੋਲ ਗੁਰਬਾਣੀ ਸੁਝਾਅ</span>
+      </div>
+      <button class="history-close" id="rareSuggestionsClose">✕</button>
+    </div>
+    <div class="history-content" style="max-height: 60vh; overflow-y: auto; padding-bottom: 20px;">
+      <div class="daily-suggestions-list" id="rareSuggestionsList">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Raag Selection Overlay -->
+<!-- ══════════════════════════════════════════
+     Raag Full-Screen Page
+══════════════════════════════════════════ -->
+<div class="raag-fullscreen" id="raagOverlay">
+
+  <!-- View 1: Raag List -->
+  <div class="raag-fs-page" id="raagListView">
+    <div class="raag-fs-header">
+      <button class="raag-fs-back" id="raagClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="raag-fs-header-text">
+        <h1 class="raag-fs-title">ਰਾਗ ਸੂਚੀ</h1>
+        <span class="raag-fs-subtitle">31 Classical Raags of SGGS</span>
+      </div>
+    </div>
+    <div class="raag-fs-content" id="raagGridList">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+  <!-- View 2: Raag Detail / Shabads -->
+  <div class="raag-fs-page raag-fs-detail" id="raagDetailView" style="display:none;">
+    <div class="raag-fs-header">
+      <button class="raag-fs-back" id="raagDetailBack" aria-label="Back to list">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="raag-fs-header-text">
+        <h1 class="raag-fs-title" id="selectedRaagTitle">Raag Asa</h1>
+        <span class="raag-fs-subtitle" id="selectedRaagMeta">Early Morning · 485 Shabads</span>
+      </div>
+    </div>
+    <div class="raag-detail-info-banner" id="selectedRaagDesc"></div>
+    <div class="raag-fs-content" id="raagShabadsList">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><span id="toastText"></span></div>
 
@@ -693,12 +774,91 @@
 
 <!-- Scripts -->
 <script src="gurbani-cache.js"></script>
-<script src="gurbani-khoj.js?v=25"></script>
+<script src="gurbani-khoj.js?v=37"></script>
 <script src="live-kirtan-tracker.js"></script>
 <script src="../lib/audio-preload.js"></script>
-<script src="../lib/audio-coordinator.js"></script>
+  <!-- Offline Detailed Progress Overlay -->
+  <div class="offline-progress-backdrop" id="offlineProgressBackdrop"></div>
+  <div class="offline-progress-sheet" id="offlineProgressSheet">
+    <div class="sheet-handle"></div>
+    <div class="offline-progress-header">
+      <h2>Offline Sync</h2>
+      <p>Downloading Gurbani for instant search</p>
+    </div>
+    <div class="offline-progress-body">
+      <div class="progress-source" id="progressSGGS">
+        <div class="progress-source-labels">
+          <span class="ps-name">Sri Guru Granth Sahib</span>
+          <span class="ps-status" id="statusSGGS">Waiting...</span>
+        </div>
+        <div class="ps-bar-bg"><div class="ps-bar-fill" id="barSGGS"></div></div>
+      </div>
+      <div class="progress-source" id="progressDasam">
+        <div class="progress-source-labels">
+          <span class="ps-name">Dasam Granth</span>
+          <span class="ps-status" id="statusDasam">Waiting...</span>
+        </div>
+        <div class="ps-bar-bg"><div class="ps-bar-fill" id="barDasam"></div></div>
+      </div>
+      <div class="progress-source" id="progressBhai">
+        <div class="progress-source-labels">
+          <span class="ps-name">Bhai Gurdas & Nand Lal</span>
+          <span class="ps-status" id="statusBhai">Waiting...</span>
+        </div>
+        <div class="ps-bar-bg"><div class="ps-bar-fill" id="barBhai"></div></div>
+      </div>
+      <div class="offline-stats" id="offlineStatsText">Total 0 / 3000 Angs downloaded</div>
+    </div>
+  </div>
+
+  <script src="../lib/audio-coordinator.js"></script>
+
 <script src="../lib/capacitor-notifications-global.js"></script>
 <script src="../lib/anhad-widget-bridge.js"></script>
 <script src="../lib/anhad-audio-singleton.js"></script>
+<script src="../js/anhad-core.js?v=28" defer></script>
+
+<!-- INLINE INIT: Ensures Raag/Simran/Bell buttons always work, even if SW serves old JS -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const CACHE_VERSION = 'anhad-v5.8.6'; // Bumped: Raag ang API fix + keyboard ghost-tap fix
+    // Wire Raag button
+    var raagBtn = document.getElementById('quickCardRaag');
+    if (raagBtn) {
+        raagBtn.onclick = function(e) {
+            e.stopPropagation();
+            if (window.RaagManager) { window.RaagManager.open(); }
+            else { console.error('RaagManager not loaded'); }
+        };
+    }
+    // Wire Simran button
+    var simranBtn = document.getElementById('quickCardSimran');
+    if (simranBtn) {
+        simranBtn.onclick = function(e) {
+            e.stopPropagation();
+            window.location.href = 'shabad-reader.html?shabad=6140';
+        };
+    }
+    // Wire Bell button
+    var bellBtn = document.getElementById('notificationBtn');
+    if (bellBtn) {
+        bellBtn.onclick = function(e) {
+            e.stopPropagation();
+            if (window.DailySuggestions) { window.DailySuggestions.open(); }
+        };
+    }
+    // Wire Raag overlay close and back
+    var raagClose = document.getElementById('raagClose');
+    if (raagClose) raagClose.onclick = function() { if(window.RaagManager) window.RaagManager.close(); };
+    var raagDetailBack = document.getElementById('raagDetailBack');
+    if (raagDetailBack) raagDetailBack.onclick = function() { if(window.RaagManager) window.RaagManager.showListView(); };
+    // Wire Daily Suggestions close
+    var rsClose = document.getElementById('rareSuggestionsClose');
+    if (rsClose) rsClose.onclick = function() { if(window.DailySuggestions) window.DailySuggestions.close(); };
+    var rsBackdrop = document.getElementById('rareSuggestionsBackdrop');
+    if (rsBackdrop) rsBackdrop.onclick = function() { if(window.DailySuggestions) window.DailySuggestions.close(); };
+});
+</script>
+
 </body>
 </html>

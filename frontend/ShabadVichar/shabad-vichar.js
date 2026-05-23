@@ -81,6 +81,7 @@ class ShabadVichar {
             // Header
             angNumber: document.getElementById('angNumber'),
             sourceInfo: document.getElementById('sourceInfo'),
+            backBtn: document.getElementById('backBtn'),
 
             // Actions
             newShabadBtn: document.getElementById('newShabadBtn'),
@@ -118,6 +119,14 @@ class ShabadVichar {
     // ═══════════════════════════════════════════════════════════════
 
     bindEvents() {
+        // Back Button
+        this.$.backBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.haptic('light');
+            if (window.navigateTo) window.navigateTo('../index.html');
+            else window.location.href = '../index.html';
+        });
+
         // New Shabad (personal override - not saved as daily)
         this.$.newShabadBtn?.addEventListener('click', () => {
             this.haptic('medium');

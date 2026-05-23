@@ -802,6 +802,7 @@
         try {
           if (audio.currentTime > 2) audio.currentTime = 0;
         } catch (e) {}
+        audio.volume = 0.8; // RESTORE VOLUME from the Safari autoplay fix
         audio.play()
           .then(() => { isPlaying = true; isLoading = false; emit('statechange', getPublicState()); })
           .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; emit('statechange', getPublicState()); });

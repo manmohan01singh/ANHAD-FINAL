@@ -1,205 +1,481 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-font="raavi" data-display="padchhed">
+<html lang="en" data-theme="light" data-font="noto" data-display="padchhed" data-sacred-theme="royal-rose">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <!-- Theme blocker - MUST run before paint -->
   <script>
 (function() {
   try {
     const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
+    const readerTheme = localStorage.getItem('gurbani_reader_theme') || 'paper';
+    const sacredTheme = localStorage.getItem('gurbani_sacred_theme') || 'royal-rose';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-reader-theme', readerTheme);
+    document.documentElement.setAttribute('data-sacred-theme', sacredTheme);
   } catch (e) {}
 })();
   </script>
   <meta name="color-scheme" content="light dark">
-    <link rel="stylesheet" href="../css/mobile-lock.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#f8f6f2">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
-    <title>Shabad Reader • ANHAD</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="shabad-reader.css">
-    
-    <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/theme-variables.css">
-    <script src="../lib/global-theme.js"></script>
-    
-    <!-- Navigation Libraries -->
-    <script src="../lib/smart-back.js"></script>
-    <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/state-preservation.js"></script>
-
+  <link rel="stylesheet" href="../css/mobile-lock.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#fdf6ee">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <title>Shabad Reader • ANHAD</title>
+  
+  <!-- Google Fonts for multi-script typography pairing -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="shabad-reader.css?v=2">
+  
+  <!-- Global Theme System -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <script src="../lib/global-theme.js"></script>
+  
+  <!-- Navigation Libraries -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/page-lifecycle.js"></script>
+  <script src="../lib/smooth-navigation.js"></script>
+  <script src="../lib/state-preservation.js"></script>
 </head>
 <body>
     <div class="app" id="app">
-    <!-- iOS Blur Orbs Background -->
+
+    <!-- Sacred Ambient Background Orbs -->
     <div class="orbs-container">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
     </div>
     
-    <!-- iOS Navigation -->
+    <!-- ═══════════════════════════════════════════════════════════
+         HEADER NAVIGATION
+         ═══════════════════════════════════════════════════════════ -->
     <nav class="ios-nav">
-        <button class="nav-back" id="navBack" data-anhad-skip-back>
-            <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
-                <path d="M9 1L1 9L9 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <button class="nav-back-circle" id="navBack" data-anhad-skip-back aria-label="Go Back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
-            <span>Search</span>
         </button>
-        <h1 class="nav-title" id="navTitle">Shabad</h1>
-        <div class="nav-actions">
-            <button class="theme-toggle" id="themeToggle">
-                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                </svg>
-                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                </svg>
-            </button>
-            <button class="fullscreen-toggle" id="fullscreenBtn" title="Full Screen">
-                <svg class="expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/>
-                </svg>
-                <svg class="compress-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>
+        <div class="nav-title-container">
+            <h1 class="nav-title-main" id="navTitle">ਸੋਰਠਿ ਮਹਲਾ ੫</h1>
+            <span class="nav-subtitle" id="navSubtitle">Sri Guru Granth Sahib Ji</span>
+        </div>
+        <div class="nav-right-actions">
+            <button class="nav-action-icon-btn" id="bookmarkBtn" title="Bookmark" aria-label="Bookmark">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                 </svg>
             </button>
-            <button class="nav-settings" id="settingsBtn">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/>
-                    <circle cx="12" cy="12" r="3"/>
+            <button class="nav-action-icon-btn" id="settingsBtn" title="Settings" aria-label="Display Settings">
+                <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
                 </svg>
             </button>
         </div>
     </nav>
 
-    <!-- Shabad Meta -->
-    <header class="shabad-meta glass" id="shabadMeta">
-        <div class="meta-left">
-            <span class="ang-badge" id="angBadge">Ang 0</span>
-            <span class="raag-name" id="raagName">Loading...</span>
-        </div>
-        <span class="writer-name" id="writerName"></span>
-    </header>
-
-    <!-- Shabad Content -->
+    <!-- ═══════════════════════════════════════════════════════════
+         READING AREA
+         ═══════════════════════════════════════════════════════════ -->
     <main class="shabad-content" id="shabadContent">
-        <!-- Loading State -->
-        <div class="loading-state active" id="loadingState">
-            <div class="loader">
-                <div class="loader-ring"></div>
-                <span class="loader-icon">☬</span>
+
+        <!-- Sacred Theme Switcher was moved to settings -->
+
+        <!-- ════════════════════ POTHI CARD ════════════════════ -->
+        <div class="pothi-card" id="pothiCard">
+
+            <!-- ── THEME-BASED BOTANICAL ORNAMENTS ── -->
+            <img id="cornerTL" class="pothi-corner-img tl" src="" alt="" aria-hidden="true">
+            <img id="cornerTR" class="pothi-corner-img tr" src="" alt="" aria-hidden="true">
+            <img id="cornerBL" class="pothi-corner-img bl" src="" alt="" aria-hidden="true">
+            <img id="cornerBR" class="pothi-corner-img br" src="" alt="" aria-hidden="true">
+
+
+
+            <!-- ── TOP ORNAMENTAL LINE ── -->
+            <div class="pothi-top-ornament" aria-hidden="true">
+                <svg width="200" height="14" viewBox="0 0 200 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="7" x2="80" y2="7" stroke="var(--card-border-color)" stroke-width="0.8" opacity="0.5"/>
+                    <circle cx="88" cy="7" r="2" fill="var(--floral-accent)" opacity="0.6"/>
+                    <circle cx="96" cy="7" r="3" fill="var(--floral-primary)" opacity="0.7"/>
+                    <circle cx="100" cy="7" r="1.5" fill="var(--card-border-color)" opacity="0.9"/>
+                    <circle cx="104" cy="7" r="3" fill="var(--floral-primary)" opacity="0.7"/>
+                    <circle cx="112" cy="7" r="2" fill="var(--floral-accent)" opacity="0.6"/>
+                    <line x1="120" y1="7" x2="200" y2="7" stroke="var(--card-border-color)" stroke-width="0.8" opacity="0.5"/>
+                </svg>
             </div>
-            <p>Loading Shabad...</p>
-        </div>
-        
-        <!-- Shabad Lines -->
-        <div class="shabad-lines" id="shabadLines"></div>
+
+            <!-- Loading State -->
+            <div class="loading-state active" id="loadingState">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <span class="loader-icon">☬</span>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.04em;">Loading Pothi...</p>
+            </div>
+            
+            <!-- Shabad Lines -->
+            <div class="shabad-lines" id="shabadLines"></div>
+
+        </div><!-- /pothi-card -->
     </main>
 
-    <!-- Bottom Controls -->
-    <footer class="bottom-controls glass">
-        <button class="control-btn fav-btn" id="favBtn">🤍</button>
-        <button class="control-btn" id="fontSizeDown">
-            <span style="font-size: 14px;">ੳ</span>
-        </button>
-        <button class="control-btn" id="fontSizeUp">
-            <span style="font-size: 22px;">ੳ</span>
-        </button>
-        <button class="control-btn share-btn" id="shareBtn">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
-                <polyline points="16,6 12,2 8,6"/>
-                <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-        </button>
-    </footer>
+    <!-- ═══════════════════════════════════════════════════════════
+         FLOATING PLAYER — GLASSMORPHISM SACRED PILL
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="floating-player-card" id="autoscrollPill" role="region" aria-label="Playback controls">
+        <!-- Speed Row -->
+        <div class="player-row speed-row">
+            <button class="scroll-play-btn" id="scrollPlayBtn" aria-label="Play/Pause auto-scroll">
+                <svg class="play-svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                    <polygon points="6,4 20,12 6,20"/>
+                </svg>
+                <svg class="pause-svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:none;">
+                    <rect x="5" y="4" width="4" height="16"/>
+                    <rect x="15" y="4" width="4" height="16"/>
+                </svg>
+            </button>
+            <span class="player-label">Speed</span>
+            <input type="range" class="player-slider" id="scrollSpeedSlider" min="0.5" max="8" step="0.5" value="1.0" aria-label="Scroll speed">
+            <span class="player-value" id="scrollSpeedVal">1.0×</span>
+        </div>
+        <!-- Nav Row -->
+        <div class="player-row nav-row">
+            <button class="nav-text-btn" id="prevShabadBtn" aria-label="Previous Shabad">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                <span>Prev</span>
+            </button>
+            
+            <button class="pothi-icon-btn fav-btn" id="favBtn" title="Save to Pothi" aria-label="Save to Pothi">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+            </button>
+            
+            <button class="nav-text-btn" id="nextShabadBtn" aria-label="Next Shabad">
+                <span>Next</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
 
-    <!-- Settings Sheet -->
-    <div class="settings-overlay" id="settingsOverlay">
+    <!-- ═══════════════════════════════════════════════════════════
+         iOS SETTINGS SHEET
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="settings-overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-label="Display Settings">
         <div class="settings-backdrop"></div>
-        <div class="settings-sheet glass">
+        <div class="settings-sheet">
+            <div class="settings-header">
+                <span class="settings-header-title">Display</span>
+                <button class="settings-done-btn" id="settingsDone">Done</button>
+            </div>
+            
+            <div class="settings-scroll-content">
+                <!-- DISPLAY SECTION -->
+                <div class="settings-section-label">DISPLAY</div>
+                <div class="settings-card">
+                    <!-- Text Size -->
+                    <div class="settings-row">
+                        <span class="row-label">Text Size</span>
+                        <div class="row-value-container">
+                            <span class="size-label-small">A</span>
+                            <input type="range" class="ios-slider" id="fontSizeSlider" min="16" max="38" step="1" value="24" aria-label="Font size">
+                            <span class="size-label-large">A</span>
+                        </div>
+                    </div>
+                    <!-- Font Selection -->
+                    <div class="settings-row clickable" id="fontRowBtn">
+                        <span class="row-label">Font</span>
+                        <span class="row-value blue" id="activeFontVal">Noto Sans &gt;</span>
+                    </div>
+                    <!-- Line Spacing -->
+                    <div class="settings-row">
+                        <span class="row-label">Line Spacing</span>
+                        <div class="ios-segmented-control" id="lineSpacingSegmented">
+                            <button class="segment-btn" data-spacing="1.4" title="Tight"><span>⁝</span></button>
+                            <button class="segment-btn active" data-spacing="2.0" title="Normal"><span>≡</span></button>
+                            <button class="segment-btn" data-spacing="2.7" title="Loose"><span>⁞</span></button>
+                        </div>
+                    </div>
+                    <!-- Text Alignment -->
+                    <div class="settings-row">
+                        <span class="row-label">Alignment</span>
+                        <div class="ios-segmented-control" id="alignSegmented">
+                            <button class="segment-btn" data-align="left" title="Left">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm0-4h12v-2H3v2zm0-4h18v-2H3v2zm0-4h12v-2H3v2zm0-6v2h18V3H3z"/></svg>
+                            </button>
+                            <button class="segment-btn active" data-align="center" title="Center">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm3-4h12v-2H6v2zm-3-4h18v-2H3v2zm3-4h12v-2H6v2zm-3-6v2h18V3H3z"/></svg>
+                            </button>
+                            <button class="segment-btn" data-align="right" title="Right">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12v-2H9v2zm-6-6v2h18V3H3z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Color Theme swatches -->
+                    <div class="settings-row" style="padding-top: 18px; padding-bottom: 18px;">
+                        <span class="row-label">Sacred Theme</span>
+                        <div class="sacred-theme-switcher" id="sacredThemeSwitcher" aria-label="Choose sacred theme" style="margin: 0; padding: 0;">
+                            <button class="sacred-theme-btn active" data-theme="royal-rose" title="Royal Rose" aria-label="Royal Rose theme"></button>
+                            <button class="sacred-theme-btn" data-theme="lotus-grace"     title="Lotus Grace" aria-label="Lotus Grace theme"></button>
+                            <button class="sacred-theme-btn" data-theme="golden-marigold" title="Golden Marigold" aria-label="Golden Marigold theme"></button>
+                            <button class="sacred-theme-btn" data-theme="blue-blossom"   title="Blue Blossom" aria-label="Blue Blossom theme"></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- READING SECTION -->
+                <div class="settings-section-label">READING</div>
+                <div class="settings-card">
+                    <div class="settings-row clickable" id="autoScrollRow">
+                        <span class="row-label">Auto Scroll</span>
+                        <span class="row-value blue" id="autoScrollVal">On &gt;</span>
+                    </div>
+                    <div class="settings-row clickable" id="scrollSpeedRow">
+                        <span class="row-label">Scroll Speed</span>
+                        <span class="row-value blue" id="scrollSpeedSettingsVal">Normal &gt;</span>
+                    </div>
+                    <div class="settings-row">
+                        <span class="row-label">Pause on Next</span>
+                        <button class="ios-switch active" id="pauseNextShabadSwitch" aria-label="Pause on next shabad">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <!-- English Transliteration -->
+                    <div class="settings-row">
+                        <span class="row-label">English Transliteration</span>
+                        <button class="ios-switch" id="translitSwitch" aria-label="Show English transliteration">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <!-- Hindi Gurbani (Devnagari) -->
+                    <div class="settings-row">
+                        <span class="row-label">Hindi Gurbani (Devnagari)</span>
+                        <button class="ios-switch" id="hindiGurbaniSwitch" aria-label="Show Hindi Gurbani">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <!-- English Translation -->
+                    <div class="settings-row">
+                        <span class="row-label">English Translation</span>
+                        <button class="ios-switch active" id="translationSwitch" aria-label="Show English translation">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <!-- Punjabi Translation -->
+                    <div class="settings-row">
+                        <span class="row-label">Punjabi Translation</span>
+                        <button class="ios-switch" id="punjabiTranslationSwitch" aria-label="Show Punjabi translation">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <!-- Hindi Translation -->
+                    <div class="settings-row">
+                        <span class="row-label">Hindi Translation</span>
+                        <button class="ios-switch" id="hindiTranslationSwitch" aria-label="Show Hindi translation">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AUDIO SECTION -->
+                <div class="settings-section-label">AUDIO</div>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="row-label">Auto Play</span>
+                        <button class="ios-switch active" id="autoPlaySwitch" aria-label="Auto play">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                    <div class="settings-row clickable" id="repeatRow">
+                        <span class="row-label">Repeat</span>
+                        <span class="row-value blue" id="repeatVal">One Shabad &gt;</span>
+                    </div>
+                    <div class="settings-row clickable" id="bgAudioRow">
+                        <span class="row-label">Background Audio</span>
+                        <span class="row-value blue" id="bgAudioVal">Continue &gt;</span>
+                    </div>
+                </div>
+
+                <!-- IMMERSIVE SECTION -->
+                <div class="settings-section-label">IMMERSIVE</div>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="row-label">Focus Mode</span>
+                        <button class="ios-switch" id="focusModeToggle" aria-label="Enable focus mode">
+                            <span class="switch-handle"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         WORD CONTEMPLATION SHEET (VICHAR)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="word-sheet-overlay" id="wordSheetOverlay" role="dialog" aria-modal="true">
+        <div class="word-sheet-backdrop"></div>
+        <div class="word-sheet glass">
             <div class="sheet-handle"></div>
-            <h2 class="settings-title">Reader Settings</h2>
-            
-            <!-- Display Mode -->
-            <div class="setting-group">
-                <label class="setting-label">Display Mode</label>
-                <div class="setting-options display-options">
-                    <button class="setting-opt active" data-display="padchhed">
-                        <span class="opt-sample">ਪਦ ਛੇਦ</span>
-                        <span>Padchhed</span>
+            <div class="word-sheet-content">
+                <h3 class="word-display" id="wordDisplay">ਸਿਮਰਨ</h3>
+                <p class="word-desc">Contemplate this word or search every verse in Guru Granth Sahib containing it.</p>
+                <div class="word-actions">
+                    <button class="word-action-btn primary" id="wordSearchBtn">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <span>Search in Gurbani Khoj</span>
                     </button>
-                    <button class="setting-opt" data-display="larivaar">
-                        <span class="opt-sample">ਲੜੀਵਾਰ</span>
-                        <span>Larivaar</span>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Translation Language -->
-            <div class="setting-group">
-                <label class="setting-label">Translation</label>
-                <div class="setting-options trans-options">
-                    <button class="setting-opt active" data-trans="english">English</button>
-                    <button class="setting-opt" data-trans="punjabi">ਪੰਜਾਬੀ</button>
-                    <button class="setting-opt" data-trans="hindi">हिंदी</button>
-                    <button class="setting-opt" data-trans="none">None</button>
-                </div>
-            </div>
-            
-            <!-- Transliteration -->
-            <div class="setting-group">
-                <label class="setting-label">Transliteration</label>
-                <div class="toggle-row">
-                    <span>Show Roman transliteration</span>
-                    <button class="toggle-switch" id="translitToggle">
-                        <span class="toggle-handle"></span>
+                    <button class="word-action-btn secondary" id="wordCopyBtn">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        <span>Copy Word</span>
                     </button>
                 </div>
             </div>
-            
-            <!-- Font Selection -->
-            <div class="setting-group">
-                <label class="setting-label">Gurmukhi Font</label>
-                <div class="setting-options font-options">
-                    <button class="setting-opt active" data-font="raavi">Raavi</button>
-                    <button class="setting-opt" data-font="noto">Noto Sans</button>
-                    <button class="setting-opt" data-font="mukta">Mukta</button>
-                </div>
-            </div>
-            
-            <button class="settings-done" id="settingsDone">Done</button>
         </div>
     </div>
 
     <!-- Toast -->
-    <div class="toast" id="toast">
+    <div class="toast" id="toast" role="status" aria-live="polite">
         <span id="toastText"></span>
     </div>
-    </div>
+
+    </div><!-- /app -->
 
     <script src="shabad-reader.js"></script>
     <!-- Global Engine -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
     <script src="../lib/anhad-audio-singleton.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SACRED THEME SWITCHER LOGIC
+         ═══════════════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        'use strict';
+
+        const THEMES = ['royal-rose', 'lotus-grace', 'golden-marigold', 'blue-blossom'];
+        const STORAGE_KEY = 'gurbani_sacred_theme';
+
+        // Theme name labels for toast
+        const THEME_NAMES = {
+            'royal-rose':       '🌹 Royal Rose',
+            'lotus-grace':      '🪷 Lotus Grace',
+            'golden-marigold':  '🌼 Golden Marigold',
+            'blue-blossom':     '❄️ Blue Blossom',
+        };
+
+        function updateSacredThemeAssets(themeName) {
+            const assetMap = {
+                'royal-rose': {
+                    corner: '../assets/royal_rose_corner.png'
+                },
+                'lotus-grace': {
+                    corner: '../assets/lotus_grace_corner.png'
+                },
+                'golden-marigold': {
+                    corner: '../assets/golden_marigold_corner.png'
+                },
+                'blue-blossom': {
+                    corner: '../assets/blue_blossom_corner.png'
+                }
+            };
+
+            const assets = assetMap[themeName] || assetMap['royal-rose'];
+            
+            const tl = document.getElementById('cornerTL');
+            const tr = document.getElementById('cornerTR');
+            const bl = document.getElementById('cornerBL');
+            const br = document.getElementById('cornerBR');
+
+            if (tl) tl.src = assets.corner;
+            if (tr) tr.src = assets.corner;
+            if (bl) bl.src = assets.corner;
+            if (br) br.src = assets.corner;
+
+            // Update mobile status bar theme color
+            const themeColors = {
+                'royal-rose': '#fdf6ee',
+                'lotus-grace': '#f7f9fc',
+                'golden-marigold': '#fdf5e6',
+                'blue-blossom': '#f5f7fc'
+            };
+            const metaTheme = document.querySelector('meta[name="theme-color"]');
+            if (metaTheme) {
+                metaTheme.setAttribute('content', themeColors[themeName] || '#fdf6ee');
+            }
+        }
+
+        function applyTheme(themeName) {
+            if (!THEMES.includes(themeName)) return;
+
+            // Update html attribute
+            document.documentElement.setAttribute('data-sacred-theme', themeName);
+
+            // Update assets
+            updateSacredThemeAssets(themeName);
+
+            // Save to localStorage
+            try { localStorage.setItem(STORAGE_KEY, themeName); } catch(e) {}
+
+            // Update switcher active states
+            const btns = document.querySelectorAll('.sacred-theme-btn');
+            btns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === themeName);
+            });
+
+            // Show toast
+            showToast(THEME_NAMES[themeName] || themeName);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            if (!toast || !toastText) return;
+            toastText.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Initialize on DOM ready
+        function init() {
+            // Read saved theme
+            let saved = 'royal-rose';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'royal-rose'; } catch(e) {}
+
+            // Apply theme buttons
+            const btns = document.querySelectorAll('.sacred-theme-btn');
+            btns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === saved);
+                btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+            });
+
+            // Apply the saved theme
+            document.documentElement.setAttribute('data-sacred-theme', saved);
+            updateSacredThemeAssets(saved);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
 </body>
 </html>

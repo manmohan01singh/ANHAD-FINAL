@@ -764,6 +764,15 @@
       try { audio.load(); } catch (e) {}
     }
 
+    // SAFARI AUTOPLAY FIX: Safari iOS pauses the media element on `ended`. If we don't call
+    // `play()` synchronously within the same call stack, it permanently blocks playback 
+    // AND refuses to load metadata (causing the 8s metadata timeout deadlock).
+    audio.volume = 0; // Mute temporarily to avoid glitch before seek
+    try {
+        const initPlay = audio.play();
+        if (initPlay && initPlay.catch) initPlay.catch(() => {});
+    } catch(e) {}
+
         // Update live sync anchor after load
     liveSyncAnchor = {
       wallTime: Date.now(),
@@ -793,6 +802,7 @@
         try {
           if (audio.currentTime > 2) audio.currentTime = 0;
         } catch (e) {}
+        audio.volume = 0.8; // RESTORE VOLUME from the Safari autoplay fix
         audio.play()
           .then(() => { isPlaying = true; isLoading = false; emit('statechange', getPublicState()); })
           .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; emit('statechange', getPublicState()); });

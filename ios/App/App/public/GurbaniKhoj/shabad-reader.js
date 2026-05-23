@@ -1,71 +1,163 @@
 /**
- * SHABAD READER - Full Page Reader
- * Shows ONLY the searched Shabad (from header to end numbering)
- * Larivaar/Padchhed, Multi-language Translation, Transliteration
- * Favorites support
+ * SHABAD READER - Premium iOS Pothi Style
+ * Exact replica of the screenshot layout & styles
  */
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// API
-// ═══════════════════════════════════════════════════════════════════════════════
-
 const API_BASE = 'https://api.banidb.com/v2';
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// DOM
-// ═══════════════════════════════════════════════════════════════════════════════
-
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
+
+// Gurmukhi to Devanagari Transliteration Mapper
+function transliterateGurmukhiToDevanagari(text) {
+    if (!text) return '';
+    const mapping = {
+        'ਕ': 'क', 'ਖ': 'ख', 'ਗ': 'ग', 'ਘ': 'घ', 'ਙ': 'ङ',
+        'ਚ': 'च', 'ਛ': 'छ', 'ਜ': 'ज', 'ਝ': 'झ', 'ਞ': 'ञ',
+        'ਟ': 'ट', 'ਠ': 'ठ', 'ਡ': 'ड', 'ਢ': 'ढ', 'ਣ': 'ण',
+        'ਤ': 'त', 'ਥ': 'थ', 'ਦ': 'द', 'ਧ': 'ध', 'ਨ': 'न',
+        'ਪ': 'प', 'ਫ': 'फ', 'ਬ': 'ब', 'ਭ': 'भ', 'ਮ': 'म',
+        'ਯ': 'य', 'ਰ': 'र', 'ਲ': 'ल', 'ਵ': 'व', 'ੜ': 'ड़',
+        'ਸ਼': 'श', 'ਖ਼': 'ख़', 'ਗ਼': 'ग़', 'ਜ਼': 'ज़', 'ਫ਼': 'फ़', 'ਲ਼': 'ळ',
+        'ਸ': 'स', 'ਹ': 'ह',
+        'ੳ': 'उ', 'ਅ': 'अ', 'ੲ': 'इ',
+        'ਆ': 'आ', 'ਇ': 'इ', 'ਈ': 'ई', 'ਉ': 'उ', 'ਊ': 'ऊ',
+        'ਏ': 'ए', 'ਐ': 'ऐ', 'ਓ': 'ओ', 'ਔ': 'औ',
+        'ਾ': 'ा', 'ਿ': 'ि', 'ੀ': 'ी', 'ੁ': 'ु', 'ੂ': 'ू',
+        'ੇ': 'े', 'ੈ': 'ै', 'ੋ': 'ो', 'ੌ': 'ौ',
+        'ੰ': 'ं', 'ਂ': 'ं', '੍ਹ': '्ह', '੍': '्', 'ੑ': '्', 'ੵ': '्य',
+        '੦': '०', '੧': '१', '੨': '२', '੩': '३', '੪': '४',
+        '੫': '५', '੬': '६', '੭': '७', '੮': '८', '੯': '९',
+        '।': '।', '॥': '॥'
+    };
+    let result = '';
+    let i = 0;
+    while (i < text.length) {
+        const char = text[i];
+        if (char === 'ੱ') {
+            let nextIdx = i + 1;
+            while (nextIdx < text.length && (text[nextIdx] === ' ' || 'ਾਿੀੁੂੇੈੋੌ'.includes(text[nextIdx]))) {
+                nextIdx++;
+            }
+            if (nextIdx < text.length) {
+                const nextChar = text[nextIdx];
+                const mappedNext = mapping[nextChar] || nextChar;
+                result += mappedNext + '्';
+            }
+            i++;
+            continue;
+        }
+        if (mapping[char]) {
+            result += mapping[char];
+        } else {
+            result += char;
+        }
+        i++;
+    }
+    return result;
+}
 
 const DOM = {
     navBack: $('#navBack'),
     navTitle: $('#navTitle'),
-    themeToggle: $('#themeToggle'),
-    fullscreenBtn: $('#fullscreenBtn'),
+    navSubtitle: $('#navSubtitle'),
+    bookmarkBtn: $('#bookmarkBtn'),
     settingsBtn: $('#settingsBtn'),
     favBtn: $('#favBtn'),
-
-    angBadge: $('#angBadge'),
-    raagName: $('#raagName'),
-    writerName: $('#writerName'),
 
     loadingState: $('#loadingState'),
     shabadLines: $('#shabadLines'),
 
-    fontSizeDown: $('#fontSizeDown'),
-    fontSizeUp: $('#fontSizeUp'),
-    shareBtn: $('#shareBtn'),
+    prevShabadBtn: $('#prevShabadBtn'),
+    nextShabadBtn: $('#nextShabadBtn'),
 
     settingsOverlay: $('#settingsOverlay'),
     settingsDone: $('#settingsDone'),
-    translitToggle: $('#translitToggle'),
+
+    // DISPLAY Settings
+    fontSizeSlider: $('#fontSizeSlider'),
+    fontRowBtn: $('#fontRowBtn'),
+    activeFontVal: $('#activeFontVal'),
+    lineSpacingSegmented: $('#lineSpacingSegmented'),
+    alignSegmented: $('#alignSegmented'),
+
+    // READING Settings
+    autoScrollRow: $('#autoScrollRow'),
+    autoScrollVal: $('#autoScrollVal'),
+    scrollSpeedRow: $('#scrollSpeedRow'),
+    scrollSpeedSettingsVal: $('#scrollSpeedSettingsVal'),
+    pauseNextShabadSwitch: $('#pauseNextShabadSwitch'),
+    translitSwitch: $('#translitSwitch'),
+    hindiGurbaniSwitch: $('#hindiGurbaniSwitch'),
+    translationSwitch: $('#translationSwitch'),
+    punjabiTranslationSwitch: $('#punjabiTranslationSwitch'),
+    hindiTranslationSwitch: $('#hindiTranslationSwitch'),
+
+    // AUDIO Settings
+    autoPlaySwitch: $('#autoPlaySwitch'),
+    repeatRow: $('#repeatRow'),
+    repeatVal: $('#repeatVal'),
+    bgAudioRow: $('#bgAudioRow'),
+    bgAudioVal: $('#bgAudioVal'),
+
+    // IMMERSIVE Focus Settings
+    focusModeToggle: $('#focusModeToggle'),
+
+    // Autoscroll components
+    autoscrollPill: $('#autoscrollPill'),
+    scrollPlayBtn: $('#scrollPlayBtn'),
+    scrollSpeedSlider: $('#scrollSpeedSlider'),
+    scrollSpeedVal: $('#scrollSpeedVal'),
+
+    // Word Vichar Sheet components
+    wordSheetOverlay: $('#wordSheetOverlay'),
+    wordDisplay: $('#wordDisplay'),
+    wordSearchBtn: $('#wordSearchBtn'),
+    wordCopyBtn: $('#wordCopyBtn'),
 
     toast: $('#toast'),
     toastText: $('#toastText')
 };
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════════════════════
 
 const State = {
     shabadId: null,
     highlightVerseId: null,
     verses: [],
     shabadInfo: null,
-    theme: 'light',
+    readerTheme: 'paper', // white, paper, charcoal, midnight
     displayMode: 'padchhed',
-    translationLang: 'english',
-    showTranslit: false,
+    showTranslitEn: false,
+    showTranslitHi: false,
+    showTransEn: true,
+    showTransPu: false,
+    showTransHi: false,
+    focusMode: false,
+    autoscrollVisible: true,
+    autoscrollActive: false,
+    autoscrollSpeed: 1.0,
     fontSizeBase: 22,
-    fontGurmukhi: 'raavi',
-    isFavorite: false,
-    isFullscreen: false
+    lineSpacing: 1.9,
+    fontGurmukhi: 'pothi', // pothi, court, modern, royal
+    textAlign: 'center', // left, center, right
+
+    // Cycles
+    scrollSpeedText: 'Normal', // Slow, Normal, Fast
+    repeatMode: 'One Shabad', // One Shabad, All, None
+    bgAudioMode: 'Continue', // Continue, Pause
+    pauseNextShabad: true,
+    autoPlay: true,
+    isFavorite: false
+};
+
+// Font display names mapping
+const FONT_NAMES = {
+    'pothi': 'Sacred Pothi',
+    'court': 'Classic Court',
+    'modern': 'Minimal Modern',
+    'royal': 'Royal Calligraphy'
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// URL PARAMS
+// URL PARAMS & HISTORY
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function getParams() {
@@ -77,48 +169,34 @@ function getParams() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// THEME
+// THEME PRESENTS OVERRIDES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const Theme = {
+const ReaderTheme = {
     init() {
-        // ── Sync with global app theme (anhad_theme) first ──
-        const globalTheme = localStorage.getItem('anhad_theme');
-        if (globalTheme) {
-            this.set(globalTheme);
-        } else {
-            const darkFlag = localStorage.getItem('anhad_dark_mode');
-            if (darkFlag === 'true') this.set('dark');
-            else if (darkFlag === 'false') this.set('light');
-            else this.set(localStorage.getItem('gurbaniTheme') || 'light');
-        }
-    },
-
-    toggle() {
-        // Disable all transitions for instant theme switch
-        document.documentElement.classList.add('no-transitions');
-        const newTheme = State.theme === 'light' ? 'dark' : 'light';
-        this.set(newTheme);
-        // Sync to global theme key
-        localStorage.setItem('anhad_theme', newTheme);
-        haptic('medium');
-        // Re-enable transitions after paint
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                document.documentElement.classList.remove('no-transitions');
-            });
-        });
+        const saved = localStorage.getItem('gurbani_reader_theme') || 'paper';
+        this.set(saved);
     },
 
     set(theme) {
-        State.theme = theme;
-        document.documentElement.dataset.theme = theme;
-        localStorage.setItem('gurbaniTheme', theme);
+        State.readerTheme = theme;
+        document.documentElement.setAttribute('data-reader-theme', theme);
+        localStorage.setItem('gurbani_reader_theme', theme);
+
+        // Sync dark mode class
+        const isDark = (theme === 'charcoal' || theme === 'midnight');
+        document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+        localStorage.setItem('anhad_theme', isDark ? 'dark' : 'light');
+
+        // Update settings swatches active class
+        $$('.theme-preset-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.readerTheme === theme);
+        });
     }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FAVORITES
+// FAVORITES / POTHI BOOKMARK
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const Favorites = {
@@ -139,7 +217,6 @@ const Favorites = {
     add(shabad) {
         const favorites = this.load();
         if (!favorites.some(f => String(f.shabadId) === String(shabad.shabadId) || String(f.id) === String(shabad.shabadId))) {
-            // Save in unified format
             favorites.unshift({
                 id: shabad.shabadId,
                 shabadId: shabad.shabadId,
@@ -147,7 +224,7 @@ const Favorites = {
                 translation: shabad.translation || '',
                 english: shabad.translation || '',
                 ang: shabad.ang || '',
-                source: 'Shabad Reader',
+                source: 'Pothi Reader',
                 savedAt: Date.now()
             });
             this.save(favorites);
@@ -172,23 +249,23 @@ const Favorites = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// HAPTIC & TOAST
+// HAPTICS & TOAST
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function haptic(style = 'light') {
     if (navigator.vibrate) {
-        navigator.vibrate(style === 'light' ? 10 : 20);
+        navigator.vibrate(style === 'light' ? 8 : 18);
     }
 }
 
 function showToast(message) {
     DOM.toastText.textContent = message;
     DOM.toast.classList.add('show');
-    setTimeout(() => DOM.toast.classList.remove('show'), 3000);
+    setTimeout(() => DOM.toast.classList.remove('show'), 2200);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// API
+// API LOADER
 // ═══════════════════════════════════════════════════════════════════════════════
 
 async function loadShabad(shabadId) {
@@ -204,31 +281,20 @@ async function loadShabad(shabadId) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// iOS NOTES STYLE SEARCH HIGHLIGHTING
+// HIGHLIGHT AND RENDER
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function highlightSearchTerm(text, query) {
     if (!query || !text) return text;
-    
-    // Escape special regex characters
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    
-    // Create regex that matches the query (case-insensitive)
     const regex = new RegExp(`(${escapedQuery})`, 'gi');
-    
-    // Replace matches with highlighted span
     return text.replace(regex, '<mark class="search-highlight">$1</mark>');
 }
 
-// Get search query from URL if passed from Gurbani Khoj
 function getSearchQuery() {
     const params = new URLSearchParams(window.location.search);
     return params.get('q') || params.get('query') || '';
 }
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// RENDER SHABAD - Only show actual Shabad verses
-// ═══════════════════════════════════════════════════════════════════════════════
 
 function renderShabad(data) {
     if (!data || !data.verses || data.verses.length === 0) {
@@ -236,13 +302,9 @@ function renderShabad(data) {
         return;
     }
 
-    // The API returns the full Shabad - all verses belong to this Shabad
-    // No filtering needed - the API endpoint /shabads/{id} returns only this Shabad's verses
     State.verses = data.verses;
-
     const firstVerse = data.verses[0];
 
-    // Store shabad info for favorites
     State.shabadInfo = {
         shabadId: State.shabadId,
         ang: firstVerse.pageNo,
@@ -250,99 +312,284 @@ function renderShabad(data) {
         gurmukhi: firstVerse.verse?.unicode || ''
     };
 
-    // Update meta
-    DOM.angBadge.textContent = `Ang ${firstVerse.pageNo || ''}`;
-    DOM.raagName.textContent = firstVerse.raag?.english || '';
-    DOM.writerName.textContent = firstVerse.writer?.english || '';
+    // Header metadata update
+    let sourceName = firstVerse.writer?.english || 'Sri Guru Granth Sahib Ji';
+    DOM.navTitle.textContent = firstVerse.raag?.english ? `${firstVerse.raag.english} ਮਹਲਾ ੫` : 'ਗੁਰਬਾਣੀ';
+    
+    // Check if source details are available
+    if (firstVerse.pageNo) {
+        DOM.navSubtitle.textContent = `Ang ${firstVerse.pageNo} • ${sourceName}`;
+    } else {
+        DOM.navSubtitle.textContent = sourceName;
+    }
 
-    // Check favorite status
     State.isFavorite = Favorites.isFavorite(State.shabadId);
     updateFavButton();
     
-    // Get search query for highlighting
     const searchQuery = getSearchQuery();
 
-    // Render lines
-    DOM.shabadLines.innerHTML = data.verses.map(verse => {
+    // Render HTML
+    DOM.shabadLines.innerHTML = data.verses.map((verse, index) => {
         const isHighlighted = String(verse.verseId) === String(State.highlightVerseId);
 
-        // Gurmukhi (Padchhed or Larivaar)
+        // Gurmukhi source text
         const gurmukhiRaw = State.displayMode === 'larivaar'
             ? (verse.larivaar?.unicode || verse.verse?.unicode || '')
             : (verse.verse?.unicode || '');
 
+        // Wrap words individually
+        const words = gurmukhiRaw.trim().split(/\s+/);
+        const gurmukhiSpans = words.map(word => {
+            const cleanWord = word.replace(/[।॥]/g, '').trim();
+            let displayWord = word;
+            if (searchQuery) {
+                displayWord = highlightSearchTerm(word, searchQuery);
+            }
+            return `<span class="g-word" data-word="${cleanWord}">${displayWord}</span>`;
+        }).join(' ');
+
         // Transliteration
-        const translitRaw = verse.transliteration?.english || '';
-
-        // Translation based on language
-        let translationRaw = '';
-        let transClass = 'translation';
-
-        switch (State.translationLang) {
-            case 'english':
-                translationRaw = verse.translation?.en?.bdb || verse.translation?.en?.ms || '';
-                break;
-            case 'punjabi':
-                translationRaw = verse.translation?.pu?.ss?.unicode || verse.translation?.pu?.bdb?.unicode || '';
-                transClass += ' punjabi';
-                break;
-            case 'hindi':
-                translationRaw = verse.translation?.hi?.ss || verse.translation?.hi?.sts || '';
-                transClass += ' hindi';
-                break;
-            case 'none':
-                translationRaw = '';
-                break;
+        let translitHtml = '';
+        if (State.showTranslitEn) {
+            const translitRaw = verse.transliteration?.english || '';
+            const translit = searchQuery ? highlightSearchTerm(translitRaw, searchQuery) : translitRaw;
+            if (translit) {
+                translitHtml += `<p class="transliteration">${translit}</p>`;
+            }
         }
         
-        // Apply search highlighting
-        const gurmukhi = searchQuery ? highlightSearchTerm(gurmukhiRaw, searchQuery) : gurmukhiRaw;
-        const translit = searchQuery ? highlightSearchTerm(translitRaw, searchQuery) : translitRaw;
-        const translation = searchQuery ? highlightSearchTerm(translationRaw, searchQuery) : translationRaw;
+        // Hindi Gurbani (Devnagari script)
+        let hindiGurbaniHtml = '';
+        if (State.showTranslitHi) {
+            let hindiRaw = verse.transliteration?.hindi || verse.transliteration?.hi || '';
+            if (!hindiRaw) {
+                hindiRaw = transliterateGurmukhiToDevanagari(verse.verse?.unicode || '');
+            }
+            const highlighted = searchQuery ? highlightSearchTerm(hindiRaw, searchQuery) : hindiRaw;
+            if (highlighted) {
+                hindiGurbaniHtml += `<p class="hindi-gurbani">${highlighted}</p>`;
+            }
+        }
+
+        // Translations HTML Builder
+        let translationsHtml = '';
+        if (State.showTransPu) {
+            const puTransRaw = verse.translation?.pu?.ss?.unicode || verse.translation?.pu?.bdb?.unicode || verse.translation?.pu?.ms?.unicode || '';
+            const puTrans = searchQuery ? highlightSearchTerm(puTransRaw, searchQuery) : puTransRaw;
+            if (puTrans) {
+                translationsHtml += `<p class="translation punjabi">${puTrans}</p>`;
+            }
+        }
+        
+        if (State.showTransHi) {
+            const hiTransRaw = verse.translation?.hi?.ss || verse.translation?.hi?.sts || '';
+            const hiTrans = searchQuery ? highlightSearchTerm(hiTransRaw, searchQuery) : hiTransRaw;
+            if (hiTrans) {
+                translationsHtml += `<p class="translation hindi">${hiTrans}</p>`;
+            }
+        }
+
+        if (State.showTransEn) {
+            const enTransRaw = verse.translation?.en?.bdb || verse.translation?.en?.ms || verse.translation?.en?.ssk || '';
+            const enTrans = searchQuery ? highlightSearchTerm(enTransRaw, searchQuery) : enTransRaw;
+            if (enTrans) {
+                translationsHtml += `<p class="translation english">${enTrans}</p>`;
+            }
+        }
+
+        // Dividers between main verse segments (e.g. after Rahao or verse pairs)
+        const isRahao = verse.verse?.unicode?.includes('ਰਹਾਉ');
+        const showDivider = (index < data.verses.length - 1) && (isRahao || (index % 2 === 1));
 
         return `
             <div class="shabad-line ${isHighlighted ? 'highlighted' : ''}" data-verse="${verse.verseId}">
-                <p class="gurmukhi">${gurmukhi}</p>
-                <p class="transliteration">${translit}</p>
-                <p class="${transClass}">${translation}</p>
+                <p class="gurmukhi">${gurmukhiSpans}</p>
+                ${hindiGurbaniHtml}
+                ${translitHtml}
+                ${translationsHtml}
             </div>
+            ${showDivider ? `
+                <div class="verse-divider">
+                    <svg viewBox="0 0 100 15" width="100" height="15">
+                        <line x1="10" y1="7.5" x2="40" y2="7.5" stroke="#d4af37" stroke-width="1.5" />
+                        <circle cx="50" cy="7.5" r="4" fill="none" stroke="#d4af37" stroke-width="1.8" />
+                        <circle cx="50" cy="7.5" r="1.2" fill="#d4af37" />
+                        <line x1="60" y1="7.5" x2="90" y2="7.5" stroke="#d4af37" stroke-width="1.5" />
+                        <circle cx="35" cy="7.5" r="1.2" fill="#d4af37" />
+                        <circle cx="65" cy="7.5" r="1.2" fill="#d4af37" />
+                    </svg>
+                </div>
+            ` : ''}
         `;
     }).join('');
 
-    // Hide loading
     DOM.loadingState.classList.remove('active');
 
-    // Scroll to highlighted
-    setTimeout(() => {
-        const highlighted = DOM.shabadLines.querySelector('.highlighted');
-        if (highlighted) {
-            highlighted.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Scroll active verse
+    if (State.highlightVerseId) {
+        setTimeout(() => {
+            selectActiveLine(State.highlightVerseId, true);
+        }, 300);
+    }
+}
+
+function selectActiveLine(verseId, smoothScroll = true) {
+    State.highlightVerseId = verseId;
+    
+    $$('.shabad-line').forEach(line => {
+        const isCurrent = String(line.dataset.verse) === String(verseId);
+        line.classList.toggle('highlighted', isCurrent);
+    });
+
+    if (smoothScroll) {
+        const activeLine = $(`.shabad-line[data-verse="${verseId}"]`);
+        if (activeLine) {
+            activeLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-    }, 300);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FAVORITE BUTTON
+// SMOOTH AUTOSCROLL ENGINE (requestAnimationFrame)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function updateFavButton() {
-    if (!DOM.favBtn) return;
-    DOM.favBtn.innerHTML = State.isFavorite ? '❤️' : '🤍';
-    DOM.favBtn.classList.toggle('active', State.isFavorite);
-}
+let autoscrollId = null;
+let lastTickTime = 0;
 
-function toggleFavorite() {
-    if (!State.shabadInfo) return;
+const Autoscroll = {
+    init() {
+        const enabled = localStorage.getItem('reader_autoscroll_enabled') !== 'false'; // default true
+        const speed = parseFloat(localStorage.getItem('reader_autoscroll_speed')) || 1.0;
+        
+        State.autoscrollVisible = enabled;
+        State.autoscrollSpeed = speed;
+        
+        DOM.scrollSpeedSlider.value = speed;
+        DOM.scrollSpeedVal.textContent = `${speed.toFixed(1)}x`;
+        DOM.autoScrollVal.textContent = enabled ? 'On >' : 'Off >';
+        DOM.autoscrollPill.style.display = enabled ? 'flex' : 'none';
 
-    State.isFavorite = Favorites.toggle(State.shabadId, State.shabadInfo);
-    updateFavButton();
+        // Speed slider
+        DOM.scrollSpeedSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            State.autoscrollSpeed = val;
+            DOM.scrollSpeedVal.textContent = `${val.toFixed(1)}x`;
+            localStorage.setItem('reader_autoscroll_speed', val);
+        });
 
-    showToast(State.isFavorite ? 'Added to favorites ❤️' : 'Removed from favorites');
-    haptic('medium');
-}
+        // Autoscroll start/pause toggle
+        DOM.scrollPlayBtn.addEventListener('click', () => {
+            haptic();
+            if (State.autoscrollActive) {
+                this.stop();
+            } else {
+                this.start();
+            }
+        });
+
+        window.addEventListener('wheel', () => this.stop(), { passive: true });
+        window.addEventListener('touchmove', () => this.stop(), { passive: true });
+    },
+
+    start() {
+        if (State.autoscrollActive) return;
+        State.autoscrollActive = true;
+        
+        DOM.scrollPlayBtn.classList.add('playing');
+        DOM.scrollPlayBtn.querySelector('.play-svg').style.display = 'none';
+        DOM.scrollPlayBtn.querySelector('.pause-svg').style.display = 'block';
+        
+        lastTickTime = performance.now();
+        this.tick();
+    },
+
+    stop() {
+        if (!State.autoscrollActive) return;
+        State.autoscrollActive = false;
+        
+        DOM.scrollPlayBtn.classList.remove('playing');
+        DOM.scrollPlayBtn.querySelector('.play-svg').style.display = 'block';
+        DOM.scrollPlayBtn.querySelector('.pause-svg').style.display = 'none';
+        
+        if (autoscrollId) {
+            cancelAnimationFrame(autoscrollId);
+            autoscrollId = null;
+        }
+    },
+
+    tick() {
+        if (!State.autoscrollActive) return;
+
+        const now = performance.now();
+        const delta = (now - lastTickTime) / 1000;
+        lastTickTime = now;
+
+        // Custom pixel rate mapping speed
+        const scrollAmount = State.autoscrollSpeed * 22 * delta;
+        window.scrollBy(0, scrollAmount);
+
+        // Auto-stop at bottom
+        const scrolledToBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 5);
+        if (scrolledToBottom) {
+            this.stop();
+            showToast('End of Shabad reached');
+        } else {
+            autoscrollId = requestAnimationFrame(() => this.tick());
+        }
+    },
+
+    toggleVisibility(show) {
+        State.autoscrollVisible = show;
+        localStorage.setItem('reader_autoscroll_enabled', show);
+        DOM.autoScrollVal.textContent = show ? 'On >' : 'Off >';
+        DOM.autoscrollPill.style.display = show ? 'flex' : 'none';
+        if (!show) this.stop();
+    }
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SETTINGS
+// WORD CONTEMPLATION SHEET (VICHAR)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const WordVichar = {
+    init() {
+        DOM.wordCopyBtn.addEventListener('click', () => {
+            const word = DOM.wordDisplay.textContent;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(word);
+                showToast('Copied to clipboard');
+            }
+            haptic();
+            this.close();
+        });
+
+        DOM.wordSearchBtn.addEventListener('click', () => {
+            const word = DOM.wordDisplay.textContent;
+            haptic('medium');
+            this.close();
+            window.location.href = `gurbani-khoj.html?q=${encodeURIComponent(word)}`;
+        });
+
+        DOM.wordSheetOverlay.querySelector('.word-sheet-backdrop').addEventListener('click', () => {
+            this.close();
+        });
+    },
+
+    open(word) {
+        haptic();
+        DOM.wordDisplay.textContent = word;
+        DOM.wordSheetOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    },
+
+    close() {
+        DOM.wordSheetOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SETTINGS CONTROLLER (Segmented, Switches, Cycles)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const Settings = {
@@ -355,290 +602,349 @@ const Settings = {
         DOM.settingsOverlay.classList.remove('active');
     },
 
-    setDisplay(mode) {
-        State.displayMode = mode;
-        document.documentElement.dataset.display = mode;
-        localStorage.setItem('shabadDisplay', mode);
-
-        $$('.display-options .setting-opt').forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.display === mode);
-        });
-
-        // Re-render
-        if (State.verses.length) {
-            renderShabad({ verses: State.verses });
-        }
-    },
-
-    setTranslation(lang) {
-        State.translationLang = lang;
-        document.documentElement.dataset.trans = lang;
-        localStorage.setItem('shabadTrans', lang);
-
-        $$('.trans-options .setting-opt').forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.trans === lang);
-        });
-
-        // Re-render
-        if (State.verses.length) {
-            renderShabad({ verses: State.verses });
-        }
-    },
-
-    toggleTranslit() {
-        State.showTranslit = !State.showTranslit;
-        document.documentElement.dataset.translit = State.showTranslit ? 'on' : 'off';
-        localStorage.setItem('shabadTranslit', State.showTranslit ? 'on' : 'off');
-        DOM.translitToggle.classList.toggle('active', State.showTranslit);
-    },
-
     setFont(font) {
         State.fontGurmukhi = font;
-        document.documentElement.dataset.font = font;
+        document.documentElement.setAttribute('data-font', font);
         localStorage.setItem('gurbaniFont', font);
 
-        $$('.font-options .setting-opt').forEach(opt => {
-            opt.classList.toggle('active', opt.dataset.font === font);
+        const displayName = FONT_NAMES[font] || 'Sacred Pothi';
+        DOM.activeFontVal.textContent = `${displayName} >`;
+        
+        $$('#fontRowBtn .row-value').forEach(el => {
+            el.textContent = `${displayName} >`;
         });
+    },
+
+    setFontSize(size) {
+        State.fontSizeBase = size;
+        document.documentElement.style.setProperty('--font-size-base', `${size}px`);
+        localStorage.setItem('shabadFontSize', size);
+    },
+
+    setLineSpacing(spacing) {
+        State.lineSpacing = spacing;
+        document.documentElement.style.setProperty('--line-spacing', spacing);
+        
+        // Update active segment button
+        $$('#lineSpacingSegmented .segment-btn').forEach(btn => {
+            btn.classList.toggle('active', parseFloat(btn.dataset.spacing) === spacing);
+        });
+        
+        localStorage.setItem('reader_line_spacing', spacing);
+    },
+
+    setTextAlign(align) {
+        State.textAlign = align;
+        document.documentElement.style.setProperty('--text-align', align);
+        
+        // Update segment active button
+        $$('#alignSegmented .segment-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.align === align);
+        });
+
+        localStorage.setItem('reader_text_align', align);
+    },
+
+    toggleTranslitEn(show = null) {
+        const nextState = show !== null ? show : !State.showTranslitEn;
+        State.showTranslitEn = nextState;
+        DOM.translitSwitch.classList.toggle('active', nextState);
+        localStorage.setItem('shabadTranslitEn', nextState ? 'on' : 'off');
+        if (State.verses.length) renderShabad({ verses: State.verses });
+    },
+
+    toggleTranslitHi(show = null) {
+        const nextState = show !== null ? show : !State.showTranslitHi;
+        State.showTranslitHi = nextState;
+        DOM.hindiGurbaniSwitch.classList.toggle('active', nextState);
+        localStorage.setItem('shabadTranslitHi', nextState ? 'on' : 'off');
+        if (State.verses.length) renderShabad({ verses: State.verses });
+    },
+
+    toggleTransEn(show = null) {
+        const nextState = show !== null ? show : !State.showTransEn;
+        State.showTransEn = nextState;
+        DOM.translationSwitch.classList.toggle('active', nextState);
+        localStorage.setItem('shabadTransEn', nextState ? 'on' : 'off');
+        if (State.verses.length) renderShabad({ verses: State.verses });
+    },
+
+    toggleTransPu(show = null) {
+        const nextState = show !== null ? show : !State.showTransPu;
+        State.showTransPu = nextState;
+        DOM.punjabiTranslationSwitch.classList.toggle('active', nextState);
+        localStorage.setItem('shabadTransPu', nextState ? 'on' : 'off');
+        if (State.verses.length) renderShabad({ verses: State.verses });
+    },
+
+    toggleTransHi(show = null) {
+        const nextState = show !== null ? show : !State.showTransHi;
+        State.showTransHi = nextState;
+        DOM.hindiTranslationSwitch.classList.toggle('active', nextState);
+        localStorage.setItem('shabadTransHi', nextState ? 'on' : 'off');
+        if (State.verses.length) renderShabad({ verses: State.verses });
+    },
+
+    toggleFocusMode(enabled = null) {
+        const nextState = enabled !== null ? enabled : !State.focusMode;
+        State.focusMode = nextState;
+        DOM.focusModeToggle.classList.toggle('active', nextState);
+        DOM.shabadLines.classList.toggle('focus-mode-active', nextState);
+        localStorage.setItem('reader_focus_mode', nextState);
     },
 
     load() {
-        // Display mode
-        const display = localStorage.getItem('shabadDisplay') || 'padchhed';
-        this.setDisplay(display);
+        this.setFontSize(parseInt(localStorage.getItem('shabadFontSize')) || 22);
+        DOM.fontSizeSlider.value = State.fontSizeBase;
 
-        // Translation
-        const trans = localStorage.getItem('shabadTrans') || 'english';
-        this.setTranslation(trans);
+        this.setFont(localStorage.getItem('gurbaniFont') || 'pothi');
 
-        // Transliteration
-        const translit = localStorage.getItem('shabadTranslit') === 'on';
-        State.showTranslit = translit;
-        document.documentElement.dataset.translit = translit ? 'on' : 'off';
-        DOM.translitToggle.classList.toggle('active', translit);
+        this.setLineSpacing(parseFloat(localStorage.getItem('reader_line_spacing')) || 1.9);
+        this.setTextAlign(localStorage.getItem('reader_text_align') || 'center');
 
-        // Font
-        const font = localStorage.getItem('gurbaniFont') || 'raavi';
-        this.setFont(font);
-    }
-};
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// FONT SIZE
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function updateFontSize(delta) {
-    State.fontSizeBase = Math.max(16, Math.min(36, State.fontSizeBase + delta));
-    document.documentElement.style.setProperty('--font-size-base', `${State.fontSizeBase}px`);
-    localStorage.setItem('shabadFontSize', State.fontSizeBase);
-    haptic();
-}
-
-function loadFontSize() {
-    const saved = parseInt(localStorage.getItem('shabadFontSize')) || 22;
-    State.fontSizeBase = saved;
-    document.documentElement.style.setProperty('--font-size-base', `${saved}px`);
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// FULLSCREEN
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Toggle browser fullscreen and UI "immersive" mode
- */
-window.toggleFullscreen = async function() {
-    console.log('Toggle fullscreen called');
-    
-    try {
-        if (!document.fullscreenElement) {
-            // Enter Fullscreen
-            if (document.documentElement.requestFullscreen) {
-                await document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                await document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                await document.documentElement.msRequestFullscreen();
-            }
-            State.isFullscreen = true;
-        } else {
-            // Exit Fullscreen
-            if (document.exitFullscreen) {
-                await document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                await document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) {
-                await document.msExitFullscreen();
-            }
-            State.isFullscreen = false;
-        }
-    } catch (err) {
-        console.warn('Fullscreen API failed, falling back to CSS-only mode', err);
-        // Fallback for browsers that don't support/allow Fullscreen API
-        State.isFullscreen = !State.isFullscreen;
-        updateFullscreenUI();
-    }
-    
-    haptic('medium');
-};
-
-/**
- * Sync UI classes and state with actual fullscreen status
- */
-function updateFullscreenUI() {
-    const isActuallyFullscreen = !!document.fullscreenElement || State.isFullscreen;
-    
-    document.body.classList.toggle('fullscreen', isActuallyFullscreen);
-    if (DOM.fullscreenBtn) {
-        DOM.fullscreenBtn.classList.toggle('active', isActuallyFullscreen);
-    }
-    
-    // If entering fullscreen, show a brief hint
-    if (isActuallyFullscreen) {
-        document.body.classList.add('show-fs-hint');
-        setTimeout(() => {
-            document.body.classList.remove('show-fs-hint');
-        }, 3000);
-    }
-}
-
-// Listen for browser-level fullscreen changes (e.g. Esc key)
-document.addEventListener('fullscreenchange', () => {
-    State.isFullscreen = !!document.fullscreenElement;
-    updateFullscreenUI();
-});
-
-document.addEventListener('webkitfullscreenchange', () => {
-    State.isFullscreen = !!document.webkitFullscreenElement;
-    updateFullscreenUI();
-});
-
-// "Tap anywhere to exit" logic
-document.addEventListener('click', (e) => {
-    // If in fullscreen and NOT clicking a control/button, exit fullscreen
-    if ((document.fullscreenElement || State.isFullscreen) && 
-        !e.target.closest('.bottom-controls') && 
-        !e.target.closest('.ios-nav') && 
-        !e.target.closest('.settings-sheet') &&
-        !e.target.closest('.fullscreen-toggle')) {
+        this.toggleTranslitEn(localStorage.getItem('shabadTranslitEn') === 'on');
+        this.toggleTranslitHi(localStorage.getItem('shabadTranslitHi') === 'on');
         
-        console.log('Exiting fullscreen via global click');
-        if (document.fullscreenElement) {
-            document.exitFullscreen().catch(() => {});
-        } else {
-            State.isFullscreen = false;
-            updateFullscreenUI();
-        }
-        haptic('light');
-    }
-});
+        this.toggleTransEn(localStorage.getItem('shabadTransEn') !== 'off');
+        this.toggleTransPu(localStorage.getItem('shabadTransPu') === 'on');
+        this.toggleTransHi(localStorage.getItem('shabadTransHi') === 'on');
 
+        this.toggleFocusMode(localStorage.getItem('reader_focus_mode') === 'true');
+
+        // Cycles settings recovery
+        State.scrollSpeedText = localStorage.getItem('reader_scroll_speed_text') || 'Normal';
+        DOM.scrollSpeedSettingsVal.textContent = `${State.scrollSpeedText} >`;
+
+        State.repeatMode = localStorage.getItem('reader_repeat_mode') || 'One Shabad';
+        DOM.repeatVal.textContent = `${State.repeatMode} >`;
+
+        State.bgAudioMode = localStorage.getItem('reader_bg_audio_mode') || 'Continue';
+        DOM.bgAudioVal.textContent = `${State.bgAudioMode} >`;
+
+        State.pauseNextShabad = localStorage.getItem('reader_pause_next_shabad') !== 'false';
+        DOM.pauseNextShabadSwitch.classList.toggle('active', State.pauseNextShabad);
+
+        State.autoPlay = localStorage.getItem('reader_autoplay') !== 'false';
+        DOM.autoPlaySwitch.classList.toggle('active', State.autoPlay);
+    }
+};
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// SHARE
+// FAVORITE UPDATE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-function shareShabad() {
-    const highlighted = DOM.shabadLines.querySelector('.highlighted');
-    const text = highlighted
-        ? highlighted.querySelector('.gurmukhi')?.textContent
-        : State.verses[0]?.verse?.unicode;
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'Gurbani',
-            text: text || ''
-        });
-    } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(text || '');
-        showToast('Copied to clipboard');
+function updateFavButton() {
+    if (!DOM.favBtn) return;
+    DOM.favBtn.classList.toggle('active', State.isFavorite);
+    
+    // Also visual highlight on the navbar bookmark icon
+    if (DOM.bookmarkBtn) {
+        DOM.bookmarkBtn.classList.toggle('active', State.isFavorite);
+        DOM.bookmarkBtn.querySelector('svg').setAttribute('fill', State.isFavorite ? 'currentColor' : 'none');
     }
-    haptic();
+}
+
+function toggleFavorite() {
+    if (!State.shabadInfo) return;
+
+    State.isFavorite = Favorites.toggle(State.shabadId, State.shabadInfo);
+    updateFavButton();
+
+    showToast(State.isFavorite ? 'Added to Pothi Pustak 📖' : 'Removed from Pothi');
+    haptic('medium');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// EVENT LISTENERS
+// ADJACENT SHABAD NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function loadAdjacentShabad(offset) {
+    const nextId = parseInt(State.shabadId) + offset;
+    if (nextId > 0 && nextId < 7000) {
+        haptic('medium');
+        const params = new URLSearchParams(window.location.search);
+        params.set('shabad', nextId);
+        params.delete('verse'); // clear line focus
+        window.location.search = params.toString();
+    } else {
+        showToast('Limit reached');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ACTIONS & EVENT WIRING
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function initEvents() {
-    // Navigation - Use history.back() to preserve all opened shabads in browser history
+    // Back navigation
     DOM.navBack.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        // Always use history.back() to preserve browser history chain
-        // This allows users to navigate back through all shabads they opened
         if (history.length > 1) {
             history.back();
         } else {
-            // Fallback to Gurbani Khoj if no history
             window.location.href = 'gurbani-khoj.html';
         }
     });
 
-    // Theme
-    DOM.themeToggle.addEventListener('click', () => Theme.toggle());
+    // Bookmark/Fav buttons
+    DOM.bookmarkBtn.addEventListener('click', toggleFavorite);
+    DOM.favBtn.addEventListener('click', toggleFavorite);
 
-    // Fullscreen
-    if (DOM.fullscreenBtn) {
-        DOM.fullscreenBtn.addEventListener('click', toggleFullscreen);
-        console.log('Fullscreen button event listener attached');
-    } else {
-        console.error('Fullscreen button not found');
-    }
+    // Adjacent shabad buttons
+    DOM.prevShabadBtn.addEventListener('click', () => loadAdjacentShabad(-1));
+    DOM.nextShabadBtn.addEventListener('click', () => loadAdjacentShabad(1));
 
-    // Favorite
-    if (DOM.favBtn) {
-        DOM.favBtn.addEventListener('click', toggleFavorite);
-    }
-
-    // Settings
+    // Settings panel triggers
     DOM.settingsBtn.addEventListener('click', () => Settings.open());
     DOM.settingsDone.addEventListener('click', () => Settings.close());
+    DOM.settingsOverlay.querySelector('.settings-backdrop').addEventListener('click', () => Settings.close());
 
-    DOM.settingsOverlay.querySelector('.settings-backdrop').addEventListener('click', () => {
-        Settings.close();
+    // Font size slider
+    DOM.fontSizeSlider.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        Settings.setFontSize(val);
     });
 
-    // Display mode
-    $$('.display-options .setting-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            Settings.setDisplay(opt.dataset.display);
-            haptic();
-        });
-    });
-
-    // Translation
-    $$('.trans-options .setting-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            Settings.setTranslation(opt.dataset.trans);
-            haptic();
-        });
-    });
-
-    // Transliteration
-    DOM.translitToggle.addEventListener('click', () => {
-        Settings.toggleTranslit();
+    // Font family cycle button
+    DOM.fontRowBtn.addEventListener('click', () => {
         haptic();
+        const fontKeys = ['pothi', 'court', 'modern', 'royal'];
+        const currentIdx = fontKeys.indexOf(State.fontGurmukhi);
+        const nextIdx = (currentIdx + 1) % fontKeys.length;
+        Settings.setFont(fontKeys[nextIdx]);
     });
 
-    // Font
-    $$('.font-options .setting-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            Settings.setFont(opt.dataset.font);
+    // Line spacing segmented control
+    $$('#lineSpacingSegmented .segment-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
             haptic();
+            Settings.setLineSpacing(parseFloat(btn.dataset.spacing));
         });
     });
 
-    // Font size
-    DOM.fontSizeDown.addEventListener('click', () => updateFontSize(-2));
-    DOM.fontSizeUp.addEventListener('click', () => updateFontSize(2));
+    // Alignment segmented control
+    $$('#alignSegmented .segment-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            haptic();
+            Settings.setTextAlign(btn.dataset.align);
+        });
+    });
 
-    // Share
-    DOM.shareBtn.addEventListener('click', shareShabad);
+    // Theme preset clicks
+    $$('.theme-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            haptic();
+            ReaderTheme.set(btn.dataset.readerTheme);
+        });
+    });
+
+    // Switches
+    DOM.translitSwitch.addEventListener('click', () => {
+        haptic();
+        Settings.toggleTranslitEn();
+    });
+
+    DOM.hindiGurbaniSwitch.addEventListener('click', () => {
+        haptic();
+        Settings.toggleTranslitHi();
+    });
+
+    DOM.translationSwitch.addEventListener('click', () => {
+        haptic();
+        Settings.toggleTransEn();
+    });
+
+    DOM.punjabiTranslationSwitch.addEventListener('click', () => {
+        haptic();
+        Settings.toggleTransPu();
+    });
+
+    DOM.hindiTranslationSwitch.addEventListener('click', () => {
+        haptic();
+        Settings.toggleTransHi();
+    });
+
+    DOM.focusModeToggle.addEventListener('click', () => {
+        haptic();
+        Settings.toggleFocusMode();
+    });
+
+    DOM.pauseNextShabadSwitch.addEventListener('click', () => {
+        haptic();
+        State.pauseNextShabad = !State.pauseNextShabad;
+        localStorage.setItem('reader_pause_next_shabad', State.pauseNextShabad);
+        DOM.pauseNextShabadSwitch.classList.toggle('active', State.pauseNextShabad);
+    });
+
+    DOM.autoPlaySwitch.addEventListener('click', () => {
+        haptic();
+        State.autoPlay = !State.autoPlay;
+        localStorage.setItem('reader_autoplay', State.autoPlay);
+        DOM.autoPlaySwitch.classList.toggle('active', State.autoPlay);
+    });
+
+    // Clicking cycles
+    DOM.autoScrollRow.addEventListener('click', () => {
+        haptic();
+        Autoscroll.toggleVisibility(!State.autoscrollVisible);
+    });
+
+    DOM.scrollSpeedRow.addEventListener('click', () => {
+        haptic();
+        const speeds = ['Slow', 'Normal', 'Fast'];
+        const rates = [0.5, 1.0, 2.5];
+        const nextIdx = (speeds.indexOf(State.scrollSpeedText) + 1) % speeds.length;
+        
+        State.scrollSpeedText = speeds[nextIdx];
+        DOM.scrollSpeedSettingsVal.textContent = `${speeds[nextIdx]} >`;
+        localStorage.setItem('reader_scroll_speed_text', speeds[nextIdx]);
+
+        // Live update slider
+        DOM.scrollSpeedSlider.value = rates[nextIdx];
+        State.autoscrollSpeed = rates[nextIdx];
+        DOM.scrollSpeedVal.textContent = `${rates[nextIdx].toFixed(1)}x`;
+        localStorage.setItem('reader_autoscroll_speed', rates[nextIdx]);
+    });
+
+    DOM.repeatRow.addEventListener('click', () => {
+        haptic();
+        const modes = ['One Shabad', 'All Shabads', 'None'];
+        const nextIdx = (modes.indexOf(State.repeatMode) + 1) % modes.length;
+        State.repeatMode = modes[nextIdx];
+        DOM.repeatVal.textContent = `${modes[nextIdx]} >`;
+        localStorage.setItem('reader_repeat_mode', modes[nextIdx]);
+    });
+
+    DOM.bgAudioRow.addEventListener('click', () => {
+        haptic();
+        const modes = ['Continue', 'Pause'];
+        const nextIdx = (modes.indexOf(State.bgAudioMode) + 1) % modes.length;
+        State.bgAudioMode = modes[nextIdx];
+        DOM.bgAudioVal.textContent = `${modes[nextIdx]} >`;
+        localStorage.setItem('reader_bg_audio_mode', modes[nextIdx]);
+    });
+
+    // Word Vichar click triggers
+    DOM.shabadLines.addEventListener('click', (e) => {
+        const wordEl = e.target.closest('.g-word');
+        if (wordEl) {
+            e.stopPropagation();
+            const word = wordEl.dataset.word;
+            WordVichar.open(word);
+            return;
+        }
+
+        const lineEl = e.target.closest('.shabad-line');
+        if (lineEl) {
+            const verseId = lineEl.dataset.verse;
+            selectActiveLine(verseId, true);
+            haptic();
+        }
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// INIT
+// INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -651,17 +957,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Init settings
-    Theme.init();
+    ReaderTheme.init();
     Settings.load();
-    loadFontSize();
+    Autoscroll.init();
+    WordVichar.init();
     initEvents();
 
-    // Load Shabad
     const data = await loadShabad(State.shabadId);
     if (data) {
         renderShabad(data);
+        // Sync values
+        Settings.setLineSpacing(State.lineSpacing);
+        Settings.setTextAlign(State.textAlign);
     }
 
-    console.log('Shabad Reader initialized');
+    console.log('Pothi App Reader Overhauled.');
 });
