@@ -231,25 +231,25 @@ body.is-scrolling #anhad-sky-canvas {
 
 /* ── MORNING (5–7am): Volcanic orange dawn rising into warm cream ── */
 [data-theme-mode="auto"][data-time-of-day="morning"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-morning-bg.webp') no-repeat center center;
+  background: url('../assets/darbar-sahib-morning-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── DAYTIME (9am–4pm): Deep sapphire sky → bright azure → near-white ── */
 [data-theme-mode="auto"][data-time-of-day="day"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-day-bg.webp') no-repeat center center;
+  background: url('../assets/darbar-sahib-day-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── EVENING (4–8pm): Midnight violet → deep crimson → fiery gold ── */
 [data-theme-mode="auto"][data-time-of-day="evening"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-evening-bg.webp') no-repeat center center;
+  background: url('../assets/darbar-sahib-evening-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── NIGHT (8pm–5am): Deep cosmic black-navy-indigo ── */
 [data-theme-mode="auto"][data-time-of-day="night"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-night-bg.webp') no-repeat center center;
+  background: url('../assets/darbar-sahib-night-bg.webp') no-repeat center center;
   background-size: cover;
 }
 

@@ -393,14 +393,18 @@
     _lastSlot = getSlot();
     _lastMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
 
-    applyTimeOfDay();
-    updateHeroCardImages();
-
-    if (document.documentElement.getAttribute('data-theme-mode') === 'auto') {
+    const isAuto = document.documentElement.getAttribute('data-theme-mode') === 'auto';
+    if (isAuto) {
       injectSVG();
       buildCanvas();
       buildStars();
       buildClouds();
+    }
+
+    applyTimeOfDay();
+    updateHeroCardImages();
+
+    if (isAuto) {
       positionCelestials();
     }
 
