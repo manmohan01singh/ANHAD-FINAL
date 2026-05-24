@@ -4916,9 +4916,7 @@ const NitnemTrackerApp = {
     hideLoadingScreen() {
         const loadingScreen = document.getElementById('appLoading');
         if (loadingScreen) {
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-            }, 300);
+            loadingScreen.classList.add('hidden');
         }
     },
 
@@ -10481,9 +10479,7 @@ const initializeFullApp = async () => {
         // Hide loading screen
         const loadingScreen = document.getElementById('appLoading');
         if (loadingScreen) {
-            setTimeout(() => {
-                loadingScreen.classList.add('hidden');
-            }, 300);
+            loadingScreen.classList.add('hidden');
         }
 
         console.log('✅ Full application initialized successfully');
