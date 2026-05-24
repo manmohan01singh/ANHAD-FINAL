@@ -590,11 +590,15 @@ a:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 1) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  background: #f0f0f3 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.15), 
+    -4px -4px 8px rgba(255, 255, 255, 0.9), 
+    inset 2px 2px 4px rgba(255, 255, 255, 1), 
+    inset -2px -2px 4px rgba(0, 0, 0, 0.08) !important;
   transition: all var(--duration-fast) var(--ease-spring) !important;
   will-change: transform;
   cursor: pointer;
@@ -602,13 +606,27 @@ a:active {
 
 .dark-mode .header__btn,
 [data-theme="dark"] .header__btn {
-  background: rgba(30, 30, 32, 0.95) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  background: #2a2a2d !important;
+  border: none !important;
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.5), 
+    -4px -4px 8px rgba(255, 255, 255, 0.05), 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.1), 
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
 .header__btn:active {
-  transform: scale(0.9) !important;
+  transform: scale(0.95) !important;
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.15), 
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+}
+
+.dark-mode .header__btn:active,
+[data-theme="dark"] .header__btn:active {
+  box-shadow: 
+    inset 4px 4px 8px rgba(0, 0, 0, 0.6), 
+    inset -4px -4px 8px rgba(255, 255, 255, 0.05) !important;
 }
 
 .header__btn svg {
