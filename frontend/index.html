@@ -35,7 +35,7 @@
       }
       
       // CRITICAL: Immediately set background to prevent white flash
-      let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F2F2F7';
+      let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
       if (theme === 'auto') {
          if (timeOfDay === 'morning') bg = '#FFF5EC';
          else if (timeOfDay === 'day') bg = '#FFFDF9';
@@ -88,7 +88,7 @@
   <style>
     html { color-scheme: light dark; }
     html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
-    html:not(.dark-mode) { background-color: var(--bg-primary, #F2F2F7) !important; }
+    html:not(.dark-mode) { background-color: var(--bg-primary, #FAF8F5) !important; }
     body { background-color: transparent !important; }
     /* CRITICAL: Show content immediately — no opacity transition.
        The old opacity:0 → 1 transition caused the ANHAD logo splash flash

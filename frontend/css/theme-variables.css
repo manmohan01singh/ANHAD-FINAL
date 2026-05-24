@@ -23,7 +23,7 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
     /* Backgrounds */
-    --bg-primary: #FFFFFF;
+    --bg-primary: #FAF8F5;
     --bg-secondary: #F2F2F7;
     --bg-tertiary: #E5E5EA;
     
@@ -192,7 +192,7 @@
 :root:not([data-theme]),
 html:not([data-theme]) {
     /* Backgrounds */
-    --bg-primary: #FFFFFF;
+    --bg-primary: #FAF8F5;
     --bg-secondary: #F2F2F7;
     --bg-tertiary: #E5E5EA;
     

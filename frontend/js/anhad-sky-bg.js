@@ -208,13 +208,24 @@
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     document.documentElement.setAttribute('data-time-of-day', slot);
 
-    // Determine which bg to show:
-    // dark mode → always night bg; light mode → day bg; auto → real time slot
-    let bgSlot = slot;
-    if (mode === 'dark') bgSlot = 'night';
-    else if (mode === 'light') bgSlot = 'day';
+    // CRITICAL: Background image ONLY in dynamic/auto mode.
+    // In explicit light/dark modes, background is a plain color (no background image).
+    if (mode === 'light' || mode === 'dark') {
+      if (document.body.style.backgroundImage !== 'none') {
+        document.body.style.backgroundImage = 'none';
+        document.body.style.backgroundSize = '';
+        document.body.style.backgroundPosition = '';
+        document.body.style.backgroundRepeat = '';
+        document.body.style.backgroundAttachment = '';
+      }
+      const canvas = document.getElementById('anhad-sky-canvas');
+      if (canvas) {
+        canvas.style.backgroundImage = '';
+      }
+      return;
+    }
 
-    const bgUrl = BG_IMAGES[bgSlot];
+    const bgUrl = BG_IMAGES[slot];
     if (!bgUrl) return;
 
     // Crossfade: only update when image actually changes
@@ -351,11 +362,17 @@
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
 
-    // Check if bg image is stale (cleared by theme change or first run)
-    const expectedBgSlot = mode === 'dark' ? 'night' : mode === 'light' ? 'day' : slot;
-    const expectedBgUrl = BG_IMAGES[expectedBgSlot];
-    const currentBg = document.body.style.backgroundImage || '';
-    const bgIsStale = expectedBgUrl && !currentBg.includes(expectedBgUrl);
+    // Check if bg image is stale
+    let bgIsStale = false;
+    if (mode === 'auto') {
+      const expectedBgUrl = BG_IMAGES[slot];
+      const currentBg = document.body.style.backgroundImage || '';
+      bgIsStale = expectedBgUrl && !currentBg.includes(expectedBgUrl);
+    } else {
+      // Explicit light/dark modes should have 'none' as background image
+      const currentBg = document.body.style.backgroundImage || '';
+      bgIsStale = currentBg && currentBg !== 'none';
+    }
 
     // Run update if slot, mode, or bg changed
     if (slot === _lastSlot && mode === _lastMode && !bgIsStale) return;
