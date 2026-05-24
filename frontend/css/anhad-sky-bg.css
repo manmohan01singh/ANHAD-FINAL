@@ -75,13 +75,23 @@
 }
 
 /* ── Apply contrast to key page elements ── */
-[data-theme-mode="auto"] .header__title {
+[data-theme-mode="auto"] .header__title,
+[data-theme-mode="auto"] .header-title {
   color: var(--sky-txt-gold, #D4943A) !important;
   text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
 }
-[data-theme-mode="auto"] .header__title-gurmukhi {
+[data-theme-mode="auto"] .header__title-gurmukhi,
+[data-theme-mode="auto"] .gurmukhi-title {
   color: var(--sky-txt-label, #6B2810) !important;
   text-shadow: var(--sky-text-shadow-dark, none) !important;
+}
+[data-theme-mode="auto"] .english-title {
+  color: var(--sky-txt-gold, #D4943A) !important;
+  text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
+}
+[data-theme-mode="auto"] .header-subtitle {
+  color: var(--sky-txt-secondary, #4A1508) !important;
+  text-shadow: var(--sky-text-shadow-dark, 0 1px 4px rgba(0,0,0,0.12)) !important;
 }
 [data-theme-mode="auto"] #greetingSalutation,
 [data-theme-mode="auto"] .greeting__salutation {
@@ -114,6 +124,21 @@
   border-radius: 50%;
   padding: 15px 0 !important;
   margin-top: -10px;
+}
+
+/* ── Nitnem Tracker specific text visibility ── */
+[data-theme-mode="auto"] .card-title,
+[data-theme-mode="auto"] .card-subtitle {
+  color: var(--sky-txt-primary, #1A0402) !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+}
+[data-theme-mode="auto"] .app-header {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+[data-theme-mode="auto"] .header-blur-bg {
+  background: rgba(0, 0, 0, 0.4) !important;
 }
 
 
