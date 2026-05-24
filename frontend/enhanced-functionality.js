@@ -499,6 +499,10 @@ class GurbaniRadioEnhancements {
                 <span class="theme-btn__emoji" aria-hidden="true">🟣</span>
                 <span class="theme-btn__label">Purple</span>
               </button>
+              <button class="theme-btn" id="openThemesShowcase" type="button" style="grid-column: span 2; margin-top: 10px; background: rgba(212, 148, 58, 0.15); border: 1px solid rgba(212, 148, 58, 0.3); color: #D4943A; font-weight: 700;">
+                <span class="theme-btn__emoji" aria-hidden="true">✨</span>
+                <span class="theme-btn__label">Themes Showcase</span>
+              </button>
             </div>
           </div>
 
@@ -559,6 +563,9 @@ class GurbaniRadioEnhancements {
         const theme = btn.getAttribute('data-theme');
         this.setTheme(theme);
       });
+    });
+    modal.querySelector('#openThemesShowcase')?.addEventListener('click', () => {
+      window.location.href = 'themes-showcase.html';
     });
 
     modal.querySelector('#autoplay')?.addEventListener('change', () => this.saveAudioSettings());

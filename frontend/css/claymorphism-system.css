@@ -18,8 +18,8 @@
   --clay-shadow-deep: 0.45;
   --clay-shadow-mid: 0.35;
   --clay-shadow-soft: 0.25;
-  --clay-highlight: 0.95;
-  --clay-border-glow: 0.7;
+  --clay-highlight: 0.0;
+  --clay-border-glow: 0.0;
   --clay-inset-shadow: 0.08;
   
   /* Color Palette for Themed Shadows */
@@ -53,8 +53,8 @@ html.dark-mode {
   --clay-shadow-deep: 0.6;
   --clay-shadow-mid: 0.45;
   --clay-shadow-soft: 0.35;
-  --clay-highlight: 0.15;
-  --clay-border-glow: 0.2;
+  --clay-highlight: 0.0;
+  --clay-border-glow: 0.0;
   --clay-inset-shadow: 0.25;
 }
 
@@ -66,9 +66,6 @@ html.dark-mode {
   box-shadow:
     40px 40px 100px rgba(0, 0, 0, var(--clay-shadow-deep)),
     20px 20px 60px rgba(0, 0, 0, var(--clay-shadow-mid)),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    -10px -10px 30px rgba(255, 255, 255, 0.8),
-    0 0 0 3px rgba(255, 255, 255, var(--clay-border-glow)),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, var(--clay-inset-shadow));
   border: 3px solid rgba(255, 255, 255, 0.6);
@@ -83,9 +80,6 @@ html.dark-mode .clay {
   box-shadow:
     40px 40px 100px rgba(0, 0, 0, var(--clay-shadow-deep)),
     20px 20px 60px rgba(0, 0, 0, var(--clay-shadow-mid)),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    -10px -10px 30px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(255, 255, 255, var(--clay-border-glow)),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, var(--clay-inset-shadow));
 }
@@ -96,9 +90,7 @@ html.dark-mode .clay {
   box-shadow:
     inset 15px 15px 40px rgba(0, 0, 0, 0.35),
     inset 8px 8px 20px rgba(0, 0, 0, 0.2),
-    inset -10px -10px 30px rgba(255, 255, 255, 0.6),
-    0 0 0 2px rgba(255, 255, 255, 0.4),
-    8px 8px 25px rgba(0, 0, 0, 0.25);
+    0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 /* ─── Colored Clay Variants ─── */
@@ -109,8 +101,6 @@ html.dark-mode .clay {
   box-shadow:
     40px 40px 100px rgba(var(--clay-gold), 0.55),
     20px 20px 60px rgba(var(--clay-gold), 0.4),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-gold), 0.35),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-gold), 0.4);
@@ -121,8 +111,6 @@ html.dark-mode .clay-gold {
   box-shadow:
     40px 40px 100px rgba(var(--clay-gold), 0.3),
     20px 20px 60px rgba(var(--clay-gold), 0.2),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-gold), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-gold), 0.25);
@@ -134,8 +122,6 @@ html.dark-mode .clay-gold {
   box-shadow:
     40px 40px 100px rgba(var(--clay-orange), 0.5),
     20px 20px 60px rgba(var(--clay-orange), 0.35),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-orange), 0.3),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-orange), 0.35);
@@ -146,8 +132,6 @@ html.dark-mode .clay-orange {
   box-shadow:
     40px 40px 100px rgba(var(--clay-orange), 0.3),
     20px 20px 60px rgba(var(--clay-orange), 0.2),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-orange), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-orange), 0.25);
@@ -159,8 +143,6 @@ html.dark-mode .clay-orange {
   box-shadow:
     40px 40px 100px rgba(var(--clay-blue), 0.45),
     20px 20px 60px rgba(var(--clay-blue), 0.3),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-blue), 0.25),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-blue), 0.3);
@@ -171,8 +153,6 @@ html.dark-mode .clay-blue {
   box-shadow:
     40px 40px 100px rgba(var(--clay-blue), 0.35),
     20px 20px 60px rgba(var(--clay-blue), 0.25),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-blue), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-blue), 0.2);
@@ -184,8 +164,6 @@ html.dark-mode .clay-blue {
   box-shadow:
     40px 40px 100px rgba(var(--clay-green), 0.45),
     20px 20px 60px rgba(var(--clay-green), 0.3),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-green), 0.25),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-green), 0.3);
@@ -196,8 +174,6 @@ html.dark-mode .clay-green {
   box-shadow:
     40px 40px 100px rgba(var(--clay-green), 0.35),
     20px 20px 60px rgba(var(--clay-green), 0.25),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-green), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-green), 0.2);
@@ -209,8 +185,6 @@ html.dark-mode .clay-green {
   box-shadow:
     40px 40px 100px rgba(var(--clay-purple), 0.45),
     20px 20px 60px rgba(var(--clay-purple), 0.3),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-purple), 0.25),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-purple), 0.3);
@@ -221,8 +195,6 @@ html.dark-mode .clay-purple {
   box-shadow:
     40px 40px 100px rgba(var(--clay-purple), 0.35),
     20px 20px 60px rgba(var(--clay-purple), 0.25),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-purple), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-purple), 0.2);
@@ -234,8 +206,6 @@ html.dark-mode .clay-purple {
   box-shadow:
     40px 40px 100px rgba(var(--clay-rose), 0.35),
     20px 20px 60px rgba(var(--clay-rose), 0.2),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-rose), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-rose), 0.25);
@@ -246,8 +216,6 @@ html.dark-mode .clay-rose {
   box-shadow:
     40px 40px 100px rgba(var(--clay-rose), 0.3),
     20px 20px 60px rgba(var(--clay-rose), 0.2),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-rose), 0.15),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-rose), 0.15);
@@ -259,8 +227,6 @@ html.dark-mode .clay-rose {
   box-shadow:
     40px 40px 100px rgba(var(--clay-red), 0.4),
     20px 20px 60px rgba(var(--clay-red), 0.25),
-    -20px -20px 60px rgba(255, 255, 255, var(--clay-highlight)),
-    0 0 0 3px rgba(var(--clay-red), 0.2),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.08);
   border-color: rgba(var(--clay-red), 0.25);
@@ -271,8 +237,6 @@ html.dark-mode .clay-red {
   box-shadow:
     40px 40px 100px rgba(var(--clay-red), 0.3),
     20px 20px 60px rgba(var(--clay-red), 0.2),
-    -20px -20px 60px rgba(255, 255, 255, 0.05),
-    0 0 0 3px rgba(var(--clay-red), 0.15),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3);
   border-color: rgba(var(--clay-red), 0.15);
@@ -285,8 +249,6 @@ html.dark-mode .clay-red {
   box-shadow:
     15px 15px 40px rgba(0, 0, 0, 0.35),
     8px 8px 20px rgba(0, 0, 0, 0.2),
-    -10px -10px 30px rgba(255, 255, 255, 0.95),
-    0 0 0 3px rgba(255, 255, 255, 0.6),
     inset 0 2px 4px rgba(255, 255, 255, 1);
   border: 2px solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s var(--clay-spring);
@@ -303,8 +265,7 @@ html.dark-mode .clay-red {
   transform: scale(0.94);
   box-shadow:
     inset 10px 10px 30px rgba(0, 0, 0, 0.3),
-    inset -6px -6px 20px rgba(255, 255, 255, 0.6),
-    0 0 0 2px rgba(255, 255, 255, 0.4);
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Small circular button */
@@ -323,8 +284,6 @@ html.dark-mode .clay-red {
   box-shadow:
     10px 10px 30px rgba(0, 0, 0, 0.15),
     5px 5px 15px rgba(0, 0, 0, 0.08),
-    -8px -8px 25px rgba(255, 255, 255, 0.9),
-    0 0 0 2px rgba(255, 255, 255, 0.4),
     inset 0 1px 3px rgba(0, 0, 0, 0.08);
   border: 2px solid rgba(255, 255, 255, 0.35);
   padding: 12px 16px;
@@ -334,7 +293,7 @@ html.dark-mode .clay-red {
 .clay-progress__fill {
   height: 100%;
   border-radius: var(--clay-radius-full);
-  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), inset -1px -1px 3px rgba(255,255,255,0.5);
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.5);
   transition: width 0.8s var(--clay-spring);
 }
 
@@ -345,7 +304,6 @@ html.dark-mode .clay-red {
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.35),
     0 12px 40px rgba(0, 0, 0, 0.22),
-    0 0 0 3px rgba(255, 255, 255, 0.6),
     inset 0 3px 6px rgba(255, 255, 255, 0.95),
     inset 0 -1px 2px rgba(0, 0, 0, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.4);
@@ -357,7 +315,6 @@ html.dark-mode .clay-nav {
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.5),
     0 12px 40px rgba(0, 0, 0, 0.35),
-    0 0 0 3px rgba(255, 255, 255, 0.15),
     inset 0 3px 6px rgba(255, 255, 255, 0.1),
     inset 0 -1px 2px rgba(0, 0, 0, 0.2);
 }
@@ -370,8 +327,6 @@ html.dark-mode .clay-nav {
   margin: 20px 0 16px;
   box-shadow:
     8px 8px 25px rgba(0, 0, 0, 0.12),
-    -6px -6px 20px rgba(255, 255, 255, 0.8),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.35);
   display: inline-block;
@@ -382,8 +337,6 @@ html.dark-mode .clay-section {
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow:
     8px 8px 25px rgba(0, 0, 0, 0.3),
-    -6px -6px 20px rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(255, 255, 255, 0.15),
     inset 0 1px 2px rgba(255, 255, 255, 0.1);
 }
 
@@ -403,8 +356,6 @@ html.dark-mode .clay-section {
   background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(245,245,247,0.95));
   box-shadow:
     8px 8px 25px rgba(0, 0, 0, 0.15),
-    -4px -4px 15px rgba(255, 255, 255, 0.8),
-    0 0 0 1px rgba(255, 255, 255, 0.4),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.35);
   margin-bottom: 12px;
@@ -424,7 +375,6 @@ html.dark-mode .clay-section {
   box-shadow:
     0 35px 90px rgba(0, 0, 0, 0.4),
     0 18px 50px rgba(0, 0, 0, 0.25),
-    0 0 0 3px rgba(255, 255, 255, 0.6),
     inset 0 3px 6px rgba(255, 255, 255, 1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.06);
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -459,7 +409,6 @@ html.dark-mode .clay-section {
   background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.9));
   box-shadow:
     4px 4px 15px rgba(0, 0, 0, 0.15),
-    -2px -2px 10px rgba(255, 255, 255, 0.8),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.4);
   padding: 6px 14px;
@@ -482,8 +431,6 @@ html.dark-mode .clay-section {
   box-shadow:
     15px 15px 40px rgba(0, 0, 0, 0.2),
     8px 8px 20px rgba(0, 0, 0, 0.1),
-    -8px -8px 25px rgba(255, 255, 255, 0.8),
-    0 0 0 4px rgba(255, 255, 255, 0.6),
     inset 0 3px 6px rgba(255, 255, 255, 0.6),
     inset 0 -2px 4px rgba(0, 0, 0, 0.1);
   border: 4px solid rgba(255, 255, 255, 0.5);
@@ -495,7 +442,6 @@ html.dark-mode .clay-section {
   background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(240,240,245,0.8));
   box-shadow:
     4px 4px 12px rgba(0, 0, 0, 0.15),
-    -2px -2px 8px rgba(255, 255, 255, 0.8),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
@@ -582,9 +528,6 @@ html.dark-mode .clay-divider {
   box-shadow:
     20px 20px 50px rgba(0, 0, 0, var(--clay-shadow-deep)),
     10px 10px 30px rgba(0, 0, 0, var(--clay-shadow-mid)),
-    -10px -10px 30px rgba(255, 255, 255, var(--clay-highlight)),
-    -5px -5px 15px rgba(255, 255, 255, 0.8),
-    0 0 0 2px rgba(255, 255, 255, var(--clay-border-glow)),
     inset 0 2px 4px rgba(255, 255, 255, 1),
     inset 0 -1px 2px rgba(0, 0, 0, var(--clay-inset-shadow));
   border-width: 2px;
@@ -595,9 +538,6 @@ html.dark-mode .clay-divider {
   box-shadow:
     50px 50px 120px rgba(0, 0, 0, var(--clay-shadow-deep)),
     25px 25px 70px rgba(0, 0, 0, var(--clay-shadow-mid)),
-    -25px -25px 70px rgba(255, 255, 255, var(--clay-highlight)),
-    -12px -12px 35px rgba(255, 255, 255, 0.8),
-    0 0 0 4px rgba(255, 255, 255, var(--clay-border-glow)),
     inset 0 4px 8px rgba(255, 255, 255, 1),
     inset 0 -3px 6px rgba(0, 0, 0, var(--clay-inset-shadow));
   border-width: 4px;

@@ -1279,6 +1279,7 @@
       this.updateNotesCard();
       this.updateNitnemQuickAccess();
       this.autoRemindUpcomingGurpurab();
+      this.updateHeroCardImages();
       
       // RE-INIT HOMEPAGE COMPONENTS
       // These elements only exist on index.html, but refreshAll is called 
@@ -1371,7 +1372,69 @@
           subtitleEl.textContent = `Ang ${preview.ang} · ${preview.writer || 'Sri Guru Granth Sahib Ji'}`;
         }
       }
+    },
+
+    updateHeroCardImages() {
+      const hour = new Date().getHours();
+      let timeSlot = 'day';
+      if (hour >= 5 && hour < 9) {
+        timeSlot = 'morning';
+      } else if (hour >= 9 && hour < 16) {
+        timeSlot = 'day';
+      } else if (hour >= 16 && hour < 20) {
+        timeSlot = 'evening';
+      } else {
+        timeSlot = 'night';
+      }
+
+      // Use the global applyHeroImages if available (inline script in index.html)
+      if (typeof window.applyHeroImages === 'function') {
+        window.applyHeroImages();
+        return;
+      }
+
+      const imageSets = {
+        morning: [
+          'assets/homepage-hero/darbar-sahib-morning-1.png',
+          'assets/homepage-hero/darbar-sahib-morning-2.png',
+          'assets/homepage-hero/darbar-sahib-morning-3.png'
+        ],
+        day: [
+          'assets/homepage-hero/darbar-sahib-day-1.png',
+          'assets/homepage-hero/darbar-sahib-day-2.png',
+          'assets/homepage-hero/darbar-sahib-day-3.png'
+        ],
+        evening: [
+          'assets/homepage-hero/darbar-sahib-evening-1.png',
+          'assets/homepage-hero/darbar-sahib-evening-2.webp',
+          'assets/homepage-hero/darbar-sahib-evening-3.webp'
+        ],
+        night: [
+          'assets/homepage-hero/darbar-sahib-night-1.png',
+          'assets/homepage-hero/darbar-sahib-night-2.png',
+          'assets/homepage-hero/darbar-sahib-night-3.png'
+        ]
+      };
+
+      const images = imageSets[timeSlot];
+
+      [
+        { id: 'heroCard1Img', src: images[0] },
+        { id: 'heroCard2Img', src: images[1] },
+        { id: 'heroCard3Img', src: images[2] }
+      ].forEach(({ id, src }) => {
+        const img = document.getElementById(id);
+        if (!img || img.src.endsWith(src)) return;
+        img.style.transition = 'opacity 0.5s ease';
+        img.style.opacity = '0';
+        setTimeout(() => {
+          img.src = src;
+          img.onload = () => { img.style.opacity = '1'; };
+          img.onerror = () => { img.style.opacity = '1'; };
+        }, 250);
+      });
     }
+
   };
 
   // ═ THEME CONTROLLER (Reconstructed — Single Source of Truth) ═
@@ -1379,7 +1442,13 @@
     init() {
       // Read the unified theme key
       const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-      this._apply(savedTheme === 'dark');
+      const isDark = savedTheme === 'dark' || (savedTheme === 'auto' && (new Date().getHours() < 5 || new Date().getHours() >= 20));
+      this._apply(isDark);
+
+      // Listen for custom theme change events
+      window.addEventListener('themechange', (e) => {
+        UIController.updateHeroCardImages();
+      });
 
       // Toggle button
       document.getElementById('themeToggle')?.addEventListener('click', () => {
@@ -1411,7 +1480,8 @@
       // Listen for storage changes (other tabs)
       window.addEventListener('storage', (e) => {
         if (e.key === 'anhad_theme' && e.newValue) {
-          this._apply(e.newValue === 'dark');
+          const isDark = e.newValue === 'dark' || (e.newValue === 'auto' && (new Date().getHours() < 5 || new Date().getHours() >= 20));
+          this._apply(isDark);
         }
       });
     },
@@ -2001,6 +2071,7 @@
         UIController.updateNanakshahiDate();
         UIController.updateNotesCard();
         UIController.updateNitnemQuickAccess();
+        UIController.updateHeroCardImages();
       });
 
       // PERF: Defer API fetch with requestIdleCallback

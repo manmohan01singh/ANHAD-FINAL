@@ -17,7 +17,7 @@
 
     function getAutoTheme() {
         const hour = new Date().getHours();
-        return (hour >= 6 && hour < 18) ? 'light' : 'dark';
+        return (hour >= 5 && hour < 20) ? 'light' : 'dark';
     }
 
     function applyTheme(theme) {
@@ -25,6 +25,22 @@
         if (theme === 'auto') {
             effectiveTheme = getAutoTheme();
         }
+
+        // Determine time-of-day for auto mode styling and images
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (!timeOfDay || !['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            const hour = new Date().getHours();
+            if (hour >= 5 && hour < 9) {
+                timeOfDay = 'morning';
+            } else if (hour >= 9 && hour < 16) {
+                timeOfDay = 'day';
+            } else if (hour >= 16 && hour < 20) {
+                timeOfDay = 'evening';
+            } else {
+                timeOfDay = 'night';
+            }
+        }
+        html.setAttribute('data-time-of-day', timeOfDay);
 
         // 1. DISABLE TRANSITIONS INSTANTLY (Injection method is faster than class-based *)
         let style = document.getElementById('anhad-theme-fast-switch');
@@ -56,6 +72,9 @@
 
         // Store original mode for UI
         html.setAttribute('data-theme-mode', theme);
+
+        // Clear inline background color to allow CSS variables to take over
+        html.style.backgroundColor = '';
 
         // Update meta theme-color (Important for mobile browser chrome)
         const metaTheme = document.querySelector('meta[name="theme-color"]');
