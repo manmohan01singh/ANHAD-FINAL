@@ -571,8 +571,10 @@
                 gap: 14px;
             }
             .anhad-lang-btn {
-                border: 1px solid rgba(212, 148, 58, 0.25);
-                background: rgba(255, 255, 255, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                background: rgba(255, 255, 255, 0.45);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
                 padding: 16px 20px;
                 border-radius: 18px;
                 font-weight: 700;
@@ -583,21 +585,27 @@
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+                box-shadow: 
+                    6px 6px 12px rgba(0, 0, 0, 0.04),
+                    inset 3px 3px 6px rgba(255, 255, 255, 0.9),
+                    inset -3px -3px 6px rgba(0, 0, 0, 0.04);
                 box-sizing: border-box;
             }
             html.dark-mode .anhad-lang-btn,
             [data-theme="dark"] .anhad-lang-btn {
-                background: rgba(255, 255, 255, 0.02);
-                border-color: rgba(255, 255, 255, 0.08);
-                box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+                background: rgba(255, 255, 255, 0.04);
+                border-color: rgba(255, 255, 255, 0.06);
+                box-shadow: 
+                    6px 6px 12px rgba(0, 0, 0, 0.3),
+                    inset 2px 2px 4px rgba(255, 255, 255, 0.08),
+                    inset -2px -2px 4px rgba(0, 0, 0, 0.4);
             }
             .anhad-lang-btn:hover, .anhad-lang-btn:active {
-                background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
-                color: white;
+                background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%) !important;
+                color: white !important;
                 transform: translateY(-2px) scale(1.02);
-                box-shadow: 0 8px 20px rgba(212, 148, 58, 0.35);
-                border-color: transparent;
+                box-shadow: 0 8px 20px rgba(212, 148, 58, 0.35) !important;
+                border-color: transparent !important;
             }
             .anhad-lang-btn-arrow {
                 font-size: 14px;
