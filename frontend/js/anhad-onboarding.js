@@ -1,8 +1,8 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD GUIDED ONBOARDING SYSTEM — High-Premium Zero-Blur Edition
+ * ANHAD GUIDED ONBOARDING SYSTEM — Premium Frosted Glass Edition
  * 4-Div Sliding Spotlight Overlay System, Dynamic Resize/Scroll Listeners,
- * Premium Glassmorphic Language Selector & Rich Multilingual Copy
+ * Premium Glassmorphic Language Selector, Glimpse Badges & Enlarged Copy
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -12,55 +12,52 @@
     const TOUR_KEY = 'anhad_onboarding_v9_completed';
     const LANG_KEY = 'anhad_tour_lang';
 
-    // Multilingual Step Content for all 14 core index.html widgets (including Guide button)
+    // Multilingual Step Content for all 13 core index.html widgets
     const tourContent = {
         en: [
-            { selector: '#homeBackBtn', title: '📻 Enter Gurdwara Sahib', text: 'Tapping this elegant radio button enters the main Gurdwara Sahib interface where you can listen to live Gurbani broadcasts perfectly synchronized across all devices in real-time.', position: 'bottom-left', badges: ['📻 Live Broadcast', '🔄 Auto-Sync', '✨ Divine Sound'] },
-            { selector: '#guideStartBtn', title: 'ℹ️ Re-run App Tour', text: 'Click this information button at any time to re-run this complete guided tour, select your language, or get a quick glimpse of ANHAD\'s beautiful capabilities.', position: 'bottom-left', badges: ['ℹ️ On-Demand', '🗣️ Multi-Language', '✨ Guided Tour'] },
-            { selector: '#themeToggleBtn', title: '✨ Choose Magic Themes', text: 'Cycle between three exquisite theme presets: crisp Light mode, deep Dark mode, or our premium auto-dynamic Time-of-Day theme which updates background artwork and colors according to the local hour.', position: 'bottom-right', badges: ['☀️ Light', '🌙 Dark', '⏳ Time Dynamic'] },
-            { selector: '.hero-carousel', title: '🎵 Virtual Live Streams', text: 'Swipe horizontally to browse live broadcasts. Tap the play controls to instantly load audio feeds for Sri Harmandir Sahib, Amritvela prayers, or peaceful Waheguru Simran.', position: 'center', badges: ['📻 Live Kirtan', '🎧 Play Controls', '🔄 Synchronized'] },
-            { selector: '#eventCard', title: '📅 Gurpurab Calendar', text: 'Keep track of upcoming historical Gurpurabs and significant Sikh dates with an active countdown timer, ensuring you never miss holy historical reminders.', position: 'top-center', badges: ['📅 Historical Dates', '⏳ Countdown', '🔔 Reminders'] },
-            { selector: '#nitnemPractice', title: '📿 Daily Nitnem Prayers', text: 'Open your daily devotional Banis in an ultra-premium reader with adjustable sizing, transliterations, translations, and beautiful progressive task completion.', position: 'top-center', badges: ['📿 Devotions', '📖 Adjust Size', '✅ Track Progress'] },
-            { selector: '#sehajPractice', title: '📖 Sehaj Paath Reader', text: 'Start, resume, and track your personal reading of Sri Guru Granth Sahib Ji at your own comfortable pace, complete with completed Ang and percentage tracking.', position: 'top-center', badges: ['📖 SGGS Ji', '📈 Percentage', '✨ Save Ang'] },
-            { selector: '#hukamPractice', title: '📜 Today\'s Hukamnama', text: 'Read the daily divine Hukamnama command issued from Sri Harmandir Sahib, complete with detailed Punjabi and English translations and high-quality audio recitation.', position: 'top-center', badges: ['📜 Daily Command', '🗣️ Translations', '🔊 Audio Recitation'] },
-            { selector: '#nitnemTrackerCard', title: '🔥 Nitnem Tracker', text: 'Monitor your spiritual consistency with active devotions tracking, check-in calendars, streak numbers, and detailed analytics inside your spiritual dashboard.', position: 'top-center', badges: ['🔥 Consistency', '📆 Calendar Check-in', '📊 Detailed Stats'] },
-            { selector: '#naamCard', title: '🙏 Naam Abhyas Simran', text: 'Set a beautiful schedule for the whole day: every single hour, dedicate 2 minutes to peaceful Simran. Leave everything else aside for those 2 minutes to connect. This daily discipline keeps Waheguru in your consciousness each and every second, fulfilling the true motive of Naam Abhyas.', position: 'top-center', badges: ['🙏 2 Min Simran', '⏰ Every Hour', '✨ Remember Waheguru'] },
-            { selector: '#shabadVicharCard', title: '🪔 Daily Shabad Vichar', text: 'Contemplate and reflect on deep theological and spiritual meanings of selected Gurbani Shabads updated every single day to guide your spiritual learning.', position: 'top-center', badges: ['🪔 Daily Shabad', '💡 Theology', '✨ Deep Meanings'] },
-            { selector: '#searchCard', title: '🔍 Advanced Gurbani Khoj', text: 'An incredibly powerful search tool that allows you to instantly search for any Shabad inside Sri Guru Granth Sahib Ji by first-letter initials or keywords.', position: 'top-center', badges: ['🔍 Multi-Search', '🔤 Initials/Keywords', '⚡ Instant'] },
-            { selector: '#notesCard', title: '📝 Spiritual Notes', text: 'Jot down, edit, and safely store your personal spiritual inspirations, reflections, and notes as you read Gurbani or contemplate your devotions.', position: 'top-center', badges: ['📝 Personal Notes', '💾 Safe Save', '✏️ Edit/View'] },
-            { selector: '#mainNav', title: '📈 Navigation & Dashboard', text: 'Easily transition between the home dashboard, your personal favorites list, the learning library (Insights), or open your complete stats dashboard.', position: 'top-center', badges: ['📈 4 Core Pages', '📊 Devotional Stats', '⭐ Favorites'] }
+            { selector: '#homeBackBtn', title: '📻 Enter Gurdwara Sahib', text: 'Tapping this elegant radio button enters the main Gurdwara Sahib interface where you can listen to live Gurbani broadcasts perfectly synchronized across all devices in real-time.', position: 'bottom-left' },
+            { selector: '#themeToggleBtn', title: '✨ Choose Magic Themes', text: 'Cycle between three exquisite theme presets: crisp Light mode, deep Dark mode, or our premium auto-dynamic Time-of-Day theme which updates background artwork and colors according to the local hour.', position: 'bottom-right' },
+            { selector: '.hero-carousel', title: '🎵 Virtual Live Streams', text: 'Swipe horizontally to browse live broadcasts. Tap the play controls to instantly load audio feeds for Sri Harmandir Sahib, Amritvela prayers, or peaceful Waheguru Simran.', position: 'center' },
+            { selector: '#eventCard', title: '📅 Gurpurab Calendar', text: 'Keep track of upcoming historical Gurpurabs and significant Sikh dates with an active countdown timer, ensuring you never miss holy historical reminders.', position: 'top-center' },
+            { selector: '#nitnemPractice', title: '📿 Daily Nitnem Prayers', text: 'Open your daily devotional Banis in an ultra-premium reader with adjustable sizing, transliterations, translations, and beautiful progressive task completion.', position: 'top-center' },
+            { selector: '#sehajPractice', title: '📖 Sehaj Paath Reader', text: 'Start, resume, and track your personal reading of Sri Guru Granth Sahib Ji at your own comfortable pace, complete with completed Ang and percentage tracking.', position: 'top-center' },
+            { selector: '#hukamPractice', title: '📜 Today\'s Hukamnama', text: 'Read the daily divine Hukamnama command issued from Sri Harmandir Sahib, complete with detailed Punjabi and English translations and high-quality audio recitation.', position: 'top-center' },
+            { selector: '#nitnemTrackerCard', title: '🔥 Nitnem Tracker', text: 'Monitor your spiritual consistency with active devotions tracking, check-in calendars, streak numbers, and detailed analytics inside your spiritual dashboard.', position: 'top-center' },
+            { selector: '#naamCard', title: '🙏 Naam Abhyas: 2-Min Hourly Simran', text: 'Schedule your entire day to pause everything for just 2 minutes every single hour for deep Simran. This powerful spiritual discipline helps you remember Waheguru in every single second and with every breath.', position: 'top-center' },
+            { selector: '#shabadVicharCard', title: '🪔 Daily Shabad Vichar', text: 'Contemplate and reflect on deep theological and spiritual meanings of selected Gurbani Shabads updated every single day to guide your spiritual learning.', position: 'top-center' },
+            { selector: '#searchCard', title: '🔍 Advanced Gurbani Khoj', text: 'An incredibly powerful search tool that allows you to instantly search for any Shabad inside Sri Guru Granth Sahib Ji by first-letter initials or keywords.', position: 'top-center' },
+            { selector: '#notesCard', title: '📝 Spiritual Notes', text: 'Jot down, edit, and safely store your personal spiritual inspirations, reflections, and notes as you read Gurbani or contemplate your devotions.', position: 'top-center' },
+            { selector: '#mainNav', title: '📈 Navigation & Dashboard', text: 'Easily transition between the home dashboard, your personal favorites list, the learning library (Insights), or open your complete stats dashboard.', position: 'top-center' }
         ],
         pa: [
-            { selector: '#homeBackBtn', title: '📻 ਗੁਰਦੁਆਰਾ ਸਾਹਿਬ ਪ੍ਰਵੇਸ਼', text: 'ਇਸ ਖੂਬਸੂਰਤ ਬਟਨ ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਗੁਰਦੁਆਰਾ ਸਾਹਿਬ ਦੇ ਮੁੱਖ ਪੇਜ \'ਤੇ ਜਾਓ, ਜਿੱਥੇ ਤੁਸੀਂ ਸਾਰੇ ਯੰਤਰਾਂ \'ਤੇ ਇੱਕੋ ਸਮੇਂ ਇੱਕਸਾਰ (synchronized) ਲਾਈਵ ਗੁਰਬਾਣੀ ਕੀਰਤਨ ਸੁਣ ਸਕਦੇ ਹੋ।', position: 'bottom-left', badges: ['📻 ਲਾਈਵ ਕੀਰਤਨ', '🔄 ਆਟੋ-ਸਿੰਕ', '✨ ਇਲਾਹੀ ਬਾਣੀ'] },
-            { selector: '#guideStartBtn', title: 'ℹ️ ਗਾਈਡ ਟੂਰ ਦੁਬਾਰਾ ਚਲਾਓ', text: 'ਐਪ ਦੇ ਇਸ ਗਾਈਡ ਟੂਰ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਦੁਬਾਰਾ ਚਲਾਉਣ, ਭਾਸ਼ਾ ਬਦਲਣ, ਜਾਂ ਐਪ ਦੀਆਂ ਬਿਹਤਰੀਨ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਸਮਝਣ ਲਈ ਇਸ ਬਟਨ ਤੇ ਕਲਿੱਕ ਕਰੋ।', position: 'bottom-left', badges: ['ℹ️ ਆਨ-ਡਿਮਾਂਡ', '🗣️ ਬਹੁ-ਭਾਸ਼ਾਈ', '✨ ਗਾਈਡ ਟੂਰ'] },
-            { selector: '#themeToggleBtn', title: '✨ ਜਾਦੂਈ ਥੀਮ ਚੁਣੋ', text: 'ਸਾਡੇ ਤਿੰਨ ਸ਼ਾਨਦਾਰ ਥੀਮ ਚੁਣੋ! ਲਾਈਟ, ਡਾਰਕ, ਜਾਂ ਸਾਡਾ ਸਭ ਤੋਂ ਪ੍ਰੀਮੀਅਮ ਡਾਇਨਾਮਿਕ ਸਮੇਂ-ਅਨੁਸਾਰ ਥੀਮ, ਜੋ ਦਿਨ ਦੇ ਸਮੇਂ ਮੁਤਾਬਿਕ ਬੈਕਗ੍ਰਾਊਂਡ ਤਸਵੀਰਾਂ ਅਤੇ ਰੰਗਾਂ ਨੂੰ ਆਪਣੇ ਆਪ ਬਦਲ ਦਿੰਦਾ ਹੈ।', position: 'bottom-right', badges: ['☀️ ਲਾਈਟ ਥੀਮ', '🌙 ਡਾਰਕ ਥੀਮ', '⏳ ਡਾਇਨਾਮਿਕ ਥੀਮ'] },
-            { selector: '.hero-carousel', title: '🎵 ਵਰਚੁਅਲ ਲਾਈਵ ਕੀਰਤਨ', text: 'ਲਾਈਵ ਪ੍ਰਸਾਰਣ ਦੇਖਣ ਲਈ ਖੱਬੇ/ਸੱਜੇ ਸਵਾਈਪ ਕਰੋ। ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਪਾਠ, ਜਾਂ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ ਦਾ ਆਡੀਓ ਚਲਾਉਣ ਲਈ ਪਲੇਅ ਬਟਨ ਦਬਾਓ।', position: 'center', badges: ['📻 ਲਾਈਵ ਪ੍ਰਸਾਰਣ', '🎧 ਪਲੇਅ ਕੰਟਰੋਲ', '🔄 ਇਕਸਾਰ ਧੁਨੀ'] },
-            { selector: '#eventCard', title: '📅 ਗੁਰਪੁਰਬ ਕੈਲੰਡਰ', text: 'ਆਉਣ ਵਾਲੇ ਇਤਿਹਾਸਕ ਗੁਰਪੁਰਬਾਂ ਅਤੇ ਸਿੱਖ ਇਤਿਹਾਸ ਦੇ ਮਹੱਤਵਪੂਰਨ ਦਿਹਾੜਿਆਂ ਦੀ ਲਾਈਵ ਉਲਟੀ ਗਿਣਤੀ (countdown) ਟਰੈਕਰ ਨਾਲ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ।', position: 'top-center', badges: ['📅 ਇਤਿਹਾਸਕ ਦਿਹਾੜੇ', '⏳ ਕਾਊਂਟਡਾਊਨ', '🔔 ਰੀਮਾਈਂਡਰ'] },
-            { selector: '#nitnemPractice', title: '📿 ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਪਾਠ', text: 'ਆਪਣੇ ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਦੀਆਂ ਬਾਣੀਆਂ ਨੂੰ ਪ੍ਰੀਮੀਅਮ ਪਾਠਕ (reader) ਵਿੱਚ ਅੱਖਰਾਂ ਦੇ ਆਕਾਰ, ਅਨੁਵਾਦ ਅਤੇ ਲਾਈਵ ਪ੍ਰਗਤੀ ਟਰੈਕਿੰਗ ਨਾਲ ਪੜ੍ਹੋ।', position: 'top-center', badges: ['📿 ਰੋਜ਼ਾਨਾ ਬਾਣੀਆਂ', '📖 ਆਕਾਰ ਬਦਲੋ', '✅ ਲਾਈਵ ਪ੍ਰਗਤੀ'] },
-            { selector: '#sehajPractice', title: '📖 ਸਹਿਜ ਪਾਠ ਰੀਡਰ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦੇ ਸਹਿਜ ਪਾਠ ਦੀ ਸ਼ੁਰੂਆਤ ਕਰੋ ਅਤੇ ਆਪਣੀ ਸਹੂਲਤ ਅਨੁਸਾਰ ਪੜ੍ਹੋ। ਇਹ ਤੁਹਾਡੇ ਪੜ੍ਹੇ ਅੰਗਾਂ ਅਤੇ ਫ਼ੀਸਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਟਰੈਕ ਕਰਦਾ ਹੈ।', position: 'top-center', badges: ['📖 ਸਹਿਜ ਪਾਠ', '📈 ਪ੍ਰਗਤੀ ਫ਼ੀਸਦੀ', '✨ ਅੰਗ ਟਰੈਕਰ'] },
-            { selector: '#hukamPractice', title: '📜 ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ (ਹੁਕਮਨਾਮਾ)', text: 'ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਤੋਂ ਅੱਜ ਦਾ ਰੋਜ਼ਾਨਾ ਪਵਿੱਤਰ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ, ਪੰਜਾਬੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿਆਖਿਆ ਅਤੇ ਉੱਚ-ਗੁਣਵੱਤਾ ਵਾਲੇ ਆਡੀਓ ਪਾਠ ਨਾਲ ਸਰਵਣ ਕਰੋ।', position: 'top-center', badges: ['📜 ਮੁੱਖਵਾਕ', '🗣️ ਵਿਆਖਿਆ', '🔊 ਆਡੀਓ ਪਾਠ'] },
-            { selector: '#nitnemTrackerCard', title: '🔥 ਨਿਤਨੇਮ ਟਰੈਕਰ', text: 'ਆਪਣੀ ਰੋਜ਼ਾਨਾ ਭਗਤੀ ਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਮਾਨੀਟਰ ਕਰੋ। ਇਹ ਕੈਲੰਡਰ, ਭਗਤੀ ਦੇ ਦਿਨ, ਨੇਮ ਦੇ ਲਗਾਤਾਰ ਦਿਨ (streaks) ਅਤੇ ਡੈਸ਼ਬੋਰਡ ਵਿੱਚ ਵਿਸ਼ਲੇਸ਼ਣ ਦਿਖਾਉਂਦਾ ਹੈ।', position: 'top-center', badges: ['🔥 ਰੋਜ਼ਾਨਾ ਨੇਮ', '📆 ਕੈਲੰਡਰ ਚੈੱਕ-ਇਨ', '📊 ਅਨਾਲਿਟਿਕਸ'] },
-            { selector: '#naamCard', title: '🙏 ਨਾਮ ਅਭਿਆਸ ਸਿਮਰਨ', text: 'ਸਾਰਾ ਦਿਨ ਸਿਮਰਨ ਦਾ ਇੱਕ ਖੂਬਸੂਰਤ ਨਿਯਮ ਬਣਾਓ: ਹਰ ਇੱਕ ਘੰਟੇ ਬਾਅਦ, ਸਿਰਫ਼ 2 ਮਿੰਟ ਲਈ ਸ਼ਾਂਤਮਈ ਸਿਮਰਨ ਕਰੋ। ਉਨ੍ਹਾਂ 2 ਮਿੰਟਾਂ ਲਈ ਦੁਨੀਆ ਦੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ। ਇਹ ਅਭਿਆਸ ਹਰ ਪਲ ਵਾਹਿਗੁਰੂ ਜੀ ਨੂੰ ਚੇਤੇ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਕਰੇਗਾ, ਜੋ ਕਿ ਨਾਮ ਅਭਿਆਸ ਦਾ ਅਸਲ ਮਨੋਰਥ ਹੈ।', position: 'top-center', badges: ['🙏 ਹਰ ਘੰਟੇ 2 ਮਿੰਟ', '⏰ ਸਿਮਰਨ ਅਭਿਆਸ', '✨ ਵਾਹਿਗੁਰੂ ਚੇਤੇ ਰੱਖੋ'] },
-            { selector: '#shabadVicharCard', title: '🪔 ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ ਵਿਚਾਰ', text: 'ਹਰ ਰੋਜ਼ ਚੁਣੇ ਗਏ ਗੁਰਬਾਣੀ ਸ਼ਬਦਾਂ ਦੇ ਡੂੰਘੇ ਰੂਹਾਨੀ ਅਤੇ ਅਧਿਆਤਮਿਕ ਅਰਥਾਂ ਨੂੰ ਪੜ੍ਹ ਕੇ ਆਪਣੇ ਰੂਹਾਨੀ ਗਿਆਨ ਵਿੱਚ ਵਾਧਾ ਕਰੋ।', position: 'top-center', badges: ['🪔 ਰੋਜ਼ਾਨਾ ਵਿਚਾਰ', '💡 ਰੂਹਾਨੀ ਗਿਆਨ', '✨ ਡੂੰਘੇ ਅਰਥ'] },
-            { selector: '#searchCard', title: '🔍 ਗੁਰਬਾਣੀ ਖੋਜ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਪਹਿਲੇ ਅੱਖਰ (initials) ਜਾਂ ਕੀਵਰਡ ਨਾਲ ਸਕਿੰਟਾਂ ਵਿੱਚ ਲੱਭਣ ਲਈ ਇੱਕ ਸ਼ਕਤੀਸ਼ਾਲੀ ਖੋਜ ਇੰਜਣ।', position: 'top-center', badges: ['🔍 ਗੁਰਬਾਣੀ ਖੋਜ', '🔤 ਅੱਖਰ/ਕੀਵਰਡ', '⚡ ਤੁਰੰਤ ਖੋਜ'] },
-            { selector: '#notesCard', title: '📝 ਗੁਰਬਾਣੀ ਨੋਟਸ', text: 'ਪਾਠ ਕਰਦੇ ਸਮੇਂ ਜਾਂ ਵਿਚਾਰ ਸੁਣਦੇ ਸਮੇਂ ਆਪਣੇ ਮਨ ਵਿੱਚ ਆਏ ਰੂਹਾਨੀ ਵਿਚਾਰਾਂ, ਪ੍ਰੇਰਨਾਵਾਂ ਅਤੇ ਨਿੱਜੀ ਨੋਟਸ ਨੂੰ ਲਿਖ ਕੇ ਸੁਰੱਖਿਅਤ ਰੱਖੋ।', position: 'top-center', badges: ['📝 ਨਿੱਜੀ ਨੋਟਸ', '💾 ਸੁਰੱਖਿਅਤ ਸੇਵ', '✏️ ਲਿਖੋ/ਸੋਧੋ'] },
-            { selector: '#mainNav', title: '📈 ਨੇਵੀਗੇਸ਼ਨ ਅਤੇ ਡੈਸ਼ਬੋਰਡ', text: 'ਹੋਮ ਪੇਜ, ਪਸੰਦੀਦਾ (favorites) ਸ਼ਬਦਾਂ ਦੀ ਸੂਚੀ, ਲਾਇਬ੍ਰੇਰੀ (Insights), ਜਾਂ ਆਪਣੀ ਭਗਤੀ ਦੇ ਵਿਸ਼ਲੇਸ਼ਣ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਚਕਾਰ ਆਸਾਨੀ ਨਾਲ ਬਦਲੋ।', position: 'top-center', badges: ['📈 4 ਮੁੱਖ ਪੰਨੇ', '📊 ਭਗਤੀ ਦੇ ਅੰਕੜੇ', '⭐ ਪਸੰਦੀਦਾ'] }
+            { selector: '#homeBackBtn', title: '📻 ਗੁਰਦੁਆਰਾ ਸਾਹਿਬ ਪ੍ਰਵੇਸ਼', text: 'ਇਸ ਖੂਬਸੂਰਤ ਬਟਨ ਤੇ ਕਲਿੱਕ ਕਰਕੇ ਗੁਰਦੁਆਰਾ ਸਾਹਿਬ ਦੇ ਮੁੱਖ ਪੇਜ \'ਤੇ ਜਾਓ, ਜਿੱਥੇ ਤੁਸੀਂ ਸਾਰੇ ਯੰਤਰਾਂ \'ਤੇ ਇੱਕੋ ਸਮੇਂ ਇੱਕਸਾਰ (synchronized) ਲਾਈਵ ਗੁਰਬਾਣੀ ਕੀਰਤਨ ਸੁਣ ਸਕਦੇ ਹੋ।', position: 'bottom-left' },
+            { selector: '#themeToggleBtn', title: '✨ ਜਾਦੂਈ ਥੀਮ ਚੁਣੋ', text: 'ਸਾਡੇ ਤਿੰਨ ਸ਼ਾਨਦਾਰ ਥੀਮ ਚੁਣੋ! ਲਾਈਟ, ਡਾਰਕ, ਜਾਂ ਸਾਡਾ ਸਭ ਤੋਂ ਪ੍ਰੀਮੀਅਮ ਡਾਇਨਾਮਿਕ ਸਮੇਂ-ਅਨੁਸਾਰ ਥੀਮ, ਜੋ ਦਿਨ ਦੇ ਸਮੇਂ ਮੁਤਾਬਿਕ ਬੈਕਗ੍ਰਾਊਂਡ ਤਸਵੀਰਾਂ ਅਤੇ ਰੰਗਾਂ ਨੂੰ ਆਪਣੇ ਆਪ ਬਦਲ ਦਿੰਦਾ ਹੈ।', position: 'bottom-right' },
+            { selector: '.hero-carousel', title: '🎵 ਵਰਚੁਅਲ ਲਾਈਵ ਕੀਰਤਨ', text: 'ਲਾਈਵ ਪ੍ਰਸਾਰਣ ਦੇਖਣ ਲਈ ਖੱਬੇ/ਸੱਜੇ ਸਵਾਈਪ ਕਰੋ। ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਪਾਠ, ਜਾਂ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ ਦਾ ਆਡੀਓ ਚਲਾਉਣ ਲਈ ਪਲੇਅ ਬਟਨ ਦਬਾਓ।', position: 'center' },
+            { selector: '#eventCard', title: '📅 ਗੁਰਪੁਰਬ ਕੈਲੰਡਰ', text: 'ਆਉਣ ਵਾਲੇ ਇਤਿਹਾਸਕ ਗੁਰਪੁਰਬਾਂ ਅਤੇ ਸਿੱਖ ਇਤਿਹਾਸ ਦੇ ਮਹੱਤਵਪੂਰਨ ਦਿਹਾੜਿਆਂ ਦੀ ਲਾਈਵ ਉਲਟੀ ਗਿਣਤੀ (countdown) ਟਰੈਕਰ ਨਾਲ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ।', position: 'top-center' },
+            { selector: '#nitnemPractice', title: '📿 ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਪਾਠ', text: 'ਆਪਣੇ ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਦੀਆਂ ਬਾਣੀਆਂ ਨੂੰ ਪ੍ਰੀਮੀਅਮ ਪਾਠਕ (reader) ਵਿੱਚ ਅੱਖਰਾਂ ਦੇ ਆਕਾਰ, ਅਨੁਵਾਦ ਅਤੇ ਲਾਈਵ ਪ੍ਰਗਤੀ ਟਰੈਕਿੰਗ ਨਾਲ ਪੜ੍ਹੋ।', position: 'top-center' },
+            { selector: '#sehajPractice', title: '📖 ਸਹਿਜ ਪਾਠ ਰੀਡਰ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦੇ ਸਹਿਜ ਪਾਠ ਦੀ ਸ਼ੁਰੂਆਤ ਕਰੋ ਅਤੇ ਆਪਣੀ ਸਹੂਲਤ ਅਨੁਸਾਰ ਪੜ੍ਹੋ। ਇਹ ਤੁਹਾਡੇ ਪੜ੍ਹੇ ਅੰਗਾਂ ਅਤੇ ਫ਼ੀਸਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਟਰੈਕ ਕਰਦਾ ਹੈ।', position: 'top-center' },
+            { selector: '#hukamPractice', title: '📜 ਅੱਜ ਦਾ ਮੁੱਖਵਾਕ (ਹੁਕਮਨਾਮਾ)', text: 'ਸ੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਤੋਂ ਅੱਜ ਦਾ ਰੋਜ਼ਾਨਾ ਪਵਿੱਤਰ ਹੁਕਮਨਾਮਾ ਸਾਹਿਬ, ਪੰਜਾਬੀ ਅਤੇ ਅੰਗਰੇਜ਼ੀ ਵਿਆਖਿਆ ਅਤੇ ਉੱਚ-ਗੁਣਵੱਤਾ ਵਾਲੇ ਆਡੀਓ ਪਾਠ ਨਾਲ ਸਰਵਣ ਕਰੋ।', position: 'top-center' },
+            { selector: '#nitnemTrackerCard', title: '🔥 ਨਿਤਨੇਮ ਟਰੈਕਰ', text: 'ਆਪਣੀ ਰੋਜ਼ਾਨਾ ਭਗਤੀ ਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਮਾਨੀਟਰ ਕਰੋ। ਇਹ ਕੈਲੰਡਰ, ਭਗਤੀ ਦੇ ਦਿਨ, ਨੇਮ ਦੇ ਲਗਾਤਾਰ ਦਿਨ (streaks) ਅਤੇ ਡੈਸ਼ਬੋਰਡ ਵਿੱਚ ਵਿਸ਼ਲੇਸ਼ਣ ਦਿਖਾਉਂਦਾ ਹੈ।', position: 'top-center' },
+            { selector: '#naamCard', title: '🙏 ਨਾਮ ਅਭਿਆਸ: ਹਰ ਘੰਟੇ 2 ਮਿੰਟ ਸਿਮਰਨ', text: 'ਆਪਣੇ ਪੂਰੇ ਦਿਨ ਨੂੰ ਇਸ ਤਰ੍ਹਾਂ ਨਿਯਤ ਕਰੋ ਕਿ ਹਰ ਘੰਟੇ ਬਾਅਦ 2 ਮਿੰਟ ਲਈ ਸਭ ਕੁਝ ਰੋਕ ਕੇ ਸਿਮਰਨ ਕੀਤਾ ਜਾਵੇ। ਇਹ ਮਹਾਨ ਰੂਹਾਨੀ ਅਭਿਆਸ ਤੁਹਾਨੂੰ ਹਰ ਸਾਸ ਅਤੇ ਹਰ ਸਕਿੰਟ ਵਾਹਿਗੁਰੂ ਨੂੰ ਚੇਤੇ ਰੱਖਣ ਵਿੱਚ ਮਦਦ ਕਰਦਾ ਹੈ।', position: 'top-center' },
+            { selector: '#shabadVicharCard', title: '🪔 ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ ਵਿਚਾਰ', text: 'ਹਰ ਰੋਜ਼ ਚੁਣੇ ਗਏ ਗੁਰਬਾਣੀ ਸ਼ਬਦਾਂ ਦੇ ਡੂੰਘੇ ਰੂਹਾਨੀ ਅਤੇ ਅਧਿਆਤਮਿਕ ਅਰਥਾਂ ਨੂੰ ਪੜ੍ਹ ਕੇ ਆਪਣੇ ਰੂਹਾਨੀ ਗਿਆਨ ਵਿੱਚ ਵਾਧਾ ਕਰੋ।', position: 'top-center' },
+            { selector: '#searchCard', title: '🔍 ਗੁਰਬਾਣੀ ਖੋਜ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਪਹਿਲੇ ਅੱਖਰ (initials) ਜਾਂ ਕੀਵਰਡ ਨਾਲ ਸਕਿੰਟਾਂ ਵਿੱਚ ਲੱਭਣ ਲਈ ਇੱਕ ਸ਼ਕਤੀਸ਼ਾਲੀ ਖੋਜ ਇੰਜਣ।', position: 'top-center' },
+            { selector: '#notesCard', title: '📝 ਗੁਰਬਾਣੀ ਨੋਟਸ', text: 'ਪਾਠ ਕਰਦੇ ਸਮੇਂ ਜਾਂ ਵਿਚਾਰ ਸੁਣਦੇ ਸਮੇਂ ਆਪਣੇ ਮਨ ਵਿੱਚ ਆਏ ਰੂਹਾਨੀ ਵਿਚਾਰਾਂ, ਪ੍ਰੇਰਨਾਵਾਂ ਅਤੇ ਨਿੱਜੀ ਨੋਟਸ ਨੂੰ ਲਿਖ ਕੇ ਸੁਰੱਖਿਅਤ ਰੱਖੋ।', position: 'top-center' },
+            { selector: '#mainNav', title: '📈 ਨੇਵੀਗੇਸ਼ਨ ਅਤੇ ਡੈਸ਼ਬੋਰਡ', text: 'ਹੋਮ ਪੇਜ, ਪਸੰਦੀਦਾ (favorites) ਸ਼ਬਦਾਂ ਦੀ ਸੂਚੀ, ਲਾਇਬ੍ਰੇਰੀ (Insights), ਜਾਂ ਆਪਣੀ ਭਗਤੀ ਦੇ ਵਿਸ਼ਲੇਸ਼ਣ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਚਕਾਰ ਆਸਾਨੀ ਨਾਲ ਬਦਲੋ।', position: 'top-center' }
         ],
         hi: [
-            { selector: '#homeBackBtn', title: '📻 गुरुद्वारा साहिब प्रवेश', text: 'इस सुंदर बटन पर क्लिक करके गुरुद्वारा साहिब की मुख्य स्क्रीन पर जाएं, जहां आप सभी उपकरणों पर एक साथ लाइव गुरबाणी कीर्तन का आनंद ले सकते हैं।', position: 'bottom-left', badges: ['📻 लाइव कीर्तन', '🔄 ऑटो-सिंक', '✨ अलौकिक वाणी'] },
-            { selector: '#guideStartBtn', title: 'ℹ️ गाइड टूर पुनः चलाएं', text: 'इस ऐप गाइड टूर को किसी भी समय दोबारा चलाने, भाषा चुनने, या ऐप की अद्भुत विशेषताओं को संक्षेप में समझने के लिए इस बटन पर क्लिक करें।', position: 'bottom-left', badges: ['ℹ️ ऑन-डिमांड', '🗣️ बहु-भाषीय', '✨ गाइड टूर'] },
-            { selector: '#themeToggleBtn', title: '✨ जादुई थीम चुनें', text: 'हमारे तीन शानदार थीम चुनें! लाइट, डार्क, या हमारा प्रीमियम ऑटो-डायनामिक टाइम-ऑफ-डे थीम, जो दिन के समय के अनुसार वॉलपेपर और रंगों को स्वचालित रूप से बदलता है।', position: 'bottom-right', badges: ['☀️ लाइट थीम', '🌙 डार्क थीम', '⏳ डायनेमिक थीम'] },
-            { selector: '.hero-carousel', title: '🎵 वर्चुअल लाइव कीर्तन', text: 'लाइव प्रसारण ब्राउज़ करने के लिए दाएं/बाएं स्वाइप करें। श्री हरिमंदिर साहिब, अमृत वेला पाठ, या वाहेगुरु सिमरन का ऑडियो सुनने के लिए प्ले दबाएं।', position: 'center', badges: ['📻 लाइव कीर्तन', '🎧 प्ले कंट्रोल्स', '🔄 एकसमान ध्वनि'] },
-            { selector: '#eventCard', title: '📅 गुरपुरब कैलेंडर', text: 'आने वाले ऐतिहासिक गुरपुरबों और ऐतिहासिक तिथियों की जानकारी लाइव उल्टी गिनती (countdown) ट्रैकर के साथ प्राप्त करें।', position: 'top-center', badges: ['📅 ऐतिहासिक तिथियां', '⏳ काउंटडाउन', '🔔 रिमाइंडर'] },
-            { selector: '#nitnemPractice', title: '📿 दैनिक नियम (नितनेम)', text: 'अपने दैनिक नितनेम की बाणियों को प्रीमियम पाठक (reader) में अक्षरों के आकार, अनुवाद और लाइव प्रगति ट्रैकिंग के साथ पढ़ें।', position: 'top-center', badges: ['📿 दैनिक बाणियां', '📖 आकार बदलें', '✅ लाइव प्रगति'] },
-            { selector: '#sehajPractice', title: '📖 सहज पाठ रीडर', text: 'श्री गुरु ग्रंथ साहिब जी के सहज पाठ की शुरुआत करें और अपनी सुविधा अनुसार आगे बढ़ें। यह आपके पढ़े गए अंग और समग्र प्रतिशत प्रगति को ट्रैक करता है।', position: 'top-center', badges: ['📖 सहज पाठ', '📈 प्रगति प्रतिशत', '✨ अंग ट्रैकर'] },
-            { selector: '#hukamPractice', title: '📜 आज का हुकमनामा', text: 'श्री हरिमंदिर साहिब से आज का पवित्र हुकमनामा, विस्तृत हिंदी और अंग्रेजी अनुवाद तथा उच्च गुणवत्ता वाले ऑडियो पाठ के साथ सुनें।', position: 'top-center', badges: ['📜 मुखवाक', '🗣️ व्याख्या', '🔊 ऑडियो पाठ'] },
-            { selector: '#nitnemTrackerCard', title: '🔥 नितनेम ट्रैकर', text: 'अपनी दैनिक भक्ति की निरंतरता की जांच करें। यह कैलेंडर, भक्ति दिवस, निरंतर दिनों के नियम (streaks) और विश्लेषण दिखाता है।', position: 'top-center', badges: ['🔥 दैनिक नियम', '📆 कैलेंडर चेक-इन', '📊 विश्लेषण'] },
-            { selector: '#naamCard', title: '🙏 नाम अभ्यास सिमरन', text: 'पूरे दिन के लिए एक सुंदर नियम बनाएं: हर घंटे में केवल 2 मिनट के लिए शांतिपूर्ण सिमरन करें। उन 2 मिनटों के लिए दुनिया के सब काम छोड़ दें। यह दैनिक अभ्यास हर पल वाहेगुरु जी को स्मरण रखने में मदद करेगा, जो कि नाम अभ्यास का मुख्य उद्देश्य है।', position: 'top-center', badges: ['🙏 हर घंटे 2 मिनट', '⏰ सिमरन अभ्यास', '✨ वाहेगुरु स्मरण'] },
-            { selector: '#shabadVicharCard', title: '🪔 दैनिक शबद विचार', text: 'प्रतिदिन चुने गए गुरबाणी शबद के गहरे आध्यात्मिक और व्यावहारिक अर्थों को पढ़कर अपने आध्यात्मिक ज्ञान में वृद्धि करें।', position: 'top-center', badges: ['🪔 दैनिक विचार', '💡 आध्यात्मिक ज्ञान', '✨ गहरे अर्थ'] },
-            { selector: '#searchCard', title: '🔍 उन्नत गुरबाणी खोज', text: 'श्री गुरु ग्रंथ साहिब जी में से किसी भी शबद को पहले अक्षर या कीवर्ड के माध्यम से तुरंत खोजने के लिए एक अत्यंत शक्तिशाली खोज उपकरण।', position: 'top-center', badges: ['🔍 गुरबाणी खोज', '🔤 अक्षर/कीवर्ड', '⚡ त्वरित खोज'] },
-            { selector: '#notesCard', title: '📝 आध्यात्मिक नोट्स', text: 'पाठ करते समय या ध्यान लगाते समय अपने मन में उठने वाले आध्यात्मिक विचारों, प्रेरणाओं और व्यक्तिगत नोट्स को लिखकर सुरक्षित रखें।', position: 'top-center', badges: ['📝 व्यक्तिगत नोट्स', '💾 सुरक्षित सेव', '✏️ लिखें/संशोधित'] },
-            { selector: '#mainNav', title: '📈 नेविगेशन और डैशबोर्ड', text: 'होम पेज, पसंदीदा (favorites) शबद सूची, लाइब्रेरी (Insights), या अपनी भक्ति की प्रगति के पूर्ण डैशबोर्ड के बीच आसानी से नेविगेट करें।', position: 'top-center', badges: ['📈 4 मुख्य पृष्ठ', '📊 भक्ति आंकड़े', '⭐ पसंदीदा'] }
+            { selector: '#homeBackBtn', title: '📻 गुरुद्वारा साहिब प्रवेश', text: 'इस सुंदर बटन पर क्लिक करके गुरुद्वारा साहिब की मुख्य स्क्रीन पर जाएं, जहां आप सभी उपकरणों पर एक साथ लाइव गुरबाणी कीर्तन का आनंद ले सकते हैं।', position: 'bottom-left' },
+            { selector: '#themeToggleBtn', title: '✨ जादुई थीम चुनें', text: 'हमारे तीन शानदार थीम चुनें! लाइट, डार्क, या हमारा प्रीमियम ऑटो-डायनामिक टाइम-ऑफ-डे थीम, जो दिन के समय के अनुसार वॉलपेपर और रंगों को स्वचालित रूप से बदलता है।', position: 'bottom-right' },
+            { selector: '.hero-carousel', title: '🎵 वर्चुअल लाइव कीर्तन', text: 'लाइव प्रसारण ब्राउज़ करने के लिए दाएं/बाएं स्वाइप करें। श्री हरिमंदिर साहिब, अमृत वेला पाठ, या वाहेगुरु सिमरन का ऑडियो सुनने के लिए प्ले दबाएं।', position: 'center' },
+            { selector: '#eventCard', title: '📅 गुरपुरब कैलेंडर', text: 'आने वाले ऐतिहासिक गुरपुरबों और ऐतिहासिक तिथियों की जानकारी लाइव उल्टी गिनती (countdown) ट्रैकर के साथ प्राप्त करें।', position: 'top-center' },
+            { selector: '#nitnemPractice', title: '📿 दैनिक नितनेम पाठ', text: 'अपने दैनिक नितनेम की बाणियों को प्रीमियम पाठक (reader) में अक्षरों के आकार, अनुवाद और लाइव प्रगति ट्रैकिंग के साथ पढ़ें।', position: 'top-center' },
+            { selector: '#sehajPractice', title: '📖 सहज पाठ रीडर', text: 'श्री गुरु ग्रंथ साहिब जी के सहज पाठ की शुरुआत करें और अपनी सुविधा अनुसार आगे बढ़ें। यह आपके पढ़े गए अंग और समग्र प्रतिशत प्रगति को ट्रैक करता है।', position: 'top-center' },
+            { selector: '#hukamPractice', title: '📜 आज का हुकमनामा', text: 'श्री हरिमंदिर साहिब से आज का पवित्र हुकमनामा, विस्तृत हिंदी और अंग्रेजी अनुवाद तथा उच्च गुणवत्ता वाले ऑडियो पाठ के साथ सुनें।', position: 'top-center' },
+            { selector: '#nitnemTrackerCard', title: '🔥 नितनेम ट्रैकर', text: 'अपनी दैनिक भक्ति की निरंतरता की जांच करें। यह कैलेंडर, भक्ति दिवस, निरंतर दिनों के नियम (streaks) और विश्लेषण दिखाता है।', position: 'top-center' },
+            { selector: '#naamCard', title: '🙏 नाम अभ्यास: हर घंटे 2 मिनट सिमरन', text: 'अपने पूरे दिन को इस प्रकार अनुसूचित करें कि हर घंटे 2 मिनट के लिए सब कुछ रोककर सिमरन किया जाए। यह महान आध्यात्मिक अभ्यास आपको हर सांस और हर सेकंड वाहेगुरु को याद रखने में मदद करता है।', position: 'top-center' },
+            { selector: '#shabadVicharCard', title: '🪔 दैनिक शबद विचार', text: 'प्रतिदिन चुने गए गुरबाणी शबद के गहरे आध्यात्मिक और व्यावहारिक अर्थों को पढ़कर अपने आध्यात्मिक ज्ञान में वृद्धि करें।', position: 'top-center' },
+            { selector: '#searchCard', title: '🔍 उन्नत गुरबाणी खोज', text: 'श्री गुरु ग्रंथ साहिब जी में से किसी भी शबद को पहले अक्षर या कीवर्ड के माध्यम से तुरंत खोजने के लिए एक अत्यंत शक्तिशाली खोज उपकरण।', position: 'top-center' },
+            { selector: '#notesCard', title: '📝 आध्यात्मिक नोट्स', text: 'पाठ करते समय या ध्यान लगाते समय अपने मन में उठने वाले आध्यात्मिक विचारों, प्रेरणाओं और व्यक्तिगत नोट्स को लिखकर सुरक्षित रखें।', position: 'top-center' },
+            { selector: '#mainNav', title: '📈 नेविगेशन और डैशबोर्ड', text: 'होम पेज, पसंदीदा (favorites) शबद सूची, लाइब्रेरी (Insights), या अपनी प्रगति के पूर्ण डैशबोर्ड के बीच आसानी से नेविगेट करें।', position: 'top-center' }
         ]
     };
 
@@ -101,7 +98,7 @@
                 opacity: 1;
             }
             
-            /* Premium Apple-style Glassmorphic Popover */
+            /* Premium Apple-style Glassmorphic Popover - Enlarged Edition */
             .anhad-tour-popover {
                 position: fixed;
                 background: rgba(255, 255, 255, 0.88);
@@ -111,9 +108,9 @@
                 box-shadow: 
                     0 15px 45px rgba(184, 134, 11, 0.15),
                     inset 0 1px 0 rgba(255, 255, 255, 0.6);
-                border-radius: 24px;
-                padding: 24px 26px;
-                width: 345px;
+                border-radius: 28px;
+                padding: 24px;
+                width: 330px;
                 z-index: 1000001;
                 transform: scale(0.9) translateY(12px);
                 opacity: 0;
@@ -141,8 +138,8 @@
                 opacity: 1;
             }
             .anhad-tour-popover-title {
-                font-weight: 900;
-                font-size: 18px;
+                font-weight: 850;
+                font-size: 18.5px;
                 margin-bottom: 10px;
                 color: #D4943A;
                 letter-spacing: 0.25px;
@@ -150,38 +147,126 @@
                 align-items: center;
                 gap: 6px;
             }
-            /* Premium Badges UI */
-            .anhad-tour-popover-badges {
+            .anhad-tour-popover-text {
+                font-size: 15px;
+                line-height: 1.6;
+                opacity: 0.95;
+                margin-bottom: 16px;
+                font-weight: 450;
+            }
+            
+            /* Visual Glimpse Badges */
+            .anhad-tour-badges {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 6px;
-                margin-bottom: 12px;
-            }
-            .anhad-tour-popover-badge {
-                font-size: 11px;
-                font-weight: 700;
-                padding: 4px 10px;
-                border-radius: 30px;
-                letter-spacing: 0.2px;
-                display: inline-flex;
-                align-items: center;
-                background: rgba(212, 148, 58, 0.08) !important;
-                color: #A06E25 !important;
-                border: 1px solid rgba(212, 148, 58, 0.15) !important;
-                transition: all 0.3s ease;
-            }
-            html.dark-mode .anhad-tour-popover-badge,
-            [data-theme="dark"] .anhad-tour-popover-badge {
-                background: rgba(212, 148, 58, 0.15) !important;
-                color: #F8CB7E !important;
-                border: 1px solid rgba(212, 148, 58, 0.3) !important;
-            }
-            .anhad-tour-popover-text {
-                font-size: 14px;
-                line-height: 1.6;
-                opacity: 0.95;
+                margin-top: 4px;
                 margin-bottom: 18px;
             }
+            .anhad-badge {
+                font-size: 11.5px;
+                font-weight: 700;
+                padding: 4.5px 11px;
+                border-radius: 12px;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                letter-spacing: -0.1px;
+                transition: all 0.25s ease;
+            }
+            .badge-gold {
+                background: rgba(212, 148, 58, 0.12);
+                color: #B8860B;
+                border: 1px solid rgba(212, 148, 58, 0.25);
+            }
+            .badge-blue {
+                background: rgba(0, 122, 255, 0.1);
+                color: #007AFF;
+                border: 1px solid rgba(0, 122, 255, 0.2);
+            }
+            .badge-green {
+                background: rgba(52, 199, 89, 0.1);
+                color: #34C759;
+                border: 1px solid rgba(52, 199, 89, 0.2);
+            }
+            .badge-red {
+                background: rgba(255, 59, 48, 0.1);
+                color: #FF3B30;
+                border: 1px solid rgba(255, 59, 48, 0.2);
+            }
+            .badge-purple {
+                background: rgba(175, 82, 222, 0.1);
+                color: #AF52DE;
+                border: 1px solid rgba(175, 82, 222, 0.2);
+            }
+            .badge-light {
+                background: rgba(255, 214, 10, 0.15);
+                color: #AF7D14;
+                border: 1px solid rgba(255, 214, 10, 0.3);
+            }
+            .badge-dark {
+                background: rgba(142, 142, 147, 0.15);
+                color: #8E8E93;
+                border: 1px solid rgba(142, 142, 147, 0.25);
+            }
+            .badge-dynamic {
+                background: linear-gradient(135deg, rgba(212, 148, 58, 0.1) 0%, rgba(175, 82, 222, 0.1) 100%);
+                color: #B8860B;
+                border: 1px solid rgba(212, 148, 58, 0.2);
+            }
+            .badge-simran {
+                background: linear-gradient(135deg, rgba(212, 148, 58, 0.15) 0%, rgba(255, 59, 48, 0.15) 100%);
+                color: #DC143C;
+                border: 1.5px solid rgba(212, 148, 58, 0.35);
+                box-shadow: 0 2px 6px rgba(220, 20, 60, 0.1);
+            }
+            
+            html.dark-mode .badge-gold, [data-theme="dark"] .badge-gold {
+                background: rgba(255, 204, 0, 0.1);
+                color: #FFCC00;
+                border-color: rgba(255, 204, 0, 0.25);
+            }
+            html.dark-mode .badge-blue, [data-theme="dark"] .badge-blue {
+                background: rgba(10, 132, 255, 0.15);
+                color: #0A84FF;
+                border-color: rgba(10, 132, 255, 0.25);
+            }
+            html.dark-mode .badge-green, [data-theme="dark"] .badge-green {
+                background: rgba(48, 209, 88, 0.15);
+                color: #30D158;
+                border-color: rgba(48, 209, 88, 0.25);
+            }
+            html.dark-mode .badge-red, [data-theme="dark"] .badge-red {
+                background: rgba(255, 69, 58, 0.15);
+                color: #FF453A;
+                border-color: rgba(255, 69, 58, 0.25);
+            }
+            html.dark-mode .badge-purple, [data-theme="dark"] .badge-purple {
+                background: rgba(191, 90, 242, 0.15);
+                color: #BF5AF2;
+                border-color: rgba(191, 90, 242, 0.25);
+            }
+            html.dark-mode .badge-light, [data-theme="dark"] .badge-light {
+                background: rgba(255, 214, 10, 0.15);
+                color: #FFD60A;
+                border-color: rgba(255, 214, 10, 0.25);
+            }
+            html.dark-mode .badge-dark, [data-theme="dark"] .badge-dark {
+                background: rgba(255, 255, 255, 0.1);
+                color: #FAF8F5;
+                border-color: rgba(255, 255, 255, 0.15);
+            }
+            html.dark-mode .badge-dynamic, [data-theme="dark"] .badge-dynamic {
+                background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(191, 90, 242, 0.15) 100%);
+                color: #FFCC00;
+                border-color: rgba(255, 204, 0, 0.25);
+            }
+            html.dark-mode .badge-simran, [data-theme="dark"] .badge-simran {
+                background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 69, 58, 0.15) 100%);
+                color: #FF453A;
+                border-color: rgba(255, 204, 0, 0.35);
+            }
+
             .anhad-tour-popover-footer {
                 display: flex;
                 justify-content: space-between;
@@ -190,7 +275,7 @@
             .anhad-tour-popover-dots {
                 display: flex;
                 gap: 5px;
-                max-width: 130px;
+                max-width: 120px;
                 flex-wrap: wrap;
             }
             .anhad-tour-popover-dot {
@@ -213,10 +298,10 @@
                 border: none;
                 background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
                 color: white;
-                padding: 7px 15px;
+                padding: 8px 18px;
                 border-radius: 12px;
                 font-weight: 700;
-                font-size: 12px;
+                font-size: 13px;
                 cursor: pointer;
                 box-shadow: 0 4px 12px rgba(212, 148, 58, 0.3);
                 transition: all 0.3s ease;
@@ -228,7 +313,7 @@
                 border: none;
                 background: transparent;
                 color: #8E8E93;
-                font-size: 12px;
+                font-size: 13px;
                 font-weight: 600;
                 cursor: pointer;
                 padding: 4px;
@@ -372,6 +457,116 @@
             }
         `;
         document.head.appendChild(style);
+    }
+
+    // Dynamic Glimpse Badge Ingestion helper
+    function getBadgesHtml(selector) {
+        if (selector === '#homeBackBtn') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📻 Live Radio</span>
+                    <span class="anhad-badge badge-blue">⚡ Sync Play</span>
+                </div>
+            `;
+        }
+        if (selector === '#themeToggleBtn') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-light">☀️ Light</span>
+                    <span class="anhad-badge badge-dark">🌙 Dark</span>
+                    <span class="anhad-badge badge-dynamic">✨ Dynamic Theme</span>
+                </div>
+            `;
+        }
+        if (selector === '.hero-carousel') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">🎵 Live Kirtan</span>
+                    <span class="anhad-badge badge-blue">📿 Simran Stream</span>
+                </div>
+            `;
+        }
+        if (selector === '#eventCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📅 Active Countdown</span>
+                    <span class="anhad-badge badge-green">☬ Sikh History</span>
+                </div>
+            `;
+        }
+        if (selector === '#nitnemPractice') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📿 Devotional Banis</span>
+                    <span class="anhad-badge badge-blue">📈 Read & Complete</span>
+                </div>
+            `;
+        }
+        if (selector === '#sehajPractice') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📖 Sri Guru Granth Sahib</span>
+                    <span class="anhad-badge badge-purple">📊 Ang Progress %</span>
+                </div>
+            `;
+        }
+        if (selector === '#hukamPractice') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📜 Today's Hukamnama</span>
+                    <span class="anhad-badge badge-blue">🔊 Translation & Audio</span>
+                </div>
+            `;
+        }
+        if (selector === '#nitnemTrackerCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-red">🔥 Streaks & Milestones</span>
+                    <span class="anhad-badge badge-gold">📅 Active Calendar</span>
+                </div>
+            `;
+        }
+        if (selector === '#naamCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-simran">🙏 2-Min Hourly Simran</span>
+                    <span class="anhad-badge badge-gold">📿 Mala Counter</span>
+                </div>
+            `;
+        }
+        if (selector === '#shabadVicharCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">🪔 Daily Reflection</span>
+                    <span class="anhad-badge badge-green">💡 Gurbani Meaning</span>
+                </div>
+            `;
+        }
+        if (selector === '#searchCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">🔍 Advanced Gurbani Khoj</span>
+                    <span class="anhad-badge badge-blue">⚡ Instant Search</span>
+                </div>
+            `;
+        }
+        if (selector === '#notesCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📝 Devotional Notes</span>
+                    <span class="anhad-badge badge-purple">💾 Safe Storage</span>
+                </div>
+            `;
+        }
+        if (selector === '#mainNav') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📊 Journey Stats</span>
+                    <span class="anhad-badge badge-red">❤️ Favorites</span>
+                </div>
+            `;
+        }
+        return '';
     }
 
     // Displays the language selector pop-up dialog
@@ -535,8 +730,8 @@
 
     // Handles the positioning of the tooltip popover box mathematically
     function positionPopover(element, step) {
-        const popoverWidth = 345;
-        const popoverHeight = popover.offsetHeight || 150;
+        const popoverWidth = 330;
+        const popoverHeight = popover.offsetHeight || 220;
         let popoverTop = 0;
         let popoverLeft = 0;
 
@@ -623,14 +818,13 @@
             // Apply physical overlays
             updateSpotlight(element);
 
-            // Populate tooltip popover with premium design and visual badges
+            // Glimpse Badges
+            const badgesHtml = getBadgesHtml(step.selector);
+
+            // Populate tooltip popover
             popover.innerHTML = `
                 <div class="anhad-tour-popover-title">${step.title}</div>
-                ${step.badges ? `
-                <div class="anhad-tour-popover-badges">
-                    ${step.badges.map(badge => `<span class="anhad-tour-popover-badge">${badge}</span>`).join('')}
-                </div>
-                ` : ''}
+                ${badgesHtml}
                 <div class="anhad-tour-popover-text">${step.text}</div>
                 <div class="anhad-tour-popover-footer">
                     <div class="anhad-tour-popover-dots">
@@ -719,6 +913,20 @@
         }, 450);
     }
 
+    // Expose public method to trigger onboarding from header Guide button
+    window.startAnhadOnboardingTour = function (forceLangSelect = false) {
+        // Prevent launching multiple tours concurrently
+        if (document.getElementById('anhad-tour-overlay-container')) return;
+
+        currentStepIndex = 0;
+        if (forceLangSelect) {
+            showLanguagePicker();
+        } else {
+            selectedLang = localStorage.getItem(LANG_KEY) || 'en';
+            startTour();
+        }
+    };
+
     // Auto-launch trigger
     window.addEventListener('load', () => {
         // Only run on the main home screen (index.html), not sub-pages
@@ -727,28 +935,20 @@
                            document.getElementById('guruSlider') !== null;
 
         if (isMainPage) {
-            // Register click handler for Guide Start Button (frosted glass info button in header left)
-            const guideStartBtn = document.getElementById('guideStartBtn');
-            if (guideStartBtn) {
-                guideStartBtn.addEventListener('click', (e) => {
+            // Bind manual trigger to guide button in header
+            const guideBtn = document.getElementById('tourGuideBtn');
+            if (guideBtn) {
+                guideBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-
-                    // If a tour is already active, close it first
-                    endTour();
-                    
-                    // Reset to first step
-                    currentStepIndex = 0;
-                    
-                    // Force display language picker for fresh selection
-                    setTimeout(showLanguagePicker, 100);
+                    window.startAnhadOnboardingTour(true); // force language select on manual click
                 });
             }
 
-            // Check if onboarding is completed
-            const completed = localStorage.getItem(TOUR_KEY);
-            if (completed !== 'true') {
+            // Check if user has already completed the onboarding
+            if (localStorage.getItem(TOUR_KEY) !== 'true') {
                 selectedLang = localStorage.getItem(LANG_KEY);
+
                 if (!selectedLang) {
                     setTimeout(showLanguagePicker, 1500);
                 } else {

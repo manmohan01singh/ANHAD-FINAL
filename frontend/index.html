@@ -128,78 +128,6 @@
       /* Radiant Glowing Gold in dark mode */
       filter: invert(72%) sepia(60%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(100%) drop-shadow(0 0 6px rgba(212, 148, 58, 0.45));
     }
-
-    /* Elite Frosted Glass Buttons UI */
-    .header__btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50% !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-      position: relative;
-      cursor: pointer;
-      text-decoration: none;
-      box-sizing: border-box;
-      
-      /* Frosted Glass day theme by default */
-      background: rgba(255, 255, 255, 0.22) !important;
-      backdrop-filter: blur(16px) saturate(120%) !important;
-      -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.35) !important;
-      box-shadow: 
-        0 4px 12px rgba(0, 0, 0, 0.04), 
-        inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
-    }
-
-    /* Hover and Active micro-animations */
-    .header__btn:hover {
-      transform: translateY(-2px) scale(1.06) !important;
-      background: rgba(255, 255, 255, 0.35) !important;
-      border-color: rgba(255, 255, 255, 0.55) !important;
-      box-shadow: 
-        0 6px 16px rgba(184, 134, 11, 0.12), 
-        inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
-    }
-
-    .header__btn:active {
-      transform: translateY(0) scale(0.96) !important;
-      background: rgba(255, 255, 255, 0.15) !important;
-      box-shadow: 
-        0 2px 6px rgba(0, 0, 0, 0.05) !important;
-    }
-
-    /* Night theme / Dark mode frosted glass */
-    html.dark-mode .header__btn,
-    [data-theme="dark"] .header__btn,
-    .dark-mode .dark-mode .header__btn {
-      background: rgba(255, 255, 255, 0.08) !important;
-      backdrop-filter: blur(20px) saturate(140%) !important;
-      -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.12) !important;
-      box-shadow: 
-        0 4px 16px rgba(0, 0, 0, 0.25), 
-        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-    }
-
-    html.dark-mode .header__btn:hover,
-    [data-theme="dark"] .header__btn:hover,
-    .dark-mode .dark-mode .header__btn:hover {
-      background: rgba(255, 255, 255, 0.15) !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 
-        0 6px 20px rgba(0, 0, 0, 0.35), 
-        0 0 8px rgba(212, 148, 58, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-    }
-
-    html.dark-mode .header__btn:active,
-    [data-theme="dark"] .header__btn:active,
-    .dark-mode .dark-mode .header__btn:active {
-      background: rgba(255, 255, 255, 0.05) !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-    }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -1814,18 +1742,11 @@
           transform: none !important;
         }
 
-        /* Better back button visibility with frosted glass */
+        /* Better back button visibility */
         .header__btn[href*="ios-homepage"] {
-          background: rgba(255, 255, 255, 0.22) !important;
-          backdrop-filter: blur(16px) saturate(120%) !important;
-          -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
-          border: 1px solid rgba(255, 255, 255, 0.35) !important;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
-        }
-        html.dark-mode .header__btn[href*="ios-homepage"],
-        [data-theme="dark"] .header__btn[href*="ios-homepage"] {
-          background: rgba(255, 255, 255, 0.08) !important;
-          border-color: rgba(255, 255, 255, 0.12) !important;
+          background: rgba(255, 255, 255, 0.9) !important;
+          border: 1px solid rgba(0,0,0,0.1) !important;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
         }
       }
     }
@@ -1976,9 +1897,8 @@
            onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
           <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
-        <!-- On-Demand Guided Tour Button -->
-        <button class="header__btn ios-haptic" id="guideStartBtn" aria-label="App Guided Tour" title="Guided Tour" style="display: flex; align-items: center; justify-content: center;">
-          <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 1.4rem;">ℹ️</span>
+        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
+          <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
         </button>
       </div>
       <div class="header__center">
