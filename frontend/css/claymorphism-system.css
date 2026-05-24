@@ -248,8 +248,7 @@ html.dark-mode .clay-red {
   background: linear-gradient(145deg, #FFFFFF, #F0F0F5);
   box-shadow:
     15px 15px 40px rgba(0, 0, 0, 0.35),
-    8px 8px 20px rgba(0, 0, 0, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 1);
+    8px 8px 20px rgba(0, 0, 0, 0.2);
   border: 2px solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s var(--clay-spring);
   cursor: pointer;

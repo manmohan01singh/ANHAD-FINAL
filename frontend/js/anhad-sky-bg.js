@@ -210,34 +210,31 @@
   function applyTimeOfDay() {
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode');
-    console.log('applyTimeOfDay - slot:', slot, 'mode:', mode);
     document.documentElement.setAttribute('data-time-of-day', slot);
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
-    console.log('Canvas exists:', !!canvas);
     
     if (canvas) {
       let bgImage = '';
+      const timestamp = Date.now();
       // Update background regardless of theme mode for auto-change
       switch(slot) {
         case 'morning':
-          bgImage = 'assets/darbar-sahib-amritvela-morning.png';
-          console.log('Morning - setting bg:', bgImage);
+          bgImage = `assets/darbar-sahib-amritvela-morning.png?v=${timestamp}`;
           break;
         case 'day':
-          bgImage = 'assets/darbar-sahib-day.jpg';
+          bgImage = `assets/darbar-sahib-day.jpg?v=${timestamp}`;
           break;
         case 'evening':
-          bgImage = 'assets/darbar-sahib-evening.jpg';
+          bgImage = `assets/darbar-sahib-evening.jpg?v=${timestamp}`;
           break;
         case 'night':
-          bgImage = 'assets/darbar-sahib-night.jpg';
+          bgImage = `assets/darbar-sahib-night.jpg?v=${timestamp}`;
           break;
       }
       if (bgImage) {
         canvas.style.backgroundImage = `url('${bgImage}')`;
-        console.log('Background set to:', canvas.style.backgroundImage);
       }
     }
   }
@@ -247,6 +244,7 @@
     const mode = document.documentElement.getAttribute('data-theme-mode');
     const slot = getSlot();
     const heroCardImages = document.querySelectorAll('.hero-card__image[data-img-morning]');
+    const timestamp = Date.now();
     
     heroCardImages.forEach(img => {
       let newSrc = '';
@@ -270,9 +268,9 @@
         }
       }
       
-      // Force update even if src matches to ensure morning images load
+      // Force update with cache-busting timestamp
       if (newSrc) {
-        img.src = newSrc;
+        img.src = `${newSrc}?v=${timestamp}`;
       }
     });
   }

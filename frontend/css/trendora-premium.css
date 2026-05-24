@@ -556,13 +556,14 @@ a:active {
   line-height: 1.0;
   color: #D4943A;
   text-transform: uppercase;
-  text-shadow: none;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   margin-top: 8px;
 }
 
 /* Dark mode: golden text */
 .dark-mode .header__title {
-  color: #D4943A;
+  color: #FFCC29;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 
 .header__title-gurmukhi {
