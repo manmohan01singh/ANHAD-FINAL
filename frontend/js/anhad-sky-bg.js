@@ -201,27 +201,37 @@
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
+    const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     document.documentElement.setAttribute('data-time-of-day', slot);
 
-    // Update background image on body (auto mode primary background)
-    const bgUrl = BG_IMAGES[slot];
-    if (bgUrl) {
-      // Only update if changed — no cache-busting timestamps!
-      const current = document.body.style.backgroundImage;
-      const expected = `url("${bgUrl}")`;
-      if (!current.includes(bgUrl)) {
-        document.body.style.backgroundImage = `url('${bgUrl}')`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center center';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundAttachment = 'fixed';
-      }
+    // Determine which bg to show:
+    // dark mode → always night bg; light mode → day bg; auto → real time slot
+    let bgSlot = slot;
+    if (mode === 'dark') bgSlot = 'night';
+    else if (mode === 'light') bgSlot = 'day';
 
-      // Also update the sky canvas if it exists
-      const canvas = document.getElementById('anhad-sky-canvas');
-      if (canvas && !canvas.style.backgroundImage.includes(bgUrl)) {
-        canvas.style.backgroundImage = `url('${bgUrl}')`;
-      }
+    const bgUrl = BG_IMAGES[bgSlot];
+    if (!bgUrl) return;
+
+    // Crossfade: only update when image actually changes
+    const current = document.body.style.backgroundImage || '';
+    if (current.includes(bgUrl)) return; // Already correct — skip
+
+    // Apply transition for smooth crossfade
+    if (!document.body.style.transition || !document.body.style.transition.includes('background-image')) {
+      document.body.style.transition = 'background-image 1.2s ease-in-out';
+    }
+
+    document.body.style.backgroundImage = `url('${bgUrl}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundAttachment = 'fixed';
+
+    // Also update the sky canvas if it exists (auto mode)
+    const canvas = document.getElementById('anhad-sky-canvas');
+    if (canvas && !canvas.style.backgroundImage.includes(bgUrl)) {
+      canvas.style.backgroundImage = `url('${bgUrl}')`;
     }
   }
 
@@ -336,8 +346,15 @@
   function smartRefresh() {
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
-    // Only do work if something actually changed
-    if (slot === _lastSlot && mode === _lastMode) return;
+
+    // Check if bg image is stale (cleared by theme change or first run)
+    const expectedBgSlot = mode === 'dark' ? 'night' : mode === 'light' ? 'day' : slot;
+    const expectedBgUrl = BG_IMAGES[expectedBgSlot];
+    const currentBg = document.body.style.backgroundImage || '';
+    const bgIsStale = expectedBgUrl && !currentBg.includes(expectedBgUrl);
+
+    // Run update if slot, mode, or bg changed
+    if (slot === _lastSlot && mode === _lastMode && !bgIsStale) return;
     _lastSlot = slot;
     _lastMode = mode;
     requestAnimationFrame(() => {
@@ -393,7 +410,7 @@
   function onThemeChange() {
     const mode = document.documentElement.getAttribute('data-theme-mode');
     _lastMode = null; // Force refresh on theme change
-    applyTimeOfDay();
+    applyTimeOfDay();      // ← updates bg image immediately for new mode
     updateHeroCardImages();
     if (mode === 'auto') {
       if (!document.getElementById('anhad-sky-canvas')) {
@@ -403,10 +420,8 @@
         buildClouds();
       }
       positionCelestials();
-    } else {
-      // Clear background image when not in auto mode
-      document.body.style.backgroundImage = 'none';
     }
+    // NOTE: removed 'else { backgroundImage = none }' — bg always shows now
   }
 
   document.addEventListener('anhadThemeChanged', onThemeChange);
