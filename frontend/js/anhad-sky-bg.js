@@ -199,7 +199,7 @@
     morning: "assets/darbar-sahib-morning-bg.webp",
     day:     "assets/darbar-sahib-day-bg.webp",
     evening: "assets/darbar-sahib-evening-bg.webp",
-    night:   "assets/darbar-sahib-night-bg.webp",
+    night:   "assets/HERO CARD IMAGES/new-night-bg.webp",
   };
 
   // ── Update time-of-day attribute on <html> ───────────────────────────────

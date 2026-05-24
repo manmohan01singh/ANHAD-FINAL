@@ -249,7 +249,7 @@ body.is-scrolling #anhad-sky-canvas {
 
 /* ── NIGHT (8pm–5am): Deep cosmic black-navy-indigo ── */
 [data-theme-mode="auto"][data-time-of-day="night"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-night-bg.webp') no-repeat center center;
+  background: url('assets/HERO CARD IMAGES/new-night-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
