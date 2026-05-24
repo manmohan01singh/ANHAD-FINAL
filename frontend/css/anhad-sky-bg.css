@@ -20,42 +20,42 @@
 
 /* MORNING — warm dark espresso/mahogany on a peach-orange sky */
 [data-theme-mode="auto"][data-time-of-day="morning"] {
-  --sky-txt-primary:   #000000;
-  --sky-txt-secondary: #1A0402;
-  --sky-txt-label:     #2A0A04;
-  --sky-txt-accent:    #3A0F05;
-  --sky-txt-gold:      #5C1E0A;
-  --sky-text-shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-text-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-greeting-bg:   rgba(0, 0, 0, 0.4);
+  --sky-txt-primary:   #1A0402;
+  --sky-txt-secondary: #3A0F05;
+  --sky-txt-label:     #5C1E0A;
+  --sky-txt-accent:    #822508;
+  --sky-txt-gold:      #A83800;
+  --sky-text-shadow-dark: none;
+  --sky-text-shadow-light: none;
+  --sky-greeting-bg:   transparent;
   --sky-bg-glass:      rgba(255, 230, 200, 0.52);
   --sky-bg-glass-border: rgba(220, 110, 50, 0.22);
 }
 
 /* DAY — deep midnight navy on a bright azure sky */
 [data-theme-mode="auto"][data-time-of-day="day"] {
-  --sky-txt-primary:   #000000;
-  --sky-txt-secondary: #000814;
-  --sky-txt-label:     #02162E;
-  --sky-txt-accent:    #05284D;
-  --sky-txt-gold:      #0A4078;
-  --sky-text-shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-text-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-greeting-bg:   rgba(0, 0, 0, 0.4);
+  --sky-txt-primary:   #000814;
+  --sky-txt-secondary: #02162E;
+  --sky-txt-label:     #05284D;
+  --sky-txt-accent:    #0A4078;
+  --sky-txt-gold:      #0C5096;
+  --sky-text-shadow-dark: none;
+  --sky-text-shadow-light: none;
+  --sky-greeting-bg:   transparent;
   --sky-bg-glass:      rgba(220, 244, 255, 0.52);
   --sky-bg-glass-border: rgba(80, 160, 230, 0.22);
 }
 
 /* EVENING — deep burgundy-wine on a crimson-gold sunset sky */
 [data-theme-mode="auto"][data-time-of-day="evening"] {
-  --sky-txt-primary:   #000000;
-  --sky-txt-secondary: #140205;
-  --sky-txt-label:     #38050C;
-  --sky-txt-accent:    #5C0A15;
-  --sky-txt-gold:      #821415;
-  --sky-text-shadow-dark: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-text-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.9);
-  --sky-greeting-bg:   rgba(0, 0, 0, 0.4);
+  --sky-txt-primary:   #140205;
+  --sky-txt-secondary: #38050C;
+  --sky-txt-label:     #5C0A15;
+  --sky-txt-accent:    #821415;
+  --sky-txt-gold:      #A82205;
+  --sky-text-shadow-dark: none;
+  --sky-text-shadow-light: none;
+  --sky-greeting-bg:   transparent;
   --sky-bg-glass:      rgba(255, 228, 198, 0.50);
   --sky-bg-glass-border: rgba(190, 80, 20, 0.22);
 }
@@ -63,13 +63,13 @@
 /* NIGHT — glowing warm ivory / antique gold on deep navy */
 [data-theme-mode="auto"][data-time-of-day="night"] {
   --sky-txt-primary:   #FFFFFF;
-  --sky-txt-secondary: #FFFFFF;
-  --sky-txt-label:     #FFF8E8;
-  --sky-txt-accent:    #FFE399;
-  --sky-txt-gold:      #FFD566;
-  --sky-text-shadow-dark: 0 3px 12px rgba(0, 0, 0, 1);
-  --sky-text-shadow-light: 0 3px 12px rgba(0, 0, 0, 1);
-  --sky-greeting-bg:   rgba(0, 0, 0, 0.5);
+  --sky-txt-secondary: #FFF2D1;
+  --sky-txt-label:     #FFE399;
+  --sky-txt-accent:    #FFD566;
+  --sky-txt-gold:      #FFC429;
+  --sky-text-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.8);
+  --sky-text-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.8);
+  --sky-greeting-bg:   transparent;
   --sky-bg-glass:      rgba(12, 8, 38, 0.62);
   --sky-bg-glass-border: rgba(170, 140, 60, 0.22);
 }
@@ -129,23 +129,39 @@
 /* ── Nitnem Tracker specific text visibility ── */
 [data-theme-mode="auto"] .card-title,
 [data-theme-mode="auto"] .card-subtitle {
-  color: var(--sky-txt-primary, #000000) !important;
-  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9) !important;
+  color: var(--sky-txt-primary, #1A0402) !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
 }
 [data-theme-mode="auto"] .app-header {
-  background: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important;
-}
-[data-theme-mode="auto"] .header-blur-bg {
-  background: rgba(0, 0, 0, 0.7) !important;
-}
-[data-theme-mode="auto"] .greeting__text {
-  background: var(--sky-greeting-bg, rgba(0, 0, 0, 0.5)) !important;
-  padding: 20px !important;
-  border-radius: 16px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
+}
+[data-theme-mode="auto"] .header-blur-bg {
+  background: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Hide greeting section in auto mode (sky background) ── */
+[data-theme-mode="auto"] .greeting,
+[data-theme-mode="auto"] .greeting__content,
+[data-theme-mode="auto"] .greeting__portrait-wrapper,
+[data-theme-mode="auto"] .greeting__text,
+[data-theme-mode="auto"] #greetingSalutation,
+[data-theme-mode="auto"] #greetingGurbani,
+[data-theme-mode="auto"] #greetingTranslation,
+[data-theme-mode="auto"] .greeting__translation,
+[data-theme-mode="auto"] .greeting__nanakshahi {
+  display: none !important;
+}
+
+/* ── Move Today's Nitnem upward in auto mode ── */
+[data-theme-mode="auto"] .main-content {
+  padding-top: calc(var(--header-height) + var(--safe-top) + 20px) !important;
+}
+
+/* ── Ensure cards start below image area ── */
+[data-theme-mode="auto"] .card {
+  margin-top: 10px !important;
 }
 
 
