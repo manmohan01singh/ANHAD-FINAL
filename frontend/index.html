@@ -6,7 +6,7 @@
   <script>
     (function() {
       try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-      const theme = localStorage.getItem('anhad_theme') || 'light';
+      const theme = localStorage.getItem('anhad_theme') || 'auto';
       let effectiveTheme = theme;
       let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
       if (theme === 'auto') {
@@ -2345,6 +2345,7 @@
   <script src="js/homepage-data.js" defer></script>
   <script src="pwa-register.js?v=2" defer></script>
   <script src="js/update-controller.js" defer></script>
+  <script src="js/anhad-onboarding.js" defer></script>
 
   <!-- LAZY: Non-critical scripts loaded during idle time -->
   <script>
@@ -2500,19 +2501,19 @@
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
     <a href="index.html" class="tab-item active">
-      <span class="tab-icon">🏠</span>
+      <span class="tab-icon">&#x1F3E0;</span>
       <span class="tab-label">Home</span>
     </a>
     <a href="Insights/insights.html" class="tab-item">
-      <span class="tab-icon">📚</span>
+      <span class="tab-icon">&#x1F4DA;</span>
       <span class="tab-label">Learning</span>
     </a>
     <a href="Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon">&#x2764;&#xFE0F;</span>
       <span class="tab-label">Favorites</span>
     </a>
     <a href="Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">📈</span>
+      <span class="tab-icon">&#x1F4C8;</span>
       <span class="tab-label">Dashboard</span>
     </a>
   </nav>

@@ -66,6 +66,7 @@
                 legacy.longestStreak = data.streaks.nitnem;
             }
             legacy.lastUpdated = data.lastActive;
+            legacy.lastCheckIn = getTodayString(); // CRITICAL BUG FIX! Prevents streak from resetting to 1!
             localStorage.setItem('anhad_streak_data', JSON.stringify(legacy));
 
             // Dispatch event for real-time updates

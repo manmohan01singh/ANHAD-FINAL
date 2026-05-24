@@ -119,7 +119,7 @@
     }
 
     function getTheme() {
-        return localStorage.getItem(THEME_KEY) || 'light';
+        return localStorage.getItem(THEME_KEY) || 'auto';
     }
 
     function setTheme(theme) {

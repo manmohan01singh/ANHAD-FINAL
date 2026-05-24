@@ -24,12 +24,17 @@
         const existingGoals = JSON.parse(localStorage.getItem('anhad_daily_goals') || '{}');
         const existingAnalytics = JSON.parse(localStorage.getItem('anhad_daily_analytics') || '{}');
         const existingUnified = JSON.parse(localStorage.getItem('anhad_unified_stats') || '{}');
+        const existingStreak = JSON.parse(localStorage.getItem('anhad_streak_data') || '{}');
         
         // Get actual data from sources
         const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
         const selectedBanis = JSON.parse(localStorage.getItem('nitnemTracker_selectedBanis') || 
             '{"amritvela":[],"rehras":[],"sohila":[]}');
-        const sehajHistory = JSON.parse(localStorage.getItem('sehajPaathHistory') || '[]');
+        
+        // Load Sehaj Paath progress correctly from sehaj_paath_progress (instead of unused sehajPaathHistory)
+        const sehajProgress = JSON.parse(localStorage.getItem('sehaj_paath_progress') || '{}');
+        const completedAngs = sehajProgress.completedAngs || [];
+        const sessions = sehajProgress.sessions || [];
         
         // Count actual Nitnem banis completed today
         const totalBanis = (selectedBanis.amritvela?.length || 0) + 
@@ -47,10 +52,11 @@
         const isNitnemComplete = totalBanis > 0 && completedBanis === totalBanis;
         
         // Count actual Sehaj Paath pages read today
-        const todayPages = sehajHistory.filter(entry => {
-            const entryDate = new Date(entry.timestamp).toLocaleDateString('en-CA');
-            return entryDate === today;
-        }).length;
+        const todayPages = sessions.filter(s => s.date === today)
+            .reduce((acc, s) => acc + Math.max(0, (s.endAng - s.startAng + 1)), 0);
+        
+        // Lifetime total pages read
+        const totalPages = completedAngs.length || 0;
         
         // Get existing listening minutes from UnifiedStats (if any)
         let existingListeningMinutes = 0;
@@ -68,13 +74,14 @@
         const existingFirstUseDate = existingStats.firstUseDate || today;
         
         console.log(`📿 Nitnem: ${completedBanis}/${totalBanis} banis`);
-        console.log(`📖 Sehaj Paath: ${todayPages} pages (existing: ${existingStats.todayPagesRead || 0})`);
+        console.log(`📖 Sehaj Paath Today: ${todayPages} pages (Total lifetime: ${totalPages})`);
         console.log(`🎧 Listening: ${existingListeningMinutes} min (preserved)`);
         
         // Only update if new values are higher (never decrease)
         const finalPagesRead = Math.max(todayPages, existingStats.todayPagesRead || 0);
         const finalListeningMinutes = Math.max(existingListeningMinutes, existingStats.todayListeningMinutes || 0);
         const finalNitnemCount = Math.max(completedBanis, existingStats.todayNitnemCount || 0);
+        const finalTotalPages = Math.max(existingTotalPages, totalPages, finalPagesRead);
         
         // Update user stats - PRESERVE TOTALS, only update today's values
         const userStats = {
@@ -84,7 +91,7 @@
             todayListeningMinutes: finalListeningMinutes,
             todayNitnemCount: finalNitnemCount,
             // Preserve or calculate totals
-            totalPagesRead: Math.max(existingTotalPages, finalPagesRead),
+            totalPagesRead: finalTotalPages,
             totalListeningMinutes: Math.max(existingTotalListening, finalListeningMinutes),
             totalNitnemCompleted: Math.max(existingTotalNitnem, isNitnemComplete ? 1 : 0),
             totalDaysActive: existingTotalDays,
@@ -95,6 +102,30 @@
         };
         
         localStorage.setItem('anhad_user_stats', JSON.stringify(userStats));
+        
+        // Sync devotion streak robustly to prevent reset
+        const nitnemStreak = Math.max(
+            existingUnified.streaks?.nitnem || 0,
+            existingStreak.currentStreak || 0,
+            existingStreak.current || 0,
+            1
+        );
+        const finalStreak = {
+            currentStreak: nitnemStreak,
+            longestStreak: Math.max(existingStreak.longestStreak || 0, existingStreak.longest || 0, nitnemStreak),
+            lastCheckIn: today,
+            freezesUsed: existingStreak.freezesUsed || 0,
+            freezesAvailable: existingStreak.freezesAvailable !== undefined ? existingStreak.freezesAvailable : 1,
+            milestones: existingStreak.milestones || {
+                day1: nitnemStreak >= 1,
+                day7: nitnemStreak >= 7,
+                day21: nitnemStreak >= 21,
+                day40: nitnemStreak >= 40,
+                day108: nitnemStreak >= 108,
+                day365: nitnemStreak >= 365
+            }
+        };
+        localStorage.setItem('anhad_streak_data', JSON.stringify(finalStreak));
         
         // Update goals - preserve existing, only update current values
         const goals = {
@@ -138,25 +169,30 @@
         localStorage.setItem('anhad_daily_analytics', JSON.stringify(analytics));
         
         // Also update UnifiedStats to ensure consistency
-        if (!existingUnified.daily) existingUnified.daily = {};
-        if (!existingUnified.daily[today]) {
-            existingUnified.daily[today] = {
+        const updatedUnified = { ...existingUnified };
+        if (!updatedUnified.daily) updatedUnified.daily = {};
+        if (!updatedUnified.daily[today]) {
+            updatedUnified.daily[today] = {
                 angRead: 0,
                 nitnemBanis: [],
                 nitnemComplete: false,
                 kirtanMinutes: 0
             };
         }
-        existingUnified.daily[today].angRead = Math.max(finalPagesRead, existingUnified.daily[today].angRead || 0);
-        existingUnified.daily[today].kirtanMinutes = Math.max(finalListeningMinutes, existingUnified.daily[today].kirtanMinutes || 0);
-        existingUnified.daily[today].nitnemComplete = isNitnemComplete || existingUnified.daily[today].nitnemComplete;
-        existingUnified.lastActive = new Date().toISOString();
-        localStorage.setItem('anhad_unified_stats', JSON.stringify(existingUnified));
+        updatedUnified.daily[today].angRead = Math.max(finalPagesRead, updatedUnified.daily[today].angRead || 0);
+        updatedUnified.daily[today].kirtanMinutes = Math.max(finalListeningMinutes, updatedUnified.daily[today].kirtanMinutes || 0);
+        updatedUnified.daily[today].nitnemComplete = isNitnemComplete || updatedUnified.daily[today].nitnemComplete;
+        
+        if (!updatedUnified.streaks) updatedUnified.streaks = {};
+        updatedUnified.streaks.nitnem = nitnemStreak;
+        updatedUnified.lastActive = new Date().toISOString();
+        localStorage.setItem('anhad_unified_stats', JSON.stringify(updatedUnified));
         
         console.log('✅ [FIX 1] Data synced (existing data preserved)');
         console.log('  - Pages: ' + finalPagesRead);
         console.log('  - Banis: ' + completedBanis);
         console.log('  - Listening: ' + finalListeningMinutes + ' min');
+        console.log('  - Streak: ' + nitnemStreak + ' days');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
