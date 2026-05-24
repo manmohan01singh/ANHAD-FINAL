@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * ANHAD — Smart Back Navigation v2.0
  * 
@@ -193,8 +193,11 @@
           shouldHistoryBack = false;
         }
       } else {
-        // If no referrer exists (common in PWA standalone or Capacitor), it's safe to go back
-        shouldHistoryBack = true;
+        // If no referrer exists (common in PWA standalone or Capacitor):
+        // On Capacitor/PWA, history.back() from a sub-page may cycle within the module
+        // Force fallback URL for reliable navigation to index.html
+        var isCapacitorApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+        shouldHistoryBack = !isCapacitorApp && window.history.length > 2;
       }
 
       if (shouldHistoryBack) {
