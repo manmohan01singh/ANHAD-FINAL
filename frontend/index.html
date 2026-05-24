@@ -155,8 +155,11 @@
   <!-- PERFORMANCE: Smart time-based preload — only current slot images (WebP, 92% smaller) -->
   <script>
     (function() {
-      var h = new Date().getHours();
-      var slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+      var slot = localStorage.getItem('anhad_forced_time_of_day');
+      if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+        var h = new Date().getHours();
+        slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+      }
       var base = 'assets/HERO CARD IMAGES/';
       var slotMap = {
         morning: ['morning-darbar-sahib.webp','morning-amritvela-kirtan.webp','morning-waheguru-simran.webp'],
@@ -2344,7 +2347,7 @@
   <script src="lib/overlay-player.js" defer></script>
   
   <!-- Core UI logic -->
-  <script src="js/trendora-app.js" defer></script>
+  <script src="js/trendora-app.js?v=4.0.1" defer></script>
   <script src="js/homepage-data.js" defer></script>
   <script src="pwa-register.js?v=2" defer></script>
   <script src="js/update-controller.js" defer></script>
@@ -2633,6 +2636,10 @@
     (function () {
       // Determine current time of day slot
       function getTimeSlot() {
+        var forced = localStorage.getItem('anhad_forced_time_of_day');
+        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+          return forced;
+        }
         const h = new Date().getHours();
         if (h >= 5 && h < 9)  return 'morning';
         if (h >= 9 && h < 16) return 'day';
@@ -2685,7 +2692,7 @@
   </script>
 
   <!-- ANHAD: Animated Sky Background Engine -->
-  <script src="js/anhad-sky-bg.js" defer></script>
+  <script src="js/anhad-sky-bg.js?v=4.0.1" defer></script>
 
 </body>
 </html>

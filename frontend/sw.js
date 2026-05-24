@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.9.3'; // Bumped: Fix raag ang-loading + keyboard ghost-tap
+const CACHE_VERSION = 'anhad-v5.9.5'; // Bumped: Fix deep conflict theme synchronization logic
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

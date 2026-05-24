@@ -26,6 +26,10 @@
 
   // ── Time helpers ─────────────────────────────────────────────────────────
   function getSlot() {
+    const forced = localStorage.getItem('anhad_forced_time_of_day');
+    if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+      return forced;
+    }
     const h = new Date().getHours();
     if (h >= 5  && h < 9)  return 'morning';
     if (h >= 9  && h < 16) return 'day';

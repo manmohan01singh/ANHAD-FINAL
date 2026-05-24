@@ -1382,12 +1382,17 @@
       }
 
       // FALLBACK: Direct update using the new clean WebP paths
-      const hour = new Date().getHours();
+      const forced = localStorage.getItem('anhad_forced_time_of_day');
       let slot = 'day';
-      if (hour >= 5 && hour < 9) slot = 'morning';
-      else if (hour >= 9 && hour < 16) slot = 'day';
-      else if (hour >= 16 && hour < 20) slot = 'evening';
-      else slot = 'night';
+      if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+        slot = forced;
+      } else {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 9) slot = 'morning';
+        else if (hour >= 9 && hour < 16) slot = 'day';
+        else if (hour >= 16 && hour < 20) slot = 'evening';
+        else slot = 'night';
+      }
 
       const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
       const effectiveSlot = mode === 'dark' ? 'night' : mode === 'light' ? 'day' : slot;
@@ -1443,7 +1448,22 @@
     init() {
       // Read the unified theme key
       const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-      const isDark = savedTheme === 'dark' || (savedTheme === 'auto' && (new Date().getHours() < 5 || new Date().getHours() >= 20));
+      
+      const getIsDark = (theme) => {
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
+        if (theme === 'auto') {
+          const forced = localStorage.getItem('anhad_forced_time_of_day');
+          if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            return forced === 'night';
+          }
+          const hour = new Date().getHours();
+          return hour < 5 || hour >= 20;
+        }
+        return false;
+      };
+
+      const isDark = getIsDark(savedTheme);
       this._apply(isDark);
 
       // Listen for custom theme change events
@@ -1480,8 +1500,8 @@
 
       // Listen for storage changes (other tabs)
       window.addEventListener('storage', (e) => {
-        if (e.key === 'anhad_theme' && e.newValue) {
-          const isDark = e.newValue === 'dark' || (e.newValue === 'auto' && (new Date().getHours() < 5 || new Date().getHours() >= 20));
+        if ((e.key === 'anhad_theme' || e.key === 'anhad_forced_time_of_day') && localStorage.getItem('anhad_theme')) {
+          const isDark = getIsDark(localStorage.getItem('anhad_theme'));
           this._apply(isDark);
         }
       });
