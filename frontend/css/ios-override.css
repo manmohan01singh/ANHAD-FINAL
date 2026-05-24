@@ -577,14 +577,30 @@ body {
 }
 
 /* Header Buttons Claymorphism */
+/* Header Buttons Glassmorphism - Premium Frosted Glass */
 .header__btn, .header-btn--glass {
   border-radius: 50% !important;
-  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.7)) !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
   box-shadow: 
-    6px 6px 15px rgba(0,0,0,0.06), 
-    inset 3px 3px 6px rgba(255,255,255,0.95),
-    inset -3px -3px 6px rgba(0,0,0,0.05) !important;
-  border: 1px solid rgba(255,255,255,0.8) !important;
+    0 4px 15px rgba(0, 0, 0, 0.05), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.header__btn:active, .header-btn--glass:active {
+  transform: scale(0.92) !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 
+    0 2px 8px rgba(212, 148, 58, 0.2), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
 }
 
 .install-banner__cta {
@@ -1177,14 +1193,22 @@ body {
   color: #FFFFFF !important;
 }
 
-/* Deep Claymorphism for Header Buttons */
+/* Deep Glassmorphism for Header Buttons - Premium Dark Frosted Glass */
 .dark-mode .dark-mode .header__btn, .dark-mode .dark-mode .header-btn--glass {
-  background: linear-gradient(145deg, rgba(40,40,45,0.9), rgba(20,20,25,0.8)) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 
-    6px 6px 15px rgba(0,0,0,0.6), 
-    inset 2px 2px 6px rgba(255,255,255,0.12),
-    inset -2px -2px 6px rgba(0,0,0,0.4) !important;
-  border: 1px solid rgba(255,255,255,0.05) !important;
+    0 4px 15px rgba(0, 0, 0, 0.4), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode .dark-mode .header__btn:active, .dark-mode .dark-mode .header-btn--glass:active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.5), 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Removed conflicting progress-inline block here to let lines 813-820 apply! */

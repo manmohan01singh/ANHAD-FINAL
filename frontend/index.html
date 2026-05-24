@@ -1888,7 +1888,7 @@
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
     <header class="header" role="banner" style="background: transparent !important;">
-      <div class="header__left">
+      <div class="header__left" style="display: flex; gap: 8px; align-items: center;">
         <!-- Back to Welcome/Splash screen -->
         <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" id="homeBackBtn"
            aria-label="Welcome Screen"
@@ -1897,6 +1897,9 @@
            onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
           <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
+        <button class="header__btn ios-haptic" id="guideStartBtn" aria-label="Start Guided Tour" title="App Tour">
+          <span class="ios-emoji" role="img" aria-label="tour">🧭</span>
+        </button>
       </div>
       <div class="header__center">
         <h1 class="header__title">ANHAD</h1>
