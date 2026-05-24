@@ -940,13 +940,34 @@
         }, 100);
     }
 
-    function endTour() {
-        console.log('🏁 Upgraded onboarding tour successfully completed.');
+    let tourCleanupTimeout = null;
+
+    function endTour(immediate = false) {
+        console.log('🏁 Upgraded onboarding tour completed.');
         localStorage.setItem(TOUR_KEY, 'true');
 
         // Unbind resize and scroll events
         window.removeEventListener('resize', handleResizeAndScroll);
         window.removeEventListener('scroll', handleResizeAndScroll);
+
+        // Cancel any pending cleanup timeout
+        if (tourCleanupTimeout) {
+            clearTimeout(tourCleanupTimeout);
+            tourCleanupTimeout = null;
+        }
+
+        // Remove target classes
+        document.querySelectorAll('.anhad-tour-target').forEach(el => {
+            el.classList.remove('anhad-tour-target');
+        });
+
+        if (immediate) {
+            // Immediate DOM Teardown to prevent race conditions
+            if (overlayContainer) { overlayContainer.remove(); overlayContainer = null; }
+            if (popover) { popover.remove(); popover = null; }
+            if (tapPrompt) { tapPrompt.remove(); tapPrompt = null; }
+            return;
+        }
 
         // Animate off
         document.querySelectorAll('.anhad-tour-overlay-edge').forEach(el => {
@@ -955,31 +976,24 @@
         if (popover) popover.classList.remove('active');
         if (tapPrompt) tapPrompt.style.opacity = '0';
 
-        // Remove high Z-indexes or style tweaks from targets
-        document.querySelectorAll('.anhad-tour-target').forEach(el => {
-            el.classList.remove('anhad-tour-target');
-        });
-
-        // Safe DOM cleanup
-        setTimeout(() => {
-            if (overlayContainer) overlayContainer.remove();
-            if (popover) popover.remove();
-            if (tapPrompt) tapPrompt.remove();
-
-            const style = document.getElementById('anhad-tour-styles-v9');
-            if (style) style.remove();
+        // Scheduled Teardown
+        tourCleanupTimeout = setTimeout(() => {
+            if (overlayContainer) { overlayContainer.remove(); overlayContainer = null; }
+            if (popover) { popover.remove(); popover = null; }
+            if (tapPrompt) { tapPrompt.remove(); tapPrompt = null; }
+            
+            // Keep stylesheet injected in the document head to avoid flashes or race conditions
+            tourCleanupTimeout = null;
         }, 450);
     }
 
     // Expose startTour globally so that the header button can invoke it
     window.startAnhadTour = function () {
-        // Safe reset: cleanup existing UI elements if tour is already active
-        endTour();
-        setTimeout(() => {
-            currentStepIndex = 0;
-            // Always show the premium language select modal first when manually triggered
-            showLanguagePicker();
-        }, 80);
+        // Immediate synchronous cleanup to avoid any race condition
+        endTour(true);
+        currentStepIndex = 0;
+        // Always show the premium language select modal first when manually triggered
+        showLanguagePicker();
     };
 
     // Auto-launch trigger & manual click listener
