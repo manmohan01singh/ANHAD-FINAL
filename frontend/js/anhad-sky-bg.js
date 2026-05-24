@@ -209,11 +209,12 @@
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
+    const mode = document.documentElement.getAttribute('data-theme-mode');
+    console.log('applyTimeOfDay called - slot:', slot, 'mode:', mode);
     document.documentElement.setAttribute('data-time-of-day', slot);
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
-    const mode = document.documentElement.getAttribute('data-theme-mode');
     
     if (canvas) {
       let bgImage = '';
@@ -233,6 +234,7 @@
           break;
       }
       if (bgImage) {
+        console.log('Setting background image:', bgImage);
         canvas.style.backgroundImage = `url('${bgImage}')`;
       }
     }
@@ -241,7 +243,10 @@
   // ── Update hero card images based on theme mode ───────────────────────────
   function updateHeroCardImages() {
     const mode = document.documentElement.getAttribute('data-theme-mode');
+    const slot = getSlot();
     const heroCardImages = document.querySelectorAll('.hero-card__image[data-img-morning]');
+    
+    console.log('updateHeroCardImages called - mode:', mode, 'slot:', slot, 'found images:', heroCardImages.length);
     
     heroCardImages.forEach(img => {
       let newSrc = '';
@@ -254,7 +259,6 @@
         newSrc = img.getAttribute('data-img-day');
       } else if (mode === 'auto') {
         // Auto mode: use time-based images
-        const slot = getSlot();
         if (slot === 'morning') {
           newSrc = img.getAttribute('data-img-morning');
         } else if (slot === 'day') {
@@ -268,6 +272,7 @@
       
       // Force update even if src matches to ensure morning images load
       if (newSrc) {
+        console.log('Setting hero card image to:', newSrc);
         img.src = newSrc;
       }
     });
