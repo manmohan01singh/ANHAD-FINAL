@@ -210,10 +210,12 @@
   function applyTimeOfDay() {
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode');
+    console.log('applyTimeOfDay - slot:', slot, 'mode:', mode);
     document.documentElement.setAttribute('data-time-of-day', slot);
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
+    console.log('Canvas exists:', !!canvas);
     
     if (canvas) {
       let bgImage = '';
@@ -221,6 +223,7 @@
       switch(slot) {
         case 'morning':
           bgImage = 'assets/darbar-sahib-amritvela-morning.png';
+          console.log('Morning - setting bg:', bgImage);
           break;
         case 'day':
           bgImage = 'assets/darbar-sahib-day.jpg';
@@ -234,6 +237,7 @@
       }
       if (bgImage) {
         canvas.style.backgroundImage = `url('${bgImage}')`;
+        console.log('Background set to:', canvas.style.backgroundImage);
       }
     }
   }
