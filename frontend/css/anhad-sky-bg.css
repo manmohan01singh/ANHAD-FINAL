@@ -78,13 +78,13 @@
 /* ── Apply contrast to key page elements ── */
 [data-theme-mode="auto"] .header__title,
 [data-theme-mode="auto"] .header-title {
-  color: var(--sky-txt-gold, #D4943A) !important;
-  text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
+  color: #FFCC29 !important; /* Premium glowing gold */
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
 }
 [data-theme-mode="auto"] .header__title-gurmukhi,
 [data-theme-mode="auto"] .gurmukhi-title {
-  color: var(--sky-txt-label, #6B2810) !important;
-  text-shadow: var(--sky-text-shadow-dark, none) !important;
+  color: #FFFFFF !important; /* Crisp glowing white */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
 }
 [data-theme-mode="auto"] .english-title {
   color: var(--sky-txt-gold, #D4943A) !important;
@@ -231,25 +231,25 @@ body.is-scrolling #anhad-sky-canvas {
 
 /* ── MORNING (5–7am): Volcanic orange dawn rising into warm cream ── */
 [data-theme-mode="auto"][data-time-of-day="morning"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-amritvela-morning.png') no-repeat center center;
+  background: url('assets/darbar-sahib-morning-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── DAYTIME (9am–4pm): Deep sapphire sky → bright azure → near-white ── */
 [data-theme-mode="auto"][data-time-of-day="day"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-day.jpg') no-repeat center center;
+  background: url('assets/darbar-sahib-day-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── EVENING (4–8pm): Midnight violet → deep crimson → fiery gold ── */
 [data-theme-mode="auto"][data-time-of-day="evening"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-evening.jpg') no-repeat center center;
+  background: url('assets/darbar-sahib-evening-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
 /* ── NIGHT (8pm–5am): Deep cosmic black-navy-indigo ── */
 [data-theme-mode="auto"][data-time-of-day="night"] #anhad-sky-canvas {
-  background: url('assets/darbar-sahib-night.jpg') no-repeat center center;
+  background: url('assets/darbar-sahib-night-bg.webp') no-repeat center center;
   background-size: cover;
 }
 
@@ -1185,23 +1185,23 @@ body.is-scrolling #anhad-sky-canvas {
 
 /* ── Ensure header ANHAD title looks crisp ── */
 [data-theme-mode="auto"] .header__title {
-  color: #D4943A !important;
+  color: #FFCC29 !important; /* Premium glowing gold */
   font-weight: 800 !important;
   letter-spacing: 0.12em !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
 }
 [data-theme-mode="auto"] .header__title-gurmukhi {
-  color: #8B4513 !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  color: #FFFFFF !important; /* Crisp glowing white */
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] .header__title {
   color: #FFCC29 !important;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9) !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 1px 5px rgba(0, 0, 0, 0.95) !important;
 }
 [data-theme-mode="auto"][data-time-of-day="night"] .header__title-gurmukhi {
   color: #FFE399 !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85) !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
 }
 
 /* ── Progress bar label ── */
@@ -1209,5 +1209,16 @@ body.is-scrolling #anhad-sky-canvas {
 [data-theme-mode="auto"] .progress-inline__text {
   font-weight: 700 !important;
   text-shadow: none !important;
+}
+
+/* ── Hide CSS celestial elements as we now have high-quality background images ── */
+#anhad-stars,
+#anhad-moon,
+#anhad-sun,
+#anhad-horizon-glow,
+#anhad-morning-rays,
+#anhad-clouds-fg,
+#anhad-clouds-bg {
+  display: none !important;
 }
 
