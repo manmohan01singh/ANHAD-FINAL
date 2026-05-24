@@ -141,27 +141,29 @@
   background: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* ── Hide greeting section in auto mode (sky background) ── */
-[data-theme-mode="auto"] .greeting,
-[data-theme-mode="auto"] .greeting__content,
-[data-theme-mode="auto"] .greeting__portrait-wrapper,
-[data-theme-mode="auto"] .greeting__text,
-[data-theme-mode="auto"] #greetingSalutation,
-[data-theme-mode="auto"] #greetingGurbani,
-[data-theme-mode="auto"] #greetingTranslation,
-[data-theme-mode="auto"] .greeting__translation,
-[data-theme-mode="auto"] .greeting__nanakshahi {
+/* ── Auto Mode: Hide greeting text, enlarge Guru portraits ── */
+[data-theme-mode="auto"] .greeting__text {
   display: none !important;
 }
-
-/* ── Move Today's Nitnem upward in auto mode ── */
-[data-theme-mode="auto"] .main-content {
-  padding-top: calc(var(--header-height) + var(--safe-top) + 20px) !important;
+[data-theme-mode="auto"] .greeting__portrait-slider {
+  height: 200px !important;
 }
-
-/* ── Ensure cards start below image area ── */
-[data-theme-mode="auto"] .card {
-  margin-top: 10px !important;
+[data-theme-mode="auto"] .greeting__guru-portrait {
+  width: 180px !important;
+  height: 180px !important;
+  min-width: 180px !important;
+  min-height: 180px !important;
+}
+[data-theme-mode="auto"] .greeting__slide {
+  width: 180px !important;
+  height: 180px !important;
+}
+[data-theme-mode="auto"] .greeting {
+  margin-bottom: 4px !important;
+  padding: 0 !important;
+}
+[data-theme-mode="auto"] .progress-inline {
+  margin-top: 8px !important;
 }
 
 
