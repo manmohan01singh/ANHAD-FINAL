@@ -1375,48 +1375,47 @@
     },
 
     updateHeroCardImages() {
-      const hour = new Date().getHours();
-      let timeSlot = 'day';
-      if (hour >= 5 && hour < 9) {
-        timeSlot = 'morning';
-      } else if (hour >= 9 && hour < 16) {
-        timeSlot = 'day';
-      } else if (hour >= 16 && hour < 20) {
-        timeSlot = 'evening';
-      } else {
-        timeSlot = 'night';
-      }
-
-      // Use the global applyHeroImages if available (inline script in index.html)
-      if (typeof window.applyHeroImages === 'function') {
-        window.applyHeroImages();
+      // PRIMARY: Delegate to the authoritative AnhadSky system (anhad-sky-bg.js)
+      if (window.AnhadSky && typeof window.AnhadSky.updateHeroCardImages === 'function') {
+        window.AnhadSky.updateHeroCardImages();
         return;
       }
 
+      // FALLBACK: Direct update using the new clean WebP paths
+      const hour = new Date().getHours();
+      let slot = 'day';
+      if (hour >= 5 && hour < 9) slot = 'morning';
+      else if (hour >= 9 && hour < 16) slot = 'day';
+      else if (hour >= 16 && hour < 20) slot = 'evening';
+      else slot = 'night';
+
+      const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
+      const effectiveSlot = mode === 'dark' ? 'night' : mode === 'light' ? 'day' : slot;
+
       const imageSets = {
         morning: [
-          'assets/homepage-hero/darbar-sahib-morning-1.png',
-          'assets/homepage-hero/darbar-sahib-morning-2.png',
-          'assets/homepage-hero/darbar-sahib-morning-3.png'
+          'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/morning-waheguru-simran.webp'
         ],
         day: [
-          'assets/homepage-hero/darbar-sahib-day-1.png',
-          'assets/homepage-hero/darbar-sahib-day-2.png',
-          'assets/homepage-hero/darbar-sahib-day-3.png'
+          'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/day-waheguru-simran.webp'
         ],
         evening: [
-          'assets/homepage-hero/darbar-sahib-evening-1.png',
-          'assets/homepage-hero/darbar-sahib-evening-2.webp',
-          'assets/homepage-hero/darbar-sahib-evening-3.webp'
+          'assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/evening-waheguru-simran.webp'
         ],
         night: [
-          'assets/homepage-hero/darbar-sahib-night-1.png',
-          'assets/homepage-hero/darbar-sahib-night-2.png',
-          'assets/homepage-hero/darbar-sahib-night-3.png'
+          'assets/HERO CARD IMAGES/night-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
         ]
       };
 
-      const images = imageSets[timeSlot];
+      const images = imageSets[effectiveSlot];
 
       [
         { id: 'heroCard1Img', src: images[0] },
@@ -1424,7 +1423,9 @@
         { id: 'heroCard3Img', src: images[2] }
       ].forEach(({ id, src }) => {
         const img = document.getElementById(id);
-        if (!img || img.src.endsWith(src)) return;
+        if (!img) return;
+        const newAbsolute = new URL(src, document.baseURI).href;
+        if (img.src === newAbsolute) return; // Already correct, no re-download
         img.style.transition = 'opacity 0.5s ease';
         img.style.opacity = '0';
         setTimeout(() => {

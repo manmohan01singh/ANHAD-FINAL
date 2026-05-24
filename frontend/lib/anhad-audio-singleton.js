@@ -90,8 +90,9 @@
         const filename = `day-${safeIndex}.webm`;
         // Capacitor: direct R2 CDN (no Render middleman = no cold starts)
         // PWA: same-origin Render proxy (simpler, no CORS issues)
+        // NOTE: No time-based cache-busting — browser caches by URL, stable URL = instant resume
         const base = window.Capacitor ? CDN_BASE_R2 : CDN_BASE;
-        return `${base}/${filename}?v=2.1.4&t=${Math.floor(Date.now() / 30000)}`;
+        return `${base}/${filename}?v=2.1.5`;
       }
     },
     simran: {
@@ -125,7 +126,8 @@
         // Direct CDN URL for both PWA and Capacitor.
         // Simran tracks are MP3 — natively supported on all platforms.
         // Seeking done via audio.currentTime after loadedmetadata.
-        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?t=${Math.floor(Date.now() / 30000)}`;
+        // NOTE: No time-based cache-busting — stable URL = browser can cache and resume instantly.
+        return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?v=2.1.5`;
       }
     },
     hukamnama: {
@@ -412,6 +414,7 @@
       const data = {
         stream: currentStream,
         trackIndex: currentTrackIndex,
+        shufflePosition: currentShufflePosition,   // persist shuffle position for refresh-resume
         isPlaying,
         volume: audio ? audio.volume : 0.8,
         currentTime: audio ? audio.currentTime : 0,
@@ -1023,14 +1026,39 @@
         }
 
       } else if (stream.type === 'playlist') {
-        // ── AMRITVELA: Server-sync + seek to live position ──
-        try {
-          const pos = await getServerLivePosition();
-          loadPlaylistPosition(streamName, pos, requestId);
-        } catch (e) {
-          console.error('[AnhadAudio] Amritvela sync failed:', e);
-          const local = getLocalLivePosition();
-          loadPlaylistPosition(streamName, local, requestId);
+        // ── PLAYLIST (Amritvela / Simran) ──
+        // REFRESH-RESUME LOGIC:
+        // If the user refreshed within 15 minutes and was on the same stream,
+        // restore their exact position instead of snapping to the live edge.
+        // They can click LIVE to jump back. This prevents the jarring track-change
+        // that happens when the server is at a different position than where they left off.
+        const saved = loadState();
+        const savedAgeMs = Date.now() - (saved?.timestamp || 0);
+        const isRecentRefresh = savedAgeMs < 15 * 60 * 1000; // 15 minutes
+        const isSameStream = saved?.stream === streamName;
+        const hasSavedPosition = saved && typeof saved.currentTime === 'number' && saved.currentTime > 5;
+
+        if (isRecentRefresh && isSameStream && hasSavedPosition) {
+          // Restore saved position — don't snap to live
+          console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs/1000)}s ago)`);
+          const restoredPos = {
+            trackIndex: saved.trackIndex || 0,
+            position: saved.currentTime,
+            shufflePosition: saved.shufflePosition || 0
+          };
+          loadPlaylistPosition(streamName, restoredPos, requestId);
+          // Fetch server data in background to update duration cache and live offset anchor
+          getServerLivePosition().catch(() => {});
+        } else {
+          // New session or too old — sync to live server position
+          try {
+            const pos = await getServerLivePosition();
+            loadPlaylistPosition(streamName, pos, requestId);
+          } catch (e) {
+            console.error('[AnhadAudio] Playlist sync failed:', e);
+            const local = getLocalLivePosition();
+            loadPlaylistPosition(streamName, local, requestId);
+          }
         }
       }
     } finally {
@@ -1446,7 +1474,29 @@
     }
 
     navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+
+    // Also expose getLiveOffset on public API (needed by virtual-live-indicator)
+    if (window.AnhadAudio) window.AnhadAudio.getLiveOffset = getLiveOffset;
   }
+
+  // ─── LIVE OFFSET HEARTBEAT — Emits every second while playing ────────────
+  // Powers the YouTube-style live indicator on player pages.
+  setInterval(() => {
+    if (!isPlaying || !currentStream || !audio) return;
+    const stream = STREAMS[currentStream];
+    if (!stream || stream.type !== 'playlist') return;
+    if (!liveSyncAnchor) return;
+
+    const elapsedSinceSync = (Date.now() - liveSyncAnchor.wallTime) / 1000;
+    const expectedAudioTime = liveSyncAnchor.audioTime + elapsedSinceSync;
+    const offsetSeconds = Math.max(0, Math.round(expectedAudioTime - (audio.currentTime || 0)));
+    const isAtLive = offsetSeconds <= 5;
+
+    emit('liveoffset', { offsetSeconds, isAtLive, stream: currentStream });
+    window.dispatchEvent(new CustomEvent('anhadLiveOffset', {
+      detail: { offsetSeconds, isAtLive, stream: currentStream }
+    }));
+  }, 1000);
 
   // ─── WAKELOCK: Keep screen alive during playback ─────────────────────────
   let _wakeLock = null;
@@ -1540,6 +1590,14 @@
       acquireWakeLock();
       updateMediaSession();
       updateForegroundServiceNotification();
+      // Re-anchor the live sync clock after tab was hidden (tab timer may have throttled)
+      if (liveSyncAnchor && audio) {
+        liveSyncAnchor = {
+          wallTime: Date.now(),
+          audioTime: audio.currentTime,
+          trackIndex: currentTrackIndex
+        };
+      }
     }
   });
 
@@ -1775,7 +1833,9 @@
     on,
     off,
     STREAMS: Object.keys(STREAMS),
-    getStreamInfo: (name) => STREAMS[name] ? { ...STREAMS[name] } : null
+    getStreamInfo: (name) => STREAMS[name] ? { ...STREAMS[name] } : null,
+    getLiveOffset,         // Returns seconds behind live edge (0 = at live)
+    getLiveSyncAnchor: () => liveSyncAnchor  // Exposed for debugging
   };
 
   // ─── Backward compatibility shims ─────────────────────────────────────────

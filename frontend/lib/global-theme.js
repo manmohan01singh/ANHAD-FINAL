@@ -109,6 +109,11 @@
                     style.parentNode.removeChild(style);
                 }
                 html.classList.remove('theme-changing');
+                // Clear background image when not in auto mode
+                // (auto mode sets body.style.backgroundImage via anhad-sky-bg.js)
+                if (theme !== 'auto' && document.body) {
+                    document.body.style.backgroundImage = 'none';
+                }
             });
         });
     }

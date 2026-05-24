@@ -588,8 +588,152 @@ app.get('/api/radio/status', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+// 🔴 WAHEGURU SIMRAN API — Same architecture as Amritvela (SIMRAN_PLAYLIST)
+// All devices hear the exact same track at the exact same position.
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * GET /api/simran/live
+ *
+ * Returns the exact current live position for the Waheguru Simran broadcast.
+ * Identical shape to /api/radio/live so the singleton can use it transparently.
+ */
+app.get('/api/simran/live', (req, res) => {
+    let livePos, track;
+    try {
+        livePos = simranBroadcast.getCurrentLivePosition();
+        track = SIMRAN_PLAYLIST[livePos.trackIndex];
+        if (!track) throw new Error('Simran track index out of bounds: ' + livePos.trackIndex);
+    } catch (err) {
+        console.error('[Simran] Live position error:', err.message);
+        return res.status(500).json({ error: 'Simran broadcast engine error' });
+    }
+
+    res.json({
+        // Core what-to-play fields
+        trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
+        trackPosition: Math.round(livePos.trackPosition * 100) / 100,
+        trackTitle: track.title,
+        trackArtist: track.artist,
+        trackFilename: track.filename,
+        trackDuration: simranBroadcast.getTrackDuration(livePos.trackIndex),
+
+        // Compatibility with singleton's liveposition event
+        position: Math.round(livePos.trackPosition * 100) / 100,
+
+        // Metadata
+        totalElapsed: Math.round(livePos.totalElapsed),
+        playlistDuration: Math.round(livePos.playlistDuration),
+        playlistCycle: livePos.playlistCycle,
+        totalTracks: SIMRAN_PLAYLIST.length,
+
+        // Sync
+        epoch: simranBroadcast.epoch,
+        serverTime: Date.now(),
+        isPlaying: true,
+        listeners: simranBroadcast.getListenerCount(),
+        listenersCount: simranBroadcast.getListenerCount(),
+
+        // All durations for local timeline prediction
+        trackDurations: Object.fromEntries(
+            SIMRAN_PLAYLIST.map((_, i) => [i, simranBroadcast.getTrackDuration(i)])
+        )
+    });
+});
+
+/**
+ * POST /api/simran/durations
+ * Clients report actual track durations — improves accuracy over time.
+ */
+app.post('/api/simran/durations', (req, res) => {
+    const { trackIndex, duration } = req.body;
+
+    if (typeof trackIndex !== 'number' || typeof duration !== 'number') {
+        return res.status(400).json({ error: 'trackIndex and duration are required numbers' });
+    }
+
+    const accepted = simranBroadcast.reportDuration(trackIndex, duration);
+    res.json({
+        accepted,
+        trackIndex,
+        duration: simranBroadcast.getTrackDuration(trackIndex),
+        knownDurations: Object.keys(simranBroadcast.trackDurations).length
+    });
+});
+
+/**
+ * POST /api/simran/heartbeat
+ * Clients call this every 30s to register as active listeners.
+ */
+app.post('/api/simran/heartbeat', (req, res) => {
+    const { listenerId } = req.body;
+
+    if (!listenerId) {
+        return res.status(400).json({ error: 'listenerId is required' });
+    }
+
+    simranBroadcast.heartbeat(listenerId, req.headers['user-agent'] || '');
+
+    const livePos = simranBroadcast.getCurrentLivePosition();
+    const track = SIMRAN_PLAYLIST[livePos.trackIndex];
+
+    res.json({
+        ok: true,
+        listenersCount: simranBroadcast.getListenerCount(),
+        trackIndex: livePos.trackIndex,
+        shufflePosition: livePos.shufflePosition,
+        trackPosition: Math.round(livePos.trackPosition * 100) / 100,
+        trackFilename: track ? track.filename : '',
+        serverTime: Date.now()
+    });
+});
+
+/**
+ * GET /api/simran/listeners
+ */
+app.get('/api/simran/listeners', (req, res) => {
+    res.json({
+        count: simranBroadcast.getListenerCount(),
+        timestamp: Date.now()
+    });
+});
+
+/**
+ * GET /api/simran/status
+ */
+app.get('/api/simran/status', (req, res) => {
+    const livePos = simranBroadcast.getCurrentLivePosition();
+    const track = SIMRAN_PLAYLIST[livePos.trackIndex];
+    const knownCount = Object.keys(simranBroadcast.trackDurations).length;
+
+    res.json({
+        status: 'broadcasting',
+        epoch: simranBroadcast.epoch,
+        epochDate: new Date(simranBroadcast.epoch).toISOString(),
+        uptime: simranBroadcast.formatTime(livePos.totalElapsed),
+        currentTrack: {
+            index: livePos.trackIndex,
+            title: track ? track.title : 'Unknown',
+            artist: track ? track.artist : 'Unknown',
+            position: simranBroadcast.formatTime(livePos.trackPosition),
+            duration: simranBroadcast.formatTime(simranBroadcast.getTrackDuration(livePos.trackIndex))
+        },
+        playlist: {
+            totalTracks: SIMRAN_PLAYLIST.length,
+            totalDuration: simranBroadcast.formatTime(livePos.playlistDuration),
+            cycle: livePos.playlistCycle,
+            knownDurations: `${knownCount}/${SIMRAN_PLAYLIST.length}`
+        },
+        listeners: { active: simranBroadcast.getListenerCount() },
+        serverTime: new Date().toISOString()
+    });
+});
+
+// ═══════════════════════════════════════════════════════════════════
 // SEHAJ PAATH API - Progress Management
 // ═══════════════════════════════════════════════════════════════════
+
 
 // Helper to read progress file
 async function readProgressFile(filePath) {

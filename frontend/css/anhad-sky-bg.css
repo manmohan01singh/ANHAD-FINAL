@@ -830,7 +830,7 @@ body.is-scrolling #anhad-sky-canvas {
   position: absolute;
   border-radius: 60px 100px 90px 55px;
   opacity: 0;
-  animation: cloud-drift linear infinite;
+  animation: none;
   /* Organic edge via SVG turbulence filter */
   filter: url(#cloud-turbulence);
 }
