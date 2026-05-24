@@ -152,11 +152,33 @@
   <link rel="preconnect" href="https://api.banidb.com">
   <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
   
+  <!-- PERFORMANCE: Preload critical images for instant loading -->
+  <link rel="preload" href="assets/HERO CARD IMAGES/DAY DARABR SAHIB CARD IMAGE.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/MORNING DARBAR SAHIB CARD IMAGE .png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/EVENEING DARBAR SAHIB CARD IMAGE .png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/NIGHT DARBAR SAHIB CARDimage.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/DAY AMRITVELA KIRTAN CARD IMAGE.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/MORNING AMRITVELA KIRTAN CARD IMAGE .png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/EVENEING AMRITVELA KIRTAN CARD IMAGE .png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/NIGHT AMRITVELA KIRTAN  CARDimage.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/DAY WAHEGURU SIMRAN CARD IMAGE.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/MORNING WAHEGURU SIMRAN CARD IMAGE .png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/EVENEING WAHEGURU SIMRAN CARD IMAGE .png.png" as="image" type="image/png">
+  <link rel="preload" href="assets/HERO CARD IMAGES/NIGHT WAHEGURU SIMRAN CARD IMAGE.png" as="image" type="image/png">
+  <link rel="preload" href="assets/darbar-sahib-amritvela-morning.png" as="image" type="image/png">
+  <link rel="preload" href="assets/darbar-sahib-day.jpg" as="image" type="image/jpeg">
+  <link rel="preload" href="assets/darbar-sahib-evening.jpg" as="image" type="image/jpeg">
+  <link rel="preload" href="assets/darbar-sahib-night.jpg" as="image" type="image/jpeg">
+  
   <!-- PERF: Removed aggressive prefetch links — SPA engine handles viewport-based prefetch -->
 
   <link rel="stylesheet" href="css/global-mini-player.css?v=4" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/desktop-responsive.css?v=11" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="./css/anhad-core.css?v=5">
+  
+  <!-- Image caching strategy -->
+  <meta http-equiv="Cache-Control" content="max-age=31536000, immutable">
+  <meta name="format-detection" content="telephone=no">
 
   <script src="./js/anhad-core.js" defer></script>
 
@@ -1920,11 +1942,11 @@
             <picture id="heroCard1Picture">
               <img class="hero-card__image" id="heroCard1Img"
                 src="assets/HERO CARD IMAGES/DAY DARABR SAHIB CARD IMAGE.png"
-                data-img-morning="assets/HERO CARD IMAGES/DAY DARABR SAHIB CARD IMAGE.png"
+                data-img-morning="assets/HERO CARD IMAGES/MORNING DARBAR SAHIB CARD IMAGE .png"
                 data-img-day="assets/HERO CARD IMAGES/DAY DARABR SAHIB CARD IMAGE.png"
                 data-img-evening="assets/HERO CARD IMAGES/EVENEING DARBAR SAHIB CARD IMAGE .png"
                 data-img-night="assets/HERO CARD IMAGES/NIGHT DARBAR SAHIB CARDimage.png"
-                alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async"
+                alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="sync"
                 onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
@@ -1949,11 +1971,11 @@
             <picture id="heroCard2Picture">
               <img class="hero-card__image" id="heroCard2Img"
                 src="assets/HERO CARD IMAGES/DAY AMRITVELA KIRTAN CARD IMAGE.png"
-                data-img-morning="assets/HERO CARD IMAGES/DAY AMRITVELA KIRTAN CARD IMAGE.png"
+                data-img-morning="assets/HERO CARD IMAGES/MORNING AMRITVELA KIRTAN CARD IMAGE .png"
                 data-img-day="assets/HERO CARD IMAGES/DAY AMRITVELA KIRTAN CARD IMAGE.png"
                 data-img-evening="assets/HERO CARD IMAGES/EVENEING AMRITVELA KIRTAN CARD IMAGE .png"
                 data-img-night="assets/HERO CARD IMAGES/NIGHT AMRITVELA KIRTAN  CARDimage.png"
-                alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="async"
+                alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="sync"
                 onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">
@@ -1978,11 +2000,11 @@
             <picture id="heroCard3Picture">
               <img class="hero-card__image" id="heroCard3Img"
                 src="assets/HERO CARD IMAGES/DAY WAHEGURU SIMRAN CARD IMAGE.png"
-                data-img-morning="assets/HERO CARD IMAGES/DAY WAHEGURU SIMRAN CARD IMAGE.png"
+                data-img-morning="assets/HERO CARD IMAGES/MORNING WAHEGURU SIMRAN CARD IMAGE .png"
                 data-img-day="assets/HERO CARD IMAGES/DAY WAHEGURU SIMRAN CARD IMAGE.png"
                 data-img-evening="assets/HERO CARD IMAGES/EVENEING WAHEGURU SIMRAN CARD IMAGE .png.png"
                 data-img-night="assets/HERO CARD IMAGES/NIGHT WAHEGURU SIMRAN CARD IMAGE.png"
-                alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" decoding="async"
+                alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" decoding="sync"
                 onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">

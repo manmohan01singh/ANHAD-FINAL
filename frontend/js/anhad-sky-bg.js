@@ -20,8 +20,8 @@
   // ── Time helpers ─────────────────────────────────────────────────────────
   function getSlot() {
     const h = new Date().getHours();
-    if (h >= 5  && h < 9)  return 'morning';
-    if (h >= 9  && h < 16) return 'day';
+    if (h >= 5  && h < 7)  return 'morning';
+    if (h >= 7  && h < 16) return 'day';
     if (h >= 16 && h < 20) return 'evening';
     return 'night';
   }
@@ -208,7 +208,31 @@
 
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
-    document.documentElement.setAttribute('data-time-of-day', getSlot());
+    const slot = getSlot();
+    document.documentElement.setAttribute('data-time-of-day', slot);
+    
+    // Update background image directly to ensure it changes without refresh
+    const canvas = document.getElementById('anhad-sky-canvas');
+    if (canvas && document.documentElement.getAttribute('data-theme-mode') === 'auto') {
+      let bgImage = '';
+      switch(slot) {
+        case 'morning':
+          bgImage = '../assets/darbar-sahib-amritvela-morning.png';
+          break;
+        case 'day':
+          bgImage = '../assets/darbar-sahib-day.jpg';
+          break;
+        case 'evening':
+          bgImage = '../assets/darbar-sahib-evening.jpg';
+          break;
+        case 'night':
+          bgImage = '../assets/darbar-sahib-night.jpg';
+          break;
+      }
+      if (bgImage) {
+        canvas.style.backgroundImage = `url('${bgImage}')`;
+      }
+    }
   }
 
   // ── Update hero card images based on theme mode ───────────────────────────
@@ -245,6 +269,16 @@
     });
   }
 
+  // ── Scroll optimization ───────────────────────────────────────────────────
+  let scrollTimeout;
+  function handleScroll() {
+    document.body.classList.add('is-scrolling');
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      document.body.classList.remove('is-scrolling');
+    }, 150);
+  }
+
   // ── Init ─────────────────────────────────────────────────────────────────
   function init() {
     applyTimeOfDay();
@@ -256,8 +290,16 @@
       buildClouds();
       positionCelestials();
     }
-    // Refresh every 60s
-    setInterval(() => { applyTimeOfDay(); updateHeroCardImages(); positionCelestials(); }, 60_000);
+    // Add scroll listener for performance optimization
+    window.addEventListener('scroll', handleScroll, { passive: true, capture: false });
+    // Refresh every 30s for faster time-based updates
+    setInterval(() => { 
+      requestAnimationFrame(() => {
+        applyTimeOfDay(); 
+        updateHeroCardImages(); 
+        positionCelestials(); 
+      });
+    }, 30_000);
   }
 
   function onThemeChange() {
