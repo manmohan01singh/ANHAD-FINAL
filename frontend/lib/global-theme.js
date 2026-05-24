@@ -109,11 +109,9 @@
                     style.parentNode.removeChild(style);
                 }
                 html.classList.remove('theme-changing');
-                // Clear background image when not in auto mode
-                // (auto mode sets body.style.backgroundImage via anhad-sky-bg.js)
-                if (theme !== 'auto' && document.body) {
-                    document.body.style.backgroundImage = 'none';
-                }
+                // NOTE: Do NOT clear body.style.backgroundImage here.
+                // anhad-sky-bg.js owns the background and will always set the correct image.
+                // Clearing it here causes the 30-second flicker bug.
             });
         });
     }
@@ -127,6 +125,8 @@
         applyTheme(theme);
         // Custom event for other components to react
         window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+        // ── INSTANT signal to anhad-sky-bg.js so background updates in <1 frame
+        window.dispatchEvent(new CustomEvent('anhadTimeForced'));
     }
 
     function toggle() {
@@ -145,12 +145,31 @@
         return theme === 'dark' || (theme === 'auto' && getAutoTheme() === 'dark');
     }
 
-    // Auto-update if in auto mode
+    // Auto-update if in auto mode — 500ms lightweight slot check (only runs heavy DOM update on actual slot change)
+    let lastAppliedSlot = null;
+    let lastAppliedTheme = null;
     setInterval(() => {
-        if (getTheme() === 'auto') {
-            applyTheme('auto');
+        const theme = getTheme();
+        if (theme === 'auto') {
+            let slot = localStorage.getItem('anhad_forced_time_of_day');
+            if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                const hour = new Date().getHours();
+                if (hour >= 5 && hour < 9) slot = 'morning';
+                else if (hour >= 9 && hour < 16) slot = 'day';
+                else if (hour >= 16 && hour < 20) slot = 'evening';
+                else slot = 'night';
+            }
+            const effectiveTheme = (slot === 'night') ? 'dark' : 'light';
+            if (slot !== lastAppliedSlot || effectiveTheme !== lastAppliedTheme) {
+                lastAppliedSlot = slot;
+                lastAppliedTheme = effectiveTheme;
+                applyTheme('auto');
+            }
+        } else {
+            lastAppliedSlot = null;
+            lastAppliedTheme = null;
         }
-    }, 60000);
+    }, 500); // 500ms safety net — event-driven updates handle the instant case
 
     // Initial application (Should be fast)
     // Note: blocking-initialization script in <head> handles the VERY first paint

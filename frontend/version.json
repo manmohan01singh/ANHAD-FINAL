@@ -1,7 +1,7 @@
 {
-  "version": "3.9.5",
-  "buildTime": "2026-05-24T12:54:00.000Z",
-  "timestamp": 1785502000000,
-  "commitHash": "c9a397i",
+  "version": "3.9.6",
+  "buildTime": "2026-05-24T07:38:00.000Z",
+  "timestamp": 1785506280000,
+  "commitHash": "d1f7e9b",
   "branch": "main"
 }

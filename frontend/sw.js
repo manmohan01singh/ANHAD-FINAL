@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.9.6'; // Bumped: Fix relative asset path and engine execution ordering conflicts
+const CACHE_VERSION = 'anhad-v5.9.8'; // Bumped: Event-driven instant bg swap (ms reaction, not 10s poll)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

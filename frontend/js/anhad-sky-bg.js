@@ -232,10 +232,10 @@
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundAttachment = 'fixed';
 
-    // Also update the sky canvas if it exists (auto mode)
+    // Clear inline background image on sky canvas so CSS stylesheet rules can control it without specificity override
     const canvas = document.getElementById('anhad-sky-canvas');
-    if (canvas && !canvas.style.backgroundImage.includes(bgUrl)) {
-      canvas.style.backgroundImage = `url('${bgUrl}')`;
+    if (canvas) {
+      canvas.style.backgroundImage = '';
     }
   }
 
@@ -368,6 +368,18 @@
     });
   }
 
+  // ── INSTANT event-driven refresh (fires in milliseconds) ─────────────────
+  // Called whenever localStorage 'anhad_forced_time_of_day' changes — no polling wait.
+  function instantRefresh() {
+    _lastSlot = null; // Force re-evaluation
+    _lastMode = null;
+    requestAnimationFrame(() => {
+      applyTimeOfDay();
+      updateHeroCardImages();
+      positionCelestials();
+    });
+  }
+
   // ── Inject fade transition CSS ────────────────────────────────────────────
   function injectFadeCSS() {
     if (document.getElementById('anhad-img-fade-style')) return;
@@ -393,26 +405,34 @@
     _lastSlot = getSlot();
     _lastMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
 
-    const isAuto = document.documentElement.getAttribute('data-theme-mode') === 'auto';
-    if (isAuto) {
+    applyTimeOfDay();
+    updateHeroCardImages();
+
+    if (document.documentElement.getAttribute('data-theme-mode') === 'auto') {
       injectSVG();
       buildCanvas();
       buildStars();
       buildClouds();
-    }
-
-    applyTimeOfDay();
-    updateHeroCardImages();
-
-    if (isAuto) {
       positionCelestials();
     }
 
     // Add scroll listener for performance optimization
     window.addEventListener('scroll', handleScroll, { passive: true, capture: false });
 
-    // Smart refresh every 60 seconds — only triggers update when time slot changes
-    setInterval(smartRefresh, 60_000);
+    // ── EVENT-DRIVEN: React instantly when forced time changes (same tab) ───
+    // This fires in <1ms — no polling delay at all.
+    window.addEventListener('anhadTimeForced', instantRefresh);
+
+    // ── EVENT-DRIVEN: React to localStorage changes from other tabs ─────────
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'anhad_forced_time_of_day' || e.key === 'anhad_theme') {
+        instantRefresh();
+      }
+    });
+
+    // ── SAFETY NET: 500ms lightweight poll (fallback only) ──────────────────
+    // This handles real-clock transitions (e.g. 9:00am → day) with minimal overhead.
+    setInterval(smartRefresh, 500);
   }
 
   function onThemeChange() {
