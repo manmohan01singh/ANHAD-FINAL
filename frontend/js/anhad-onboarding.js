@@ -9,7 +9,7 @@
 (function () {
     'use strict';
 
-    const TOUR_KEY = 'anhad_onboarding_completed';
+    const TOUR_KEY = 'anhad_onboarding_v9_completed';
     const LANG_KEY = 'anhad_tour_lang';
 
     // Don't run if already completed

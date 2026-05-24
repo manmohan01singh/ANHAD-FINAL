@@ -424,42 +424,52 @@
     }
 
     function renderHistory(lang) {
-        if (SIKH_HISTORY.guruSahibaan && SIKH_HISTORY.guruSahibaan[lang]) {
-            const data = SIKH_HISTORY.guruSahibaan[lang];
+        if (SIKH_HISTORY.guruSahibaan) {
+            const data = SIKH_HISTORY.guruSahibaan[lang] || SIKH_HISTORY.guruSahibaan['en'];
+            const gurusSource = SIKH_HISTORY.guruSahibaan['en'].gurus || [];
             let html = `<div class="history-content">`;
             
             // Add intro
             if (data.intro) {
-                html += `<p style="margin-bottom: 20px;">${data.intro}</p>`;
+                html += `<p style="margin-bottom: 20px; line-height: 1.6;">${data.intro}</p>`;
             }
             
             // Add Guru Sahibaan section
-            if (data.gurus && data.gurus.length > 0) {
-                html += `<h3 style="margin: 20px 0 10px;">${data.title}</h3>`;
-                data.gurus.forEach(g => {
+            if (gurusSource.length > 0) {
+                html += `<h3 style="margin: 20px 0 12px; color: var(--gold-400);">${data.title || 'Guru Sahibaan'}</h3>`;
+                gurusSource.forEach(g => {
+                    const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
+                    const contribDisp = lang === 'pa' ? (g.contributionsPa || g.contributions) : lang === 'hi' ? (g.contributionsHi || g.contributions) : g.contributions;
+                    const teachingsDisp = lang === 'pa' ? (g.teachingsPa || g.teachings) : lang === 'hi' ? (g.teachingsHi || g.teachings) : g.teachings;
+                    
                     html += `
-                    <div class="theme-card" style="margin-bottom: 12px;">
-                        <div class="theme-card__title">🙏 ${g.english}</div>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--gold-400); margin: 2px 0;">${g.namePunjabi || g.name}</div>
-                        <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px;">${g.years}</div>
-                        <div class="theme-card__desc">${g.contributions}</div>
+                    <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
+                        <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+                        <div style="font-size: 11px; color: var(--text-tertiary); margin: 4px 0 8px;">${lang === 'pa' ? 'ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'जीवन काल' : 'Lifetime'}: ${g.years}</div>
+                        <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contribDisp}</div>
+                        ${teachingsDisp ? `
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                            <strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachingsDisp}
+                        </div>` : ''}
                     </div>`;
                 });
             }
             
             // Add major events section
-            if (SIKH_HISTORY.majorEvents && SIKH_HISTORY.majorEvents[lang]) {
-                const eventsData = SIKH_HISTORY.majorEvents[lang];
-                html += `<h3 style="margin: 20px 0 10px;">${eventsData.title}</h3>`;
-                if (eventsData.events) {
-                    eventsData.events.forEach(e => {
-                        html += `
-                        <div style="margin-bottom: 8px; padding: 8px; background: var(--glass-bg); border-radius: 8px;">
-                            <div style="font-weight: 600; color: var(--gold-400);">${e.year}</div>
-                            <div>${e.event}</div>
-                            <div style="font-size: 12px; color: var(--text-tertiary);">${e.description}</div>
-                        </div>`;
-                    });
+            if (SIKH_HISTORY.majorEvents) {
+                const eventsData = SIKH_HISTORY.majorEvents[lang] || SIKH_HISTORY.majorEvents['en'];
+                if (eventsData) {
+                    html += `<h3 style="margin: 24px 0 12px; color: var(--gold-400);">${eventsData.title || 'Major Events'}</h3>`;
+                    if (eventsData.events) {
+                        eventsData.events.forEach(e => {
+                            html += `
+                            <div style="margin-bottom: 12px; padding: 14px; background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--border-color);">
+                                <div style="font-weight: 800; color: #D4943A; font-size: 14px;">📅 ${e.year}</div>
+                                <div style="font-weight: 600; margin: 4px 0; font-size: 13.5px;">${e.event}</div>
+                                <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">${e.description}</div>
+                            </div>`;
+                        });
+                    }
                 }
             }
             
@@ -496,14 +506,15 @@
         return GURU_SAHIBAAN.map((g, i) => {
             const contrib = g[contribField] || g.majorContributions || g.desc || g.description || 'Contributions details coming soon.';
             const teachings = g[teachingField] || g.keyTeachings || 'Teachings details coming soon.';
+            const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
+            const subtitleDisp = lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'ऐतिहासिक जीवन काल' : 'Historical Lifetime';
             
             return `
-            <div class="theme-card" style="margin-bottom: 12px;">
-                <div class="theme-card__title">🙏 ${g.english || g.name}</div>
-                <div style="font-size: 14px; font-weight: 600; color: var(--gold-400); margin: 2px 0;">${g.namePunjabi || g.name}</div>
-                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px;">${g.years || ''}</div>
-                <div class="theme-card__desc">${contrib}</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);"><strong>Teachings:</strong> ${teachings}</div>
+            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
+                <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary); margin: 4px 0 8px;">${subtitleDisp}: ${g.years || ''}</div>
+                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contrib}</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);"><strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachings}</div>
             </div>`;
         }).join('');
     }

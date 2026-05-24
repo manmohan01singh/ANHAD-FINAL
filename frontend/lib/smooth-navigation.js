@@ -142,6 +142,33 @@
    * @param {string} url - Destination URL
    * @param {Object} options - Navigation options
    */
+  /**
+   * Determine if a URL is part of the core Home App Shell pages
+   * (Home, Learning, Favorites, Dashboard) which are perfectly compatible with SPA swapping
+   */
+  function isShellPage(url) {
+    try {
+      const pathname = new URL(url, window.location.origin).pathname;
+      const cleanPath = pathname.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+      
+      return cleanPath.endsWith('/frontend') || 
+             cleanPath.endsWith('/frontend/index.html') ||
+             cleanPath.endsWith('/frontend/index') ||
+             cleanPath.endsWith('/index.html') ||
+             cleanPath.endsWith('/index') ||
+             cleanPath.endsWith('/') || 
+             cleanPath === '' ||
+             cleanPath.endsWith('/Insights/insights.html') ||
+             cleanPath.endsWith('/Insights/insights') ||
+             cleanPath.endsWith('/Favorites/favorites.html') ||
+             cleanPath.endsWith('/Favorites/favorites') ||
+             cleanPath.endsWith('/Dashboard/dashboard.html') ||
+             cleanPath.endsWith('/Dashboard/dashboard');
+    } catch (e) {
+      return false;
+    }
+  }
+
   window.navigateTo = async function(url, options = {}) {
     if (!url || typeof url !== 'string') return;
 
@@ -162,17 +189,19 @@
       } catch(e) {}
     }
 
-    // ─── ALWAYS FULL RELOAD ─────────────────────────────────────────────────
-    // Every page in the ANHAD app (Nitnem, GurbaniKhoj, SehajPaath, Hukamnama,
-    // readers, etc.) is a standalone app with its own complete CSS system,
-    // DOM structure, and JS initialization. SPA partial-swap between these
-    // pages causes CSS pollution, missing DOM elements, and script failures.
-    //
-    // Full page reload is what already makes SehajPaath and Hukamnama work
-    // perfectly. We now make this the default for ALL inter-page navigation.
-    // ───────────────────────────────────────────────────────────────────────
-    console.log('[SmoothNav] Navigating to:', absoluteUrl, '— full page reload');
-    window.location.href = absoluteUrl;
+    // ─── SELECTIVE SPA SWAP FOR APP SHELL PAGES ──────────────────────────────
+    // Core Home App Shell pages share identical styling and singletons.
+    // They are perfectly compatible with instant view-transition AJAX swaps.
+    // All subdirectories (nitnem, GurbaniKhoj, SehajPaath, readers) operate
+    // as standalone apps and are loaded as full reloads to prevent leaks.
+    // ─────────────────────────────────────────────────────────────────────────
+    if (isShellPage(absoluteUrl)) {
+      console.log('[SmoothNav] SPA swap navigating to:', absoluteUrl);
+      performSwap(absoluteUrl, options);
+    } else {
+      console.log('[SmoothNav] Full reload navigating to:', absoluteUrl);
+      window.location.href = absoluteUrl;
+    }
   };
 
   /**
@@ -591,8 +620,11 @@
 
       if (src) {
         const absoluteSrc = new URL(src, sourceUrl).href;
-        // Skip already-loaded scripts — their init() is triggered via anhad_page_changed event
-        if (document.querySelector(`script[src="${absoluteSrc}"]`)) continue;
+        // Re-execute page-specific scripts on every SPA swap by removing old instances first!
+        const existingScript = document.querySelector(`script[src="${absoluteSrc}"]`);
+        if (existingScript) {
+          existingScript.remove();
+        }
         externalScripts.push(new Promise((resolve) => {
           const newScript = document.createElement('script');
           Array.from(script.attributes).forEach(attr => {

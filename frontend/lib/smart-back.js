@@ -271,6 +271,8 @@
       elements.forEach(function(el) {
         // Skip if marked to skip auto-wiring
         if (el.hasAttribute('data-anhad-skip-back')) return;
+        // CRITICAL: Bottom tab-bar items are for routing and must never be wired as back buttons
+        if (el.classList.contains('tab-item') || el.closest('.tab-bar')) return;
         // Prevent double-binding
         if (el._anhadBackWired || wired.has(el)) return;
         el._anhadBackWired = true;
