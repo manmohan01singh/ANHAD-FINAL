@@ -1197,7 +1197,7 @@ a:active {
   scroll-snap-align: center;
   border-radius: 24px;
   overflow: hidden;
-  background: var(--surface-primary);
+  background: transparent !important;
   box-shadow: none !important;
   cursor: pointer;
   transition: transform var(--duration-normal) var(--ease-spring),
