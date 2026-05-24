@@ -108,15 +108,7 @@
     c.id = 'anhad-sky-canvas';
     c.setAttribute('aria-hidden', 'true');
     // Order: BG clouds → stars → moon → sun → horizon glow → FG clouds
-    c.innerHTML = `
-      <div id="anhad-clouds-bg"></div>
-      <div id="anhad-stars"></div>
-      <div id="anhad-moon"><span class="moon-inner"></span></div>
-      <div id="anhad-sun"></div>
-      <div id="anhad-horizon-glow"></div>
-      <div id="anhad-morning-rays"></div>
-      <div id="anhad-clouds-fg"></div>
-    `;
+    c.innerHTML = ``;
     document.body.insertBefore(c, document.body.firstChild);
   }
 
@@ -125,44 +117,8 @@
     const c = document.getElementById('anhad-stars');
     if (!c || c.children.length > 0) return;
     const f = document.createDocumentFragment();
-
-    for (let i = 0; i < CFG.stars; i++) {
-      const el  = document.createElement('div');
-      el.className = 'anhad-star';
-      const sz  = r(0.5, 2.5);
-      const op  = r(0.22, 0.96);
-      const dur = r(2, 7);
-      const del = r(0, 9);
-      const isGold = Math.random() > 0.70;
-      const isBlue = Math.random() > 0.82;
-      const col = isGold ? `hsl(${ri(38,52)},70%,85%)` : isBlue ? `hsl(${ri(200,230)},60%,92%)` : '#FFF';
-      el.style.cssText = `left:${r(0,100)}%;top:${r(0,85)}%;width:${sz}px;height:${sz}px;background:${col};--star-opacity:${op.toFixed(2)};--td:${dur.toFixed(1)}s;--dl:-${del.toFixed(1)}s;opacity:${op.toFixed(2)};`;
-      f.appendChild(el);
-    }
-
-    // Brighter featured stars
-    for (let i = 0; i < CFG.brightStars; i++) {
-      const el = document.createElement('div');
-      el.className = 'anhad-star anhad-star--bright';
-      const sz  = r(2.0, 4.5);
-      const op  = r(0.60, 1.0);
-      const dur = r(2.5, 6);
-      const del = r(0, 7);
-      el.style.cssText = `left:${r(2,98)}%;top:${r(2,70)}%;width:${sz}px;height:${sz}px;--star-opacity:${op.toFixed(2)};--td:${dur.toFixed(1)}s;--dl:-${del.toFixed(1)}s;`;
-      f.appendChild(el);
-    }
-
-    // Shooting stars
-    for (let i = 0; i < CFG.shootingStars; i++) {
-      const el  = document.createElement('div');
-      el.className = 'anhad-shooting-star';
-      const dur = r(5, 14);
-      const del = r(5, 40);
-      el.style.cssText = `left:${r(3,50)}%;top:${r(2,36)}%;animation-duration:${dur.toFixed(1)}s;animation-delay:${del.toFixed(1)}s;`;
-      f.appendChild(el);
-    }
-
-    c.appendChild(f);
+    // Disabled because we use static images now
+    return;
   }
 
   // ── Clouds (foreground + background layers) ──────────────────────────────
@@ -173,21 +129,8 @@
 
   // ── Position sun, moon and set phase ────────────────────────────────────
   function positionCelestials() {
-    const { sunL, sunT, moonL, moonT } = celestialPos();
-
-    const sun  = document.getElementById('anhad-sun');
-    const moon = document.getElementById('anhad-moon');
-
-    if (sun) {
-      sun.style.left  = `${sunL}%`;
-      sun.style.top   = `${sunT}%`;
-      sun.className   = getSunClass();
-    }
-    if (moon) {
-      moon.style.left  = `${moonL}%`;
-      moon.style.top   = `${moonT}%`;
-      moon.className   = `moon-${getMoonPhase()}`;
-    }
+    // Disabled because we use static images now
+    return;
   }
 
   // ── Background image map (WebP — optimized) ──────────────────────────────
