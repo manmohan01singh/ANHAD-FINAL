@@ -590,11 +590,11 @@ a:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.35) !important;
-  backdrop-filter: blur(12px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 4px 12px rgba(212, 148, 58, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
   transition: all var(--duration-fast) var(--ease-spring) !important;
   will-change: transform;
   cursor: pointer;
@@ -602,9 +602,9 @@ a:active {
 
 .dark-mode .header__btn,
 [data-theme="dark"] .header__btn {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  background: rgba(30, 30, 32, 0.95) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 .header__btn:active {
@@ -612,14 +612,20 @@ a:active {
 }
 
 .header__btn svg {
-  width: 19px;
-  height: 19px;
-  color: var(--text-secondary);
+  width: 22px;
+  height: 22px;
+  color: #000000 !important;
   transition: color var(--duration-fast) ease;
+  stroke-width: 2.5px;
+}
+
+.dark-mode .header__btn svg,
+[data-theme="dark"] .header__btn svg {
+  color: #FFFFFF !important;
 }
 
 .header__btn:active svg {
-  color: var(--accent);
+  color: var(--accent) !important;
 }
 
 .header__badge {

@@ -579,11 +579,11 @@ body {
 /* Header Buttons Glassmorphism - Premium Frosted Glass */
 .header__btn, .header-btn--glass {
   border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.35) !important;
-  backdrop-filter: blur(12px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 4px 12px rgba(212, 148, 58, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
 .install-banner__cta {
@@ -1178,11 +1178,11 @@ body {
 
 /* Deep Glassmorphism for Header Buttons - Premium Dark Frosted Glass */
 .dark-mode .dark-mode .header__btn, .dark-mode .dark-mode .header-btn--glass {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(12px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  background: rgba(30, 30, 32, 0.95) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Removed conflicting progress-inline block here to let lines 813-820 apply! */
