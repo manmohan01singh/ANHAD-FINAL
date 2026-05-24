@@ -576,18 +576,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Header Buttons Claymorphism */
+/* Header Buttons Completely Flat (No Shadow) */
 .header__btn, .header-btn--glass {
   border-radius: 50% !important;
   background: #f0f0f3 !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
-  box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.15), 
-    -4px -4px 8px rgba(255, 255, 255, 0.9), 
-    inset 2px 2px 4px rgba(255, 255, 255, 1), 
-    inset -2px -2px 4px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
 }
 
 .install-banner__cta {
@@ -1180,17 +1176,13 @@ body {
   color: #FFFFFF !important;
 }
 
-/* Deep Claymorphism for Header Buttons */
+/* Flat styling for Header Buttons */
 .dark-mode .dark-mode .header__btn, .dark-mode .dark-mode .header-btn--glass {
   background: #2a2a2d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
-  box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.5), 
-    -4px -4px 8px rgba(255, 255, 255, 0.05), 
-    inset 2px 2px 4px rgba(255, 255, 255, 0.1), 
-    inset -2px -2px 4px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 /* Removed conflicting progress-inline block here to let lines 813-820 apply! */

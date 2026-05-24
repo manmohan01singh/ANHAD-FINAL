@@ -594,11 +594,7 @@ a:active {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   border: none !important;
-  box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.15), 
-    -4px -4px 8px rgba(255, 255, 255, 0.9), 
-    inset 2px 2px 4px rgba(255, 255, 255, 1), 
-    inset -2px -2px 4px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
   transition: all var(--duration-fast) var(--ease-spring) !important;
   will-change: transform;
   cursor: pointer;
@@ -608,25 +604,17 @@ a:active {
 [data-theme="dark"] .header__btn {
   background: #2a2a2d !important;
   border: none !important;
-  box-shadow: 
-    4px 4px 8px rgba(0, 0, 0, 0.5), 
-    -4px -4px 8px rgba(255, 255, 255, 0.05), 
-    inset 2px 2px 4px rgba(255, 255, 255, 0.1), 
-    inset -2px -2px 4px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 .header__btn:active {
   transform: scale(0.95) !important;
-  box-shadow: 
-    inset 4px 4px 8px rgba(0, 0, 0, 0.15), 
-    inset -4px -4px 8px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: none !important;
 }
 
 .dark-mode .header__btn:active,
 [data-theme="dark"] .header__btn:active {
-  box-shadow: 
-    inset 4px 4px 8px rgba(0, 0, 0, 0.6), 
-    inset -4px -4px 8px rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
 }
 
 .header__btn svg {
