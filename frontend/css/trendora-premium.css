@@ -1,4 +1,4 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    âœ¦âœ¦âœ¦ ANHAD â€” TRENDORA-EXTREME iOS PREMIUM DESIGN SYSTEM âœ¦âœ¦âœ¦
    
    Design Philosophy: RADICAL RESTRAINT Ã— TRENDORA WARMTH
@@ -554,25 +554,26 @@ a:active {
   font-weight: 600;
   letter-spacing: 3px;
   line-height: 1.0;
-  color: #FFF !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.6) !important;
+  color: #D4943A;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   margin-top: 8px;
 }
 
 /* Dark mode: golden text */
 .dark-mode .header__title {
-  color: #FFF !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 16px rgba(0, 0, 0, 0.8) !important;
+  color: #FFCC29;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 
 .header__title-gurmukhi {
   font-family: var(--font-gurmukhi);
   font-size: 0.95rem; /* Balanced with SF Pro English */
   font-weight: var(--weight-semibold);
-  color: #FFF !important;
+  color: var(--accent);
   letter-spacing: 0.2px;
-  opacity: 1 !important;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 12px rgba(0, 0, 0, 0.6) !important;
+  opacity: 0.9;
+}
 
 .header__right {
   display: flex;
