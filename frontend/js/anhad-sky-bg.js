@@ -20,7 +20,6 @@
   // ── Time helpers ─────────────────────────────────────────────────────────
   function getSlot() {
     const h = new Date().getHours();
-    console.log('Current hour:', h);
     if (h >= 5  && h < 7)  return 'morning';
     if (h >= 7  && h < 16) return 'day';
     if (h >= 16 && h < 20) return 'evening';
@@ -211,37 +210,31 @@
   function applyTimeOfDay() {
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode');
-    console.log('applyTimeOfDay called - slot:', slot, 'mode:', mode);
     document.documentElement.setAttribute('data-time-of-day', slot);
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
-    console.log('Canvas element exists:', !!canvas);
     
     if (canvas) {
       let bgImage = '';
       // Update background regardless of theme mode for auto-change
       switch(slot) {
         case 'morning':
-          bgImage = '../assets/darbar-sahib-amritvela-morning.png';
-          console.log('Morning slot detected, using:', bgImage);
+          bgImage = 'assets/darbar-sahib-amritvela-morning.png';
           break;
         case 'day':
-          bgImage = '../assets/darbar-sahib-day.jpg';
+          bgImage = 'assets/darbar-sahib-day.jpg';
           break;
         case 'evening':
-          bgImage = '../assets/darbar-sahib-evening.jpg';
+          bgImage = 'assets/darbar-sahib-evening.jpg';
           break;
         case 'night':
-          bgImage = '../assets/darbar-sahib-night.jpg';
+          bgImage = 'assets/darbar-sahib-night.jpg';
           break;
       }
       if (bgImage) {
-        console.log('Setting background image:', bgImage);
         canvas.style.backgroundImage = `url('${bgImage}')`;
       }
-    } else {
-      console.log('Canvas element not found!');
     }
   }
 
@@ -250,8 +243,6 @@
     const mode = document.documentElement.getAttribute('data-theme-mode');
     const slot = getSlot();
     const heroCardImages = document.querySelectorAll('.hero-card__image[data-img-morning]');
-    
-    console.log('updateHeroCardImages called - mode:', mode, 'slot:', slot, 'found images:', heroCardImages.length);
     
     heroCardImages.forEach(img => {
       let newSrc = '';
@@ -277,7 +268,6 @@
       
       // Force update even if src matches to ensure morning images load
       if (newSrc) {
-        console.log('Setting hero card image to:', newSrc);
         img.src = newSrc;
       }
     });
