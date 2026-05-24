@@ -233,26 +233,21 @@
     let transitionFinished = false;
 
     try {
-      // 1. Check in-memory page cache first for instant load
-      let text = PAGE_CACHE.get(url);
-      
-      if (!text) {
-        // Show loader after grace period (only for forward navigation, not back)
-        loaderTimeout = setTimeout(() => {
-          if (!transitionFinished && !options.isBack) {
-            loader.classList.add('visible');
-            document.body.classList.add('page-loading');
-          }
-        }, 120); // Reduced from 250ms for snappier feel
+      // Show loader after grace period (only for forward navigation, not back)
+      loaderTimeout = setTimeout(() => {
+        if (!transitionFinished && !options.isBack) {
+          loader.classList.add('visible');
+          document.body.classList.add('page-loading');
+        }
+      }, 120); // Reduced from 250ms for snappier feel
 
-        // Use fetchUrl (with index.html) to avoid directory listing responses
-        const response = await fetch(fetchUrl);
-        if (!response.ok) throw new Error(`HTTP ${response.status} for ${fetchUrl}`);
-        text = await response.text();
-        
-        // Cache under the normalized URL (canonical key)
-        PAGE_CACHE.set(url, text);
-      }
+      // Use fetchUrl (with index.html) to avoid directory listing responses
+      const response = await fetch(fetchUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status} for ${fetchUrl}`);
+      const text = await response.text();
+      
+      // Cache under the normalized URL (canonical key)
+      PAGE_CACHE.set(url, text);
       
       transitionFinished = true;
       clearTimeout(loaderTimeout);
@@ -789,7 +784,7 @@
       }
     }, { passive: true });
 
-    // Handle browser back/forward buttons
+    // Handle browser back/forward buttons — always full reload
     window.addEventListener('popstate', (e) => {
       // Stamp session flags for index.html to prevent splash screen
       if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
@@ -799,15 +794,8 @@
           localStorage.setItem('anhad_session_active_ts', Date.now().toString());
         } catch(e) {}
       }
-      
-      const targetUrl = window.location.href;
-      if (isShellPage(targetUrl)) {
-        console.log('[SmoothNav] Popstate — smooth SPA swap for:', targetUrl);
-        performSwap(targetUrl, { isBack: true, instant: false });
-      } else {
-        console.log('[SmoothNav] Popstate — full page reload for:', targetUrl);
-        window.location.reload();
-      }
+      console.log('[SmoothNav] Popstate — full page reload for:', window.location.href);
+      window.location.reload();
     });
 
     // Integrate with Capacitor native back button

@@ -5,12 +5,38 @@
   <script>
 (function() {
   try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
+    const theme = localStorage.getItem('anhad_theme') || 'auto';
+    let effectiveTheme = theme;
+    let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+    if (theme === 'auto') {
+      if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+        effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+      } else {
+        const hour = new Date().getHours();
+        effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+        else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+        else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+        else timeOfDay = 'night';
+      }
+    }
     const readerTheme = localStorage.getItem('gurbani_reader_theme') || 'paper';
     const sacredTheme = localStorage.getItem('gurbani_sacred_theme') || 'royal-rose';
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    document.documentElement.setAttribute('data-theme-mode', theme);
     document.documentElement.setAttribute('data-reader-theme', readerTheme);
     document.documentElement.setAttribute('data-sacred-theme', sacredTheme);
+    if (theme === 'auto') {
+      document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+    }
+    document.documentElement.style.colorScheme = effectiveTheme;
+    if (effectiveTheme === 'dark') {
+      document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#0D0D0F';
+    } else {
+      document.documentElement.classList.remove('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#FAF8F5';
+    }
   } catch (e) {}
 })();
   </script>
