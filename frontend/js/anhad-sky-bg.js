@@ -213,20 +213,23 @@
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
-    if (canvas && document.documentElement.getAttribute('data-theme-mode') === 'auto') {
+    const mode = document.documentElement.getAttribute('data-theme-mode');
+    
+    if (canvas) {
       let bgImage = '';
+      // Update background regardless of theme mode for auto-change
       switch(slot) {
         case 'morning':
-          bgImage = '../assets/darbar-sahib-amritvela-morning.png';
+          bgImage = 'assets/darbar-sahib-amritvela-morning.png';
           break;
         case 'day':
-          bgImage = '../assets/darbar-sahib-day.jpg';
+          bgImage = 'assets/darbar-sahib-day.jpg';
           break;
         case 'evening':
-          bgImage = '../assets/darbar-sahib-evening.jpg';
+          bgImage = 'assets/darbar-sahib-evening.jpg';
           break;
         case 'night':
-          bgImage = '../assets/darbar-sahib-night.jpg';
+          bgImage = 'assets/darbar-sahib-night.jpg';
           break;
       }
       if (bgImage) {
@@ -263,7 +266,8 @@
         }
       }
       
-      if (newSrc && img.src !== newSrc) {
+      // Force update even if src matches to ensure morning images load
+      if (newSrc) {
         img.src = newSrc;
       }
     });
