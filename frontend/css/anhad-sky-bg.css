@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ANHAD — Majestic Sky Background System v3.0
-   Pure CSS + SVG. Zero images. 90fps. Pixel-sharp. Ultra-premium.
+   ANHAD — Majestic Sky Background System v3.0 (PERFORMANCE OPTIMIZED)
+   Pure CSS + SVG. Zero images. 120fps. Pixel-sharp. Ultra-premium.
+   Optimized for ultra-smooth scrolling with GPU acceleration.
 
    Sections:
      1. Text Contrast System (auto-mode variables)
@@ -166,6 +167,36 @@
   margin-top: 8px !important;
 }
 
+/* ── ULTRA SMOOTH SCROLLING OPTIMIZATIONS ── */
+/* Disable heavy animations during scroll for 120fps performance */
+body.is-scrolling #anhad-sun,
+body.is-scrolling #anhad-moon,
+body.is-scrolling .anhad-cloud,
+body.is-scrolling .anhad-star {
+  animation-play-state: paused !important;
+}
+
+/* Force GPU layers on all animated elements */
+.anhad-star,
+.anhad-cloud,
+.anhad-shooting-star {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimize main content scrolling */
+[data-theme-mode="auto"] .main-content {
+  will-change: scroll-position;
+  contain: layout style paint;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduce composite layers on background during scroll */
+body.is-scrolling #anhad-sky-canvas {
+  will-change: transform;
+}
+
 
 /* ────────────────────────────────────────────────────────────────────────────
    §2  SKY CANVAS + 4-TIME-OF-DAY GRADIENTS
@@ -181,6 +212,9 @@
   overflow: hidden;
   display: none;
   transition: background 2s ease-in-out;
+  will-change: transform;
+  transform: translateZ(0);
+  contain: strict;
 }
 
 [data-theme-mode="auto"] #anhad-sky-canvas {
@@ -235,13 +269,15 @@
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
   width: 220%;
   height: 48%;
   pointer-events: none;
   display: none;
   opacity: 0;
   transition: opacity 2s ease;
+  will-change: opacity, transform;
+  contain: strict;
 }
 
 [data-theme-mode="auto"][data-time-of-day="morning"] #anhad-horizon-glow {
@@ -273,12 +309,14 @@
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
   width: 250%;
   height: 65%;
   pointer-events: none;
   display: none;
   opacity: 0;
+  will-change: opacity, transform;
+  contain: strict;
 }
 
 [data-theme-mode="auto"][data-time-of-day="morning"] #anhad-morning-rays {
@@ -329,9 +367,11 @@
 #anhad-sun {
   position: absolute;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
   transition: left 60s linear, top 60s linear;
   display: none !important;
+  will-change: transform, opacity;
+  contain: strict;
   /* Glow/rays via ::before (outer halo) and ::after (rotating rays) */
 }
 
@@ -537,9 +577,11 @@
 
 #anhad-moon {
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
   transition: left 60s linear, top 60s linear;
   display: none;
+  will-change: transform, opacity;
+  contain: strict;
 }
 
 [data-theme-mode="auto"][data-time-of-day="night"] #anhad-moon {
@@ -677,6 +719,9 @@
   inset: 0;
   display: none;
   pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+  contain: strict;
 }
 
 /* Stars: visible at night, faint in evening (early star appearance) */
@@ -767,6 +812,9 @@
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+  contain: strict;
 }
 
 /* ── Cloud base shape ── */
