@@ -20,6 +20,7 @@
   // ── Time helpers ─────────────────────────────────────────────────────────
   function getSlot() {
     const h = new Date().getHours();
+    console.log('Current hour:', h);
     if (h >= 5  && h < 7)  return 'morning';
     if (h >= 7  && h < 16) return 'day';
     if (h >= 16 && h < 20) return 'evening';
@@ -215,6 +216,7 @@
     
     // Update background image directly to ensure it changes without refresh
     const canvas = document.getElementById('anhad-sky-canvas');
+    console.log('Canvas element exists:', !!canvas);
     
     if (canvas) {
       let bgImage = '';
@@ -222,6 +224,7 @@
       switch(slot) {
         case 'morning':
           bgImage = '../assets/darbar-sahib-amritvela-morning.png';
+          console.log('Morning slot detected, using:', bgImage);
           break;
         case 'day':
           bgImage = '../assets/darbar-sahib-day.jpg';
@@ -237,6 +240,8 @@
         console.log('Setting background image:', bgImage);
         canvas.style.backgroundImage = `url('${bgImage}')`;
       }
+    } else {
+      console.log('Canvas element not found!');
     }
   }
 
