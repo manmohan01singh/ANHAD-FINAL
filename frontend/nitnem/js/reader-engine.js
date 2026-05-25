@@ -1057,9 +1057,9 @@
         state.settings.paperBackground = false;
         applyAllSettings();
         saveSettings();
-        // Propagate to global theme system so other pages stay in sync
+        // Propagate to isolated Nitnem theme system so other pages stay in sync
         try {
-            localStorage.setItem('anhad_theme', normalizedTheme);
+            localStorage.setItem('nitnem_theme_override', normalizedTheme);
         } catch (e) {}
         window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: normalizedTheme } }));
     }
@@ -1199,24 +1199,24 @@
             }
             // ────────────────────────────────────────────────────────────────
 
+            const getNitnemDefaultTheme = () => {
+                var override = localStorage.getItem('nitnem_theme_override');
+                if (override === 'light' || override === 'dark') return override;
+                var hour = new Date().getHours();
+                return (hour >= 6 && hour < 19) ? 'light' : 'dark';
+            };
             const saved = localStorage.getItem('anhad_reader_v5');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                // Sync with global theme on load - prefer global theme
-                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
-                if (globalTheme) {
-                    parsed.theme = globalTheme;
-                } else if (!parsed.theme) {
-                    parsed.theme = 'light';
-                }
+                // Sync with isolated Nitnem theme on load - prefer isolated theme
+                const nitnemTheme = getNitnemDefaultTheme();
+                parsed.theme = nitnemTheme;
                 state.settings = { ...DEFAULTS, ...parsed };
             } else {
                 // No saved settings — use DEFAULTS (both backgrounds are 0 by default)
-                const globalTheme = (typeof window !== 'undefined' && window.AnhadTheme ? window.AnhadTheme.get() : null) || localStorage.getItem('anhad_theme');
+                const nitnemTheme = getNitnemDefaultTheme();
                 state.settings = { ...DEFAULTS };
-                if (globalTheme) {
-                    state.settings.theme = globalTheme;
-                }
+                state.settings.theme = nitnemTheme;
             }
         } catch (e) {
             state.settings = { ...DEFAULTS };
@@ -1524,11 +1524,11 @@
         // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
         // ═══════════════════════════════════════════════════════════════
         window.addEventListener('storage', (e) => {
-            if (e.key === 'anhad_theme' && e.newValue) {
+            if (e.key === 'nitnem_theme_override' && e.newValue) {
                 state.settings.theme = e.newValue;
                 applyAllSettings();
                 saveSettings();
-                console.log('🎨 Nitnem Reader: Synced with global theme:', e.newValue);
+                console.log('🎨 Nitnem Reader: Synced with isolated Nitnem theme:', e.newValue);
             }
         });
 

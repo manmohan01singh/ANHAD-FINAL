@@ -16,8 +16,47 @@
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reader.css">
     
-    <!-- Global Theme System -->
-    <script src="../lib/global-theme.js"></script>
+    <!-- Theme Initialization (Instant & Isolated) -->
+    <script>
+        (function() {
+            try {
+                var override = localStorage.getItem('nitnem_theme_override');
+                var effectiveTheme;
+                if (override === 'light' || override === 'dark') {
+                    effectiveTheme = override;
+                } else {
+                    // Auto time-based: 6am - 7pm is light, otherwise dark
+                    var hour = new Date().getHours();
+                    effectiveTheme = (hour >= 6 && hour < 19) ? 'light' : 'dark';
+                }
+                var html = document.documentElement;
+                html.setAttribute('data-theme', effectiveTheme);
+                html.style.colorScheme = effectiveTheme;
+                html.style.backgroundColor = (effectiveTheme === 'dark') ? '#000000' : '#F8F9FA';
+                
+                if (effectiveTheme === 'dark') {
+                    html.classList.add('dark', 'dark-mode');
+                } else {
+                    html.classList.remove('dark', 'dark-mode');
+                }
+                
+                // Sync class to body once DOM is ready
+                var observer = new MutationObserver(function() {
+                    if (document.body) {
+                        if (effectiveTheme === 'dark') {
+                            document.body.classList.add('dark', 'dark-mode');
+                            document.body.style.backgroundColor = '#000000';
+                        } else {
+                            document.body.classList.remove('dark', 'dark-mode');
+                            document.body.style.backgroundColor = '#F8F9FA';
+                        }
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(html, { childList: true, subtree: true });
+            } catch(e) {}
+        })();
+    </script>
     
     <!-- Navigation Libraries -->
     <script src="../lib/smart-back.js"></script>

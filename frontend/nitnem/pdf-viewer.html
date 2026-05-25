@@ -1,7 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="color-scheme" content="light">
+  <script>
+      (function() {
+          try {
+              var override = localStorage.getItem('nitnem_theme_override');
+              var effectiveTheme;
+              if (override === 'light' || override === 'dark') {
+                  effectiveTheme = override;
+              } else {
+                  // Auto time-based: 6am - 7pm is light, otherwise dark
+                  var hour = new Date().getHours();
+                  effectiveTheme = (hour >= 6 && hour < 19) ? 'light' : 'dark';
+              }
+              var html = document.documentElement;
+              html.setAttribute('data-theme', effectiveTheme);
+              html.style.colorScheme = effectiveTheme;
+              
+              if (effectiveTheme === 'dark') {
+                  html.classList.add('dark', 'dark-mode');
+              } else {
+                  html.classList.remove('dark', 'dark-mode');
+              }
+          } catch(e) {}
+      })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PDF Viewer | ANHAD</title>
