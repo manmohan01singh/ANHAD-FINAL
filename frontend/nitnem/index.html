@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
   <meta name="color-scheme" content="light dark">
@@ -87,13 +87,13 @@
     <script src="js/hub-app.js?v=5"></script>
     
     <!-- Global Theme System -->
-    <script src="../lib/global-theme.js"></script>
+    <!-- global-theme.js REMOVED: Nitnem has its own isolated theme system -->
     
     <!-- Navigation Libraries -->
-    <script src="../lib/smart-back.js"></script>
-    <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/smooth-navigation.js"></script>
-    <script src="../lib/state-preservation.js"></script>
+    <!-- smart-back.js REMOVED from Nitnem -->
+    <!-- page-lifecycle.js REMOVED from Nitnem -->
+    <!-- smooth-navigation.js REMOVED: causes broken state in Nitnem sub-app -->
+    <!-- state-preservation.js REMOVED from Nitnem -->
     
     <!-- Custom Gurmukhi Fonts -->
     <style>
@@ -1300,7 +1300,7 @@
     
     <!-- Floating Tab Bar -->
     <nav class="tab-bar">
-        <a href="../index.html" class="tab-item" onclick="goHome(event)">
+        <a href="../index.html" class="tab-item" onclick="goHome(event); return false;">
             <span class="tab-icon">🏠</span>
             <span class="tab-label">Home</span>
         </a>
@@ -1477,14 +1477,12 @@
                 localStorage.setItem('anhad_session_active_ts', Date.now().toString());
             } catch (_) {}
 
-            // USE STANDARDIZED NAVIGATION ENGINE (SPA — no full-page reload)
-            if (window.navigateTo) {
-                window.navigateTo('../index.html');
-            } else if (window.anhadGoBack) {
-                window.anhadGoBack('../index.html');
-            } else {
-                window.location.href = '../index.html';
-            }
+            // Direct navigation — Nitnem is standalone, NOT SPA context.
+            // Direct navigation — Nitnem is standalone, NOT part of the SPA shell.
+            // smooth-navigation.js is not loaded here, so navigateTo() would cause broken UI.
+            window.location.href = '../index.html';
+
+
         };
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
