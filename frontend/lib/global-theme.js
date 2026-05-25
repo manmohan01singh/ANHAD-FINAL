@@ -44,7 +44,11 @@
                 timeOfDay = 'night';
             }
         }
-        html.setAttribute('data-time-of-day', timeOfDay);
+        // Only set time-of-day on home page where the sky canvas + palette exist
+        // Sub-pages use clean light/dark mode only (no morning/day/evening/night palette)
+        if (html.hasAttribute('data-anhad-home')) {
+            html.setAttribute('data-time-of-day', timeOfDay);
+        }
 
         // 1. SCOPE TRANSITION KILL to background/color properties only
         // This preserves transform/opacity animations so buttons and scrolling

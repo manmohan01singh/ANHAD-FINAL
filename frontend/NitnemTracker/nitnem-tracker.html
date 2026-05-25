@@ -8,24 +8,15 @@
   try {
     const theme = localStorage.getItem('anhad_theme') || 'auto';
     let effectiveTheme = theme;
-    let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
     if (theme === 'auto') {
-      if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
-        effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
-      } else {
-        const hour = new Date().getHours();
-        effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-        if (hour >= 5 && hour < 9) timeOfDay = 'morning';
-        else if (hour >= 9 && hour < 16) timeOfDay = 'day';
-        else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
-        else timeOfDay = 'night';
-      }
+      const hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
     }
     document.documentElement.setAttribute('data-theme', effectiveTheme);
     document.documentElement.setAttribute('data-theme-mode', theme);
-    if (theme === 'auto') {
-      document.documentElement.setAttribute('data-time-of-day', timeOfDay);
-    }
+    // Note: data-time-of-day is intentionally NOT set on sub-pages.
+    // The time-of-day color palette (morning/day/evening/night) is home-page only.
+    // Sub-pages use clean light/dark mode based on time of day.
     document.documentElement.style.colorScheme = effectiveTheme;
     if (effectiveTheme === 'dark') {
       document.documentElement.classList.add('dark', 'dark-mode');
@@ -79,7 +70,7 @@
     
     <!-- Global Theme System -->
     <link rel="stylesheet" href="../css/theme-variables.css">
-    <link rel="stylesheet" href="../css/anhad-sky-bg.css">
+    <!-- ANHAD Sky CSS is home-page only — not needed here -->
     <script src="../lib/global-theme.js"></script>
     <script src="../js/scroll-optimizer.js"></script>
     <script src="../lib/smart-back.js"></script>

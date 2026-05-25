@@ -56,8 +56,8 @@
    AUTO MODE — Time of Day Specific Overrides (Dynamic background colors)
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-/* Morning Time — Warm Peach/Orange shades (5:00 AM to 9:00 AM) */
-[data-theme-mode="auto"][data-time-of-day="morning"] {
+/* Morning Time — Warm Peach/Orange shades (5:00 AM to 9:00 AM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] {
     --bg-primary: #FFF5EC;
     --bg-secondary: #FFEBD8;
     --bg-tertiary: #FFE0C4;
@@ -67,8 +67,8 @@
     --border-color: rgba(232, 168, 124, 0.2);
 }
 
-/* Daytime — Warm Creamy Yellowish shades (9:00 AM to 4:00 PM) */
-[data-theme-mode="auto"][data-time-of-day="day"] {
+/* Daytime — Warm Creamy Yellowish shades (9:00 AM to 4:00 PM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] {
     --bg-primary: #FFFDF9;
     --bg-secondary: #FFF8EE;
     --bg-tertiary: #FFF2DF;
@@ -78,8 +78,8 @@
     --border-color: rgba(212, 148, 58, 0.15);
 }
 
-/* Evening / Golden Hour — Warm Amber shades (4:00 PM to 8:00 PM) */
-[data-theme-mode="auto"][data-time-of-day="evening"] {
+/* Evening / Golden Hour — Warm Amber shades (4:00 PM to 8:00 PM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] {
     --bg-primary: #FFF8E7;
     --bg-secondary: #FFF0D4;
     --bg-tertiary: #FFE4B5;
@@ -89,8 +89,8 @@
     --border-color: rgba(184, 134, 11, 0.25);
 }
 
-/* Night — Deep charcoal/slate dark shades (8:00 PM to 5:00 AM) */
-[data-theme-mode="auto"][data-time-of-day="night"] {
+/* Night — Deep charcoal/slate dark shades (8:00 PM to 5:00 AM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
     --bg-primary: #0F0F12;
     --bg-secondary: #17171C;
     --bg-tertiary: #22222A;
