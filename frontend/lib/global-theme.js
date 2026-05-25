@@ -15,6 +15,10 @@
     const THEME_KEY = 'anhad_theme';
     const html = document.documentElement;
 
+    // Cached DOM references (queried once, not on every 30s tick)
+    let _metaTheme = null;
+    let _themeIcons = null;
+
     function getAutoTheme() {
         const hour = new Date().getHours();
         return (hour >= 5 && hour < 20) ? 'light' : 'dark';
@@ -42,20 +46,10 @@
         }
         html.setAttribute('data-time-of-day', timeOfDay);
 
-        // 1. DISABLE TRANSITIONS INSTANTLY (Injection method is faster than class-based *)
-        let style = document.getElementById('anhad-theme-fast-switch');
-        if (!style) {
-            style = document.createElement('style');
-            style.id = 'anhad-theme-fast-switch';
-            document.head.appendChild(style);
-        }
-        style.textContent = `
-            *, *::before, *::after {
-                transition: none !important;
-                animation-duration: 0s !important;
-                animation-delay: 0s !important;
-            }
-        `;
+        // 1. SCOPE TRANSITION KILL to background/color properties only
+        // This preserves transform/opacity animations so buttons and scrolling
+        // remain alive during theme switch — no more global animation freeze!
+        html.classList.add('theme-switching');
 
         // 2. APPLY THEME ATTRIBUTES & CLASSES
         if (effectiveTheme === 'dark') {
@@ -76,19 +70,20 @@
         // Clear inline background color to allow CSS variables to take over
         html.style.backgroundColor = '';
 
-        // Update meta theme-color (Important for mobile browser chrome)
-        const metaTheme = document.querySelector('meta[name="theme-color"]');
-        if (metaTheme) {
-            metaTheme.content = effectiveTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
+        // Update meta theme-color (cached — not queried on every tick)
+        if (!_metaTheme) _metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (_metaTheme) {
+            _metaTheme.content = effectiveTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
         }
 
-        // Update theme toggle icons (Query only if they exist)
-        const icons = document.querySelectorAll('#themeIcon, .theme-icon');
-        if (icons.length > 0) {
+        // Update theme toggle icons (use cache, reset cache if icons were removed by SPA swap)
+        if (!_themeIcons || !_themeIcons.length) {
+            _themeIcons = document.querySelectorAll('#themeIcon, .theme-icon');
+        }
+        if (_themeIcons.length > 0) {
             const iconText = theme === 'auto' ? '✨' : (effectiveTheme === 'dark' ? '☀️' : '🌙');
             const iconClass = theme === 'auto' ? 'fas fa-magic' : (effectiveTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon');
-            
-            icons.forEach(icon => {
+            _themeIcons.forEach(icon => {
                 if (icon.tagName === 'SPAN') {
                     icon.textContent = iconText;
                 } else {
@@ -97,22 +92,10 @@
             });
         }
 
-        // 3. FORCE REFLOW & RENDER
-        // This ensures the browser has processed the "no-transition" state before we remove it
-        void html.offsetHeight;
-
-        // 4. RESTORE TRANSITIONS
-        // Use double rAF to ensure the browser has painted the theme change
+        // 3. RESTORE TRANSITIONS after one rAF so the browser paints the instant switch
         requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                if (style.parentNode) {
-                    style.parentNode.removeChild(style);
-                }
-                html.classList.remove('theme-changing');
-                // NOTE: Do NOT clear body.style.backgroundImage here.
-                // anhad-sky-bg.js owns the background and will always set the correct image.
-                // Clearing it here causes the 30-second flicker bug.
-            });
+            html.classList.remove('theme-switching');
+            html.classList.remove('theme-changing');
         });
     }
 
@@ -169,15 +152,29 @@
             lastAppliedSlot = null;
             lastAppliedTheme = null;
         }
-    }, 500); // 500ms safety net — event-driven updates handle the instant case
+    }, 30000); // 30s safety net — event-driven 'themechange' handles instant switching (was 500ms)
 
-    // Initial application (Should be fast)
-    // Note: blocking-initialization script in <head> handles the VERY first paint
-    // but we re-apply here to sync UI elements.
+    // Only sync icons on load — full theme was already applied by inline IIFE in <head>.
+    // Running full applyTheme() here would cause a redundant style recalculation.
+    function _syncIconsOnLoad() {
+        const theme = getTheme();
+        let effectiveTheme = theme === 'auto' ? getAutoTheme() : theme;
+        if (!_themeIcons || !_themeIcons.length) {
+            _themeIcons = document.querySelectorAll('#themeIcon, .theme-icon');
+        }
+        if (_themeIcons.length > 0) {
+            const iconText = theme === 'auto' ? '✨' : (effectiveTheme === 'dark' ? '☀️' : '🌙');
+            const iconClass = theme === 'auto' ? 'fas fa-magic' : (effectiveTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon');
+            _themeIcons.forEach(icon => {
+                if (icon.tagName === 'SPAN') icon.textContent = iconText;
+                else icon.className = iconClass;
+            });
+        }
+    }
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => applyTheme(getTheme()));
+        document.addEventListener('DOMContentLoaded', _syncIconsOnLoad);
     } else {
-        applyTheme(getTheme());
+        _syncIconsOnLoad();
     }
 
     // Expose Global API

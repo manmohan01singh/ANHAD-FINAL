@@ -447,9 +447,10 @@
       }
     });
 
-    // ── SAFETY NET: 500ms lightweight poll (fallback only) ──────────────────
-    // This handles real-clock transitions (e.g. 9:00am → day) with minimal overhead.
-    setInterval(smartRefresh, 500);
+    // ── SAFETY NET: 30s lightweight poll (fallback only) ────────────────────
+    // Real-clock transitions (9:00am → day, 8:00pm → night) handled by this.
+    // Event-driven updates (themechange, anhadTimeForced) handle the instant case.
+    setInterval(smartRefresh, 30000); // was 500ms
   }
 
   function onThemeChange() {
@@ -469,9 +470,11 @@
     // NOTE: removed 'else { backgroundImage = none }' — bg always shows now
   }
 
+  // Use document listeners only — events dispatched on window bubble to document,
+  // so a window+document pair fires onThemeChange TWICE per toggle.
   document.addEventListener('anhadThemeChanged', onThemeChange);
-  document.addEventListener('themechange',        onThemeChange);
-  window.addEventListener('themechange',          onThemeChange);
+  document.addEventListener('themechange', onThemeChange);
+  // NOTE: window 'themechange' listener intentionally REMOVED to prevent double-fire.
 
   // Force immediate update when DOM is ready
   if (document.readyState === 'loading') {

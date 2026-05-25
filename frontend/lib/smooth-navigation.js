@@ -15,6 +15,9 @@
 (function() {
   'use strict';
 
+  // Set to true only for debugging — kills all console.log overhead in production
+  const NAV_DEBUG = false;
+
   const MAIN_TARGET_ID = 'app';
   const PAGE_CACHE = new Map();
   const DOM_CACHE = new Map(); // For keepAlive strategy
@@ -69,8 +72,9 @@
 
   let currentActiveUrl = normalizeUrl(window.location.href);
   
-  // Cache the initial page immediately to prevent re-fetching on first 'back' navigation
-  if (document.documentElement.innerHTML) {
+  // Cache the initial page's #app content immediately (not full outerHTML — saves ~2MB memory)
+  const _initApp = document.getElementById('app');
+  if (_initApp) {
     PAGE_CACHE.set(currentActiveUrl, document.documentElement.outerHTML);
   }
 
@@ -127,7 +131,7 @@
       window.ANHAD_ROOT = window.location.origin + '/ANHAD-FINAL/frontend/';
     }
   }
-  console.log('[SmoothNav] App Root resolved to:', window.ANHAD_ROOT);
+      NAV_DEBUG &&   console.log('[SmoothNav] App Root resolved to:', window.ANHAD_ROOT);
 
   // Fix icon paths to absolute to prevent 404s during SPA navigation
   document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]').forEach(link => {
@@ -196,10 +200,10 @@
     // as standalone apps and are loaded as full reloads to prevent leaks.
     // ─────────────────────────────────────────────────────────────────────────
     if (isShellPage(absoluteUrl)) {
-      console.log('[SmoothNav] SPA swap navigating to:', absoluteUrl);
+      NAV_DEBUG &&       console.log('[SmoothNav] SPA swap navigating to:', absoluteUrl);
       performSwap(absoluteUrl, options);
     } else {
-      console.log('[SmoothNav] Full reload navigating to:', absoluteUrl);
+      NAV_DEBUG &&       console.log('[SmoothNav] Full reload navigating to:', absoluteUrl);
       window.location.href = absoluteUrl;
     }
   };
@@ -227,7 +231,23 @@
     // Normalize for caching/history — but fetch the actual file URL
     url = normalizeUrl(url);
     const fetchUrl = toFetchUrl(url); // e.g. /nitnem/ → /nitnem/index.html
-    
+
+    // ── CACHE HIT: serve instantly from in-memory cache ──────────────────────
+    const cachedHtml = PAGE_CACHE.get(url);
+    if (cachedHtml) {
+      NAV_DEBUG && console.log('[SmoothNav] Cache hit for:', url);
+      if ('startViewTransition' in document && !options.instant) {
+        document.startViewTransition(() => applyNewContent(cachedHtml, url, options));
+      } else {
+        await applyNewContent(cachedHtml, url, options);
+      }
+      return;
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Disconnect mutation observer during swap to prevent DOM-mutation storm
+    if (window._anhadDomObserver) window._anhadDomObserver.disconnect();
+
     const loader = ensureLoader();
     let loaderTimeout = null;
     let transitionFinished = false;
@@ -239,7 +259,7 @@
           loader.classList.add('visible');
           document.body.classList.add('page-loading');
         }
-      }, 120); // Reduced from 250ms for snappier feel
+      }, 120);
 
       // Use fetchUrl (with index.html) to avoid directory listing responses
       const response = await fetch(fetchUrl);
@@ -251,6 +271,7 @@
       
       transitionFinished = true;
       clearTimeout(loaderTimeout);
+      loaderTimeout = null;
       
       if ('startViewTransition' in document && !options.instant) {
         document.startViewTransition(() => applyNewContent(text, url, options));
@@ -261,13 +282,17 @@
     } catch (e) {
       console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
       clearTimeout(loaderTimeout);
-      // Fall back to the fetch URL (the actual file) not the normalized one
       window.location.href = fetchUrl;
     } finally {
-      // ROBUST: Always clean up loader state
-      clearTimeout(loaderTimeout);
+      if (loaderTimeout) clearTimeout(loaderTimeout);
       loader.classList.remove('visible');
       document.body.classList.remove('page-loading');
+      // Reconnect mutation observer after swap completes
+      if (window._anhadDomObserver && document.body) {
+        window._anhadDomObserver.observe(document.body, {
+          childList: true, subtree: true, attributes: false, characterData: false
+        });
+      }
     }
   }
 
@@ -326,7 +351,7 @@
         }
       } else if (newNode && !currentNode) {
         // Inject shell element if it exists in the incoming page but is missing from active DOM
-        console.log('[SPA] Dynamic Shell Sync — Injecting missing shell element:', selector);
+      NAV_DEBUG &&         console.log('[SPA] Dynamic Shell Sync — Injecting missing shell element:', selector);
         const clonedNode = newNode.cloneNode(true);
         
         // Find correct placement
@@ -344,7 +369,7 @@
         }
       } else if (!newNode && currentNode) {
         // Remove shell element if it does not exist in the incoming page but exists in active DOM
-        console.log('[SPA] Dynamic Shell Sync — Removing shell element:', selector);
+      NAV_DEBUG &&         console.log('[SPA] Dynamic Shell Sync — Removing shell element:', selector);
         currentNode.remove();
       }
     });
@@ -371,22 +396,30 @@
       }
     });
     
-    // Clear ALL inline body styles to prevent leakage from any module
-    document.body.style.backgroundImage = '';
+    // Clear inline body styles to prevent leakage from any module
+    // NOTE: Do NOT clear backgroundImage — anhad-sky-bg.js owns it.
+    // Clearing it causes a 1-2 frame dark flash on every navigation.
     document.body.style.backgroundColor = '';
     document.body.style.overflow = '';
     document.body.style.minHeight = '';
     document.body.style.color = '';
+
+    // Remove previously injected page-specific <style> blocks (prevents unbounded <head> growth)
+    const oldPageStyles = document.querySelectorAll('style[data-spa-page]');
+    const newPageKey = new URL(url, window.location.origin).pathname;
+    oldPageStyles.forEach(el => {
+      if (el.getAttribute('data-spa-page') !== newPageKey) el.remove();
+    });
     
     moduleSpecificSelectors.forEach(selector => {
       const currentEl = document.querySelector(selector);
       const newEl = newDoc.querySelector(selector);
       
       if (currentEl && !newEl) {
-        console.log('[SPA] Cleaning up module element:', selector);
+      NAV_DEBUG &&         console.log('[SPA] Cleaning up module element:', selector);
         currentEl.remove();
       } else if (!currentEl && newEl) {
-        console.log('[SPA] Injecting module element:', selector);
+      NAV_DEBUG &&         console.log('[SPA] Injecting module element:', selector);
         // Clone to body but keep it outside #app
         document.body.appendChild(newEl.cloneNode(true));
       }
@@ -399,11 +432,11 @@
     // SWAP CONTENT
     currentApp.innerHTML = newApp.innerHTML;
     
-    // Update URL
+    // Update URL — store url in state so popstate can do cache lookup
     if (!options.replace) {
-      history.pushState({ spa: true }, '', url);
+      history.pushState({ spa: true, url: url }, '', url);
     } else {
-      history.replaceState({ spa: true }, '', url);
+      history.replaceState({ spa: true, url: url }, '', url);
     }
 
     // Execute Page-Specific Scripts (Sequential & Async-aware)
@@ -527,7 +560,7 @@
       if (href) {
         const absoluteHref = new URL(href, sourceUrl).href;
         if (!currentStyles.includes(absoluteHref)) {
-          console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
+      NAV_DEBUG &&           console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = absoluteHref;
@@ -586,7 +619,7 @@
         Promise.all(loadPromises),
         new Promise(resolve => setTimeout(resolve, 600))
       ]);
-      console.log('[SmoothNav] All new stylesheets ready.');
+      NAV_DEBUG &&       console.log('[SmoothNav] All new stylesheets ready.');
     }
   }
 
@@ -784,18 +817,31 @@
       }
     }, { passive: true });
 
-    // Handle browser back/forward buttons — always full reload
+    // Handle browser back/forward buttons — use SPA cache for instant back (no hard reload)
     window.addEventListener('popstate', (e) => {
-      // Stamp session flags for index.html to prevent splash screen
+      // Stamp session flags for index.html to prevent splash screen re-show
       if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/')) {
         try {
           sessionStorage.setItem('anhad_welcomed', '1');
           localStorage.setItem('anhad_welcome_seen', 'true');
           localStorage.setItem('anhad_session_active_ts', Date.now().toString());
-        } catch(e) {}
+        } catch(ex) {}
       }
-      console.log('[SmoothNav] Popstate — full page reload for:', window.location.href);
-      window.location.reload();
+      const targetUrl = normalizeUrl(window.location.href);
+      const cached = PAGE_CACHE.get(targetUrl);
+      if (cached) {
+        // Instant SPA swap — no network request, no white flash
+        NAV_DEBUG && console.log('[SmoothNav] Popstate cache hit:', targetUrl);
+        if ('startViewTransition' in document) {
+          document.startViewTransition(() => applyNewContent(cached, targetUrl, { replace: true, isBack: true }));
+        } else {
+          applyNewContent(cached, targetUrl, { replace: true, isBack: true });
+        }
+      } else {
+        // Not cached — full reload as safe fallback
+        NAV_DEBUG && console.log('[SmoothNav] Popstate — no cache, reload for:', window.location.href);
+        window.location.reload();
+      }
     });
 
     // Integrate with Capacitor native back button
@@ -847,12 +893,13 @@
     if ('MutationObserver' in window) {
       let mutationTimeout = null;
       const domObserver = new MutationObserver(function() {
-        // PERF: Increased debounce from 500ms to 1000ms.
-        // During SPA swaps the whole DOM is replaced — a 500ms debounce fires
-        // multiple times per transition. 1s ensures a single call per swap.
+        // PERF: Debounce at 1000ms — SPA swaps replace the whole DOM
+        // so a 1s debounce ensures a single call per swap.
         clearTimeout(mutationTimeout);
         mutationTimeout = setTimeout(observeNewLinks, 1000);
       });
+      // Expose globally so performSwap can disconnect during swaps (prevents GC storm)
+      window._anhadDomObserver = domObserver;
 
       const startObserving = () => {
         if (document.body) {

@@ -36,12 +36,10 @@
       if (this.isInitialized) return;
       
       this.navElement = document.getElementById('mainNav');
-      console.log('[AnhadNav] Looking for #mainNav element...');
       if (!this.navElement) {
         console.warn('[AnhadNav] Navigation element not found. Call init() after nav HTML is injected.');
         return;
       }
-      console.log('[AnhadNav] Found nav element:', this.navElement);
 
       // Cache nav items
       const navItems = this.navElement.querySelectorAll('.nav-item');
@@ -69,7 +67,6 @@
       this.setupClickHandlers();
 
       this.isInitialized = true;
-      console.log('[AnhadNav] Initialized with tabs:', Array.from(this.items.keys()));
     }
 
     /**
@@ -141,11 +138,15 @@
       // Update active state immediately for perceived performance
       this.setActive(tabId);
 
-      // Navigate
+      // Navigate via SPA engine if available (instant, no white flash)
       if (targetUrl === '#' || targetUrl.endsWith(window.location.pathname.split('/').pop())) {
-        // Already on this page, just scroll to top
+        // Already on this page — scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (typeof window.navigateTo === 'function') {
+        // SPA engine: instant, cache-powered navigation
+        window.navigateTo(targetUrl);
       } else {
+        // Fallback if SPA engine not yet loaded
         window.location.href = targetUrl;
       }
     }
@@ -173,12 +174,13 @@
       activeItem.element.setAttribute('aria-current', 'page');
       this.activeTab = tabId;
 
-      // Trigger icon spring animation
+      // Trigger icon spring animation via class (no forced reflow)
       if (animate) {
         const iconWrap = activeItem.element.querySelector('.nav-icon-wrap');
-        iconWrap.style.animation = 'none';
-        iconWrap.offsetHeight; // Force reflow
-        iconWrap.style.animation = 'iconSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        if (iconWrap) {
+          iconWrap.classList.remove('spring-animate');
+          requestAnimationFrame(() => { iconWrap.classList.add('spring-animate'); });
+        }
       }
     }
 
@@ -277,7 +279,7 @@
     handleThemeChange(theme) {
       // Theme changes are handled automatically via CSS [data-theme] selectors
       // This method is available for any JS-side theme adjustments if needed
-      console.log('[AnhadNav] Theme changed to:', theme);
+      // AnhadNav theme changed
     }
 
     /**
@@ -309,6 +311,5 @@
   }
 
   // Expose for manual initialization if needed
-  console.log('[AnhadNav] Controller loaded. Auto-initializing...');
 
 })();
