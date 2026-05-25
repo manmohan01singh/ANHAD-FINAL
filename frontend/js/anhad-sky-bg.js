@@ -232,10 +232,8 @@
     const current = document.body.style.backgroundImage || '';
     if (current.includes(bgUrl)) return; // Already correct — skip
 
-    // Apply transition for smooth crossfade
-    if (!document.body.style.transition || !document.body.style.transition.includes('background-image')) {
-      document.body.style.transition = 'background-image 1.2s ease-in-out';
-    }
+    // Make background image swap instant (in milliseconds) with no transition delay
+    document.body.style.transition = 'none';
 
     document.body.style.backgroundImage = `url('${bgUrl}')`;
     document.body.style.backgroundSize = 'cover';

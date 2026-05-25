@@ -106,9 +106,10 @@
     function setTheme(theme) {
         localStorage.setItem(THEME_KEY, theme);
         applyTheme(theme);
-        // Custom event for other components to react
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
-        // ── INSTANT signal to anhad-sky-bg.js so background updates in <1 frame
+        // Dispatch on document with bubbling so all listeners on document and window receive it cleanly
+        const eventDetail = { bubbles: true, detail: { theme } };
+        document.dispatchEvent(new CustomEvent('themechange', eventDetail));
+        document.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
         window.dispatchEvent(new CustomEvent('anhadTimeForced'));
     }
 

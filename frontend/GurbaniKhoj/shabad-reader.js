@@ -174,11 +174,20 @@ function getParams() {
 
 const ReaderTheme = {
     init() {
-        const saved = localStorage.getItem('gurbani_reader_theme') || 'paper';
-        this.set(saved);
+        let saved = localStorage.getItem('gurbani_reader_theme');
+        const globalTheme = localStorage.getItem('anhad_theme') || 'auto';
+        
+        if (globalTheme === 'auto') {
+            const hour = new Date().getHours();
+            const effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            saved = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
+        } else if (!saved) {
+            saved = (globalTheme === 'dark') ? 'charcoal' : 'paper';
+        }
+        this.set(saved, false);
     },
 
-    set(theme) {
+    set(theme, saveGlobal = false) {
         State.readerTheme = theme;
         document.documentElement.setAttribute('data-reader-theme', theme);
         localStorage.setItem('gurbani_reader_theme', theme);
@@ -186,7 +195,20 @@ const ReaderTheme = {
         // Sync dark mode class
         const isDark = (theme === 'charcoal' || theme === 'midnight');
         document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-        localStorage.setItem('anhad_theme', isDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        if (isDark) {
+            document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+
+        if (saveGlobal) {
+            localStorage.setItem('anhad_theme', isDark ? 'dark' : 'light');
+            // Dispatch dynamic theme change events
+            const eventDetail = { bubbles: true, detail: { theme: isDark ? 'dark' : 'light' } };
+            document.dispatchEvent(new CustomEvent('themechange', eventDetail));
+            document.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
+        }
 
         // Update settings swatches active class
         $$('.theme-preset-btn').forEach(btn => {
@@ -842,7 +864,7 @@ function initEvents() {
     $$('.theme-preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             haptic();
-            ReaderTheme.set(btn.dataset.readerTheme);
+            ReaderTheme.set(btn.dataset.readerTheme, true);
         });
     });
 

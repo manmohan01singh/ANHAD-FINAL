@@ -1,0 +1,93 @@
+
+========================================
+File: gurbani-khoj.js
+========================================
+  Line 2: * GURBANI KHOJ - Premium Edition with Theme Toggle
+  Line 55: themeToggle: $('#themeToggle'),
+  Line 113: theme: 'light',
+  Line 286: // THEME
+  Line 289: const Theme = {
+  Line 291: // ?? Sync with global app theme (anhad_theme) first ??
+  Line 292: const globalTheme = localStorage.getItem('anhad_theme');
+  Line 293: if (globalTheme) {
+  Line 294: this.set(globalTheme);
+  Line 296: const darkFlag = localStorage.getItem('anhad_dark_mode');
+  Line 297: if (darkFlag === 'true') this.set('dark');
+  Line 298: else if (darkFlag === 'false') this.set('light');
+  Line 299: else this.set(localStorage.getItem('gurbaniTheme') || 'light');
+  Line 304: // Disable all transitions for instant theme switch
+  Line 306: const newTheme = State.theme === 'light' ? 'dark' : 'light';
+  Line 307: this.set(newTheme);
+  Line 308: // Sync to global theme key
+  Line 309: localStorage.setItem('anhad_theme', newTheme);
+  Line 319: set(theme) {
+  Line 320: State.theme = theme;
+  Line 321: document.documentElement.dataset.theme = theme;
+  Line 322: localStorage.setItem('gurbaniTheme', theme);
+  Line 324: const metaTheme = document.querySelector('meta[name="theme-color"]');
+  Line 325: if (metaTheme) {
+  Line 326: metaTheme.content = theme === 'dark' ? '#0a0a0f' : '#f8f6f2';
+  Line 515: function haptic(style = 'light') {
+  Line 517: navigator.vibrate(style === 'light' ? 10 : style === 'medium' ? 20 : 30);
+  Line 834: // iOS NOTES STYLE SEARCH HIGHLIGHTING
+  Line 837: function highlightSearchTerm(text, query) {
+  Line 846: // Replace matches with highlighted span
+  Line 847: return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+  Line 862: // Apply search highlighting
+  Line 863: const gurmukhi = query ? highlightSearchTerm(gurmukhiRaw, query) : gurmukhiRaw;
+  Line 2216: // Theme toggle
+  Line 2217: DOM.themeToggle?.addEventListener('click', () => Theme.toggle());
+  Line 2621: Theme.init();
+
+========================================
+File: shabad-reader.js
+========================================
+  Line 123: highlightVerseId: null,
+  Line 126: readerTheme: 'paper', // white, paper, charcoal, midnight
+  Line 172: // THEME PRESENTS OVERRIDES
+  Line 175: const ReaderTheme = {
+  Line 177: const saved = localStorage.getItem('gurbani_reader_theme') || 'paper';
+  Line 181: set(theme) {
+  Line 182: State.readerTheme = theme;
+  Line 183: document.documentElement.setAttribute('data-reader-theme', theme);
+  Line 184: localStorage.setItem('gurbani_reader_theme', theme);
+  Line 186: // Sync dark mode class
+  Line 187: const isDark = (theme === 'charcoal' || theme === 'midnight');
+  Line 188: document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  Line 189: localStorage.setItem('anhad_theme', isDark ? 'dark' : 'light');
+  Line 192: $$('.theme-preset-btn').forEach(btn => {
+  Line 193: btn.classList.toggle('active', btn.dataset.readerTheme === theme);
+  Line 255: function haptic(style = 'light') {
+  Line 257: navigator.vibrate(style === 'light' ? 8 : 18);
+  Line 284: // HIGHLIGHT AND RENDER
+  Line 287: function highlightSearchTerm(text, query) {
+  Line 291: return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+  Line 308: // Find the highlighted verse if any, else default to first
+  Line 310: if (State.highlightVerseId) {
+  Line 311: const found = data.verses.find(v => String(v.verseId) === String(State.highlightVerseId));
+  Line 341: const isHighlighted = String(verse.verseId) === String(State.highlightVerseId);
+  Line 354: displayWord = highlightSearchTerm(word, searchQuery);
+  Line 363: const translit = searchQuery ? highlightSearchTerm(translitRaw, searchQuery) : translitRaw;
+  Line 376: const highlighted = searchQuery ? highlightSearchTerm(hindiRaw, searchQuery) : hindiRaw;
+  Line 377: if (highlighted) {
+  Line 378: hindiGurbaniHtml += `<p class="hindi-gurbani">${highlighted}</p>`;
+  Line 386: const puTrans = searchQuery ? highlightSearchTerm(puTransRaw, searchQuery) : puTransRaw;
+  Line 394: const hiTrans = searchQuery ? highlightSearchTerm(hiTransRaw, searchQuery) : hiTransRaw;
+  Line 402: const enTrans = searchQuery ? highlightSearchTerm(enTransRaw, searchQuery) : enTransRaw;
+  Line 413: <div class="shabad-line ${isHighlighted ? 'highlighted' : ''}" data-verse="${verse.verseId}">
+  Line 437: if (State.highlightVerseId) {
+  Line 439: selectActiveLine(State.highlightVerseId, true);
+  Line 445: State.highlightVerseId = verseId;
+  Line 449: line.classList.toggle('highlighted', isCurrent);
+  Line 748: // Also visual highlight on the navbar bookmark icon
+  Line 841: // Theme preset clicks
+  Line 842: $$('.theme-preset-btn').forEach(btn => {
+  Line 845: ReaderTheme.set(btn.dataset.readerTheme);
+  Line 961: State.highlightVerseId = params.verseId;
+  Line 968: ReaderTheme.init();
+
+========================================
+File: search-history.js
+========================================
+  Line 29: function haptic(style = 'light') {
+  Line 31: navigator.vibrate(style === 'light' ? 10 : 20);

@@ -202,7 +202,7 @@ body.is-scrolling #anhad-sky-canvas {
 
 /* Optimize background image transitions for instant switching */
 #anhad-sky-canvas {
-  transition: background-image 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
+  transition: none !important;
 }
 
 
@@ -219,7 +219,7 @@ body.is-scrolling #anhad-sky-canvas {
   pointer-events: none;
   overflow: hidden;
   display: none;
-  transition: background 2s ease-in-out;
+  transition: none;
   will-change: transform;
   transform: translateZ(0);
   contain: strict;
