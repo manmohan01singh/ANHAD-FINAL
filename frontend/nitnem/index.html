@@ -842,10 +842,13 @@
         .modal {
             position: fixed;
             inset: 0;
-            z-index: 9999;
+            z-index: 200000;
             display: none;
             align-items: flex-end;
             justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         
         .modal[aria-hidden="false"] {
