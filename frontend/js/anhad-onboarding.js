@@ -455,6 +455,167 @@
                 transform: translateX(3px);
                 opacity: 1;
             }
+
+            /* Golden spotlight ring */
+            .anhad-tour-spotlight-ring {
+                position: fixed;
+                border: 2px solid #D4943A;
+                box-shadow: 0 0 15px rgba(212, 148, 58, 0.4), 0 0 0 4px rgba(212, 148, 58, 0.15);
+                z-index: 1000000;
+                pointer-events: none;
+                transition: 
+                    top 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
+                    left 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
+                    width 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
+                    height 0.45s cubic-bezier(0.25, 1, 0.3, 1),
+                    opacity 0.3s ease;
+                opacity: 0;
+                will-change: top, left, width, height, opacity;
+                animation: ringPulse 2s infinite ease-in-out;
+            }
+            .anhad-tour-spotlight-ring.active {
+                opacity: 1;
+            }
+            @keyframes ringPulse {
+                0%, 100% { box-shadow: 0 0 10px rgba(212, 148, 58, 0.3), 0 0 0 2px rgba(212, 148, 58, 0.1); }
+                50% { box-shadow: 0 0 20px rgba(212, 148, 58, 0.6), 0 0 0 6px rgba(212, 148, 58, 0.2); }
+            }
+
+            /* Progress Bar & Step Counter */
+            .anhad-tour-progress-container {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex: 1;
+                margin-right: 12px;
+            }
+            .anhad-tour-step-counter {
+                font-size: 11.5px;
+                font-weight: 700;
+                color: #8E8E93;
+                font-variant-numeric: tabular-nums;
+            }
+            .anhad-tour-progress-bar-wrap {
+                flex: 1;
+                height: 4px;
+                background: rgba(0, 0, 0, 0.08);
+                border-radius: 99px;
+                overflow: hidden;
+                position: relative;
+            }
+            html.dark-mode .anhad-tour-progress-bar-wrap,
+            [data-theme="dark"] .anhad-tour-progress-bar-wrap {
+                background: rgba(255, 255, 255, 0.08);
+            }
+            .anhad-tour-progress-bar-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #D4943A 0%, #B8860B 100%);
+                border-radius: 99px;
+                transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            /* Premium Shimmer Button effect */
+            .anhad-tour-popover-btn.shimmer-btn {
+                position: relative;
+                overflow: hidden;
+            }
+            .anhad-tour-popover-btn.shimmer-btn::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -60%;
+                width: 30%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(30deg);
+                animation: shimmerEffect 3s infinite linear;
+            }
+            @keyframes shimmerEffect {
+                0% { left: -60%; }
+                30% { left: 160%; }
+                100% { left: 160%; }
+            }
+
+            /* Celebration card */
+            .anhad-celebration-card {
+                position: fixed;
+                bottom: -100%;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 400px;
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(25px) saturate(200%);
+                -webkit-backdrop-filter: blur(25px) saturate(200%);
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                border-radius: 32px;
+                padding: 32px 24px;
+                box-shadow: 
+                    0 30px 60px rgba(184, 134, 11, 0.25),
+                    0 0 100px rgba(0,0,0,0.1),
+                    inset 0 1px 0 rgba(255,255,255,0.7);
+                z-index: 2000003;
+                transition: bottom 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                text-align: center;
+                color: #3D2914;
+                box-sizing: border-box;
+            }
+            html.dark-mode .anhad-celebration-card {
+                background: rgba(28, 28, 31, 0.92);
+                border-color: rgba(255, 255, 255, 0.08);
+                color: #FAF8F5;
+                box-shadow: 
+                    0 30px 60px rgba(0, 0, 0, 0.6),
+                    0 0 100px rgba(0,0,0,0.2),
+                    inset 0 1px 0 rgba(255,255,255,0.05);
+            }
+            .anhad-celebration-card.active {
+                bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            }
+            .anhad-celebration-emoji {
+                font-size: 52px;
+                margin-bottom: 16px;
+                display: inline-block;
+                animation: emojiWiggle 1.5s ease infinite;
+            }
+            @keyframes emojiWiggle {
+                0%, 100% { transform: rotate(0deg) scale(1); }
+                50% { transform: rotate(15deg) scale(1.1); }
+            }
+            .anhad-celebration-title {
+                font-size: 24px;
+                font-weight: 900;
+                margin-bottom: 12px;
+                color: #D4943A;
+                letter-spacing: -0.3px;
+            }
+            .anhad-celebration-text {
+                font-size: 15px;
+                line-height: 1.6;
+                margin-bottom: 24px;
+                opacity: 0.9;
+            }
+            .anhad-celebration-btn {
+                width: 100%;
+                border: none;
+                background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 20px;
+                font-weight: 800;
+                font-size: 16px;
+                cursor: pointer;
+                box-shadow: 0 8px 24px rgba(212, 148, 58, 0.4);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+            .anhad-celebration-btn:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 12px 30px rgba(212, 148, 58, 0.5);
+            }
+            .anhad-celebration-btn:active {
+                transform: translateY(0) scale(0.98);
+            }
         `;
         document.head.appendChild(style);
     }
@@ -656,6 +817,11 @@
             tapPrompt.innerHTML = '👆 Tap anywhere to continue';
         }
 
+        let spotlightRing = document.createElement('div');
+        spotlightRing.className = 'anhad-tour-spotlight-ring';
+        spotlightRing.id = 'anhad-tour-spotlight-ring';
+        document.body.appendChild(spotlightRing);
+
         document.body.appendChild(overlayContainer);
         document.body.appendChild(popover);
         document.body.appendChild(tapPrompt);
@@ -725,6 +891,22 @@
             rightEl.style.left = `${r}px`;
             rightEl.style.width = `${w - r}px`;
             rightEl.style.height = `${b - t}px`;
+        }
+
+        // Dynamic Spotlight Ring
+        const ring = document.getElementById('anhad-tour-spotlight-ring');
+        if (ring) {
+            if (element) {
+                ring.style.top = `${rect.top - padding}px`;
+                ring.style.left = `${rect.left - padding}px`;
+                ring.style.width = `${rect.width + padding * 2}px`;
+                ring.style.height = `${rect.height + padding * 2}px`;
+                const style = window.getComputedStyle(element);
+                ring.style.borderRadius = style.borderRadius || '12px';
+                ring.classList.add('active');
+            } else {
+                ring.classList.remove('active');
+            }
         }
     }
 
@@ -827,12 +1009,15 @@
                 ${badgesHtml}
                 <div class="anhad-tour-popover-text">${step.text}</div>
                 <div class="anhad-tour-popover-footer">
-                    <div class="anhad-tour-popover-dots">
-                        ${steps.map((_, i) => `<span class="anhad-tour-popover-dot ${i === currentStepIndex ? 'active' : ''}"></span>`).join('')}
+                    <div class="anhad-tour-progress-container">
+                        <span class="anhad-tour-step-counter">${currentStepIndex + 1} / ${steps.length}</span>
+                        <div class="anhad-tour-progress-bar-wrap">
+                            <div class="anhad-tour-progress-bar-fill" style="width: ${((currentStepIndex + 1) / steps.length) * 100}%"></div>
+                        </div>
                     </div>
-                    <div>
+                    <div style="display: flex; align-items: center; flex-shrink: 0;">
                         <button class="anhad-tour-skip-btn" id="tourSkipBtn">${selectedLang === 'pa' ? 'ਛੱਡੋ' : selectedLang === 'hi' ? 'छोड़ें' : 'Skip'}</button>
-                        <button class="anhad-tour-popover-btn" id="tourNextBtn">${currentStepIndex === steps.length - 1 ? (selectedLang === 'pa' ? 'ਸਮਾਪਤ' : selectedLang === 'hi' ? 'समाप्त' : 'Finish') : (selectedLang === 'pa' ? 'ਅਗਲਾ' : selectedLang === 'hi' ? 'अगला' : 'Next')}</button>
+                        <button class="anhad-tour-popover-btn shimmer-btn" id="tourNextBtn">${currentStepIndex === steps.length - 1 ? (selectedLang === 'pa' ? 'ਸਮਾਪਤ' : selectedLang === 'hi' ? 'समाप्त' : 'Finish') : (selectedLang === 'pa' ? 'ਅਗਲਾ' : selectedLang === 'hi' ? 'अगला' : 'Next')}</button>
                     </div>
                 </div>
             `;
@@ -886,6 +1071,12 @@
         console.log('🏁 Upgraded onboarding tour successfully completed.');
         localStorage.setItem(TOUR_KEY, 'true');
 
+        // FORCE default dynamic theme if not already explicitly configured!
+        if (!localStorage.getItem('anhad_theme')) {
+            localStorage.setItem('anhad_theme', 'auto');
+            if (window.AnhadTheme) window.AnhadTheme.apply('auto');
+        }
+
         // Unbind resize and scroll events
         window.removeEventListener('resize', handleResizeAndScroll);
         window.removeEventListener('scroll', handleResizeAndScroll);
@@ -894,6 +1085,8 @@
         document.querySelectorAll('.anhad-tour-overlay-edge').forEach(el => {
             el.classList.remove('active');
         });
+        const spotlightRing = document.getElementById('anhad-tour-spotlight-ring');
+        if (spotlightRing) spotlightRing.classList.remove('active');
         if (popover) popover.classList.remove('active');
         if (tapPrompt) tapPrompt.style.opacity = '0';
 
@@ -902,15 +1095,49 @@
             el.classList.remove('anhad-tour-target');
         });
 
-        // Safe DOM cleanup
-        setTimeout(() => {
-            if (overlayContainer) overlayContainer.remove();
-            if (popover) popover.remove();
-            if (tapPrompt) tapPrompt.remove();
+        // Show celebration bottom card modal
+        const celebrationCard = document.createElement('div');
+        celebrationCard.className = 'anhad-celebration-card';
+        
+        let titleHtml = '✨ Dynamic Theme Active!';
+        let textHtml = 'ANHAD is configured with our premium <b>Auto-Dynamic Theme</b> by default. Your background artwork and card colors will adapt beautifully with the local hour (Amritvela, Day, Evening, and Night).';
+        let btnHtml = 'Begin Journey';
+        
+        if (selectedLang === 'pa') {
+            titleHtml = '✨ ਡਾਇਨਾਮਿਕ ਥੀਮ ਸਰਗਰਮ!';
+            textHtml = 'ANHAD ਨੂੰ ਡਿਫੌਲਟ ਰੂਪ ਵਿੱਚ ਸਾਡੇ ਪ੍ਰੀਮੀਅਮ <b>ਆਟੋ-ਡਾਇਨਾਮਿਕ ਥੀਮ</b> ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡਾ ਬੈਕਗ੍ਰਾਊਂਡ ਅਤੇ ਰੰਗ ਦਿਨ ਦੇ ਸਮੇਂ (ਅੰਮ੍ਰਿਤ ਵੇਲਾ, ਦਿਨ, ਸ਼ਾਮ ਅਤੇ ਰਾਤ) ਅਨੁਸਾਰ ਆਪਣੇ ਆਪ ਬਦਲਣਗੇ।';
+            btnHtml = 'ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ';
+        } else if (selectedLang === 'hi') {
+            titleHtml = '✨ डायनामिक थीम सक्रिय!';
+            textHtml = 'ANHAD को डिफ़ॉल्ट रूप से हमारे प्रीमियम <b>ऑटो-डायनामिक थीम</b> पर सेट किया गया है। आपका बैकग्राउंड और रंग दिन के समय (अमृतवेला, दिन, शाम और रात) के अनुसार प्राकृतिक रूप से बदलेंगे।';
+            btnHtml = 'यात्रा शुरू करें';
+        }
 
-            const style = document.getElementById('anhad-tour-styles-v9');
-            if (style) style.remove();
-        }, 450);
+        celebrationCard.innerHTML = `
+            <div class="anhad-celebration-emoji">🎉</div>
+            <div class="anhad-celebration-title">${titleHtml}</div>
+            <div class="anhad-celebration-text">${textHtml}</div>
+            <button class="anhad-celebration-btn" id="celebrationCloseBtn">${btnHtml}</button>
+        `;
+        document.body.appendChild(celebrationCard);
+        
+        // Trigger active class
+        setTimeout(() => celebrationCard.classList.add('active'), 100);
+
+        document.getElementById('celebrationCloseBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            celebrationCard.classList.remove('active');
+            setTimeout(() => {
+                celebrationCard.remove();
+                if (overlayContainer) overlayContainer.remove();
+                if (popover) popover.remove();
+                if (tapPrompt) tapPrompt.remove();
+                if (spotlightRing) spotlightRing.remove();
+                const style = document.getElementById('anhad-tour-styles-v9');
+                if (style) style.remove();
+            }, 600);
+        });
     }
 
     // Expose public method to trigger onboarding from header Guide button

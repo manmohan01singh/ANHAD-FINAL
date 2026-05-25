@@ -47,31 +47,6 @@
       // FAST-TRACK: Prevent white flash
       document.documentElement.classList.add('theme-loaded');
 
-      // Set hero card images based on theme mode immediately
-      window.addEventListener('DOMContentLoaded', function() {
-        const heroCardImages = document.querySelectorAll('.hero-card__image[data-img-morning]');
-        heroCardImages.forEach(img => {
-          let newSrc = '';
-          if (theme === 'dark') {
-            newSrc = img.getAttribute('data-img-night');
-          } else if (theme === 'light') {
-            newSrc = img.getAttribute('data-img-day');
-          } else if (theme === 'auto') {
-            if (timeOfDay === 'morning') {
-              newSrc = img.getAttribute('data-img-morning');
-            } else if (timeOfDay === 'day') {
-              newSrc = img.getAttribute('data-img-day');
-            } else if (timeOfDay === 'evening') {
-              newSrc = img.getAttribute('data-img-evening');
-            } else {
-              newSrc = img.getAttribute('data-img-night');
-            }
-          }
-          if (newSrc && img.src !== newSrc) {
-            img.src = newSrc;
-          }
-        });
-      });
 
       // Sync to body as soon as it exists
       const observer = new MutationObserver(() => {
@@ -173,6 +148,8 @@
         evening: 'assets/darbar-sahib-evening-bg.webp',
         night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
       };
+      
+      // 1. Preload current slot images for instant auto theme paint
       var imgs = slotMap[slot] || slotMap.day;
       imgs.forEach(function(f) {
         var l = document.createElement('link');
@@ -184,6 +161,21 @@
       bl.rel = 'preload'; bl.as = 'image'; bl.type = 'image/webp';
       bl.href = bgMap[slot] || bgMap.day;
       document.head.appendChild(bl);
+
+      // 2. Preload night slot images (crucial for instant dark-mode swap!)
+      if (slot !== 'night') {
+        var nightImgs = slotMap.night;
+        nightImgs.forEach(function(f) {
+          var l = document.createElement('link');
+          l.rel = 'preload'; l.as = 'image'; l.type = 'image/webp';
+          l.href = base + f;
+          document.head.appendChild(l);
+        });
+        var nbl = document.createElement('link');
+        nbl.rel = 'preload'; nbl.as = 'image'; nbl.type = 'image/webp';
+        nbl.href = bgMap.night;
+        document.head.appendChild(nbl);
+      }
     })();
   </script>
   
@@ -1788,6 +1780,30 @@
 </head>
 
 <body>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('anhad_theme') || 'auto';
+      if (theme === 'auto') {
+        let slot = localStorage.getItem('anhad_forced_time_of_day');
+        if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+          const h = new Date().getHours();
+          slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+        }
+        const bgMap = {
+          morning: 'assets/darbar-sahib-morning-bg.webp',
+          day:     'assets/darbar-sahib-day-bg.webp',
+          evening: 'assets/darbar-sahib-evening-bg.webp',
+          night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+        };
+        const bgUrl = bgMap[slot] || bgMap.day;
+        document.body.style.backgroundImage = "url('" + bgUrl + "')";
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed';
+      }
+    })();
+  </script>
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop
   ════════════════════════════════════════════════════════════════════════════ -->
@@ -1963,14 +1979,25 @@
         <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard1Picture">
-              <img class="hero-card__image" id="heroCard1Img"
-                src="assets/HERO CARD IMAGES/day-darbar-sahib.webp"
-                data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp"
-                data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp"
-                data-img-evening="assets/HERO CARD IMAGES/evening-darbar-sahib.webp"
-                data-img-night="assets/HERO CARD IMAGES/night-darbar-sahib.webp"
-                alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="sync"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard1Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-darbar-sahib.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-darbar-sahib.webp" ' +
+                    'alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#D4943A,#C4842A)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
               <span class="hero-card__badge-dot" aria-hidden="true"></span>
@@ -1992,14 +2019,25 @@
         <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard2Picture">
-              <img class="hero-card__image" id="heroCard2Img"
-                src="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp"
-                data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp"
-                data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp"
-                data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp"
-                data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp"
-                alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="sync"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard2Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp" ' +
+                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="eager" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:var(--anhad-gold)"></span>
@@ -2021,14 +2059,25 @@
         <article class="hero-card" id="heroCard3" data-stream="simran" data-color="#B8860B" data-color-rgb="184,134,11" aria-label="Waheguru Simran" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard3Picture">
-              <img class="hero-card__image" id="heroCard3Img"
-                src="assets/HERO CARD IMAGES/day-waheguru-simran.webp"
-                data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp"
-                data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp"
-                data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp"
-                data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp"
-                alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" decoding="sync"
-                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard3Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp" ' +
+                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="eager" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
               <span class="hero-card__badge-dot" aria-hidden="true"></span>
@@ -2631,67 +2680,7 @@
 
   <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->
 
-  <!-- ANHAD: Time-Based Hero Card Image Swap -->
-  <script>
-    (function () {
-      // Determine current time of day slot
-      function getTimeSlot() {
-        var forced = localStorage.getItem('anhad_forced_time_of_day');
-        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
-          return forced;
-        }
-        const h = new Date().getHours();
-        if (h >= 5 && h < 9)  return 'morning';
-        if (h >= 9 && h < 16) return 'day';
-        if (h >= 16 && h < 20) return 'evening';
-        return 'night';
-      }
-
-      // Apply time-based images to all three hero cards
-      function applyHeroImages() {
-        const slot = getTimeSlot();
-        const imgs = [
-          document.getElementById('heroCard1Img'),
-          document.getElementById('heroCard2Img'),
-          document.getElementById('heroCard3Img')
-        ];
-        imgs.forEach(function(img) {
-          if (!img) return;
-          const newSrc = img.getAttribute('data-img-' + slot);
-          if (newSrc && img.src.indexOf(newSrc) === -1) {
-            // Smooth crossfade
-            img.style.transition = 'opacity 0.5s ease';
-            img.style.opacity = '0';
-            setTimeout(function() {
-              img.src = newSrc;
-              img.onload = function() {
-                img.style.opacity = '1';
-              };
-              img.onerror = function() {
-                img.style.opacity = '1'; // show anyway
-              };
-            }, 250);
-          }
-        });
-      }
-
-      // Run on DOM ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', applyHeroImages);
-      } else {
-        applyHeroImages();
-      }
-
-      // Also re-apply when theme changes (e.g. user switches to auto mode)
-      document.addEventListener('anhadThemeChanged', applyHeroImages);
-      document.addEventListener('themechange', applyHeroImages);
-      // INSTANT: React when forced time-of-day changes (fires in <1 frame)
-      window.addEventListener('anhadTimeForced', applyHeroImages);
-
-      // Expose globally so trendora-app.js ThemeController can call it
-      window.applyHeroImages = applyHeroImages;
-    })();
-  </script>
+  <!-- ANHAD: Time-Based Hero Card Image Swap handled authoritative by anhad-sky-bg.js to prevent race conditions and override lag -->
 
   <!-- ANHAD: Animated Sky Background Engine -->
   <script src="js/anhad-sky-bg.js?v=4.0.2" defer></script>

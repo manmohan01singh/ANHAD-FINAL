@@ -954,141 +954,152 @@ body.is-scrolling #anhad-sky-canvas {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   §8  AUTO-MODE OVERRIDES: Remove white outer shadows, boost text visibility
-   Applied when background images are active. Claymorphism shape is KEPT.
-   Only the outward-bleeding white shadows are removed.
+   §8  AUTO-MODE OVERRIDES: 3D Cushion Clay — Time-Tinted Shadows
+   Applied when background images are active. Uses --sky-card-shadow for
+   the ambient tinted shadow that matches the current time-of-day palette.
+   Claymorphism shape (inset highlights) is KEPT. White outer shadows REMOVED.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Strip white outer glow from ALL clay cards ── */
+/* ── Universal 3D cushion clay in auto mode ── */
 [data-theme-mode="auto"] .clay-card,
 [data-theme-mode="auto"] .clay {
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.28),
-    0 2px 8px  rgba(0, 0, 0, 0.18),
-    inset 0 2px 4px rgba(255, 255, 255, 0.55),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
+    0 1px 2px rgba(0, 0, 0, 0.12),
+    0 4px 12px var(--sky-card-shadow, rgba(0, 0, 0, 0.18)),
+    0 14px 36px rgba(0, 0, 0, 0.16),
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
+  border-color: var(--sky-card-border, rgba(255, 255, 255, 0.45)) !important;
 }
 
-/* ── Colored clay variants — strip white halos, keep colored shadows ── */
+/* ── Colored clay variants — time-tinted ambient, keep color identity ── */
 [data-theme-mode="auto"] .clay-gold {
   box-shadow:
-    0 8px 28px rgba(var(--clay-gold), 0.45),
-    0 2px 8px  rgba(var(--clay-gold), 0.25),
-    inset 0 2px 5px rgba(255, 255, 255, 0.60),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-gold), 0.30),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-orange {
   box-shadow:
-    0 8px 28px rgba(var(--clay-orange), 0.40),
-    0 2px 8px  rgba(var(--clay-orange), 0.22),
-    inset 0 2px 5px rgba(255, 255, 255, 0.58),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-orange), 0.26),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-blue {
   box-shadow:
-    0 8px 28px rgba(var(--clay-blue), 0.35),
-    0 2px 8px  rgba(var(--clay-blue), 0.20),
-    inset 0 2px 5px rgba(255, 255, 255, 0.58),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-blue), 0.22),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-green {
   box-shadow:
-    0 8px 28px rgba(var(--clay-green), 0.35),
-    0 2px 8px  rgba(var(--clay-green), 0.20),
-    inset 0 2px 5px rgba(255, 255, 255, 0.58),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-green), 0.22),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-purple {
   box-shadow:
-    0 8px 28px rgba(var(--clay-purple), 0.35),
-    0 2px 8px  rgba(var(--clay-purple), 0.20),
-    inset 0 2px 5px rgba(255, 255, 255, 0.55),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-purple), 0.22),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-rose {
   box-shadow:
-    0 8px 28px rgba(var(--clay-rose), 0.32),
-    0 2px 8px  rgba(var(--clay-rose), 0.18),
-    inset 0 2px 5px rgba(255, 255, 255, 0.55),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-rose), 0.20),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.12)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 [data-theme-mode="auto"] .clay-red {
   box-shadow:
-    0 8px 28px rgba(var(--clay-red), 0.32),
-    0 2px 8px  rgba(var(--clay-red), 0.18),
-    inset 0 2px 5px rgba(255, 255, 255, 0.55),
-    inset 0 -1px 3px rgba(0, 0, 0, 0.10) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 12px rgba(var(--clay-red), 0.20),
+    0 14px 32px var(--sky-card-shadow, rgba(0, 0, 0, 0.12)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* ── Buttons: no white outer halo ── */
+/* ── Buttons: subtle time-tinted depth ── */
 [data-theme-mode="auto"] .clay-btn {
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.25),
-    0 2px 6px  rgba(0, 0, 0, 0.15),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.08) !important;
+    0 2px 6px rgba(0, 0, 0, 0.16),
+    0 6px 16px var(--sky-card-shadow, rgba(0, 0, 0, 0.18)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.06) !important;
 }
 
-/* ── Section headers: no white halo ── */
+/* ── Section headers: mild lift ── */
 [data-theme-mode="auto"] .clay-section {
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+    0 2px 8px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
 }
 
-/* ── Bottom nav: no white halo ── */
+/* ── Bottom nav: upward lift shadow ── */
 [data-theme-mode="auto"] .clay-nav {
   box-shadow:
-    0 -6px 30px rgba(0, 0, 0, 0.30),
-    0 -2px 10px rgba(0, 0, 0, 0.18),
-    inset 0 2px 4px rgba(255, 255, 255, 0.55) !important;
+    0 -2px 8px rgba(0, 0, 0, 0.18),
+    0 -6px 24px var(--sky-card-shadow, rgba(0, 0, 0, 0.22)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.55) !important;
 }
 
-/* ── Small size clay: no white halo ── */
+/* ── Small clay: scaled cushion ── */
 [data-theme-mode="auto"] .clay--sm {
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.22),
-    0 1px 5px  rgba(0, 0, 0, 0.14),
-    inset 0 1px 3px rgba(255, 255, 255, 0.60),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.08) !important;
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 3px 8px var(--sky-card-shadow, rgba(0, 0, 0, 0.16)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* ── Avatar/Circle: no white halo ── */
+/* ── Avatar/Circle ── */
 [data-theme-mode="auto"] .clay-avatar {
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.20),
-    0 0 0 3px rgba(255, 255, 255, 0.65),
-    inset 0 2px 4px rgba(255, 255, 255, 0.60) !important;
+    0 3px 10px var(--sky-card-shadow, rgba(0, 0, 0, 0.18)),
+    0 0 0 2px rgba(255, 255, 255, 0.65),
+    inset 0 2px 0 rgba(255, 255, 255, 0.60) !important;
 }
 
-/* ── Icon wrapper: no white halo ── */
+/* ── Icon wrapper ── */
 [data-theme-mode="auto"] .clay-icon {
   box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+    0 2px 6px var(--sky-card-shadow, rgba(0, 0, 0, 0.16)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
 }
 
-/* ── Badge/Pill: no white halo ── */
+/* ── Badge/Pill ── */
 [data-theme-mode="auto"] .clay-badge {
   box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+    0 2px 6px var(--sky-card-shadow, rgba(0, 0, 0, 0.16)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
 }
 
-/* ── Player: no white halo ── */
+/* ── Player ── */
 [data-theme-mode="auto"] .clay-player {
   box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.35),
-    0 4px 14px rgba(0, 0, 0, 0.20),
-    inset 0 2px 4px rgba(255, 255, 255, 0.55) !important;
+    0 4px 14px rgba(0, 0, 0, 0.22),
+    0 12px 36px var(--sky-card-shadow, rgba(0, 0, 0, 0.28)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.60) !important;
 }
 
-/* ── Sheet options: no white halo ── */
+/* ── Sheet options ── */
 [data-theme-mode="auto"] .clay-sheet__option {
   box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.18),
-    inset 0 1px 2px rgba(255, 255, 255, 0.65) !important;
+    0 2px 8px var(--sky-card-shadow, rgba(0, 0, 0, 0.14)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
 }
+
 
 /* ────────────────────────────────────────────────────────────────────────────
    TEXT VISIBILITY BOOST — All key text elements get maximum readability
@@ -1220,5 +1231,317 @@ body.is-scrolling #anhad-sky-canvas {
 #anhad-clouds-fg,
 #anhad-clouds-bg {
   display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §9  TIME-ADAPTIVE CARD SYSTEM
+   CSS custom properties set by JS (applyTimeAdaptiveCardColors) drive
+   ALL card backgrounds, text, shadows in auto mode.
+   Explicit light/dark modes are COMPLETELY UNAFFECTED.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Fallback defaults (day palette) so cards never flash unstyled ── */
+:root {
+  --sky-card-bg:       rgba(210, 238, 255, 0.84);
+  --sky-card-bg-glass: rgba(240, 250, 255, 0.72);
+  --sky-card-text:     #000814;
+  --sky-card-text2:    #02162E;
+  --sky-card-shadow:   rgba(0, 80, 180, 0.30);
+  --sky-card-border:   rgba(60, 140, 220, 0.28);
+  --sky-card-icon-bg:  rgba(180, 220, 255, 0.70);
+  --sky-card-accent:   #0A4078;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PRACTICE CARDS — Time-tinted soft clay cushion
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .practice-card {
+  background: var(--sky-card-bg) !important;
+  border-color: var(--sky-card-border) !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 14px var(--sky-card-shadow),
+    0 14px 36px rgba(0, 0, 0, 0.14),
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__title {
+  color: var(--sky-card-text) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme-mode="auto"] .practice-card__status {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__ring-icon {
+  background: var(--sky-card-icon-bg) !important;
+  border-radius: 50% !important;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   QUICK ACCESS CARDS — Time-tinted glassmorphism clay
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .quick-card {
+  background: var(--sky-card-bg) !important;
+  border-color: var(--sky-card-border) !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 4px 14px var(--sky-card-shadow),
+    0 14px 36px rgba(0, 0, 0, 0.14),
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__title {
+  color: var(--sky-card-text) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme-mode="auto"] .quick-card__subtitle {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__icon {
+  background: var(--sky-card-icon-bg) !important;
+  box-shadow:
+    0 2px 8px var(--sky-card-shadow),
+    inset 0 1px 2px rgba(255, 255, 255, 0.55) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__meta-value,
+[data-theme-mode="auto"] .quick-card__progress {
+  color: var(--sky-card-accent) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme-mode="auto"] .quick-card__chevron {
+  color: var(--sky-card-text2) !important;
+  opacity: 0.65;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   EVENT CARD — Time-tinted glass card
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .event-card {
+  background: var(--sky-card-bg) !important;
+  border-color: var(--sky-card-border) !important;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.10),
+    0 6px 20px var(--sky-card-shadow),
+    0 18px 48px rgba(0, 0, 0, 0.16),
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+[data-theme-mode="auto"] .event-card__eyebrow {
+  color: var(--sky-card-accent) !important;
+  letter-spacing: 0.06em !important;
+}
+
+[data-theme-mode="auto"] .event-card__title {
+  color: var(--sky-card-text) !important;
+  font-weight: 800 !important;
+}
+
+[data-theme-mode="auto"] .event-card__date {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .event-card__countdown {
+  color: var(--sky-card-accent) !important;
+  font-weight: 700 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HERO CARDS
+   (Hero cards keep their clean cinematic look, no claymorphism override)
+   ══════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════
+   SECTION HEADERS — Time-tinted text
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .section-header__title {
+  color: var(--sky-card-text) !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PROGRESS BAR — Time-tinted
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .progress-inline {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  box-shadow:
+    0 2px 8px var(--sky-card-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+}
+
+[data-theme-mode="auto"] .progress-inline__label,
+[data-theme-mode="auto"] .progress-inline__text {
+  color: var(--sky-card-text2) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme-mode="auto"] .progress-inline__fill {
+  background: linear-gradient(90deg,
+    var(--sky-card-accent) 0%,
+    var(--sky-card-shadow) 100%
+  ) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TRANSITION: Smooth palette shift when time slot changes
+   Only the card properties animate, NOT the background image.
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .practice-card,
+[data-theme-mode="auto"] .quick-card,
+[data-theme-mode="auto"] .event-card,
+[data-theme-mode="auto"] .progress-inline {
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease !important;
+}
+
+/* Titles and subtitles color-shift smoothly */
+[data-theme-mode="auto"] .practice-card__title,
+[data-theme-mode="auto"] .practice-card__status,
+[data-theme-mode="auto"] .quick-card__title,
+[data-theme-mode="auto"] .quick-card__subtitle,
+[data-theme-mode="auto"] .quick-card__meta-value,
+[data-theme-mode="auto"] .quick-card__progress,
+[data-theme-mode="auto"] .event-card__title,
+[data-theme-mode="auto"] .event-card__eyebrow,
+[data-theme-mode="auto"] .event-card__date,
+[data-theme-mode="auto"] .section-header__title {
+  transition: color 0.35s ease !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   §10  HEADER — TIME-ADAPTIVE TITLE + BUTTON COLORS (Auto Mode Only)
+   ANHAD title, ਅਨਹਦ subtitle, and the 4 header buttons all follow the
+   time-of-day color palette in auto/dynamic mode.
+   Light/dark explicit modes: completely unaffected.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── ANHAD + ਅਨਹਦ title — time-adaptive visibility ── */
+[data-theme-mode="auto"] .header__title {
+  font-family: 'Optimus Princeps', 'Trajan Pro', serif !important;
+  font-size: clamp(1.8rem, 5vw, 2.5rem) !important; /* Premium responsive sizing */
+  font-weight: 900 !important;
+  letter-spacing: 3px !important;
+  line-height: 1.1 !important;
+  display: inline-block !important;
+  text-transform: uppercase !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  background-clip: initial !important;
+  text-fill-color: initial !important;
+  color: #FFD566 !important; /* Premium glowing gold */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important; /* High contrast readability */
+  filter: none !important;
+  animation: none !important;
+  transition: color 0.35s ease !important;
+}
+
+/* Slot-specific gorgeous solid text colors (matches gold) */
+[data-theme-mode="auto"][data-time-of-day="morning"] .header__title {
+  color: #FFD566 !important;
+}
+[data-theme-mode="auto"][data-time-of-day="day"] .header__title {
+  color: #FFD566 !important;
+}
+[data-theme-mode="auto"][data-time-of-day="evening"] .header__title {
+  color: #FFD566 !important;
+}
+[data-theme-mode="auto"][data-time-of-day="night"] .header__title {
+  color: #FFD566 !important;
+}
+
+/* Gurmukhi subtitle follow accent color with beautiful responsive flat design */
+[data-theme-mode="auto"] .header__title-gurmukhi {
+  font-family: var(--font-gurmukhi) !important;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem) !important; /* Balanced responsive sizing */
+  font-weight: 700 !important;
+  display: inline-block !important;
+  letter-spacing: 0.5px !important;
+  opacity: 0.95 !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: initial !important;
+  background-clip: initial !important;
+  text-fill-color: initial !important;
+  color: #FFFFFF !important; /* Solid high-contrast white */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important; /* Crisp text shadow */
+  filter: none !important;
+  transition: color 0.35s ease !important;
+}
+
+[data-theme-mode="auto"][data-time-of-day="morning"] .header__title-gurmukhi {
+  color: #FFFFFF !important;
+}
+[data-theme-mode="auto"][data-time-of-day="day"] .header__title-gurmukhi {
+  color: #FFFFFF !important;
+}
+[data-theme-mode="auto"][data-time-of-day="evening"] .header__title-gurmukhi {
+  color: #FFFFFF !important;
+}
+[data-theme-mode="auto"][data-time-of-day="night"] .header__title-gurmukhi {
+  color: #FFFFFF !important;
+}
+
+/* ── Header buttons — time-tinted background + icon color ── */
+[data-theme-mode="auto"] .header__btn {
+  background: var(--sky-card-icon-bg, rgba(180, 220, 255, 0.65)) !important;
+  border-color: var(--sky-card-border, rgba(60, 140, 220, 0.25)) !important;
+  color: var(--sky-card-accent, #0A4078) !important;
+  transition:
+    background 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease !important;
+}
+
+[data-theme-mode="auto"] .header__btn:active {
+  transform: scale(0.91);
+  background: var(--sky-card-bg, rgba(210, 238, 255, 0.92)) !important;
+}
+
+/* ── Header btn image (radio icon) — follow accent color ── */
+[data-theme-mode="auto"] .header__btn-img {
+  transition: filter 0.35s ease !important;
+}
+
+/* Morning: warm amber filter */
+[data-theme-mode="auto"][data-time-of-day="morning"] .header__btn-img {
+  filter: invert(45%) sepia(90%) saturate(600%) hue-rotate(10deg) brightness(90%) contrast(100%) !important;
+}
+
+/* Day: deep blue filter */
+[data-theme-mode="auto"][data-time-of-day="day"] .header__btn-img {
+  filter: invert(18%) sepia(80%) saturate(800%) hue-rotate(205deg) brightness(80%) contrast(110%) !important;
+}
+
+/* Evening: crimson-gold filter */
+[data-theme-mode="auto"][data-time-of-day="evening"] .header__btn-img {
+  filter: invert(20%) sepia(95%) saturate(900%) hue-rotate(340deg) brightness(80%) contrast(110%) !important;
+}
+
+/* Night: ivory/gold filter */
+[data-theme-mode="auto"][data-time-of-day="night"] .header__btn-img {
+  filter: invert(90%) sepia(30%) saturate(400%) hue-rotate(20deg) brightness(110%) contrast(100%) drop-shadow(0 0 6px rgba(255, 213, 102, 0.4)) !important;
+}
+
+/* ── Theme icon emoji transition ── */
+[data-theme-mode="auto"] .ios-emoji {
+  transition: color 0.35s ease !important;
 }
 

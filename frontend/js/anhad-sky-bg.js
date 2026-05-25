@@ -202,6 +202,41 @@
     night:   "assets/HERO CARD IMAGES/new-night-bg.webp",
   };
 
+  // ── Pre-load all bg images for instant swap ──────────────────────────────
+  // Called once at init so all 4 time-slot images are in browser cache.
+  function preloadBgImages() {
+    Object.values(BG_IMAGES).forEach(url => {
+      const img = new Image();
+      img.fetchPriority = 'low';
+      img.src = url;
+    });
+  }
+
+  // ── Inject instant-bg CSS kill-switch ───────────────────────────────────
+  // Permanently disables any CSS transition on body background so the swap
+  // fires in < 1 frame (< 16ms), not after a 300-500ms dissolve.
+  function injectInstantBgCSS() {
+    if (document.getElementById('anhad-instant-bg-style')) return;
+    const s = document.createElement('style');
+    s.id = 'anhad-instant-bg-style';
+    s.textContent = `
+      /* INSTANT background swap — no transition allowed on body bg */
+      body {
+        transition-property: color !important;
+        background-image: none;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+      }
+      /* Sky canvas: never animate background changes */
+      #anhad-sky-canvas {
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(s);
+  }
+
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
@@ -228,24 +263,31 @@
     const bgUrl = BG_IMAGES[slot];
     if (!bgUrl) return;
 
-    // Crossfade: only update when image actually changes
+    // Skip if already correct
     const current = document.body.style.backgroundImage || '';
-    if (current.includes(bgUrl)) return; // Already correct — skip
+    if (current.includes(bgUrl)) return;
 
-    // Make background image swap instant (in milliseconds) with no transition delay
+    // ── INSTANT SWAP: Force GPU layer recalculation in current frame ──
+    // 1. Kill any lingering CSS transition on body
     document.body.style.transition = 'none';
+    document.body.style.transitionProperty = 'none';
 
+    // 2. Apply new background image synchronously — paints in the very
+    //    next composite (< 16ms, usually < 8ms on modern devices).
     document.body.style.backgroundImage = `url('${bgUrl}')`;
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundPosition = 'center center';
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundAttachment = 'fixed';
 
-    // Clear inline background image on sky canvas so CSS stylesheet rules can control it without specificity override
+    // Clear sky canvas inline style so CSS takes over
     const canvas = document.getElementById('anhad-sky-canvas');
     if (canvas) {
       canvas.style.backgroundImage = '';
     }
+
+    // 3. Kick off a time-adaptive card color update
+    applyTimeAdaptiveCardColors(slot);
   }
 
   // ── Hero card image map (WebP — clean filenames) ─────────────────────────
@@ -290,7 +332,9 @@
 
     const images = HERO_CARD_IMGS[targetSlot];
 
-    // Update via data-img-* attributes (for compatibility with HTML declarations)
+    // ── INSTANT UPDATE: Direct src set, let browser cache do the work ─────
+    // No fade-out/load listener dance — if image is preloaded it paints in <16ms.
+    // The CSS transition on .hero-card__image handles the visual smoothness.
     const heroCardImages = document.querySelectorAll('.hero-card__image[data-img-morning]');
     heroCardImages.forEach((img, idx) => {
       let newSrc = '';
@@ -299,29 +343,18 @@
       } else if (mode === 'light') {
         newSrc = img.getAttribute('data-img-day') || images[idx] || '';
       } else {
-        if (slot === 'morning') newSrc = img.getAttribute('data-img-morning') || images[idx] || '';
-        else if (slot === 'day') newSrc = img.getAttribute('data-img-day') || images[idx] || '';
+        if (slot === 'morning')      newSrc = img.getAttribute('data-img-morning') || images[idx] || '';
+        else if (slot === 'day')     newSrc = img.getAttribute('data-img-day')     || images[idx] || '';
         else if (slot === 'evening') newSrc = img.getAttribute('data-img-evening') || images[idx] || '';
-        else newSrc = img.getAttribute('data-img-night') || images[idx] || '';
+        else                         newSrc = img.getAttribute('data-img-night')   || images[idx] || '';
       }
 
       if (!newSrc) return;
 
-      // CRITICAL FIX: Compare properly without setting if already correct
-      // No ?v=Date.now() — browser cache must work!
-      const currentSrc = img.src;
+      // Smart compare — only update if actually different
       const newAbsolute = new URL(newSrc, document.baseURI).href;
-
-      if (currentSrc !== newAbsolute) {
-        img.classList.add('anhad-img-fade-out');
-        const onLoad = () => {
-          img.classList.remove('anhad-img-fade-out');
-          img.classList.add('anhad-img-fade-in');
-          setTimeout(() => img.classList.remove('anhad-img-fade-in'), 600);
-        };
-        // Set src — browser will use cache if available (304 Not Modified)
-        img.addEventListener('load', onLoad, { once: true });
-        img.src = newSrc;
+      if (img.src !== newAbsolute) {
+        img.src = newSrc;  // Cache-hit = instant; network = browser-managed
       }
     });
 
@@ -414,14 +447,97 @@
     document.head.appendChild(s);
   }
 
+  // ── TIME-ADAPTIVE CARD COLORS ─────────────────────────────────────────────
+  // Sets CSS custom properties on <html> that drive card backgrounds,
+  // text colors and shadows in auto mode only.
+  // In light/dark explicit modes this function is a no-op.
+  const CARD_PALETTES = {
+    morning: {
+      bg:          'rgba(255, 235, 208, 0.84)',
+      bgGlass:     'rgba(255, 248, 238, 0.72)',
+      text:        '#1A0402',
+      text2:       '#4A1508',
+      shadow:      'rgba(200, 100, 20, 0.32)',
+      border:      'rgba(230, 140, 60, 0.30)',
+      iconBg:      'rgba(255, 215, 160, 0.70)',
+      accent:      '#B84800',
+    },
+    day: {
+      bg:          'rgba(210, 238, 255, 0.84)',
+      bgGlass:     'rgba(240, 250, 255, 0.72)',
+      text:        '#000814',
+      text2:       '#02162E',
+      shadow:      'rgba(0, 80, 180, 0.30)',
+      border:      'rgba(60, 140, 220, 0.28)',
+      iconBg:      'rgba(180, 220, 255, 0.70)',
+      accent:      '#0A4078',
+    },
+    evening: {
+      bg:          'rgba(255, 210, 175, 0.84)',
+      bgGlass:     'rgba(255, 235, 210, 0.72)',
+      text:        '#140205',
+      text2:       '#38050C',
+      shadow:      'rgba(180, 35, 10, 0.36)',
+      border:      'rgba(200, 80, 20, 0.30)',
+      iconBg:      'rgba(255, 185, 130, 0.70)',
+      accent:      '#7A1410',
+    },
+    night: {
+      bg:          'rgba(12, 18, 58, 0.86)',
+      bgGlass:     'rgba(18, 24, 72, 0.78)',
+      text:        '#FFF2D1',
+      text2:       '#FFE399',
+      shadow:      'rgba(50, 70, 190, 0.42)',
+      border:      'rgba(100, 130, 240, 0.22)',
+      iconBg:      'rgba(40, 55, 140, 0.80)',
+      accent:      '#FFD566',
+    },
+  };
+
+  function applyTimeAdaptiveCardColors(slot) {
+    const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
+    if (mode !== 'auto') return; // Only in dynamic mode
+
+    const p = CARD_PALETTES[slot] || CARD_PALETTES.day;
+    const root = document.documentElement;
+
+    root.style.setProperty('--sky-card-bg',      p.bg);
+    root.style.setProperty('--sky-card-bg-glass', p.bgGlass);
+    root.style.setProperty('--sky-card-text',     p.text);
+    root.style.setProperty('--sky-card-text2',    p.text2);
+    root.style.setProperty('--sky-card-shadow',   p.shadow);
+    root.style.setProperty('--sky-card-border',   p.border);
+    root.style.setProperty('--sky-card-icon-bg',  p.iconBg);
+    root.style.setProperty('--sky-card-accent',   p.accent);
+  }
+
+  // ── Clear time-adaptive card colors when leaving auto mode ───────────────
+  function clearTimeAdaptiveCardColors() {
+    const props = [
+      '--sky-card-bg', '--sky-card-bg-glass', '--sky-card-text',
+      '--sky-card-text2', '--sky-card-shadow', '--sky-card-border',
+      '--sky-card-icon-bg', '--sky-card-accent',
+    ];
+    props.forEach(p => document.documentElement.style.removeProperty(p));
+  }
+
   // ── Init ─────────────────────────────────────────────────────────────────
   function init() {
+    // Inject CSS that kills background-image transitions on body
+    injectInstantBgCSS();
     injectFadeCSS();
+
     _lastSlot = getSlot();
     _lastMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
 
+    // Pre-load all 4 bg images so time-slot switches are cache-hits (instant)
+    preloadBgImages();
+
     applyTimeOfDay();
     updateHeroCardImages();
+
+    // Apply card colors for current slot immediately
+    applyTimeAdaptiveCardColors(_lastSlot);
 
     if (document.documentElement.getAttribute('data-theme-mode') === 'auto') {
       injectSVG();
@@ -448,7 +564,26 @@
     // ── SAFETY NET: 30s lightweight poll (fallback only) ────────────────────
     // Real-clock transitions (9:00am → day, 8:00pm → night) handled by this.
     // Event-driven updates (themechange, anhadTimeForced) handle the instant case.
-    setInterval(smartRefresh, 30000); // was 500ms
+    setInterval(smartRefresh, 30000);
+
+    // ── VISIBILITY CHANGE: Fire instantly when tab/app becomes active ────────
+    // Catches device clock changes that happened while app was in background.
+    // This is the key fix for "changed device time but images didn't update" bug.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        // Force re-evaluation regardless of cached slot
+        _lastSlot = null;
+        _lastMode = null;
+        requestAnimationFrame(() => {
+          applyTimeOfDay();
+          updateHeroCardImages();
+          positionCelestials();
+          const slot = getSlot();
+          const mode = document.documentElement.getAttribute('data-theme-mode') || 'auto';
+          if (mode === 'auto') applyTimeAdaptiveCardColors(slot);
+        });
+      }
+    });
   }
 
   function onThemeChange() {
@@ -464,8 +599,11 @@
         buildClouds();
       }
       positionCelestials();
+      applyTimeAdaptiveCardColors(getSlot());
+    } else {
+      // In light/dark explicit modes: clear the time-adaptive variables
+      clearTimeAdaptiveCardColors();
     }
-    // NOTE: removed 'else { backgroundImage = none }' — bg always shows now
   }
 
   // Use document listeners only — events dispatched on window bubble to document,
@@ -483,5 +621,12 @@
     init();
   }
 
-  window.AnhadSky = { refresh: positionCelestials, init, updateHeroCardImages, applyTimeOfDay };
+  window.AnhadSky = {
+    refresh: positionCelestials,
+    init,
+    updateHeroCardImages,
+    applyTimeOfDay,
+    applyTimeAdaptiveCardColors,
+    clearTimeAdaptiveCardColors,
+  };
 })();
