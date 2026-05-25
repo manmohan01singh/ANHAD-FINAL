@@ -20,6 +20,10 @@
     let _themeIcons = null;
 
     function getAutoTheme() {
+        if (window.matchMedia) {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+            if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+        }
         const hour = new Date().getHours();
         return (hour >= 5 && hour < 20) ? 'light' : 'dark';
     }
@@ -180,6 +184,15 @@
         document.addEventListener('DOMContentLoaded', _syncIconsOnLoad);
     } else {
         _syncIconsOnLoad();
+    }
+
+    // Listen for OS system theme preference changes and apply instantly in 'auto' mode
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (getTheme() === 'auto') {
+                applyTheme('auto');
+            }
+        });
     }
 
     // Expose Global API

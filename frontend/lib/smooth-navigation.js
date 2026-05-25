@@ -225,6 +225,29 @@
   }
 
   /**
+   * Safely starts a view transition, handling the .back-transition class.
+   */
+  async function safeStartTransition(callback, isBack, instant) {
+    if ('startViewTransition' in document && !instant) {
+      if (isBack) {
+        document.documentElement.classList.add('back-transition');
+      } else {
+        document.documentElement.classList.remove('back-transition');
+      }
+      const transition = document.startViewTransition(callback);
+      try {
+        await transition.finished;
+      } catch (e) {
+        // Ignore view transition cancellation/errors
+      } finally {
+        document.documentElement.classList.remove('back-transition');
+      }
+    } else {
+      await callback();
+    }
+  }
+
+  /**
    * Fetch new page and swap content
    */
   async function performSwap(url, options = {}) {
@@ -236,11 +259,7 @@
     const cachedHtml = PAGE_CACHE.get(url);
     if (cachedHtml) {
       NAV_DEBUG && console.log('[SmoothNav] Cache hit for:', url);
-      if ('startViewTransition' in document && !options.instant) {
-        document.startViewTransition(() => applyNewContent(cachedHtml, url, options));
-      } else {
-        await applyNewContent(cachedHtml, url, options);
-      }
+      await safeStartTransition(() => applyNewContent(cachedHtml, url, options), options.isBack, options.instant);
       return;
     }
     // ─────────────────────────────────────────────────────────────────────────
@@ -273,11 +292,7 @@
       clearTimeout(loaderTimeout);
       loaderTimeout = null;
       
-      if ('startViewTransition' in document && !options.instant) {
-        document.startViewTransition(() => applyNewContent(text, url, options));
-      } else {
-        await applyNewContent(text, url, options);
-      }
+      await safeStartTransition(() => applyNewContent(text, url, options), options.isBack, options.instant);
       
     } catch (e) {
       console.error('[SmoothNav] SPA swap failed, falling back to full reload:', e);
@@ -832,15 +847,11 @@
       if (cached) {
         // Instant SPA swap — no network request, no white flash
         NAV_DEBUG && console.log('[SmoothNav] Popstate cache hit:', targetUrl);
-        if ('startViewTransition' in document) {
-          document.startViewTransition(() => applyNewContent(cached, targetUrl, { replace: true, isBack: true }));
-        } else {
-          applyNewContent(cached, targetUrl, { replace: true, isBack: true });
-        }
+        safeStartTransition(() => applyNewContent(cached, targetUrl, { replace: true, isBack: true }), true, false);
       } else {
-        // Not cached — full reload as safe fallback
-        NAV_DEBUG && console.log('[SmoothNav] Popstate — no cache, reload for:', window.location.href);
-        window.location.reload();
+        // Not cached — fetch asynchronously instead of hard reload to keep it smooth!
+        NAV_DEBUG && console.log('[SmoothNav] Popstate cache miss, performing swap for:', targetUrl);
+        performSwap(targetUrl, { replace: true, isBack: true });
       }
     });
 

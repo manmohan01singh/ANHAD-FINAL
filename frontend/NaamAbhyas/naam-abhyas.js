@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ═══════════════════════════════════════════════════════════════════════════════
  * NAAM ABHYAS - Hourly Spiritual Practice Reminder System
  * ─────────────────────────────────────────────────────────────────────────────
@@ -1087,53 +1087,71 @@ class NaamAbhyas {
                 return;
             }
 
-            const dbName = 'NaamAbhyasDB';
-            const storeName = 'alarms';
+            const DB_NAME = 'GurbaniRadioSW';
+            const DB_VERSION = 2;
+            const STORE_NAME = 'notification_schedule';
             
-            // Open or create database
-            const request = indexedDB.open(dbName, 1);
+            // Open database
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
             
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                if (!db.objectStoreNames.contains(storeName)) {
-                    db.createObjectStore(storeName, { keyPath: 'id' });
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+                    store.createIndex('fired', 'fired', { unique: false });
                 }
             };
 
             request.onsuccess = (event) => {
                 const db = event.target.result;
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
 
-                // Clear old alarms
-                store.clear();
+                // Cursor-based deletion: clean up only old Naam Abhyas keys starting with 'naam_'
+                const cursorRequest = store.openCursor();
+                cursorRequest.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const key = cursor.key;
+                        if (typeof key === 'string' && key.startsWith('naam_')) {
+                            cursor.delete();
+                        }
+                        cursor.continue();
+                    } else {
+                        // All previous Naam alarms cleared. Now write the new upcoming alarms.
+                        const now = new Date();
+                        const today = now.toLocaleDateString('en-CA');
 
-                // Add current schedule alarms
-                const now = new Date();
-                const today = now.toDateString();
-                const currentHour = now.getHours();
+                        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
+                            const hourNum = parseInt(hour);
+                            const scheduledTime = new Date();
+                            scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
 
-                Object.entries(this.currentSchedule).forEach(([hour, session]) => {
-                    const hourNum = parseInt(hour);
-                    const scheduledTime = new Date();
-                    scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
-
-                    // Only schedule future alarms
-                    if (scheduledTime > now) {
-                        store.put({
-                            id: `naam_${hour}_${session.startMinute}`,
-                            hour: hourNum,
-                            startMinute: session.startMinute,
-                            scheduledTime: scheduledTime.getTime(),
-                            title: '🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ',
-                            body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
-                            status: session.status,
-                            date: today
+                            // Only schedule future alarms
+                            if (scheduledTime > now) {
+                                store.put({
+                                    id: `naam_${hour}_${session.startMinute}`,
+                                    title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                                    body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
+                                    scheduledTime: scheduledTime.getTime(),
+                                    hour: hourNum,
+                                    startMinute: session.startMinute,
+                                    duration: this.config.duration || 2,
+                                    fired: false,
+                                    createdAt: Date.now(),
+                                    data: {
+                                        hour: hourNum,
+                                        startMinute: session.startMinute,
+                                        duration: this.config.duration || 2
+                                    },
+                                    tag: `naam-abhyas-${today}-${hour}`
+                                });
+                            }
                         });
+                        console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB (notification_schedule) for SW access');
                     }
-                });
-
-                console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB for SW access');
+                };
             };
 
             request.onerror = (event) => {

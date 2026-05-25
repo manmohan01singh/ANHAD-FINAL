@@ -789,7 +789,6 @@
 
     checkAlarms() {
       const now = new Date();
-      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
       const today = now.getDay();
 
       // Get all enabled alarms for today
@@ -798,25 +797,31 @@
         ...State.reminders.custom
       ];
 
-      // Find alarms that should trigger now (exact match)
-      const activeAlarms = allReminders.filter(r => 
-        r.enabled && 
-        r.days.includes(today) && 
-        r.time === currentTime
-      );
-
       // Check if already responded today
       const alarmLog = Storage.get(CONFIG.storage.alarmLog, {});
       const todayLog = alarmLog[Utils.today()] || {};
 
+      // Find alarms that should trigger now (either scheduled for this minute
+      // OR scheduled within the last 3 minutes and not yet responded to today)
+      const activeAlarms = allReminders.filter(alarm => {
+        if (!alarm.enabled || !alarm.days.includes(today)) return false;
+        if (todayLog[alarm.id]) return false; // Already responded today
+
+        const [h, m] = alarm.time.split(':').map(Number);
+        const alarmTimeToday = new Date(now);
+        alarmTimeToday.setHours(h, m, 0, 0);
+
+        const diffMs = now - alarmTimeToday;
+        // Trigger if current time is within 3 minutes after the scheduled time
+        return diffMs >= 0 && diffMs <= 3 * 60000;
+      });
+
       activeAlarms.forEach(alarm => {
-        if (!todayLog[alarm.id]) {
-          // Check if we already triggered this alarm recently (prevent duplicates)
-          const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
-          if (!lastTriggered || (Date.now() - lastTriggered) > 60000) {
-            this.scheduled.set(alarm.id + '_triggered', Date.now());
-            this.triggerAlarm(alarm);
-          }
+        // Check if we already triggered this alarm recently (prevent duplicates)
+        const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
+        if (!lastTriggered || (Date.now() - lastTriggered) > 60000) {
+          this.scheduled.set(alarm.id + '_triggered', Date.now());
+          this.triggerAlarm(alarm);
         }
       });
     },
