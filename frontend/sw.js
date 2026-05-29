@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.0.0'; // Bumped for final production readiness (compressed WebPs & complete precache)
+const CACHE_VERSION = 'anhad-v6.1.0'; // Bumped for logo & night image updates and stale-while-revalidate home page loading
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -401,12 +401,6 @@ self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('/Audio/') ||
       url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
     event.respondWith(cacheFirst(event.request));
-    return;
-  }
-
-  // CRITICAL FIX: Use NETWORK-FIRST for index.html to prevent broken UI when returning from nitnem
-  if (url.pathname === '/' || url.pathname.endsWith('/index.html')) {
-    event.respondWith(networkFirst(event.request));
     return;
   }
 
