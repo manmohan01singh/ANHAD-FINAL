@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.1.0'; // Bumped for logo & night image updates and stale-while-revalidate home page loading
+const CACHE_VERSION = 'anhad-v6.2.0'; // Force cache bust — rollback to de09325 clean state
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
