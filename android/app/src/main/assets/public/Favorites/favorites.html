@@ -1,20 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-global-theme="force">
 <head>
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
 (function() {
   try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    const html = document.documentElement;
-    if (theme === 'dark') {
-      html.classList.add('dark', 'dark-mode');
-      html.setAttribute('data-theme', 'dark');
-      html.style.colorScheme = 'dark';
+    const theme = localStorage.getItem('anhad_theme') || 'auto';
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+      const hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+    }
+    // data-time-of-day is NOT set on sub-pages. Home-page only.
+    // Sub-pages use clean light/dark based on time, not morning/evening palette.
+    document.documentElement.style.colorScheme = effectiveTheme;
+    if (effectiveTheme === 'dark') {
+      document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#0D0D0F';
     } else {
-      html.classList.remove('dark', 'dark-mode');
-      html.setAttribute('data-theme', 'light');
-      html.style.colorScheme = 'light';
+      document.documentElement.classList.remove('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#FAF8F5';
     }
   } catch (e) {}
 })();
@@ -27,7 +32,7 @@
   <meta name="theme-color" content="#FAF8F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   
-  <title>Favorites � ANHAD</title>
+  <title>Favorites ? ANHAD</title>
   
   <!-- Global Theme -->
   <link rel="stylesheet" href="../css/theme-variables.css">
@@ -557,7 +562,7 @@
       letter-spacing: 1px;
     }
     
-    /* Old bottom-nav styles removed � unified emoji navbar CSS is below */
+    /* Old bottom-nav styles removed ? unified emoji navbar CSS is below */
     
     /* Animations */
     @keyframes slideUp {
@@ -896,7 +901,7 @@
           if (shabads.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">📖</div>
+                <div class="empty-state__icon">??</div>
                 <h3 class="empty-state__title">No saved Shabads</h3>
                 <p class="empty-state__desc">Save Shabads from Gurbani Khoj or Random Shabad</p>
               </div>
@@ -921,7 +926,7 @@
               <div class="fav-card__translation">${shabad.translation || shabad.english || ''}</div>
               <div class="fav-card__meta">
                 <span class="fav-card__meta-item">
-                  <i class="fas fa-book"></i> Ang ${shabad.ang || '�'}
+                  <i class="fas fa-book"></i> Ang ${shabad.ang || '?'}
                 </span>
                 <span class="fav-card__meta-item">
                   <i class="fas fa-clock"></i> ${formatDate(shabad.savedAt)}
@@ -949,7 +954,7 @@
           if (bookmarks.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">🔖</div>
+                <div class="empty-state__icon">??</div>
                 <h3 class="empty-state__title">No bookmarked Ang</h3>
                 <p class="empty-state__desc">Bookmark pages in Sehaj Paath Reader</p>
               </div>
@@ -991,7 +996,7 @@
           if (notes.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">📝</div>
+                <div class="empty-state__icon">??</div>
                 <h3 class="empty-state__title">No notes yet</h3>
                 <p class="empty-state__desc">Add notes while reading in Sehaj Paath</p>
               </div>
@@ -1138,29 +1143,29 @@
     })();
   </script>
 
-  <!-- Floating Tab Bar — Same as Home Page -->
+  <!-- Floating Tab Bar  Same as Home Page -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-    <a href="../index.html" class="tab-item">
-      <span class="tab-icon">🏠</span>
-      <span class="tab-label">Home</span>
-    </a>
-    <a href="../Insights/insights.html" class="tab-item">
-      <span class="tab-icon">📚</span>
-      <span class="tab-label">Learning</span>
-    </a>
-    <a href="favorites.html" class="tab-item active">
-      <span class="tab-icon">❤️</span>
-      <span class="tab-label">Favorites</span>
-    </a>
-    <a href="../Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">📈</span>
-      <span class="tab-label">Dashboard</span>
-    </a>
-  </nav>
+  <a href="../index.html" class="tab-item">
+    <span class="tab-icon">&#x1F3E0;</span>
+    <span class="tab-label">Home</span>
+  </a>
+  <a href="../Insights/insights.html" class="tab-item">
+    <span class="tab-icon">&#x1F4DA;</span>
+    <span class="tab-label">Learning</span>
+  </a>
+  <a href="favorites.html" class="tab-item active">
+    <span class="tab-icon">&#x2764;&#xFE0F;</span>
+    <span class="tab-label">Favorites</span>
+  </a>
+  <a href="../Dashboard/dashboard.html" class="tab-item">
+    <span class="tab-icon">&#x1F4C8;</span>
+    <span class="tab-label">Dashboard</span>
+  </a>
+</nav>
 
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
-    <script src="../lib/anhad-audio-singleton.js"></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 </body>
 </html>

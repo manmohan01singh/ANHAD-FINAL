@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════
    ANHAD — Homepage Data & Logic
    Real-time data, navigation, audio sync, install, filters
    Extracted from inline scripts for clean architecture
@@ -306,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const scheduleData = localStorage.getItem('naam_abhyas_schedule');
       if (scheduleData) {
         const schedule = JSON.parse(scheduleData);
-        const now = new Date(), ch = now.getHours(), cm = now.getMinutes(), sh = cm >= 30 ? ch + 1 : ch;
+        const now = new Date(), ch = now.getHours(), cm = now.getMinutes(), sh = ch; // Always check from current hour - status='pending' handles filtering
         if (typeof schedule === 'object') { for (let h = sh; h < 24; h++) { if (schedule[h] && schedule[h].status === 'pending') { nextScheduledHour = h; break; } } }
       }
       if (nextScheduledHour === null) {
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (configData) { const config = JSON.parse(configData); if (config.enabled && config.activeHours) { const now = new Date(), eh = now.getMinutes() >= 30 ? now.getHours() + 1 : now.getHours(); if (eh >= config.activeHours.start && eh < config.activeHours.end) nextScheduledHour = eh; else if (eh < config.activeHours.start) nextScheduledHour = config.activeHours.start; } }
       }
     } catch (e) {}
-    const subtitleEl = document.getElementById('nextSession'), timeEl = document.getElementById('sessionTime');
+    const subtitleEl = document.getElementById('naamSubtitle') || document.getElementById('nextSession'), timeEl = document.getElementById('naamMeta') || document.getElementById('sessionTime');
     if (!subtitleEl || !timeEl) return;
     if (nextScheduledHour !== null) {
       let timeStr; try { const sd = localStorage.getItem('naam_abhyas_schedule'); if (sd) { const s = JSON.parse(sd); if (s[nextScheduledHour]?.startTime) timeStr = s[nextScheduledHour].startTime; } } catch (e) {}

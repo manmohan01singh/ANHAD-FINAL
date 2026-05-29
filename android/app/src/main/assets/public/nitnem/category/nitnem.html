@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pa" dir="ltr">
 
 <head>
@@ -7,11 +7,11 @@
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="ਨਿਤਨੇਮ — Daily Prayers & Banis for spiritual discipline">
+    <meta name="description" content="?????? � Daily Prayers & Banis for spiritual discipline">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <title>ਨਿਤਨੇਮ | Nitnem — ANHAD</title>
+    <title>?????? | Nitnem � ANHAD</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,29 +21,57 @@
 
     <!-- Global Theme System -->
     <script>
-        // Apply theme immediately before any rendering
+        // Theme Initialization (Instant & Isolated)
         (function() {
-            const theme = localStorage.getItem('anhad_theme') || 'light';
-            document.documentElement.setAttribute('data-theme', theme);
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark', 'dark-mode');
-                document.documentElement.style.colorScheme = 'dark';
-            } else {
-                document.documentElement.style.colorScheme = 'light';
-            }
+            try {
+                var override = localStorage.getItem('nitnem_theme_override');
+                var effectiveTheme;
+                if (override === 'light' || override === 'dark') {
+                    effectiveTheme = override;
+                } else {
+                    // Auto time-based: 6am - 7pm (19:00) is light, otherwise dark
+                    var hour = new Date().getHours();
+                    effectiveTheme = (hour >= 6 && hour < 19) ? 'light' : 'dark';
+                }
+                var html = document.documentElement;
+                html.setAttribute('data-theme', effectiveTheme);
+                html.style.colorScheme = effectiveTheme;
+                html.style.backgroundColor = (effectiveTheme === 'dark') ? '#000000' : '#F8F9FA';
+                
+                if (effectiveTheme === 'dark') {
+                    html.classList.add('dark', 'dark-mode');
+                } else {
+                    html.classList.remove('dark', 'dark-mode');
+                }
+                
+                // Sync class to body once DOM is ready
+                var observer = new MutationObserver(function() {
+                    if (document.body) {
+                        if (effectiveTheme === 'dark') {
+                            document.body.classList.add('dark', 'dark-mode');
+                            document.body.style.backgroundColor = '#000000';
+                        } else {
+                            document.body.classList.remove('dark', 'dark-mode');
+                            document.body.style.backgroundColor = '#F8F9FA';
+                        }
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(html, { childList: true, subtree: true });
+            } catch(e) {}
         })();
     </script>
     <link rel="stylesheet" href="../../css/anhad-core.css">
     <link rel="stylesheet" href="../../css/claymorphism-system.css?v=1">
     <link rel="stylesheet" href="../../css/nav-glass.css?v=4.1.9">
     <link rel="stylesheet" href="../../css/theme-variables.css">
-    <script src="../../lib/global-theme.js"></script>
+    <!-- global-theme.js REMOVED: Nitnem has its own isolated theme system -->
     
     <!-- Navigation Libraries -->
-    <script src="../../lib/smart-back.js"></script>
-    <script src="../../lib/page-lifecycle.js"></script>
-    <script src="../../lib/smooth-navigation.js"></script>
-    <script src="../../lib/state-preservation.js"></script>
+    <!-- smart-back.js REMOVED -->
+    <!-- page-lifecycle.js REMOVED -->
+    <!-- smooth-navigation.js REMOVED: Nitnem uses own navigation -->
+    <!-- state-preservation.js REMOVED -->
 
     <style>
         @font-face {
@@ -379,7 +407,7 @@
     </style>
 
     <!-- Smart Back Navigation -->
-    <script src="../../lib/smart-back.js"></script>
+    <!-- smart-back.js REMOVED -->
     
     <!-- BaniDB API - now with instant offline-first -->
     <script src="../js/banidb-api.js?v=5"></script>
@@ -413,7 +441,7 @@
         <!-- Hero -->
         <section class="hero">
             <div class="hero-icon">
-                <img src="../../assets/ikonkar_guru-gobind-singh.webp" alt="ੴ" />
+                <img src="../../assets/ikonkar_guru-gobind-singh.webp" alt="ਨਿਤਨੇਮ" />
             </div>
             <h2>ਨਿਤਨੇਮ</h2>
             <p>Essential daily prayers for spiritual discipline and connection with Waheguru</p>
@@ -423,9 +451,9 @@
 
             <!-- Info -->
             <div class="info-card">
-                <span class="info-card-icon">🌅</span>
+                <span class="info-card-icon">📿</span>
                 <div>
-                    <h4>ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਦਾ ਨਿਤਨੇਮ</h4>
+                    <h4>ਨਿਤਨੇਮ ਬਾਰੇ ਵਿੱਚ ਜਾਣੋ</h4>
                     <p>The Five Banis recited during Amritvela (early morning) as part of daily Sikh practice.</p>
                 </div>
             </div>
@@ -436,7 +464,7 @@
                     <span class="section-icon">🌅</span>
                     <h3>Amritvela Banis</h3>
                 </div>
-                <span class="time-badge">☀️ Morning (3-6 AM)</span>
+                <span class="time-badge">🌄 Morning (3-6 AM)</span>
                 <div class="bani-list">
                     <a href="../reader.html?id=2" class="bani-card">
                         <div class="bani-icon"><img src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
@@ -445,7 +473,7 @@
                             <div class="bani-english">Japji Sahib</div>
                             <div class="bani-meta">
                                 <span>⏱️ 20-25 min</span>
-                                <span>👤 Guru Nanak Dev Ji</span>
+                                <span>🙏 Guru Nanak Dev Ji</span>
                             </div>
                         </div>
                         <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -460,7 +488,7 @@
                             <div class="bani-english">Jaap Sahib</div>
                             <div class="bani-meta">
                                 <span>⏱️ 15-20 min</span>
-                                <span>👤 Guru Gobind Singh Ji</span>
+                                <span>🙏 Guru Gobind Singh Ji</span>
                             </div>
                         </div>
                         <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -471,11 +499,11 @@
                     <a href="../reader.html?id=6" class="bani-card">
                         <div class="bani-icon"><img src="../../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
                         <div class="bani-content">
-                            <div class="bani-name">ਤ੍ਵ ਪ੍ਰਸਾਦਿ ਸਵੈਯੇ</div>
+                            <div class="bani-name">ਤਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ</div>
                             <div class="bani-english">Tav Prasad Savaiye</div>
                             <div class="bani-meta">
                                 <span>⏱️ 5-7 min</span>
-                                <span>👤 Guru Gobind Singh Ji</span>
+                                <span>🙏 Guru Gobind Singh Ji</span>
                             </div>
                         </div>
                         <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -486,11 +514,11 @@
                     <a href="../reader.html?id=9" class="bani-card">
                         <div class="bani-icon"><img src="../../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
                         <div class="bani-content">
-                            <div class="bani-name">ਚੌਪਈ ਸਾਹਿਬ</div>
+                            <div class="bani-name">ਬੇਨਤੀ ਚੌਪਈ</div>
                             <div class="bani-english">Chaupai Sahib</div>
                             <div class="bani-meta">
                                 <span>⏱️ 7-10 min</span>
-                                <span>👤 Guru Gobind Singh Ji</span>
+                                <span>🙏 Guru Gobind Singh Ji</span>
                             </div>
                         </div>
                         <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -505,7 +533,7 @@
                             <div class="bani-english">Anand Sahib</div>
                             <div class="bani-meta">
                                 <span>⏱️ 15-20 min</span>
-                                <span>👤 Guru Amar Das Ji</span>
+                                <span>🙏 Guru Amar Das Ji</span>
                             </div>
                         </div>
                         <svg class="bani-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -518,7 +546,7 @@
             <!-- Evening Banis -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-icon">🌇</span>
+                    <span class="section-icon">🌅</span>
                     <h3>Evening Bani</h3>
                 </div>
                 <span class="time-badge">🌆 Evening (6 PM)</span>
@@ -543,7 +571,7 @@
             <!-- Night Bani -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-icon">🌙</span>
+                    <span class="section-icon">🌅</span>
                     <h3>Night Bani</h3>
                 </div>
                 <span class="time-badge">🌙 Before Sleep</span>
@@ -568,7 +596,7 @@
             <!-- Ardas -->
             <section class="section">
                 <div class="section-header">
-                    <span class="section-icon">🙏</span>
+                    <span class="section-icon">🌅</span>
                     <h3>Prayer</h3>
                 </div>
                 <div class="bani-list">
@@ -599,36 +627,60 @@
     </div>
 
     <script>
-        // Theme Toggle — delegates to global AnhadTheme
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
+        // Local self-contained theme toggler for isolated Nitnem system
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const html = document.documentElement;
 
-        function updateThemeIcon(theme) {
-            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-        }
-
-        // Set initial icon from AnhadTheme
-        if (window.AnhadTheme) {
-            updateThemeIcon(AnhadTheme.get());
-        }
-
-        // Toggle theme via AnhadTheme
-        themeToggle.addEventListener('click', () => {
-            if (window.AnhadTheme) {
-                const newTheme = AnhadTheme.toggle();
-                updateThemeIcon(newTheme);
+            function applyTheme(theme) {
+                html.setAttribute('data-theme', theme);
+                html.style.colorScheme = theme;
+                html.style.backgroundColor = (theme === 'dark') ? '#000000' : '#F8F9FA';
+                
+                if (theme === 'dark') {
+                    html.classList.add('dark', 'dark-mode');
+                    if (document.body) {
+                        document.body.classList.add('dark', 'dark-mode');
+                        document.body.style.backgroundColor = '#000000';
+                    }
+                } else {
+                    html.classList.remove('dark', 'dark-mode');
+                    if (document.body) {
+                        document.body.classList.remove('dark', 'dark-mode');
+                        document.body.style.backgroundColor = '#F8F9FA';
+                    }
+                }
+                
+                if (themeIcon) {
+                    themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+                }
+                
+                // Dispatch local event for any listening readers
+                window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
             }
-        });
 
-        // Listen for theme changes from other sources
-        window.addEventListener('themechange', (e) => {
-            updateThemeIcon(e.detail.theme);
-        });
+            // Toggle button handler
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = html.getAttribute('data-theme') || 'light';
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    localStorage.setItem('nitnem_theme_override', newTheme);
+                    applyTheme(newTheme);
+                });
+            }
+
+            // Initial setup from current computed data-theme attribute
+            const initialTheme = html.getAttribute('data-theme') || 'light';
+            if (themeIcon) {
+                themeIcon.textContent = initialTheme === 'dark' ? '🌙' : '☀️';
+            }
+        })();
     </script>
     <!-- Global Engine -->
     <script src="../../lib/capacitor-notifications-global.js"></script>
     <script src="../../lib/anhad-widget-bridge.js"></script>
-    <script src="../../lib/anhad-audio-singleton.js"></script>
+    <script src="../../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 </body>
 
 </html>

@@ -5,16 +5,21 @@
   <script>
 (function() {
   try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    const html = document.documentElement;
-    if (theme === 'dark') {
-      html.classList.add('dark', 'dark-mode');
-      html.setAttribute('data-theme', 'dark');
-      html.style.colorScheme = 'dark';
+    const theme = localStorage.getItem('anhad_theme') || 'auto';
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+      const hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+    }
+    // data-time-of-day is NOT set on sub-pages. Home-page only.
+    // Sub-pages use clean light/dark based on time, not morning/evening palette.
+    document.documentElement.style.colorScheme = effectiveTheme;
+    if (effectiveTheme === 'dark') {
+      document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#0D0D0F';
     } else {
-      html.classList.remove('dark', 'dark-mode');
-      html.setAttribute('data-theme', 'light');
-      html.style.colorScheme = 'light';
+      document.documentElement.classList.remove('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#FAF8F5';
     }
   } catch (e) {}
 })();
@@ -257,7 +262,7 @@
       <div class="insight-modal__lang-switch" id="langSwitch" style="display:none;">
         <button class="lang-btn lang-btn--active" data-lang="en">English</button>
         <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
-        <button class="lang-btn" data-lang="hi">ਹਿੰਦੀ</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
       </div>
       <div class="insight-modal__body" id="modalBody">
         <!-- Content will be populated by JS -->
@@ -277,27 +282,27 @@
 
   <!-- Floating Tab Bar — Same as Home Page -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation">
-    <a href="../index.html" class="tab-item" data-set-session="1" data-anhad-back="../index.html">
-      <span class="tab-icon">🏠</span>
-      <span class="tab-label">Home</span>
-    </a>
-    <a href="insights.html" class="tab-item active">
-      <span class="tab-icon">📚</span>
-      <span class="tab-label">Learning</span>
-    </a>
-    <a href="../Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
-      <span class="tab-label">Favorites</span>
-    </a>
-    <a href="../Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">📈</span>
-      <span class="tab-label">Dashboard</span>
-    </a>
-  </nav>
+  <a href="../index.html" class="tab-item">
+    <span class="tab-icon">&#x1F3E0;</span>
+    <span class="tab-label">Home</span>
+  </a>
+  <a href="insights.html" class="tab-item active">
+    <span class="tab-icon">&#x1F4DA;</span>
+    <span class="tab-label">Learning</span>
+  </a>
+  <a href="../Favorites/favorites.html" class="tab-item">
+    <span class="tab-icon">&#x2764;&#xFE0F;</span>
+    <span class="tab-label">Favorites</span>
+  </a>
+  <a href="../Dashboard/dashboard.html" class="tab-item">
+    <span class="tab-icon">&#x1F4C8;</span>
+    <span class="tab-label">Dashboard</span>
+  </a>
+</nav>
 
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
     <script src="../lib/capacitor-notifications-global.js"></script>
     <script src="../lib/anhad-widget-bridge.js"></script>
-    <script src="../lib/anhad-audio-singleton.js"></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 </body>
 </html>

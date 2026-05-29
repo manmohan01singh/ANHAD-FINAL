@@ -626,8 +626,18 @@ class ShabadVichar {
     }
 
     applyTheme() {
-        document.documentElement.setAttribute('data-theme', this.config.theme);
-        const color = this.config.theme === 'dark' ? '#1C1C1E' : '#FAF8F5';
+        let themeToApply = this.config.theme;
+        if (themeToApply === 'auto') {
+            const hour = new Date().getHours();
+            themeToApply = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', themeToApply);
+        if (themeToApply === 'dark') {
+            document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        const color = themeToApply === 'dark' ? '#0D0D0F' : '#FAF8F5';
         document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
     }
 

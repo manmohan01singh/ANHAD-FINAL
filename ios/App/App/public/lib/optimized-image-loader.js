@@ -101,7 +101,15 @@ class OptimizedImageLoader {
             const tempImg = new Image();
             
             // Setup load handlers
-            tempImg.onload = () => {
+            tempImg.onload = async () => {
+                try {
+                    if ('decode' in tempImg) {
+                        await tempImg.decode();
+                    }
+                } catch (e) {
+                    console.warn('[ImageLoader] Async decode failed, falling back to standard draw:', e);
+                }
+
                 // Fade in the image
                 img.src = imageUrl;
                 img.classList.remove('img-loading');

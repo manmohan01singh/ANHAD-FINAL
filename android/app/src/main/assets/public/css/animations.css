@@ -386,3 +386,60 @@
     opacity: 0;
   }
 }
+
+/* ── VIEW TRANSITIONS: PREMIUM iOS-STYLE SLIDES ── */
+@keyframes ios-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes ios-slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-30%); }
+}
+
+@keyframes ios-slide-in-left {
+  from { transform: translateX(-30%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes ios-slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Set up mix-blend-mode to avoid color blending during transition overlays */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  height: 100%;
+  animation-duration: 0.32s;
+  animation-timing-function: cubic-bezier(0.32, 0.94, 0.6, 1);
+  animation-fill-mode: both;
+}
+
+/* Default Forward Navigation: old slides out left, new slides in right */
+::view-transition-old(root) {
+  animation-name: ios-slide-out-left;
+}
+::view-transition-new(root) {
+  animation-name: ios-slide-in-right;
+}
+
+/* Back Navigation: old slides out right, new slides in left */
+.back-transition::view-transition-old(root) {
+  animation-name: ios-slide-out-right;
+  z-index: 2; /* old page slides on top to the right */
+}
+.back-transition::view-transition-new(root) {
+  animation-name: ios-slide-in-left;
+  z-index: 1; /* new page is underneath sliding in slightly */
+}
+
+::view-transition-group(root) {
+  background-color: var(--bg-color, #FAF8F5);
+}
+html.dark::view-transition-group(root),
+html.dark-mode::view-transition-group(root) {
+  background-color: var(--bg-color, #0D0D0F);
+}

@@ -60,5 +60,5 @@
         getState: function() { return { isScrolling: isScrolling }; }
     };
 
-    console.log('[ScrollPerformance] Lean 60fps scroll manager loaded');
+
 })();

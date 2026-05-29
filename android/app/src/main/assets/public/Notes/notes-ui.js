@@ -230,12 +230,18 @@ class NotesUI {
     }
 
     setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.classList.toggle('dark-mode', theme === 'dark');
+        let themeToApply = theme;
+        if (themeToApply === 'auto') {
+            const hour = new Date().getHours();
+            themeToApply = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        }
+        document.documentElement.setAttribute('data-theme', themeToApply);
+        document.documentElement.classList.toggle('dark-mode', themeToApply === 'dark');
+        document.documentElement.classList.toggle('dark', themeToApply === 'dark');
 
         // Update menu theme option
         if (this.elements.menuThemeIcon && this.elements.menuThemeText) {
-            if (theme === 'dark') {
+            if (themeToApply === 'dark') {
                 this.elements.menuThemeIcon.classList.remove('fa-sun');
                 this.elements.menuThemeIcon.classList.add('fa-moon');
                 this.elements.menuThemeText.textContent = 'Dark Mode';

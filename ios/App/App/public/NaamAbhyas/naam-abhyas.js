@@ -97,6 +97,13 @@ class NaamAbhyasThemeEngine {
                 this.applyTheme(e.newValue);
             }
         });
+
+        // Auto-refresh for 'auto' time-based mode (check every minute)
+        setInterval(() => {
+            if (this.currentTheme === 'auto') {
+                this.applyTheme('auto');
+            }
+        }, 60000);
     }
 
     applyTheme(theme) {
@@ -105,7 +112,11 @@ class NaamAbhyasThemeEngine {
 
     // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
     let actualTheme = theme;
-    if (theme === 'system') {
+    if (theme === 'auto') {
+        // 'auto' = time-based: light 6AM-6PM, dark otherwise
+        const hour = new Date().getHours();
+        actualTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+    } else if (theme === 'system') {
         const stored = localStorage.getItem('anhad_theme');
         if (stored && stored !== 'system') {
             actualTheme = stored;
@@ -1076,53 +1087,71 @@ class NaamAbhyas {
                 return;
             }
 
-            const dbName = 'NaamAbhyasDB';
-            const storeName = 'alarms';
+            const DB_NAME = 'GurbaniRadioSW';
+            const DB_VERSION = 2;
+            const STORE_NAME = 'notification_schedule';
             
-            // Open or create database
-            const request = indexedDB.open(dbName, 1);
+            // Open database
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
             
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                if (!db.objectStoreNames.contains(storeName)) {
-                    db.createObjectStore(storeName, { keyPath: 'id' });
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    store.createIndex('scheduledTime', 'scheduledTime', { unique: false });
+                    store.createIndex('fired', 'fired', { unique: false });
                 }
             };
 
             request.onsuccess = (event) => {
                 const db = event.target.result;
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
 
-                // Clear old alarms
-                store.clear();
+                // Cursor-based deletion: clean up only old Naam Abhyas keys starting with 'naam_'
+                const cursorRequest = store.openCursor();
+                cursorRequest.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const key = cursor.key;
+                        if (typeof key === 'string' && key.startsWith('naam_')) {
+                            cursor.delete();
+                        }
+                        cursor.continue();
+                    } else {
+                        // All previous Naam alarms cleared. Now write the new upcoming alarms.
+                        const now = new Date();
+                        const today = now.toLocaleDateString('en-CA');
 
-                // Add current schedule alarms
-                const now = new Date();
-                const today = now.toDateString();
-                const currentHour = now.getHours();
+                        Object.entries(this.currentSchedule).forEach(([hour, session]) => {
+                            const hourNum = parseInt(hour);
+                            const scheduledTime = new Date();
+                            scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
 
-                Object.entries(this.currentSchedule).forEach(([hour, session]) => {
-                    const hourNum = parseInt(hour);
-                    const scheduledTime = new Date();
-                    scheduledTime.setHours(hourNum, session.startMinute, 0, 0);
-
-                    // Only schedule future alarms
-                    if (scheduledTime > now) {
-                        store.put({
-                            id: `naam_${hour}_${session.startMinute}`,
-                            hour: hourNum,
-                            startMinute: session.startMinute,
-                            scheduledTime: scheduledTime.getTime(),
-                            title: '🙏 ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ',
-                            body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
-                            status: session.status,
-                            date: today
+                            // Only schedule future alarms
+                            if (scheduledTime > now) {
+                                store.put({
+                                    id: `naam_${hour}_${session.startMinute}`,
+                                    title: '🙏 ਨਾਮ ਅਭਿਆਸ | Naam Abhyas',
+                                    body: `Leave all work. Remember Vaheguru for ${this.config.duration || 2} minutes.`,
+                                    scheduledTime: scheduledTime.getTime(),
+                                    hour: hourNum,
+                                    startMinute: session.startMinute,
+                                    duration: this.config.duration || 2,
+                                    fired: false,
+                                    createdAt: Date.now(),
+                                    data: {
+                                        hour: hourNum,
+                                        startMinute: session.startMinute,
+                                        duration: this.config.duration || 2
+                                    },
+                                    tag: `naam-abhyas-${today}-${hour}`
+                                });
+                            }
                         });
+                        console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB (notification_schedule) for SW access');
                     }
-                });
-
-                console.log('[NaamAbhyas] ✅ Alarms saved to IndexedDB for SW access');
+                };
             };
 
             request.onerror = (event) => {
@@ -1347,6 +1376,41 @@ class NaamAbhyas {
                 });
                 console.log(`[NaamAbhyas] ✅ ELECTRON notification scheduled for ${session.startTime} (works in tray!)`);
             }
+        // ═══ PRE-NOTIFICATION: Schedule 30 seconds BEFORE the session ═══
+        // This gives user a humble Nimrata warning so they can finish work
+        const preNotifTime = new Date(scheduledTime.getTime() - 30000);
+        if (preNotifTime > new Date()) {
+            const preNimrataMessages = [
+                'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
+                'Waheguru Ji is calling in 30 seconds. Please wrap up, dear Gurmukh. \uD83C\uDF38',
+                'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u262C',
+                '30 seconds remain. Please leave all work and prepare for Naam Simran. \uD83D\uDE4F',
+                'ਬੱਸ 30 ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u262C'
+            ];
+            const preBody = preNimrataMessages[Math.floor(Math.random() * preNimrataMessages.length)];
+            const preNotifId = 'naam_pre30_' + hour + '_' + session.startMinute;
+            const preTitle = '\uD83C\uDF38 ਨਾਮ ਅਭਿਆਸ ਆ ਰਿਹਾ ਹੈ | Naam Abhyas Coming';
+
+            // Schedule via Capacitor or Fallback Alarm
+            if (window.CapacitorNotifications && window.CapacitorNotifications.isCapacitorAvailable && window.CapacitorNotifications.isCapacitorAvailable()) {
+                window.CapacitorNotifications.scheduleNotification({
+                    id: preNotifId, title: preTitle, body: preBody,
+                    scheduledTime: preNotifTime, icon: '/assets/icon-192x192.png',
+                    tag: 'naam-abhyas-pre-' + today + '-' + hour,
+                    data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre', hour: hour }
+                }).catch(function(e) { console.warn('[NaamAbhyas] Pre-notification Capacitor failed:', e); });
+            }
+            if (window.fallbackAlarmSystem) {
+                window.fallbackAlarmSystem.scheduleAlarm({
+                    id: preNotifId, title: preTitle, body: preBody,
+                    scheduledTime: preNotifTime.getTime(),
+                    tag: 'naam-abhyas-pre-' + today + '-' + hour,
+                    data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre' }
+                });
+            }
+            console.log('[NaamAbhyas] ✅ PRE-notification scheduled 30s before ' + session.startTime);
+        }
+
         } catch (error) {
             console.warn('[NaamAbhyas] Failed to schedule notification:', error);
         }
@@ -1874,8 +1938,20 @@ class NaamAbhyas {
             return;
         }
 
-        // Clear trigger guard if we're waiting for a new session
+        // ═══ 30-SECOND PRE-ALERT: Show humble Nimrata banner when <=30s remain ═══
         const nextSession = this.getNextScheduledSession();
+        if (nextSession && diff > 0 && diff <= 30000) {
+            const preKey = pre_ + nextSession.hour + _ + nextSession.startMinute;
+            if (!this._preAlertShownFor || this._preAlertShownFor !== preKey) {
+                this._preAlertShownFor = preKey;
+                setTimeout(() => { if (this._preAlertShownFor === preKey) this._preAlertShownFor = null; }, 35000);
+                this.showNimrataPreAlert(nextSession, Math.ceil(diff / 1000));
+            }
+        } else if (diff > 30000 && this._preAlertShownFor) {
+            this._preAlertShownFor = null;
+        }
+
+        // Clear trigger guard if we're waiting for a new session
         if (nextSession) {
             const sessionKey = `${nextSession.hour}_${nextSession.startMinute}`;
             if (this.sessionAlertTriggeredFor && this.sessionAlertTriggeredFor !== sessionKey) {
@@ -2007,6 +2083,33 @@ class NaamAbhyas {
     /* ═════════════════════════════════════════════════════════════════════════
        SESSION HANDLING
     ═════════════════════════════════════════════════════════════════════════ */
+
+
+    /**
+     * Show a humble in-app Nimrata banner 30 seconds before a session.
+     * Fires a soft top-of-screen banner with Gurmukhi and English messages.
+     */
+    showNimrataPreAlert(session, secondsLeft) {
+        const msgs = [
+            'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
+            'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u2741',
+            'Please leave all work, dear Gurmukh. Naam Abhyas begins in ' + secondsLeft + ' seconds. \uD83D\uDE4F',
+            'ਬੱਸ ' + secondsLeft + ' ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u2741',
+            '30 seconds remain. Please wrap up and prepare your heart for Simran. \uD83C\uDF38',
+            'ਨਾਮ ਜਪਣ ਦਾ ਵੇਲਾ ਆਉਂਦਾ ਹੈ। ਹਰ ਕੰਮ ਛੱਡ ਕੇ ਤਿਆਰ ਹੋ ਜਾਓ \uD83D\uDE4F'
+        ];
+        const msg = msgs[Math.floor(Math.random() * msgs.length)];
+
+        // Show as a top-positioned Nimrata banner (8 seconds — give user time to read)
+        this.showToast('\uD83C\uDF38 ' + msg, 'nimrata', 8000);
+
+        // Gentle single vibration — loving nudge, not startling
+        if (this.config.notifications && this.config.notifications.vibration && navigator.vibrate) {
+            navigator.vibrate([80]);
+        }
+
+        console.log('[NaamAbhyas] \uD83C\uDF38 Nimrata pre-alert shown for', session.startTime, '(' + secondsLeft + 's remaining)');
+    }
 
     triggerSessionAlert(session) {
         console.log('[NaamAbhyas] 🔔 triggerSessionAlert called for session:', session);
@@ -3184,7 +3287,7 @@ class NaamAbhyas {
         }
     }
 
-    showToast(message, type = 'info') {
+    showToast(message, type = 'info', duration = 3000) {
         const container = document.getElementById('toastContainer');
         if (!container) return;
 
@@ -3192,13 +3295,14 @@ class NaamAbhyas {
             success: '✓',
             error: '✗',
             warning: '⚠',
-            info: 'ℹ'
+            info: 'ℹ',
+            nimrata: '🌸'
         };
 
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.innerHTML = `
-            <span class="toast-icon">${icons[type]}</span>
+            <span class="toast-icon">${icons[type] || icons.info}</span>
             <span class="toast-message">${message}</span>
         `;
 

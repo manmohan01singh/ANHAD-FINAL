@@ -1,32 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-anhad-home>
 <head>
   <meta charset="UTF-8">
   
   <script>
     (function() {
       try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-      const theme = localStorage.getItem('anhad_theme') || 'light';
+      const theme = localStorage.getItem('anhad_theme') || 'auto';
       let effectiveTheme = theme;
+      let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
       if (theme === 'auto') {
-        const hour = new Date().getHours();
-        effectiveTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+        if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+          effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+        } else {
+          const hour = new Date().getHours();
+          effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+          
+          if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+          else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+          else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+          else timeOfDay = 'night';
+        }
       }
       document.documentElement.setAttribute('data-theme', effectiveTheme);
       document.documentElement.setAttribute('data-theme-mode', theme);
+      if (theme === 'auto') {
+        document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+      }
       document.documentElement.style.colorScheme = effectiveTheme;
       if (effectiveTheme === 'dark') {
-        document.documentElement.classList.add('dark-mode');
+        document.documentElement.classList.add('dark', 'dark-mode');
       } else {
-        document.documentElement.classList.remove('dark-mode');
+        document.documentElement.classList.remove('dark', 'dark-mode');
       }
       
       // CRITICAL: Immediately set background to prevent white flash
-      const bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#F2F2F7';
+      let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+      if (theme === 'auto') {
+         if (timeOfDay === 'morning') bg = '#FFF5EC';
+         else if (timeOfDay === 'day') bg = '#FFFDF9';
+         else if (timeOfDay === 'evening') bg = '#FFF8E7';
+         else if (timeOfDay === 'night') bg = '#0F0F12';
+      }
       document.documentElement.style.backgroundColor = bg;
       
       // FAST-TRACK: Prevent white flash
       document.documentElement.classList.add('theme-loaded');
+
 
       // Sync to body as soon as it exists
       const observer = new MutationObserver(() => {
@@ -42,8 +62,8 @@
   
   <style>
     html { color-scheme: light dark; }
-    html.dark-mode { background-color: #0D0D0F !important; }
-    html:not(.dark-mode) { background-color: #F2F2F7 !important; }
+    html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
+    html:not(.dark-mode) { background-color: var(--bg-primary, #FAF8F5) !important; }
     body { background-color: transparent !important; }
     /* CRITICAL: Show content immediately — no opacity transition.
        The old opacity:0 → 1 transition caused the ANHAD logo splash flash
@@ -94,7 +114,9 @@
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="css/theme-variables.css">
-  <script src="lib/global-theme.js"></script>
+  <link rel="stylesheet" href="css/anhad-sky-bg.css">
+  <script src="lib/global-theme.js?v=4.0.2"></script>
+  <script src="js/scroll-optimizer.js"></script>
   <link rel="apple-touch-icon" href="assets/icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16x16.png">
@@ -105,11 +127,67 @@
   <link rel="preconnect" href="https://api.banidb.com">
   <link rel="dns-prefetch" href="https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev">
   
+  <!-- PERFORMANCE: Smart time-based preload — only current slot images (WebP, 92% smaller) -->
+  <script>
+    (function() {
+      var slot = localStorage.getItem('anhad_forced_time_of_day');
+      if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+        var h = new Date().getHours();
+        slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+      }
+      var base = 'assets/HERO CARD IMAGES/';
+      var slotMap = {
+        morning: ['morning-darbar-sahib.webp','morning-amritvela-kirtan.webp','morning-waheguru-simran.webp'],
+        day:     ['day-darbar-sahib.webp','day-amritvela-kirtan.webp','day-waheguru-simran.webp'],
+        evening: ['evening-darbar-sahib.webp','evening-amritvela-kirtan.webp','evening-waheguru-simran.webp'],
+        night:   ['night-darbar-sahib.webp','night-amritvela-kirtan.webp','night-waheguru-simran.webp'],
+      };
+      var bgMap = {
+        morning: 'assets/darbar-sahib-morning-bg.webp',
+        day:     'assets/darbar-sahib-day-bg.webp',
+        evening: 'assets/darbar-sahib-evening-bg.webp',
+        night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+      };
+      
+      // 1. Preload current slot images for instant auto theme paint
+      var imgs = slotMap[slot] || slotMap.day;
+      imgs.forEach(function(f) {
+        var l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'image'; l.type = 'image/webp';
+        l.href = base + f;
+        document.head.appendChild(l);
+      });
+      var bl = document.createElement('link');
+      bl.rel = 'preload'; bl.as = 'image'; bl.type = 'image/webp';
+      bl.href = bgMap[slot] || bgMap.day;
+      document.head.appendChild(bl);
+
+      // 2. Preload night slot images (crucial for instant dark-mode swap!)
+      if (slot !== 'night') {
+        var nightImgs = slotMap.night;
+        nightImgs.forEach(function(f) {
+          var l = document.createElement('link');
+          l.rel = 'preload'; l.as = 'image'; l.type = 'image/webp';
+          l.href = base + f;
+          document.head.appendChild(l);
+        });
+        var nbl = document.createElement('link');
+        nbl.rel = 'preload'; nbl.as = 'image'; nbl.type = 'image/webp';
+        nbl.href = bgMap.night;
+        document.head.appendChild(nbl);
+      }
+    })();
+  </script>
+  
   <!-- PERF: Removed aggressive prefetch links — SPA engine handles viewport-based prefetch -->
 
   <link rel="stylesheet" href="css/global-mini-player.css?v=4" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/desktop-responsive.css?v=11" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="./css/anhad-core.css?v=5">
+  
+  <!-- Image caching strategy -->
+  <meta http-equiv="Cache-Control" content="max-age=31536000, immutable">
+  <meta name="format-detection" content="telephone=no">
 
   <script src="./js/anhad-core.js" defer></script>
 
@@ -124,7 +202,7 @@
   <!-- Preloads — Critical Resources -->
   <!-- PERF: Only preload fonts used above-the-fold -->
   <link rel="preload" href="nitnem/g-fonts/pg_serif_s.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" as="image" href="assets/darbar-sahib-day.webp" type="image/webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/darbar-sahib-day-bg.webp" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
@@ -145,7 +223,10 @@
   <link rel="stylesheet" href="css/mobile-accessibility.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
+  <!-- ANHAD: Animated Sky Background (Auto Mode) — async load -->
+  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=1" media="print" onload="this.media='all'">
   <!-- PERF: Removed scroll-fix-simple.css — redundant with scroll-performance-90fps.css -->
+
 
   <!-- Inline critical above-fold styles for instant paint -->
   <style>
@@ -172,6 +253,7 @@
       font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
       font-weight: 800 !important;
       font-size: 1.7rem !important;
+      text-shadow: none !important;
       letter-spacing: 1px !important;
     }
 
@@ -514,9 +596,11 @@
       }
       .header__title {
         font-size: 18px !important;
+        text-shadow: none !important;
       }
       .header__title-gurmukhi {
         font-size: 14px !important;
+        text-shadow: none !important;
       }
       
       /* Greeting - Compact */
@@ -850,16 +934,23 @@
       background: var(--card-green-gradient) !important;
       border: none !important;
       border-radius: 24px !important;
+    }
+    .quick-card__title {
+      text-shadow: none !important;
+    }
+    .practice-card__title {
+      text-shadow: none !important;
+    }
+    .quick-card--green {
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .quick-card--green:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .quick-card--gold {
@@ -868,14 +959,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .quick-card--gold:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .quick-card--purple {
@@ -884,14 +974,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .quick-card--purple:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .quick-card--blue {
@@ -900,14 +989,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .quick-card--blue:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .quick-card--rose {
@@ -916,14 +1004,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .quick-card--rose:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     /* Increased padding and radius on quick cards */
@@ -940,14 +1027,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .practice-card--nitnem:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .practice-card--sehaj {
@@ -956,14 +1042,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .practice-card--sehaj:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     .practice-card--hukam {
@@ -972,14 +1057,13 @@
       border-radius: 24px !important;
       box-shadow: 
         12px 12px 30px rgba(0, 0, 0, 0.08),
-        -6px -6px 20px rgba(255, 255, 255, 0.95),
-        inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+        inset 2px 2px 8px rgba(0, 0, 0, 0.05),
         inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
     }
     .practice-card--hukam:active {
       box-shadow: 
         inset 6px 6px 12px rgba(0, 0, 0, 0.06),
-        inset -6px -6px 12px rgba(255, 255, 255, 0.95) !important;
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     }
     
     /* Gurpurab Event Card - Clean without white shadows */
@@ -1012,7 +1096,6 @@
       border-radius: 50%;
       overflow: hidden;
       box-shadow: 
-        0 0 0 2px rgba(255, 255, 255, 0.95),
         0 0 0 4px rgba(212, 168, 83, 0.35),
         0 8px 24px rgba(0, 0, 0, 0.12),
         0 0 16px rgba(212, 168, 83, 0.25);
@@ -1021,8 +1104,8 @@
     }
     
     @keyframes subtlePulse {
-      0%, 100% { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95), 0 0 0 4px rgba(212, 168, 83, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 16px rgba(212, 168, 83, 0.25); }
-      50% { box-shadow: 0 0 0 2px rgba(255, 255, 255, 1), 0 0 0 4px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(212, 168, 83, 0.4); }
+      0%, 100% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.35), 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 16px rgba(212, 168, 83, 0.25); }
+      50% { box-shadow: 0 0 0 4px rgba(212, 168, 83, 0.5), 0 10px 28px rgba(0, 0, 0, 0.15), 0 0 24px rgba(212, 168, 83, 0.4); }
     }
     
     .event-card__guru-img {
@@ -1338,6 +1421,9 @@
         /* Hero card - NO CUT OFF */
         .hero-card {
           overflow: visible !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          border: none !important;
         }
         .hero-card__image-wrapper {
           aspect-ratio: 16/10 !important;
@@ -1396,8 +1482,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--gold {
@@ -1406,8 +1491,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--purple {
@@ -1416,8 +1500,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--blue {
@@ -1426,8 +1509,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .quick-card--rose {
@@ -1436,8 +1518,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         
@@ -1448,8 +1529,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--sehaj {
@@ -1458,8 +1538,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         .practice-card--hukam {
@@ -1468,8 +1547,7 @@
           border-radius: 24px !important;
           box-shadow: 
             12px 12px 30px rgba(0, 0, 0, 0.08),
-            -6px -6px 20px rgba(255, 255, 255, 0.95),
-            inset 2px 2px 8px rgba(255, 255, 255, 0.9),
+            inset 2px 2px 8px rgba(0, 0, 0, 0.05),
             inset -2px -2px 8px rgba(0, 0, 0, 0.03) !important;
         }
         
@@ -1480,8 +1558,7 @@
           border-radius: 28px !important;
           box-shadow: 
             0 4px 20px rgba(0, 0, 0, 0.06),
-            0 0 0 1px rgba(255, 255, 255, 0.8) inset,
-            inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+            inset 0 1px 0 rgba(0, 0, 0, 0.05) !important;
           transition: all 0.3s ease !important;
           position: relative;
           overflow: hidden;
@@ -1490,31 +1567,15 @@
           padding: 32px 48px !important;
         }
         .event-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 45%;
-          background: linear-gradient(180deg, 
-            rgba(255, 255, 255, 0.7) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            transparent 100%);
-          border-radius: 30px 30px 0 0;
-          pointer-events: none;
-          z-index: 1;
+          display: none;
         }
         .event-card:hover {
           transform: translateY(-4px) scale(1.02) !important;
           box-shadow: 
             30px 30px 100px rgba(0, 0, 0, 0.15),
-            -15px -15px 60px rgba(255, 255, 255, 1),
             0 0 80px rgba(212, 148, 58, 0.2),
-            inset 10px 10px 24px rgba(255, 255, 255, 0.98),
-            inset 5px 5px 15px rgba(255, 255, 255, 0.85),
+            inset 10px 10px 24px rgba(0, 0, 0, 0.05),
             inset -10px -10px 24px rgba(212, 148, 58, 0.15),
-            inset -5px -5px 15px rgba(139, 90, 43, 0.08),
-            0 0 0 2px rgba(255, 255, 255, 0.7),
             0 0 0 5px rgba(212, 148, 58, 0.15) !important;
         }
         
@@ -1525,7 +1586,6 @@
           background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF8C00 50%, #D4943A 75%, #B8860B 100%);
           border-radius: 50%;
           box-shadow: 
-            0 0 0 4px rgba(255, 255, 255, 0.8),
             0 0 0 8px rgba(212, 148, 58, 0.3),
             0 12px 30px rgba(0, 0, 0, 0.2),
             0 0 40px rgba(255, 215, 0, 0.5);
@@ -1542,7 +1602,7 @@
           object-fit: cover;
           border-radius: 50%;
           transition: opacity 0.3s ease, transform 0.3s ease;
-          border: 2px solid rgba(255, 255, 255, 0.5);
+          border: 2px solid rgba(212, 148, 58, 0.3);
         }
         .event-card__guru-img.loaded {
           opacity: 1;
@@ -1720,6 +1780,30 @@
 </head>
 
 <body>
+  <script>
+    (function() {
+      const theme = localStorage.getItem('anhad_theme') || 'auto';
+      if (theme === 'auto') {
+        let slot = localStorage.getItem('anhad_forced_time_of_day');
+        if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+          const h = new Date().getHours();
+          slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+        }
+        const bgMap = {
+          morning: 'assets/darbar-sahib-morning-bg.webp',
+          day:     'assets/darbar-sahib-day-bg.webp',
+          evening: 'assets/darbar-sahib-evening-bg.webp',
+          night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+        };
+        const bgUrl = bgMap[slot] || bgMap.day;
+        document.body.style.backgroundImage = "url('" + bgUrl + "')";
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'fixed';
+      }
+    })();
+  </script>
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop
   ════════════════════════════════════════════════════════════════════════════ -->
@@ -1823,7 +1907,7 @@
          HEADER — Avatar | ANHAD | Emoji Actions
     ════════════════════════════════════════════════════════════════════ -->
     <header class="header" role="banner" style="background: transparent !important;">
-      <div class="header__left">
+      <div class="header__left" style="display: flex; gap: 8px; align-items: center;">
         <!-- Back to Welcome/Splash screen -->
         <a href="Homepage/ios-homepage.html" class="header__btn ios-haptic" id="homeBackBtn"
            aria-label="Welcome Screen"
@@ -1832,6 +1916,9 @@
            onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
           <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
+        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
+          <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
+        </button>
       </div>
       <div class="header__center">
         <h1 class="header__title">ANHAD</h1>
@@ -1891,10 +1978,26 @@
         <!-- Card 1: Darbar Sahib Live -->
         <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
-            <picture>
-              <source srcset="assets/darbar-sahib-day.webp" type="image/webp">
-              <img class="hero-card__image" src="assets/darbar-sahib-day.png" alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async"
-              onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
+            <picture id="heroCard1Picture">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard1Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-darbar-sahib.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-darbar-sahib.webp" ' +
+                    'alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#D4943A,#C4842A)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
               <span class="hero-card__badge-dot" aria-hidden="true"></span>
@@ -1915,10 +2018,26 @@
         <!-- Card 2: Amritvela Kirtan -->
         <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
-            <picture>
-              <source srcset="assets/Darbar-sahib-AMRITVELA.webp" type="image/webp">
-              <img class="hero-card__image" src="assets/Darbar-sahib-AMRITVELA.png" alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" decoding="async"
-              onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+            <picture id="heroCard2Picture">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard2Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp" ' +
+                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="eager" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--dlive" aria-label="D-LIVE stream">
               <span class="hero-card__badge-dot" aria-hidden="true" style="background:var(--anhad-gold)"></span>
@@ -1939,9 +2058,26 @@
         <!-- Card 3: Waheguru Simran -->
         <article class="hero-card" id="heroCard3" data-stream="simran" data-color="#B8860B" data-color-rgb="184,134,11" aria-label="Waheguru Simran" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
-            <picture>
-              <img class="hero-card__image" src="assets/homepage-hero/hero-temple-night.png" alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" decoding="async"
-              onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
+            <picture id="heroCard3Picture">
+              <script>
+                (function() {
+                  var slot = localStorage.getItem('anhad_forced_time_of_day');
+                  if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+                    var h = new Date().getHours();
+                    slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+                  }
+                  var theme = localStorage.getItem('anhad_theme') || 'auto';
+                  var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+                  document.write('<img class="hero-card__image" id="heroCard3Img" ' +
+                    'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
+                    'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
+                    'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
+                    'data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp" ' +
+                    'data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp" ' +
+                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="eager" decoding="async" ' +
+                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                })();
+              </script>
             </picture>
             <div class="hero-card__badge hero-card__badge--live" aria-label="Live streaming">
               <span class="hero-card__badge-dot" aria-hidden="true"></span>
@@ -1988,6 +2124,27 @@
         <button class="hero-carousel__dot" data-index="3" aria-label="Slide 4" role="tab" aria-selected="false"></button>
       </div>
     </section>
+
+    <!-- Hero card images + background are fully managed by js/anhad-sky-bg.js (loaded with defer below).
+         This script fires AFTER DOMContentLoaded and handles:
+           - Correct time-based slot detection
+           - Auto-refresh every 60s only when slot changes
+           - Smooth fade transitions
+           - Theme switch (light/dark/auto) immediate response
+         No duplicate logic needed here. -->
+    <script>
+      // Thin bridge: dispatch themechange when AnhadTheme.set() is called from elsewhere
+      // so anhad-sky-bg.js always reacts to it.
+      (function() {
+        var _orig = window.AnhadTheme && window.AnhadTheme.set;
+        // AnhadTheme.set already dispatches 'themechange' via window event — no extra wiring needed.
+        // If window.AnhadSky is ready, call it immediately to apply theme to images.
+        if (window.AnhadSky && window.AnhadSky.updateHeroCardImages) {
+          window.AnhadSky.updateHeroCardImages();
+          window.AnhadSky.applyTimeOfDay();
+        }
+      })();
+    </script>
 
     <!-- ════════════════════════════════════════════════════════════════════
          GURPURAB SPECIAL MODE — Divine Visual Effects Container
@@ -2235,14 +2392,15 @@
   <script src="lib/storage-manager.js" defer></script>
   <script src="lib/capacitor-notifications.js" defer></script>
   <script src="lib/audio-coordinator.js" defer></script>
-  <script src="lib/anhad-audio-singleton.js" defer></script>
+  <script src="lib/anhad-audio-singleton.js?v=2.1.5" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   
   <!-- Core UI logic -->
-  <script src="js/trendora-app.js" defer></script>
+  <script src="js/trendora-app.js?v=4.0.1" defer></script>
   <script src="js/homepage-data.js" defer></script>
   <script src="pwa-register.js?v=2" defer></script>
   <script src="js/update-controller.js" defer></script>
+  <script src="js/anhad-onboarding.js" defer></script>
 
   <!-- LAZY: Non-critical scripts loaded during idle time -->
   <script>
@@ -2398,19 +2556,19 @@
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
     <a href="index.html" class="tab-item active">
-      <span class="tab-icon">🏠</span>
+      <span class="tab-icon">&#x1F3E0;</span>
       <span class="tab-label">Home</span>
     </a>
     <a href="Insights/insights.html" class="tab-item">
-      <span class="tab-icon">📚</span>
+      <span class="tab-icon">&#x1F4DA;</span>
       <span class="tab-label">Learning</span>
     </a>
     <a href="Favorites/favorites.html" class="tab-item">
-      <span class="tab-icon">❤️</span>
+      <span class="tab-icon">&#x2764;&#xFE0F;</span>
       <span class="tab-label">Favorites</span>
     </a>
     <a href="Dashboard/dashboard.html" class="tab-item">
-      <span class="tab-icon">📈</span>
+      <span class="tab-icon">&#x1F4C8;</span>
       <span class="tab-label">Dashboard</span>
     </a>
   </nav>
@@ -2522,6 +2680,10 @@
 
   <!-- Service Worker — Silent Auto-Update (via pwa-register.js) -->
 
+  <!-- ANHAD: Time-Based Hero Card Image Swap handled authoritative by anhad-sky-bg.js to prevent race conditions and override lag -->
+
+  <!-- ANHAD: Animated Sky Background Engine -->
+  <script src="js/anhad-sky-bg.js?v=4.0.2" defer></script>
 
 </body>
 </html>

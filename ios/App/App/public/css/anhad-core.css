@@ -692,3 +692,37 @@ html.theme-changing *::before,
 html.theme-changing *::after {
   transition: none !important;
 }
+
+/* -- Theme Switching: suppress color/bg transitions only, NOT transforms ------
+   Added by global-theme.js - removed after 1 rAF (replaces global * transition kill) */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition-property: none !important;
+}
+/* Restore transform/opacity so tappable elements stay animated during switch */
+.theme-switching .hero-card,
+.theme-switching .nav-tab,
+.theme-switching .practice-card,
+.theme-switching .quick-card,
+.theme-switching .tappable {
+  transition: transform 0.15s var(--ac-spring), opacity 0.15s var(--ac-smooth) !important;
+}
+
+/* -- Nav Icon Spring Animation (used by setActive, no forced reflow needed) --- */
+@keyframes iconSpring {
+  0%   { transform: scale3d(1, 1, 1); }
+  30%  { transform: scale3d(1.25, 0.85, 1); }
+  50%  { transform: scale3d(0.90, 1.10, 1); }
+  70%  { transform: scale3d(1.05, 0.95, 1); }
+  100% { transform: scale3d(1, 1, 1); }
+}
+.nav-icon-wrap.spring-animate {
+  animation: iconSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* -- Progress bar: scaleX keeps animation on compositor layer ---------- */
+.progress-inline__fill,
+.mini-player__progress-fill {
+  transform-origin: left center;
+}

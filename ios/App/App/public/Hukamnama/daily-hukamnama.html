@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+    <script>
+(function() {
+  try {
+    const theme = localStorage.getItem('anhad_theme') || 'auto';
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+      const hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    document.documentElement.setAttribute('data-theme-mode', theme);
+    // Note: data-time-of-day is NOT set on sub-pages - home page only.
+    // Sub-pages use clean light/dark mode. Morning/day/evening/night palette is index.html only.
+    document.documentElement.style.colorScheme = effectiveTheme;
+    if (effectiveTheme === 'dark') {
+      document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#0D0D0F';
+    } else {
+      document.documentElement.classList.remove('dark', 'dark-mode');
+      document.documentElement.style.backgroundColor = '#FAF8F5';
+    }
+  } catch (e) {}
+})();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <title>Daily Hukamnama | ANHAD</title>

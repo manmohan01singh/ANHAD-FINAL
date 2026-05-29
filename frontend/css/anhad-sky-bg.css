@@ -61,7 +61,7 @@
   --sky-bg-glass-border: rgba(190, 80, 20, 0.22);
 }
 
-/* NIGHT — glowing warm ivory / antique gold on deep navy */
+/* NIGHT — glowing warm ivory / antique gold on deep dark */
 [data-theme-mode="auto"][data-time-of-day="night"] {
   --sky-txt-primary:   #FFFFFF;
   --sky-txt-secondary: #FFF2D1;
@@ -71,7 +71,7 @@
   --sky-text-shadow-dark: 0 1px 4px rgba(0, 0, 0, 0.8);
   --sky-text-shadow-light: 0 1px 4px rgba(0, 0, 0, 0.8);
   --sky-greeting-bg:   transparent;
-  --sky-bg-glass:      rgba(12, 8, 38, 0.62);
+  --sky-bg-glass:      rgba(28, 28, 30, 0.62);
   --sky-bg-glass-border: rgba(170, 140, 60, 0.22);
 }
 

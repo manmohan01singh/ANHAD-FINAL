@@ -60,7 +60,23 @@
 <body>
     <!-- AMBIENT BACKGROUND -->
     <div class="bg-container">
-        <img class="bg-image" src="../assets/darbar-sahib-evening.webp" alt="" id="bgDarbar">
+        <img class="bg-image" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="" id="bgDarbar">
+        <script>
+            (function() {
+                try {
+                    const theme = localStorage.getItem('anhad_theme') || 'light';
+                    const params = new URLSearchParams(window.location.search);
+                    const stream = params.get('stream') || 'darbar';
+                    let img = '../assets/HERO CARD IMAGES/new-night-bg.webp';
+                    if (theme === 'light') {
+                        if (stream === 'darbar' || stream === 'amritvela') {
+                            img = '../assets/darbar-sahib-day.webp';
+                        }
+                    }
+                    document.getElementById('bgDarbar').src = img;
+                } catch(e) {}
+            })();
+        </script>
         <img class="bg-image" src="../assets/darbar-sahib-day.webp" alt="" id="bgDay" style="opacity:0">
         <div class="bloom-orb o1" id="bloomO1"></div>
         <div class="bloom-orb o2" id="bloomO2"></div>
@@ -118,7 +134,23 @@
             <div class="artwork-glow" id="artworkGlow"></div>
             <div class="artwork-clay" id="artworkContainer">
                 <div class="artwork-inner">
-                    <img class="artwork-img" src="../assets/darbar-sahib-evening.webp" alt="Sri Darbar Sahib" id="artworkImg">
+                    <img class="artwork-img" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="Sri Darbar Sahib" id="artworkImg">
+                    <script>
+                        (function() {
+                            try {
+                                const theme = localStorage.getItem('anhad_theme') || 'light';
+                                const params = new URLSearchParams(window.location.search);
+                                const stream = params.get('stream') || 'darbar';
+                                let img = '../assets/HERO CARD IMAGES/new-night-bg.webp';
+                                if (theme === 'light') {
+                                    if (stream === 'darbar' || stream === 'amritvela') {
+                                        img = '../assets/darbar-sahib-day.webp';
+                                    }
+                                }
+                                document.getElementById('artworkImg').src = img;
+                            } catch(e) {}
+                        })();
+                    </script>
                 </div>
                 <div class="live-badge" id="liveBadge">Live</div>
             </div>
@@ -244,8 +276,8 @@
             name: 'Darbar Sahib',
             url: 'https://live.sgpc.net:8443/;nocache=1',
             type: 'live',
-            image: '../assets/darbar-sahib-evening.webp',
-            lightImage: '../Homepage/darbar-sahib.webp',
+            image: '../assets/HERO CARD IMAGES/new-night-bg.webp',
+            lightImage: '../assets/darbar-sahib-day.webp',
             title: 'Live Kirtan',
             artist: 'Sri Harmandir Sahib',
             color: 'gold'
@@ -266,8 +298,8 @@
                 return 'https://anhad-final.onrender.com/api/radio/live';
             })(),
             type: 'playlist',
-            image: '../assets/Darbar-sahib-AMRITVELA.webp',
-            lightImage: '../Homepage/darbar-sahib.webp',
+            image: '../assets/HERO CARD IMAGES/new-night-bg.webp',
+            lightImage: '../assets/darbar-sahib-day.webp',
             title: 'Amritvela Kirtan',
             artist: 'Divine Shabad',
             color: 'orange'

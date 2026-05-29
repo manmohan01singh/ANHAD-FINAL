@@ -318,12 +318,23 @@ const Theme = {
 
     set(theme) {
         State.theme = theme;
-        document.documentElement.dataset.theme = theme;
+        let themeToApply = theme;
+        if (themeToApply === 'auto') {
+            const hour = new Date().getHours();
+            themeToApply = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = themeToApply;
+        document.documentElement.setAttribute('data-theme', themeToApply);
+        if (themeToApply === 'dark') {
+            document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark', 'dark-mode');
+        }
         localStorage.setItem('gurbaniTheme', theme);
 
         const metaTheme = document.querySelector('meta[name="theme-color"]');
         if (metaTheme) {
-            metaTheme.content = theme === 'dark' ? '#0a0a0f' : '#f8f6f2';
+            metaTheme.content = themeToApply === 'dark' ? '#0a0a0f' : '#f8f6f2';
         }
     }
 };

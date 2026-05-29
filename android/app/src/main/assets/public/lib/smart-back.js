@@ -35,6 +35,20 @@
     try { sessionStorage.setItem(storageKey, JSON.stringify(map)); } catch (_) {}
   }
 
+  /** Get the module/folder name of a pathname (e.g. "/GurbaniKhoj/gurbani-khoj.html" -> "GurbaniKhoj") */
+  function getModuleName(pathname) {
+    if (!pathname) return '';
+    var clean = pathname.replace(/^\//, '').replace(/\/$/, '');
+    if (clean.indexOf('frontend/') === 0) {
+      clean = clean.substring(9);
+    }
+    var parts = clean.split('/');
+    if (parts.length > 1 || (parts.length === 1 && parts[0] && parts[0].indexOf('.html') === -1 && parts[0] !== 'index')) {
+      return parts[0];
+    }
+    return '';
+  }
+
   // ─── 1. Referrer Tracking ────────────────────────────────────────────────
   // On every page load, record document.referrer so we know "who sent me here"
 
@@ -156,55 +170,7 @@
       localStorage.setItem('anhad_session_active_ts', Date.now().toString());
     } catch (e) {}
 
-    // 1. Use history.back() when we have real browser history.
-    var isCapacitor = !!(window.Capacitor || window.location.protocol === 'capacitor:');
-    var hasHistory  = window.history.length > 1;
-
-    if (hasHistory) {
-      var shouldHistoryBack = false;
-
-      var referrer = document.referrer || getSavedReferrer();
-      if (referrer) {
-        // If referrer exists, ensure it's from our own app
-        try {
-          var ref = new URL(referrer);
-          if (ref.origin === window.location.origin) {
-            // Check if referrer is a child page of current page
-            // (e.g. current = /nitnem/index.html, referrer = /nitnem/reader.html)
-            var currPath = window.location.pathname;
-            var refPath = ref.pathname;
-            
-            // Normalize paths: remove trailing slashes and index.html
-            var cleanCurr = currPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
-            var cleanRef = refPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
-            
-            var isCurrHub = currPath.endsWith('/') || currPath.endsWith('/index.html') || currPath.endsWith('/index');
-            
-            if (isCurrHub && cleanRef.startsWith(cleanCurr + '/')) {
-              // Referrer is a sub-page/child of this hub page. Do NOT use history.back()
-              // as it would lead to a navigation loop between index and reader pages.
-              shouldHistoryBack = false;
-              console.log('[SmartBack] Referrer is a child page, skipping history.back:', refPath);
-            } else {
-              shouldHistoryBack = true;
-            }
-          }
-        } catch (e) {
-          shouldHistoryBack = false;
-        }
-      } else {
-        // If no referrer exists (common in PWA standalone or Capacitor), it's safe to go back
-        shouldHistoryBack = true;
-      }
-
-      if (shouldHistoryBack) {
-        console.log('[SmartBack] history.back() executed');
-        history.back();
-        return;
-      }
-    }
-
-    // 2. Resolve fallback URL to absolute path relative to current page location first
+    // 1. Resolve fallback URL to absolute path relative to current page location first
     var target = fallbackUrl || '../index.html';
     var resolvedTarget;
     try {
@@ -240,7 +206,73 @@
       console.log('[SmartBack] Local Back → resolved to:', resolvedTarget);
     }
 
-    console.log('[SmartBack] Navigating to fallback:', resolvedTarget);
+    // 2. Use history.back() when we have real browser history.
+    var isCapacitor = !!(window.Capacitor || window.location.protocol === 'capacitor:');
+    var hasHistory  = window.history.length > 1;
+
+    if (hasHistory) {
+      var shouldHistoryBack = false;
+
+      // CRITICAL FLATTENING: If the target is the main Home screen (index.html),
+      // we NEVER use history.back() blindly because it can leak to other sibling modules.
+      // Direct SPA navigation to the resolved Home screen is 100% safe, fast, and deterministic.
+      if (isBackToHome) {
+        shouldHistoryBack = false;
+        console.log('[SmartBack] Target is Home screen, bypassing history.back() for safe deterministic routing');
+      } else {
+        var referrer = document.referrer || getSavedReferrer();
+        if (referrer) {
+          // If referrer exists, ensure it's from our own app
+          try {
+            var ref = new URL(referrer);
+            if (ref.origin === window.location.origin) {
+              // Extract module names to detect cross-module transitions
+              var currModule = getModuleName(window.location.pathname);
+              var refModule = getModuleName(ref.pathname);
+
+              if (currModule && refModule && currModule !== refModule) {
+                shouldHistoryBack = false;
+                console.log('[SmartBack] Cross-module referrer detected (' + refModule + ' -> ' + currModule + '), skipping history.back()');
+              } else {
+                // Check if referrer is a child page of current page
+                // (e.g. current = /nitnem/index.html, referrer = /nitnem/reader.html)
+                var currPath = window.location.pathname;
+                var refPath = ref.pathname;
+                
+                // Normalize paths: remove trailing slashes and index.html
+                var cleanCurr = currPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+                var cleanRef = refPath.replace(/\/index\.html$/, '/').replace(/\/$/, '');
+                
+                var isCurrHub = currPath.endsWith('/') || currPath.endsWith('/index.html') || currPath.endsWith('/index');
+                
+                if (isCurrHub && cleanRef.startsWith(cleanCurr + '/')) {
+                  // Referrer is a sub-page/child of this hub page. Do NOT use history.back()
+                  // as it would lead to a navigation loop between index and reader pages.
+                  shouldHistoryBack = false;
+                  console.log('[SmartBack] Referrer is a child page, skipping history.back:', refPath);
+                } else {
+                  shouldHistoryBack = true;
+                }
+              }
+            }
+          } catch (e) {
+            shouldHistoryBack = false;
+          }
+        } else {
+          // NO REFERRER: Never call history.back() blindly because we don't know where it leads!
+          shouldHistoryBack = false;
+          console.log('[SmartBack] No referrer found, avoiding history.back() to prevent wrong page routing');
+        }
+      }
+
+      if (shouldHistoryBack) {
+        console.log('[SmartBack] history.back() executed');
+        history.back();
+        return;
+      }
+    }
+
+    console.log('[SmartBack] Navigating to target:', resolvedTarget);
 
     // Prefer SPA engine (no full-page reload, no flash)
     if (window.navigateTo) {
@@ -271,6 +303,8 @@
       elements.forEach(function(el) {
         // Skip if marked to skip auto-wiring
         if (el.hasAttribute('data-anhad-skip-back')) return;
+        // CRITICAL: Bottom tab-bar items are for routing and must never be wired as back buttons
+        if (el.classList.contains('tab-item') || el.closest('.tab-bar')) return;
         // Prevent double-binding
         if (el._anhadBackWired || wired.has(el)) return;
         el._anhadBackWired = true;
@@ -326,8 +360,17 @@
   }
 
   // SPA INTEGRATION: Re-wire when page content changes via smooth-navigation
+  var lastHref = window.location.href;
   window.addEventListener('anhad_page_changed', function() {
-    console.log('[SmartBack] Page changed, re-wiring back buttons...');
+    console.log('[SmartBack] Page changed, recording SPA referrer and re-wiring back buttons...');
+    if (lastHref && lastHref !== window.location.href) {
+      var key = pageKey(window.location.href);
+      var map = loadMap(REFERRER_KEY);
+      map[key] = lastHref;
+      saveMap(REFERRER_KEY, map);
+      console.log('[SmartBack] SPA Referrer recorded:', lastHref, '->', window.location.href);
+    }
+    lastHref = window.location.href;
     autoWire();
     restoreScrollState();
   });

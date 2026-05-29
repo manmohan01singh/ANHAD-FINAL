@@ -182,6 +182,16 @@
     
     if (normalized === currentActiveUrl && !options.force) return;
 
+    // Proactively save navigation referrer in sessionStorage for robust back routing (esp. on Capacitor)
+    try {
+      const targetUrlObj = new URL(absoluteUrl, window.location.origin);
+      const targetKey = targetUrlObj.pathname + targetUrlObj.search;
+      const referrerMap = JSON.parse(sessionStorage.getItem('anhad_nav_referrer') || '{}');
+      referrerMap[targetKey] = window.location.href;
+      sessionStorage.setItem('anhad_nav_referrer', JSON.stringify(referrerMap));
+      NAV_DEBUG && console.log('[SmoothNav] Proactively saved referrer:', window.location.href, '->', targetKey);
+    } catch (ex) {}
+
     // CRITICAL: Before navigating to index.html, always stamp session flags so
     // welcome-check.js NEVER triggers the splash/welcome screen redirect.
     if (absoluteUrl.endsWith('/index.html') || absoluteUrl.endsWith('/index') ||

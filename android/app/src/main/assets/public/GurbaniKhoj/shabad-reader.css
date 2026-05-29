@@ -537,7 +537,54 @@ html, body {
     position: relative;
 }
 
-.shabad-line:last-child { border-bottom: none; }
+/*  Highlighted Verse (Pankti) Styling  */
+.shabad-line.highlighted {
+    transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Light Mode Highlight Text Colors */
+[data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
+[data-sacred-theme="royal-rose"] .shabad-line.highlighted .hindi-gurbani {
+    color: #8E3B46;
+}
+[data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
+[data-sacred-theme="lotus-grace"] .shabad-line.highlighted .hindi-gurbani {
+    color: #3A6A7A;
+}
+[data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
+[data-sacred-theme="golden-marigold"] .shabad-line.highlighted .hindi-gurbani {
+    color: #A67C00;
+}
+[data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
+[data-sacred-theme="blue-blossom"] .shabad-line.highlighted .hindi-gurbani {
+    color: #2F4858;
+}
+
+/* Dark Mode Highlight Text Colors */
+[data-theme="dark"][data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"][data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
+[data-theme="dark"][data-sacred-theme="royal-rose"] .shabad-line.highlighted .hindi-gurbani,
+[data-reader-theme="charcoal"][data-sacred-theme="royal-rose"] .shabad-line.highlighted .hindi-gurbani {
+    color: #FFB3C6;
+}
+[data-theme="dark"][data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"][data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
+[data-theme="dark"][data-sacred-theme="lotus-grace"] .shabad-line.highlighted .hindi-gurbani,
+[data-reader-theme="charcoal"][data-sacred-theme="lotus-grace"] .shabad-line.highlighted .hindi-gurbani {
+    color: #A0E4F1;
+}
+[data-theme="dark"][data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"][data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
+[data-theme="dark"][data-sacred-theme="golden-marigold"] .shabad-line.highlighted .hindi-gurbani,
+[data-reader-theme="charcoal"][data-sacred-theme="golden-marigold"] .shabad-line.highlighted .hindi-gurbani {
+    color: #FFDF73;
+}
+[data-theme="dark"][data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
+[data-reader-theme="charcoal"][data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
+[data-theme="dark"][data-sacred-theme="blue-blossom"] .shabad-line.highlighted .hindi-gurbani,
+[data-reader-theme="charcoal"][data-sacred-theme="blue-blossom"] .shabad-line.highlighted .hindi-gurbani {
+    color: #A3C4DC;
+}
 
 /* ── Apple Music Focus Mode ── */
 .shabad-lines.focus-mode-active .shabad-line {

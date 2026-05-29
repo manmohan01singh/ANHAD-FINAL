@@ -89,16 +89,6 @@
     --border-color: rgba(184, 134, 11, 0.25);
 }
 
-/* Night — Deep charcoal/slate dark shades (8:00 PM to 5:00 AM) — HOME PAGE ONLY */
-[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
-    --bg-primary: #0F0F12;
-    --bg-secondary: #17171C;
-    --bg-tertiary: #22222A;
-    --text-primary: #F5F5F7;
-    --text-secondary: #8E8E93;
-    --text-accent: #0A84FF;
-    --border-color: rgba(255, 255, 255, 0.08);
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DARK THEME — #1C1C1E bg, #F5F5F7 text, #FFD60A highlight

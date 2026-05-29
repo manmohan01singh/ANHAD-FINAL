@@ -23,7 +23,7 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
     /* Backgrounds */
-    --bg-primary: #FFFFFF;
+    --bg-primary: #FAF8F5;
     --bg-secondary: #F2F2F7;
     --bg-tertiary: #E5E5EA;
     
@@ -50,6 +50,54 @@
     /* Event Card Specific */
     --event-title-color: #72500A;
     --event-title-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   AUTO MODE — Time of Day Specific Overrides (Dynamic background colors)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Morning Time — Warm Peach/Orange shades (5:00 AM to 9:00 AM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="morning"] {
+    --bg-primary: #FFF5EC;
+    --bg-secondary: #FFEBD8;
+    --bg-tertiary: #FFE0C4;
+    --text-primary: #3E2723;
+    --text-secondary: #7D6B58;
+    --text-accent: #E8A87C;
+    --border-color: rgba(232, 168, 124, 0.2);
+}
+
+/* Daytime — Warm Creamy Yellowish shades (9:00 AM to 4:00 PM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="day"] {
+    --bg-primary: #FFFDF9;
+    --bg-secondary: #FFF8EE;
+    --bg-tertiary: #FFF2DF;
+    --text-primary: #1C1C1E;
+    --text-secondary: #8E8E93;
+    --text-accent: #D4943A;
+    --border-color: rgba(212, 148, 58, 0.15);
+}
+
+/* Evening / Golden Hour — Warm Amber shades (4:00 PM to 8:00 PM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] {
+    --bg-primary: #FFF8E7;
+    --bg-secondary: #FFF0D4;
+    --bg-tertiary: #FFE4B5;
+    --text-primary: #3B2A00;
+    --text-secondary: #7A6A4F;
+    --text-accent: #B8860B;
+    --border-color: rgba(184, 134, 11, 0.25);
+}
+
+/* Night — Deep charcoal/slate dark shades (8:00 PM to 5:00 AM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
+    --bg-primary: #0F0F12;
+    --bg-secondary: #17171C;
+    --bg-tertiary: #22222A;
+    --text-primary: #F5F5F7;
+    --text-secondary: #8E8E93;
+    --text-accent: #0A84FF;
+    --border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -144,7 +192,7 @@
 :root:not([data-theme]),
 html:not([data-theme]) {
     /* Backgrounds */
-    --bg-primary: #FFFFFF;
+    --bg-primary: #FAF8F5;
     --bg-secondary: #F2F2F7;
     --bg-tertiary: #E5E5EA;
     

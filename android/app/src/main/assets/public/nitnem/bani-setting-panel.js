@@ -6,6 +6,14 @@
 (function() {
   'use strict';
 
+  // Helper to get time-based or local override theme for isolated Nitnem system
+  function getNitnemDefaultTheme() {
+    var override = localStorage.getItem('nitnem_theme_override');
+    if (override === 'light' || override === 'dark') return override;
+    var hour = new Date().getHours();
+    return (hour >= 6 && hour < 19) ? 'light' : 'dark';
+  }
+
   // ═══════════════════════════════════════════════════════════════
   // DEFAULT SETTINGS
   // ═══════════════════════════════════════════════════════════════
@@ -15,7 +23,7 @@
     transliterationSize: 18,
     translationSize: 16,
     punjabiSize: 16,
-    theme: localStorage.getItem('anhad_theme') || 'light', // Sync with global theme
+    theme: getNitnemDefaultTheme(), // Sync with isolated Nitnem theme
     spacing: 'normal',
     lensMode: false,
     glassGlow: 0.35,
@@ -662,10 +670,10 @@
         console.log('📂 Settings loaded:', settings);
       }
       
-      // Always sync with global theme on load
-      const globalTheme = localStorage.getItem('anhad_theme') || 'light';
-      if (THEMES.includes(globalTheme)) {
-        settings.theme = globalTheme;
+      // Always sync with isolated Nitnem theme on load
+      const nitnemTheme = getNitnemDefaultTheme();
+      if (THEMES.includes(nitnemTheme)) {
+        settings.theme = nitnemTheme;
       }
       
     } catch (e) {
@@ -714,6 +722,7 @@
   function setTheme(themeName) {
     if (THEMES.includes(themeName)) {
       settings.theme = themeName;
+      localStorage.setItem('nitnem_theme_override', themeName); // Save in isolated Nitnem system override
       applyOpticalDefaultsForTheme(themeName);
       applySettings();
       saveSettings();
@@ -887,11 +896,11 @@
     // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
     // ═══════════════════════════════════════════════════════════════
     window.addEventListener('storage', (e) => {
-      if (e.key === 'anhad_theme' && e.newValue) {
+      if (e.key === 'nitnem_theme_override' && e.newValue) {
         if (THEMES.includes(e.newValue)) {
           settings.theme = e.newValue;
           applySettings();
-          console.log('🎨 Bani reader synced with global theme:', e.newValue);
+          console.log('🎨 Bani reader synced with isolated Nitnem theme:', e.newValue);
         }
       }
     });

@@ -112,17 +112,116 @@
                 { title: "Detachment", titlePa: "ਵੈਰਾਗ", titleHi: "वैराग्य", emoji: "🕊️", desc: "Freedom from worldly attachments while living in the world." }
             ];
             GURU_SAHIBAAN = [
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ", english: "Sri Guru Nanak Dev Ji", years: "1469–1539", desc: "Founder of Sikhi. Taught the Oneness of God, equality of all humanity." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ", english: "Sri Guru Angad Dev Ji", years: "1504–1552", desc: "Standardized the Gurmukhi script." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ", english: "Sri Guru Amar Das Ji", years: "1479–1574", desc: "Established the Manji system, abolished sati." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ", english: "Sri Guru Ram Das Ji", years: "1534–1581", desc: "Founded the city of Amritsar, composed the Laavan." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ", english: "Sri Guru Arjan Dev Ji", years: "1563–1606", desc: "Compiled the Adi Granth, built Sri Harmandir Sahib Ji." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Hargobind Sahib Ji", years: "1595–1644", desc: "Introduced Miri-Piri concept." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Rai Sahib Ji", years: "1630–1661", desc: "Known for compassion, maintained a large cavalry." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Har Krishan Sahib Ji", years: "1656–1664", desc: "Youngest Guru, healed the sick during smallpox epidemic." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Tegh Bahadur Sahib Ji", years: "1621–1675", desc: "Hind Di Chadar — gave his life for religious freedom." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Gobind Singh Sahib Ji", years: "1666–1708", desc: "Created the Khalsa, finalized SGGS Ji as eternal Guru." },
-                { name: "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ", english: "Sri Guru Granth Sahib Ji", years: "1708–Present", desc: "The Eternal Living Guru of the Sikhs." }
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ",
+                    english: "Sri Guru Nanak Dev Ji",
+                    years: "1469–1539",
+                    majorContributions: "Founder of Sikhism. Traveled extensively on four major Udasis (spiritual journeys) spanning thousands of miles to spread the message of one God. Established the institution of Langar (free community kitchen) and Kartarpur Sahib.",
+                    majorContributionsPa: "ਸਿੱਖ ਧਰਮ ਦੇ ਸੰਸਥਾਪਕ। ਇੱਕ ਪ੍ਰਮਾਤਮਾ ਦਾ ਸੰਦੇਸ਼ ਫੈਲਾਉਣ ਲਈ ਚਾਰ ਵੱਡੀਆਂ ਉਦਾਸੀਆਂ (ਰੂਹਾਨੀ ਯਾਤਰਾਵਾਂ) ਕੀਤੀਆਂ। ਕਰਤਾਰਪੁਰ ਸਾਹਿਬ ਦੀ ਸਥਾਪਨਾ ਕੀਤੀ ਅਤੇ ਸਾਂਝੇ ਲੰਗਰ ਪ੍ਰਥਾ ਦੀ ਸ਼ੁਰੂਆਤ ਕੀਤੀ।",
+                    keyTeachings: "Three pillars of Sikhism: Kirat Karo (honest living), Naam Japna (remembering God), and Vand Chhako (sharing with others). Preached equality of all, regardless of caste, gender, or status.",
+                    keyTeachingsPa: "ਤਿੰਨ ਮੂਲ ਸਿਧਾਂਤ: ਕਿਰਤ ਕਰੋ (ਈਮਾਨਦਾਰੀ ਨਾਲ ਕੰਮ), ਨਾਮ ਜਪੋ (ਪ੍ਰਮਾਤਮਾ ਦਾ ਸਿਮਰਨ), ਅਤੇ ਵੰਡ ਛਕੋ (ਲੋੜਵੰਦਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨਾ)। ਜਾਤ-ਪਾਤ ਅਤੇ ਲਿੰਗ ਭੇਦਭਾਵ ਤੋਂ ਉੱਪਰ ਉੱਠ ਕੇ ਬਰਾਬਰੀ ਦਾ ਸੰਦੇਸ਼ ਦਿੱਤਾ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਅੰਗਦ ਦੇਵ ਜੀ",
+                    english: "Sri Guru Angad Dev Ji",
+                    years: "1504–1552",
+                    majorContributions: "Standardized and formalized the Gurmukhi script, making spiritual writings accessible to the common people. Established new schools, promoted physical fitness by starting Mall Akhara (wrestling arenas), and collected Guru Nanak Dev Ji's life stories (Sakhis).",
+                    majorContributionsPa: "ਗੁਰਮੁਖੀ ਲਿਪੀ ਨੂੰ ਸੁਧਾਰਿਆ ਅਤੇ ਮਿਆਰੀ ਬਣਾਇਆ, ਜਿਸ ਨਾਲ ਆਮ ਲੋਕਾਂ ਲਈ ਵਿੱਦਿਆ ਅਤੇ ਬਾਣੀ ਦਾ ਮਾਰਗ ਖੁੱਲ੍ਹਿਆ। ਮੱਲ ਅਖਾੜਿਆਂ ਦੀ ਸਥਾਪਨਾ ਕਰਕੇ ਸਰੀਰਕ ਤੰਦਰੁਸਤੀ ਨੂੰ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਅਤੇ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਜੀਵਨ ਦੀਆਂ ਸਾਖੀਆਂ ਇਕੱਤਰ ਕੀਤੀਆਂ।",
+                    keyTeachings: "Emphasized selfless service (Seva), absolute devotion to the Guru's word, and the importance of physical, mental, and spiritual wellness.",
+                    keyTeachingsPa: "ਨਿਸ਼ਕਾਮ ਸੇਵਾ (ਸੇਵਾ), ਗੁਰੂ ਦੇ ਸ਼ਬਦ ਪ੍ਰਤੀ ਪੂਰਨ ਸਮਰਪਣ, ਅਤੇ ਸਰੀਰਕ, ਮਾਨਸਿਕ ਅਤੇ ਰੂਹਾਨੀ ਤੰਦਰੁਸਤੀ ਦੀ ਮਹੱਤਤਾ 'ਤੇ ਜ਼ੋਰ ਦਿੱਤਾ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ",
+                    english: "Sri Guru Amar Das Ji",
+                    years: "1479–1574",
+                    majorContributions: "Established the 'Manji' and 'Piri' systems of administrative organization to spread the Guru's teachings across India. Greatly expanded the Langar system, making it mandatory to eat together ('Pangat') before meeting the Guru ('Sangat'), and campaigned against social evils like Sati and Purdah.",
+                    majorContributionsPa: "ਗੁਰੂ ਸਾਹਿਬ ਦੇ ਸੰਦੇਸ਼ ਨੂੰ ਦੂਰ-ਦੂਰ ਤੱਕ ਪਹੁੰਚਾਉਣ ਲਈ 22 ਮੰਜੀਆਂ ਅਤੇ ਪੀੜੀਆਂ ਦੀ ਪ੍ਰਸ਼ਾਸਕੀ ਪ੍ਰਣਾਲੀ ਸਥਾਪਤ ਕੀਤੀ। ਲੰਗਰ ਪ੍ਰਥਾ ਦਾ ਵਿਸਥਾਰ ਕੀਤਾ ('ਪਹਿਲਾਂ ਪੰਗਤ ਪਾਛੇ ਸੰਗਤ') ਅਤੇ ਸਤੀ ਪ੍ਰਥਾ ਤੇ ਪਰਦਾ ਪ੍ਰਥਾ ਵਰਗੀਆਂ ਸਮਾਜਿਕ ਬੁਰਾਈਆਂ ਵਿਰੁੱਧ ਆਵਾਜ਼ ਬੁਲੰਦ ਕੀਤੀ।",
+                    keyTeachings: "Advocated for social equality, women's empowerment, spiritual devotion, and community service. Taught that the true path to God is humility.",
+                    keyTeachingsPa: "ਸਮਾਜਿਕ ਬਰਾਬਰੀ, ਇਸਤਰੀ ਸ਼ਕਤੀਕਰਨ, ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਅਤੇ ਰੂਹਾਨੀ ਭਗਤੀ ਦੀ ਵਕਾਲਤ ਕੀਤੀ। ਸਿਖਾਇਆ ਕਿ ਪ੍ਰਮਾਤਮਾ ਨੂੰ ਪਾਉਣ ਦਾ ਸੱਚਾ ਮਾਰਗ ਨਿਮਰਤਾ ਹੈ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ",
+                    english: "Sri Guru Ram Das Ji",
+                    years: "1534–1581",
+                    majorContributions: "Founded the holy city of Amritsar (originally Ramdaspur) and designed the sacred pool (Sarovar). Composed the 'Laavan' (wedding hymns) which form the core of the Sikh marriage ceremony (Anand Karaj).",
+                    majorContributionsPa: "ਪਵਿੱਤਰ ਸ਼ਹਿਰ ਸ਼੍ਰੀ ਅੰਮ੍ਰਿਤਸਰ ਸਾਹਿਬ (ਰਾਮਦਾਸਪੁਰ) ਦੀ ਸਥਾਪਨਾ ਕੀਤੀ ਅਤੇ ਪਵਿੱਤਰ ਸਰੋਵਰ ਦੀ ਖੁਦਾਈ ਕਰਵਾਈ। 'ਲਾਵਾਂ' ਦੀ ਰਚਨਾ ਕੀਤੀ ਜੋ ਸਿੱਖ ਵਿਆਹ ਕਾਰਜ (ਅਨੰਦ ਕਾਰਜ) ਦਾ ਕੇਂਦਰੀ ਹਿੱਸਾ ਹਨ।",
+                    keyTeachings: "Taught the importance of daily spiritual discipline, selfless service, building a strong community, and seeking refuge in the holy congregation (Sangat).",
+                    keyTeachingsPa: "ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਦੀ ਰੂਹਾਨੀ ਅਨੁਸ਼ਾਸਨ, ਨਿਸ਼ਕਾਮ ਸੇਵਾ, ਇੱਕ ਮਜ਼ਬੂਤ ਸਮਾਜ ਦੀ ਸਿਰਜਣਾ, ਅਤੇ ਸਾਧ ਸੰਗਤ ਵਿੱਚ ਓਟ ਲੈਣ ਦੀ ਮਹੱਤਤਾ ਸਿਖਾਈ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ",
+                    english: "Sri Guru Arjan Dev Ji",
+                    years: "1563–1606",
+                    majorContributions: "Compiled the first official Sikh scripture, the Adi Granth (later Guru Granth Sahib Ji), and installed it at Sri Harmandir Sahib (Golden Temple), which he designed and constructed. Became the first martyr in Sikh history, standing firm against religious persecution.",
+                    majorContributionsPa: "ਪਹਿਲੇ ਪਵਿੱਤਰ ਗ੍ਰੰਥ 'ਆਦਿ ਗ੍ਰੰਥ' (ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ) ਦਾ ਸੰਕਲਨ ਕੀਤਾ ਅਤੇ ਸ਼੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਸਿਰਜਣਾ ਕਰਕੇ ਇਸ ਦਾ ਪ੍ਰਕਾਸ਼ ਕੀਤਾ। ਸਿੱਖ ਇਤਿਹਾਸ ਦੇ ਪਹਿਲੇ ਸ਼ਹੀਦ ਬਣੇ ਅਤੇ ਧਾਰਮਿਕ ਅਜ਼ਾਦੀ ਲਈ ਆਪਣੀ ਸ਼ਹੀਦੀ ਦਿੱਤੀ।",
+                    keyTeachings: "Exemplified peaceful resistance, supreme sacrifice, devotion, and acceptance of the Divine Will (Bhana). Composed the blissful 'Sukhmani Sahib' (Prayer of Peace).",
+                    keyTeachingsPa: "ਸ਼ਾਂਤਮਈ ਪ੍ਰਤੀਰੋਧ, ਪਰਮ ਕੁਰਬਾਨੀ, ਅਟੁੱਟ ਭਗਤੀ ਅਤੇ ਪ੍ਰਮਾਤਮਾ ਦੇ ਭਾਣੇ ਨੂੰ ਮਿੱਠਾ ਕਰਕੇ ਮੰਨਣ ਦੀ ਮਿਸਾਲ ਕਾਇਮ ਕੀਤੀ। ਸ਼ਾਂਤੀ ਦੇ ਸਰੋਤ 'ਸੁਖਮਨੀ ਸਾਹਿਬ' ਦੀ ਰਚਨਾ ਕੀਤੀ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਹਰਗੋਬਿੰਦ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Hargobind Sahib Ji",
+                    years: "1595–1644",
+                    majorContributions: "Introduced the concept of 'Miri-Piri' (wearing two swords representing temporal and spiritual authority). Constructed the Sri Akal Takht Sahib (Throne of the Timeless One) as the center of Sikh temporal affairs, and built a defensive military force.",
+                    majorContributionsPa: "ਮੀਰੀ-ਪੀਰੀ (ਧਾਰਮਿਕ ਅਤੇ ਸੰਸਾਰਕ ਅਧਿਕਾਰ ਦੀਆਂ ਦੋ ਤਲਵਾਰਾਂ) ਦਾ ਸਿਧਾਂਤ ਸ਼ੁਰੂ ਕੀਤਾ। ਅਕਾਲੀ ਮਾਮਲਿਆਂ ਦੇ ਕੇਂਦਰ ਵਜੋਂ ਸ਼੍ਰੀ ਅਕਾਲ ਤਖ਼ਤ ਸਾਹਿਬ ਦੀ ਸਿਰਜਣਾ ਕੀਤੀ ਅਤੇ ਜ਼ੁਲਮ ਦੇ ਟਾਕਰੇ ਲਈ ਸਿੱਖ ਫੌਜ ਤਿਆਰ ਕੀਤੀ।",
+                    keyTeachings: "A Sikh must be a warrior-saint (Sant-Sipahi)—combining spiritual devotion and meditation with the courage and duty to defend the oppressed against tyranny.",
+                    keyTeachingsPa: "ਇੱਕ ਸਿੱਖ ਨੂੰ 'ਸੰਤ-ਸਿਪਾਹੀ' ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ—ਭਾਵ ਰੂਹਾਨੀ ਭਗਤੀ ਦੇ ਨਾਲ-ਨਾਲ ਕਮਜ਼ੋਰਾਂ ਅਤੇ ਦੱਬੇ-ਕੁਚਲੇ ਲੋਕਾਂ ਦੀ ਰੱਖਿਆ ਲਈ ਹਮੇਸ਼ਾ ਤਿਆਰ ਰਹਿਣਾ ਚਾਹੀਦਾ ਹੈ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਰਾਇ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Har Rai Sahib Ji",
+                    years: "1630–1661",
+                    majorContributions: "Maintained a highly trained cavalry of 2,200 soldiers for defense but avoided armed conflict. Known for great compassion, established extensive botanical gardens, wildlife sanctuaries, and free herbal hospitals for the sick.",
+                    majorContributionsPa: "ਰੱਖਿਆ ਲਈ 2200 ਘੋੜਸਵਾਰਾਂ ਦੀ ਫੌਜ ਰੱਖੀ ਪਰ ਹਮੇਸ਼ਾ ਸ਼ਾਂਤੀ ਦਾ ਮਾਰਗ ਚੁਣਿਆ। ਬੇਅੰਤ ਦਿਆਲਤਾ ਦੇ ਮਾਲਕ, ਜੜ੍ਹੀ-ਬੂਟੀਆਂ ਦੇ ਬਾਗ ਲਗਾਏ, ਜੀਵ-ਜੰਤੂਆਂ ਲਈ ਸੁਰੱਖਿਅਤ ਥਾਵਾਂ ਬਣਾਈਆਂ ਅਤੇ ਬਿਮਾਰਾਂ ਲਈ ਮੁਫ਼ਤ ਡਿਸਪੈਂਸਰੀਆਂ ਖੋਲ੍ਹੀਆਂ।",
+                    keyTeachings: "Taught that every life-form is sacred and deserves compassion. Emphasized gentle speech, kind actions, and environmental stewardship.",
+                    keyTeachingsPa: "ਸਿਖਾਇਆ ਕਿ ਹਰ ਜੀਵ ਪਵਿੱਤਰ ਹੈ ਅਤੇ ਦਇਆ ਦਾ ਹੱਕਦਾਰ ਹੈ। ਮਿੱਠਾ ਬੋਲਣ, ਦੂਜਿਆਂ ਦਾ ਭਲਾ ਕਰਨ ਅਤੇ ਕੁਦਰਤ ਦੀ ਸੰਭਾਲ ਕਰਨ 'ਤੇ ਜ਼ੋਰ ਦਿੱਤਾ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਹਰ ਕ੍ਰਿਸ਼ਨ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Har Krishan Sahib Ji",
+                    years: "1656–1664",
+                    majorContributions: "The youngest Guru, assumed guruship at age five. Served and healed thousands of smallpox and cholera victims during a severe epidemic in Delhi, eventually catching the illness and giving his life at age eight for the service of humanity.",
+                    majorContributionsPa: "ਸਭ ਤੋਂ ਛੋਟੀ ਉਮਰ ਦੇ ਗੁਰੂ, ਪੰਜ ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਗੁਰਗੱਦੀ ਸੰਭਾਲੀ। ਦਿੱਲੀ ਵਿੱਚ ਚੇਚਕ ਅਤੇ ਹੈਜ਼ੇ ਦੀ ਮਹਾਂਮਾਰੀ ਦੌਰਾਨ ਹਜ਼ਾਰਾਂ ਪੀੜਤਾਂ ਦੀ ਨਿਸ਼ਕਾਮ ਸੇਵਾ ਕੀਤੀ ਅਤੇ ਅਖੀਰ ਅੱਠ ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਮਾਨਵਤਾ ਲਈ ਆਪਣੀ ਜਾਨ ਨਿਛਾਵਰ ਕੀਤੀ।",
+                    keyTeachings: "Demonstrated that spiritual wisdom, compassion, and divine power are not dependent on age. Taught selfless sacrifice and pure love.",
+                    keyTeachingsPa: "ਸਾਬਤ ਕੀਤਾ ਕਿ ਆਤਮਿਕ ਗਿਆਨ, ਦਇਆ ਅਤੇ ਰੂਹਾਨੀ ਸ਼ਕਤੀ ਉਮਰ 'ਤੇ ਨਿਰਭਰ ਨਹੀਂ ਕਰਦੀ। ਨਿਸ਼ਕਾਮ ਕੁਰਬਾਨੀ ਅਤੇ ਬਿਨਾਂ ਕਿਸੇ ਭੇਦਭਾਵ ਦੇ ਸਭ ਨੂੰ ਪਿਆਰ ਕਰਨਾ ਸਿਖਾਇਆ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Tegh Bahadur Sahib Ji",
+                    years: "1621–1675",
+                    majorContributions: "Known as 'Hind Di Chadar' (Shield of India). Sacrificed his life at Chandni Chowk in Delhi to defend the religious freedom and right to conscience of Kashmiri Hindus who were being forcibly converted. Travelled extensively to establish Sangats.",
+                    majorContributionsPa: "ਹਿੰਦ ਦੀ ਚਾਦਰ ਵਜੋਂ ਜਾਣੇ ਜਾਂਦੇ ਹਨ। ਕਸ਼ਮੀਰੀ ਹਿੰਦੂਆਂ ਦੀ ਧਾਰਮਿਕ ਅਜ਼ਾਦੀ ਅਤੇ ਮਨੁੱਖੀ ਅਧਿਕਾਰਾਂ ਦੀ ਰੱਖਿਆ ਲਈ ਦਿੱਲੀ ਦੇ ਚਾਂਦਨੀ ਚੌਕ ਵਿਖੇ ਆਪਣਾ ਸੀਸ ਕੁਰਬਾਨ ਕੀਤਾ। ਸਿੱਖ ਸੰਗਤਾਂ ਦੀ ਸਥਾਪਨਾ ਲਈ ਦੇਸ਼ ਭਰ ਵਿੱਚ ਲੰਮੀ ਯਾਤਰਾ ਕੀਤੀ।",
+                    keyTeachings: "Exemplified detachment from wordly desires, fearlessness ('Fear none, frighten none'), and supreme sacrifice for the freedom of conscience of others.",
+                    keyTeachingsPa: "ਸੰਸਾਰਕ ਮੋਹ-ਮਾਇਆ ਤੋਂ ਮੁਕਤੀ, ਨਿਰਭੈਤਾ ('ਭੈ ਕਾਹੂ ਕੋ ਦੇਤ ਨਹਿ ਨਹਿ ਭੈ ਮਾਨਤ ਆਨ') ਅਤੇ ਦੂਜਿਆਂ ਦੇ ਹੱਕਾਂ ਲਈ ਆਤਮ-ਬਲੀਦਾਨ ਦੇਣ ਦੀ ਸਿੱਖਿਆ ਦਿੱਤੀ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Gobind Singh Sahib Ji",
+                    years: "1666–1708",
+                    majorContributions: "Created the Khalsa Panth in 1699, introducing the five Kakars (Kesh, Kangha, Kara, Kachera, Kirpan) and the names 'Singh' and 'Kaur'. Finalized the compilation of Sri Guru Granth Sahib Ji, adding Guru Tegh Bahadur Ji's hymns. Sacrificed his entire family, including his four sons (Sahibzade), for the protection of humanity.",
+                    majorContributionsPa: "1699 ਵਿੱਚ ਖਾਲਸਾ ਪੰਥ ਦੀ ਸਿਰਜਣਾ ਕੀਤੀ, ਪੰਜ ਕਕਾਰਾਂ ਦੀ ਮਰਿਆਦਾ ਦਿੱਤੀ ਅਤੇ ਸਿੱਖਾਂ ਨੂੰ 'ਸਿੰਘ' ਤੇ 'ਕੌਰ' ਦੇ ਉਪਨਾਮ ਬਖਸ਼ੇ। ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਸੰਪੂਰਨ ਕੀਤਾ ਅਤੇ ਗੁਰਗੱਦੀ ਸੌਂਪੀ। ਦੇਸ਼ ਤੇ ਕੌਮ ਦੀ ਰੱਖਿਆ ਲਈ ਆਪਣੇ ਚਾਰੇ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਸਮੇਤ ਸਰਬੰਸ ਵਾਰ ਦਿੱਤਾ।",
+                    keyTeachings: "Taught the ultimate warrior-saint discipline. Preached that all human beings are equal ('Recognize the whole human race as one'), and that weapons should only be drawn as a last resort when all peaceful means have failed.",
+                    keyTeachingsPa: "ਸੰਤ-ਸਿਪਾਹੀ ਦੇ ਉੱਚ ਆਚਰਣ ਦੀ ਸਿੱਖਿਆ ਦਿੱਤੀ। ਪ੍ਰਚਾਰਿਆ ਕਿ ਸਮੁੱਚੀ ਮਾਨਵਤਾ ਇੱਕ ਹੈ ('ਮਾਨਸ ਕੀ ਜਾਤ ਸਬੈ ਏਕੈ ਪਹਿਚਾਨਬੋ')। ਸਿਖਾਇਆ ਕਿ ਜਦੋਂ ਸ਼ਾਂਤੀ ਦੇ ਸਾਰੇ ਹੀਲੇ ਖ਼ਤਮ ਹੋ ਜਾਣ, ਉਦੋਂ ਹੀ ਹੱਥ ਵਿੱਚ ਤਲਵਾਰ ਉਠਾਉਣਾ ਜਾਇਜ਼ ਹੈ।"
+                },
+                {
+                    name: "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+                    namePunjabi: "ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ",
+                    english: "Sri Guru Granth Sahib Ji",
+                    years: "1708–Present",
+                    majorContributions: "The eternal, living Guru of Sikhs. A voluminous compilation of 1,430 Angs containing 5,894 hymns from the Sikh Gurus and 30 other Hindu and Muslim saints, Bhagats, and poets, organized in 31 classical musical modes (Raags).",
+                    majorContributionsPa: "ਸਿੱਖਾਂ ਦੇ ਸਦੀਵੀ ਜਾਗਦੀ ਜੋਤ ਗੁਰੂ। 1430 ਅੰਗਾਂ ਦਾ ਪਵਿੱਤਰ ਗ੍ਰੰਥ ਜਿਸ ਵਿੱਚ 6 ਗੁਰੂ ਸਾਹਿਬਾਨ, 15 ਭਗਤਾਂ, 11 ਭੱਟਾਂ ਅਤੇ 4 ਗੁਰਸਿੱਖਾਂ ਦੀ ਇਲਾਹੀ ਬਾਣੀ ਦਰਜ ਹੈ, ਜੋ 31 ਸ਼ਾਸਤਰੀ ਰਾਗਾਂ ਵਿੱਚ ਉਚਾਰਨ ਕੀਤੀ ਗਈ ਹੈ।",
+                    keyTeachings: "Direct experience of the Divine through the sacred word (Shabad Guru). Promotes universal love, brotherhood, social justice, humility, and constant remembrance of the Creator.",
+                    keyTeachingsPa: "ਸ਼ਬਦ ਗੁਰੂ (ਇਲਾਹੀ ਬਾਣੀ) ਰਾਹੀਂ ਪ੍ਰਮਾਤਮਾ ਦਾ ਸਿੱਖਿਆ ਅਤੇ ਸਿੱਧਾ ਅਨੁਭਵ। ਸਰਵ-ਵਿਆਪੀ ਪਿਆਰ, ਮਾਨਵਤਾ ਦੀ ਸਾਂਝ, ਸਮਾਜਿਕ ਨਿਆਂ, ਨਿਮਰਤਾ, ਅਤੇ ਕਰਤਾ ਪੁਰਖ ਦੇ ਨਾਮ ਸਿਮਰਨ ਦਾ ਸੰਦੇਸ਼ ਦਿੰਦਾ ਹੈ।"
+                }
             ];
             SAKHIS = [
                 { title: "ਸੱਚਾ ਸੌਦਾ — The True Deal", guru: "Guru Nanak Dev Ji", desc: "Young Nanak was given 20 rupees by his father to make a profitable trade. Instead, he spent it feeding hungry sadhus, calling it the truest deal of all." },
@@ -325,42 +424,52 @@
     }
 
     function renderHistory(lang) {
-        if (SIKH_HISTORY.guruSahibaan && SIKH_HISTORY.guruSahibaan[lang]) {
-            const data = SIKH_HISTORY.guruSahibaan[lang];
+        if (SIKH_HISTORY.guruSahibaan) {
+            const data = SIKH_HISTORY.guruSahibaan[lang] || SIKH_HISTORY.guruSahibaan['en'];
+            const gurusSource = SIKH_HISTORY.guruSahibaan['en'].gurus || [];
             let html = `<div class="history-content">`;
             
             // Add intro
             if (data.intro) {
-                html += `<p style="margin-bottom: 20px;">${data.intro}</p>`;
+                html += `<p style="margin-bottom: 20px; line-height: 1.6;">${data.intro}</p>`;
             }
             
             // Add Guru Sahibaan section
-            if (data.gurus && data.gurus.length > 0) {
-                html += `<h3 style="margin: 20px 0 10px;">${data.title}</h3>`;
-                data.gurus.forEach(g => {
+            if (gurusSource.length > 0) {
+                html += `<h3 style="margin: 20px 0 12px; color: var(--gold-400);">${data.title || 'Guru Sahibaan'}</h3>`;
+                gurusSource.forEach(g => {
+                    const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
+                    const contribDisp = lang === 'pa' ? (g.contributionsPa || g.contributions) : lang === 'hi' ? (g.contributionsHi || g.contributions) : g.contributions;
+                    const teachingsDisp = lang === 'pa' ? (g.teachingsPa || g.teachings) : lang === 'hi' ? (g.teachingsHi || g.teachings) : g.teachings;
+                    
                     html += `
-                    <div class="theme-card" style="margin-bottom: 12px;">
-                        <div class="theme-card__title">🙏 ${g.english}</div>
-                        <div style="font-size: 14px; font-weight: 600; color: var(--gold-400); margin: 2px 0;">${g.namePunjabi || g.name}</div>
-                        <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px;">${g.years}</div>
-                        <div class="theme-card__desc">${g.contributions}</div>
+                    <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
+                        <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+                        <div style="font-size: 11px; color: var(--text-tertiary); margin: 4px 0 8px;">${lang === 'pa' ? 'ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'जीवन काल' : 'Lifetime'}: ${g.years}</div>
+                        <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contribDisp}</div>
+                        ${teachingsDisp ? `
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                            <strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachingsDisp}
+                        </div>` : ''}
                     </div>`;
                 });
             }
             
             // Add major events section
-            if (SIKH_HISTORY.majorEvents && SIKH_HISTORY.majorEvents[lang]) {
-                const eventsData = SIKH_HISTORY.majorEvents[lang];
-                html += `<h3 style="margin: 20px 0 10px;">${eventsData.title}</h3>`;
-                if (eventsData.events) {
-                    eventsData.events.forEach(e => {
-                        html += `
-                        <div style="margin-bottom: 8px; padding: 8px; background: var(--glass-bg); border-radius: 8px;">
-                            <div style="font-weight: 600; color: var(--gold-400);">${e.year}</div>
-                            <div>${e.event}</div>
-                            <div style="font-size: 12px; color: var(--text-tertiary);">${e.description}</div>
-                        </div>`;
-                    });
+            if (SIKH_HISTORY.majorEvents) {
+                const eventsData = SIKH_HISTORY.majorEvents[lang] || SIKH_HISTORY.majorEvents['en'];
+                if (eventsData) {
+                    html += `<h3 style="margin: 24px 0 12px; color: var(--gold-400);">${eventsData.title || 'Major Events'}</h3>`;
+                    if (eventsData.events) {
+                        eventsData.events.forEach(e => {
+                            html += `
+                            <div style="margin-bottom: 12px; padding: 14px; background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--border-color);">
+                                <div style="font-weight: 800; color: #D4943A; font-size: 14px;">📅 ${e.year}</div>
+                                <div style="font-weight: 600; margin: 4px 0; font-size: 13.5px;">${e.event}</div>
+                                <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">${e.description}</div>
+                            </div>`;
+                        });
+                    }
                 }
             }
             
@@ -394,14 +503,20 @@
         const contribField = lang === 'pa' ? 'majorContributionsPa' : lang === 'hi' ? 'majorContributionsHi' : 'majorContributions';
         const teachingField = lang === 'pa' ? 'keyTeachingsPa' : lang === 'hi' ? 'keyTeachingsHi' : 'keyTeachings';
         
-        return GURU_SAHIBAAN.map((g, i) => `
-            <div class="theme-card" style="margin-bottom: 12px;">
-                <div class="theme-card__title">🙏 ${g.english}</div>
-                <div style="font-size: 14px; font-weight: 600; color: var(--gold-400); margin: 2px 0;">${g.namePunjabi || g.name}</div>
-                <div style="font-size: 12px; color: var(--text-tertiary); margin-bottom: 6px;">${g.years}</div>
-                <div class="theme-card__desc">${g[contribField] || g.majorContributions}</div>
-                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-color);"><strong>Teachings:</strong> ${g[teachingField] || g.keyTeachings}</div>
-            </div>`).join('');
+        return GURU_SAHIBAAN.map((g, i) => {
+            const contrib = g[contribField] || g.majorContributions || g.desc || g.description || 'Contributions details coming soon.';
+            const teachings = g[teachingField] || g.keyTeachings || 'Teachings details coming soon.';
+            const nameDisp = lang === 'pa' ? (g.namePunjabi || g.name) : lang === 'hi' ? (g.nameHindi || g.name) : g.name;
+            const subtitleDisp = lang === 'pa' ? 'ਇਤਿਹਾਸਕ ਜੀਵਨ ਕਾਲ' : lang === 'hi' ? 'ऐतिहासिक जीवन काल' : 'Historical Lifetime';
+            
+            return `
+            <div class="theme-card" style="margin-bottom: 14px; padding: 18px; border-radius: 20px; background: var(--glass-bg); border: 1px solid var(--border-color);">
+                <div class="theme-card__title" style="font-size: 16px; font-weight: 800; color: #D4943A;">🙏 ${nameDisp}</div>
+                <div style="font-size: 12px; color: var(--text-tertiary); margin: 4px 0 8px;">${subtitleDisp}: ${g.years || ''}</div>
+                <div class="theme-card__desc" style="font-size: 13.5px; line-height: 1.55;">${contrib}</div>
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);"><strong>${lang === 'pa' ? 'ਮੁੱਖ ਸਿੱਖਿਆਵਾਂ' : lang === 'hi' ? 'मुख्य शिक्षाएं' : 'Key Teachings'}:</strong> ${teachings}</div>
+            </div>`;
+        }).join('');
     }
 
     function setupLangSwitch() {

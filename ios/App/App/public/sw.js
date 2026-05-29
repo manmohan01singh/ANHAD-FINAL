@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.9.3'; // Bumped: Fix raag ang-loading + keyboard ghost-tap
+const CACHE_VERSION = 'anhad-v5.9.8'; // Bumped: Event-driven instant bg swap (ms reaction, not 10s poll)
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

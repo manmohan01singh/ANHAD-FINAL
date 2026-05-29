@@ -2,18 +2,52 @@
 <html lang="pa" data-theme="light">
 <head>
   <script>
-  (function(){
-    try {
-      var t = localStorage.getItem('anhad_theme') || 'light';
-      document.documentElement.setAttribute('data-theme', t);
-    } catch(e){}
+(function() {
+  try {
+    var theme = localStorage.getItem('anhad_theme') || 'auto';
+    var effectiveTheme = theme;
+    if (theme === 'auto') {
+      var hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+    }
+    var html = document.documentElement;
+    html.setAttribute('data-theme', effectiveTheme);
+    html.setAttribute('data-theme-mode', theme);
+    html.style.colorScheme = effectiveTheme;
+    
+    var isDark = (effectiveTheme === 'dark');
+    html.style.backgroundColor = isDark ? '#0D0D0F' : '#FAF8F5';
+    
+    if (isDark) {
+      html.classList.add('dark', 'dark-mode');
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+    }
+    
+    var observer = new MutationObserver(function() {
+      if (document.body) {
+        if (isDark) {
+          document.body.classList.add('dark', 'dark-mode');
+          document.body.style.backgroundColor = '#0D0D0F';
+        } else {
+          document.body.classList.remove('dark', 'dark-mode');
+          document.body.style.backgroundColor = '#FAF8F5';
+        }
+        observer.disconnect();
+      }
+    });
+    observer.observe(html, { childList: true, subtree: true });
+  } catch(e) {}
+  
+  try {
     // Force reload new SW + clear stale caches
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
         regs.forEach(function(reg) { reg.update(); });
       });
     }
-  })();
+  } catch(e) {}
+})();
   </script>
   <meta charset="UTF-8">
   <link rel="icon" href="data:image/x-icon;base64,">
@@ -815,7 +849,7 @@
 
 <script src="../lib/capacitor-notifications-global.js"></script>
 <script src="../lib/anhad-widget-bridge.js"></script>
-<script src="../lib/anhad-audio-singleton.js"></script>
+<script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 <script src="../js/anhad-core.js?v=28" defer></script>
 
 <!-- INLINE INIT: Ensures Raag/Simran/Bell buttons always work, even if SW serves old JS -->

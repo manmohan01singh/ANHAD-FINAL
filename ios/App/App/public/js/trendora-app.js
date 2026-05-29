@@ -1279,6 +1279,7 @@
       this.updateNotesCard();
       this.updateNitnemQuickAccess();
       this.autoRemindUpcomingGurpurab();
+      this.updateHeroCardImages();
       
       // RE-INIT HOMEPAGE COMPONENTS
       // These elements only exist on index.html, but refreshAll is called 
@@ -1371,7 +1372,75 @@
           subtitleEl.textContent = `Ang ${preview.ang} · ${preview.writer || 'Sri Guru Granth Sahib Ji'}`;
         }
       }
+    },
+
+    updateHeroCardImages() {
+      // PRIMARY: Delegate to the authoritative AnhadSky system (anhad-sky-bg.js)
+      if (window.AnhadSky && typeof window.AnhadSky.updateHeroCardImages === 'function') {
+        window.AnhadSky.updateHeroCardImages();
+        return;
+      }
+
+      // FALLBACK: Direct update using the new clean WebP paths
+      const forced = localStorage.getItem('anhad_forced_time_of_day');
+      let slot = 'day';
+      if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+        slot = forced;
+      } else {
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 9) slot = 'morning';
+        else if (hour >= 9 && hour < 16) slot = 'day';
+        else if (hour >= 16 && hour < 20) slot = 'evening';
+        else slot = 'night';
+      }
+
+      const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
+      const effectiveSlot = mode === 'dark' ? 'night' : mode === 'light' ? 'day' : slot;
+
+      const imageSets = {
+        morning: [
+          'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/morning-waheguru-simran.webp'
+        ],
+        day: [
+          'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/day-waheguru-simran.webp'
+        ],
+        evening: [
+          'assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/evening-waheguru-simran.webp'
+        ],
+        night: [
+          'assets/HERO CARD IMAGES/night-darbar-sahib.webp',
+          'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp',
+          'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
+        ]
+      };
+
+      const images = imageSets[effectiveSlot];
+
+      [
+        { id: 'heroCard1Img', src: images[0] },
+        { id: 'heroCard2Img', src: images[1] },
+        { id: 'heroCard3Img', src: images[2] }
+      ].forEach(({ id, src }) => {
+        const img = document.getElementById(id);
+        if (!img) return;
+        const newAbsolute = new URL(src, document.baseURI).href;
+        if (img.src === newAbsolute) return; // Already correct, no re-download
+        img.style.transition = 'opacity 0.5s ease';
+        img.style.opacity = '0';
+        setTimeout(() => {
+          img.src = src;
+          img.onload = () => { img.style.opacity = '1'; };
+          img.onerror = () => { img.style.opacity = '1'; };
+        }, 250);
+      });
     }
+
   };
 
   // ═ THEME CONTROLLER (Reconstructed — Single Source of Truth) ═
@@ -1379,7 +1448,28 @@
     init() {
       // Read the unified theme key
       const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-      this._apply(savedTheme === 'dark');
+      
+      const getIsDark = (theme) => {
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
+        if (theme === 'auto') {
+          const forced = localStorage.getItem('anhad_forced_time_of_day');
+          if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            return forced === 'night';
+          }
+          const hour = new Date().getHours();
+          return hour < 5 || hour >= 20;
+        }
+        return false;
+      };
+
+      const isDark = getIsDark(savedTheme);
+      this._apply(isDark);
+
+      // Listen for custom theme change events
+      window.addEventListener('themechange', (e) => {
+        UIController.updateHeroCardImages();
+      });
 
       // Toggle button
       document.getElementById('themeToggle')?.addEventListener('click', () => {
@@ -1410,8 +1500,9 @@
 
       // Listen for storage changes (other tabs)
       window.addEventListener('storage', (e) => {
-        if (e.key === 'anhad_theme' && e.newValue) {
-          this._apply(e.newValue === 'dark');
+        if ((e.key === 'anhad_theme' || e.key === 'anhad_forced_time_of_day') && localStorage.getItem('anhad_theme')) {
+          const isDark = getIsDark(localStorage.getItem('anhad_theme'));
+          this._apply(isDark);
         }
       });
     },
@@ -2001,6 +2092,7 @@
         UIController.updateNanakshahiDate();
         UIController.updateNotesCard();
         UIController.updateNitnemQuickAccess();
+        UIController.updateHeroCardImages();
       });
 
       // PERF: Defer API fetch with requestIdleCallback

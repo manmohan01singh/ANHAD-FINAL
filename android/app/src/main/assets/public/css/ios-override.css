@@ -1,4 +1,4 @@
-﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    âœ¦ ANHAD â€” iOS 18 NATIVE OVERRIDE SYSTEM
    
    Loaded AFTER trendora-premium.css to apply pure Apple iOS design language.
@@ -280,7 +280,7 @@ body {
   opacity: 1 !important;
   transform: scale(1.35) translateY(-3px) !important;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -328,6 +328,7 @@ body {
 .hero-card {
   border-radius: 24px;
   box-shadow: none !important;
+  background: transparent !important;
 }
 
 .hero-card__image-wrapper {
@@ -575,16 +576,14 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Header Buttons Claymorphism */
+/* Header Buttons Completely Flat (No Shadow) */
 .header__btn, .header-btn--glass {
   border-radius: 50% !important;
-  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.7)) !important;
-  box-shadow: 
-    6px 6px 15px rgba(0,0,0,0.06), 
-    -4px -4px 12px rgba(255,255,255,0.95),
-    inset 3px 3px 6px rgba(255,255,255,0.95),
-    inset -3px -3px 6px rgba(0,0,0,0.05) !important;
-  border: 1px solid rgba(255,255,255,0.8) !important;
+  background: #f0f0f3 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .install-banner__cta {
@@ -911,7 +910,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .quick-card:active {
@@ -983,7 +982,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .event-card:active {
@@ -1002,7 +1001,7 @@ body {
   box-shadow: none !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .hero-card:active {
@@ -1044,7 +1043,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .practice-card:active {
@@ -1073,7 +1072,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .glass-card:active {
@@ -1102,7 +1101,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .stat-card:active {
@@ -1131,7 +1130,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .card:active {
@@ -1160,7 +1159,7 @@ body {
     inset -5px -5px 12px rgba(0, 0, 0, 0.4) !important;
   border: none !important;
   transform: translateY(-2px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dark-mode .dark-mode .bani-card__link:active {
@@ -1177,14 +1176,13 @@ body {
   color: #FFFFFF !important;
 }
 
-/* Deep Claymorphism for Header Buttons */
+/* Flat styling for Header Buttons */
 .dark-mode .dark-mode .header__btn, .dark-mode .dark-mode .header-btn--glass {
-  background: linear-gradient(145deg, rgba(40,40,45,0.9), rgba(20,20,25,0.8)) !important;
-  box-shadow: 
-    6px 6px 15px rgba(0,0,0,0.6), 
-    inset 2px 2px 6px rgba(255,255,255,0.12),
-    inset -2px -2px 6px rgba(0,0,0,0.4) !important;
-  border: 1px solid rgba(255,255,255,0.05) !important;
+  background: #2a2a2d !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* Removed conflicting progress-inline block here to let lines 813-820 apply! */
@@ -1246,7 +1244,7 @@ a,
     inset 2px 2px 8px rgba(255, 255, 255, 0.9),
     inset -2px -2px 8px rgba(212, 148, 58, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.5);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .greeting__nanakshahi:hover {

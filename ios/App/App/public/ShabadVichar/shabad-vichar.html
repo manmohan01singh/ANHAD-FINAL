@@ -5,15 +5,40 @@
   <script>
 (function() {
   try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
+    var theme = localStorage.getItem('anhad_theme') || 'auto';
+    var effectiveTheme = theme;
+    if (theme === 'auto') {
+      var hour = new Date().getHours();
+      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
     }
-  } catch (e) {}
+    var html = document.documentElement;
+    html.setAttribute('data-theme', effectiveTheme);
+    html.setAttribute('data-theme-mode', theme);
+    html.style.colorScheme = effectiveTheme;
+    
+    var isDark = (effectiveTheme === 'dark');
+    html.style.backgroundColor = isDark ? '#0D0D0F' : '#FAF8F5';
+    
+    if (isDark) {
+      html.classList.add('dark', 'dark-mode');
+    } else {
+      html.classList.remove('dark', 'dark-mode');
+    }
+    
+    var observer = new MutationObserver(function() {
+      if (document.body) {
+        if (isDark) {
+          document.body.classList.add('dark', 'dark-mode');
+          document.body.style.backgroundColor = '#0D0D0F';
+        } else {
+          document.body.classList.remove('dark', 'dark-mode');
+          document.body.style.backgroundColor = '#FAF8F5';
+        }
+        observer.disconnect();
+      }
+    });
+    observer.observe(html, { childList: true, subtree: true });
+  } catch(e) {}
 })();
   </script>
   <meta charset="UTF-8">
@@ -266,7 +291,7 @@
   <!-- Unified Audio System -->
   <script src="../lib/audio-preload.js"></script>
   <script src="../lib/audio-coordinator.js"></script>
-  <script src="../lib/anhad-audio-singleton.js"></script>
+  <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
   <script src="../lib/overlay-player.js"></script>
   <script src="../lib/smart-back.js"></script>
   <script src="shabad-vichar.js?v=1.0"></script>
