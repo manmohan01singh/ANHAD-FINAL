@@ -2288,12 +2288,67 @@ async function checkLiveViaScrap(ch) {
 
     const html = resp.data;
 
-    // Try to find the current video ID on the page (works when live)
+    let playerResponse = null;
+    const jsonMatch = html.match(/var ytInitialPlayerResponse\s*=\s*({.*?});/s) || 
+                      html.match(/ytInitialPlayerResponse\s*=\s*({.*?});/s);
+    if (jsonMatch) {
+        try {
+            playerResponse = JSON.parse(jsonMatch[1]);
+        } catch (e) {
+            try {
+                const startIdx = html.indexOf('ytInitialPlayerResponse');
+                if (startIdx !== -1) {
+                    const jsonStart = html.indexOf('{', startIdx);
+                    let braceCount = 0;
+                    let inString = false;
+                    let escape = false;
+                    let jsonEnd = -1;
+                    for (let i = jsonStart; i < html.length; i++) {
+                        const char = html[i];
+                        if (escape) { escape = false; continue; }
+                        if (char === '\\') { escape = true; continue; }
+                        if (char === '"') { inString = !inString; continue; }
+                        if (!inString) {
+                            if (char === '{') braceCount++;
+                            else if (char === '}') {
+                                braceCount--;
+                                if (braceCount === 0) {
+                                    jsonEnd = i + 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (jsonEnd !== -1) {
+                        playerResponse = JSON.parse(html.substring(jsonStart, jsonEnd));
+                    }
+                }
+            } catch (err) {
+                console.error(`[Sadhsangat Scrap] Failed to parse player response for ${ch.channelName || ch.channelId}:`, err.message);
+            }
+        }
+    }
+
+    if (playerResponse && playerResponse.videoDetails) {
+        const details = playerResponse.videoDetails;
+        const videoId = details.videoId;
+        
+        // Strict active live player check based on actual videoDetails metadata.
+        const isLive = !!(details.isLive || details.isLiveContent) && 
+                       details.lengthSeconds === "0" && 
+                       !html.includes('"isUpcoming":true') &&
+                       !html.includes('"isUpcoming": true');
+
+        const title = details.title || null;
+        
+        return { isLive, videoId: isLive ? videoId : null, title };
+    }
+
+    // Fallback if ytInitialPlayerResponse is not found
     const vidM = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/) ||
                  html.match(/"currentVideoEndpoint".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
     const videoId = vidM ? vidM[1] : null;
 
-    // Strict active live player check (avoiding false positives from sidebar recommendations on completed stream replays)
     const isLive =
         html.includes('"isLiveNow":true') ||
         (/"isLive"\s*:\s*true/i.test(html) &&
@@ -2301,7 +2356,6 @@ async function checkLiveViaScrap(ch) {
          !html.includes('"isLiveContent":false') &&
          !html.includes('"isLiveContent": false'));
 
-    // Extract stream title
     const titleM = html.match(/<title>([^<]+)<\/title>/) ||
                    html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/) ||
                    html.match(/"og:title" content="([^"]+)"/);

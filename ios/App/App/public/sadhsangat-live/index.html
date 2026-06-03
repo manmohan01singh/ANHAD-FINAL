@@ -4290,50 +4290,75 @@
 
   // Pre-unlock the audio element to bypass autoplay restrictions on mobile/iOS
   function unlockBgKeeper() {
-    ensureBgKeeper();
-    if (!bgKeeper) return;
-    
-    bgKeeper.play().then(function() {
-      console.log("[Sadhsangat BG] Keeper unlocked successfully");
-      bgKeeper.pause();
-    }).catch(function(err) {
-      console.warn("[Sadhsangat BG] Keeper unlock failed:", err.message);
-    });
-    
-    // Remove listeners once unlocked
+    // Remove listeners first to guarantee they are never called repeatedly, preventing any touch blocking loops
     document.removeEventListener('click', unlockBgKeeper);
     document.removeEventListener('touchstart', unlockBgKeeper);
+
+    try {
+      ensureBgKeeper();
+      if (!bgKeeper) return;
+      
+      var playPromise = bgKeeper.play();
+      if (playPromise !== undefined && typeof playPromise.then === 'function') {
+        playPromise.then(function() {
+          console.log("[Sadhsangat BG] Keeper unlocked successfully");
+          bgKeeper.pause();
+        }).catch(function(err) {
+          console.warn("[Sadhsangat BG] Keeper unlock failed:", err.message);
+        });
+      } else {
+        console.log("[Sadhsangat BG] Keeper unlocked synchronously (no promise)");
+        bgKeeper.pause();
+      }
+    } catch (err) {
+      console.warn("[Sadhsangat BG] Keeper unlock error:", err.message);
+    }
   }
   document.addEventListener('click', unlockBgKeeper, { passive: true });
   document.addEventListener('touchstart', unlockBgKeeper, { passive: true });
 
   function startBackgroundKeeper() {
-    ensureBgKeeper();
-    if (!bgKeeper) return;
     try {
-      bgKeeper.play().then(function() {
-        console.log("[Sadhsangat BG] Keeper started");
-      }).catch(function(err) {
-        console.warn("[Sadhsangat BG] Keeper play failed (autoplay restriction):", err.message);
-      });
+      ensureBgKeeper();
+      if (!bgKeeper) return;
+      
+      var playPromise = bgKeeper.play();
+      if (playPromise !== undefined && typeof playPromise.then === 'function') {
+        playPromise.then(function() {
+          console.log("[Sadhsangat BG] Keeper started");
+        }).catch(function(err) {
+          console.warn("[Sadhsangat BG] Keeper play failed (autoplay restriction):", err.message);
+        });
+      } else {
+        console.log("[Sadhsangat BG] Keeper started (no promise)");
+      }
     } catch (err) {
       console.warn("[Sadhsangat BG] Keeper play failed:", err.message);
     }
+    
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.playbackState = "playing";
-      console.log("[Sadhsangat BG] MediaSession active");
+      try {
+        navigator.mediaSession.playbackState = "playing";
+        console.log("[Sadhsangat BG] MediaSession active");
+      } catch (e) {
+        console.warn("[Sadhsangat BG] MediaSession playbackState set error:", e.message);
+      }
     }
   }
 
   function stopBackgroundKeeper() {
-    if (!bgKeeper) return;
     try {
+      if (!bgKeeper) return;
       bgKeeper.pause();
       bgKeeper.currentTime = 0;
       console.log("[Sadhsangat BG] Keeper stopped");
-    } catch (err) {}
+    } catch (err) {
+      console.warn("[Sadhsangat BG] Keeper stop error:", err.message);
+    }
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.playbackState = "paused";
+      try {
+        navigator.mediaSession.playbackState = "paused";
+      } catch (e) {}
     }
   }
 
