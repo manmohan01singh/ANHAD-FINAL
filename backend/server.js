@@ -2293,13 +2293,13 @@ async function checkLiveViaScrap(ch) {
                  html.match(/"currentVideoEndpoint".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
     const videoId = vidM ? vidM[1] : null;
 
-    // Comprehensive active live broadcast indicators — avoid false positives on completed replays
+    // Strict active live player check (avoiding false positives from sidebar recommendations on completed stream replays)
     const isLive =
-        // Strict active live player check
-        /"isLive"\s*:\s*true/i.test(html) ||
-        html.includes('BADGE_STYLE_TYPE_LIVE_NOW') ||
-        html.includes('liveStreamabilityRenderer') ||
-        html.includes('"style":"LIVE"');
+        html.includes('"isLiveNow":true') ||
+        (/"isLive"\s*:\s*true/i.test(html) &&
+         !html.includes('"isUpcoming":true') &&
+         !html.includes('"isLiveContent":false') &&
+         !html.includes('"isLiveContent": false'));
 
     // Extract stream title
     const titleM = html.match(/<title>([^<]+)<\/title>/) ||
