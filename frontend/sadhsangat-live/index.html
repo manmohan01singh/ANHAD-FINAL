@@ -2224,6 +2224,11 @@
     }, 450);
   }
 
+  // Hook global stop request event from media controls
+  window.addEventListener('sadhsangatPlayerStopRequested', () => {
+    stopAndClosePlayer();
+  });
+
   function syncPlayPauseIcons() {
     if (ytPlayer && ytPlayer.getPlayerState) {
       try {
@@ -2299,13 +2304,16 @@
             $('playerBufferingOverlay').style.opacity = '0';
             setTimeout(() => $('playerBufferingOverlay').style.display = 'none', 200);
             playVideoProgress();
+            window.dispatchEvent(new CustomEvent('sadhsangatPlayerPlaying'));
           } else if (e.data === YT.PlayerState.PAUSED) {
             stopVideoProgress();
+            window.dispatchEvent(new CustomEvent('sadhsangatPlayerPaused'));
           } else if (e.data === YT.PlayerState.BUFFERING) {
             $('playerBufferingOverlay').style.display = 'flex';
             $('playerBufferingOverlay').style.opacity = '1';
           } else if (e.data === YT.PlayerState.ENDED) {
             stopVideoProgress();
+            window.dispatchEvent(new CustomEvent('sadhsangatPlayerEnded'));
           }
         }
       }
@@ -4263,91 +4271,208 @@
 (function() {
   'use strict';
 
-  // ── Silent Audio Trick ────────────────────────────────────────────────────
-  // Playing a silent audio element in a loop prevents the browser from
-  // throttling the page when it goes to background, keeping the YouTube
-  // iframe alive longer on supported browsers.
-  var silentAudio = null;
+  var bgKeeper = null;
+  var bgKeeperUrl = null;
 
-  function startSilentAudio() {
-    if (silentAudio) return;
-    try {
-      // 1-second silent MP3 as a data URI (44 bytes, Base64-encoded)
-      var SILENT_MP3 = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////8AAAAATGF2YzU3LjkxAAAAAAAAAAAAAAAAJAAAAAAAAAAAAnGWJ6IAAAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIAACNQBUNBAAAA==';
-      silentAudio = new Audio(SILENT_MP3);
-      silentAudio.loop = true;
-      silentAudio.volume = 0;
-      silentAudio.play().catch(function() { silentAudio = null; });
-    } catch (e) { silentAudio = null; }
+  function buildSilentWavBlob(durationSeconds, sampleRate) {
+    var dur = durationSeconds || 1;
+    var rate = sampleRate || 8000;
+    var numSamples = Math.max(1, Math.floor(dur * rate));
+    var bytesPerSample = 2; // 16-bit PCM
+    var blockAlign = bytesPerSample;
+    var byteRate = rate * blockAlign;
+    var dataSize = numSamples * bytesPerSample;
+    var buffer = new ArrayBuffer(44 + dataSize);
+    var view = new DataView(buffer);
+
+    var writeString = function(offset, str) {
+      for (var i = 0; i < str.length; i++) {
+        view.setUint8(offset + i, str.charCodeAt(i));
+      }
+    };
+
+    // RIFF/WAVE header
+    writeString(0, "RIFF");
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
+    view.setUint32(16, 16, true);      // PCM chunk size
+    view.setUint16(20, 1, true);       // PCM format
+    view.setUint16(22, 1, true);       // mono
+    view.setUint32(24, rate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);      // 16-bit
+    writeString(36, "data");
+    view.setUint32(40, dataSize, true);
+
+    // Remaining bytes are already zero => silence
+    return new Blob([buffer], { type: "audio/wav" });
   }
 
-  function stopSilentAudio() {
-    if (silentAudio) {
-      try { silentAudio.pause(); silentAudio.src = ''; } catch(e) {}
-      silentAudio = null;
+  function ensureBgKeeper() {
+    if (!bgKeeper) {
+      bgKeeper = document.getElementById("bg-keeper");
+    }
+    if (!bgKeeper) {
+      bgKeeper = document.createElement("audio");
+      bgKeeper.id = "bg-keeper";
+      bgKeeper.loop = true;
+      bgKeeper.setAttribute("playsinline", "true");
+      bgKeeper.setAttribute("webkit-playsinline", "true");
+      bgKeeper.preload = "auto";
+      bgKeeper.setAttribute("aria-hidden", "true");
+      bgKeeper.style.display = "none";
+      document.body.appendChild(bgKeeper);
+    }
+
+    if (!bgKeeperUrl) {
+      try {
+        var blob = buildSilentWavBlob(1, 8000);
+        bgKeeperUrl = URL.createObjectURL(blob);
+        bgKeeper.src = bgKeeperUrl;
+        bgKeeper.volume = 0.001; // effectively silent, but still "playing"
+      } catch (err) {
+        console.error("[Sadhsangat BG] Error building WAV blob:", err.message);
+      }
     }
   }
 
-  // ── MediaSession API registration when YouTube player is playing ─────────
+  function startBackgroundKeeper() {
+    ensureBgKeeper();
+    if (!bgKeeper) return;
+    try {
+      bgKeeper.play().then(function() {
+        console.log("[Sadhsangat BG] Keeper started");
+      }).catch(function(err) {
+        console.warn("[Sadhsangat BG] Keeper play failed (autoplay restriction):", err.message);
+      });
+    } catch (err) {
+      console.warn("[Sadhsangat BG] Keeper play failed:", err.message);
+    }
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "playing";
+      console.log("[Sadhsangat BG] MediaSession active");
+    }
+  }
+
+  function stopBackgroundKeeper() {
+    if (!bgKeeper) return;
+    try {
+      bgKeeper.pause();
+      bgKeeper.currentTime = 0;
+      console.log("[Sadhsangat BG] Keeper stopped");
+    } catch (err) {}
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "paused";
+    }
+  }
+
   function registerMediaSession(title, channelName) {
     if (!('mediaSession' in navigator)) return;
     try {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: title || 'Gurbani Kirtan',
-        artist: channelName || 'Sadhsangat Live',
+        title: title || 'Sadhsangat Live',
+        artist: channelName || 'Gurbani Kirtan',
         album: 'ANHAD',
         artwork: [
           { src: '../assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: '../assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
         ]
       });
-      navigator.mediaSession.playbackState = 'playing';
 
-      // Hook notification controls to YouTube player
+      // Hook lockscreen/headset notification controls to YouTube player
       navigator.mediaSession.setActionHandler('play', function() {
+        console.log("[Sadhsangat BG] MediaSession Play Action");
         if (window.ytPlayer && window.ytPlayer.playVideo) {
           try { window.ytPlayer.playVideo(); } catch(e) {}
         }
+        startBackgroundKeeper();
       });
       navigator.mediaSession.setActionHandler('pause', function() {
+        console.log("[Sadhsangat BG] MediaSession Pause Action");
         if (window.ytPlayer && window.ytPlayer.pauseVideo) {
           try { window.ytPlayer.pauseVideo(); } catch(e) {}
         }
+        stopBackgroundKeeper();
       });
       navigator.mediaSession.setActionHandler('stop', function() {
-        if (window.ytPlayer && window.ytPlayer.pauseVideo) {
-          try { window.ytPlayer.pauseVideo(); } catch(e) {}
-        }
-        stopSilentAudio();
+        console.log("[Sadhsangat BG] MediaSession Stop Action");
+        window.dispatchEvent(new CustomEvent('sadhsangatPlayerStopRequested'));
+        stopBackgroundKeeper();
         navigator.mediaSession.playbackState = 'none';
       });
-    } catch(e) {}
+    } catch(e) {
+      console.warn("[Sadhsangat BG] MediaSession setup error:", e.message);
+    }
   }
 
-  // Listen for player state changes dispatched by the main player code
+  // Hook background keeper to existing player events
   window.addEventListener('sadhsangatPlayerOpened', function(e) {
     var detail = e.detail || {};
-    startSilentAudio();
+    startBackgroundKeeper();
     registerMediaSession(detail.title, detail.channelName);
   });
 
   window.addEventListener('sadhsangatPlayerClosed', function() {
-    stopSilentAudio();
+    stopBackgroundKeeper();
     if ('mediaSession' in navigator) {
       try { navigator.mediaSession.playbackState = 'none'; } catch(e) {}
     }
   });
 
+  window.addEventListener('sadhsangatPlayerPlaying', function() {
+    startBackgroundKeeper();
+  });
+
   window.addEventListener('sadhsangatPlayerPaused', function() {
+    stopBackgroundKeeper();
+  });
+
+  window.addEventListener('sadhsangatPlayerEnded', function() {
+    stopBackgroundKeeper();
     if ('mediaSession' in navigator) {
-      try { navigator.mediaSession.playbackState = 'paused'; } catch(e) {}
+      try { navigator.mediaSession.playbackState = 'none'; } catch(e) {}
     }
   });
 
-  // Expose helpers for main player code
+  // Visibility handling
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      console.log("[Sadhsangat BG] Visibility hidden");
+      // Maintain background keeper if stream is playing
+      if (window.ytPlayer && window.ytPlayer.getPlayerState) {
+        try {
+          var state = window.ytPlayer.getPlayerState();
+          if (state === 1) { // PLAYING
+            startBackgroundKeeper();
+          }
+        } catch(e) {}
+      }
+    } else {
+      console.log("[Sadhsangat BG] Visibility visible");
+      // Re-sync state with YouTube player
+      if (window.ytPlayer && window.ytPlayer.getPlayerState) {
+        try {
+          var state = window.ytPlayer.getPlayerState();
+          if (state === 1) {
+            startBackgroundKeeper();
+          } else if (state === 2) {
+            stopBackgroundKeeper();
+          }
+        } catch(e) {}
+      }
+    }
+  });
+
+  window.addEventListener("pagehide", function() {
+    stopBackgroundKeeper();
+  });
+
+  // Expose hooks for main player code
   window.SadhsangatBg = {
-    startSilentAudio: startSilentAudio,
-    stopSilentAudio: stopSilentAudio,
+    startSilentAudio: startBackgroundKeeper,
+    stopSilentAudio: stopBackgroundKeeper,
     registerMediaSession: registerMediaSession
   };
 })();
