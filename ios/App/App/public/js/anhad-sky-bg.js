@@ -160,7 +160,7 @@
     morning: { bg:'rgba(255,235,208,0.84)', bgGlass:'rgba(255,248,238,0.72)', text:'#1A0402', text2:'#4A1508', shadow:'rgba(200,100,20,0.32)', border:'rgba(230,140,60,0.30)', iconBg:'rgba(255,215,160,0.70)', accent:'#B84800' },
     day:     { bg:'rgba(210,238,255,0.84)', bgGlass:'rgba(240,250,255,0.72)', text:'#000814', text2:'#02162E', shadow:'rgba(0,80,180,0.30)',   border:'rgba(60,140,220,0.28)',  iconBg:'rgba(180,220,255,0.70)', accent:'#0A4078' },
     evening: { bg:'rgba(255,210,175,0.84)', bgGlass:'rgba(255,235,210,0.72)', text:'#140205', text2:'#38050C', shadow:'rgba(180,35,10,0.36)',  border:'rgba(200,80,20,0.30)',   iconBg:'rgba(255,185,130,0.70)', accent:'#7A1410' },
-    night:   { bg:'rgba(12,18,58,0.86)',    bgGlass:'rgba(18,24,72,0.78)',    text:'#FFF2D1', text2:'#FFE399', shadow:'rgba(50,70,190,0.42)',  border:'rgba(100,130,240,0.22)', iconBg:'rgba(40,55,140,0.80)',   accent:'#FFD566' },
+    night:   { bg:'rgba(28,28,30,0.90)',    bgGlass:'rgba(28,28,30,0.80)',    text:'#F5F5F7', text2:'#8E8E93', shadow:'rgba(0,0,0,0.45)',  border:'rgba(255,255,255,0.12)', iconBg:'rgba(58,58,60,0.70)',   accent:'#FFD60A' },
   };
 
   function applyTimeAdaptiveCardColors(slot) {
