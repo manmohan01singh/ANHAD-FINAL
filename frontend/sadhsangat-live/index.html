@@ -2097,6 +2097,7 @@
 
   /* ── EMBEDDED iOS YOUTUBE PLAYER CONTROLLER ────────── */
   let ytPlayer = null;
+  window.__anhadYtPlayer = null;  // Expose to outer scope for bg-keeper
   let currentPlaying = null;
   let playerTimeInterval = null;
 
@@ -2295,8 +2296,10 @@
           e.target.playVideo();
           e.target.setVolume(parseInt($('playerVolumeSlider').value));
           playVideoProgress();
+          window.__anhadYtPlayer = ytPlayer; // Expose for bg-keeper
         },
         onStateChange: (e) => {
+          window.__anhadYtPlayer = ytPlayer; // Keep in sync
           syncPlayPauseIcons();
           if (e.data === YT.PlayerState.PLAYING) {
             $('playerBufferingOverlay').style.opacity = '0';
@@ -2771,11 +2774,16 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (isLive && ch.videoId) {
-          openPlayer(ch.videoId, ch.liveTitle || 'Live Gurbani', ch.channelName, ch.thumbnail, true);
-        } else {
+          openPlayer(ch.videoId, ch.liveTitle || 'Live Gurbani Kirtan', ch.channelName, ch.thumbnail, true);
+        } else if (!isLive) {
           State.activeTab = 'videos';
           renderMainUI();
           loadVideosTab();
+        } else {
+          // Live but no videoId yet — show toast and open watch URL
+          showToast('⚡ Opening live stream...');
+          const watchUrl = getWatchUrl(ch);
+          if (watchUrl && watchUrl !== '#') window.open(watchUrl, '_blank');
         }
       });
       content.appendChild(btn);
@@ -3017,9 +3025,10 @@
       feedSection.appendChild(noLive);
     } else {
       liveChannels.forEach(ch => {
+        if (!ch.videoId) return; // Skip if no valid videoId
         const card = createYtVideoCard({
           videoId: ch.videoId,
-          title: ch.liveTitle || 'Live Gurbani',
+          title: ch.liveTitle || 'Live Gurbani Kirtan',
           channelName: ch.channelName,
           channelThumbnail: ch.thumbnail,
           views: 'Watching live'
@@ -4289,10 +4298,11 @@
   }
 
   // Pre-unlock the audio element to bypass autoplay restrictions on mobile/iOS
+  // Using { once: true } so the listener auto-removes after first call — zero risk of scroll locking
+  var _bgKeeperUnlocked = false;
   function unlockBgKeeper() {
-    // Remove listeners first to guarantee they are never called repeatedly, preventing any touch blocking loops
-    document.removeEventListener('click', unlockBgKeeper);
-    document.removeEventListener('touchstart', unlockBgKeeper);
+    if (_bgKeeperUnlocked) return;
+    _bgKeeperUnlocked = true;
 
     try {
       ensureBgKeeper();
@@ -4304,18 +4314,19 @@
           console.log("[Sadhsangat BG] Keeper unlocked successfully");
           bgKeeper.pause();
         }).catch(function(err) {
-          console.warn("[Sadhsangat BG] Keeper unlock failed:", err.message);
+          console.warn("[Sadhsangat BG] Keeper unlock failed (normal on first load):", err.message);
         });
       } else {
         console.log("[Sadhsangat BG] Keeper unlocked synchronously (no promise)");
-        bgKeeper.pause();
+        try { bgKeeper.pause(); } catch(e) {}
       }
     } catch (err) {
       console.warn("[Sadhsangat BG] Keeper unlock error:", err.message);
     }
   }
-  document.addEventListener('click', unlockBgKeeper, { passive: true });
-  document.addEventListener('touchstart', unlockBgKeeper, { passive: true });
+  // { once: true } auto-removes the listener after first invocation — no manual cleanup needed, no scroll lock risk
+  document.addEventListener('click', unlockBgKeeper, { passive: true, once: true });
+  document.addEventListener('touchstart', unlockBgKeeper, { passive: true, once: true });
 
   function startBackgroundKeeper() {
     try {
@@ -4344,6 +4355,7 @@
         console.warn("[Sadhsangat BG] MediaSession playbackState set error:", e.message);
       }
     }
+    console.log("[Sadhsangat BG] Keeper started");
   }
 
   function stopBackgroundKeeper() {
@@ -4378,15 +4390,17 @@
       // Hook lockscreen/headset notification controls to YouTube player
       navigator.mediaSession.setActionHandler('play', function() {
         console.log("[Sadhsangat BG] MediaSession Play Action");
-        if (window.ytPlayer && window.ytPlayer.playVideo) {
-          try { window.ytPlayer.playVideo(); } catch(e) {}
+        var _p = window.__anhadYtPlayer;
+        if (_p && _p.playVideo) {
+          try { _p.playVideo(); } catch(e) {}
         }
         startBackgroundKeeper();
       });
       navigator.mediaSession.setActionHandler('pause', function() {
         console.log("[Sadhsangat BG] MediaSession Pause Action");
-        if (window.ytPlayer && window.ytPlayer.pauseVideo) {
-          try { window.ytPlayer.pauseVideo(); } catch(e) {}
+        var _p = window.__anhadYtPlayer;
+        if (_p && _p.pauseVideo) {
+          try { _p.pauseVideo(); } catch(e) {}
         }
         stopBackgroundKeeper();
       });
@@ -4437,9 +4451,10 @@
     if (document.hidden) {
       console.log("[Sadhsangat BG] Visibility hidden");
       // Maintain background keeper if stream is playing
-      if (window.ytPlayer && window.ytPlayer.getPlayerState) {
+      var _p = window.__anhadYtPlayer;
+      if (_p && _p.getPlayerState) {
         try {
-          var state = window.ytPlayer.getPlayerState();
+          var state = _p.getPlayerState();
           if (state === 1) { // PLAYING
             startBackgroundKeeper();
           }
@@ -4448,12 +4463,13 @@
     } else {
       console.log("[Sadhsangat BG] Visibility visible");
       // Re-sync state with YouTube player
-      if (window.ytPlayer && window.ytPlayer.getPlayerState) {
+      var _p2 = window.__anhadYtPlayer;
+      if (_p2 && _p2.getPlayerState) {
         try {
-          var state = window.ytPlayer.getPlayerState();
-          if (state === 1) {
+          var state2 = _p2.getPlayerState();
+          if (state2 === 1) {
             startBackgroundKeeper();
-          } else if (state === 2) {
+          } else if (state2 === 2) {
             stopBackgroundKeeper();
           }
         } catch(e) {}
