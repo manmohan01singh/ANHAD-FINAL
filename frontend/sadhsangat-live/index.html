@@ -3050,6 +3050,11 @@
       feedSection.appendChild(noPrev);
     } else {
       let prevVideos = State.streams;
+      
+      // Filter out currently active live streams to prevent duplicate cards
+      const activeLiveVideoIds = new Set(State.live.filter(c => c.isLive === 1).map(c => c.videoId));
+      prevVideos = prevVideos.filter(v => !activeLiveVideoIds.has(v.videoId));
+
       if (State.selectedChannelId !== 'all') {
         const selCh = State.myChannels.find(c => c.channelId === State.selectedChannelId);
         const handleMatch = selCh ? (selCh.channelHandle || '').toLowerCase() : '';

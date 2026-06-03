@@ -2293,21 +2293,13 @@ async function checkLiveViaScrap(ch) {
                  html.match(/"currentVideoEndpoint".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
     const videoId = vidM ? vidM[1] : null;
 
-    // Comprehensive live broadcast indicators — YouTube changes these regularly
+    // Comprehensive active live broadcast indicators — avoid false positives on completed replays
     const isLive =
-        // Classic indicators
-        html.includes('"isLiveContent":true') ||
-        html.includes('isLiveBroadcast') ||
-        html.includes('"liveBroadcastDetails"') ||
-        // Modern indicators (2024+)
-        html.includes('"isLive":true') ||
-        html.includes('concurrentViewers') ||
+        // Strict active live player check
+        /"isLive"\s*:\s*true/i.test(html) ||
         html.includes('BADGE_STYLE_TYPE_LIVE_NOW') ||
         html.includes('liveStreamabilityRenderer') ||
-        html.includes('"style":"LIVE"') ||
-        // Viewer count patterns — YouTube now shows "9.1K watching" not "watching now"
-        (html.includes(' watching') && !!videoId) ||
-        (html.includes('watching now') && !!videoId);
+        html.includes('"style":"LIVE"');
 
     // Extract stream title
     const titleM = html.match(/<title>([^<]+)<\/title>/) ||
