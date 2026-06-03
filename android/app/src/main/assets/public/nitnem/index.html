@@ -1112,7 +1112,7 @@
         <!-- Header -->
         <header class="header">
             <a href="../index.html" class="back-btn glass-nav__back" aria-label="Back" data-anhad-back="../index.html"
-               onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now()+'');}catch(e){}">
+               onclick="goHome(event)">
                 <svg viewBox="0 0 12 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <path d="M10 2L2 10L10 18"/>
                 </svg>
@@ -1520,12 +1520,14 @@
                 localStorage.setItem('anhad_session_active_ts', Date.now().toString());
             } catch (_) {}
 
-            // Direct navigation — Nitnem is standalone, NOT SPA context.
-            // Direct navigation — Nitnem is standalone, NOT part of the SPA shell.
-            // smooth-navigation.js is not loaded here, so navigateTo() would cause broken UI.
-            window.location.href = '../index.html';
-
-
+            // Use history.back() if possible to restore Home page instantly from bfcache
+            if (window.history.length > 1 && document.referrer && (document.referrer.indexOf('index.html') !== -1 || document.referrer.endsWith('/frontend/'))) {
+                console.log('[Nitnem] Returning to Home via history.back() for instant load');
+                window.history.back();
+            } else {
+                console.log('[Nitnem] Returning to Home via location.href');
+                window.location.href = '../index.html';
+            }
         };
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->

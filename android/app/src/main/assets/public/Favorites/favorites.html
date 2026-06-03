@@ -8,11 +8,16 @@
     const theme = localStorage.getItem('anhad_theme') || 'auto';
     let effectiveTheme = theme;
     if (theme === 'auto') {
-      const hour = new Date().getHours();
-      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+      const forced = localStorage.getItem('anhad_forced_time_of_day');
+      if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+        effectiveTheme = (forced === 'night') ? 'dark' : 'light';
+      } else {
+        const hour = new Date().getHours();
+        effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+      }
     }
-    // data-time-of-day is NOT set on sub-pages. Home-page only.
-    // Sub-pages use clean light/dark based on time, not morning/evening palette.
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    document.documentElement.setAttribute('data-theme-mode', theme);
     document.documentElement.style.colorScheme = effectiveTheme;
     if (effectiveTheme === 'dark') {
       document.documentElement.classList.add('dark', 'dark-mode');
@@ -564,21 +569,10 @@
     
     /* Old bottom-nav styles removed ? unified emoji navbar CSS is below */
     
-    /* Animations */
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
+    /* Animations removed — caused staggered jank on every SPA swap */
     .app > *, .favorites-list > * {
-      animation: slideUp 0.5s ease backwards;
+      /* No animation — instant render */
     }
-    
-    .favorites-list > *:nth-child(1) { animation-delay: 0.05s; }
-    .favorites-list > *:nth-child(2) { animation-delay: 0.1s; }
-    .favorites-list > *:nth-child(3) { animation-delay: 0.15s; }
-    .favorites-list > *:nth-child(4) { animation-delay: 0.2s; }
-    .favorites-list > *:nth-child(5) { animation-delay: 0.25s; }
     
     /* Tab Content */
     .tab-content {
@@ -1157,9 +1151,11 @@
     <span class="tab-icon">&#x2764;&#xFE0F;</span>
     <span class="tab-label">Favorites</span>
   </a>
-  <a href="../Dashboard/dashboard.html" class="tab-item">
-    <span class="tab-icon">&#x1F4C8;</span>
-    <span class="tab-label">Dashboard</span>
+  <a href="../sadhsangat-live/index.html" class="tab-item">
+    <span class="tab-icon" style="font-size:0;line-height:0;">
+      <img src="../assets/app-logo.png" alt="Sadhsangat" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
+    </span>
+    <span class="tab-label">Sadhsangat</span>
   </a>
 </nav>
 

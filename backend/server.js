@@ -21,6 +21,11 @@ const ffmpegPath = require('ffmpeg-static');
 const ffmpeg = require('fluent-ffmpeg');
 if (ffmpegPath) ffmpeg.setFfmpegPath(ffmpegPath);
 
+// Sadhsangat Live Imports
+const sqlite3 = require('sqlite3');
+const axios = require('axios');
+const cron = require('node-cron');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -764,6 +769,19 @@ async function writeProgressFile(progress, filePath) {
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function getUserId(req, res) {
+    // 1. Check custom header (for Capacitor persistent sessions)
+    const headerUserId = req.headers['x-user-id'];
+    if (headerUserId && UUID_REGEX.test(headerUserId)) {
+        return headerUserId;
+    }
+
+    // 2. Check query parameter
+    const queryUserId = req.query.userId;
+    if (queryUserId && UUID_REGEX.test(queryUserId)) {
+        return queryUserId;
+    }
+
+    // 3. Fallback to Cookie
     const cookieHeader = req.headers.cookie || '';
     const match = cookieHeader.match(/(?:^|;\s*)anhad_user_id=([^;]+)/);
     let userId = match ? match[1] : null;
@@ -1187,6 +1205,19 @@ async function writeProgressFile(progress, filePath) {
 // UUID_REGEX defined above
 
 function getUserId(req, res) {
+    // 1. Check custom header (for Capacitor persistent sessions)
+    const headerUserId = req.headers['x-user-id'];
+    if (headerUserId && UUID_REGEX.test(headerUserId)) {
+        return headerUserId;
+    }
+
+    // 2. Check query parameter
+    const queryUserId = req.query.userId;
+    if (queryUserId && UUID_REGEX.test(queryUserId)) {
+        return queryUserId;
+    }
+
+    // 3. Fallback to Cookie
     const cookieHeader = req.headers.cookie || '';
     const match = cookieHeader.match(/(?:^|;\s*)anhad_user_id=([^;]+)/);
     let userId = match ? match[1] : null;
@@ -1599,6 +1630,1956 @@ app.get('/api/darbar-live', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+// 🕉️ SADHSANGAT LIVE DATABASE & CACHE BACKEND
+// ═══════════════════════════════════════════════════════════════════
+
+let dbClient = null;
+let useJsonFallback = false;
+const jsonDbPath = path.join(__dirname, 'data', 'sadhsangat-cache.json');
+let jsonData = { channels: [], user_channels: [] };
+
+async function initSadhsangatDb() {
+    const dataDir = path.join(__dirname, 'data');
+    try {
+        await fs.mkdir(dataDir, { recursive: true });
+    } catch (e) {}
+
+    try {
+        const sqlite3Module = require('sqlite3').verbose();
+        const dbPath = path.join(dataDir, 'sadhsangat.db');
+        
+        await new Promise((resolve) => {
+            dbClient = new sqlite3Module.Database(dbPath, (err) => {
+                if (err) {
+                    console.error('[Sadhsangat DB] SQLite connection error, falling back to JSON cache:', err.message);
+                    setupJsonFallback();
+                    resolve();
+                } else {
+                    console.log('[Sadhsangat DB] Connected to SQLite database');
+                    createTables(resolve);
+                }
+            });
+        });
+    } catch (err) {
+        console.warn('[Sadhsangat DB] sqlite3 package load failed, falling back to JSON cache:', err.message);
+        setupJsonFallback();
+    }
+
+    // Seed default channels if database is empty
+    await seedDefaultChannels();
+}
+
+function setupJsonFallback() {
+    useJsonFallback = true;
+    try {
+        if (fsSync.existsSync(jsonDbPath)) {
+            const content = fsSync.readFileSync(jsonDbPath, 'utf8');
+            jsonData = JSON.parse(content);
+            if (!jsonData.channels) jsonData.channels = [];
+            if (!jsonData.user_channels) jsonData.user_channels = [];
+            console.log('[Sadhsangat DB] Loaded fallback JSON database with ' + jsonData.channels.length + ' channels');
+        } else {
+            saveJsonDbSync();
+            console.log('[Sadhsangat DB] Created fresh fallback JSON database');
+        }
+    } catch (e) {
+        console.error('[Sadhsangat DB] Error loading JSON fallback:', e.message);
+    }
+}
+
+function saveJsonDbSync() {
+    try {
+        fsSync.writeFileSync(jsonDbPath, JSON.stringify(jsonData, null, 2), 'utf8');
+    } catch (e) {
+        console.error('[Sadhsangat DB] Failed to save JSON database:', e.message);
+    }
+}
+
+async function saveJsonDb() {
+    try {
+        await fs.writeFile(jsonDbPath, JSON.stringify(jsonData, null, 2), 'utf8');
+    } catch (e) {
+        console.error('[Sadhsangat DB] Failed to save JSON database:', e.message);
+    }
+}
+
+function createTables(doneCallback) {
+    dbClient.serialize(() => {
+        dbClient.run(`
+            CREATE TABLE IF NOT EXISTS channels (
+                channelId TEXT PRIMARY KEY,
+                channelName TEXT NOT NULL,
+                channelHandle TEXT,
+                subscriberCount TEXT,
+                thumbnail TEXT,
+                isLive INTEGER DEFAULT 0,
+                liveTitle TEXT,
+                videoId TEXT,
+                watchUrl TEXT,
+                lastChecked TEXT,
+                isFeatured INTEGER DEFAULT 0,
+                displayOrder INTEGER DEFAULT 0,
+                isEnabled INTEGER DEFAULT 1,
+                notifyOnLive INTEGER DEFAULT 1,
+                scheduledStartTime TEXT,
+                scheduledTitle TEXT,
+                scheduledVideoId TEXT
+            )
+        `, (err) => {
+            if (err) console.error('[Sadhsangat DB] Error creating channels table:', err.message);
+            // Migration: add channelHandle if it doesn't exist in older DBs
+            dbClient.run(`ALTER TABLE channels ADD COLUMN channelHandle TEXT`, () => {});
+        });
+
+        dbClient.run(`
+            CREATE TABLE IF NOT EXISTS user_channels (
+                userId TEXT,
+                channelId TEXT,
+                displayOrder INTEGER DEFAULT 0,
+                PRIMARY KEY (userId, channelId)
+            )
+        `, (err) => {
+            if (err) {
+                console.error('[Sadhsangat DB] Error creating user_channels table:', err.message);
+            }
+            if (doneCallback) doneCallback();
+        });
+    });
+}
+
+const SadhsangatDb = {
+    async getAllChannels() {
+        if (useJsonFallback) {
+            return jsonData.channels;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.all("SELECT * FROM channels", [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows || []);
+            });
+        });
+    },
+
+    async getFeaturedChannels() {
+        if (useJsonFallback) {
+            return jsonData.channels
+                .filter(c => c.isFeatured === 1 && c.isEnabled === 1)
+                .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.all("SELECT * FROM channels WHERE isFeatured = 1 AND isEnabled = 1 ORDER BY displayOrder ASC", [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows || []);
+            });
+        });
+    },
+
+    async getLiveChannels() {
+        if (useJsonFallback) {
+            return jsonData.channels.filter(c => c.isLive === 1 && c.isEnabled === 1);
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.all("SELECT * FROM channels WHERE isLive = 1 AND isEnabled = 1", [], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows || []);
+            });
+        });
+    },
+
+    async getChannelById(channelId) {
+        if (useJsonFallback) {
+            return jsonData.channels.find(c => c.channelId === channelId) || null;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.get("SELECT * FROM channels WHERE channelId = ?", [channelId], (err, row) => {
+                if (err) reject(err);
+                else resolve(row || null);
+            });
+        });
+    },
+
+    async upsertChannel(ch) {
+        if (useJsonFallback) {
+            const index = jsonData.channels.findIndex(c => c.channelId === ch.channelId);
+            if (index !== -1) {
+                jsonData.channels[index] = { ...jsonData.channels[index], ...ch };
+            } else {
+                jsonData.channels.push({
+                    isLive: 0,
+                    isFeatured: 0,
+                    displayOrder: 0,
+                    isEnabled: 1,
+                    notifyOnLive: 1,
+                    ...ch
+                });
+            }
+            await saveJsonDb();
+            return;
+        }
+        
+        const existing = await this.getChannelById(ch.channelId);
+        if (existing) {
+            const query = `
+                UPDATE channels SET 
+                    channelName = ?, 
+                    channelHandle = COALESCE(?, channelHandle),
+                    subscriberCount = COALESCE(?, subscriberCount), 
+                    thumbnail = COALESCE(?, thumbnail), 
+                    isLive = ?, 
+                    liveTitle = ?, 
+                    videoId = ?, 
+                    watchUrl = ?, 
+                    lastChecked = ?,
+                    isFeatured = COALESCE(?, isFeatured),
+                    displayOrder = COALESCE(?, displayOrder),
+                    isEnabled = COALESCE(?, isEnabled),
+                    notifyOnLive = COALESCE(?, notifyOnLive),
+                    scheduledStartTime = ?,
+                    scheduledTitle = ?,
+                    scheduledVideoId = ?
+                WHERE channelId = ?
+            `;
+            const params = [
+                ch.channelName, ch.channelHandle || null, ch.subscriberCount, ch.thumbnail, ch.isLive, 
+                ch.liveTitle, ch.videoId, ch.watchUrl, ch.lastChecked,
+                ch.isFeatured, ch.displayOrder, ch.isEnabled, ch.notifyOnLive,
+                ch.scheduledStartTime, ch.scheduledTitle, ch.scheduledVideoId,
+                ch.channelId
+            ];
+            return new Promise((resolve, reject) => {
+                dbClient.run(query, params, function(err) {
+                    if (err) reject(err);
+                    else resolve(this.changes);
+                });
+            });
+        } else {
+            const query = `
+                INSERT INTO channels (
+                    channelId, channelName, channelHandle, subscriberCount, thumbnail, 
+                    isLive, liveTitle, videoId, watchUrl, lastChecked, 
+                    isFeatured, displayOrder, isEnabled, notifyOnLive,
+                    scheduledStartTime, scheduledTitle, scheduledVideoId
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+            const params = [
+                ch.channelId, ch.channelName, ch.channelHandle || null, ch.subscriberCount, ch.thumbnail,
+                ch.isLive || 0, ch.liveTitle || null, ch.videoId || null, ch.watchUrl || null, ch.lastChecked || null,
+                ch.isFeatured || 0, ch.displayOrder || 0, ch.isEnabled !== undefined ? ch.isEnabled : 1, ch.notifyOnLive !== undefined ? ch.notifyOnLive : 1,
+                ch.scheduledStartTime || null, ch.scheduledTitle || null, ch.scheduledVideoId || null
+            ];
+            return new Promise((resolve, reject) => {
+                dbClient.run(query, params, function(err) {
+                    if (err) reject(err);
+                    else resolve(this.lastID);
+                });
+            });
+        }
+    },
+
+    async deleteChannel(channelId) {
+        if (useJsonFallback) {
+            jsonData.channels = jsonData.channels.filter(c => c.channelId !== channelId);
+            jsonData.user_channels = jsonData.user_channels.filter(c => c.channelId !== channelId);
+            await saveJsonDb();
+            return;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.serialize(() => {
+                dbClient.run("DELETE FROM channels WHERE channelId = ?", [channelId], (err) => {
+                    if (err) console.error('[Sadhsangat DB] Delete channel reference error:', err.message);
+                });
+                dbClient.run("DELETE FROM user_channels WHERE channelId = ?", [channelId], function(err) {
+                    if (err) reject(err);
+                    else resolve(this.changes);
+                });
+            });
+        });
+    },
+
+    async getUserChannels(userId) {
+        if (useJsonFallback) {
+            let userChs = jsonData.user_channels.filter(uc => uc.userId === userId);
+            const hasSgpc = userChs.some(uc => uc.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w');
+            if (!hasSgpc) {
+                jsonData.user_channels.push({ userId, channelId: 'UCYn6UEtQ771a_OWSiNBoG8w', displayOrder: 0 });
+                await saveJsonDb();
+                userChs = jsonData.user_channels.filter(uc => uc.userId === userId);
+            }
+            userChs.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+            return userChs.map(uc => {
+                const ch = jsonData.channels.find(c => c.channelId === uc.channelId);
+                return ch ? { ...ch, displayOrder: uc.displayOrder } : null;
+            }).filter(Boolean);
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.get(
+                "SELECT 1 FROM user_channels WHERE userId = ? AND channelId = 'UCYn6UEtQ771a_OWSiNBoG8w'",
+                [userId],
+                (err, row) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    if (!row) {
+                        dbClient.run(
+                            "INSERT OR IGNORE INTO user_channels (userId, channelId, displayOrder) VALUES (?, 'UCYn6UEtQ771a_OWSiNBoG8w', 0)",
+                            [userId],
+                            (insertErr) => {
+                                if (insertErr) {
+                                    console.error('[Sadhsangat DB] Auto-seed user channel error:', insertErr.message);
+                                }
+                                fetchChannels();
+                            }
+                        );
+                    } else {
+                        fetchChannels();
+                    }
+                }
+            );
+
+            function fetchChannels() {
+                const query = `
+                    SELECT c.*, uc.displayOrder 
+                    FROM channels c 
+                    JOIN user_channels uc ON c.channelId = uc.channelId 
+                    WHERE uc.userId = ? 
+                    ORDER BY uc.displayOrder ASC
+                `;
+                dbClient.all(query, [userId], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows || []);
+                });
+            }
+        });
+    },
+
+    async addUserChannel(userId, channelId, displayOrder = 0) {
+        if (useJsonFallback) {
+            const exists = jsonData.user_channels.some(uc => uc.userId === userId && uc.channelId === channelId);
+            if (!exists) {
+                jsonData.user_channels.push({ userId, channelId, displayOrder });
+                await saveJsonDb();
+            }
+            return;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.serialize(() => {
+                dbClient.run("DELETE FROM user_channels WHERE userId = ? AND channelId = ?", [userId, channelId], (err) => {
+                    if (err) console.error('[Sadhsangat DB] Map reset error:', err.message);
+                });
+                dbClient.run("INSERT INTO user_channels (userId, channelId, displayOrder) VALUES (?, ?, ?)", [userId, channelId, displayOrder], function(err) {
+                    if (err) reject(err);
+                    else resolve(this.lastID);
+                });
+            });
+        });
+    },
+
+    async removeUserChannel(userId, channelId) {
+        if (useJsonFallback) {
+            jsonData.user_channels = jsonData.user_channels.filter(uc => !(uc.userId === userId && uc.channelId === channelId));
+            await saveJsonDb();
+            return;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.run("DELETE FROM user_channels WHERE userId = ? AND channelId = ?", [userId, channelId], function(err) {
+                if (err) reject(err);
+                else resolve(this.changes);
+            });
+        });
+    },
+
+    async reorderUserChannels(userId, orderedChannelIds) {
+        if (useJsonFallback) {
+            orderedChannelIds.forEach((channelId, index) => {
+                const uc = jsonData.user_channels.find(u => u.userId === userId && u.channelId === channelId);
+                if (uc) uc.displayOrder = index;
+            });
+            await saveJsonDb();
+            return;
+        }
+        return new Promise((resolve, reject) => {
+            dbClient.serialize(() => {
+                const stmt = dbClient.prepare("UPDATE user_channels SET displayOrder = ? WHERE userId = ? AND channelId = ?");
+                orderedChannelIds.forEach((channelId, index) => {
+                    stmt.run(index, userId, channelId);
+                });
+                stmt.finalize((err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        });
+    }
+};
+
+async function seedDefaultChannels() {
+    // Migrate obsolete fake channel ID from SQLite/JSON database
+    try {
+        await SadhsangatDb.deleteChannel('UC6U4oR4O2Q-4YV3ZkX6o66Q');
+        console.log('[Sadhsangat DB] Cleaned up obsolete channel seed: UC6U4oR4O2Q-4YV3ZkX6o66Q');
+    } catch (e) {
+        console.warn('[Sadhsangat DB] Cleanup of obsolete channel failed:', e.message);
+    }
+
+    // SINGLE default channel — user adds more via the UI
+    const defaults = [
+        {
+            channelId: 'UCYn6UEtQ771a_OWSiNBoG8w',
+            channelName: 'SGPC, Sri Amritsar',
+            channelHandle: '@SGPCSriAmritsar',
+            subscriberCount: '1.67M',
+            thumbnail: null,
+            isFeatured: 1,
+            displayOrder: 1,
+            isEnabled: 1,
+            notifyOnLive: 1
+        }
+    ];
+
+    for (const ch of defaults) {
+        const existing = await SadhsangatDb.getChannelById(ch.channelId);
+        if (!existing) {
+            await SadhsangatDb.upsertChannel(ch);
+        } else if (!existing.channelHandle && ch.channelHandle) {
+            await SadhsangatDb.upsertChannel({ ...existing, channelHandle: ch.channelHandle });
+        }
+    }
+
+    // Remove old Harmandir Sahib duplicate if present
+    const harmDir = await SadhsangatDb.getChannelById('UCNwDk-F10U-cO3g_L20fM_g');
+    if (harmDir) {
+        await SadhsangatDb.deleteChannel('UCNwDk-F10U-cO3g_L20fM_g');
+        console.log('[Sadhsangat DB] Removed duplicate Harmandir Sahib channel');
+    }
+
+    // Async: scrape real thumbnails for channels missing them
+    scrapeAndUpdateAvatars().catch(e => console.warn('[Sadhsangat] Avatar scrape failed:', e.message));
+
+    console.log('[Sadhsangat DB] Seeding default channels completed');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 📺 YOUTUBE DATA API & CRON POLLING ENGINE (WITH QUOTA PROTECTION)
+// ═══════════════════════════════════════════════════════════════════
+
+function formatSubscribers(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+    }
+    return count.toString();
+}
+
+async function checkSingleChannel(ch, apiKey) {
+    const channelId = ch.channelId;
+    let isLive = 0;
+    let liveTitle = null;
+    let videoId = null;
+    let watchUrl = null;
+    let liveThumbnail = null;
+    let subscriberCount = ch.subscriberCount;
+    let thumbnail = ch.thumbnail;
+    
+    let scheduledStartTime = null;
+    let scheduledTitle = null;
+    let scheduledVideoId = null;
+
+    // 1. Fetch channel metadata (subscribers and main thumbnail)
+    try {
+        const chanRes = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+            params: {
+                part: 'snippet,statistics',
+                id: channelId,
+                key: apiKey
+            }
+        });
+        
+        if (chanRes.data && chanRes.data.items && chanRes.data.items.length > 0) {
+            const chanInfo = chanRes.data.items[0];
+            const subs = parseInt(chanInfo.statistics.subscriberCount) || 0;
+            subscriberCount = formatSubscribers(subs);
+            thumbnail = chanInfo.snippet.thumbnails.default.url || thumbnail;
+        }
+    } catch (e) {
+        console.warn(`[Sadhsangat API] Failed to fetch channel meta for ${channelId}:`, e.message);
+    }
+
+    // 2. Fetch live status
+    try {
+        const liveRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+            params: {
+                part: 'snippet',
+                channelId: channelId,
+                eventType: 'live',
+                type: 'video',
+                key: apiKey
+            }
+        });
+
+        if (liveRes.data && liveRes.data.items && liveRes.data.items.length > 0) {
+            const item = liveRes.data.items[0];
+            isLive = 1;
+            liveTitle = item.snippet.title;
+            videoId = item.id.videoId;
+            watchUrl = `https://youtube.com/watch?v=${videoId}`;
+            liveThumbnail = item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : item.snippet.thumbnails.default.url;
+        }
+    } catch (e) {
+        if (e.response && e.response.data && e.response.data.error) {
+            const errMsg = e.response.data.error.message;
+            if (errMsg.toLowerCase().includes('quota')) {
+                throw new Error('YouTube API Quota Exceeded (Quota Protection Mode Enabled)');
+            }
+        }
+        throw e;
+    }
+
+    // 3. If NOT live, check for upcoming livestreams
+    if (!isLive) {
+        try {
+            const upcomingRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+                params: {
+                    part: 'snippet',
+                    channelId: channelId,
+                    eventType: 'upcoming',
+                    type: 'video',
+                    key: apiKey
+                }
+            });
+
+            if (upcomingRes.data && upcomingRes.data.items && upcomingRes.data.items.length > 0) {
+                const item = upcomingRes.data.items[0];
+                scheduledTitle = item.snippet.title;
+                scheduledVideoId = item.id.videoId;
+                
+                try {
+                    const vidDetailsRes = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+                        params: {
+                            part: 'liveStreamingDetails',
+                            id: scheduledVideoId,
+                            key: apiKey
+                        }
+                    });
+                    if (vidDetailsRes.data && vidDetailsRes.data.items && vidDetailsRes.data.items.length > 0) {
+                        scheduledStartTime = vidDetailsRes.data.items[0].liveStreamingDetails.scheduledStartTime;
+                    }
+                } catch (e2) {
+                    console.warn(`[Sadhsangat API] Failed to fetch scheduledStartTime for video ${scheduledVideoId}:`, e2.message);
+                }
+            }
+        } catch (e) {
+            console.warn(`[Sadhsangat API] Failed to search upcoming streams for ${channelId}:`, e.message);
+        }
+    }
+
+    // Save back to DB
+    await SadhsangatDb.upsertChannel({
+        channelId,
+        channelName: ch.channelName,
+        subscriberCount,
+        thumbnail: liveThumbnail || thumbnail,
+        isLive,
+        liveTitle,
+        videoId,
+        watchUrl,
+        lastChecked: new Date().toISOString(),
+        scheduledStartTime,
+        scheduledTitle,
+        scheduledVideoId
+    });
+}
+
+async function checkYouTubeChannels() {
+    console.log('[Sadhsangat Cron] Checking YouTube live streams...');
+    const channels = await SadhsangatDb.getAllChannels();
+    const apiKey = process.env.YOUTUBE_API_KEY;
+
+    if (!apiKey) {
+        console.log('[Sadhsangat Cron] No YOUTUBE_API_KEY — using real page scraping for live status.');
+        for (const ch of channels) {
+            if (ch.isEnabled === 0) continue;
+            try {
+                // If thumbnail or handle is missing, scrape channel info to populate them
+                let resolvedCh = { ...ch };
+                if (!ch.thumbnail || !ch.channelHandle) {
+                    try {
+                        const info = await scrapeYouTubeChannelInfo(ch.channelId);
+                        if (info) {
+                            resolvedCh.thumbnail = info.thumbnail || resolvedCh.thumbnail;
+                            resolvedCh.channelHandle = info.channelHandle || resolvedCh.channelHandle;
+                            resolvedCh.channelName = info.channelName || resolvedCh.channelName;
+                            resolvedCh.subscriberCount = info.subscriberCount || resolvedCh.subscriberCount;
+                        }
+                    } catch (infoErr) {
+                        console.warn(`[Sadhsangat Cron] Failed to resolve channel details for ${ch.channelId}:`, infoErr.message);
+                    }
+                }
+
+                const status = await checkLiveViaScrap(resolvedCh);
+                const liveUrl = resolvedCh.channelHandle
+                    ? `https://www.youtube.com/${resolvedCh.channelHandle}/live`
+                    : `https://www.youtube.com/channel/${resolvedCh.channelId}/live`;
+
+                const updatedCh = {
+                    ...resolvedCh,
+                    lastChecked: new Date().toISOString(),
+                    isLive: status.isLive ? 1 : 0,
+                    liveTitle: status.isLive ? (status.title || resolvedCh.liveTitle) : null,
+                    videoId: status.isLive ? (status.videoId || null) : null,
+                    watchUrl: status.isLive
+                        ? (status.videoId ? `https://www.youtube.com/watch?v=${status.videoId}` : liveUrl)
+                        : liveUrl,
+                    scheduledTitle: status.isLive ? null : resolvedCh.scheduledTitle,
+                    scheduledStartTime: status.isLive ? null : resolvedCh.scheduledStartTime
+                };
+                await SadhsangatDb.upsertChannel(updatedCh);
+                console.log(`[Sadhsangat Cron] ${ch.channelName}: ${status.isLive ? '🔴 LIVE' : '⚫ offline'}${status.videoId ? ' (vid:' + status.videoId + ')' : ''}`);
+            } catch (e) {
+                console.warn(`[Sadhsangat Cron] Scrape failed for ${ch.channelName}:`, e.message);
+            }
+            await new Promise(r => setTimeout(r, 2000)); // be gentle
+        }
+        return;
+    }
+
+    for (const ch of channels) {
+        if (ch.isEnabled === 0) continue;
+        
+        try {
+            await checkSingleChannel(ch, apiKey);
+        } catch (err) {
+            console.error(`[Sadhsangat Cron] Error updating channel ${ch.channelName} (${ch.channelId}):`, err.message);
+            if (err.message.includes('Quota Exceeded')) {
+                console.warn('[Sadhsangat Cron] YouTube quota exceeded. Skipping remaining channels to protect cache.');
+                break;
+            }
+        }
+        await new Promise(r => setTimeout(r, 500));
+    }
+}
+
+// ───────────────────────────────────────────────────────────────────
+// 🔴 Real live-status checker — scrapes YouTube /live page
+//    Extracts videoId, title, isLive without any API key
+// ───────────────────────────────────────────────────────────────────
+async function checkLiveViaScrap(ch) {
+    const handle = ch.channelHandle || null;
+    const url = handle
+        ? `https://www.youtube.com/${handle}/live`
+        : `https://www.youtube.com/channel/${ch.channelId}/live`;
+
+    let resp;
+    try {
+        resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            maxRedirects: 10,
+            timeout: 20000
+        });
+    } catch (e) {
+        return { isLive: false };
+    }
+
+    const html = resp.data;
+
+    // Try to find the current video ID on the page (works when live)
+    const vidM = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/) ||
+                 html.match(/"currentVideoEndpoint".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
+    const videoId = vidM ? vidM[1] : null;
+
+    // Comprehensive live broadcast indicators — YouTube changes these regularly
+    const isLive =
+        // Classic indicators
+        html.includes('"isLiveContent":true') ||
+        html.includes('isLiveBroadcast') ||
+        html.includes('"liveBroadcastDetails"') ||
+        // Modern indicators (2024+)
+        html.includes('"isLive":true') ||
+        html.includes('concurrentViewers') ||
+        html.includes('BADGE_STYLE_TYPE_LIVE_NOW') ||
+        html.includes('liveStreamabilityRenderer') ||
+        html.includes('"style":"LIVE"') ||
+        // Viewer count patterns — YouTube now shows "9.1K watching" not "watching now"
+        (html.includes(' watching') && !!videoId) ||
+        (html.includes('watching now') && !!videoId);
+
+    // Extract stream title
+    const titleM = html.match(/<title>([^<]+)<\/title>/) ||
+                   html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/) ||
+                   html.match(/"og:title" content="([^"]+)"/);
+    const title = titleM ? titleM[1].replace(' - YouTube','').replace(/&amp;/g,'&').trim() : null;
+
+    return { isLive: !!(isLive && videoId), videoId: isLive ? videoId : null, title };
+}
+
+async function searchChannelsViaScrap(query) {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAg%253D%253D`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+        
+        const data = JSON.parse(jsonMatch[1]);
+        const items = data.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents || [];
+        
+        const results = [];
+        for (const item of items) {
+            const channel = item.channelRenderer;
+            if (channel) {
+                const channelId = channel.channelId;
+                const channelName = channel.title?.simpleText || channel.title?.runs?.[0]?.text || '';
+                const thumbnail = channel.thumbnail?.thumbnails?.[0]?.url;
+                const subsText = channel.subscriberCountText?.simpleText || channel.subscriberCountText?.runs?.[0]?.text || '';
+                
+                const baseUrl = channel.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl || '';
+                let channelHandle = null;
+                if (baseUrl.includes('/@')) {
+                    channelHandle = '@' + baseUrl.split('/@')[1];
+                }
+                
+                results.push({
+                    channelId,
+                    channelName,
+                    channelHandle,
+                    thumbnail: thumbnail ? (thumbnail.startsWith('//') ? 'https:' + thumbnail : thumbnail) : null,
+                    subscriberCount: subsText.replace(' subscribers', '').trim()
+                });
+            }
+        }
+        return results;
+    } catch (e) {
+        console.warn('[Sadhsangat Search Scraper] Failed to search channels:', e.message);
+        return [];
+    }
+}
+
+// ───────────────────────────────────────────────────────────────────
+// 🕉 YouTube channel page scraper — fetches real avatar & name
+//    without requiring an API key
+// ───────────────────────────────────────────────────────────────────
+async function scrapeYouTubeChannelInfo(input) {
+    input = (input || '').trim();
+    let url;
+    if (input.startsWith('http')) {
+        url = input.split('?')[0];
+    } else if (input.startsWith('@')) {
+        url = `https://www.youtube.com/${input}`;
+    } else if (/^UC[0-9a-zA-Z_-]{22}$/.test(input)) {
+        url = `https://www.youtube.com/channel/${input}`;
+    } else {
+        // Run search first as name search fallback
+        try {
+            const results = await searchChannelsViaScrap(input);
+            if (results && results.length > 0) {
+                // Recurse with the first channelId found
+                return await scrapeYouTubeChannelInfo(results[0].channelId);
+            }
+        } catch (searchErr) {
+            console.warn(`[Sadhsangat] Scrape search failed for "${input}":`, searchErr.message);
+        }
+        url = `https://www.youtube.com/@${input}`;
+    }
+
+    const resp = await axios.get(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept': 'text/html,application/xhtml+xml'
+        },
+        timeout: 10000
+    });
+    const html = resp.data;
+
+    let channelId = null;
+    let channelHandle = null;
+    let channelName = null;
+    let thumbnail = null;
+    let subscriberCount = null;
+
+    // Try finding JSON object in html
+    const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+    if (jsonMatch) {
+        try {
+            const data = JSON.parse(jsonMatch[1]);
+            
+            // Try PageHeaderRenderer (modern layout)
+            if (data.header && data.header.pageHeaderRenderer) {
+                const phr = data.header.pageHeaderRenderer;
+                channelName = phr.pageTitle;
+                
+                const vm = phr.content && phr.content.pageHeaderViewModel;
+                if (vm) {
+                    // Avatar
+                    if (vm.avatar && vm.avatar.avatarViewModel && vm.avatar.avatarViewModel.image) {
+                        const srcList = vm.avatar.avatarViewModel.image.sources || [];
+                        if (srcList.length > 0) {
+                            thumbnail = srcList[srcList.length - 1].url;
+                        }
+                    }
+                    
+                    // Metadata: handle and subscribers
+                    const metadataRows = vm.metadata && vm.metadata.contentMetadataViewModel && vm.metadata.contentMetadataViewModel.metadataRows;
+                    if (metadataRows && metadataRows.length > 0) {
+                        metadataRows.forEach(row => {
+                            const parts = row.metadataParts || [];
+                            parts.forEach(part => {
+                                const txt = part.text && part.text.content;
+                                if (txt) {
+                                    if (txt.startsWith('@')) {
+                                        channelHandle = txt;
+                                    } else if (txt.includes('subscriber') || /[0-9].*(?:subs|subscriber)/.test(txt.toLowerCase())) {
+                                        subscriberCount = txt.replace(/\s*subscribers?/, '').trim();
+                                    }
+                                }
+                            });
+                        });
+                    }
+                }
+            }
+            
+            // Try C4TabbedHeaderRenderer (legacy/channelId layout)
+            if (!channelName && data.header && data.header.c4TabbedHeaderRenderer) {
+                const c4 = data.header.c4TabbedHeaderRenderer;
+                channelName = c4.title;
+                channelId = c4.channelId;
+                if (c4.avatar && c4.avatar.thumbnails && c4.avatar.thumbnails.length > 0) {
+                    thumbnail = c4.avatar.thumbnails[c4.avatar.thumbnails.length - 1].url;
+                }
+                const subsTxt = c4.subscriberCountText && c4.subscriberCountText.simpleText;
+                if (subsTxt) {
+                    subscriberCount = subsTxt.replace(/\s*subscribers?/, '').trim();
+                }
+                if (c4.vanityUrl) {
+                    const cleanHandle = c4.vanityUrl.split('/').pop();
+                    if (cleanHandle.startsWith('@')) {
+                        channelHandle = cleanHandle;
+                    }
+                }
+            }
+
+            // Fallback for channelId in JSON
+            if (data.responseContext && data.responseContext.serviceTrackingParams) {
+                data.responseContext.serviceTrackingParams.forEach(st => {
+                    const params = st.params || [];
+                    params.forEach(p => {
+                        if (p.key === 'browse_id') {
+                            channelId = p.value;
+                        }
+                    });
+                });
+            }
+        } catch (e) {
+            console.warn('JSON parsing error in scraper:', e.message);
+        }
+    }
+
+    // Fallbacks via og: tags if JSON parsing did not find everything
+    if (!channelName) {
+        const nameM = html.match(/<meta property="og:title" content="([^"]+)"/);
+        if (nameM) channelName = nameM[1].replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"');
+    }
+    if (!thumbnail) {
+        const imgM = html.match(/<meta property="og:image" content="(https:\/\/yt3\.[^"]+)"/);
+        if (imgM) thumbnail = imgM[1];
+    }
+    if (!channelId) {
+        const idM = html.match(/"channelId":"(UC[a-zA-Z0-9_-]{22})"/);
+        if (idM) channelId = idM[1];
+    }
+    if (!channelHandle) {
+        const hM = html.match(/"vanityUrl":"(@[a-zA-Z0-9._-]+)"/) ||
+                   html.match(/"canonicalChannelUrl":"https:\/\/www\.youtube\.com\/(@[^"]+)"/);
+        if (hM) channelHandle = hM[1];
+    }
+
+    return { channelId, channelHandle, channelName, thumbnail, subscriberCount };
+}
+
+async function scrapeAndUpdateAvatars() {
+    await new Promise(r => setTimeout(r, 5000)); // wait for server to fully start
+    const channels = await SadhsangatDb.getAllChannels();
+    for (const ch of channels) {
+        if (ch.thumbnail && ch.thumbnail.startsWith('https://yt3.')) continue; // already has real thumb
+        const identifier = ch.channelHandle || ch.channelId;
+        try {
+            const info = await scrapeYouTubeChannelInfo(identifier);
+            if (info.thumbnail) {
+                await SadhsangatDb.upsertChannel({ ...ch, thumbnail: info.thumbnail, subscriberCount: info.subscriberCount || ch.subscriberCount, channelName: info.channelName || ch.channelName });
+                console.log(`[Sadhsangat] Updated avatar for ${ch.channelName}`);
+            }
+            await new Promise(r => setTimeout(r, 3000)); // be gentle with YouTube
+        } catch (e) {
+            console.warn(`[Sadhsangat] Avatar scrape failed for ${identifier}:`, e.message);
+        }
+    }
+}
+
+async function resolveChannelHandle(input, apiKey) {
+    let handle = '';
+    let channelId = '';
+
+    input = input.trim();
+
+    if (/^UC[0-9a-zA-Z_-]{22}$/.test(input)) {
+        channelId = input;
+    } else {
+        const handleMatch = input.match(/(?:@)([0-9a-zA-Z._-]+)/);
+        if (handleMatch) {
+            handle = '@' + handleMatch[1];
+        } else if (input.includes('youtube.com/')) {
+            if (input.includes('/channel/')) {
+                const parts = input.split('/channel/');
+                channelId = parts[1].split(/[?#/]/)[0];
+            } else if (input.includes('/c/') || input.includes('/user/')) {
+                const parts = input.split(/\/(?:c|user)\//);
+                handle = parts[1].split(/[?#/]/)[0];
+                if (!handle.startsWith('@')) handle = '@' + handle;
+            } else {
+                const urlParts = input.split('/');
+                const lastPart = urlParts[urlParts.length - 1];
+                handle = lastPart.split(/[?#/]/)[0];
+                if (!handle.startsWith('@')) handle = '@' + handle;
+            }
+        } else {
+            if (input.startsWith('@')) {
+                handle = input;
+            } else {
+                handle = '@' + input;
+            }
+        }
+    }
+
+    if (!apiKey) {
+        // Try to scrape real info from YouTube page
+        try {
+            const scraped = await scrapeYouTubeChannelInfo(input);
+            if (scraped.channelId || scraped.channelHandle) {
+                return {
+                    channelId: scraped.channelId,
+                    channelHandle: scraped.channelHandle,
+                    channelName: scraped.channelName || scraped.channelHandle || 'Unknown Channel',
+                    subscriberCount: scraped.subscriberCount,
+                    thumbnail: scraped.thumbnail
+                };
+            }
+        } catch (scrapeErr) {
+            console.warn('[Sadhsangat] Page scrape failed:', scrapeErr.message);
+        }
+
+        // Fallback: extract what we can from the raw string without scraping
+        const rawHandle = input.match(/@([a-zA-Z0-9._-]+)/);
+        const rawId = input.match(/UC[0-9a-zA-Z_-]{22}/);
+        const handle = rawHandle ? '@' + rawHandle[1] : null;
+        const cId = rawId ? rawId[0] : null;
+        return {
+            channelId: cId,
+            channelHandle: handle,
+            channelName: handle ? handle.substring(1) : (cId ? 'Channel' : 'Unknown'),
+            subscriberCount: null,
+            thumbnail: null
+        };
+    }
+
+    if (channelId) {
+        const res = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+            params: {
+                part: 'snippet,statistics',
+                id: channelId,
+                key: apiKey
+            }
+        });
+        if (res.data && res.data.items && res.data.items.length > 0) {
+            const item = res.data.items[0];
+            return {
+                channelId: item.id,
+                channelName: item.snippet.title,
+                subscriberCount: formatSubscribers(parseInt(item.statistics.subscriberCount) || 0),
+                thumbnail: item.snippet.thumbnails.default.url
+            };
+        }
+    } else if (handle) {
+        try {
+            const res = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+                params: {
+                    part: 'snippet,statistics',
+                    forHandle: handle,
+                    key: apiKey
+                }
+            });
+            if (res.data && res.data.items && res.data.items.length > 0) {
+                const item = res.data.items[0];
+                return {
+                    channelId: item.id,
+                    channelName: item.snippet.title,
+                    subscriberCount: formatSubscribers(parseInt(item.statistics.subscriberCount) || 0),
+                    thumbnail: item.snippet.thumbnails.default.url
+                };
+            }
+        } catch (err) {
+            console.warn(`[Sadhsangat] Handle lookup failed for ${handle}, searching as fallback:`, err.message);
+        }
+
+        const searchRes = await axios.get('https://www.googleapis.com/youtube/v3/search', {
+            params: {
+                part: 'snippet',
+                type: 'channel',
+                q: handle,
+                maxResults: 1,
+                key: apiKey
+            }
+        });
+        if (searchRes.data && searchRes.data.items && searchRes.data.items.length > 0) {
+            const channelItem = searchRes.data.items[0];
+            const chId = channelItem.id.channelId;
+            const res = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+                params: {
+                    part: 'snippet,statistics',
+                    id: chId,
+                    key: apiKey
+                }
+            });
+            if (res.data && res.data.items && res.data.items.length > 0) {
+                const item = res.data.items[0];
+                return {
+                    channelId: item.id,
+                    channelName: item.snippet.title,
+                    subscriberCount: formatSubscribers(parseInt(item.statistics.subscriberCount) || 0),
+                    thumbnail: item.snippet.thumbnails.default.url
+                };
+            }
+        }
+    }
+
+    throw new Error('Could not resolve YouTube channel ID from input.');
+}
+
+function startSadhsangatCron() {
+    checkYouTubeChannels().catch(e => console.error('[Sadhsangat Cron] Startup sync failed:', e.message));
+
+    cron.schedule('*/10 * * * *', () => {
+        checkYouTubeChannels().catch(e => console.error('[Sadhsangat Cron] Regular check failed:', e.message));
+    });
+    console.log('[Sadhsangat Cron] Polling background worker scheduled for every 10 minutes');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// 🕉️ SADHSANGAT LIVE API ENDPOINTS
+// ═══════════════════════════════════════════════════════════════════
+
+app.get('/api/sadhsangat/live', async (req, res) => {
+    try {
+        const channels = await SadhsangatDb.getAllChannels();
+        const liveChannels = channels.filter(c => c.isLive === 1 && c.isEnabled === 1);
+        const upcomingStreams = channels.filter(c => c.isLive === 0 && c.scheduledStartTime && c.isEnabled === 1);
+        
+        const userId = getUserId(req, res);
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        const myChIds = new Set(myChs.map(c => c.channelId));
+
+        const userLiveChannels = liveChannels.filter(c => myChIds.has(c.channelId));
+        const userUpcomingStreams = upcomingStreams.filter(c => myChIds.has(c.channelId));
+
+        const sortedLive = userLiveChannels.sort((a, b) => {
+            if (a.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') return -1;
+            if (b.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') return 1;
+            if (a.isFeatured && !b.isFeatured) return -1;
+            if (!a.isFeatured && b.isFeatured) return 1;
+            return (a.displayOrder || 0) - (b.displayOrder || 0);
+        });
+
+        res.json({
+            live: sortedLive,
+            upcoming: userUpcomingStreams.sort((a, b) => new Date(a.scheduledStartTime) - new Date(b.scheduledStartTime)),
+            timestamp: Date.now()
+        });
+    } catch (err) {
+        console.error('[Sadhsangat API] Error fetching live streams:', err.message);
+        res.status(500).json({ error: 'Failed to fetch live streams' });
+    }
+});
+
+app.get('/api/sadhsangat/featured', async (req, res) => {
+    try {
+        const featured = await SadhsangatDb.getFeaturedChannels();
+        res.json({ featured });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch featured channels' });
+    }
+});
+
+app.get('/api/sadhsangat/my-channels', async (req, res) => {
+    try {
+        const userId = getUserId(req, res);
+        const myChannels = await SadhsangatDb.getUserChannels(userId);
+        res.json({ channels: myChannels });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch your channels' });
+    }
+});
+
+app.post('/api/sadhsangat/my-channels', async (req, res) => {
+    const { handle, channelId: directId } = req.body;
+    if (!handle && !directId) {
+        return res.status(400).json({ error: 'YouTube handle or URL is required' });
+    }
+
+    try {
+        const userId = getUserId(req, res);
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        const allChs = await SadhsangatDb.getAllChannels();
+
+        // Try to find existing channel by channelId or handle FIRST (no fake IDs)
+        const inputStr = directId || handle;
+        const rawIdMatch = inputStr.match(/UC[0-9a-zA-Z_-]{22}/);
+        const rawHandleMatch = inputStr.match(/@([a-zA-Z0-9._-]+)/);
+        const rawHandle = rawHandleMatch ? '@' + rawHandleMatch[1] : null;
+        const rawId = rawIdMatch ? rawIdMatch[0] : null;
+
+        let existingChannel = null;
+        if (rawId) existingChannel = allChs.find(c => c.channelId === rawId);
+        if (!existingChannel && rawHandle) {
+            existingChannel = allChs.find(c =>
+                c.channelHandle && c.channelHandle.toLowerCase() === rawHandle.toLowerCase()
+            );
+        }
+
+        // Capacity check: exclude SGPC (UCYn6UEtQ771a_OWSiNBoG8w)
+        const addingSgpc = (existingChannel && existingChannel.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') || 
+                           (rawId === 'UCYn6UEtQ771a_OWSiNBoG8w') ||
+                           (rawHandle && rawHandle.toLowerCase() === '@sgpcsriamritsar');
+        if (!addingSgpc) {
+            const customChannels = myChs.filter(c => c.channelId !== 'UCYn6UEtQ771a_OWSiNBoG8w');
+            if (customChannels.length >= 4) {
+                return res.status(400).json({ error: 'You can only monitor up to 4 custom channels.' });
+            }
+        }
+
+        if (existingChannel) {
+            // Channel already in DB — just add to My Channels
+            if (myChs.some(c => c.channelId === existingChannel.channelId)) {
+                return res.status(400).json({
+                    error: `"${existingChannel.channelName}" is already in your channels.`,
+                    channel: existingChannel
+                });
+            }
+            await SadhsangatDb.addUserChannel(userId, existingChannel.channelId, myChs.length);
+            return res.json({ success: true, channel: existingChannel, wasExisting: true });
+        }
+
+        const apiKey = process.env.YOUTUBE_API_KEY;
+        const resolved = await resolveChannelHandle(inputStr, apiKey);
+
+        if (!resolved.channelId && !resolved.channelHandle) {
+            return res.status(400).json({ error: 'Could not identify the YouTube channel. Please use a full @handle or channel URL.' });
+        }
+
+        // Double-check by channelId in case scraper found it
+        if (resolved.channelId) {
+            const byId = allChs.find(c => c.channelId === resolved.channelId);
+            if (byId) {
+                if (myChs.some(c => c.channelId === byId.channelId)) {
+                    return res.status(400).json({ error: `"${byId.channelName}" is already monitored.`, channel: byId });
+                }
+                await SadhsangatDb.addUserChannel(userId, byId.channelId, myChs.length);
+                return res.json({ success: true, channel: byId, wasExisting: true });
+            }
+        }
+
+        // Build a live URL for the new channel
+        const liveUrl = resolved.channelHandle
+            ? `https://www.youtube.com/${resolved.channelHandle}/live`
+            : (resolved.channelId ? `https://www.youtube.com/channel/${resolved.channelId}/live` : null);
+
+        // Use handle as channelId key if no real channelId (store as HANDLE_xxx)
+        const storeId = resolved.channelId || `HANDLE_${(resolved.channelHandle || '').substring(1)}`;
+
+        await SadhsangatDb.upsertChannel({
+            channelId: storeId,
+            channelName: resolved.channelName,
+            channelHandle: resolved.channelHandle,
+            subscriberCount: resolved.subscriberCount,
+            thumbnail: resolved.thumbnail,
+            watchUrl: liveUrl,
+            isLive: 0,
+            isFeatured: 0,
+            isEnabled: 1,
+            notifyOnLive: 1
+        });
+
+        await SadhsangatDb.addUserChannel(userId, storeId, myChs.length);
+
+        // Clear unified videos cache to update list immediately
+        cachedVideos = null;
+        cachedVideosTime = 0;
+
+        // Run background scraper updates immediately for the new channel so content is visible instantly
+        setTimeout(async () => {
+            try {
+                const apiKey = process.env.YOUTUBE_API_KEY;
+                // Seed live status check
+                if (!apiKey) {
+                    const status = await checkLiveViaScrap({ channelId: storeId, channelHandle: resolved.channelHandle });
+                    const liveUrl = resolved.channelHandle
+                        ? `https://www.youtube.com/${resolved.channelHandle}/live`
+                        : `https://www.youtube.com/channel/${storeId}/live`;
+                    await SadhsangatDb.upsertChannel({
+                        channelId: storeId,
+                        channelName: resolved.channelName,
+                        channelHandle: resolved.channelHandle,
+                        subscriberCount: resolved.subscriberCount,
+                        thumbnail: resolved.thumbnail,
+                        isLive: status.isLive ? 1 : 0,
+                        liveTitle: status.isLive ? status.title : null,
+                        videoId: status.isLive ? status.videoId : null,
+                        watchUrl: status.isLive ? `https://www.youtube.com/watch?v=${status.videoId}` : liveUrl,
+                        isFeatured: 0,
+                        isEnabled: 1,
+                        notifyOnLive: 1,
+                        lastChecked: new Date().toISOString()
+                    });
+                } else {
+                    await checkSingleChannel({
+                        channelId: storeId,
+                        channelName: resolved.channelName,
+                        subscriberCount: resolved.subscriberCount,
+                        thumbnail: resolved.thumbnail
+                    }, apiKey);
+                }
+                
+                // Fetch videos, playlists, posts
+                await scrapeChannelVideos(storeId, resolved.channelHandle);
+                await scrapeChannelPlaylists(storeId, resolved.channelHandle);
+                await scrapeChannelPosts(storeId, resolved.channelHandle);
+                console.log(`[Sadhsangat Sync] Completed immediate content sync for ${resolved.channelName}`);
+            } catch (err) {
+                console.error(`[Sadhsangat Sync] Immediate content sync failed for ${resolved.channelName}:`, err.message);
+            }
+        }, 100);
+
+        res.json({ success: true, channel: { ...resolved, channelId: storeId, watchUrl: liveUrl } });
+    } catch (err) {
+        console.error('[Sadhsangat API] Error adding custom channel:', err.message);
+        res.status(500).json({ error: err.message || 'Failed to add channel' });
+    }
+});
+
+app.delete('/api/sadhsangat/my-channels/:channelId', async (req, res) => {
+    const { channelId } = req.params;
+    if (channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') {
+        return res.status(400).json({ error: 'The default SGPC channel cannot be removed.' });
+    }
+    try {
+        const userId = getUserId(req, res);
+        await SadhsangatDb.removeUserChannel(userId, channelId);
+
+        // Clear unified videos cache to update list immediately
+        cachedVideos = null;
+        cachedVideosTime = 0;
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to remove channel' });
+    }
+});
+
+// Resolve / search channel by handle or URL (for the Add Channel search UI)
+app.get('/api/sadhsangat/resolve', async (req, res) => {
+    const { q } = req.query;
+    if (!q || q.trim().length < 2) {
+        return res.status(400).json({ error: 'Query too short' });
+    }
+    try {
+        const apiKey = process.env.YOUTUBE_API_KEY;
+        let info;
+        if (apiKey) {
+            try { info = await resolveChannelHandle(q, apiKey); } catch (e) {}
+        }
+        if (!info || (!info.channelId && !info.channelHandle)) {
+            info = await scrapeYouTubeChannelInfo(q);
+        }
+
+        // Check if already monitored
+        const allChs = await SadhsangatDb.getAllChannels();
+        const alreadyMonitored = !!(allChs.find(c =>
+            (info.channelId && c.channelId === info.channelId) ||
+            (info.channelHandle && c.channelHandle && c.channelHandle.toLowerCase() === info.channelHandle.toLowerCase())
+        ));
+
+        res.json({ ...info, alreadyMonitored });
+    } catch (e) {
+        console.error('[Sadhsangat Resolve]', e.message);
+        res.status(500).json({ error: 'Could not fetch channel info: ' + e.message });
+    }
+});
+
+app.put('/api/sadhsangat/my-channels/reorder', async (req, res) => {
+    const { channelIds } = req.body;
+    if (!Array.isArray(channelIds)) {
+        return res.status(400).json({ error: 'channelIds array is required' });
+    }
+    try {
+        const userId = getUserId(req, res);
+        await SadhsangatDb.reorderUserChannels(userId, channelIds);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to reorder channels' });
+    }
+});
+
+// Admin channels endpoints
+app.get('/api/sadhsangat/admin/channels', async (req, res) => {
+    try {
+        const channels = await SadhsangatDb.getAllChannels();
+        res.json({ channels });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch admin channels' });
+    }
+});
+
+app.post('/api/sadhsangat/admin/channels', async (req, res) => {
+    const { handle, isFeatured, displayOrder, isEnabled, notifyOnLive } = req.body;
+    if (!handle) {
+        return res.status(400).json({ error: 'YouTube handle or URL is required' });
+    }
+    try {
+        const apiKey = process.env.YOUTUBE_API_KEY;
+        const resolved = await resolveChannelHandle(handle, apiKey);
+        
+        await SadhsangatDb.upsertChannel({
+            channelId: resolved.channelId,
+            channelName: resolved.channelName,
+            subscriberCount: resolved.subscriberCount,
+            thumbnail: resolved.thumbnail,
+            isFeatured: isFeatured !== undefined ? (isFeatured ? 1 : 0) : 1,
+            displayOrder: displayOrder || 0,
+            isEnabled: isEnabled !== undefined ? (isEnabled ? 1 : 0) : 1,
+            notifyOnLive: notifyOnLive !== undefined ? (notifyOnLive ? 1 : 0) : 1
+        });
+
+        if (apiKey) {
+            checkSingleChannel(resolved, apiKey).catch(e => 
+                console.error(`[Sadhsangat API] Async update failed for ${resolved.channelId}:`, e.message)
+            );
+        }
+
+        res.json({ success: true, channel: resolved });
+    } catch (err) {
+        res.status(500).json({ error: err.message || 'Failed to add admin channel' });
+    }
+});
+
+app.put('/api/sadhsangat/admin/channels/:channelId', async (req, res) => {
+    const { channelId } = req.params;
+    const { isFeatured, displayOrder, isEnabled, notifyOnLive, channelName } = req.body;
+    try {
+        const existing = await SadhsangatDb.getChannelById(channelId);
+        if (!existing) {
+            return res.status(404).json({ error: 'Channel not found' });
+        }
+
+        await SadhsangatDb.upsertChannel({
+            channelId,
+            channelName: channelName || existing.channelName,
+            isFeatured: isFeatured !== undefined ? (isFeatured ? 1 : 0) : existing.isFeatured,
+            displayOrder: displayOrder !== undefined ? displayOrder : existing.displayOrder,
+            isEnabled: isEnabled !== undefined ? (isEnabled ? 1 : 0) : existing.isEnabled,
+            notifyOnLive: notifyOnLive !== undefined ? (notifyOnLive ? 1 : 0) : existing.notifyOnLive
+        });
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update admin channel' });
+    }
+});
+
+app.delete('/api/sadhsangat/admin/channels/:channelId', async (req, res) => {
+    const { channelId } = req.params;
+    try {
+        await SadhsangatDb.deleteChannel(channelId);
+
+        // Clear unified videos cache to update list immediately
+        cachedVideos = null;
+        cachedVideosTime = 0;
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete channel' });
+    }
+});
+
+// Sadhsangat Scraping Cache Maps
+const channelVideosCache = new Map(); // channelId -> { videos, timestamp }
+const channelStreamsCache = new Map(); // channelId -> { streams, timestamp }
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+
+async function getCachedChannelVideos(channelId, handle) {
+    const cached = channelVideosCache.get(channelId);
+    const now = Date.now();
+    if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+        return cached.videos;
+    }
+    const videos = await scrapeChannelVideos(channelId, handle);
+    channelVideosCache.set(channelId, { videos, timestamp: now });
+    return videos;
+}
+
+async function getCachedChannelStreams(channelId, handle) {
+    const cached = channelStreamsCache.get(channelId);
+    const now = Date.now();
+    if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+        return cached.streams;
+    }
+    const streams = await scrapeChannelStreams(channelId, handle);
+    channelStreamsCache.set(channelId, { streams, timestamp: now });
+    return streams;
+}
+
+async function scrapeChannelVideos(channelId, channelHandle) {
+    if (!channelHandle) {
+        try {
+            const info = await scrapeYouTubeChannelInfo(channelId);
+            if (info && info.channelHandle) {
+                channelHandle = info.channelHandle;
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                if (ch) {
+                    await SadhsangatDb.upsertChannel({ ...ch, channelHandle });
+                }
+            }
+        } catch (e) {
+            console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelVideos for ${channelId}:`, e.message);
+        }
+    }
+    const url = channelHandle 
+        ? `https://www.youtube.com/${channelHandle}/videos` 
+        : `https://www.youtube.com/channel/${channelId}/videos`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+
+        const data = JSON.parse(jsonMatch[1]);
+        const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+        // Match the Videos tab specifically to avoid featured playlists/channels on Home page
+        const videosTab = tabs.find(t => {
+            const title = (t.tabRenderer?.title || '').toLowerCase();
+            return title === 'videos' || title === 'वीडियो' || title === 'ਵੀਡੀਓ';
+        }) || tabs.find(t => t.tabRenderer?.selected === true) || tabs[1] || tabs[0];
+        const content = videosTab?.tabRenderer?.content;
+        
+        let items = [];
+        if (content?.richGridRenderer) {
+            items = content.richGridRenderer.contents || [];
+        } else if (content?.sectionListRenderer) {
+            items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items || [];
+        }
+
+        const videos = [];
+        for (const item of items) {
+            const lockup = item.richItemRenderer?.content?.lockupViewModel;
+            const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
+            
+            if (lockup && lockup.contentId) {
+                const videoId = lockup.contentId;
+                const meta = lockup.metadata?.lockupMetadataViewModel;
+                const title = meta?.title?.content || lockup.rendererContext?.accessibilityContext?.label?.split(' | ')[0] || 'Video';
+                
+                let duration = '';
+                const overlays = lockup.contentImage?.thumbnailViewModel?.overlays || [];
+                for (const ov of overlays) {
+                    const status = ov.thumbnailOverlayTimeStatusRenderer;
+                    if (status) {
+                        duration = status.text?.runs?.[0]?.text || status.text?.simpleText || '';
+                    }
+                }
+                
+                let views = '';
+                let publishedTime = '';
+                const rows = meta?.metadata?.contentMetadataViewModel?.metadataRows || [];
+                if (rows.length > 0) {
+                    const parts = rows[0].metadataParts || [];
+                    if (parts.length > 0) views = parts[0].text?.content || '';
+                    if (parts.length > 1) publishedTime = parts[1].text?.content || '';
+                }
+                
+                const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
+            } else if (video && video.videoId) {
+                const videoId = video.videoId;
+                const title = video.title?.runs?.[0]?.text || video.title?.simpleText || 'Video';
+                const duration = video.lengthText?.simpleText || '';
+                const views = video.viewCountText?.simpleText || video.viewCountText?.runs?.[0]?.text || '';
+                const publishedTime = video.publishedTimeText?.simpleText || '';
+                const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
+            }
+        }
+        return videos;
+    } catch(e) {
+        console.warn(`[Sadhsangat Video Scraper] Failed for ${channelId}:`, e.message);
+        return [];
+    }
+}
+
+async function scrapeChannelStreams(channelId, channelHandle) {
+    if (!channelHandle) {
+        try {
+            const info = await scrapeYouTubeChannelInfo(channelId);
+            if (info && info.channelHandle) {
+                channelHandle = info.channelHandle;
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                if (ch) {
+                    await SadhsangatDb.upsertChannel({ ...ch, channelHandle });
+                }
+            }
+        } catch (e) {
+            console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelStreams for ${channelId}:`, e.message);
+        }
+    }
+    const url = channelHandle 
+        ? `https://www.youtube.com/${channelHandle}/streams` 
+        : `https://www.youtube.com/channel/${channelId}/streams`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+
+        const data = JSON.parse(jsonMatch[1]);
+        const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+        // Match the Live tab specifically on the streams page
+        const streamsTab = tabs.find(t => {
+            const title = (t.tabRenderer?.title || '').toLowerCase();
+            return title === 'live' || title === 'streams' || title === 'ਲਾਈਵ' || title === 'लाइव';
+        }) || tabs.find(t => t.tabRenderer?.selected === true) || tabs[3] || tabs[0];
+        const content = streamsTab?.tabRenderer?.content;
+        
+        let items = [];
+        if (content?.richGridRenderer) {
+            items = content.richGridRenderer.contents || [];
+        } else if (content?.sectionListRenderer) {
+            items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items || [];
+        }
+
+        const videos = [];
+        for (const item of items) {
+            const lockup = item.richItemRenderer?.content?.lockupViewModel;
+            const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
+            
+            if (lockup && lockup.contentId) {
+                const videoId = lockup.contentId;
+                const meta = lockup.metadata?.lockupMetadataViewModel;
+                const title = meta?.title?.content || lockup.rendererContext?.accessibilityContext?.label?.split(' | ')[0] || 'Video';
+                
+                let duration = '';
+                const overlays = lockup.contentImage?.thumbnailViewModel?.overlays || [];
+                for (const ov of overlays) {
+                    const status = ov.thumbnailOverlayTimeStatusRenderer;
+                    if (status) {
+                        duration = status.text?.runs?.[0]?.text || status.text?.simpleText || '';
+                    }
+                }
+                
+                let views = '';
+                let publishedTime = '';
+                const rows = meta?.metadata?.contentMetadataViewModel?.metadataRows || [];
+                if (rows.length > 0) {
+                    const parts = rows[0].metadataParts || [];
+                    if (parts.length > 0) views = parts[0].text?.content || '';
+                    if (parts.length > 1) publishedTime = parts[1].text?.content || '';
+                }
+                
+                const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
+            } else if (video && video.videoId) {
+                const videoId = video.videoId;
+                const title = video.title?.runs?.[0]?.text || video.title?.simpleText || 'Video';
+                const duration = video.lengthText?.simpleText || '';
+                const views = video.viewCountText?.simpleText || video.viewCountText?.runs?.[0]?.text || '';
+                const publishedTime = video.publishedTimeText?.simpleText || '';
+                const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
+            }
+        }
+        return videos;
+    } catch(e) {
+        console.warn(`[Sadhsangat Streams Scraper] Failed for ${channelId}:`, e.message);
+        return [];
+    }
+}
+
+async function scrapeChannelPlaylists(channelId, channelHandle) {
+    if (!channelHandle) {
+        try {
+            const info = await scrapeYouTubeChannelInfo(channelId);
+            if (info && info.channelHandle) {
+                channelHandle = info.channelHandle;
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                if (ch) {
+                    await SadhsangatDb.upsertChannel({ ...ch, channelHandle });
+                }
+            }
+        } catch (e) {
+            console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelPlaylists for ${channelId}:`, e.message);
+        }
+    }
+    const url = channelHandle 
+        ? `https://www.youtube.com/${channelHandle}/playlists` 
+        : `https://www.youtube.com/channel/${channelId}/playlists`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+
+        const data = JSON.parse(jsonMatch[1]);
+        const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+        const plTab = tabs.find(t => t.tabRenderer?.title === 'Playlists');
+        const content = plTab?.tabRenderer?.content;
+        
+        let items = [];
+        if (content?.richGridRenderer) {
+            items = content.richGridRenderer.contents || [];
+        } else if (content?.sectionListRenderer) {
+            items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items || [];
+        }
+
+        const playlists = [];
+        for (const item of items) {
+            const pl = item.richItemRenderer?.content?.playlistRenderer || item.playlistRenderer;
+            if (pl && pl.playlistId) {
+                const playlistId = pl.playlistId;
+                const title = pl.title?.runs?.[0]?.text || pl.title?.simpleText || 'Playlist';
+                const videoCount = pl.videoCount || pl.videoCountText?.runs?.[0]?.text || '';
+                const thumbnail = pl.thumbnail?.thumbnails?.[0]?.url || '';
+                playlists.push({ playlistId, title, videoCount, thumbnail });
+            }
+        }
+        return playlists;
+    } catch(e) {
+        console.warn(`[Sadhsangat Playlist Scraper] Failed for ${channelId}:`, e.message);
+        return [];
+    }
+}
+
+async function scrapeChannelPosts(channelId, channelHandle) {
+    if (!channelHandle) {
+        try {
+            const info = await scrapeYouTubeChannelInfo(channelId);
+            if (info && info.channelHandle) {
+                channelHandle = info.channelHandle;
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                if (ch) {
+                    await SadhsangatDb.upsertChannel({ ...ch, channelHandle });
+                }
+            }
+        } catch (e) {
+            console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelPosts for ${channelId}:`, e.message);
+        }
+    }
+    const url = channelHandle 
+        ? `https://www.youtube.com/${channelHandle}/community` 
+        : `https://www.youtube.com/channel/${channelId}/community`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+
+        const data = JSON.parse(jsonMatch[1]);
+        const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+        const commTab = tabs.find(t => t.tabRenderer?.title === 'Community' || t.tabRenderer?.title === 'Posts');
+        const content = commTab?.tabRenderer?.content;
+        
+        let items = [];
+        if (content?.sectionListRenderer) {
+            items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents || [];
+        }
+
+        const posts = [];
+        for (const item of items) {
+            const post = item.backstagePostThreadRenderer?.post?.backstagePostRenderer;
+            if (post) {
+                const text = post.contentText?.runs?.map(r => r.text).join('') || '';
+                const time = post.publishedTimeText?.runs?.[0]?.text || '';
+                const likes = post.voteCount?.simpleText || '';
+                posts.push({ text, time, likes });
+            }
+        }
+        return posts;
+    } catch(e) {
+        console.warn(`[Sadhsangat Posts Scraper] Failed for ${channelId}:`, e.message);
+        return [];
+    }
+}
+
+app.get('/api/sadhsangat/channel/:channelId/videos', async (req, res) => {
+    const { channelId } = req.params;
+    try {
+        const ch = await SadhsangatDb.getChannelById(channelId);
+        const handle = ch ? ch.channelHandle : null;
+        const videos = await getCachedChannelVideos(channelId, handle);
+        const mappedVideos = videos.map(v => ({
+            ...v,
+            channelId: channelId,
+            channelName: ch ? ch.channelName : 'Gurbani Channel',
+            channelThumbnail: ch ? ch.thumbnail : null
+        }));
+        res.json({ videos: mappedVideos });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/sadhsangat/channel/:channelId/streams', async (req, res) => {
+    const { channelId } = req.params;
+    try {
+        const ch = await SadhsangatDb.getChannelById(channelId);
+        const handle = ch ? ch.channelHandle : null;
+        const streams = await getCachedChannelStreams(channelId, handle);
+        const mappedStreams = streams.map(v => ({
+            ...v,
+            channelId: channelId,
+            channelName: ch ? ch.channelName : 'Gurbani Channel',
+            channelThumbnail: ch ? ch.thumbnail : null
+        }));
+        res.json({ videos: mappedStreams }); // Named 'videos' to preserve exact frontend contracts
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/sadhsangat/channel/:channelId/playlists', async (req, res) => {
+    const { channelId } = req.params;
+    try {
+        const ch = await SadhsangatDb.getChannelById(channelId);
+        const handle = ch ? ch.channelHandle : null;
+        const playlists = await scrapeChannelPlaylists(channelId, handle);
+        res.json({ playlists });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.get('/api/sadhsangat/channel/:channelId/posts', async (req, res) => {
+    const { channelId } = req.params;
+    try {
+        const ch = await SadhsangatDb.getChannelById(channelId);
+        const handle = ch ? ch.channelHandle : null;
+        const posts = await scrapeChannelPosts(channelId, handle);
+        res.json({ posts });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+app.post('/api/sadhsangat/sync-now', async (req, res) => {
+    try {
+        await checkYouTubeChannels();
+        res.json({ success: true, message: 'Sync complete' });
+    } catch (err) {
+        res.status(500).json({ error: err.message || 'Sync failed' });
+    }
+});
+
+// Channel name-based search API
+app.get('/api/sadhsangat/search', async (req, res) => {
+    const { q } = req.query;
+    if (!q || q.trim().length < 2) {
+        return res.status(400).json({ error: 'Query too short' });
+    }
+    try {
+        const results = await searchChannelsViaScrap(q.trim());
+        
+        // Check if each found channel is already monitored by this user
+        const userId = getUserId(req, res);
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        const monitoredIds = new Set(myChs.map(c => c.channelId));
+        const monitoredHandles = new Set(myChs.map(c => (c.channelHandle || '').toLowerCase()));
+        
+        const mappedResults = results.map(r => {
+            const alreadyMonitored = monitoredIds.has(r.channelId) || 
+                                     (r.channelHandle && monitoredHandles.has(r.channelHandle.toLowerCase()));
+            return { ...r, alreadyMonitored };
+        });
+        
+        res.json({ channels: mappedResults });
+    } catch (e) {
+        console.error('[Sadhsangat Search API] Error:', e.message);
+        res.status(500).json({ error: 'Could not search channels: ' + e.message });
+    }
+});
+
+// Helper to sort YouTube relative strings ("1 hour ago") and absolute dates ("1 Jun 2026")
+const parsePublishedTime = (timeStr) => {
+    if (!timeStr) return 999999999;
+    let clean = timeStr.toLowerCase().trim();
+    
+    // Remove formatting keywords
+    clean = clean.replace('streamed', '').replace('premiered', '').trim();
+
+    // Live streams show "X watching" or "X,XXX watching" — always sort to top (0 = most recent)
+    if (clean.includes('watching') || clean.includes('watching now')) {
+        return 0;
+    }
+    
+    if (clean.includes('scheduled') || clean.includes('starts')) {
+        return 999999998; // Sort upcoming/scheduled streams towards the end
+    }
+    
+    if (clean.includes('ago')) {
+        let multiplier = 1;
+        if (clean.includes('second')) multiplier = 1;
+        else if (clean.includes('minute')) multiplier = 60;
+        else if (clean.includes('hour')) multiplier = 3600;
+        else if (clean.includes('day')) multiplier = 86400;
+        else if (clean.includes('week')) multiplier = 86400 * 7;
+        else if (clean.includes('month')) multiplier = 86400 * 30;
+        else if (clean.includes('year')) multiplier = 86400 * 365;
+        
+        const match = clean.match(/([0-9.]+)/);
+        const value = match ? parseFloat(match[1]) : 1;
+        return value * multiplier;
+    }
+    
+    // Parse absolute dates (e.g. "1 jun 2026", "19 apr 2026")
+    const parsed = Date.parse(clean);
+    if (!isNaN(parsed)) {
+        return Math.max(0, Math.floor((Date.now() - parsed) / 1000));
+    }
+    
+    return 999999999;
+};
+
+// Unified video feed for all monitored channels combined
+app.get('/api/sadhsangat/videos', async (req, res) => {
+    const userId = getUserId(req, res);
+    try {
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        if (myChs.length === 0) {
+            return res.json({ videos: [] });
+        }
+        
+        // Fetch videos for user's monitored channels in parallel
+        const fetchPromises = myChs.map(async (ch) => {
+            try {
+                const videos = await getCachedChannelVideos(ch.channelId, ch.channelHandle);
+                return videos.map(v => ({
+                    ...v,
+                    channelId: ch.channelId,
+                    channelName: ch.channelName,
+                    channelThumbnail: ch.thumbnail
+                }));
+            } catch (err) {
+                console.warn(`[Sadhsangat Unified Videos] Failed for ${ch.channelName}:`, err.message);
+                return [];
+            }
+        });
+        
+        const results = await Promise.allSettled(fetchPromises);
+        let allVideos = [];
+        for (const res of results) {
+            if (res.status === 'fulfilled') {
+                allVideos = allVideos.concat(res.value);
+            }
+        }
+        
+        // Sort most recent first (ascending elapsed time)
+        allVideos.sort((a, b) => parsePublishedTime(a.publishedTime) - parsePublishedTime(b.publishedTime));
+        
+        res.json({ videos: allVideos });
+    } catch (e) {
+        console.error('[Sadhsangat Unified Videos API] Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Unified stream feed for all monitored channels combined
+app.get('/api/sadhsangat/streams', async (req, res) => {
+    const userId = getUserId(req, res);
+    try {
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        if (myChs.length === 0) {
+            return res.json({ videos: [] });
+        }
+        
+        // Fetch streams for user's monitored channels in parallel
+        const fetchPromises = myChs.map(async (ch) => {
+            try {
+                const streams = await getCachedChannelStreams(ch.channelId, ch.channelHandle);
+                return streams.map(v => ({
+                    ...v,
+                    channelId: ch.channelId,
+                    channelName: ch.channelName,
+                    channelThumbnail: ch.thumbnail
+                }));
+            } catch (err) {
+                console.warn(`[Sadhsangat Unified Streams] Failed for ${ch.channelName}:`, err.message);
+                return [];
+            }
+        });
+        
+        const results = await Promise.allSettled(fetchPromises);
+        let allStreams = [];
+        for (const res of results) {
+            if (res.status === 'fulfilled') {
+                allStreams = allStreams.concat(res.value);
+            }
+        }
+        
+        // Sort most recent first (ascending elapsed time)
+        allStreams.sort((a, b) => parsePublishedTime(a.publishedTime) - parsePublishedTime(b.publishedTime));
+        
+        res.json({ videos: allStreams });
+    } catch (e) {
+        console.error('[Sadhsangat Unified Streams API] Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
 // OTHER API ROUTES
 // ═══════════════════════════════════════════════════════════════════
 
@@ -1736,6 +3717,10 @@ async function startServer() {
     // Initialize the broadcast engine first
     await broadcast.initialize();
     await simranBroadcast.initialize();
+
+    // Initialize Sadhsangat Live DB and start the Cron Poller
+    await initSadhsangatDb();
+    startSadhsangatCron();
 
     app.listen(PORT, () => {
         const livePos = broadcast.getCurrentLivePosition();

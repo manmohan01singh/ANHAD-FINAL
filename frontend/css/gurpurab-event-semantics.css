@@ -10,17 +10,17 @@
 ───────────────────────────────────────────────────────────────────────────── */
 
 .event-card.event-remembrance {
-  background: linear-gradient(160deg, 
-    rgba(60, 60, 67, 0.03) 0%, 
-    rgba(60, 60, 67, 0.01) 100%);
-  border-color: rgba(60, 60, 67, 0.08);
+  background: rgba(60, 60, 67, 0.08);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(60, 60, 67, 0.12);
 }
 
 .event-card.event-remembrance.event-today {
   position: relative;
-  background: linear-gradient(160deg, 
-    rgba(60, 60, 67, 0.05) 0%, 
-    rgba(60, 60, 67, 0.02) 100%);
+  background: rgba(60, 60, 67, 0.12);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-left: 3px solid rgba(60, 60, 67, 0.25);
   padding-left: calc(var(--space-5, 20px) - 3px);
 }
@@ -63,20 +63,19 @@
 ───────────────────────────────────────────────────────────────────────────── */
 
 .event-card.event-celebration {
-  background: linear-gradient(160deg, 
-    rgba(212, 148, 58, 0.06) 0%, 
-    rgba(212, 148, 58, 0.03) 100%);
-  border-color: rgba(212, 148, 58, 0.15);
+  background: rgba(212, 148, 58, 0.10);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(212, 148, 58, 0.2);
 }
 
 .event-card.event-celebration.event-today {
   position: relative;
   overflow: visible;
-  background: linear-gradient(160deg, 
-    rgba(212, 148, 58, 0.12) 0%, 
-    rgba(255, 215, 0, 0.08) 50%,
-    rgba(212, 148, 58, 0.06) 100%);
-  border-color: rgba(212, 148, 58, 0.25);
+  background: rgba(212, 148, 58, 0.15);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(212, 148, 58, 0.3);
 }
 
 /* Animated ring light border for celebration events */
@@ -173,17 +172,17 @@
 
 html.dark-mode .event-card.event-remembrance,
 body.dark-mode .event-card.event-remembrance {
-  background: linear-gradient(160deg, 
-    rgba(60, 60, 67, 0.15) 0%, 
-    rgba(60, 60, 67, 0.08) 100%);
+  background: rgba(60, 60, 67, 0.15);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-color: rgba(255, 255, 255, 0.08);
 }
 
 html.dark-mode .event-card.event-remembrance.event-today,
 body.dark-mode .event-card.event-remembrance.event-today {
-  background: linear-gradient(160deg, 
-    rgba(60, 60, 67, 0.25) 0%, 
-    rgba(60, 60, 67, 0.15) 100%);
+  background: rgba(60, 60, 67, 0.2);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-left-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -204,18 +203,17 @@ body.dark-mode .event-card.event-remembrance .event-card__date {
 
 html.dark-mode .event-card.event-celebration,
 body.dark-mode .event-card.event-celebration {
-  background: linear-gradient(160deg, 
-    rgba(212, 148, 58, 0.12) 0%, 
-    rgba(212, 148, 58, 0.06) 100%);
+  background: rgba(212, 148, 58, 0.12);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-color: rgba(212, 148, 58, 0.2);
 }
 
 html.dark-mode .event-card.event-celebration.event-today,
 body.dark-mode .event-card.event-celebration.event-today {
-  background: linear-gradient(160deg, 
-    rgba(212, 148, 58, 0.18) 0%, 
-    rgba(255, 215, 0, 0.12) 50%,
-    rgba(212, 148, 58, 0.10) 100%);
+  background: rgba(212, 148, 58, 0.18);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
 html.dark-mode .event-card.event-celebration .event-card__eyebrow,

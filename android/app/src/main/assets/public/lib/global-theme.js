@@ -20,9 +20,9 @@
     let _themeIcons = null;
 
     function getAutoTheme() {
-        if (window.matchMedia) {
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-            if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            return (timeOfDay === 'night') ? 'dark' : 'light';
         }
         const hour = new Date().getHours();
         return (hour >= 5 && hour < 20) ? 'light' : 'dark';

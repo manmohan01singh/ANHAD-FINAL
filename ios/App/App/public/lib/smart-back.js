@@ -212,15 +212,24 @@
 
     if (hasHistory) {
       var shouldHistoryBack = false;
+      var referrer = document.referrer || getSavedReferrer();
+      var referrerMatched = false;
+      if (referrer) {
+        try {
+          var refUrl = new URL(referrer, window.location.origin).href;
+          if (pageKey(refUrl) === pageKey(resolvedTarget)) {
+            referrerMatched = true;
+          }
+        } catch (_) {}
+      }
 
-      // CRITICAL FLATTENING: If the target is the main Home screen (index.html),
-      // we NEVER use history.back() blindly because it can leak to other sibling modules.
-      // Direct SPA navigation to the resolved Home screen is 100% safe, fast, and deterministic.
-      if (isBackToHome) {
+      if (referrerMatched) {
+        shouldHistoryBack = true;
+        console.log('[SmartBack] Referrer matches target URL in history, using history.back() for instant load');
+      } else if (isBackToHome) {
         shouldHistoryBack = false;
-        console.log('[SmartBack] Target is Home screen, bypassing history.back() for safe deterministic routing');
+        console.log('[SmartBack] Target is Home screen but referrer does not match, bypassing history.back()');
       } else {
-        var referrer = document.referrer || getSavedReferrer();
         if (referrer) {
           // If referrer exists, ensure it's from our own app
           try {

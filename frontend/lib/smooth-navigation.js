@@ -22,6 +22,9 @@
   const PAGE_CACHE = new Map();
   const DOM_CACHE = new Map(); // For keepAlive strategy
   const FETCH_QUEUE = new Set();
+  // ── SCROLL PRESERVATION: remembers scroll per URL so returning to any page
+  //    (especially Home) lands at the same position rather than jumping to top.
+  const SCROLL_POSITIONS = new Map();
   // Tracks which pages have had their inline body scripts executed.
   // Inline scripts declaring top-level 'const'/'let' can only run once per session.
   // Re-visits rely on anhad_page_changed event for re-initialization.
@@ -71,7 +74,27 @@
   }
 
   let currentActiveUrl = normalizeUrl(window.location.href);
-  
+
+  /**
+   * Save the current scroll position before we swap away from a page.
+   * We save it under the current URL key so it can be restored on return.
+   */
+  function saveScrollPosition() {
+    SCROLL_POSITIONS.set(currentActiveUrl, window.scrollY);
+  }
+
+  /**
+   * Restore scroll position for a given URL, or scroll to top if no saved pos.
+   * @param {string} url - Normalised URL key to look up.
+   */
+  function restoreScrollPosition(url) {
+    const saved = SCROLL_POSITIONS.get(url);
+    // Use requestAnimationFrame to ensure the DOM is fully painted before scrolling
+    requestAnimationFrame(() => {
+      window.scrollTo(0, saved !== undefined ? saved : 0);
+    });
+  }
+
   // Cache the initial page's #app content immediately (not full outerHTML — saves ~2MB memory)
   const _initApp = document.getElementById('app');
   if (_initApp) {
@@ -166,8 +189,9 @@
              cleanPath.endsWith('/Insights/insights') ||
              cleanPath.endsWith('/Favorites/favorites.html') ||
              cleanPath.endsWith('/Favorites/favorites') ||
-             cleanPath.endsWith('/Dashboard/dashboard.html') ||
-             cleanPath.endsWith('/Dashboard/dashboard');
+             cleanPath.endsWith('/sadhsangat-live/index.html') ||
+             cleanPath.endsWith('/sadhsangat-live/index') ||
+             cleanPath.endsWith('/sadhsangat-live');
     } catch (e) {
       return false;
     }
@@ -181,6 +205,9 @@
     const normalized = normalizeUrl(absoluteUrl);
     
     if (normalized === currentActiveUrl && !options.force) return;
+
+    // Save current page scroll BEFORE we swap away
+    saveScrollPosition();
 
     // Proactively save navigation referrer in sessionStorage for robust back routing (esp. on Capacitor)
     try {
@@ -235,26 +262,11 @@
   }
 
   /**
-   * Safely starts a view transition, handling the .back-transition class.
+   * Instantly executes callback — View Transitions API DISABLED for maximum
+   * performance. Zero animation = instant feel like a native iOS/Android app.
    */
   async function safeStartTransition(callback, isBack, instant) {
-    if ('startViewTransition' in document && !instant) {
-      if (isBack) {
-        document.documentElement.classList.add('back-transition');
-      } else {
-        document.documentElement.classList.remove('back-transition');
-      }
-      const transition = document.startViewTransition(callback);
-      try {
-        await transition.finished;
-      } catch (e) {
-        // Ignore view transition cancellation/errors
-      } finally {
-        document.documentElement.classList.remove('back-transition');
-      }
-    } else {
-      await callback();
-    }
+    await callback();
   }
 
   /**
@@ -454,8 +466,26 @@
     // This prevents the Flash Of Unstyled Content (FOUC) seen on SPA navigation
     await syncHeadAssets(newDoc, url);
     
-    // SWAP CONTENT
-    currentApp.innerHTML = newApp.innerHTML;
+    // ── SWAP CONTENT — with DOM Node Cache ────────────────────────────────
+    // CRITICAL FLASH FIX: For shell pages (Home, Insights, Favorites, Dashboard),
+    // we store the live DOM node tree in DOM_CACHE after first visit.
+    // On return, we clone it back instead of setting innerHTML — this means all
+    // <img> elements keep their decoded pixels in the GPU and never repaint.
+    // The result: ZERO flash when switching between tabs or pressing back.
+    const isCachedDom = DOM_CACHE.has(url);
+    if (isCachedDom) {
+      // Return path: clone cached node subtree back (no image reload, no flash)
+      const cachedNode = DOM_CACHE.get(url);
+      const fragment = cachedNode.cloneNode(true);
+      // Clear the current content and append the cached fragment
+      while (currentApp.firstChild) currentApp.removeChild(currentApp.firstChild);
+      // Move children from the clone to currentApp (cloneNode on a fragment is deep)
+      Array.from(fragment.childNodes).forEach(child => currentApp.appendChild(child));
+      NAV_DEBUG && console.log('[SmoothNav] DOM_CACHE hit for:', url);
+    } else {
+      // First visit: standard innerHTML swap
+      currentApp.innerHTML = newApp.innerHTML;
+    }
     
     // Update URL — store url in state so popstate can do cache lookup
     if (!options.replace) {
@@ -467,13 +497,31 @@
     // Execute Page-Specific Scripts (Sequential & Async-aware)
     await executePageScripts(newDoc, url);
 
-    // Scroll and Lifecycle
-    // PERF FIX: Always use instant scroll — smooth scroll fights View Transitions
-    // and causes visible jank as the animation and scroll conflict on the GPU.
+    // ── SAVE to DOM_CACHE after first visit (only shell pages) ───────────────
+    // We do this AFTER scripts have run so any dynamic mutations (status texts,
+    // ring progress, etc.) are baked into the saved node.
+    if (!isCachedDom && isShellPage(url)) {
+      DOM_CACHE.set(url, currentApp.cloneNode(true));
+      NAV_DEBUG && console.log('[SmoothNav] DOM_CACHE saved for:', url);
+    }
+
+    // Restore saved scroll for this URL, or scroll to top if first visit
     if (!options.keepScroll) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      restoreScrollPosition(url);
     }
     document.documentElement.style.overscrollBehaviorY = 'auto';
+
+    // Re-apply global theme to new content after every SPA swap
+    if (window.AnhadTheme) {
+      try { window.AnhadTheme.apply(window.AnhadTheme.get()); } catch(e) {}
+    }
+    // Re-apply sky background + hero images for new page
+    if (window.AnhadSky) {
+      try {
+        window.AnhadSky.applyTimeOfDay();
+        window.AnhadSky.updateHeroCardImages();
+      } catch(e) {}
+    }
     
     // Trigger lifecycle recovery
     if (window.AnhadPageLifecycle && window.AnhadPageLifecycle.recover) {
@@ -585,16 +633,19 @@
       if (href) {
         const absoluteHref = new URL(href, sourceUrl).href;
         if (!currentStyles.includes(absoluteHref)) {
-      NAV_DEBUG &&           console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
+          NAV_DEBUG && console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = absoluteHref;
-          // Track each new stylesheet load so we can wait for it
-          const p = new Promise(resolve => {
-            link.onload = resolve;
-            link.onerror = resolve; // Don't block on errors (e.g. missing optional sheet)
-          });
-          loadPromises.push(p);
+          // Track local stylesheets to avoid FOUC, but load remote fonts/CDNs fully async
+          const isRemote = absoluteHref.startsWith('http') && !absoluteHref.includes(window.location.host);
+          if (!isRemote) {
+            const p = new Promise(resolve => {
+              link.onload = resolve;
+              link.onerror = resolve; // Don't block on errors (e.g. missing optional sheet)
+            });
+            loadPromises.push(p);
+          }
           document.head.appendChild(link);
         }
       }
@@ -621,7 +672,7 @@
             // Skip already-absolute URLs and data URIs
             if (!relUrl || relUrl.startsWith('http') || relUrl.startsWith('/') ||
                 relUrl.startsWith('data:') || relUrl.startsWith('#')) {
-              return match;
+               return match;
             }
             try {
               return `url('${new URL(relUrl, sourceUrl).href}')`;
@@ -638,13 +689,13 @@
       }
     }
 
-    // Wait for all new external stylesheets to load, max 600ms
+    // Wait for all new external stylesheets to load, max 150ms
     if (loadPromises.length > 0) {
       await Promise.race([
         Promise.all(loadPromises),
-        new Promise(resolve => setTimeout(resolve, 600))
+        new Promise(resolve => setTimeout(resolve, 150))
       ]);
-      NAV_DEBUG &&       console.log('[SmoothNav] All new stylesheets ready.');
+      NAV_DEBUG && console.log('[SmoothNav] All new stylesheets ready.');
     }
   }
 
@@ -769,17 +820,17 @@
     const targetUrl = new URL(url, window.location.origin);
     if (targetUrl.origin !== window.location.origin) return;
 
-    FETCH_QUEUE.add(url);
+    FETCH_QUEUE.add(normalized);
     try {
       const response = await fetch(url);
       if (response.ok) {
         const text = await response.text();
-        PAGE_CACHE.set(url, text);
+        PAGE_CACHE.set(normalized, text);
       }
     } catch (e) {
       // Silent fail for prefetch
     } finally {
-      FETCH_QUEUE.delete(url);
+      FETCH_QUEUE.delete(normalized);
     }
   }
 
@@ -975,5 +1026,31 @@
       keys.slice(1, keys.length - 10).forEach(key => PAGE_CACHE.delete(key));
     }
   }, 60000);
+
+  // Proactively prefetch the core sub-pages on launch so they are loaded in RAM instantly
+  function prefetchCoreShell() {
+    setTimeout(() => {
+      const shellPages = [
+        'Insights/insights.html',
+        'Favorites/favorites.html',
+        'sadhsangat-live/index.html'
+      ];
+      shellPages.forEach(url => {
+        try {
+          const absolute = new URL(url, window.ANHAD_ROOT).href;
+          prefetchPage(absolute);
+        } catch (e) {
+          prefetchPage(url);
+        }
+      });
+    }, 1500);
+  }
+  
+  // Call prefetchCoreShell on startup
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', prefetchCoreShell);
+  } else {
+    prefetchCoreShell();
+  }
 
 })();

@@ -5,11 +5,8 @@ node_modules/
 *.asar
 
 backend/.env.example
-
 backend/.env
-
 backend/node_modules/
-
 node_modules/
 
 # IDEs and editors
@@ -43,3 +40,8 @@ out/
 .gemini/
 .kiro/
 backend/radio-state.json
+backend/simran-state.json
+backend/data/
+*.db
+*.apk
+scratch/

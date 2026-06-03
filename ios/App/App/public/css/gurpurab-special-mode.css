@@ -489,8 +489,10 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 /* Day 5: Subtle hint - gentle golden glow */
 .gurpurab-decor-day-5 .event-card {
   box-shadow: 
-    0 4px 20px rgba(212, 148, 58, 0.15),
-    0 0 0 1px rgba(212, 148, 58, 0.1) !important;
+    0 8px 32px rgba(212, 148, 58, 0.15),
+    0 2px 8px rgba(212, 148, 58, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(212, 148, 58, 0.15) !important;
 }
 .gurpurab-decor-day-5 .event-card__guru-img-wrapper {
   box-shadow: 
@@ -502,8 +504,10 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 /* Day 4: Growing anticipation - stronger glow + single diya */
 .gurpurab-decor-day-4 .event-card {
   box-shadow: 
-    0 6px 24px rgba(212, 148, 58, 0.2),
-    0 0 0 2px rgba(212, 148, 58, 0.15),
+    0 8px 32px rgba(212, 148, 58, 0.2),
+    0 2px 8px rgba(212, 148, 58, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1.5px rgba(212, 148, 58, 0.2),
     0 0 30px rgba(255, 215, 0, 0.1) !important;
   position: relative;
 }
@@ -528,7 +532,9 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 .gurpurab-decor-day-3 .event-card {
   box-shadow: 
     0 8px 32px rgba(212, 148, 58, 0.25),
-    0 0 0 2px rgba(212, 148, 58, 0.2),
+    0 2px 8px rgba(212, 148, 58, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1.5px rgba(212, 148, 58, 0.25),
     0 0 40px rgba(255, 215, 0, 0.15) !important;
   position: relative;
 }
@@ -562,10 +568,12 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 /* Day 2: Near celebration - abundant decorations */
 .gurpurab-decor-day-2 .event-card {
   box-shadow: 
-    0 10px 40px rgba(212, 148, 58, 0.3),
-    0 0 0 3px rgba(212, 148, 58, 0.25),
+    0 8px 32px rgba(212, 148, 58, 0.3),
+    0 2px 8px rgba(212, 148, 58, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(212, 148, 58, 0.3),
     0 0 50px rgba(255, 215, 0, 0.2),
-    inset 0 0 20px rgba(255, 248, 220, 0.3) !important;
+    inset 0 0 30px rgba(255, 248, 220, 0.15) !important;
   position: relative;
 }
 .gurpurab-decor-day-2 .event-card::before {
@@ -605,11 +613,13 @@ body.dark-mode .gurpurab-mode--remembrance .event-card {
 /* Day 1: Eve of celebration - maximum anticipation */
 .gurpurab-decor-day-1 .event-card {
   box-shadow: 
-    0 12px 48px rgba(212, 148, 58, 0.35),
-    0 0 0 3px rgba(212, 148, 58, 0.3),
-    0 0 0 6px rgba(255, 215, 0, 0.15),
+    0 8px 32px rgba(212, 148, 58, 0.35),
+    0 2px 8px rgba(212, 148, 58, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(212, 148, 58, 0.35),
+    0 0 0 5px rgba(255, 215, 0, 0.15),
     0 0 60px rgba(255, 215, 0, 0.25),
-    inset 0 0 30px rgba(255, 248, 220, 0.4) !important;
+    inset 0 0 40px rgba(255, 248, 220, 0.2) !important;
   position: relative;
   animation: cardPulse 2s ease-in-out infinite;
 }

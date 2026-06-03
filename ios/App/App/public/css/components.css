@@ -491,6 +491,7 @@
 }
 
 .hero-carousel__track {
+  position: relative;
   display: flex;
   gap: 12px;
   overflow-x: auto;

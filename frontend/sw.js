@@ -373,46 +373,49 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http
   if (!url.protocol.startsWith('http')) return;
 
+  // NEVER cache sw.js or service-worker.js — browser handles this
+  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
+    return;
+  }
+
   // NEVER cache version.json — always go to network for instant update detection
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
     return;
   }
 
-  // NEVER cache sw.js or service-worker.js — browser handles this
-  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
-    return;
-  }
+  // 1. ONLINE KIRTAN (LIVE STREAMS) -> NETWORK ONLY
+  // Detect live audio stream requests (Amritvela r2.dev webm files, icecast, shoutcast, live streams)
+  const isLiveStream = (
+    url.hostname.includes('r2.dev') ||
+    url.hostname.includes('listen.samayam') ||
+    url.hostname.includes('icecast') ||
+    url.hostname.includes('shoutcast') ||
+    url.hostname.includes('streaming') ||
+    url.pathname.match(/\.m3u8$|\.ts$/) ||
+    (url.pathname.match(/\.(mp3|aac|ogg|webm)$/) && !url.pathname.startsWith('/Audio/'))
+  );
 
-  // API requests - Network first
-  if (url.hostname.includes('api.banidb.com') ||
-    url.hostname.includes('api.gurbaninow.com')) {
-    event.respondWith(networkFirst(event.request));
-    return;
-  }
-
-  // CRITICAL FIX: Never cache r2.dev audio files (Amritvela streams) - always fetch fresh
-  if (event.request.url.includes('r2.dev') && event.request.url.includes('.webm')) {
+  if (isLiveStream) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // Audio files & images - Cache first (large assets, rarely change)
-  if (event.request.url.includes('/Audio/') ||
-      url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
-    event.respondWith(cacheFirst(event.request));
+  // 2. HUKAMNAMA & API CALLS -> NETWORK FIRST with Cache Fallback
+  // Once fetched, the API result is saved in the cache. If offline, it is loaded from the cache.
+  const isApiOrHukamnama = (
+    url.hostname.includes('api.banidb.com') ||
+    url.hostname.includes('api.gurbaninow.com') ||
+    url.pathname.includes('/hukamnama')
+  );
+
+  if (isApiOrHukamnama) {
+    event.respondWith(networkFirst(event.request));
     return;
   }
 
-  // HTML, JS, CSS files — STALE-WHILE-REVALIDATE
-  // Serve cached version instantly, but fetch fresh in background
-  // Next load will have the new version
-  if (url.pathname.match(/\.(html|js|css|json)$/) || event.request.mode === 'navigate') {
-    event.respondWith(staleWhileRevalidate(event.request));
-    return;
-  }
-
-  // Everything else — cache first
+  // 3. ALL OTHER PAGES, IMAGES, CSS, JS -> CACHE FIRST (Offline-first)
+  // Serve from cache immediately; if not found in cache, fetch from network and cache it.
   event.respondWith(cacheFirst(event.request));
 });
 

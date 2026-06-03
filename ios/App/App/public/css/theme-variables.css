@@ -65,6 +65,15 @@
     --text-secondary: #7D6B58;
     --text-accent: #E8A87C;
     --border-color: rgba(232, 168, 124, 0.2);
+    /* Card gradients — morning warm peach palette */
+    --card-green-gradient: linear-gradient(140deg, #FFF0E6 0%, #FFE4CC 100%);
+    --card-gold-gradient:  linear-gradient(140deg, #FFF5DC 0%, #FFE8B0 100%);
+    --card-purple-gradient:linear-gradient(140deg, #FFF0F0 0%, #FFE0D8 100%);
+    --card-blue-gradient:  linear-gradient(140deg, #FFF3E8 0%, #FFE6D0 100%);
+    --card-rose-gradient:  linear-gradient(140deg, #FFF0E6 0%, #FFD8C4 100%);
+    --card-event-gradient: linear-gradient(160deg, #FFF8F2 0%, #FFF0E0 25%, #FFE8CC 50%, #FFE0B8 75%, #FFD8A0 100%);
+    --event-title-color: #72500A;
+    --event-title-shadow: 0 1px 1px rgba(255,255,255,0.6);
 }
 
 /* Daytime — Warm Creamy Yellowish shades (9:00 AM to 4:00 PM) — HOME PAGE ONLY */
@@ -76,6 +85,15 @@
     --text-secondary: #8E8E93;
     --text-accent: #D4943A;
     --border-color: rgba(212, 148, 58, 0.15);
+    /* Card gradients — daytime warm cream palette */
+    --card-green-gradient: linear-gradient(140deg, #F2FAEE 0%, #E0F5D6 100%);
+    --card-gold-gradient:  linear-gradient(140deg, #FFFBEE 0%, #FFF3CC 100%);
+    --card-purple-gradient:linear-gradient(140deg, #F5F0FC 0%, #E8DCFA 100%);
+    --card-blue-gradient:  linear-gradient(140deg, #EEF6FF 0%, #D8ECFF 100%);
+    --card-rose-gradient:  linear-gradient(140deg, #FFF0F3 0%, #FFD8E0 100%);
+    --card-event-gradient: linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%);
+    --event-title-color: #72500A;
+    --event-title-shadow: 0 1px 1px rgba(255,255,255,0.6);
 }
 
 /* Evening / Golden Hour — Warm Amber shades (4:00 PM to 8:00 PM) — HOME PAGE ONLY */
@@ -87,18 +105,17 @@
     --text-secondary: #7A6A4F;
     --text-accent: #B8860B;
     --border-color: rgba(184, 134, 11, 0.25);
+    /* Card gradients — evening amber palette */
+    --card-green-gradient: linear-gradient(140deg, #F5F5DC 0%, #EEEEC0 100%);
+    --card-gold-gradient:  linear-gradient(140deg, #FFF8D8 0%, #FFE896 100%);
+    --card-purple-gradient:linear-gradient(140deg, #FFF0E8 0%, #FFE0C8 100%);
+    --card-blue-gradient:  linear-gradient(140deg, #F8F0D8 0%, #EEE4B8 100%);
+    --card-rose-gradient:  linear-gradient(140deg, #FFF0D8 0%, #FFE0B0 100%);
+    --card-event-gradient: linear-gradient(160deg, #FFF8E8 0%, #FFF0D0 25%, #FFE8B8 50%, #FFE0A0 75%, #FFD888 100%);
+    --event-title-color: #4A3500;
+    --event-title-shadow: 0 1px 1px rgba(255,255,255,0.4);
 }
 
-/* Night — Deep charcoal/slate dark shades (8:00 PM to 5:00 AM) — HOME PAGE ONLY */
-[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
-    --bg-primary: #0F0F12;
-    --bg-secondary: #17171C;
-    --bg-tertiary: #22222A;
-    --text-primary: #F5F5F7;
-    --text-secondary: #8E8E93;
-    --text-accent: #0A84FF;
-    --border-color: rgba(255, 255, 255, 0.08);
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DARK THEME — #1C1C1E bg, #F5F5F7 text, #FFD60A highlight

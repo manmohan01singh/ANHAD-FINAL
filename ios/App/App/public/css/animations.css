@@ -1,10 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════
-   ANHAD — Animations & Keyframes
-   Aurora Living Background • Spring Reveals • Sacred Motion
-   90fps locked • GPU-only properties • will-change managed
+   ANHAD — Animations & Keyframes v2.0
+   REMOVED: aurora drift animations (caused constant GPU repaints)
+   REMOVED: mandana-spin (180s GPU animation)
+   REMOVED: View Transitions CSS (API disabled in smooth-navigation.js)
+   REMOVED: float-gentle, heading-breathe (ambient GPU waste)
+   KEPT: shimmer, spin, skeleton, sheet, modal, pulse — triggered by JS
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── AURORA BACKGROUND (CSS Approach A — lightweight, 90fps) ── */
+/* ── AURORA BACKGROUND — STATIC (no animation, saves GPU) ── */
 .aurora-bg {
   position: fixed;
   inset: 0;
@@ -14,75 +17,7 @@
   pointer-events: none;
 }
 
-.aurora-bg::before {
-  content: '';
-  position: absolute;
-  width: 80vmax;
-  height: 80vmax;
-  top: -40vmax;
-  left: -20vmax;
-  background: radial-gradient(circle,
-    rgba(212, 134, 10, 0.15) 0%,
-    rgba(212, 134, 10, 0.05) 40%,
-    transparent 70%);
-  animation: aurora-drift-1 12s ease-in-out infinite alternate;
-  filter: blur(40px);
-  will-change: transform;
-}
-
-.aurora-bg::after {
-  content: '';
-  position: absolute;
-  width: 60vmax;
-  height: 60vmax;
-  top: -30vmax;
-  right: -10vmax;
-  background: radial-gradient(circle,
-    rgba(168, 85, 247, 0.10) 0%,
-    rgba(168, 85, 247, 0.04) 40%,
-    transparent 70%);
-  animation: aurora-drift-2 9s ease-in-out infinite alternate;
-  filter: blur(50px);
-  will-change: transform;
-}
-
-/* Third aurora blob for richer spatial feel */
-.aurora-bg-extra {
-  position: fixed;
-  width: 50vmax;
-  height: 50vmax;
-  bottom: -25vmax;
-  left: 30%;
-  background: radial-gradient(circle,
-    rgba(20, 184, 166, 0.06) 0%,
-    rgba(20, 184, 166, 0.02) 40%,
-    transparent 70%);
-  animation: aurora-drift-3 15s ease-in-out infinite alternate;
-  filter: blur(60px);
-  will-change: transform;
-  pointer-events: none;
-  z-index: var(--z-below, -1);
-}
-
-@keyframes aurora-drift-1 {
-  from { transform: translate(0, 0) scale(1); }
-  to   { transform: translate(5vw, 3vh) scale(1.1); }
-}
-
-@keyframes aurora-drift-2 {
-  from { transform: translate(0, 0) scale(1.1); }
-  to   { transform: translate(-4vw, 4vh) scale(0.95); }
-}
-
-@keyframes aurora-drift-3 {
-  from { transform: translate(0, 0) scale(0.9); }
-  to   { transform: translate(3vw, -2vh) scale(1.05); }
-}
-
-/* CSS fallback class when WebGL is unavailable */
-.aurora-css-fallback .aurora-bg { display: block; }
-
-/* ── MANDANA WATERMARK ── */
+/* ── MANDANA WATERMARK — static, no spin ── */
 .mandana-watermark {
   position: fixed;
   top: 50%;
@@ -93,84 +28,20 @@
   opacity: 0.06;
   pointer-events: none;
   z-index: var(--z-below, -1);
-  animation: mandana-spin 180s linear infinite;
-  transform-origin: center center;
   filter: saturate(0.5);
 }
 
-@keyframes mandana-spin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mandana-watermark { animation: none; }
-}
-
-/* Pause rotation on mobile to save battery */
-@media (hover: none) and (pointer: coarse) {
-  .mandana-watermark {
-    animation-play-state: paused;
-  }
-}
-
-/* ── SCROLL REVEAL ANIMATIONS ── */
+/* ── SCROLL REVEAL ANIMATIONS (JS-triggered, once only) ── */
 [data-animate] {
   opacity: 0;
-  transform: translateY(20px);
-  filter: blur(4px);
+  transform: translateY(12px);
   transition: none;
 }
-
 [data-animate].animate-in {
-  animation: reveal-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: reveal-up 0.3s ease forwards;
 }
-
 @keyframes reveal-up {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-/* Reveal from left */
-[data-animate="left"] {
-  transform: translateX(-24px) translateY(0);
-}
-
-[data-animate="left"].animate-in {
-  animation: reveal-left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes reveal-left {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
-}
-
-/* Reveal scale */
-[data-animate="scale"] {
-  transform: scale(0.92) translateY(0);
-}
-
-[data-animate="scale"].animate-in {
-  animation: reveal-scale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes reveal-scale {
-  to {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-/* Stagger delay from data-delay attribute */
-[data-animate][data-delay] {
-  animation-delay: calc(var(--delay, 0) * 1ms);
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── PULSE / BREATHE ── */
@@ -178,13 +49,11 @@
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%      { opacity: 1; transform: scale(1.03); }
 }
-
 @keyframes pulse-dot {
   0%   { opacity: 1; transform: scale(1); }
   50%  { opacity: 0.5; transform: scale(1.5); }
   100% { opacity: 1; transform: scale(1); }
 }
-
 @keyframes live-pulse {
   0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
   70%  { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
@@ -199,247 +68,61 @@
 
 /* ── SHIMMER LOADING ── */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(212, 134, 10, 0.04) 0%,
-    rgba(212, 134, 10, 0.14) 40%,
-    rgba(212, 134, 10, 0.04) 80%
-  );
+  background: linear-gradient(90deg, rgba(212,134,10,0.04) 0%, rgba(212,134,10,0.14) 40%, rgba(212,134,10,0.04) 80%);
   background-size: 200% 100%;
   animation: shimmer-sweep 1.8s ease-in-out infinite;
 }
-
 .shimmer-dark {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 255, 255, 0.12) 40%,
-    rgba(255, 255, 255, 0.04) 80%
-  );
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.12) 40%, rgba(255,255,255,0.04) 80%);
   background-size: 200% 100%;
   animation: shimmer-sweep 1.8s ease-in-out infinite;
 }
-
 @keyframes shimmer-sweep {
   from { background-position: 200% center; }
   to   { background-position: -200% center; }
 }
 
 /* ── RIPPLE EXPAND ── */
-@keyframes ripple-expand {
-  to {
-    transform: scale(120);
-    opacity: 0;
-  }
-}
+@keyframes ripple-expand { to { transform: scale(120); opacity: 0; } }
 
 /* ── MODAL / SHEET ANIMATIONS ── */
-@keyframes overlay-in {
-  from { opacity: 0; backdrop-filter: blur(0); }
-  to   { opacity: 1; backdrop-filter: blur(12px); }
-}
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes sheet-up   { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes sheet-down { from { transform: translateY(0); } to { transform: translateY(100%); } }
 
-@keyframes overlay-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
-
-@keyframes sheet-up {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
-}
-
-@keyframes sheet-down {
-  from { transform: translateY(0); }
-  to   { transform: translateY(100%); }
-}
-
-/* ── GLOW PULSE ── */
-@keyframes temple-glow-pulse {
-  0%   { opacity: 0.4; }
-  100% { opacity: 0.75; }
-}
-
-/* ── GOLDEN GLOW ── */
+/* ── GLOW / SACRED ── */
+@keyframes temple-glow-pulse { 0% { opacity: 0.4; } 100% { opacity: 0.75; } }
 @keyframes sacred-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(212, 134, 10, 0.1),
-                0 0 40px rgba(212, 134, 10, 0.05);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(212, 134, 10, 0.2),
-                0 0 60px rgba(212, 134, 10, 0.1);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(212,134,10,0.1), 0 0 40px rgba(212,134,10,0.05); }
+  50%      { box-shadow: 0 0 30px rgba(212,134,10,0.2), 0 0 60px rgba(212,134,10,0.1); }
 }
 
 /* ── PROGRESS RING ── */
-@keyframes ring-fill {
-  from { stroke-dashoffset: 163.36; }
-}
+@keyframes ring-fill { from { stroke-dashoffset: 163.36; } }
 
 /* ── SCALE SPRING ── */
 @keyframes scale-in {
-  from { transform: scale(0.9); opacity: 0; }
+  from { transform: scale(0.95); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
 }
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes fade-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
-
-/* ── FONT BREATHING (variable font) ── */
-@keyframes font-breathe {
-  0%, 100% { font-variation-settings: 'wght' 400; }
-  50%      { font-variation-settings: 'wght' 600; }
-}
-
-.heading-breathe {
-  animation: font-breathe 4s ease-in-out infinite;
-}
-
-/* ── CAROUSEL CARD ARC ── */
-@keyframes carousel-enter {
-  from {
-    transform: translateX(60px) scale(0.85) rotateZ(-5deg);
-    opacity: 0;
-    filter: blur(4px);
-  }
-  to {
-    transform: translateX(0) scale(1) rotateZ(0);
-    opacity: 1;
-    filter: blur(0);
-  }
-}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
 
 /* ── NOTIFICATION BADGE BOUNCE ── */
 @keyframes badge-bounce {
   0%   { transform: scale(0); }
-  50%  { transform: scale(1.3); }
-  70%  { transform: scale(0.9); }
+  50%  { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
 /* ── SKELETON LOADING ── */
-@keyframes skeleton-pulse {
-  0%   { opacity: 0.6; }
-  50%  { opacity: 0.3; }
-  100% { opacity: 0.6; }
-}
+@keyframes skeleton-pulse { 0% { opacity: 0.6; } 50% { opacity: 0.3; } 100% { opacity: 0.6; } }
 
-/* ── FLOAT / HOVER (ambient motion) ── */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
-}
+/* ── ROTATE ── */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
 
-.float-gentle {
-  animation: float 4s ease-in-out infinite;
-}
-
-/* ── ROTATE (loading/processing) ── */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.spin {
-  animation: spin 1s linear infinite;
-}
-
-/* ── SLIDE IN FROM BOTTOM (for toasts/snackbars) ── */
-@keyframes slide-up-in {
-  from {
-    transform: translateY(100%) scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-down-out {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(100%) scale(0.95);
-    opacity: 0;
-  }
-}
-
-/* ── GOLDEN PARTICLE BURST (CSS-only fallback) ── */
-@keyframes particle-burst {
-  0% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(var(--px, 20px), var(--py, -30px)) scale(0);
-    opacity: 0;
-  }
-}
-
-/* ── VIEW TRANSITIONS: PREMIUM iOS-STYLE SLIDES ── */
-@keyframes ios-slide-in-right {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes ios-slide-out-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-30%); }
-}
-
-@keyframes ios-slide-in-left {
-  from { transform: translateX(-30%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes ios-slide-out-right {
-  from { transform: translateX(0); }
-  to { transform: translateX(100%); }
-}
-
-/* Set up mix-blend-mode to avoid color blending during transition overlays */
-::view-transition-old(root),
-::view-transition-new(root) {
-  mix-blend-mode: normal;
-  height: 100%;
-  animation-duration: 0.32s;
-  animation-timing-function: cubic-bezier(0.32, 0.94, 0.6, 1);
-  animation-fill-mode: both;
-}
-
-/* Default Forward Navigation: old slides out left, new slides in right */
-::view-transition-old(root) {
-  animation-name: ios-slide-out-left;
-}
-::view-transition-new(root) {
-  animation-name: ios-slide-in-right;
-}
-
-/* Back Navigation: old slides out right, new slides in left */
-.back-transition::view-transition-old(root) {
-  animation-name: ios-slide-out-right;
-  z-index: 2; /* old page slides on top to the right */
-}
-.back-transition::view-transition-new(root) {
-  animation-name: ios-slide-in-left;
-  z-index: 1; /* new page is underneath sliding in slightly */
-}
-
-::view-transition-group(root) {
-  background-color: var(--bg-color, #FAF8F5);
-}
-html.dark::view-transition-group(root),
-html.dark-mode::view-transition-group(root) {
-  background-color: var(--bg-color, #0D0D0F);
-}
+/* ── SLIDE IN FROM BOTTOM ── */
+@keyframes slide-up-in { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slide-down-out { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }

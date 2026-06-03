@@ -24,21 +24,15 @@
   /* PREMIUM DARK GLASS (Default for maximum float contrast) */
   background: rgba(18, 18, 20, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(18px) saturate(600%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(600%) !important;
+  backdrop-filter: blur(12px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
   box-shadow: 
     0 20px 50px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
   
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: all 0.2s ease !important;
   pointer-events: all !important;
   margin: 0 !important;
-  animation: navSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-}
-
-@keyframes navSlideUp {
-  0% { transform: translate(-50%, 100px); opacity: 0; }
-  100% { transform: translate(-50%, 0); opacity: 1; }
 }
 
 /* Light Theme Overrides - High Contrast Glass */
@@ -62,7 +56,7 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
   border-radius: 20px !important;
   text-decoration: none !important;
   color: rgba(255, 255, 255, 0.5) !important;
-  transition: all 0.3s ease !important;
+  transition: color 0.15s ease !important;
   position: relative !important;
   flex: 1 !important;
   min-width: 60px !important;
@@ -86,7 +80,7 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
 .tab-icon {
   font-size: 22px !important;
   line-height: 1 !important;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: transform 0.15s ease !important;
 }
 
 .tab-label {
@@ -98,7 +92,7 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
 
 /* Hover/Active effects */
 .tab-item:active {
-  transform: scale(0.9) !important;
+  transform: scale(0.96) !important;
 }
 
 /* Prevent content overlap across the app */

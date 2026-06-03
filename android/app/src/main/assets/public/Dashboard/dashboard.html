@@ -16,11 +16,16 @@
         const theme = localStorage.getItem('anhad_theme') || 'auto';
         let effectiveTheme = theme;
         if (theme === 'auto') {
-      const hour = new Date().getHours();
-      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-    }
-    // data-time-of-day is NOT set on sub-pages. Home-page only.
-    // Sub-pages use clean light/dark based on time, not morning/evening palette.
+          const forced = localStorage.getItem('anhad_forced_time_of_day');
+          if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            effectiveTheme = (forced === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
         document.documentElement.style.colorScheme = effectiveTheme;
         if (effectiveTheme === 'dark') {
           document.documentElement.classList.add('dark', 'dark-mode');
@@ -599,9 +604,11 @@
     <span class="tab-icon">&#x2764;&#xFE0F;</span>
     <span class="tab-label">Favorites</span>
   </a>
-  <a href="dashboard.html" class="tab-item active">
-    <span class="tab-icon">&#x1F4C8;</span>
-    <span class="tab-label">Dashboard</span>
+  <a href="../sadhsangat-live/index.html" class="tab-item">
+    <span class="tab-icon" style="font-size:0;line-height:0;">
+      <img src="../assets/app-logo.png" alt="Sadhsangat" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
+    </span>
+    <span class="tab-label">Sadhsangat</span>
   </a>
 </nav>
 

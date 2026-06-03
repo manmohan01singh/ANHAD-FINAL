@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v5.9.8'; // Bumped: Event-driven instant bg swap (ms reaction, not 10s poll)
+const CACHE_VERSION = 'anhad-v6.2.0'; // Force cache bust — rollback to de09325 clean state
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -166,8 +166,8 @@ const STATIC_FILES = [
 
   // Reminders
   'reminders/smart-reminders-v7.html',
-  'reminders/smart-reminders-v6.css',
-  'reminders/smart-reminders-v6.js',
+  'reminders/smart-reminders-v7.css',
+  'reminders/smart-reminders-v7.js',
   'reminders/smart-reminders-ui.js',
   'reminders/alarm.html',
   'reminders/css/alarm.css',
@@ -177,17 +177,66 @@ const STATIC_FILES = [
   'reminders/js/bg-alarm.js',
   'reminders/js/nitnem-sync.js',
 
-  // Gurbani Radio — Phase 11 rebuild
-  'GurbaniRadio/gurbani-radio-new.html',
-  'GurbaniRadio/gurbani-radio-new.css',
-  'GurbaniRadio/gurbani-radio-new.js',
+  // Gurbani Radio player files (Correct production player assets)
+  'GurbaniRadio/gurbani-radio-amritvela.html',
+  'GurbaniRadio/gurbani-radio-darbar.html',
+  'GurbaniRadio/gurbani-radio.html',
+  'GurbaniRadio/gurbani-radio.js',
+  'GurbaniRadio/gurbani-radio-ios.css',
+  'GurbaniRadio/gurbani-radio.css',
+  'GurbaniRadio/ios17-player.css',
+  'GurbaniRadio/ios17-player.js',
 
   // Notes
   'Notes/notes.html',
   'Notes/notes-app.css',
   'Notes/notes-manager.js',
   'Notes/notes-ui.js',
-  'Notes/notes-integration.js'
+  'Notes/notes-integration.js',
+
+  // Guru Portraits (precached for instant, offline load)
+  'guruimages/guruamardasji.jpeg',
+  'guruimages/guruangaddevsahebji.jpeg',
+  'guruimages/guruarjanddevsahebji.jpeg',
+  'guruimages/gurugobindsinghsahebji.jpeg',
+  'guruimages/gurugranthsahebji.jpeg',
+  'guruimages/guruhargobindsahebji.jpeg',
+  'guruimages/guruharkrishansahebji.jpeg',
+  'guruimages/guruharraisahebji.jpeg',
+  'guruimages/gurunanakdevsahebji.jpeg',
+  'guruimages/gururamdassahebji.jpeg',
+  'guruimages/gurutegbahadursahebji.jpeg',
+
+  // Background WebP Layers (precached for instant, offline load)
+  'assets/Darbar-sahib-AMRITVELA.webp',
+  'assets/HUKAMNAMA-SAHIB.webp',
+  'assets/bangla-sahib.webp',
+  'assets/darbar-sahib-day-bg.webp',
+  'assets/darbar-sahib-day.webp',
+  'assets/darbar-sahib-evening-bg.webp',
+  'assets/darbar-sahib-evening.webp',
+  'assets/darbar-sahib-morning-bg.webp',
+  'assets/darbar-sahib-night-bg.webp',
+  'assets/ikonkar_guru-gobind-singh.webp',
+  'assets/dasam-granth-transparent.webp',
+  'assets/sarbloh-granth-transparent.webp',
+  'assets/sggs-transparent.webp',
+  'assets/nishan-logo.webp',
+  'assets/waheguru-simran-cover.png',
+
+  // Ultra-Compressed WebP Hero Card Images (Instant Loading)
+  'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
+  'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+  'assets/HERO CARD IMAGES/morning-waheguru-simran.webp',
+  'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+  'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+  'assets/HERO CARD IMAGES/day-waheguru-simran.webp',
+  'assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
+  'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+  'assets/HERO CARD IMAGES/evening-waheguru-simran.webp',
+  'assets/HERO CARD IMAGES/night-darbar-sahib.webp',
+  'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp',
+  'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
 ];
 
 // Data URLs that need special caching
@@ -324,52 +373,49 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome-extension and other non-http
   if (!url.protocol.startsWith('http')) return;
 
+  // NEVER cache sw.js or service-worker.js — browser handles this
+  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
+    return;
+  }
+
   // NEVER cache version.json — always go to network for instant update detection
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
     return;
   }
 
-  // NEVER cache sw.js or service-worker.js — browser handles this
-  if (url.pathname.endsWith('/sw.js') || url.pathname.endsWith('/service-worker.js')) {
-    return;
-  }
+  // 1. ONLINE KIRTAN (LIVE STREAMS) -> NETWORK ONLY
+  // Detect live audio stream requests (Amritvela r2.dev webm files, icecast, shoutcast, live streams)
+  const isLiveStream = (
+    url.hostname.includes('r2.dev') ||
+    url.hostname.includes('listen.samayam') ||
+    url.hostname.includes('icecast') ||
+    url.hostname.includes('shoutcast') ||
+    url.hostname.includes('streaming') ||
+    url.pathname.match(/\.m3u8$|\.ts$/) ||
+    (url.pathname.match(/\.(mp3|aac|ogg|webm)$/) && !url.pathname.startsWith('/Audio/'))
+  );
 
-  // API requests - Network first
-  if (url.hostname.includes('api.banidb.com') ||
-    url.hostname.includes('api.gurbaninow.com')) {
-    event.respondWith(networkFirst(event.request));
-    return;
-  }
-
-  // CRITICAL FIX: Never cache r2.dev audio files (Amritvela streams) - always fetch fresh
-  if (event.request.url.includes('r2.dev') && event.request.url.includes('.webm')) {
+  if (isLiveStream) {
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // Audio files & images - Cache first (large assets, rarely change)
-  if (event.request.url.includes('/Audio/') ||
-      url.pathname.match(/\.(png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|eot)$/)) {
-    event.respondWith(cacheFirst(event.request));
-    return;
-  }
+  // 2. HUKAMNAMA & API CALLS -> NETWORK FIRST with Cache Fallback
+  // Once fetched, the API result is saved in the cache. If offline, it is loaded from the cache.
+  const isApiOrHukamnama = (
+    url.hostname.includes('api.banidb.com') ||
+    url.hostname.includes('api.gurbaninow.com') ||
+    url.pathname.includes('/hukamnama')
+  );
 
-  // CRITICAL FIX: Use NETWORK-FIRST for index.html to prevent broken UI when returning from nitnem
-  if (url.pathname === '/' || url.pathname.endsWith('/index.html')) {
+  if (isApiOrHukamnama) {
     event.respondWith(networkFirst(event.request));
     return;
   }
 
-  // HTML, JS, CSS files — STALE-WHILE-REVALIDATE
-  // Serve cached version instantly, but fetch fresh in background
-  // Next load will have the new version
-  if (url.pathname.match(/\.(html|js|css|json)$/) || event.request.mode === 'navigate') {
-    event.respondWith(staleWhileRevalidate(event.request));
-    return;
-  }
-
-  // Everything else — cache first
+  // 3. ALL OTHER PAGES, IMAGES, CSS, JS -> CACHE FIRST (Offline-first)
+  // Serve from cache immediately; if not found in cache, fetch from network and cache it.
   event.respondWith(cacheFirst(event.request));
 });
 
