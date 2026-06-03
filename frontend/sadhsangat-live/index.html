@@ -3346,6 +3346,16 @@
     return userId;
   }
 
+  const API_BASE = (() => {
+    try {
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+      if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+      return 'https://anhad-final.onrender.com';
+    } catch (e) {}
+    return 'https://anhad-final.onrender.com';
+  })();
+
   function fetchWithUser(url, options = {}) {
     const userId = getPersistentUserId();
     if (!options.headers) {
@@ -3357,7 +3367,8 @@
     if (!options.cache) {
       options.cache = 'no-store';
     }
-    return fetch(url, options);
+    const finalUrl = url.startsWith('/') ? `${API_BASE}${url}` : url;
+    return fetch(finalUrl, options);
   }
 
   async function fetchVideosForSelectedChannel(silent = false) {
@@ -3834,7 +3845,7 @@
         <div class="empty-state">
           <div class="empty-icon">⚠️</div>
           <div class="empty-heading">Connection Error</div>
-          <div class="empty-desc">Could not reach the server. Please verify if the server is running on port 3000.</div>
+          <div class="empty-desc">Could not reach the server. Please check your internet connection or verify if the backend service is running.</div>
         </div>
       `;
       $('liveDot').className = 'hdr-status-dot';

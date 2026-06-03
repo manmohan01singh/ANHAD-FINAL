@@ -838,7 +838,7 @@ body {
   background-color: var(--ios-bg-primary);
 }
 
-.dark-mode .dark-mode .practice-card--nitnem {
+[data-theme="dark"] .practice-card--nitnem {
   background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
   box-shadow: 
     15px 15px 35px rgba(0, 0, 0, 0.5),
@@ -847,7 +847,7 @@ body {
     0 0 0 2px rgba(212, 148, 58, 0.2) !important;
   border: 2px solid rgba(255,255,255,0.05) !important;
 }
-.dark-mode .dark-mode .practice-card--sehaj {
+[data-theme="dark"] .practice-card--sehaj {
   background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%) !important;
   box-shadow: 
     15px 15px 35px rgba(0, 0, 0, 0.5),
@@ -856,7 +856,7 @@ body {
     0 0 0 2px rgba(88, 86, 214, 0.2) !important;
   border: 2px solid rgba(255,255,255,0.05) !important;
 }
-.dark-mode .dark-mode .practice-card--hukam {
+[data-theme="dark"] .practice-card--hukam {
   background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%) !important;
   box-shadow: 
     15px 15px 35px rgba(0, 0, 0, 0.5),
@@ -867,7 +867,7 @@ body {
 }
 
 /* Dark mode Progress Card â€” Deep Claymorphism without white outer glow */
-.dark-mode .dark-mode .progress-inline {
+[data-theme="dark"] .progress-inline {
   background: linear-gradient(165deg, #202022 0%, #151515 100%) !important;
   box-shadow: 
     15px 15px 35px rgba(0, 0, 0, 0.6),
@@ -875,27 +875,27 @@ body {
     inset -4px -4px 12px rgba(0, 0, 0, 0.8) !important;
   border: 2px solid rgba(255, 255, 255, 0.03) !important;
 }
-.dark-mode .dark-mode .quick-card--green {
+[data-theme="dark"] .quick-card--green {
   background: linear-gradient(140deg, #1B3F27 0%, #234E32 100%) !important;
 }
-.dark-mode .dark-mode .quick-card--gold {
+[data-theme="dark"] .quick-card--gold {
   background: linear-gradient(140deg, #4A3A22 0%, #5C4A2E 100%) !important;
 }
-.dark-mode .dark-mode .quick-card--purple {
+[data-theme="dark"] .quick-card--purple {
   background: linear-gradient(140deg, #2E2A4A 0%, #3B365E 100%) !important;
 }
-.dark-mode .dark-mode .quick-card--blue {
+[data-theme="dark"] .quick-card--blue {
   background: linear-gradient(140deg, #1C304A 0%, #263E5E 100%) !important;
 }
-.dark-mode .dark-mode .quick-card--teal {
+[data-theme="dark"] .quick-card--teal {
   background: linear-gradient(140deg, #18423B 0%, #22564D 100%) !important;
 }
-.dark-mode .dark-mode .quick-card--rose {
+[data-theme="dark"] .quick-card--rose {
   background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%) !important;
 }
 
 /* Ultimate Dark Mode Claymorphism for Quick Cards - 3D Pumping Out Effect */
-.dark-mode .dark-mode .quick-card {
+[data-theme="dark"] .quick-card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -913,7 +913,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .quick-card:active {
+[data-theme="dark"] .quick-card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -923,7 +923,7 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-.dark-mode .dark-mode .quick-card__icon {
+[data-theme="dark"] .quick-card__icon {
   background: rgba(20, 20, 22, 0.95) !important;
   border: none !important;
   box-shadow: 
@@ -936,38 +936,38 @@ body {
 }
 
 /* Improve emoji visibility in dark mode for Quick Access cards */
-.dark-mode .dark-mode .quick-card__icon .ios-emoji {
+[data-theme="dark"] .quick-card__icon .ios-emoji {
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3)) !important;
   opacity: 1 !important;
 }
 
 /* More vibrant dark mode colors for Quick Access card variants */
-.dark-mode .dark-mode .quick-card--green {
+[data-theme="dark"] .quick-card--green {
   background: #0D0D0F !important;
   border: none !important;
 }
-.dark-mode .dark-mode .quick-card--gold {
+[data-theme="dark"] .quick-card--gold {
   background: #0D0D0F !important;
   border: none !important;
 }
-.dark-mode .dark-mode .quick-card--purple {
+[data-theme="dark"] .quick-card--purple {
   background: #0D0D0F !important;
   border: none !important;
 }
-.dark-mode .dark-mode .quick-card--blue {
+[data-theme="dark"] .quick-card--blue {
   background: #0D0D0F !important;
   border: none !important;
 }
-.dark-mode .dark-mode .quick-card--rose {
+[data-theme="dark"] .quick-card--rose {
   background: #0D0D0F !important;
   border: none !important;
 }
-.dark-mode .dark-mode .quick-card--teal {
+[data-theme="dark"] .quick-card--teal {
   background: #0D0D0F !important;
   border: none !important;
 }
 
-.dark-mode .dark-mode .event-card {
+[data-theme="dark"] .event-card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -985,7 +985,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .event-card:active {
+[data-theme="dark"] .event-card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -996,7 +996,7 @@ body {
 }
 
 /* Hero Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .hero-card {
+[data-theme="dark"] .hero-card {
   background: #0D0D0F !important;
   box-shadow: none !important;
   border: none !important;
@@ -1004,21 +1004,21 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .hero-card:active {
+[data-theme="dark"] .hero-card:active {
   box-shadow: none !important;
   background: #0A0A0C !important;
   transform: translateY(0) scale(0.98);
 }
 
 /* Enhancing Hero Play button visibility in Dark Mode - REMOVE CLAYMORPHISM */
-.dark-mode .dark-mode .hero-card__image-wrapper::before,
-.dark-mode .dark-mode .hero-card__image-wrapper::after {
+[data-theme="dark"] .hero-card__image-wrapper::before,
+[data-theme="dark"] .hero-card__image-wrapper::after {
   box-shadow: none !important;
   border: none !important;
   mix-blend-mode: normal !important;
 }
 
-.dark-mode .dark-mode .hero-card__play-btn {
+[data-theme="dark"] .hero-card__play-btn {
   background: rgba(0, 0, 0, 0.5) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
@@ -1028,7 +1028,7 @@ body {
 }
 
 /* Practice Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .practice-card {
+[data-theme="dark"] .practice-card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -1046,7 +1046,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .practice-card:active {
+[data-theme="dark"] .practice-card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -1057,7 +1057,7 @@ body {
 }
 
 /* Glass Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .glass-card {
+[data-theme="dark"] .glass-card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -1075,7 +1075,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .glass-card:active {
+[data-theme="dark"] .glass-card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -1086,7 +1086,7 @@ body {
 }
 
 /* Stat Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .stat-card {
+[data-theme="dark"] .stat-card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -1104,7 +1104,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .stat-card:active {
+[data-theme="dark"] .stat-card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -1115,7 +1115,7 @@ body {
 }
 
 /* Generic Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .card {
+[data-theme="dark"] .card {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -1133,7 +1133,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .card:active {
+[data-theme="dark"] .card:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -1144,7 +1144,7 @@ body {
 }
 
 /* Nitnem Page Bani Cards - Dark Claymorphism 3D Effect */
-.dark-mode .dark-mode .bani-card__link {
+[data-theme="dark"] .bani-card__link {
   background: #0D0D0F !important;
   box-shadow: 
     /* Strong outer shadow for 3D lift - pumping out effect */
@@ -1162,7 +1162,7 @@ body {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dark-mode .dark-mode .bani-card__link:active {
+[data-theme="dark"] .bani-card__link:active {
   box-shadow: 
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
@@ -1172,12 +1172,12 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
-.dark-mode .dark-mode .hero-card__play-btn svg {
+[data-theme="dark"] .hero-card__play-btn svg {
   color: #FFFFFF !important;
 }
 
 /* Flat styling for Header Buttons */
-.dark-mode .dark-mode .header__btn, .dark-mode .dark-mode .header-btn--glass {
+[data-theme="dark"] .header__btn, [data-theme="dark"] .header-btn--glass {
   background: #2a2a2d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -1189,17 +1189,17 @@ body {
 
 /* .dark-mode .greeting__salutation â€” golden gradient preserved from trendora-premium.css */
 
-.dark-mode .dark-mode .greeting__gurbani {
+[data-theme="dark"] .greeting__gurbani {
   color: #E8B84A !important;
   text-shadow: 0 0 20px rgba(212, 148, 58, 0.3) !important;
 }
 
-.dark-mode .dark-mode .section-header__title {
+[data-theme="dark"] .section-header__title {
   color: #FFFFFF !important;
 }
 
 /* Remove glow from Carousel dots in dark mode */
-.dark-mode .dark-mode .hero-carousel__dot--active {
+[data-theme="dark"] .hero-carousel__dot--active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1286,4 +1286,604 @@ a,
   .ios-stagger > * {
     animation-delay: 0s !important;
   }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   § 16. AUTO MODE / DYNAMIC CARD PALETTE OVERRIDES
+   ═════════════════════════════════════════════════════════════════════════════ */
+[data-theme-mode="auto"] .practice-card,
+[data-theme-mode="auto"] .practice-card--nitnem,
+[data-theme-mode="auto"] .practice-card--sehaj,
+[data-theme-mode="auto"] .practice-card--hukam {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__title {
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__status {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__ring-bg {
+  stroke: var(--sky-card-border) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__ring-fill {
+  stroke: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__ring-icon {
+  color: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .practice-card__ring-icon .ios-emoji {
+  filter: drop-shadow(0 2px 8px var(--sky-card-shadow)) !important;
+}
+
+/* Quick Access Grid Overrides for Auto Mode */
+[data-theme-mode="auto"] .quick-card,
+[data-theme-mode="auto"] .quick-card--green,
+[data-theme-mode="auto"] .quick-card--gold,
+[data-theme-mode="auto"] .quick-card--purple,
+[data-theme-mode="auto"] .quick-card--blue,
+[data-theme-mode="auto"] .quick-card--rose,
+[data-theme-mode="auto"] .quick-card--teal {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__title {
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__subtitle {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__icon {
+  background: var(--sky-card-icon-bg) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px var(--sky-card-shadow) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__chevron {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .quick-card__meta,
+[data-theme-mode="auto"] .quick-card__meta-value,
+[data-theme-mode="auto"] .quick-card__progress {
+  color: var(--sky-card-accent) !important;
+}
+
+/* Active Pressed States for Auto Mode Cards */
+[data-theme-mode="auto"] .practice-card:active,
+[data-theme-mode="auto"] .practice-card--nitnem:active,
+[data-theme-mode="auto"] .practice-card--sehaj:active,
+[data-theme-mode="auto"] .practice-card--hukam:active,
+[data-theme-mode="auto"] .quick-card:active,
+[data-theme-mode="auto"] .quick-card--green:active,
+[data-theme-mode="auto"] .quick-card--gold:active,
+[data-theme-mode="auto"] .quick-card--purple:active,
+[data-theme-mode="auto"] .quick-card--blue:active,
+[data-theme-mode="auto"] .quick-card--rose:active,
+[data-theme-mode="auto"] .quick-card--teal:active {
+  transform: scale(0.96) !important;
+  background: var(--sky-card-bg) !important;
+  box-shadow: inset 0 4px 14px var(--sky-card-shadow) !important;
+}
+
+/* Upcoming Event Card Overrides for Auto Mode */
+[data-theme-mode="auto"] .event-card {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .event-card__title {
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .event-card__eyebrow {
+  color: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .event-card__description,
+[data-theme-mode="auto"] .event-card__date,
+[data-theme-mode="auto"] .event-card__countdown,
+[data-theme-mode="auto"] .event-card__countdown-label {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .event-card__learn-more {
+  background: var(--sky-card-icon-bg) !important;
+  color: var(--sky-card-text) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+}
+
+/* Progress Bar Overrides for Auto Mode */
+[data-theme-mode="auto"] .progress-inline {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .progress-inline__fill {
+  background: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .progress-inline__text {
+  color: var(--sky-card-text) !important;
+}
+
+/* Header Buttons Overrides for Auto Mode */
+[data-theme-mode="auto"] .header__btn,
+[data-theme-mode="auto"] .header-btn--glass,
+[data-theme-mode="auto"] .header__back,
+[data-theme-mode="auto"] .glass-nav__back {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  box-shadow: 0 4px 12px var(--sky-card-shadow) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .header__btn svg,
+[data-theme-mode="auto"] .header-btn--glass svg,
+[data-theme-mode="auto"] .header__back svg,
+[data-theme-mode="auto"] .glass-nav__back svg {
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .header__btn:active,
+[data-theme-mode="auto"] .header-btn--glass:active,
+[data-theme-mode="auto"] .header__back:active,
+[data-theme-mode="auto"] .glass-nav__back:active {
+  background: var(--sky-card-bg) !important;
+}
+
+/* Tab Bar Navigation Overrides for Auto Mode */
+[data-theme-mode="auto"] .tab-bar,
+[data-theme-mode="auto"] .bottom-nav__glass {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  box-shadow: 0 -8px 32px var(--sky-card-shadow) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .tab-item {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .tab-item.active {
+  color: var(--sky-card-accent) !important;
+  background: var(--sky-card-icon-bg) !important;
+}
+
+[data-theme-mode="auto"] .tab-item.active .tab-icon {
+  filter: drop-shadow(0 2px 8px var(--sky-card-shadow)) !important;
+}
+
+/* =========================================================================
+   § 17. DASHBOARD GLASSMORPHIC OVERRIDES (AUTO THEME)
+   ========================================================================= */
+[data-theme-mode="auto"] .streak-hero,
+[data-theme-mode="auto"] .stat-card,
+[data-theme-mode="auto"] .goal-card,
+[data-theme-mode="auto"] .analytics-chart,
+[data-theme-mode="auto"] .analytics-chart-skeleton,
+[data-theme-mode="auto"] .milestone {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .streak-hero__label,
+[data-theme-mode="auto"] .streak-hero__subtitle,
+[data-theme-mode="auto"] .stat-card__label,
+[data-theme-mode="auto"] .goal-card__title,
+[data-theme-mode="auto"] .goal-card__status,
+[data-theme-mode="auto"] .chart-title,
+[data-theme-mode="auto"] .legend-item,
+[data-theme-mode="auto"] .chart-label,
+[data-theme-mode="auto"] .chart-goal-label,
+[data-theme-mode="auto"] .score-label,
+[data-theme-mode="auto"] .minimal-labels span,
+[data-theme-mode="auto"] .milestone__label {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .streak-hero__count,
+[data-theme-mode="auto"] .score-value,
+[data-theme-mode="auto"] .stat-card__value,
+[data-theme-mode="auto"] .milestone__days {
+  color: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .streak-hero__freeze {
+  background: var(--sky-card-icon-bg) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  color: var(--sky-card-accent) !important;
+  box-shadow: 0 4px 12px var(--sky-card-shadow) !important;
+}
+
+[data-theme-mode="auto"] .goal-card__progress-wrap {
+  background: var(--sky-card-border) !important;
+}
+
+[data-theme-mode="auto"] .goal-card__fill {
+  background: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .chart-body {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  box-shadow: inset 2px 2px 8px var(--sky-card-shadow) !important;
+}
+
+[data-theme-mode="auto"] .milestone--achieved {
+  background: var(--sky-card-icon-bg) !important;
+  border: 1.5px solid var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .chart-insight {
+  background: var(--sky-card-icon-bg) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .chart-insight i {
+  color: var(--sky-card-accent) !important;
+}
+
+/* =========================================================================
+   § 18. LEARNING & FAVORITES GLASSMORPHIC OVERRIDES (AUTO THEME)
+   ========================================================================= */
+[data-theme-mode="auto"] .inspiration-section,
+[data-theme-mode="auto"] .wisdom-card,
+[data-theme-mode="auto"] .category-card,
+[data-theme-mode="auto"] .topic-card,
+[data-theme-mode="auto"] .shabad-card,
+[data-theme-mode="auto"] .quick-stats-section,
+[data-theme-mode="auto"] .insight-modal__content,
+[data-theme-mode="auto"] .tabs,
+[data-theme-mode="auto"] .fav-card,
+[data-theme-mode="auto"] .fav-card__read-btn,
+[data-theme-mode="auto"] .fav-card__action,
+[data-theme-mode="auto"] .add-note-btn,
+[data-theme-mode="auto"] .empty-state,
+[data-theme-mode="auto"] .empty-state__icon {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1.5px solid var(--sky-card-border) !important;
+  box-shadow: 0 8px 32px var(--sky-card-shadow),
+              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+[data-theme-mode="auto"] .category-name,
+[data-theme-mode="auto"] .topic-name,
+[data-theme-mode="auto"] .shabad-title,
+[data-theme-mode="auto"] .fav-card__gurmukhi,
+[data-theme-mode="auto"] .wisdom-title,
+[data-theme-mode="auto"] .inspiration-quote__text {
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .category-desc,
+[data-theme-mode="auto"] .topic-desc,
+[data-theme-mode="auto"] .shabad-meta,
+[data-theme-mode="auto"] .fav-card__translation,
+[data-theme-mode="auto"] .fav-card__meta,
+[data-theme-mode="auto"] .wisdom-desc,
+[data-theme-mode="auto"] .wisdom-pankti,
+[data-theme-mode="auto"] .wisdom-source,
+[data-theme-mode="auto"] .inspiration-quote__translation,
+[data-theme-mode="auto"] .inspiration-meta,
+[data-theme-mode="auto"] .quick-stat__label,
+[data-theme-mode="auto"] .empty-state__title,
+[data-theme-mode="auto"] .empty-state__desc,
+[data-theme-mode="auto"] .tab {
+  color: var(--sky-card-text2) !important;
+}
+
+[data-theme-mode="auto"] .tab--active {
+  background: var(--sky-card-icon-bg) !important;
+  color: var(--sky-card-accent) !important;
+  border: 1px solid var(--sky-card-border) !important;
+}
+
+[data-theme-mode="auto"] .tab__count {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .tab--active .tab__count {
+  background: var(--sky-card-icon-bg) !important;
+  color: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .quick-stat__value {
+  color: var(--sky-card-accent) !important;
+}
+
+[data-theme-mode="auto"] .fav-card__type {
+  background: var(--sky-card-icon-bg) !important;
+  color: var(--sky-card-accent) !important;
+  border: 1px solid var(--sky-card-border) !important;
+}
+
+[data-theme-mode="auto"] .wisdom-glow,
+[data-theme-mode="auto"] .wisdom-rays {
+  opacity: 0.15 !important;
+}
+
+
+/* =========================================================================
+   § MASTER BLUR — All cards get glassmorphism across ALL themes + palettes
+   Applies to: light · dark · auto (morning/day/evening/night)
+   ========================================================================= */
+
+/* ── Quick Cards ── */
+.quick-card {
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Event / Practice Cards ── */
+.event-card,
+.practice-card,
+.card,
+.glass-card,
+.nitnem-card,
+.insight-card,
+.fav-card,
+.streak-hero,
+.stat-card,
+.goal-card,
+.milestone,
+.analytics-chart {
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Dark theme card backgrounds need slight transparency for blur to show ── */
+[data-theme="dark"] .quick-card,
+.dark-mode .quick-card {
+  background: rgba(30, 30, 35, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+[data-theme="dark"] .event-card,
+.dark-mode .event-card,
+[data-theme="dark"] .fav-card,
+.dark-mode .fav-card,
+[data-theme="dark"] .insight-card,
+.dark-mode .insight-card,
+[data-theme="dark"] .practice-card,
+.dark-mode .practice-card {
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Auto theme — all 4 sky palettes inherit blur from var(--sky-card-bg-glass) ── */
+[data-theme-mode="auto"] .quick-card,
+[data-theme-mode="auto"] .event-card,
+[data-theme-mode="auto"] .practice-card,
+[data-theme-mode="auto"] .fav-card,
+[data-theme-mode="auto"] .insight-card,
+[data-theme-mode="auto"] .card,
+[data-theme-mode="auto"] .glass-card,
+[data-theme-mode="auto"] .nitnem-card {
+  background: var(--sky-card-bg-glass) !important;
+  border: 1px solid var(--sky-card-border) !important;
+  color: var(--sky-card-text) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  box-shadow:
+    0 8px 32px var(--sky-card-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+/* ── Override any mobile disabling of blur on cards ── */
+.is-mobile .quick-card,
+.is-mobile .event-card,
+.is-mobile .fav-card,
+.is-mobile .practice-card,
+.is-mobile .insight-card {
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+}
+
+/* ── Ensure quick-card icon keeps blur ── */
+.is-mobile .quick-card__icon {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* =========================================================================
+   § INSTANT THEME / PALETTE SWITCHING — Zero transition on theme variables
+   The sky background image + CSS vars switch instantly; only micro-interactions
+   (hover, tap) keep their transitions.
+   ========================================================================= */
+
+/* Kill slow color transitions on the root/body so palette changes are instant */
+html,
+body,
+.app,
+#app {
+  transition: background-image 0ms, background-color 0ms, color 0ms !important;
+}
+
+/* Keep micro-animations for cards (tap/hover only, not on theme change) */
+.quick-card,
+.event-card,
+.hero-card,
+.practice-card,
+.fav-card {
+  transition:
+    transform 0.15s var(--ios-ease),
+    box-shadow 0.15s ease !important;
+}
+
+/* Tab bar color/background must also switch instantly */
+.tab-bar {
+  transition: transform 0.2s ease !important;
+}
+
+.tab-item {
+  transition: color 0.1s ease !important;
+}
+
+/* =========================================================================
+   § TAB ICON IMAGE — Perfectly centred logo in nav pill
+   ========================================================================= */
+
+.tab-icon img {
+  display: block !important;
+  margin: 0 auto !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  width: 26px !important;
+  height: 26px !important;
+  transition: transform 0.15s ease, filter 0.15s ease !important;
+}
+
+.tab-item.active .tab-icon img {
+  filter: drop-shadow(0 2px 10px rgba(255, 59, 48, 0.55)) !important;
+  transform: scale(1.12) translateY(-2px) !important;
+}
+
+/* =========================================================================
+   § DARK GLASS FIX — Make dark backgrounds semi-transparent so blur shows
+   The backdrop-filter blur only works when background has alpha < 1.
+   These come LAST so they win over all earlier !important rules.
+   ========================================================================= */
+
+/* ── Dark quick-cards: all variants get glassy dark bg ── */
+[data-theme="dark"] .quick-card,
+[data-theme="dark"] .quick-card--green,
+[data-theme="dark"] .quick-card--gold,
+[data-theme="dark"] .quick-card--purple,
+[data-theme="dark"] .quick-card--blue,
+[data-theme="dark"] .quick-card--rose,
+[data-theme="dark"] .quick-card--teal,
+.dark-mode .quick-card,
+.dark-mode .quick-card--green,
+.dark-mode .quick-card--gold,
+.dark-mode .quick-card--purple,
+.dark-mode .quick-card--blue,
+.dark-mode .quick-card--rose,
+.dark-mode .quick-card--teal {
+  background: rgba(13, 13, 15, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Dark event-cards ── */
+[data-theme="dark"] .event-card,
+.dark-mode .event-card {
+  background: rgba(13, 13, 15, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Dark hero-cards ── */
+[data-theme="dark"] .hero-card,
+.dark-mode .hero-card {
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+}
+
+/* ── Kill slow background transition on cards — only transform animates ── */
+[data-theme="dark"] .quick-card,
+[data-theme="dark"] .event-card,
+.dark-mode .quick-card,
+.dark-mode .event-card {
+  transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+              box-shadow 0.15s ease !important;
+}
+
+/* =========================================================================
+   § COMPLETE DARK GLASS FIX — glass-card, stat-card, card, practice-card
+   Semi-transparent backgrounds so backdrop-filter blur renders correctly.
+   Last in file = highest cascade priority despite equal specificity.
+   ========================================================================= */
+[data-theme="dark"] .glass-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .practice-card,
+[data-theme="dark"] .nitnem-card,
+[data-theme="dark"] .insight-card,
+[data-theme="dark"] .fav-card,
+.dark-mode .glass-card,
+.dark-mode .stat-card,
+.dark-mode .card,
+.dark-mode .practice-card,
+.dark-mode .nitnem-card,
+.dark-mode .insight-card,
+.dark-mode .fav-card {
+  background: rgba(13, 13, 15, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+              box-shadow 0.15s ease !important;
+}
+
+/* Dark hero-card: keep image visible but add blur to the card surface */
+[data-theme="dark"] .hero-card,
+.dark-mode .hero-card {
+  background: rgba(13, 13, 15, 0.65) !important;
+  backdrop-filter: blur(0px) !important;
+  -webkit-backdrop-filter: blur(0px) !important;
+  transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)) !important;
+}
+
+/* ── Light theme cards: already have white/color bg — just add blur ── */
+[data-theme="light"] .quick-card,
+[data-theme="light"] .event-card,
+[data-theme="light"] .glass-card,
+[data-theme="light"] .practice-card,
+[data-theme="light"] .card,
+[data-theme="light"] .fav-card,
+[data-theme="light"] .insight-card {
+  backdrop-filter: blur(16px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
+  transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+              box-shadow 0.15s ease !important;
 }

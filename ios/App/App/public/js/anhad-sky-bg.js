@@ -70,6 +70,8 @@
       return;
     }
 
+    applyTimeAdaptiveCardColors(slot);
+
     const bgUrl = BG_IMAGES[slot];
     if (!bgUrl) return;
 
@@ -83,8 +85,6 @@
     document.body.style.backgroundPosition = 'center center';
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundAttachment = 'fixed';
-
-    applyTimeAdaptiveCardColors(slot);
   }
 
   // ── Hero card image map ───────────────────────────────────────────────────
@@ -221,6 +221,7 @@
   // ── Init ─────────────────────────────────────────────────────────────────
   function init() {
     injectInstantBgCSS();
+    preloadBgImages();
     _lastSlot = getSlot();
     _lastMode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     applyTimeOfDay();

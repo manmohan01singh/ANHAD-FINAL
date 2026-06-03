@@ -189,8 +189,9 @@
              cleanPath.endsWith('/Insights/insights') ||
              cleanPath.endsWith('/Favorites/favorites.html') ||
              cleanPath.endsWith('/Favorites/favorites') ||
-             cleanPath.endsWith('/Dashboard/dashboard.html') ||
-             cleanPath.endsWith('/Dashboard/dashboard');
+             cleanPath.endsWith('/sadhsangat-live/index.html') ||
+             cleanPath.endsWith('/sadhsangat-live/index') ||
+             cleanPath.endsWith('/sadhsangat-live');
     } catch (e) {
       return false;
     }
@@ -632,16 +633,19 @@
       if (href) {
         const absoluteHref = new URL(href, sourceUrl).href;
         if (!currentStyles.includes(absoluteHref)) {
-      NAV_DEBUG &&           console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
+          NAV_DEBUG && console.log('[SmoothNav] Loading stylesheet:', absoluteHref);
           const link = document.createElement('link');
           link.rel = 'stylesheet';
           link.href = absoluteHref;
-          // Track each new stylesheet load so we can wait for it
-          const p = new Promise(resolve => {
-            link.onload = resolve;
-            link.onerror = resolve; // Don't block on errors (e.g. missing optional sheet)
-          });
-          loadPromises.push(p);
+          // Track local stylesheets to avoid FOUC, but load remote fonts/CDNs fully async
+          const isRemote = absoluteHref.startsWith('http') && !absoluteHref.includes(window.location.host);
+          if (!isRemote) {
+            const p = new Promise(resolve => {
+              link.onload = resolve;
+              link.onerror = resolve; // Don't block on errors (e.g. missing optional sheet)
+            });
+            loadPromises.push(p);
+          }
           document.head.appendChild(link);
         }
       }
@@ -668,7 +672,7 @@
             // Skip already-absolute URLs and data URIs
             if (!relUrl || relUrl.startsWith('http') || relUrl.startsWith('/') ||
                 relUrl.startsWith('data:') || relUrl.startsWith('#')) {
-              return match;
+               return match;
             }
             try {
               return `url('${new URL(relUrl, sourceUrl).href}')`;
@@ -685,13 +689,13 @@
       }
     }
 
-    // Wait for all new external stylesheets to load, max 600ms
+    // Wait for all new external stylesheets to load, max 150ms
     if (loadPromises.length > 0) {
       await Promise.race([
         Promise.all(loadPromises),
-        new Promise(resolve => setTimeout(resolve, 600))
+        new Promise(resolve => setTimeout(resolve, 150))
       ]);
-      NAV_DEBUG &&       console.log('[SmoothNav] All new stylesheets ready.');
+      NAV_DEBUG && console.log('[SmoothNav] All new stylesheets ready.');
     }
   }
 
@@ -1029,7 +1033,7 @@
       const shellPages = [
         'Insights/insights.html',
         'Favorites/favorites.html',
-        'Dashboard/dashboard.html'
+        'sadhsangat-live/index.html'
       ];
       shellPages.forEach(url => {
         try {

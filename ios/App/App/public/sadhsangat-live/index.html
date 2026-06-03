@@ -1850,15 +1850,18 @@
   <div class="player-sheet" id="playerSheet">
     
     <!-- Drag Indicator / Top Bar -->
-    <div class="player-sheet-header" id="playerDragHeader">
-      <div class="player-drag-handle"></div>
-      <div style="width:100%; display:flex; align-items:center; justify-content:space-between;">
-        <button class="player-close-btn" id="playerCloseBtn">▾</button>
-        <div style="flex:1; text-align:center; min-width:0; padding:0 12px;">
-          <div id="playerChannelName">Sadhsangat Live</div>
-          <div id="playerVideoTitle">Loading stream...</div>
+    <div class="player-sheet-header" id="playerDragHeader" style="position: relative; padding: 8px 16px 12px; border-bottom: 1px solid var(--sep); cursor: grab; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;">
+      <div class="player-drag-handle" style="width: 36px; height: 5px; background: var(--text-muted); opacity: 0.4; border-radius: 100px; margin-bottom: 8px;"></div>
+      <div style="width: 100%; position: relative; display: flex; align-items: center; min-height: 40px; justify-content: center;">
+        <button class="player-close-btn" id="playerCloseBtn" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--gold); font-size: 24px; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; z-index: 10; line-height: 1;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke: var(--gold);">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div style="flex: 1; text-align: center; min-width: 0; padding: 0 40px;">
+          <div id="playerChannelName" style="font-size: 11px; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sadhsangat Live</div>
+          <div id="playerVideoTitle" style="font-size: 14.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">Loading stream...</div>
         </div>
-        <div style="width:32px;"></div> <!-- Spacer -->
       </div>
     </div>
 
@@ -1907,9 +1910,14 @@
 
         <!-- Timeline / Progress Bar -->
         <div class="player-timeline-block" style="margin-bottom:24px;">
-          <div id="playerLiveBadgeRow" style="display:none; align-items:center; gap:8px; margin-bottom:8px;">
-            <span style="background:var(--red-live); color:#FFF; font-size:10px; font-weight:800; padding:4px 8px; border-radius:6px; letter-spacing:0.5px; animation:pulse-red 1.5s infinite; display:inline-flex; align-items:center; gap:4px;"><span style="width:5px; height:5px; border-radius:50%; background:#FFF;"></span>LIVE</span>
-            <span id="playerLiveViewerCount" style="font-size:12px; color:var(--text-muted); font-weight:600;">Streaming in real-time</span>
+          <div id="playerLiveBadgeRow" style="display:none; align-items:center; justify-content:space-between; margin-bottom:8px; width:100%;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="playerStaticLiveBadge" style="background:var(--red-live); color:#FFF; font-size:10px; font-weight:800; padding:4px 8px; border-radius:6px; letter-spacing:0.5px; display:inline-flex; align-items:center; gap:4px;"><span style="width:5px; height:5px; border-radius:50%; background:#FFF;"></span>LIVE</span>
+              <span id="playerLiveViewerCount" style="font-size:12px; color:var(--text-muted); font-weight:600;">Streaming in real-time</span>
+            </div>
+            <button id="playerGoLiveBtn" style="display:none; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; background:var(--gold); border:none; color:#000; font-size:11px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(212,175,55,0.3); transition:all 0.2s;">
+              ↩ Jump to Live <span id="playerLiveOffsetLabel" style="background:rgba(0,0,0,0.15); padding:1px 6px; border-radius:8px; margin-left:4px;">-1 Min</span>
+            </button>
           </div>
           
           <input type="range" id="playerProgressBar" min="0" max="100" value="0">
@@ -1941,40 +1949,41 @@
             <input type="range" id="playerVolumeSlider" min="0" max="100" value="80">
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:12.5px; font-weight:700; flex-wrap:wrap; gap:8px;">
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:4px;">
-                <span style="color:var(--text-muted);">Speed:</span>
-                <select id="playerSpeedSelector" style="background:var(--card-bg); border:var(--card-border); border-radius:10px; padding:4px 6px; color:var(--text); font-weight:700; font-size:12px; outline:none; box-shadow:var(--card-shadow);">
-                  <option value="0.5">0.5x</option>
-                  <option value="0.75">0.75x</option>
-                  <option value="1.0" selected>Normal</option>
-                  <option value="1.25">1.25x</option>
-                  <option value="1.5">1.5x</option>
-                  <option value="2.0">2.0x</option>
-                </select>
-              </div>
-              <div style="display:flex; align-items:center; gap:4px;">
-                <span style="color:var(--text-muted);">Sleep:</span>
-                <select id="playerSleepTimer" style="background:var(--card-bg); border:var(--card-border); border-radius:10px; padding:4px 6px; color:var(--text); font-weight:700; font-size:12px; outline:none; box-shadow:var(--card-shadow);">
-                  <option value="0">Off</option>
-                  <option value="15">15 mins</option>
-                  <option value="30">30 mins</option>
-                  <option value="45">45 mins</option>
-                  <option value="60">60 mins</option>
-                </select>
-              </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; width: 100%;">
+            <!-- Speed Control -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); border: var(--card-border); border-radius: 12px; padding: 6px 12px; box-shadow: var(--card-shadow); height: 38px;">
+              <span style="color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Speed</span>
+              <select id="playerSpeedSelector" style="background: none; border: none; color: var(--text); font-weight: 700; font-size: 12px; outline: none; cursor: pointer; text-align: right; direction: rtl; padding-right: 4px; max-width: 70px;">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1.0" selected>Normal</option>
+                <option value="1.25">1.25x</option>
+                <option value="1.5">1.5x</option>
+                <option value="2.0">2.0x</option>
+              </select>
             </div>
-            
-            <div style="display:flex; align-items:center; gap:6px;">
-              <button id="playerAudioToggleBtn" style="background:var(--card-bg); border:var(--card-border); border-radius:12px; padding:6px 10px; color:var(--text); font-weight:700; display:flex; align-items:center; gap:4px; cursor:pointer; box-shadow:var(--card-shadow); font-size:12px;">
-                🎧 Audio
-              </button>
-              <button id="playerFullscreenBtn" style="background:var(--card-bg); border:var(--card-border); border-radius:12px; padding:6px 10px; color:var(--text); font-weight:700; display:flex; align-items:center; gap:4px; cursor:pointer; box-shadow:var(--card-shadow); font-size:12px;">
-                <svg id="fullscreenIconSvg" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                Full
-              </button>
+            <!-- Sleep Timer -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); border: var(--card-border); border-radius: 12px; padding: 6px 12px; box-shadow: var(--card-shadow); height: 38px;">
+              <span style="color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Sleep</span>
+              <select id="playerSleepTimer" style="background: none; border: none; color: var(--text); font-weight: 700; font-size: 12px; outline: none; cursor: pointer; text-align: right; direction: rtl; padding-right: 4px; max-width: 70px;">
+                <option value="0">Off</option>
+                <option value="15">15 Min</option>
+                <option value="30">30 Min</option>
+                <option value="45">45 Min</option>
+                <option value="60">60 Min</option>
+              </select>
             </div>
+            <!-- Audio Toggle -->
+            <button id="playerAudioToggleBtn" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--card-bg); border: var(--card-border); border-radius: 12px; padding: 6px 12px; color: var(--text); font-weight: 700; font-size: 12px; cursor: pointer; box-shadow: var(--card-shadow); height: 38px; transition: all 0.2s;">
+              🎧 Audio: Off
+            </button>
+            <!-- Fullscreen -->
+            <button id="playerFullscreenBtn" style="display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--card-bg); border: var(--card-border); border-radius: 12px; padding: 6px 12px; color: var(--text); font-weight: 700; font-size: 12px; cursor: pointer; box-shadow: var(--card-shadow); height: 38px; transition: all 0.2s;">
+              <svg id="fullscreenIconSvg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              Fullscreen
+            </button>
           </div>
         </div>
       </div>
@@ -2043,7 +2052,9 @@
     upcoming: [],
     myChannels: [],
     activeTab: 'live', // Tabs: 'live', 'videos', 'playlists', 'posts'
+    selectedChannelId: 'all', // Active channel filter
     videos: [],        // Cached unified video list
+    streams: [],       // Cached unified streams list
     loadingVideos: false,
     audioOnly: false,
     sleepTimerId: null,
@@ -2068,8 +2079,9 @@
 
   function updateCarouselPosition() {
     const track = $('carouselTrack');
-    if (!track) return;
-    track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+    if (!track || !track.children.length) return;
+    const pct = 100 / track.children.length;
+    track.style.transform = `translateX(-${currentSlideIndex * pct}%)`;
     
     // Update active dot indicator
     const dots = document.querySelectorAll('.carousel-dot');
@@ -2088,7 +2100,7 @@
   let playerTimeInterval = null;
 
   function openPlayer(videoId, title, channelName, avatarUrl, isLive) {
-    currentPlaying = { videoId, title, channelName, avatarUrl, isLive };
+    currentPlaying = { videoId, title, channelName, avatarUrl, isLive, autoJumped: false };
     
     // Populate controls & details UI
     $('playerChannelName').textContent = channelName;
@@ -2293,14 +2305,56 @@
     if (playerTimeInterval) clearInterval(playerTimeInterval);
     playerTimeInterval = setInterval(() => {
       if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.getDuration) {
+        if (ytPlayer.getPlayerState) {
+          const state = ytPlayer.getPlayerState();
+          if (state !== 1 && state !== 2) {
+            // Hide jump to live button during buffering / unstarted states
+            $('playerGoLiveBtn').style.display = 'none';
+            return;
+          }
+        }
         const cur = ytPlayer.getCurrentTime();
         const dur = ytPlayer.getDuration();
         if (dur > 0) {
           if (!window.isPlayerSeeking) {
             $('playerProgressBar').value = (cur / dur) * 100;
           }
-          $('playerCurrentTime').textContent = formatTime(cur);
-          $('playerDuration').textContent = formatTime(dur);
+          if (currentPlaying && currentPlaying.isLive) {
+            const diff = dur - cur;
+            // Auto jump to live on first load if we are far behind (bypasses YouTube resume-from-history)
+            if (!currentPlaying.autoJumped && diff > 15) {
+               ytPlayer.seekTo(dur - 1, true);
+               currentPlaying.autoJumped = true;
+               return; // Skip UI update this tick since we just seeked
+            }
+            if (diff > 45) {
+              $('playerGoLiveBtn').style.display = 'inline-flex';
+              let offsetStr = '';
+              if (diff < 60) {
+                offsetStr = `-${Math.round(diff)}s`;
+              } else {
+                offsetStr = `-${Math.round(diff / 60)} Min`;
+              }
+              $('playerLiveOffsetLabel').textContent = offsetStr;
+              $('playerCurrentTime').textContent = offsetStr;
+              $('playerDuration').textContent = 'LIVE';
+              $('playerStaticLiveBadge').style.background = '#555';
+              $('playerCurrentTime').style.cursor = 'pointer';
+              $('playerCurrentTime').style.textDecoration = 'underline';
+              $('playerStaticLiveBadge').style.cursor = 'pointer';
+            } else {
+              $('playerGoLiveBtn').style.display = 'none';
+              $('playerCurrentTime').textContent = 'LIVE';
+              $('playerDuration').textContent = 'Live';
+              $('playerStaticLiveBadge').style.background = 'var(--red-live)';
+              $('playerCurrentTime').style.cursor = 'default';
+              $('playerCurrentTime').style.textDecoration = 'none';
+              $('playerStaticLiveBadge').style.cursor = 'default';
+            }
+          } else {
+            $('playerCurrentTime').textContent = formatTime(cur);
+            $('playerDuration').textContent = formatTime(dur);
+          }
         }
       }
     }, 500);
@@ -2407,7 +2461,36 @@
   });
 
   $('playerBackdrop').addEventListener('click', minimizePlayer);
-  $('playerCloseBtn').addEventListener('click', minimizePlayer);
+  
+  // Go Live Button Action
+  const jumpToLive = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (ytPlayer && ytPlayer.getDuration) {
+      const dur = ytPlayer.getDuration();
+      ytPlayer.seekTo(dur - 1, true);
+      showToast('⚡ Jumped back to Live stream');
+    }
+  };
+  $('playerGoLiveBtn').addEventListener('click', jumpToLive);
+  $('playerCurrentTime').addEventListener('click', (e) => {
+    if (currentPlaying && currentPlaying.isLive) {
+      jumpToLive(e);
+    }
+  });
+  $('playerStaticLiveBadge').addEventListener('click', (e) => {
+    if (currentPlaying && currentPlaying.isLive) {
+      jumpToLive(e);
+    }
+  });
+
+  // Minimize close button with robust Touch & Click handling to prevent iOS drag/bubble interference
+  const handleMinimize = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    minimizePlayer();
+  };
+  $('playerCloseBtn').addEventListener('click', handleMinimize);
+  $('playerCloseBtn').addEventListener('touchstart', handleMinimize, { passive: false });
 
   // Mini Player actions
   $('playerMiniPlayPauseBtn').addEventListener('click', (e) => {
@@ -2443,6 +2526,9 @@
   let isDragging = false;
 
   $('playerDragHeader').addEventListener('touchstart', (e) => {
+    if (e.target.closest('#playerCloseBtn') || e.target.closest('button') || e.target.closest('a') || e.target.closest('input') || e.target.closest('select')) {
+      return;
+    }
     dragStartY = e.touches[0].clientY;
     isDragging = true;
     $('playerSheet').style.transition = 'none';
@@ -2848,18 +2934,20 @@
     });
     actionsDiv.appendChild(downBtn);
 
-    const delBtn = CE('button');
-    delBtn.className = 'row-delete-btn';
-    delBtn.title = 'Remove channel';
-    delBtn.innerHTML = '✕';
-    delBtn.style.marginLeft = '8px';
-    delBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      if (confirm(`Remove "${ch.channelName}" from your active monitored channels feed?`)) {
-        deleteChannel(ch.channelId);
-      }
-    });
-    actionsDiv.appendChild(delBtn);
+    if (ch.channelId !== 'UCYn6UEtQ771a_OWSiNBoG8w') {
+      const delBtn = CE('button');
+      delBtn.className = 'row-delete-btn';
+      delBtn.title = 'Remove channel';
+      delBtn.innerHTML = '✕';
+      delBtn.style.marginLeft = '8px';
+      delBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        if (confirm(`Remove "${ch.channelName}" from your active monitored channels feed?`)) {
+          deleteChannel(ch.channelId);
+        }
+      });
+      actionsDiv.appendChild(delBtn);
+    }
     right.appendChild(actionsDiv);
 
     card.appendChild(right);
@@ -2936,7 +3024,7 @@
         <div class="shimmer-card"></div>
       `;
       feedSection.appendChild(loading);
-    } else if (State.videos.length === 0) {
+    } else if (State.streams.length === 0) {
       const noPrev = CE('div');
       noPrev.style.padding = '16px';
       noPrev.style.fontSize = '13.5px';
@@ -2950,7 +3038,7 @@
       noPrev.textContent = 'No previous broadcasts available.';
       feedSection.appendChild(noPrev);
     } else {
-      let prevVideos = State.videos;
+      let prevVideos = State.streams;
       if (State.selectedChannelId !== 'all') {
         const selCh = State.myChannels.find(c => c.channelId === State.selectedChannelId);
         const handleMatch = selCh ? (selCh.channelHandle || '').toLowerCase() : '';
@@ -2959,7 +3047,7 @@
                  (handleMatch && (v.channelName || '').toLowerCase().includes(handleMatch.replace('@','')));
         });
       }
-      prevVideos = prevVideos.slice(0, 4);
+      prevVideos = prevVideos.slice(0, 30);
       if (prevVideos.length === 0) {
         const noVideos = CE('div');
         noVideos.style.padding = '16px';
@@ -2980,7 +3068,11 @@
 
   /* ── LOAD TAB CONTENT HELPER ── */
   function loadTabContent(tabId) {
-    if (tabId === 'videos') {
+    if (tabId === 'live') {
+      if (State.streams.length === 0) {
+        fetchVideosForSelectedChannel(false);
+      }
+    } else if (tabId === 'videos') {
       loadVideosTab();
     } else if (tabId === 'playlists') {
       loadPlaylistsTab();
@@ -3000,6 +3092,7 @@
     allItem.addEventListener('click', () => {
       State.selectedChannelId = 'all';
       State.videos = []; // Clear cached videos
+      State.streams = []; // Clear cached streams
       fetchVideosForSelectedChannel(false);
     });
     
@@ -3025,8 +3118,14 @@
       item.addEventListener('click', () => {
         State.selectedChannelId = ch.channelId;
         State.videos = []; // Clear cached videos
+        State.streams = []; // Clear cached streams
         fetchVideosForSelectedChannel(false);
       });
+      
+      const logoWrap = CE('div');
+      logoWrap.style.position = 'relative';
+      logoWrap.style.width = '54px';
+      logoWrap.style.height = '54px';
       
       const circle = CE('div');
       circle.className = 'channel-logo-circle';
@@ -3044,14 +3143,19 @@
       } else {
         circle.textContent = getInitials(ch.channelName);
       }
-      item.appendChild(circle);
+      logoWrap.appendChild(circle);
       
-      // Live dot indicator on circle logo
+      // Live ring and dot animation indicators on channel DP
       if (ch.isLive === 1) {
+        const ring = CE('div');
+        ring.className = 'channel-row-live-ring';
+        logoWrap.appendChild(ring);
+        
         const dot = CE('div');
         dot.className = 'channel-logo-live-dot';
-        item.appendChild(dot);
+        logoWrap.appendChild(dot);
       }
+      item.appendChild(logoWrap);
       
       const name = CE('div');
       name.className = 'channel-logo-name';
@@ -3242,16 +3346,33 @@
     return userId;
   }
 
+  const API_BASE = (() => {
+    try {
+      const host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+      if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+      return 'https://anhad-final.onrender.com';
+    } catch (e) {}
+    return 'https://anhad-final.onrender.com';
+  })();
+
   function fetchWithUser(url, options = {}) {
     const userId = getPersistentUserId();
     if (!options.headers) {
       options.headers = {};
     }
     options.headers['X-User-ID'] = userId;
-    return fetch(url, options);
+    // Always bypass Service Worker cache for API calls so fresh data is
+    // always fetched after adding / deleting a channel — no hard-refresh needed.
+    if (!options.cache) {
+      options.cache = 'no-store';
+    }
+    const finalUrl = url.startsWith('/') ? `${API_BASE}${url}` : url;
+    return fetch(finalUrl, options);
   }
 
   async function fetchVideosForSelectedChannel(silent = false) {
+    if (!State.selectedChannelId) State.selectedChannelId = 'all';
     if (!silent) {
       State.loadingVideos = true;
       // Rerender the active tab to show shimmer/loading if appropriate
@@ -3274,17 +3395,32 @@
     }
     
     try {
-      const url = State.selectedChannelId === 'all'
-        ? '/api/sadhsangat/videos'
-        : `/api/sadhsangat/channel/${encodeURIComponent(State.selectedChannelId)}/videos`;
+      let url = '';
+      if (State.activeTab === 'live') {
+        url = State.selectedChannelId === 'all'
+          ? '/api/sadhsangat/streams'
+          : `/api/sadhsangat/channel/${encodeURIComponent(State.selectedChannelId)}/streams`;
+      } else {
+        url = State.selectedChannelId === 'all'
+          ? '/api/sadhsangat/videos'
+          : `/api/sadhsangat/channel/${encodeURIComponent(State.selectedChannelId)}/videos`;
+      }
       const res = await fetchWithUser(url);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch videos');
       
-      State.videos = data.videos || [];
+      if (State.activeTab === 'live') {
+        State.streams = data.videos || [];
+      } else {
+        State.videos = data.videos || [];
+      }
     } catch (e) {
       console.error('[Fetch Videos Error]', e);
-      State.videos = [];
+      if (State.activeTab === 'live') {
+        State.streams = [];
+      } else {
+        State.videos = [];
+      }
     } finally {
       if (!silent) {
         State.loadingVideos = false;
@@ -3612,15 +3748,49 @@
   /* ── CORE DATA LOADING & AUTO RE-LOAD ──────────────── */
   async function loadData() {
     try {
-      const [liveRes, myChannelsRes] = await Promise.all([
+      const [liveRes, myChannelsRes, streamsRes] = await Promise.all([
         fetchWithUser('/api/sadhsangat/live').then(r => r.json()),
-        fetchWithUser('/api/sadhsangat/my-channels').then(r => r.json())
+        fetchWithUser('/api/sadhsangat/my-channels').then(r => r.json()),
+        fetchWithUser('/api/sadhsangat/streams').then(r => r.json()).catch(() => ({ videos: [] }))
       ]);
 
       const prevLive = [...State.live];
       State.live = liveRes.live || [];
       State.upcoming = liveRes.upcoming || [];
       State.myChannels = myChannelsRes.channels || [];
+
+      // ── STREAMS-BASED LIVE DETECTION SAFETY NET ──────────────────────
+      // If the DB cron hasn't caught up yet, a channel may show isLive=0
+      // even though streams data has "X watching" (e.g. "9.1K watching").
+      // Cross-reference streams → supplement State.live with any such channel.
+      const streamVideos = streamsRes.videos || [];
+      const liveChannelIds = new Set(State.live.map(c => c.channelId));
+      streamVideos.forEach(sv => {
+        const views = (sv.views || sv.viewerCount || '').toLowerCase();
+        const isWatching = views.includes('watching') || views.includes(' now');
+        if (isWatching && sv.channelId && !liveChannelIds.has(sv.channelId)) {
+          // Find this channel in myChannels and inject it as live
+          const ch = State.myChannels.find(c => c.channelId === sv.channelId);
+          if (ch) {
+            State.live.push({
+              ...ch,
+              isLive: 1,
+              liveTitle: sv.title || ch.liveTitle,
+              videoId: sv.videoId || ch.videoId,
+              watchUrl: sv.videoId
+                ? `https://www.youtube.com/watch?v=${sv.videoId}`
+                : ch.watchUrl
+            });
+            liveChannelIds.add(sv.channelId);
+          }
+        }
+      });
+      // Also update myChannels isLive flag to reflect resolved live state
+      State.myChannels = State.myChannels.map(ch => ({
+        ...ch,
+        isLive: liveChannelIds.has(ch.channelId) ? 1 : ch.isLive
+      }));
+      // ─────────────────────────────────────────────────────────────────
 
       // Dynamic Live Notification triggers
       State.live.forEach(ch => {
@@ -3675,7 +3845,7 @@
         <div class="empty-state">
           <div class="empty-icon">⚠️</div>
           <div class="empty-heading">Connection Error</div>
-          <div class="empty-desc">Could not reach the server. Please verify if the server is running on port 3000.</div>
+          <div class="empty-desc">Could not reach the server. Please check your internet connection or verify if the backend service is running.</div>
         </div>
       `;
       $('liveDot').className = 'hdr-status-dot';
@@ -4067,5 +4237,10 @@
 
 })();
 </script>
+
+  <style>
+    /* Ensure content doesn't hide behind the mini-player */
+    body { padding-bottom: 90px !important; }
+  </style>
 </body>
 </html>
