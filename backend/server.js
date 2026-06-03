@@ -368,7 +368,7 @@ app.use(express.json({ limit: '10kb' }));
 
 // CORS — allow localhost variants for development, env-controlled for production
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
-    'http://localhost:3000,http://127.0.0.1:3000,https://localhost,https://localhost:3000,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
+    'http://localhost:3000,http://127.0.0.1:3000,https://localhost,https://localhost:3000,https://anhad.vercel.app,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
     .split(',').map(o => o.trim()).filter(Boolean);
 
 // For local dev, be permissive; production uses strict origin list
@@ -383,14 +383,14 @@ app.use((req, res, next) => {
     if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
         res.setHeader('Access-Control-Allow-Origin', origin || '*');
         res.setHeader('Vary', 'Origin');
-    } else if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    } else if (origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app') || origin === 'https://anhad.vercel.app')) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
     }
     
     res.setHeader('Access-Control-Allow-Methods', requestedMethod || 'GET, POST, PUT, DELETE, OPTIONS');
     // IMPORTANT: echo requested headers so preflight always passes (Capacitor/WebView can send extra headers)
-    res.setHeader('Access-Control-Allow-Headers', requestedHeaders || 'Content-Type, Range, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', requestedHeaders || 'Content-Type, Range, Authorization, X-User-ID');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     
     if (req.method === 'OPTIONS') {
