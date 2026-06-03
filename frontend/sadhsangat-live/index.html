@@ -25,6 +25,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- Ultra-smooth 90fps scroll optimization -->
+  <link rel="stylesheet" href="../css/scroll-performance-90fps.css?v=2" media="print" onload="this.media='all'">
+
   <style>
     /* ═══════════════════════════════════════════════════════════════
        DESIGN SYSTEM & TOKENS (Pure iOS Claymorphic/Neomorphic)
@@ -2169,6 +2172,11 @@
     $('playerBufferingOverlay').style.opacity = '1';
     
     loadYtPlayer(videoId);
+
+    // Notify background audio keeper
+    window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
+      detail: { videoId, title, channelName }
+    }));
   }
 
   function minimizePlayer() {
@@ -2203,6 +2211,9 @@
     }
     stopVideoProgress();
     currentPlaying = null;
+
+    // Notify background audio keeper
+    window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
     
     $('playerSheet').classList.remove('minimized');
     $('playerSheet').classList.remove('open');
@@ -4235,6 +4246,105 @@
   // Poll live statuses and cache feeds every 45 seconds for auto updates
   setInterval(loadData, 45 * 1000);
 
+})();
+</script>
+
+<!-- Ultra-smooth scroll optimizer -->
+<script src="../js/scroll-optimizer.js"></script>
+<script src="../js/scroll-performance-90fps.js"></script>
+
+<!-- Background audio keeper: silent audio loop + MediaSession for YouTube player -->
+<script>
+(function() {
+  'use strict';
+
+  // ── Silent Audio Trick ────────────────────────────────────────────────────
+  // Playing a silent audio element in a loop prevents the browser from
+  // throttling the page when it goes to background, keeping the YouTube
+  // iframe alive longer on supported browsers.
+  var silentAudio = null;
+
+  function startSilentAudio() {
+    if (silentAudio) return;
+    try {
+      // 1-second silent MP3 as a data URI (44 bytes, Base64-encoded)
+      var SILENT_MP3 = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////8AAAAATGF2YzU3LjkxAAAAAAAAAAAAAAAAJAAAAAAAAAAAAnGWJ6IAAAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIAACNQBUNBAAAA==';
+      silentAudio = new Audio(SILENT_MP3);
+      silentAudio.loop = true;
+      silentAudio.volume = 0;
+      silentAudio.play().catch(function() { silentAudio = null; });
+    } catch (e) { silentAudio = null; }
+  }
+
+  function stopSilentAudio() {
+    if (silentAudio) {
+      try { silentAudio.pause(); silentAudio.src = ''; } catch(e) {}
+      silentAudio = null;
+    }
+  }
+
+  // ── MediaSession API registration when YouTube player is playing ─────────
+  function registerMediaSession(title, channelName) {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title || 'Gurbani Kirtan',
+        artist: channelName || 'Sadhsangat Live',
+        album: 'ANHAD',
+        artwork: [
+          { src: '../assets/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '../assets/icon-512x512.png', sizes: '512x512', type: 'image/png' }
+        ]
+      });
+      navigator.mediaSession.playbackState = 'playing';
+
+      // Hook notification controls to YouTube player
+      navigator.mediaSession.setActionHandler('play', function() {
+        if (window.ytPlayer && window.ytPlayer.playVideo) {
+          try { window.ytPlayer.playVideo(); } catch(e) {}
+        }
+      });
+      navigator.mediaSession.setActionHandler('pause', function() {
+        if (window.ytPlayer && window.ytPlayer.pauseVideo) {
+          try { window.ytPlayer.pauseVideo(); } catch(e) {}
+        }
+      });
+      navigator.mediaSession.setActionHandler('stop', function() {
+        if (window.ytPlayer && window.ytPlayer.pauseVideo) {
+          try { window.ytPlayer.pauseVideo(); } catch(e) {}
+        }
+        stopSilentAudio();
+        navigator.mediaSession.playbackState = 'none';
+      });
+    } catch(e) {}
+  }
+
+  // Listen for player state changes dispatched by the main player code
+  window.addEventListener('sadhsangatPlayerOpened', function(e) {
+    var detail = e.detail || {};
+    startSilentAudio();
+    registerMediaSession(detail.title, detail.channelName);
+  });
+
+  window.addEventListener('sadhsangatPlayerClosed', function() {
+    stopSilentAudio();
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.playbackState = 'none'; } catch(e) {}
+    }
+  });
+
+  window.addEventListener('sadhsangatPlayerPaused', function() {
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.playbackState = 'paused'; } catch(e) {}
+    }
+  });
+
+  // Expose helpers for main player code
+  window.SadhsangatBg = {
+    startSilentAudio: startSilentAudio,
+    stopSilentAudio: stopSilentAudio,
+    registerMediaSession: registerMediaSession
+  };
 })();
 </script>
 

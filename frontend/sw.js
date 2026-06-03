@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.2.1'; // Force cache bust - rollback to de09325 clean state
+const CACHE_VERSION = 'anhad-v6.2.2'; // Force cache bust - API bypass + scroll opt
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -381,6 +381,13 @@ self.addEventListener('fetch', (event) => {
   // NEVER cache version.json — always go to network for instant update detection
   if (url.pathname.endsWith('/version.json')) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  // NEVER cache /api/ calls — always network-only so channel additions/deletions reflect immediately
+  // This bypasses the SW for the entire Render backend (onrender.com) and any /api/ path
+  if (url.pathname.includes('/api/') || url.hostname.includes('onrender.com')) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
