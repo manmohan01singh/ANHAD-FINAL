@@ -103,6 +103,63 @@
       /* Radiant Glowing Gold in dark mode */
       filter: invert(72%) sepia(60%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(100%) drop-shadow(0 0 6px rgba(212, 148, 58, 0.45));
     }
+
+    /* Mobile app-shell stability: fixes Android Recents/status-bar clipping
+       and keeps the home surface smooth while returning from sub-pages. */
+    @media (max-width: 768px) {
+      html, body {
+        min-height: 100dvh;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .app {
+        min-height: 100dvh;
+        padding-top: env(safe-area-inset-top, 0px);
+        contain: layout paint;
+      }
+
+      .header[role="banner"] {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        min-height: calc(60px + env(safe-area-inset-top, 0px));
+        padding-top: max(10px, env(safe-area-inset-top, 0px));
+        margin-top: 0;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        will-change: transform;
+      }
+
+      .hero-carousel,
+      .hero-card,
+      .practice-card,
+      .quick-card {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        contain: layout paint;
+      }
+
+      .hero-carousel__glow,
+      .gmp-background,
+      .bg-orbs,
+      .cloud-layer,
+      .weather-cloud {
+        animation-play-state: paused !important;
+        filter: none !important;
+      }
+
+      body.is-scrolling .hero-carousel__glow,
+      body.is-scrolling .hero-card__image {
+        transition: none !important;
+      }
+
+      .ios-animate-in,
+      .quick-card,
+      .practice-card {
+        animation-duration: 0.001s !important;
+      }
+    }
   </style>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -2708,6 +2765,16 @@
           });
         }, 1000);
       }, 1000);
+    });
+  </script>
+
+  <script>
+    window.addEventListener('pageshow', function() {
+      document.documentElement.classList.add('theme-loaded');
+      if (document.body) {
+        document.body.classList.add('theme-loaded');
+        document.body.classList.remove('app--exiting');
+      }
     });
   </script>
 

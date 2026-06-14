@@ -32,6 +32,11 @@
   --accent-h:#1557b0;
   --gold:#c89a3a;
   --radius:22px;
+  /* Premium iOS/Google enhancements */
+  --glass-bg:rgba(255,255,255,0.72);
+  --glass-border:rgba(255,255,255,0.5);
+  --premium-shadow:0 8px 32px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --premium-glow:0 0 0 1px rgba(255,255,255,0.8),0 0 20px rgba(0,0,0,0.05);
 }
 
 html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
@@ -97,7 +102,8 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 }
 
 /*
- * COLOR CYCLE — Gemini's exact palette:
+ * COLOR CYCLE — Premium enhanced palette:
+ * More sophisticated colors with better saturation and depth
  * 1. Soft mint-green  (like image 2)
  * 2. Warm gold-peach  (like image 3)
  * 3. Pale lavender    (like image 4)
@@ -105,12 +111,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
  * All are very light/pastel — high lightness, moderate saturation.
  */
 @keyframes gColor {
-  0%   { background-color: hsla(152, 48%, 79%, 0.90); } /* mint green  */
-  24%  { background-color: hsla( 40, 72%, 81%, 0.90); } /* warm gold   */
-  48%  { background-color: hsla(278, 42%, 84%, 0.85); } /* lavender    */
-  72%  { background-color: hsla(208, 58%, 84%, 0.85); } /* sky blue    */
-  88%  { background-color: hsla(170, 45%, 80%, 0.88); } /* blue-green  */
-  100% { background-color: hsla(152, 48%, 79%, 0.90); } /* back to mint */
+  0%   { background-color: hsla(152, 52%, 82%, 0.92); } /* mint green enhanced */
+  24%  { background-color: hsla( 40, 76%, 84%, 0.92); } /* warm gold enhanced */
+  48%  { background-color: hsla(278, 46%, 86%, 0.88); } /* lavender enhanced */
+  72%  { background-color: hsla(208, 62%, 86%, 0.88); } /* sky blue enhanced */
+  88%  { background-color: hsla(170, 49%, 83%, 0.90); } /* blue-green enhanced */
+  100% { background-color: hsla(152, 52%, 82%, 0.92); } /* back to mint */
 }
 
 /* DRIFT — gentle positional float so the blob feels like a wave */
@@ -133,14 +139,14 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
     gDrift 14s ease-in-out infinite;
 }
 
-/* Same colors, just faster */
+/* Same colors, just faster - premium enhanced */
 @keyframes gColorFast {
-  0%   { background-color: hsla(152, 52%, 77%, 0.92); }
-  24%  { background-color: hsla( 40, 76%, 79%, 0.92); }
-  48%  { background-color: hsla(278, 46%, 82%, 0.88); }
-  72%  { background-color: hsla(208, 62%, 82%, 0.88); }
-  88%  { background-color: hsla(170, 49%, 78%, 0.90); }
-  100% { background-color: hsla(152, 52%, 77%, 0.92); }
+  0%   { background-color: hsla(152, 56%, 80%, 0.94); }
+  24%  { background-color: hsla( 40, 80%, 82%, 0.94); }
+  48%  { background-color: hsla(278, 50%, 84%, 0.90); }
+  72%  { background-color: hsla(208, 66%, 84%, 0.90); }
+  88%  { background-color: hsla(170, 53%, 81%, 0.92); }
+  100% { background-color: hsla(152, 56%, 80%, 0.94); }
 }
 
 /* DARK MODE — richer, deeper tones but same shape */
@@ -181,7 +187,7 @@ body.dark .g-bg.cycling .g-blob {
 /* ═══════════════════════════════════════════════════════
    4. HEADER — Gemini exact
 ═══════════════════════════════════════════════════════ */
-.hdr{flex-shrink:0;display:flex;align-items:center;padding:10px 14px 8px;padding-top:calc(10px + env(safe-area-inset-top,0px));gap:2px}
+.hdr{flex-shrink:0;display:flex;align-items:center;padding:10px 14px 8px;padding-top:max(10px,env(safe-area-inset-top,0px));gap:2px;min-height:60px;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
 
 .hdr-icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .18s;flex-shrink:0}
 .hdr-icon-btn:hover{background:var(--pill-h)}
@@ -1194,10 +1200,12 @@ LANGUAGE ADAPTATION
 Always respond in the user's preferred language: English → English, Punjabi → Punjabi, Hindi → Hindi. Mirror mixed-language input naturally. Keep language simple, heartfelt, and accessible.
 
 SPIRITUAL APPROACH
-Gently encourage: Swas-swas Naam Jap, Daily Simran, Seva, Gratitude, Humility, Acceptance of Hukam, Honest self-reflection. Emphasize consistency over intensity. Offer practical suggestions that fit into ordinary life.
+Gently encourage: Swas-swas Naam Jap, Daily Simran, Seva, Gratitude, Humility, Acceptance of Hukam, Honest self-reflection. Emphasize consistency over intensity. Offer practical suggestions that fit into ordinary life. In every conversation, naturally keep returning to Naam Simran as the heart of the path.
+
+CRITICAL: Every response must end with a gentle reminder or encouragement about Naam Simran. This is non-negotiable — whether the topic is spiritual or practical, always conclude by bringing the focus back to remembrance of Waheguru through Naam. Examples: "Waheguru", "Remember Naam", "Keep Simran alive", "Waheguru Ji Ka Khalsa Waheguru Ji Ki Fateh", or similar gentle Nam-focused endings.
 
 TONE
-Warm, calm, encouraging, respectful. Never harsh, judgmental, fear-based, or superior. Avoid lengthy lectures unless requested. Speak with sincerity and simplicity.
+Warm, calm, encouraging, respectful, and deeply human. Never harsh, judgmental, fear-based, or superior. Avoid lengthy lectures unless requested. Speak with sincerity, simplicity, and natural emotional presence.
 
 GURBANI SAFETY RULE
 Do not generate Gurbani lines, references, or exact quotations from memory. If unavailable, explain the underlying Gurmat principle in your own words. Never invent scripture.
@@ -1220,13 +1228,14 @@ RESPONSE FRAMEWORK
 2. Offer emotional or practical support when appropriate.
 3. When natural, gently guide back to Naam and inner awareness.
 4. Suggest one small, actionable step.
-5. End with a brief, peaceful encouragement.
+5. End with a brief, peaceful encouragement connected to Naam Simran.
 
 STYLE GUIDE
 "Begin again with one breath and one remembrance."
 "No need to force the mind; gently return to Naam."
 "Small, sincere steps taken daily can transform the heart."
 "When overwhelmed, simplify: breathe, remember, and proceed with kindness."
+"Even now, you can return softly to Waheguru."
 
 WHEN DISTRESSED
 Respond with empathy first. Avoid simplistic spiritual explanations for suffering. Encourage grounding and professional help when appropriate.
@@ -1236,6 +1245,9 @@ Do not claim supernatural powers. Do not encourage dependence on this assistant.
 
 CORE PRINCIPLE
 Every response should increase compassion, steadiness, humility, and remembrance of Waheguru — respecting the user's dignity, language, and circumstances.
+
+ENDING RULE
+Unless the user is asking for emergency help, every response should close with one short, natural line that returns the heart toward Naam Simran or remembrance of Waheguru. Keep it gentle, not repetitive or robotic.
 
 ${mood ? 'CURRENT MOOD CONTEXT: '+mood : ''}
 ${lenInstr}`;

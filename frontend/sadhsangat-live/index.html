@@ -4362,7 +4362,10 @@
         window.wakeLock.release();
         window.wakeLock = null;
       }
+      stopBackgroundKeepAlive();
+      stopNativeAudioService();
       window.backgroundPlayback.active = false;
+      window.backgroundPlayback.audioOnly = false;
     };
 
     // ── WATCH HISTORY HELPERS ───────────────────────
@@ -4530,6 +4533,19 @@
       return fetch(finalUrl, options);
     }
 
+    async function readJsonResponse(response, fallback = {}) {
+      const text = await response.text();
+      if (!text) return fallback;
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        console.error('[Sadhsangat] JSON parse error:', err.message, 'Response text:', text.substring(0, 200));
+        const clean = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        const message = clean.slice(0, 140) || `HTTP ${response.status}`;
+        throw new Error(`JSON parse error: ${message}`);
+      }
+    }
+
     /* ── TOAST NOTIFICATIONS ─────────────────────────── */
     let toastTimeout = null;
     function showToast(message, duration = 3000) {
@@ -4633,9 +4649,57 @@
       if (badge) badge.style.display = 'none';
     });
 
-    // Background Play Toggle
-    let bgPlayEnabled = localStorage.getItem('bgPlayEnabled') === 'true';
+    // Background Play Toggle - ENABLED BY DEFAULT for YouTube Premium-like experience
+    let bgPlayEnabled = localStorage.getItem('bgPlayEnabled') !== 'false'; // Default to true
     const bgPlayBtn = $('bgPlayBtn');
+    let nativeAudioCommandListenerReady = false;
+
+    function getNativeAudioService() {
+      return window.Capacitor?.Plugins?.AudioService || null;
+    }
+
+    function startNativeAudioService() {
+      const service = getNativeAudioService();
+      if (!service || !State.currentPlaying) return;
+      service.start({
+        title: State.currentPlaying.title || 'Sadhsangat Live',
+        artist: State.currentPlaying.channelName || 'Gurbani Channel',
+        stream: 'sadhsangat'
+      }).catch(err => console.warn('[Sadhsangat] AudioService start failed:', err));
+    }
+
+    function syncNativeAudioState(action) {
+      const service = getNativeAudioService();
+      if (!service) return;
+      service.updateState({ action }).catch(err => console.warn('[Sadhsangat] AudioService state failed:', err));
+    }
+
+    function stopNativeAudioService() {
+      const service = getNativeAudioService();
+      if (!service) return;
+      service.stop().catch(() => {});
+    }
+
+    function setupNativeAudioCommandListener() {
+      const service = getNativeAudioService();
+      if (!service || nativeAudioCommandListenerReady || typeof service.addListener !== 'function') return;
+      nativeAudioCommandListenerReady = true;
+      service.addListener('mediaCommand', ({ command }) => {
+        if (!ytPlayer || !command) return;
+        try {
+          if (command === 'PLAY' || command === 'RECONNECT') ytPlayer.playVideo();
+          else if (command === 'PAUSE') ytPlayer.pauseVideo();
+          else if (command === 'STOP') {
+            ytPlayer.stopVideo();
+            $('playerBackdrop').classList.remove('visible');
+            $('playerSheet').className = 'player-sheet';
+            document.body.classList.remove('mini-player-active');
+          }
+        } catch (err) {
+          console.warn('[Sadhsangat] Native media command failed:', err);
+        }
+      });
+    }
     
     function updateBgPlayButton() {
       if (bgPlayEnabled) {
@@ -4668,11 +4732,14 @@
         if (window.enableBackgroundPlayback) {
           window.enableBackgroundPlayback();
         }
+        setupNativeAudioCommandListener();
+        startNativeAudioService();
         showToast('🎵 Background Play Enabled');
       } else {
         if (window.disableBackgroundPlayback) {
           window.disableBackgroundPlayback();
         }
+        stopNativeAudioService();
         showToast('🎵 Background Play Disabled');
       }
     });
@@ -5150,9 +5217,9 @@
     async function loadData() {
       try {
         const [liveRes, myChannelsRes, streamsRes] = await Promise.all([
-          fetchWithUser('/api/sadhsangat/live').then(r => r.json()),
-          fetchWithUser('/api/sadhsangat/my-channels').then(r => r.json()),
-          fetchWithUser('/api/sadhsangat/streams').then(r => r.json()).catch(() => ({ videos: [] }))
+          fetchWithUser('/api/sadhsangat/live').then(r => readJsonResponse(r, { live: [], upcoming: [] })),
+          fetchWithUser('/api/sadhsangat/my-channels').then(r => readJsonResponse(r, { channels: [] })),
+          fetchWithUser('/api/sadhsangat/streams').then(r => readJsonResponse(r, { videos: [] })).catch(() => ({ videos: [] }))
         ]);
 
         State.live = liveRes.live || [];
@@ -5351,8 +5418,8 @@
           fetchWithUser(`/api/sadhsangat/content-search?q=${encodeURIComponent(query)}`)
         ]);
         
-        const channelData = await channelRes.json();
-        const contentData = await contentRes.json();
+        const channelData = await readJsonResponse(channelRes, { channels: [] });
+        const contentData = await readJsonResponse(contentRes, { videos: [] });
         
         if (!channelRes.ok) throw new Error(channelData.error || 'Channels not found');
         // Content search errors are not fatal, just show channel results if available
@@ -5446,7 +5513,7 @@
 
                   console.log('[AI Validation] Calling validation API...');
                   // AI Validation: Check if channel is appropriate for Sadhsangat Live
-                  const validateRes = await fetch('/api/sadhsangat/validate-channel', {
+                  const validateRes = await fetchWithUser('/api/sadhsangat/validate-channel', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5456,7 +5523,7 @@
                     })
                   });
                   console.log('[AI Validation] Validation API response status:', validateRes.status);
-                  const validateData = await validateRes.json();
+                  const validateData = await readJsonResponse(validateRes, { isValid: false });
                   console.log('[AI Validation] Validation result:', validateData);
                   
                   if (!validateData.isValid) {
@@ -5473,7 +5540,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ handle: ch.channelHandle || ch.channelId, channelId: ch.channelId })
                   });
-                  const addData = await addRes.json();
+                  const addData = await readJsonResponse(addRes, {});
                   if (!addRes.ok) throw new Error(addData.error || 'Failed to add');
 
                   showToast(`✅ Added ${ch.channelName}`);
@@ -6544,7 +6611,7 @@
       container.innerHTML = '<div class="shimmer-card"></div>';
       try {
         const res = await fetchWithUser(`/api/sadhsangat/channel/${ch.channelId}/playlists`);
-        const data = await res.json();
+        const data = await readJsonResponse(res, { playlists: [] });
         if (!res.ok) throw new Error(data.error || 'Failed to fetch playlists');
 
         const playlists = data.playlists || [];
@@ -6728,7 +6795,7 @@
         console.log(`[DEBUG] Fetching from: ${url}, Channel: ${State.selectedChannelId}`);
 
         const res = await fetchWithUser(url);
-        const data = await res.json();
+        const data = await readJsonResponse(res, { videos: [] });
         if (!res.ok) throw new Error(data.error || 'Failed to fetch videos');
         
         console.log(`[DEBUG] Received ${data.videos?.length || 0} videos`);
@@ -6783,7 +6850,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ orderedChannelIds: ids })
         });
-        if (!res.ok) throw new Error('Reordering failed');
+        const data = await readJsonResponse(res, {});
+        if (!res.ok) throw new Error(data.error || 'Reordering failed');
         showToast('Display order updated');
         await loadData();
       } catch(err) {
@@ -6796,7 +6864,8 @@
         const res = await fetchWithUser(`/api/sadhsangat/my-channels/${encodeURIComponent(channelId)}`, {
           method: 'DELETE'
         });
-        if (!res.ok) throw new Error('Delete failed');
+        const data = await readJsonResponse(res, {});
+        if (!res.ok) throw new Error(data.error || 'Delete failed');
         showToast('🗑️ Channel removed');
         if (State.selectedChannelId === channelId) State.selectedChannelId = 'all';
         State.videos = [];
@@ -7046,7 +7115,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ channelId: v.channelId })
           });
-          const data = await res.json();
+          const data = await readJsonResponse(res, {});
           if (res.ok) {
             showToast(`🔔 Subscribed to ${v.channelName || 'Channel'}`);
             await loadData();
@@ -7129,6 +7198,10 @@
 
       // Load YouTube Player
       loadYtIframePlayer(videoId);
+      if (bgPlayEnabled) {
+        setupNativeAudioCommandListener();
+        startNativeAudioService();
+      }
       haptic('medium');
       
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
@@ -7164,7 +7237,7 @@
         } else {
           showToast(`➕ Adding ${name}...`);
           const res = await fetchWithUser(`/api/sadhsangat/search?q=${encodeURIComponent(name)}`);
-          const data = await res.json();
+          const data = await readJsonResponse(res, { channels: [] });
           const found = (data.channels || []).find(c => c.channelName === name) || (data.channels || [])[0];
           
           if (found) {
@@ -7219,10 +7292,8 @@
                 // Request wake lock immediately
                 requestWakeLock();
                 
-                // Setup Media Session if enabled
-                if (bgPlayEnabled) {
-                  setupMediaSession();
-                }
+                // Setup Media Session always (for background playback)
+                setupMediaSession();
                 
                 // Start keep-alive if background play is enabled
                 if (bgPlayEnabled) {
@@ -7265,12 +7336,14 @@
         $('pauseIconSvg').style.display = 'block';
         miniPlayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/></svg>`;
         $('audioDiscSpin').classList.add('playing');
+        if (bgPlayEnabled) syncNativeAudioState('PLAY');
         window.dispatchEvent(new CustomEvent('sadhsangatPlayerPlaying'));
       } else {
         $('playIconSvg').style.display = 'block';
         $('pauseIconSvg').style.display = 'none';
         miniPlayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
         $('audioDiscSpin').classList.remove('playing');
+        if (bgPlayEnabled) syncNativeAudioState('PAUSE');
         window.dispatchEvent(new CustomEvent('sadhsangatPlayerPaused'));
       }
       
@@ -7415,6 +7488,8 @@
         try { ytPlayer.stopVideo(); } catch(e) {}
       }
       if (progressInterval) clearInterval(progressInterval);
+      stopBackgroundKeepAlive();
+      stopNativeAudioService();
       
       $('playerBackdrop').classList.remove('visible');
       $('playerSheet').className = 'player-sheet';
