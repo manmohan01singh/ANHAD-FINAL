@@ -1,0 +1,249 @@
+# UPDATED Backend API Endpoints for AI Validation
+# REPLACE the previous code in backend/server.js after line 3638
+
+// In-memory cache for channel validation results (can be upgraded to database later)
+const channelValidationCache = new Map();
+
+// AI Channel Validation Endpoint
+app.post('/api/sadhsangat/validate-channel', async (req, res) => {
+    const { channelName, channelId, channelHandle } = req.body;
+    
+    if (!channelName || channelName.trim().length < 2) {
+        return res.status(400).json({ error: 'Channel name too short' });
+    }
+    
+    try {
+        const cacheKey = `${channelName}_${channelId || 'unknown'}`;
+        const now = Date.now();
+        const cached = channelValidationCache.get(cacheKey);
+        
+        if (cached && (now - cached.timestamp) < CONFIG.CHANNEL_VALIDATION_CACHE_TTL) {
+            return res.json({ 
+                isValid: cached.isValid, 
+                reason: cached.reason,
+                fromCache: true 
+            });
+        }
+        
+        // FAST PATH: Check for obvious Gurbani/religious keywords first (instant approval)
+        const gurbaniKeywords = [
+            'gurbani', 'kirtan', 'shabad', 'nitnem', 'japji', 'rehraas', 'sukhmani',
+            'simran', 'naam', 'waheguru', 'satnam', 'mool mantar', 'ardas',
+            'gurdwara', 'harmandir', 'darbar', 'amrit', 'amrit vela', 'prabhat',
+            'sikh', 'singh', 'kaur', 'guru', 'granth', 'punjabi', 'devotional'
+        ];
+        
+        const channelNameLower = channelName.toLowerCase();
+        const hasObviousKeyword = gurbaniKeywords.some(kw => channelNameLower.includes(kw));
+        
+        if (hasObviousKeyword) {
+            console.log('[Channel Validation] Fast-path approval for', channelName, '- contains Gurbani keyword');
+            channelValidationCache.set(cacheKey, {
+                isValid: true,
+                reason: 'Contains religious/devotional content',
+                timestamp: now
+            });
+            return res.json({
+                isValid: true,
+                reason: 'Contains religious/devotional content',
+                category: 'gurbani',
+                fromCache: false
+            });
+        }
+        
+        // Fetch sample videos from the channel to understand actual content
+        let sampleVideos = [];
+        if (channelId) {
+            try {
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                const handle = ch ? ch.channelHandle : channelHandle;
+                const videos = await getCachedChannelVideos(channelId, handle);
+                // Get first 5 video titles to understand content
+                sampleVideos = videos.slice(0, 5).map(v => v.title).filter(t => t);
+            } catch (err) {
+                console.warn('[Channel Validation] Could not fetch videos:', err.message);
+            }
+        }
+        
+        const videosText = sampleVideos.length > 0 
+            ? `Recent Video Titles: ${sampleVideos.join(' | ')}`
+            : 'No videos available for content analysis';
+        
+        const validationPrompt = `You are a content validation assistant for "Sadhsangat Live", a devotional/religious app.
+
+IMPORTANT: Be EXTREMELY LENIENT and PERMISSIVE. Default to APPROVING channels unless they are clearly inappropriate.
+
+Channel to analyze:
+- Name: ${channelName}
+- ID: ${channelId || 'Not provided'}
+- ${videosText}
+
+VALIDATION RULES:
+1. ✅ APPROVE if ANY of these appear in name OR video titles:
+   - Gurbani, Kirtan, Shabad, Nitnem, Japji, Rehraas, Sukhmani
+   - Simran, Naam, Waheguru, Satnam, Mool Mantar
+   - Ardas, Hukamnama, Gurdwara, Harmandir, Darbar
+   - Amrit Vela, Prabhat Pheri, Morning/Evening prayers
+   - Sikh, Singh, Kaur, Guru, Granth
+   - Punjabi/Devotional context
+
+2. ✅ APPROVE Hindu/religious/devotional channels (Premanand Ji, etc.)
+
+3. ❌ REJECT ONLY if clearly inappropriate:
+   - Gambling, betting, casinos
+   - Explicit/adult content
+   - Hate speech, violence
+   - Politics, news, entertainment (if clearly non-devotional)
+
+4. ⚠️ If unsure: APPROVE it
+
+Examples of channels to APPROVE:
+- "Amritavela Trust Live" (has "Amrit Vela" - morning prayers)
+- "Gurdwara XYZ" (Gurdwara = religious place)
+- "XYZ Live Kirtan" (Kirtan = religious music)
+- "Morning Devotional Songs" (devotional = religious)
+
+Respond in JSON only:
+{
+    "isValid": true/false,
+    "reason": "Brief explanation",
+    "category": "gurbani/sikh/hindu/devotional/other"
+}
+
+REMEMBER: Be permissive - it's better to allow a slightly off-topic channel than to block a legitimate Gurbani channel!`;
+
+        const response = await axios.post(CONFIG.GROQ_API_URL, {
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                { role: 'system', content: 'You are a helpful JSON API that always responds with valid JSON. Never include markdown or explanations outside JSON.' },
+                { role: 'user', content: validationPrompt }
+            ],
+            temperature: 0.3,
+            max_tokens: 200
+        }, {
+            headers: {
+                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const content = response.data.choices[0]?.message?.content || '';
+        
+        let validationResult;
+        try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            const jsonStr = jsonMatch ? jsonMatch[0] : content;
+            validationResult = JSON.parse(jsonStr);
+            
+            // Additional safety: if AI rejected but we have Gurbani keywords in videos, override approval
+            if (!validationResult.isValid && sampleVideos.length > 0) {
+                const gurbaniKeywords = ['gurbani', 'kirtan', 'shabad', 'nitnem', 'japji', 'simran', 'waheguru', 'gurdwara', 'harmandir', 'amrit'];
+                const videosTextLower = sampleVideos.join(' ').toLowerCase();
+                const hasGurbaniKeywords = gurbaniKeywords.some(kw => videosTextLower.includes(kw));
+                const channelNameLower = channelName.toLowerCase();
+                const hasKeywordInName = gurbaniKeywords.some(kw => channelNameLower.includes(kw));
+                
+                if (hasGurbaniKeywords || hasKeywordInName) {
+                    console.log('[Channel Validation] Overriding rejection due to Gurbani keywords');
+                    validationResult.isValid = true;
+                    validationResult.reason = 'Contains Gurbani/religious content';
+                    validationResult.category = 'gurbani';
+                }
+            }
+        } catch (e) {
+            console.error('[Channel Validation] Failed to parse AI response:', content);
+            // Fallback: be permissive and allow
+            validationResult = { isValid: true, reason: 'Validation service unavailable', category: 'other' };
+        }
+        
+        channelValidationCache.set(cacheKey, {
+            isValid: validationResult.isValid,
+            reason: validationResult.reason,
+            timestamp: now
+        });
+        
+        console.log('[Channel Validation] Validation result for', channelName, ':', validationResult);
+        
+        res.json({ 
+            isValid: validationResult.isValid, 
+            reason: validationResult.reason,
+            category: validationResult.category || 'other',
+            fromCache: false
+        });
+        
+    } catch (e) {
+        console.error('[Channel Validation] Error:', e.message);
+        // On error, be permissive and allow
+        res.json({ 
+            isValid: true, 
+            reason: 'Validation service unavailable',
+            category: 'other'
+        });
+    }
+});
+
+// Enhanced Content Search API (search videos by title, description, channel name)
+app.get('/api/sadhsangat/content-search', async (req, res) => {
+    const { q } = req.query;
+    const userId = getUserId(req, res);
+    
+    if (!q || q.trim().length < 2) {
+        return res.status(400).json({ error: 'Query too short' });
+    }
+    
+    try {
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        
+        const fetchPromises = myChs.map(async (ch) => {
+            try {
+                const videos = await getCachedChannelVideos(ch.channelId, ch.channelHandle);
+                return videos.map(v => ({
+                    ...v,
+                    channelId: ch.channelId,
+                    channelName: ch.channelName,
+                    channelThumbnail: ch.thumbnail
+                }));
+            } catch (err) {
+                console.warn(`[Content Search] Failed for ${ch.channelName}:`, err.message);
+                return [];
+            }
+        });
+        
+        const results = await Promise.allSettled(fetchPromises);
+        let allVideos = [];
+        for (const res of results) {
+            if (res.status === 'fulfilled') {
+                allVideos = allVideos.concat(res.value);
+            }
+        }
+        
+        const queryLower = q.toLowerCase().trim();
+        const searchResults = allVideos.filter(v => {
+            const titleMatch = (v.title || '').toLowerCase().includes(queryLower);
+            const channelMatch = (v.channelName || '').toLowerCase().includes(queryLower);
+            return titleMatch || channelMatch;
+        });
+        
+        searchResults.sort((a, b) => {
+            const aExactTitle = (a.title || '').toLowerCase() === queryLower ? 1 : 0;
+            const bExactTitle = (b.title || '').toLowerCase() === queryLower ? 1 : 0;
+            
+            if (bExactTitle !== 0) return 1;
+            if (aExactTitle !== 0) return -1;
+            
+            const aChannelMatch = (a.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
+            const bChannelMatch = (b.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
+            return bChannelMatch - aChannelMatch;
+        });
+        
+        res.json({ 
+            videos: searchResults.slice(0, 50),
+            total: searchResults.length,
+            query: q 
+        });
+        
+    } catch (e) {
+        console.error('[Content Search API] Error:', e.message);
+        res.status(500).json({ error: 'Search failed: ' + e.message });
+    }
+});

@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.2.3'; // Force cache bust - scroll/live/keeper updates
+const CACHE_VERSION = 'anhad-v6.4.1'; // Fix: sadhsangat-live syntax error and cache bust
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.3.0'; // Force cache bust - ytPlayer scope fix, scroll lock fix, SGPC video fix
+const CACHE_VERSION = 'anhad-v6.4.1'; // Fix: sadhsangat-live syntax error and cache bust
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

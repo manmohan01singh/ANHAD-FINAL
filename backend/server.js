@@ -6,10 +6,10 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
-const path = require('path');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { Readable } = require('stream');
@@ -45,6 +45,10 @@ const CONFIG = {
     DEFAULT_TRACK_DURATION: parseInt(process.env.DEFAULT_TRACK_DURATION) || 3600, // 1 hour fallback per track
     LISTENER_TTL: parseInt(process.env.LISTENER_TTL) || 60000, // 60s — heartbeat timeout
     STATE_SAVE_INTERVAL: parseInt(process.env.STATE_SAVE_INTERVAL) || 30000, // Save state to disk every 30s
+    // Groq AI API Configuration
+    GROQ_API_KEY: process.env.GROQ_API_KEY || '',
+    GROQ_API_URL: 'https://api.groq.com/openai/v1/chat/completions',
+    CHANNEL_VALIDATION_CACHE_TTL: 86400000 // 24 hours cache for channel validation
 };
 
 const PLAYLIST = [
@@ -379,8 +383,15 @@ app.use((req, res, next) => {
     const requestedHeaders = req.headers['access-control-request-headers'];
     const requestedMethod = req.headers['access-control-request-method'];
     
-    // Local dev: allow any localhost origin (including https://localhost)
-    if (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+    // Check if it is a local request origin (development / custom builds)
+    const isLocalOrigin = origin && (
+        origin.startsWith('http://localhost') || 
+        origin.startsWith('https://localhost') || 
+        origin.startsWith('http://127.0.0.1') || 
+        origin.startsWith('https://127.0.0.1')
+    );
+
+    if (isLocalOrigin || (IS_LOCAL_DEV && (!origin || origin.includes('localhost') || origin.includes('127.0.0.1')))) {
         res.setHeader('Access-Control-Allow-Origin', origin || '*');
         res.setHeader('Vary', 'Origin');
     } else if (origin && (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app') || origin === 'https://anhad.vercel.app')) {
@@ -1899,9 +1910,14 @@ const SadhsangatDb = {
     async getUserChannels(userId) {
         if (useJsonFallback) {
             let userChs = jsonData.user_channels.filter(uc => uc.userId === userId);
-            const hasSgpc = userChs.some(uc => uc.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w');
-            if (!hasSgpc) {
-                jsonData.user_channels.push({ userId, channelId: 'UCYn6UEtQ771a_OWSiNBoG8w', displayOrder: 0 });
+            if (userChs.length === 0) {
+                const defaultIds = ['UCYn6UEtQ771a_OWSiNBoG8w'];
+                for (let idx = 0; idx < defaultIds.length; idx++) {
+                    const cid = defaultIds[idx];
+                    if (!userChs.some(uc => uc.channelId === cid)) {
+                        jsonData.user_channels.push({ userId, channelId: cid, displayOrder: idx });
+                    }
+                }
                 await saveJsonDb();
                 userChs = jsonData.user_channels.filter(uc => uc.userId === userId);
             }
@@ -1912,25 +1928,25 @@ const SadhsangatDb = {
             }).filter(Boolean);
         }
         return new Promise((resolve, reject) => {
-            dbClient.get(
-                "SELECT 1 FROM user_channels WHERE userId = ? AND channelId = 'UCYn6UEtQ771a_OWSiNBoG8w'",
+            dbClient.all(
+                "SELECT channelId FROM user_channels WHERE userId = ?",
                 [userId],
-                (err, row) => {
+                (err, rows) => {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    if (!row) {
-                        dbClient.run(
-                            "INSERT OR IGNORE INTO user_channels (userId, channelId, displayOrder) VALUES (?, 'UCYn6UEtQ771a_OWSiNBoG8w', 0)",
-                            [userId],
-                            (insertErr) => {
-                                if (insertErr) {
-                                    console.error('[Sadhsangat DB] Auto-seed user channel error:', insertErr.message);
-                                }
-                                fetchChannels();
-                            }
-                        );
+                    if (!rows || rows.length === 0) {
+                        const defaultIds = ['UCYn6UEtQ771a_OWSiNBoG8w'];
+                        dbClient.serialize(() => {
+                            defaultIds.forEach((cid, idx) => {
+                                dbClient.run(
+                                    "INSERT OR IGNORE INTO user_channels (userId, channelId, displayOrder) VALUES (?, ?, ?)",
+                                    [userId, cid, idx]
+                                );
+                            });
+                            fetchChannels();
+                        });
                     } else {
                         fetchChannels();
                     }
@@ -2014,12 +2030,21 @@ const SadhsangatDb = {
 };
 
 async function seedDefaultChannels() {
-    // Migrate obsolete fake channel ID from SQLite/JSON database
-    try {
-        await SadhsangatDb.deleteChannel('UC6U4oR4O2Q-4YV3ZkX6o66Q');
-        console.log('[Sadhsangat DB] Cleaned up obsolete channel seed: UC6U4oR4O2Q-4YV3ZkX6o66Q');
-    } catch (e) {
-        console.warn('[Sadhsangat DB] Cleanup of obsolete channel failed:', e.message);
+    // Migrate obsolete fake/extra default channel IDs from SQLite/JSON database
+    const obsoleteIds = [
+        'UC6U4oR4O2Q-4YV3ZkX6o66Q',
+        'UCgjKIbrlQYDJh8UdJUPia3A',
+        'UCx8Xu8R-mJEBDit1PPvI08Q',
+        'UC2AHnxSbmtaKrk74noBMv-Q',
+        'UCswIOlMY2_DT05glwBsxZyg'
+    ];
+    for (const id of obsoleteIds) {
+        try {
+            await SadhsangatDb.deleteChannel(id);
+            console.log(`[Sadhsangat DB] Cleaned up obsolete channel seed: ${id}`);
+        } catch (e) {
+            console.warn(`[Sadhsangat DB] Cleanup of obsolete channel ${id} failed:`, e.message);
+        }
     }
 
     // SINGLE default channel — user adds more via the UI
@@ -2262,18 +2287,113 @@ async function checkYouTubeChannels() {
 }
 
 // ───────────────────────────────────────────────────────────────────
-// 🔴 Real live-status checker — scrapes YouTube /live page
-//    Extracts videoId, title, isLive without any API key
+// 🔴 Real live-status checker — multi-method approach
+//    Method 1: Scrape /streams tab for "X watching" (most reliable)
+//    Method 2: Parse ytInitialPlayerResponse from /live page
+//    Method 3: String pattern fallback
 // ───────────────────────────────────────────────────────────────────
 async function checkLiveViaScrap(ch) {
     const handle = ch.channelHandle || null;
-    const url = handle
+
+    // ── METHOD 1: Check the /streams tab for "watching" viewer count ──
+    // When a channel is live, their streams page shows "X,XXX watching" in viewer count.
+    // This is the most reliable signal as it's in ytInitialData (not ytInitialPlayerResponse).
+    try {
+        const streamsUrl = handle
+            ? `https://www.youtube.com/${handle}/streams`
+            : `https://www.youtube.com/channel/${ch.channelId}/streams`;
+        
+        const streamsResp = await axios.get(streamsUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            maxRedirects: 5,
+            timeout: 15000
+        });
+        const streamsHtml = streamsResp.data;
+        
+        // Extract ytInitialData using brace-matching parser (no /s flag needed)
+        let initialData = null;
+        const dataIdx = streamsHtml.indexOf('var ytInitialData = {');
+        if (dataIdx !== -1) {
+            const jsonStart = streamsHtml.indexOf('{', dataIdx);
+            let braceCount = 0, inStr = false, esc = false, jsonEnd = -1;
+            for (let i = jsonStart; i < streamsHtml.length; i++) {
+                const c = streamsHtml[i];
+                if (esc) { esc = false; continue; }
+                if (c === '\\') { esc = true; continue; }
+                if (c === '"') { inStr = !inStr; continue; }
+                if (!inStr) {
+                    if (c === '{') braceCount++;
+                    else if (c === '}') { braceCount--; if (braceCount === 0) { jsonEnd = i + 1; break; } }
+                }
+            }
+            if (jsonEnd !== -1) {
+                try { initialData = JSON.parse(streamsHtml.substring(jsonStart, jsonEnd)); } catch(e) {}
+            }
+        }
+        
+        if (initialData) {
+            const tabs = initialData.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
+            const streamsTab = tabs.find(t => {
+                const title = (t.tabRenderer?.title || '').toLowerCase();
+                return title === 'live' || title === 'streams' || title === 'ਲਾਈਵ' || title === 'लाइव';
+            }) || tabs.find(t => t.tabRenderer?.selected === true);
+            
+            const content = streamsTab?.tabRenderer?.content;
+            let items = [];
+            if (content?.richGridRenderer) items = content.richGridRenderer.contents || [];
+            else if (content?.sectionListRenderer) {
+                items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items || [];
+            }
+            
+            for (const item of items) {
+                const lockup = item.richItemRenderer?.content?.lockupViewModel;
+                const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
+                
+                let videoId = null, title = null, viewsText = '';
+                
+                if (lockup && lockup.contentId) {
+                    videoId = lockup.contentId;
+                    const meta = lockup.metadata?.lockupMetadataViewModel;
+                    title = meta?.title?.content || 'Live Stream';
+                    const rows = meta?.metadata?.contentMetadataViewModel?.metadataRows || [];
+                    if (rows.length > 0) {
+                        const parts = rows[0].metadataParts || [];
+                        if (parts.length > 0) viewsText = parts[0].text?.content || '';
+                    }
+                } else if (video && video.videoId) {
+                    videoId = video.videoId;
+                    title = video.title?.runs?.[0]?.text || video.title?.simpleText || 'Live Stream';
+                    viewsText = video.viewCountText?.runs?.[0]?.text || video.viewCountText?.simpleText || '';
+                }
+                
+                // "X watching" / "X,XXX watching" / "watching now" signals active live stream
+                const isCurrentlyWatching = viewsText && (
+                    viewsText.toLowerCase().includes('watching') ||
+                    viewsText.toLowerCase().includes(' now')
+                );
+                
+                if (isCurrentlyWatching && videoId) {
+                    console.log(`[Sadhsangat Scrap] Method1 (streams page) detected LIVE: ${ch.channelName} → vid:${videoId} viewers:"${viewsText}"`);
+                    return { isLive: true, videoId, title };
+                }
+            }
+        }
+    } catch (e) {
+        console.warn(`[Sadhsangat Scrap] Method1 (streams page) failed for ${ch.channelName}:`, e.message);
+    }
+
+    // ── METHOD 2: Parse ytInitialPlayerResponse from /live page ──
+    const liveUrl = handle
         ? `https://www.youtube.com/${handle}/live`
         : `https://www.youtube.com/channel/${ch.channelId}/live`;
 
     let resp;
     try {
-        resp = await axios.get(url, {
+        resp = await axios.get(liveUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept-Language': 'en-US,en;q=0.9',
@@ -2288,43 +2408,25 @@ async function checkLiveViaScrap(ch) {
 
     const html = resp.data;
 
+    // Parse ytInitialPlayerResponse using brace-matching (avoids /s flag issues on older Node)
     let playerResponse = null;
-    const jsonMatch = html.match(/var ytInitialPlayerResponse\s*=\s*({.*?});/s) || 
-                      html.match(/ytInitialPlayerResponse\s*=\s*({.*?});/s);
-    if (jsonMatch) {
-        try {
-            playerResponse = JSON.parse(jsonMatch[1]);
-        } catch (e) {
-            try {
-                const startIdx = html.indexOf('ytInitialPlayerResponse');
-                if (startIdx !== -1) {
-                    const jsonStart = html.indexOf('{', startIdx);
-                    let braceCount = 0;
-                    let inString = false;
-                    let escape = false;
-                    let jsonEnd = -1;
-                    for (let i = jsonStart; i < html.length; i++) {
-                        const char = html[i];
-                        if (escape) { escape = false; continue; }
-                        if (char === '\\') { escape = true; continue; }
-                        if (char === '"') { inString = !inString; continue; }
-                        if (!inString) {
-                            if (char === '{') braceCount++;
-                            else if (char === '}') {
-                                braceCount--;
-                                if (braceCount === 0) {
-                                    jsonEnd = i + 1;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (jsonEnd !== -1) {
-                        playerResponse = JSON.parse(html.substring(jsonStart, jsonEnd));
-                    }
+    const prIdx = html.indexOf('ytInitialPlayerResponse');
+    if (prIdx !== -1) {
+        const jsonStart = html.indexOf('{', prIdx);
+        if (jsonStart !== -1) {
+            let braceCount = 0, inStr = false, esc = false, jsonEnd = -1;
+            for (let i = jsonStart; i < html.length; i++) {
+                const c = html[i];
+                if (esc) { esc = false; continue; }
+                if (c === '\\') { esc = true; continue; }
+                if (c === '"') { inStr = !inStr; continue; }
+                if (!inStr) {
+                    if (c === '{') braceCount++;
+                    else if (c === '}') { braceCount--; if (braceCount === 0) { jsonEnd = i + 1; break; } }
                 }
-            } catch (err) {
-                console.error(`[Sadhsangat Scrap] Failed to parse player response for ${ch.channelName || ch.channelId}:`, err.message);
+            }
+            if (jsonEnd !== -1) {
+                try { playerResponse = JSON.parse(html.substring(jsonStart, jsonEnd)); } catch(e) {}
             }
         }
     }
@@ -2333,35 +2435,50 @@ async function checkLiveViaScrap(ch) {
         const details = playerResponse.videoDetails;
         const videoId = details.videoId;
         
-        // Strict active live player check based on actual videoDetails metadata.
-        const isLive = !!(details.isLive || details.isLiveContent) && 
-                       details.lengthSeconds === "0" && 
-                       !html.includes('"isUpcoming":true') &&
-                       !html.includes('"isUpcoming": true');
-
+        // isLive must be true OR (isLiveContent AND lengthSeconds is "0") AND not upcoming
+        const isActuallyLive = !!(details.isLive === true) ||
+            (!!(details.isLiveContent === true) && details.lengthSeconds === '0');
+        
+        const isUpcoming = html.includes('"isUpcoming":true') || html.includes('"isUpcoming": true');
+        const isLive = isActuallyLive && !isUpcoming;
+        
         const title = details.title || null;
         
-        return { isLive, videoId: isLive ? videoId : null, title };
+        if (videoId) {
+            console.log(`[Sadhsangat Scrap] Method2 (playerResponse): ${ch.channelName} isLive=${isLive} vid=${videoId}`);
+            return { isLive, videoId: isLive ? videoId : null, title };
+        }
     }
 
-    // Fallback if ytInitialPlayerResponse is not found
-    const vidM = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/) ||
-                 html.match(/"currentVideoEndpoint".*?"videoId":"([a-zA-Z0-9_-]{11})"/);
-    const videoId = vidM ? vidM[1] : null;
+    // ── METHOD 3: String-pattern fallback ──
+    const isUpcoming = html.includes('"isUpcoming":true') || html.includes('"isUpcoming": true');
+    
+    // Look for video ID near the /live redirect
+    const vidPatterns = [
+        /"videoId":"([a-zA-Z0-9_-]{11})"/,
+        /watch\?v=([a-zA-Z0-9_-]{11})/,
+        /"currentVideoEndpoint"[^}]*?"videoId":"([a-zA-Z0-9_-]{11})"/
+    ];
+    let videoId = null;
+    for (const pat of vidPatterns) {
+        const m = html.match(pat);
+        if (m) { videoId = m[1]; break; }
+    }
 
-    const isLive =
+    const isLiveStr =
         html.includes('"isLiveNow":true') ||
-        (/"isLive"\s*:\s*true/i.test(html) &&
-         !html.includes('"isUpcoming":true') &&
-         !html.includes('"isLiveContent":false') &&
-         !html.includes('"isLiveContent": false'));
+        html.includes('"isLive":true') ||
+        html.includes('"isLive": true');
+
+    const isLive = isLiveStr && !isUpcoming && !!videoId;
 
     const titleM = html.match(/<title>([^<]+)<\/title>/) ||
-                   html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/) ||
-                   html.match(/"og:title" content="([^"]+)"/);
+                   html.match(/"og:title" content="([^"]+)"/) ||
+                   html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/);
     const title = titleM ? titleM[1].replace(' - YouTube','').replace(/&amp;/g,'&').trim() : null;
 
-    return { isLive: !!(isLive && videoId), videoId: isLive ? videoId : null, title };
+    console.log(`[Sadhsangat Scrap] Method3 (string fallback): ${ch.channelName} isLive=${isLive} vid=${videoId}`);
+    return { isLive: !!isLive, videoId: isLive ? videoId : null, title };
 }
 
 async function searchChannelsViaScrap(query) {
@@ -3463,10 +3580,41 @@ app.get('/api/sadhsangat/channel/:channelId/posts', async (req, res) => {
 
 app.post('/api/sadhsangat/sync-now', async (req, res) => {
     try {
+        // Clear all caches so fresh data is fetched after sync
+        channelVideosCache.clear();
+        channelStreamsCache.clear();
         await checkYouTubeChannels();
         res.json({ success: true, message: 'Sync complete' });
     } catch (err) {
         res.status(500).json({ error: err.message || 'Sync failed' });
+    }
+});
+
+// Real-time single-channel live check (used by frontend for on-demand check)
+app.get('/api/sadhsangat/live-check', async (req, res) => {
+    const { channelId } = req.query;
+    if (!channelId) return res.status(400).json({ error: 'channelId required' });
+    try {
+        const ch = await SadhsangatDb.getChannelById(channelId);
+        if (!ch) return res.status(404).json({ error: 'Channel not found' });
+        const status = await checkLiveViaScrap(ch);
+        // Update DB with fresh status
+        const liveUrl = ch.channelHandle
+            ? `https://www.youtube.com/${ch.channelHandle}/live`
+            : `https://www.youtube.com/channel/${ch.channelId}/live`;
+        await SadhsangatDb.upsertChannel({
+            ...ch,
+            isLive: status.isLive ? 1 : 0,
+            liveTitle: status.isLive ? (status.title || ch.liveTitle) : null,
+            videoId: status.isLive ? (status.videoId || null) : null,
+            watchUrl: status.isLive && status.videoId
+                ? `https://www.youtube.com/watch?v=${status.videoId}`
+                : liveUrl,
+            lastChecked: new Date().toISOString()
+        });
+        res.json({ isLive: status.isLive, videoId: status.videoId || null, title: status.title || null });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -3495,6 +3643,373 @@ app.get('/api/sadhsangat/search', async (req, res) => {
     } catch (e) {
         console.error('[Sadhsangat Search API] Error:', e.message);
         res.status(500).json({ error: 'Could not search channels: ' + e.message });
+    }
+});
+// In-memory cache for channel validation results (can be upgraded to database later)
+const channelValidationCache = new Map();
+
+// ═══════════════════════════════════════════════════════════════════
+// SMART CHANNEL VALIDATION — Layered Intelligence System
+// Layer 1: Instant rejection list (zero AI cost)
+// Layer 2: Instant approval list (zero AI cost)
+// Layer 3: Groq Llama 3.3 with rich context (channel name + up to 10 videos + description)
+// NOTE: AI decision is FINAL — no dumb keyword override after AI approves
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Layer 1: Definite NON-SPIRITUAL content → instant reject ────────
+const INSTANT_REJECT_KEYWORDS = [
+    // Major music labels
+    't-series', 'zee music', 'yrf', 'tips music', 'speed records', 'saregama', 'eros now',
+    'universal music', 'sony music', 'warner music', 'atlantic records',
+    // Mainstream TV / OTT
+    'set india', 'sony tv', 'sony liv', 'sony entertainment', 'sony sabrang',
+    'star plus', 'star sports', 'star movies', 'hotstar', 'disney hotstar',
+    'colors tv', 'colors infinity', 'viacom18', 'colors bangla',
+    'zee tv', 'zee punjabi', 'zee cinema', 'zee5',
+    'ndtv', 'aaj tak', 'abp news', 'news18', 'india tv', 'republic tv', 'times now',
+    'mtv india', 'vh1 india', 'comedy central', 'cartoon network', 'nick india',
+    'disney channel', 'hbo', 'netflix', 'amazon prime video',
+    // Pure entertainment tags
+    'bigg boss', 'indian idol', 'kbc', 'kaun banega',
+    // Sports
+    'cricket', 'ipl official', 'bcci', 'fifa', 'isl official',
+    // Bollywood / Pollywood (music-only; not spiritual)
+    'bollywood', 'kollywood', 'tollywood',
+];
+
+// Famous Punjabi / Bollywood non-devotional artists (exact channel name patterns)
+const INSTANT_REJECT_ARTISTS = [
+    'karan aujla', 'diljit dosanjh', 'sidhu moose wala', 'ap dhillon', 'r nait',
+    'mankirt aulakh', 'jazzy b', 'babbal rak', 'amrit maan', 'gippy grewal',
+    'arjan dhillon', 'shubh', 'imran khan', 'badshah', 'yo yo honey singh',
+    'guru randhawa', 'harrdy sandhu', 'b praak', 'jaani', 'prabh gill',
+    'sukh-e musical doctorz', 'deep money', 'garry sandhu',
+    'akshay kumar', 'salman khan', 'shah rukh khan', 'aamir khan',
+];
+
+// ── Layer 2: Obviously SPIRITUAL content → instant approve ──────────
+const INSTANT_APPROVE_KEYWORDS = [
+    // Gurbani / Sikh
+    'gurbani', 'kirtan', 'shabad', 'nitnem', 'japji', 'rehraas', 'sukhmani',
+    'simran', 'naam simran', 'waheguru', 'satnam', 'mool mantar', 'ardas', 'hukamnama',
+    'gurdwara', 'harmandir', 'darbar sahib', 'amrit sanchar', 'amrit vela', 'prabhat pheri',
+    'sikh', 'sikhism', 'guru granth', 'granth sahib', 'dastar', 'langar',
+    'akali', 'sgpc', 'taksali', 'hazoori ragi', 'ragi jatha',
+    // Spiritual / Devotional (Punjabi/Hindi terms)
+    'sadhna', 'sadhsangat', 'sangat', 'satsang', 'sewa', 'sevadars',
+    'katha', 'kathavachak', 'paath', 'path', 'akhand path', 'sehaj path',
+    'divya', 'divine', 'spiritual', 'devotional', 'bhajan', 'aarti', 'puja', 'pooja',
+    'mandir', 'temple', 'masjid', 'church', 'gurudwara',
+    'swami', 'maharaj', 'guruji', 'sant', 'baba', 'mahapurush', 'sadhu',
+    'ashram', 'dera', 'tirth', 'yatra', 'dharm', 'dharam', 'dharma',
+    'amritvani', 'prabhu', 'bhagwan', 'ishwar', 'parmatma', 'aatma',
+    // Other Indian devotional
+    'ramayana', 'mahabharata', 'geeta', 'gita', 'veda', 'vedic', 'upanishad',
+    'hanuman', 'krishna', 'ram', 'shiv', 'durga', 'ganesh', 'mata',
+    'quran', 'namaz', 'dua', 'islamic', 'sufi', 'dargah',
+    'bible', 'gospel', 'prayer', 'christian', 'jesus',
+];
+
+// AI Channel Validation Endpoint
+app.post('/api/sadhsangat/validate-channel', async (req, res) => {
+    const { channelName, channelId, channelHandle } = req.body;
+    
+    if (!channelName || channelName.trim().length < 2) {
+        return res.status(400).json({ error: 'Channel name too short' });
+    }
+    
+    try {
+        const cacheKey = `${channelName.trim().toLowerCase()}_${channelId || 'unknown'}`;
+        const now = Date.now();
+        const cached = channelValidationCache.get(cacheKey);
+        
+        if (cached && (now - cached.timestamp) < CONFIG.CHANNEL_VALIDATION_CACHE_TTL) {
+            console.log('[Channel Validation] Cache hit for', channelName);
+            return res.json({ 
+                isValid: cached.isValid, 
+                reason: cached.reason,
+                category: cached.category || 'other',
+                fromCache: true 
+            });
+        }
+        
+        const channelNameLower = channelName.trim().toLowerCase();
+
+        // ─────────────────────────────────────────────────────────────────
+        // LAYER 1: INSTANT REJECT — obvious non-spiritual (no AI cost)
+        // Uses the INSTANT_REJECT_KEYWORDS + INSTANT_REJECT_ARTISTS arrays
+        // ─────────────────────────────────────────────────────────────────
+        const matchedRejectKw = INSTANT_REJECT_KEYWORDS.find(kw => channelNameLower.includes(kw));
+        const matchedRejectArtist = INSTANT_REJECT_ARTISTS.find(artist => channelNameLower.includes(artist));
+
+        if (matchedRejectKw || matchedRejectArtist) {
+            const matchedTerm = matchedRejectKw || matchedRejectArtist;
+            console.log(`[Channel Validation] ❌ INSTANT REJECT: "${channelName}" matched "${matchedTerm}"`);
+            const result = {
+                isValid: false,
+                reason: `This channel appears to be non-spiritual content (matched: "${matchedTerm}"). Not suitable for Sadhsangat Live.`,
+                category: 'entertainment',
+                timestamp: now
+            };
+            channelValidationCache.set(cacheKey, result);
+            return res.json({ ...result, fromCache: false });
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // LAYER 2: INSTANT APPROVE — obvious spiritual (no AI cost)
+        // Uses the INSTANT_APPROVE_KEYWORDS array (includes sadhna, sangat,
+        // sewa, katha, paath, sant, baba, maharaj, mandir, swami, etc.)
+        // ─────────────────────────────────────────────────────────────────
+        const matchedApproveKw = INSTANT_APPROVE_KEYWORDS.find(kw => channelNameLower.includes(kw));
+
+        if (matchedApproveKw) {
+            console.log(`[Channel Validation] ✅ INSTANT APPROVE: "${channelName}" matched "${matchedApproveKw}"`);
+            const result = {
+                isValid: true,
+                reason: `Channel name contains spiritual keyword "${matchedApproveKw}" — clearly devotional content.`,
+                category: 'devotional',
+                timestamp: now
+            };
+            channelValidationCache.set(cacheKey, result);
+            return res.json({ ...result, fromCache: false });
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // LAYER 3: AI DEEP ANALYSIS — for ambiguous channels
+        // Provides rich context: up to 10 video titles + channel description
+        // AI decision is FINAL (no dumb keyword override that kills legit channels)
+        // ─────────────────────────────────────────────────────────────────
+        let sampleVideos = [];
+        let channelDescription = '';
+        let channelHandle_resolved = channelHandle || '';
+
+        if (channelId) {
+            try {
+                const ch = await SadhsangatDb.getChannelById(channelId);
+                channelHandle_resolved = (ch && ch.channelHandle) ? ch.channelHandle : channelHandle_resolved;
+                const videos = await getCachedChannelVideos(channelId, channelHandle_resolved);
+                sampleVideos = videos.slice(0, 10).map(v => v.title).filter(t => t);
+                if (ch && ch.description) {
+                    channelDescription = ch.description.substring(0, 600);
+                }
+            } catch (err) {
+                console.warn('[Channel Validation] Could not fetch channel data:', err.message);
+            }
+        }
+
+        // Build rich context for AI
+        const contextLines = [];
+        contextLines.push(`Channel Name: ${channelName}`);
+        if (channelHandle_resolved) contextLines.push(`Handle: @${channelHandle_resolved.replace(/^@/, '')}`);
+        if (sampleVideos.length > 0) {
+            contextLines.push(`Recent Videos (${sampleVideos.length}):\n${sampleVideos.map((t, i) => `  ${i+1}. ${t}`).join('\n')}`);
+        } else {
+            contextLines.push('Recent Videos: Not available — judge by channel name alone');
+        }
+        if (channelDescription) {
+            contextLines.push(`Channel Description: ${channelDescription}`);
+        }
+        const richContext = contextLines.join('\n');
+
+        const validationPrompt = `You are an expert content classifier for a SIKH & SPIRITUAL DEVOTIONAL platform called "Sadhsangat Live".
+Your job: decide if a YouTube channel belongs on this platform.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CHANNEL TO EVALUATE:
+${richContext}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+APPROVE (isValid: true) if the channel is about:
+• Gurbani, Kirtan, Shabad, Nitnem, Simran, Waheguru, Amrit Vela
+• Sikh Gurdwara, SGPC, Darbar Sahib, Hazoori Ragi
+• Satsang, Katha, Paath, Sewa, Sadhsangat, Sangat
+• Sadhna (in spiritual context), Guruji, Sant, Baba, Maharaj
+• Hindu devotional: Bhajan, Aarti, Satsang, Swami, Ashram, Mandir
+• Islamic devotional: Naats, Quran recitation, Sufi, Dargah
+• Christian devotional: Gospel, Praise & Worship, Church hymns
+• Punjabi Ragis, Dhadhis, Hazoori Singers performing Gurbani
+• Spiritual talks / discourses even if not purely Gurbani
+
+REJECT (isValid: false) if the channel is about:
+• Punjabi pop singers (Karan Aujla, Diljit Dosanjh, AP Dhillon, Sidhu Moose Wala, Babbal Rak, Amrit Maan, Guru Randhawa, Arjan Dhillon, Shubh, etc.)
+• Music labels (T-Series, Speed Records, Zee Music, YRF, Tips Music)
+• Mainstream TV (Star, Colors, Zee, Sony, NDTV, Aaj Tak)
+• Entertainment: Comedy, fashion, gaming, vlogs, reality shows
+• Sports, politics, news, technology, cooking (non-devotional)
+• Bollywood / film industry channels
+
+IMPORTANT NOTES:
+• Channels in Punjabi script (Gurmukhi) or Hindi are often devotional — be generous
+• A channel named after a saint / spiritual teacher is likely devotional
+• "Sadhna" in Punjabi/Hindi context = spiritual practice — NOT the TV channel "Sadhna TV"
+• "Sangat", "Satsang", "Sewa", "Baba", "Sant" are strong spiritual indicators
+• If video titles contain Gurbani words or Punjabi religious terms → APPROVE
+• When genuinely unsure → lean APPROVE (the platform admins will do final review)
+• Your decision is FINAL — do not second-guess yourself
+
+Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
+{
+  "isValid": true,
+  "reason": "one sentence explaining why",
+  "category": "gurbani|sikh|hindu|islamic|christian|devotional|singer|entertainment|other",
+  "confidence": "high|medium|low"
+}`;
+
+        console.log(`[Channel Validation] 🤖 Calling AI for "${channelName}" (${sampleVideos.length} videos fetched)`);
+
+        const response = await axios.post(CONFIG.GROQ_API_URL, {
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                { role: 'system', content: 'You are a JSON API. Always respond with valid JSON only. Never add markdown fences or text outside the JSON object.' },
+                { role: 'user', content: validationPrompt }
+            ],
+            temperature: 0.2,
+            max_tokens: 250
+        }, {
+            headers: {
+                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 15000
+        });
+        
+        const rawContent = response.data.choices[0]?.message?.content || '';
+        console.log(`[Channel Validation] AI raw response for "${channelName}":`, rawContent.substring(0, 300));
+        
+        let validationResult;
+        try {
+            const jsonMatch = rawContent.match(/{[\s\S]*}/);
+            const jsonStr = jsonMatch ? jsonMatch[0] : rawContent;
+            validationResult = JSON.parse(jsonStr);
+
+            if (typeof validationResult.isValid !== 'boolean') {
+                throw new Error('AI response missing isValid boolean');
+            }
+
+            console.log(`[Channel Validation] 🎯 AI decision for "${channelName}": ${validationResult.isValid ? '✅ APPROVED' : '❌ REJECTED'} (${validationResult.confidence || '?'} confidence) — ${validationResult.reason}`);
+
+            // Rescue pass: AI rejected but video titles clearly show spiritual content
+            // This ONLY rescues rejections, never kills approvals
+            if (!validationResult.isValid && sampleVideos.length > 0) {
+                const videosTextLower = sampleVideos.join(' ').toLowerCase();
+                const spiritualRescueKw = [
+                    'gurbani', 'kirtan', 'shabad', 'nitnem', 'japji', 'simran',
+                    'waheguru', 'gurdwara', 'harmandir', 'amrit', 'satsang', 'katha',
+                    'bhajan', 'aarti', 'sewa', 'paath', 'hukamnama'
+                ];
+                const matchedRescue = spiritualRescueKw.find(kw => videosTextLower.includes(kw));
+                if (matchedRescue) {
+                    console.log(`[Channel Validation] 🛟 RESCUE: AI rejected "${channelName}" but videos contain "${matchedRescue}" — overriding to APPROVE`);
+                    validationResult.isValid = true;
+                    validationResult.reason = `AI was uncertain but video titles clearly contain spiritual content ("${matchedRescue}").`;
+                    validationResult.category = 'devotional';
+                    validationResult.confidence = 'medium';
+                }
+            }
+
+        } catch (parseErr) {
+            console.error('[Channel Validation] ⚠️ Failed to parse AI response:', rawContent, parseErr.message);
+            // On parse failure: REJECT (secure default)
+            validationResult = {
+                isValid: false,
+                reason: 'AI response could not be parsed. Channel rejected for safety — please try again.',
+                category: 'other',
+                confidence: 'low'
+            };
+        }
+        
+        const cacheEntry = {
+            isValid: validationResult.isValid,
+            reason: validationResult.reason,
+            category: validationResult.category || 'other',
+            timestamp: now
+        };
+        channelValidationCache.set(cacheKey, cacheEntry);
+        
+        return res.json({ 
+            isValid: validationResult.isValid, 
+            reason: validationResult.reason,
+            category: validationResult.category || 'other',
+            confidence: validationResult.confidence || 'medium',
+            fromCache: false
+        });
+        
+    } catch (err) {
+        console.error('[Channel Validation] ❌ Unexpected error:', err.message);
+        // On unexpected error: REJECT (secure default — don't accidentally let junk through)
+        return res.json({ 
+            isValid: false, 
+            reason: 'Validation service temporarily unavailable. Please try adding the channel again in a moment.',
+            category: 'other',
+            confidence: 'low',
+            fromCache: false
+        });
+    }
+});
+
+// Enhanced Content Search API (search videos by title, description, channel name)
+app.get('/api/sadhsangat/content-search', async (req, res) => {
+    const { q } = req.query;
+    const userId = getUserId(req, res);
+    
+    if (!q || q.trim().length < 2) {
+        return res.status(400).json({ error: 'Query too short' });
+    }
+    
+    try {
+        const myChs = await SadhsangatDb.getUserChannels(userId);
+        
+        const fetchPromises = myChs.map(async (ch) => {
+            try {
+                const videos = await getCachedChannelVideos(ch.channelId, ch.channelHandle);
+                return videos.map(v => ({
+                    ...v,
+                    channelId: ch.channelId,
+                    channelName: ch.channelName,
+                    channelThumbnail: ch.thumbnail
+                }));
+            } catch (err) {
+                console.warn(`[Content Search] Failed for ${ch.channelName}:`, err.message);
+                return [];
+            }
+        });
+        
+        const results = await Promise.allSettled(fetchPromises);
+        let allVideos = [];
+        for (const res of results) {
+            if (res.status === 'fulfilled') {
+                allVideos = allVideos.concat(res.value);
+            }
+        }
+        
+        const queryLower = q.toLowerCase().trim();
+        const searchResults = allVideos.filter(v => {
+            const titleMatch = (v.title || '').toLowerCase().includes(queryLower);
+            const channelMatch = (v.channelName || '').toLowerCase().includes(queryLower);
+            return titleMatch || channelMatch;
+        });
+        
+        searchResults.sort((a, b) => {
+            const aExactTitle = (a.title || '').toLowerCase() === queryLower ? 1 : 0;
+            const bExactTitle = (b.title || '').toLowerCase() === queryLower ? 1 : 0;
+            
+            if (bExactTitle !== 0) return 1;
+            if (aExactTitle !== 0) return -1;
+            
+            const aChannelMatch = (a.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
+            const bChannelMatch = (b.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
+            return bChannelMatch - aChannelMatch;
+        });
+        
+        res.json({ 
+            videos: searchResults.slice(0, 50),
+            total: searchResults.length,
+            query: q 
+        });
+        
+    } catch (e) {
+        console.error('[Content Search API] Error:', e.message);
+        res.status(500).json({ error: 'Search failed: ' + e.message });
     }
 });
 
@@ -3693,6 +4208,162 @@ app.get('/version.json', (req, res) => {
 // Manifest
 app.get('/manifest.json', (req, res) => {
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'manifest.json'));
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// GURBANI GPT — AI Chat API (Groq Llama-3.3-70B, SSE Streaming)
+// POST /api/gurbani-gpt/chat
+//   Body: { messages: [{role, content}], systemPrompt?: string }
+//   Response: text/event-stream (SSE) with OpenAI-compatible deltas
+// ═══════════════════════════════════════════════════════════════════
+
+const GURBANI_GPT_RATE_LIMIT = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 30,             // 30 messages per minute per IP
+    message: { error: 'Too many requests. Please wait a moment and try again.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+// Fallback system prompt (used if frontend doesn't send one)
+const GURBANI_GPT_SYSTEM_PROMPT = `You are "Gurbani GPT" — a warm, humble, spiritually grounded assistant for Sikh guidance, remembrance of Naam, and practical daily discipline.
+
+CORE IDENTITY
+- Your tone must feel humble, shant, respectful, devotional, and steady.
+- Speak like a gurmukh guide: gentle, direct, compassionate, and practical.
+- Do not sound preachy, arrogant, argumentative, or overly academic.
+- Your primary mission is to inspire Naam Jap, Simran, inner discipline, humility, seva, patience, and remembrance of Waheguru.
+- Keep the style uplifting and simple.
+- Adapt to the user's language automatically: English→English, Punjabi→Punjabi, Hindi→Hindi, mixed→mixed.
+
+SPIRITUAL STYLE
+- Always bring the user back to Naam Jap and remembrance of Waheguru.
+- Guide toward: swas swas Naam jap, simran in daily life, humility, sewa, patience, acceptance of Hukam, self-observation.
+- Feel like a compassionate spiritual elder who encourages practice, not debate.
+- Prefer short, repeatable practices.
+- If distressed user: bring them back to one simple practice first.
+
+NO GURBANI PANKTI QUOTING RULE
+- Do NOT provide Gurbani pankti, verse references, or exact quotations as default.
+- Do NOT invent or hallucinate Gurbani.
+- If not fully certain of a verse, say: "Main exact pankti nahi de reha, par Gurmat da saar eh hai..." or "I will avoid exact lines so I do not risk mistakes, but the teaching is..."
+- Prefer paraphrase over quotation.
+
+RESPONSE BEHAVIOR
+- Be concise by default. Give simple, actionable spiritual steps.
+- End with soft reminders: "Keep simran steady." / "One breath, one Waheguru." / "Swas swas Naam jap."
+- When confused user appears: give ONE clear next step, not ten.
+
+SAFETY AND HUMILITY
+- Grief/anxiety/crisis: respond with compassion and simple grounding.
+- Always remain humble. Do not replace medical/professional help.
+
+FINAL PRINCIPLE
+Make every response help the user move closer to Naam, humility, and inner steadiness — accurate, gentle, and free from invented scripture.`;
+
+app.post('/api/gurbani-gpt/chat', GURBANI_GPT_RATE_LIMIT, async (req, res) => {
+    const { messages, systemPrompt } = req.body;
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: 'messages array is required' });
+    }
+
+    // Sanitize messages — only allow user/assistant roles, trim content
+    const cleanMessages = messages
+        .filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string')
+        .map(m => ({ role: m.role, content: m.content.slice(0, 4000) }))
+        .slice(-30); // max 30 messages in context
+
+    if (cleanMessages.length === 0) {
+        return res.status(400).json({ error: 'No valid messages provided' });
+    }
+
+    const sysPrompt = (typeof systemPrompt === 'string' && systemPrompt.length > 10)
+        ? systemPrompt
+        : GURBANI_GPT_SYSTEM_PROMPT;
+
+    const payload = {
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+            { role: 'system', content: sysPrompt },
+            ...cleanMessages
+        ],
+        temperature: 0.75,
+        max_tokens: 800,
+        stream: true
+    };
+
+    console.log(`[GurbaniGPT] Chat request — ${cleanMessages.length} messages, last: "${cleanMessages.slice(-1)[0]?.content?.slice(0, 60)}..."`);
+
+    try {
+        const groqResponse = await axios.post(CONFIG.GROQ_API_URL, payload, {
+            headers: {
+                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            responseType: 'stream',
+            timeout: 30000
+        });
+
+        // Set SSE headers
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering
+        res.flushHeaders();
+
+        let fullContent = '';
+
+        groqResponse.data.on('data', (chunk) => {
+            const rawText = chunk.toString();
+            const lines = rawText.split('\n');
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim();
+                    if (data === '[DONE]') {
+                        res.write('data: [DONE]\n\n');
+                        console.log(`[GurbaniGPT] Stream complete — ${fullContent.length} chars`);
+                        return;
+                    }
+                    try {
+                        const parsed = JSON.parse(data);
+                        const token = parsed.choices?.[0]?.delta?.content || '';
+                        if (token) {
+                            fullContent += token;
+                            res.write(`data: ${JSON.stringify(parsed)}\n\n`);
+                        }
+                    } catch(e) {
+                        // Skip non-JSON lines (keep-alive pings etc)
+                    }
+                }
+            }
+        });
+
+        groqResponse.data.on('end', () => {
+            res.write('data: [DONE]\n\n');
+            res.end();
+        });
+
+        groqResponse.data.on('error', (err) => {
+            console.error('[GurbaniGPT] Stream error:', err.message);
+            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+            res.end();
+        });
+
+        // Handle client disconnect
+        req.on('close', () => {
+            groqResponse.data.destroy();
+        });
+
+    } catch (error) {
+        console.error('[GurbaniGPT] API error:', error.message);
+        if (!res.headersSent) {
+            res.status(500).json({
+                error: error.response?.data?.error?.message || error.message || 'AI service unavailable'
+            });
+        }
+    }
 });
 
 // ═══════════════════════════════════════════════════════════════════
