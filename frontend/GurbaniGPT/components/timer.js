@@ -1,0 +1,1 @@
+export function initTimer(){ console.log('timer module'); }
