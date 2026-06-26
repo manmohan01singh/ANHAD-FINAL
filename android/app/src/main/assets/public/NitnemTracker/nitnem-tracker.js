@@ -203,35 +203,48 @@ const Utils = {
     },
 
     /**
-     * Calculate streak from date array
-     * Fixed: Properly counts consecutive days including today
+     * Calculate streak from date array (YYYY-MM-DD strings)
+     * BUG FIX: old code used new Date('YYYY-MM-DD') subtraction which is
+     * timezone-sensitive — ISO date strings parse as UTC midnight, causing
+     * off-by-one errors in IST and other UTC+ zones across DST transitions.
+     * Fix: compare UTC day-numbers (ms since epoch ÷ 86400000) which is
+     * completely immune to local timezone offsets.
      */
     calculateStreak(dates) {
         if (!dates || dates.length === 0) return 0;
 
-        const sortedDates = [...dates].sort((a, b) => new Date(b) - new Date(a));
-        const today = Utils.getTodayString();
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayString = yesterday.toLocaleDateString('en-CA');
+        // PERF FIX: Work with UTC day numbers to avoid timezone issues
+        const toUtcDay = (dateStr) => {
+            // YYYY-MM-DD → parse parts directly to avoid timezone ambiguity
+            const parts = String(dateStr).split('-');
+            if (parts.length !== 3) return NaN;
+            return Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) / 86400000;
+        };
 
-        // Check if streak is active (today or yesterday)
-        const mostRecent = sortedDates[0];
-        const isStreakActive = mostRecent === today || mostRecent === yesterdayString;
+        const today = Utils.getTodayString();
+        const todayDay = toUtcDay(today);
+        const yesterdayDay = todayDay - 1;
+
+        // Sort descending by day number
+        const dayNumbers = [...new Set(dates.map(toUtcDay))]
+            .filter(d => !isNaN(d))
+            .sort((a, b) => b - a);
+
+        if (!dayNumbers.length) return 0;
+
+                // Check if streak is active (today or yesterday)
+        const mostRecent = dayNumbers[0];
+        const isStreakActive = mostRecent === todayDay || mostRecent === yesterdayDay;
 
         if (!isStreakActive) {
             return 0;
         }
 
-        // Count consecutive days starting from the most recent
+        // Count consecutive days starting from most recent
+        // BUG FIX: compare UTC day integers — immune to timezone/DST issues
         let streak = 1;
-        for (let i = 0; i < sortedDates.length - 1; i++) {
-            const current = new Date(sortedDates[i]);
-            const next = new Date(sortedDates[i + 1]);
-            const diffDays = Math.round((current - next) / (1000 * 60 * 60 * 24));
-
-            // Consecutive days have exactly 1 day difference
-            if (diffDays === 1) {
+        for (let i = 0; i < dayNumbers.length - 1; i++) {
+            if (dayNumbers[i] - dayNumbers[i + 1] === 1) {
                 streak++;
             } else {
                 break;
@@ -7697,6 +7710,15 @@ const StreakSaverManager = {
             // Punishment expired - streak breaks
             this.removePunishmentFromNitnem();
             localStorage.removeItem(this.STORAGE_KEY);
+            localStorage.removeItem(this.ATTENDANCE_KEY);
+            StreakManager.state.currentStreak = 0;
+            StreakManager.saveStreakData();
+            StreakManager.recalculateStreak();
+            HeaderManager.updatePenaltyState();
+            HeaderManager.updateStreakDisplay();
+            if (typeof UIManager !== 'undefined' && typeof UIManager.updateStatsDashboard === 'function') {
+                UIManager.updateStatsDashboard();
+            }
             Toast.info('⏰ Streak Saver Expired', 'Your streak has been reset. Start fresh today!');
         }
     },

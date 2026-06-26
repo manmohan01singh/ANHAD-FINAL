@@ -1018,14 +1018,20 @@
   // Also run conversion on page change
   window.addEventListener('anhad_page_changed', convertOnclickToDataHref);
 
-  // Periodic cache maintenance to prevent memory leaks in long sessions
-  setInterval(() => {
+  // PERF FIX: Periodic cache maintenance — prevent PAGE_CACHE memory leak in long sessions.
+  // MEMORY LEAK FIX: Store interval ID and clear it on pagehide to prevent accumulation.
+  const _cacheMaintenanceInterval = setInterval(() => {
     if (PAGE_CACHE.size > 20) {
       const keys = Array.from(PAGE_CACHE.keys());
       // Keep initial page and last 10
       keys.slice(1, keys.length - 10).forEach(key => PAGE_CACHE.delete(key));
     }
   }, 60000);
+
+  // MEMORY LEAK FIX: Always clean up timers when the page is hidden or unloaded.
+  window.addEventListener('pagehide', () => {
+    clearInterval(_cacheMaintenanceInterval);
+  }, { once: true });
 
   // Proactively prefetch the core sub-pages on launch so they are loaded in RAM instantly
   function prefetchCoreShell() {

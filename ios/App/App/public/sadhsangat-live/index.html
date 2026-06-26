@@ -3465,27 +3465,10 @@
       </button>
       
       <a href="#" class="hdr-logo-area" id="logoLink">
-        <div class="hdr-logo-icon">
-          <svg viewBox="0 0 24 24" width="36" height="36" fill="var(--gold-accent)">
-            <circle cx="12" cy="12" r="10" fill="var(--gold-accent)" stroke="white" stroke-width="0.5"/>
-            <line x1="12" y1="4" x2="12" y2="20" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-            <circle cx="12" cy="7" r="3" fill="white"/>
-            <circle cx="12" cy="14" r="3" fill="white"/>
-            <circle cx="12" cy="12" r="2" fill="white" opacity="0.8"/>
-            <circle cx="6" cy="10" r="1" fill="white" opacity="0.6"/>
-            <circle cx="18" cy="10" r="1" fill="white" opacity="0.6"/>
-            <circle cx="10" cy="16" r="1" fill="white" opacity="0.6"/>
-            <circle cx="14" cy="16" r="1" fill="white" opacity="0.6"/>
-          </svg>
-        </div>
         <div class="hdr-logo-text">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-family:'Cinzel Decorative', display; font-size:18px; font-weight:600; letter-spacing:1px; color:var(--gold-accent);">ANHAD</span>
-            <span style="font-family:'Cinzel Decorative', display; font-size:18px; font-weight:600; color:var(--text);">Sadhsangat</span>
-          </div>
+          <span style="font-family:'Cinzel Decorative', display; font-size:20px; font-weight:600; color:var(--text);">Sadhsangat</span>
           <span class="hdr-logo-live-badge"><span class="hdr-logo-live-dot"></span>LIVE</span>
         </div>
-
       </a>
       
       <div class="hdr-actions">
@@ -3988,32 +3971,43 @@
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         // Page went to background
-        console.log('Page hidden - enabling background playback');
+        console.log('Page hidden - checking background playback settings');
         
-        // Request wake lock
-        requestWakeLock();
-        
-        // Enable audio-only mode for efficiency
-        if (ytPlayer && State.currentPlaying) {
-          // Keep playing in background
+        // Only enable background playback if user has enabled it via button
+        if (bgPlayEnabled && State.currentPlaying && ytPlayer) {
+          console.log('Background play enabled - activating all systems');
+          
+          // Enable all background features
+          if (window.enableBackgroundPlayback) {
+            window.enableBackgroundPlayback();
+          }
+          
+          // Keep audio playing
           try {
-            ytPlayer.setPlaybackQuality('tiny'); // Lower quality for audio
-          } catch(e) {}
+            if (ytPlayer.getPlayerState) {
+              ytPlayer.getPlayerState((state) => {
+                if (state !== YT.PlayerState.PLAYING) {
+                  ytPlayer.playVideo();
+                }
+              });
+            }
+          } catch(e) {
+            console.log('Auto-play error:', e);
+          }
         }
-        
-        window.backgroundPlayback.active = true;
       } else {
         // Page came to foreground
         console.log('Page visible - restoring normal playback');
         
-        // Restore quality
-        if (ytPlayer && State.currentPlaying && !State.audioOnly) {
+        // Restore normal playback quality
+        if (bgPlayEnabled && State.currentPlaying && ytPlayer) {
           try {
             ytPlayer.setPlaybackQuality('auto');
           } catch(e) {}
         }
         
-        window.backgroundPlayback.active = false;
+        // Update Media Session
+        updateMediaSessionPlaybackState();
       }
     });
 
@@ -4066,11 +4060,243 @@
     document.addEventListener('click', resumeAudioContext, { once: true });
     document.addEventListener('touchstart', resumeAudioContext, { once: true });
 
+
+    // 9. MEDIA SESSION API - Lock Screen Controls (YouTube Premium-like)
+    function setupMediaSession() {
+      if (!('mediaSession' in navigator)) return;
+      
+      const metadata = State.currentPlaying ? {
+        title: State.currentPlaying.title,
+        artist: State.currentPlaying.channelName,
+        album: 'Sadhsangat Live',
+        artwork: [
+          { src: 'https://via.placeholder.com/96/FFD700/000000?text=S', sizes: '96x96', type: 'image/png' },
+          { src: 'https://via.placeholder.com/128/FFD700/000000?text=S', sizes: '128x128', type: 'image/png' },
+          { src: 'https://via.placeholder.com/256/FFD700/000000?text=S', sizes: '256x256', type: 'image/png' },
+          { src: 'https://via.placeholder.com/512/FFD700/000000?text=S', sizes: '512x512', type: 'image/png' }
+        ]
+      } : {};
+      
+      navigator.mediaSession.metadata = new MediaMetadata(metadata);
+      
+      // Play/Pause handler
+      navigator.mediaSession.setActionHandler('play', async () => {
+        console.log('Media Session: Play');
+        if (ytPlayer) {
+          ytPlayer.playVideo();
+        }
+        updateMediaSessionPlaybackState();
+      });
+      
+      navigator.mediaSession.setActionHandler('pause', async () => {
+        console.log('Media Session: Pause');
+        if (ytPlayer) {
+          ytPlayer.pauseVideo();
+        }
+        updateMediaSessionPlaybackState();
+      });
+      
+      // Seek handlers
+      navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+        console.log('Media Session: Seek Backward');
+        if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.seekTo) {
+          ytPlayer.getCurrentTime((seconds) => {
+            ytPlayer.seekTo(seconds - (details.seekOffset || 10));
+          });
+        }
+      });
+      
+      navigator.mediaSession.setActionHandler('seekforward', (details) => {
+        console.log('Media Session: Seek Forward');
+        if (ytPlayer && ytPlayer.getCurrentTime && ytPlayer.seekTo) {
+          ytPlayer.getCurrentTime((seconds) => {
+            ytPlayer.seekTo(seconds + (details.seekOffset || 10));
+          });
+        }
+      });
+      
+      // Next/Previous (for playlist navigation)
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        console.log('Media Session: Next Track');
+        // Implement if you have playlist support
+      });
+      
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        console.log('Media Session: Previous Track');
+        // Implement if you have playlist support
+      });
+    }
+    
+    function updateMediaSessionPlaybackState() {
+      if ('mediaSession' in navigator && ytPlayer) {
+        ytPlayer.getPlayerState((state) => {
+          if (state === YT.PlayerState.PLAYING) {
+            navigator.mediaSession.playbackState = 'playing';
+          } else {
+            navigator.mediaSession.playbackState = 'paused';
+          }
+        });
+      }
+    }
+    
+    // Call setupMediaSession whenever video changes
+    document.addEventListener('sadhsangatPlayerPlaying', setupMediaSession);
+    document.addEventListener('sadhsangatPlayerPaused', setupMediaSession);
+    
+    // 10. ENHANCED AUDIO KEEP-ALIVE SYSTEM
+    let backgroundKeepAlive = null;
+    let keepAliveInterval = null;
+    
+    function startBackgroundKeepAlive() {
+      if (backgroundKeepAlive) return;
+      
+      // Create a silent audio element for keep-alive
+      backgroundKeepAlive = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
+      backgroundKeepAlive.loop = true;
+      backgroundKeepAlive.volume = 0.00001; // Almost silent
+      backgroundKeepAlive.play().catch(e => console.log('Keep-alive audio error:', e));
+      
+      // Also use a ping interval to keep the service worker alive
+      keepAliveInterval = setInterval(() => {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'keepalive' });
+        }
+      }, 30000); // Every 30 seconds
+    }
+    
+    function stopBackgroundKeepAlive() {
+      if (backgroundKeepAlive) {
+        backgroundKeepAlive.pause();
+        backgroundKeepAlive = null;
+      }
+      if (keepAliveInterval) {
+        clearInterval(keepAliveInterval);
+        keepAliveInterval = null;
+      }
+    }
+
+    // 11. PWA SERVICE WORKER SETUP FOR BACKGROUND AUDIO
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('Service Worker registered');
+        
+        // Listen for messages from service worker
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data.type === 'keepalive-response') {
+            console.log('Keep-alive ping successful');
+          }
+        });
+      }).catch(err => console.log('Service Worker error:', err));
+    }
+
+    // 12. CAPACITOR/CORDOVA BACKGROUND AUDIO SUPPORT
+    function setupCapacitorBackgroundAudio() {
+      // Check if running in Capacitor
+      if (window.Capacitor) {
+        const { App, BackgroundTask } = window.Capacitor.Plugins || {};
+        
+        if (BackgroundTask) {
+          // Handle background task for Capacitor
+          BackgroundTask.beforeExit(async () => {
+            if (bgPlayEnabled && State.currentPlaying) {
+              // Create a background task to keep audio playing
+              const taskId = await BackgroundTask.beforeExit();
+              console.log('Capacitor background task:', taskId);
+              
+              // Keep task alive
+              const interval = setInterval(() => {
+                // Ping to keep task alive
+              }, 1000);
+              
+              // Clean up when task ends
+              BackgroundTask.on('exit', () => {
+                clearInterval(interval);
+              });
+            }
+          });
+        }
+      }
+      
+      // Check if running in Cordova/PhoneGap
+      if (window.cordova && window.plugins && window.plugins.backgroundMode) {
+        // Enable background mode for Cordova
+        window.plugins.backgroundMode.enable();
+        window.plugins.backgroundMode.on('activate', () => {
+          console.log('Cordova background mode activated');
+        });
+        window.plugins.backgroundMode.on('deactivate', () => {
+          console.log('Cordova background mode deactivated');
+        });
+      }
+    }
+    
+    setupCapacitorBackgroundAudio();
+
     // 8. ENHANCED YOUTUBE PLAYER CONFIG FOR BACKGROUND PLAYBACK
     window.enableBackgroundPlayback = function() {
-      console.log('Enabling comprehensive background playback');
+      console.log('Enabling comprehensive background playback (YouTube Premium-like)');
+      
+      // 1. Request wake lock to keep screen/CPU active
       requestWakeLock();
+      
+      // 2. Setup Media Session for lock screen controls
+      setupMediaSession();
+      
+      // 3. Start background keep-alive system
+      startBackgroundKeepAlive();
+      
+      // 4. Enable audio context
+      resumeAudioContext();
+      
+      // 5. Set YouTube player for background play
+      if (ytPlayer) {
+        try {
+          // Set player to audio-only mode (lower quality for efficiency)
+          ytPlayer.setPlaybackQuality('tiny');
+          
+          // Disable video to save bandwidth when in background
+          if (typeof ytPlayer.hideVideo === 'function') {
+            ytPlayer.hideVideo();
+          }
+        } catch(e) {
+          console.log('YouTube player config error:', e);
+        }
+      }
+      
       window.backgroundPlayback.active = true;
+      window.backgroundPlayback.audioOnly = true;
+      
+      console.log('Background playback fully enabled with all features');
+    };
+
+    window.disableBackgroundPlayback = function() {
+      console.log('Disabling background playback');
+      
+      // 1. Release wake lock
+      if (window.wakeLock) {
+        window.wakeLock.release();
+        window.wakeLock = null;
+      }
+      
+      // 2. Stop keep-alive system
+      stopBackgroundKeepAlive();
+      
+      // 3. Restore YouTube player
+      if (ytPlayer) {
+        try {
+          ytPlayer.setPlaybackQuality('auto');
+          if (typeof ytPlayer.showVideo === 'function') {
+            ytPlayer.showVideo();
+          }
+        } catch(e) {
+          console.log('YouTube player restore error:', e);
+        }
+      }
+      
+      window.backgroundPlayback.active = false;
+      window.backgroundPlayback.audioOnly = false;
+      
+      console.log('Background playback disabled');
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -4136,7 +4362,10 @@
         window.wakeLock.release();
         window.wakeLock = null;
       }
+      stopBackgroundKeepAlive();
+      stopNativeAudioService();
       window.backgroundPlayback.active = false;
+      window.backgroundPlayback.audioOnly = false;
     };
 
     // ── WATCH HISTORY HELPERS ───────────────────────
@@ -4304,6 +4533,19 @@
       return fetch(finalUrl, options);
     }
 
+    async function readJsonResponse(response, fallback = {}) {
+      const text = await response.text();
+      if (!text) return fallback;
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        console.error('[Sadhsangat] JSON parse error:', err.message, 'Response text:', text.substring(0, 200));
+        const clean = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        const message = clean.slice(0, 140) || `HTTP ${response.status}`;
+        throw new Error(`JSON parse error: ${message}`);
+      }
+    }
+
     /* ── TOAST NOTIFICATIONS ─────────────────────────── */
     let toastTimeout = null;
     function showToast(message, duration = 3000) {
@@ -4407,9 +4649,57 @@
       if (badge) badge.style.display = 'none';
     });
 
-    // Background Play Toggle
-    let bgPlayEnabled = localStorage.getItem('bgPlayEnabled') === 'true';
+    // Background Play Toggle - ENABLED BY DEFAULT for YouTube Premium-like experience
+    let bgPlayEnabled = localStorage.getItem('bgPlayEnabled') !== 'false'; // Default to true
     const bgPlayBtn = $('bgPlayBtn');
+    let nativeAudioCommandListenerReady = false;
+
+    function getNativeAudioService() {
+      return window.Capacitor?.Plugins?.AudioService || null;
+    }
+
+    function startNativeAudioService() {
+      const service = getNativeAudioService();
+      if (!service || !State.currentPlaying) return;
+      service.start({
+        title: State.currentPlaying.title || 'Sadhsangat Live',
+        artist: State.currentPlaying.channelName || 'Gurbani Channel',
+        stream: 'sadhsangat'
+      }).catch(err => console.warn('[Sadhsangat] AudioService start failed:', err));
+    }
+
+    function syncNativeAudioState(action) {
+      const service = getNativeAudioService();
+      if (!service) return;
+      service.updateState({ action }).catch(err => console.warn('[Sadhsangat] AudioService state failed:', err));
+    }
+
+    function stopNativeAudioService() {
+      const service = getNativeAudioService();
+      if (!service) return;
+      service.stop().catch(() => {});
+    }
+
+    function setupNativeAudioCommandListener() {
+      const service = getNativeAudioService();
+      if (!service || nativeAudioCommandListenerReady || typeof service.addListener !== 'function') return;
+      nativeAudioCommandListenerReady = true;
+      service.addListener('mediaCommand', ({ command }) => {
+        if (!ytPlayer || !command) return;
+        try {
+          if (command === 'PLAY' || command === 'RECONNECT') ytPlayer.playVideo();
+          else if (command === 'PAUSE') ytPlayer.pauseVideo();
+          else if (command === 'STOP') {
+            ytPlayer.stopVideo();
+            $('playerBackdrop').classList.remove('visible');
+            $('playerSheet').className = 'player-sheet';
+            document.body.classList.remove('mini-player-active');
+          }
+        } catch (err) {
+          console.warn('[Sadhsangat] Native media command failed:', err);
+        }
+      });
+    }
     
     function updateBgPlayButton() {
       if (bgPlayEnabled) {
@@ -4442,11 +4732,14 @@
         if (window.enableBackgroundPlayback) {
           window.enableBackgroundPlayback();
         }
+        setupNativeAudioCommandListener();
+        startNativeAudioService();
         showToast('🎵 Background Play Enabled');
       } else {
         if (window.disableBackgroundPlayback) {
           window.disableBackgroundPlayback();
         }
+        stopNativeAudioService();
         showToast('🎵 Background Play Disabled');
       }
     });
@@ -4924,9 +5217,9 @@
     async function loadData() {
       try {
         const [liveRes, myChannelsRes, streamsRes] = await Promise.all([
-          fetchWithUser('/api/sadhsangat/live').then(r => r.json()),
-          fetchWithUser('/api/sadhsangat/my-channels').then(r => r.json()),
-          fetchWithUser('/api/sadhsangat/streams').then(r => r.json()).catch(() => ({ videos: [] }))
+          fetchWithUser('/api/sadhsangat/live').then(r => readJsonResponse(r, { live: [], upcoming: [] })),
+          fetchWithUser('/api/sadhsangat/my-channels').then(r => readJsonResponse(r, { channels: [] })),
+          fetchWithUser('/api/sadhsangat/streams').then(r => readJsonResponse(r, { videos: [] })).catch(() => ({ videos: [] }))
         ]);
 
         State.live = liveRes.live || [];
@@ -5125,8 +5418,8 @@
           fetchWithUser(`/api/sadhsangat/content-search?q=${encodeURIComponent(query)}`)
         ]);
         
-        const channelData = await channelRes.json();
-        const contentData = await contentRes.json();
+        const channelData = await readJsonResponse(channelRes, { channels: [] });
+        const contentData = await readJsonResponse(contentRes, { videos: [] });
         
         if (!channelRes.ok) throw new Error(channelData.error || 'Channels not found');
         // Content search errors are not fatal, just show channel results if available
@@ -5220,7 +5513,7 @@
 
                   console.log('[AI Validation] Calling validation API...');
                   // AI Validation: Check if channel is appropriate for Sadhsangat Live
-                  const validateRes = await fetch('/api/sadhsangat/validate-channel', {
+                  const validateRes = await fetchWithUser('/api/sadhsangat/validate-channel', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5230,7 +5523,7 @@
                     })
                   });
                   console.log('[AI Validation] Validation API response status:', validateRes.status);
-                  const validateData = await validateRes.json();
+                  const validateData = await readJsonResponse(validateRes, { isValid: false });
                   console.log('[AI Validation] Validation result:', validateData);
                   
                   if (!validateData.isValid) {
@@ -5247,7 +5540,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ handle: ch.channelHandle || ch.channelId, channelId: ch.channelId })
                   });
-                  const addData = await addRes.json();
+                  const addData = await readJsonResponse(addRes, {});
                   if (!addRes.ok) throw new Error(addData.error || 'Failed to add');
 
                   showToast(`✅ Added ${ch.channelName}`);
@@ -6318,7 +6611,7 @@
       container.innerHTML = '<div class="shimmer-card"></div>';
       try {
         const res = await fetchWithUser(`/api/sadhsangat/channel/${ch.channelId}/playlists`);
-        const data = await res.json();
+        const data = await readJsonResponse(res, { playlists: [] });
         if (!res.ok) throw new Error(data.error || 'Failed to fetch playlists');
 
         const playlists = data.playlists || [];
@@ -6502,7 +6795,7 @@
         console.log(`[DEBUG] Fetching from: ${url}, Channel: ${State.selectedChannelId}`);
 
         const res = await fetchWithUser(url);
-        const data = await res.json();
+        const data = await readJsonResponse(res, { videos: [] });
         if (!res.ok) throw new Error(data.error || 'Failed to fetch videos');
         
         console.log(`[DEBUG] Received ${data.videos?.length || 0} videos`);
@@ -6557,7 +6850,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ orderedChannelIds: ids })
         });
-        if (!res.ok) throw new Error('Reordering failed');
+        const data = await readJsonResponse(res, {});
+        if (!res.ok) throw new Error(data.error || 'Reordering failed');
         showToast('Display order updated');
         await loadData();
       } catch(err) {
@@ -6570,7 +6864,8 @@
         const res = await fetchWithUser(`/api/sadhsangat/my-channels/${encodeURIComponent(channelId)}`, {
           method: 'DELETE'
         });
-        if (!res.ok) throw new Error('Delete failed');
+        const data = await readJsonResponse(res, {});
+        if (!res.ok) throw new Error(data.error || 'Delete failed');
         showToast('🗑️ Channel removed');
         if (State.selectedChannelId === channelId) State.selectedChannelId = 'all';
         State.videos = [];
@@ -6820,7 +7115,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ channelId: v.channelId })
           });
-          const data = await res.json();
+          const data = await readJsonResponse(res, {});
           if (res.ok) {
             showToast(`🔔 Subscribed to ${v.channelName || 'Channel'}`);
             await loadData();
@@ -6903,6 +7198,10 @@
 
       // Load YouTube Player
       loadYtIframePlayer(videoId);
+      if (bgPlayEnabled) {
+        setupNativeAudioCommandListener();
+        startNativeAudioService();
+      }
       haptic('medium');
       
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
@@ -6938,7 +7237,7 @@
         } else {
           showToast(`➕ Adding ${name}...`);
           const res = await fetchWithUser(`/api/sadhsangat/search?q=${encodeURIComponent(name)}`);
-          const data = await res.json();
+          const data = await readJsonResponse(res, { channels: [] });
           const found = (data.channels || []).find(c => c.channelName === name) || (data.channels || [])[0];
           
           if (found) {
@@ -6974,20 +7273,42 @@
               modestbranding: 1,
               rel: 0,
               playsinline: 1,
-              // Enhanced background playback settings
-              iv_load_policy: 3,
-              cc_load_policy: 0,
-              showinfo: 0,
-              // Allow background playback on mobile
-              'playsinline': 1
+              // AGGRESSIVE BACKGROUND PLAYBACK SETTINGS (YouTube Premium-like)
+              iv_load_policy: 3,          // Hide annotations
+              cc_load_policy: 0,          // Hide closed captions
+              showinfo: 0,                // Hide video info
+              fs: 0,                      // Hide fullscreen button (use custom)
+              disablekb: 1,               // Disable keyboard controls
+              // Mobile-specific for background play
+              'playsinline': 1,
+              // Performance optimizations
+              'hl': 'en',
+              'color': 'white'
             },
             events: {
               onReady: (event) => {
-                console.log('YouTube Player ready with background playback support');
-                requestWakeLock(); // Request wake lock when player starts
+                console.log('YouTube Player ready with AGGRESSIVE background playback support');
+                
+                // Request wake lock immediately
+                requestWakeLock();
+                
+                // Setup Media Session always (for background playback)
+                setupMediaSession();
+                
+                // Start keep-alive if background play is enabled
+                if (bgPlayEnabled) {
+                  startBackgroundKeepAlive();
+                }
+                
                 onPlayerReady(event);
               },
-              onStateChange: onPlayerStateChange,
+              onStateChange: (event) => {
+                // Update Media Session on state change
+                if (bgPlayEnabled) {
+                  updateMediaSessionPlaybackState();
+                }
+                onPlayerStateChange(event);
+              },
               onError: (error) => {
                 console.error('YouTube Player error:', error);
               }
@@ -7015,12 +7336,14 @@
         $('pauseIconSvg').style.display = 'block';
         miniPlayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><rect x="5" y="4" width="4" height="16"/><rect x="15" y="4" width="4" height="16"/></svg>`;
         $('audioDiscSpin').classList.add('playing');
+        if (bgPlayEnabled) syncNativeAudioState('PLAY');
         window.dispatchEvent(new CustomEvent('sadhsangatPlayerPlaying'));
       } else {
         $('playIconSvg').style.display = 'block';
         $('pauseIconSvg').style.display = 'none';
         miniPlayBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
         $('audioDiscSpin').classList.remove('playing');
+        if (bgPlayEnabled) syncNativeAudioState('PAUSE');
         window.dispatchEvent(new CustomEvent('sadhsangatPlayerPaused'));
       }
       
@@ -7165,6 +7488,8 @@
         try { ytPlayer.stopVideo(); } catch(e) {}
       }
       if (progressInterval) clearInterval(progressInterval);
+      stopBackgroundKeepAlive();
+      stopNativeAudioService();
       
       $('playerBackdrop').classList.remove('visible');
       $('playerSheet').className = 'player-sheet';

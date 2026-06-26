@@ -344,7 +344,26 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
       const today = new Date().toLocaleDateString('en-CA');
       const nl = localStorage.getItem('nitnemTracker_nitnemLog');
-      if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completedToday = p[today].length; else if (typeof p[today] === 'object') { const td = p[today]; completedToday = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } }
+      if (nl) {
+        const p = JSON.parse(nl);
+        if (p[today]) {
+          // Handle different data structure formats
+          if (Array.isArray(p[today])) {
+            completedToday = p[today].length;
+          } else if (typeof p[today] === 'object') {
+            const td = p[today];
+            // Check for completed array (newer format)
+            if (Array.isArray(td.completed)) {
+              completedToday = td.completed.length;
+            } else {
+              // Fallback to individual bani arrays
+              completedToday = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0);
+            }
+          } else if (typeof p[today] === 'number') {
+            completedToday = p[today];
+          }
+        }
+      }
       
       // SYNC: Use UnifiedStats for streak data
       if (window.UnifiedStats) {
@@ -558,8 +577,22 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ━━━ REFRESH ON RETURN ━━━
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
-  window.addEventListener('pageshow', e => { if (e.persisted) { updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNextSession(); updateNitnemSubtitle(); } });
+  // OPTIMIZED: Only update time-sensitive data to prevent splash effect
+  document.addEventListener('visibilitychange', () => { 
+    if (document.visibilityState === 'visible') { 
+      updateClock(); 
+      updateGreeting(); 
+      // Only update data that actually changes, not full re-render
+      updateNitnemSubtitle(); 
+    } 
+  });
+  window.addEventListener('pageshow', e => { 
+    if (e.persisted) { 
+      updateClock(); 
+      updateGreeting(); 
+      updateNitnemSubtitle(); 
+    } 
+  });
 
   // ━━━ REFRESH ON SPA NAVIGATION BACK ━━━
   // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh

@@ -352,7 +352,7 @@
     const nowUTC = Math.floor(Date.now() / 1000);
 
     const positionInPlaylist = ((nowUTC - VIRTUAL_LIVE_EPOCH_START) % totalDuration + totalDuration) % totalDuration;
-
+    return computeVirtualLivePositionOrdered(playlist, totalDuration, positionInPlaylist);
   }
 
   // PERF FIX: Ordered virtual-live schedule helpers used by the no-backend engine.
@@ -1906,6 +1906,9 @@
       return { driftSeconds: 0, isLive: true };
     }
     const live = computeVirtualLivePosition(currentStream);
+    if (!live) {
+      return { driftSeconds: 0, isLive: true };
+    }
     const userPosition = getTrackAccumulatedStart(currentStream, currentTrackIndex) + (Number(audio.currentTime) || 0);
     const livePosition = Number(live.trackAccumulatedStart || 0) + (Number(live.position) || 0);
     const total = Number(live.totalDuration) || getVirtualTotalDuration(currentStream);

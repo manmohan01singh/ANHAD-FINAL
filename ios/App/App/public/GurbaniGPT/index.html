@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <title>Gurbani GPT — Naam Simran AI | ANHAD</title>
+  <meta name="description" content="Gurbani GPT — A compassionate AI companion for Naam Simran, spiritual guidance, and Gurmat practice.">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Google+Sans+Text:wght@400;500&family=Noto+Sans+Gurmukhi:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   1. RESET & TOKENS
+═══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#ffffff;
+  --text:#1f1f1f;
+  --text2:#444746;
+  --text3:#8e918f;
+  --pill:#f0f4f9;
+  --pill-h:#e3eaf4;
+  --border:rgba(0,0,0,0.08);
+  --shadow:0 1px 8px rgba(0,0,0,0.08);
+  --font:'Google Sans Text','Google Sans',-apple-system,sans-serif;
+  --font-d:'Google Sans',-apple-system,sans-serif;
+  --font-g:'Noto Sans Gurmukhi',sans-serif;
+  --accent:#1a73e8;
+  --accent-h:#1557b0;
+  --gold:#c89a3a;
+  --radius:22px;
+  /* Premium iOS/Google enhancements */
+  --glass-bg:rgba(255,255,255,0.72);
+  --glass-border:rgba(255,255,255,0.5);
+  --premium-shadow:0 8px 32px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --premium-glow:0 0 0 1px rgba(255,255,255,0.8),0 0 20px rgba(0,0,0,0.05);
+}
+
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+
+/* ═══════════════════════════════════════════════════════
+   2. GRADIENT SYSTEM — Exact Gemini replica
+   Single soft blob. Always on. Cycles: mint→gold→lavender→blue.
+   Fades to pure white at center & bottom — never touches edges.
+   ═══════════════════════════════════════════════════════ */
+
+/* Full-screen fixed canvas — sits behind everything */
+.g-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /*
+   * THE MASK — this is the secret to the Gemini look:
+   * Strong color at the very top, fading softly to complete
+   * transparency by ~70% down the screen. The ellipse shape
+   * also fades on the left & right so edges are always clean.
+   */
+  mask-image: radial-gradient(
+    ellipse 90% 66% at 35% 0%,
+    rgba(0,0,0,0.95)  0%,
+    rgba(0,0,0,0.90) 16%,
+    rgba(0,0,0,0.65) 34%,
+    rgba(0,0,0,0.25) 52%,
+    rgba(0,0,0,0.04) 66%,
+    transparent       78%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 66% at 35% 0%,
+    rgba(0,0,0,0.95)  0%,
+    rgba(0,0,0,0.90) 16%,
+    rgba(0,0,0,0.65) 34%,
+    rgba(0,0,0,0.25) 52%,
+    rgba(0,0,0,0.04) 66%,
+    transparent       78%
+  );
+}
+
+/*
+ * THE BLOB — one large circle, heavily blurred.
+ * background-color animates smoothly between 4 soft pastels.
+ * transform gently drifts so the glow feels alive, wave-like.
+ */
+.g-blob {
+  position: absolute;
+  /* Oversized so the blur never shows a hard edge */
+  width: 140%;
+  height: 80%;
+  left: -20%;
+  top: -28%;
+  border-radius: 50%;
+  filter: blur(72px);
+  /* Idle animation — always running, gentle 22s cycle */
+  animation:
+    gColor 22s ease-in-out infinite,
+    gDrift 28s ease-in-out infinite;
+  will-change: background-color, transform;
+}
+
+/*
+ * COLOR CYCLE — Premium enhanced palette:
+ * More sophisticated colors with better saturation and depth
+ * 1. Soft mint-green  (like image 2)
+ * 2. Warm gold-peach  (like image 3)
+ * 3. Pale lavender    (like image 4)
+ * 4. Soft sky-blue    (like image 5)
+ * All are very light/pastel — high lightness, moderate saturation.
+ */
+@keyframes gColor {
+  0%   { background-color: hsla(152, 52%, 82%, 0.92); } /* mint green enhanced */
+  24%  { background-color: hsla( 40, 76%, 84%, 0.92); } /* warm gold enhanced */
+  48%  { background-color: hsla(278, 46%, 86%, 0.88); } /* lavender enhanced */
+  72%  { background-color: hsla(208, 62%, 86%, 0.88); } /* sky blue enhanced */
+  88%  { background-color: hsla(170, 49%, 83%, 0.90); } /* blue-green enhanced */
+  100% { background-color: hsla(152, 52%, 82%, 0.92); } /* back to mint */
+}
+
+/* DRIFT — gentle positional float so the blob feels like a wave */
+@keyframes gDrift {
+  0%,100% { transform: translate(  0%,  0%) scale(1.00); }
+  22%     { transform: translate( 10%,  6%) scale(1.06); }
+  44%     { transform: translate( -7%, 10%) scale(0.96); }
+  66%     { transform: translate(  8%, -4%) scale(1.04); }
+  88%     { transform: translate( -4%,  7%) scale(0.98); }
+}
+
+/*
+ * CYCLING STATE (while AI is responding):
+ * Speed up color cycle so it feels responsive.
+ * Slight opacity boost makes it feel more alive.
+ */
+.g-bg.cycling .g-blob {
+  animation:
+    gColorFast 8s ease-in-out infinite,
+    gDrift 14s ease-in-out infinite;
+}
+
+/* Same colors, just faster - premium enhanced */
+@keyframes gColorFast {
+  0%   { background-color: hsla(152, 56%, 80%, 0.94); }
+  24%  { background-color: hsla( 40, 80%, 82%, 0.94); }
+  48%  { background-color: hsla(278, 50%, 84%, 0.90); }
+  72%  { background-color: hsla(208, 66%, 84%, 0.90); }
+  88%  { background-color: hsla(170, 53%, 81%, 0.92); }
+  100% { background-color: hsla(152, 56%, 80%, 0.94); }
+}
+
+/* DARK MODE — richer, deeper tones but same shape */
+body.dark .g-blob {
+  animation:
+    gColorDark 22s ease-in-out infinite,
+    gDrift     28s ease-in-out infinite;
+  filter: blur(72px);
+}
+body.dark .g-bg.cycling .g-blob {
+  animation:
+    gColorDarkFast 8s ease-in-out infinite,
+    gDrift         14s ease-in-out infinite;
+}
+@keyframes gColorDark {
+  0%   { background-color: hsla(152, 42%, 40%, 0.75); }
+  24%  { background-color: hsla( 40, 60%, 45%, 0.75); }
+  48%  { background-color: hsla(278, 38%, 45%, 0.70); }
+  72%  { background-color: hsla(208, 52%, 45%, 0.70); }
+  88%  { background-color: hsla(170, 40%, 42%, 0.72); }
+  100% { background-color: hsla(152, 42%, 40%, 0.75); }
+}
+@keyframes gColorDarkFast {
+  0%   { background-color: hsla(152, 48%, 38%, 0.85); }
+  24%  { background-color: hsla( 40, 66%, 42%, 0.85); }
+  48%  { background-color: hsla(278, 44%, 43%, 0.80); }
+  72%  { background-color: hsla(208, 58%, 43%, 0.80); }
+  88%  { background-color: hsla(170, 46%, 40%, 0.82); }
+  100% { background-color: hsla(152, 48%, 38%, 0.85); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   3. APP SHELL
+═══════════════════════════════════════════════════════ */
+.wrapper{position:relative;height:100dvh;height:100vh;overflow:hidden}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;max-width:640px;margin:0 auto}
+
+/* ═══════════════════════════════════════════════════════
+   4. HEADER — Gemini exact
+═══════════════════════════════════════════════════════ */
+.hdr{flex-shrink:0;display:flex;align-items:center;padding:10px 14px 8px;padding-top:max(10px,env(safe-area-inset-top,0px));gap:2px;min-height:60px;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+
+.hdr-icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .18s;flex-shrink:0}
+.hdr-icon-btn:hover{background:var(--pill-h)}
+.hdr-icon-btn:active{background:rgba(0,0,0,.1)}
+
+.hamburger{display:flex;flex-direction:column;gap:5px;width:18px}
+.hamburger span{display:block;height:1.5px;background:currentColor;border-radius:2px}
+
+.hdr-title{flex:1;display:flex;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background .18s;min-width:0;margin:0 2px}
+.hdr-title:hover{background:var(--pill-h)}
+.hdr-title-txt{font-family:var(--font-d);font-size:15px;font-weight:400;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-title-txt b{font-weight:600}
+.hdr-chevron{color:var(--text2);font-size:10px;flex-shrink:0;margin-top:1px}
+
+.hdr-right{display:flex;gap:2px;flex-shrink:0;position:relative}
+
+/* Status dot */
+.status-dot{width:8px;height:8px;border-radius:50%;background:#34a853;position:absolute;top:18px;right:18px;box-shadow:0 0 0 2px var(--bg)}
+.status-dot.offline{background:#ea4335}
+
+/* ═══════════════════════════════════════════════════════
+   5. MESSAGES
+═══════════════════════════════════════════════════════ */
+.msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 16px 12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.msgs::-webkit-scrollbar{width:0}
+
+/* ═══════════════════════════════════════════════════════
+   6. WELCOME STATE
+═══════════════════════════════════════════════════════ */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52vh;padding:32px 20px 20px;text-align:center;animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.welcome-star{width:48px;height:48px;margin-bottom:16px;animation:starFloat 4s ease-in-out infinite}
+@keyframes starFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.04)}}
+
+.welcome-title{font-family:var(--font-d);font-size:23px;font-weight:500;color:var(--text);letter-spacing:-.3px;line-height:1.3;margin-bottom:6px}
+.welcome-sub{font-size:13.5px;color:var(--text3);margin-bottom:28px;line-height:1.5}
+
+.chips-grid{display:flex;flex-direction:column;gap:9px;width:100%;max-width:330px}
+.chip{display:flex;align-items:center;gap:12px;background:var(--pill);border:none;border-radius:14px;padding:12px 16px;text-align:left;cursor:pointer;transition:background .18s,transform .15s;width:100%}
+.chip:hover{background:var(--pill-h);transform:translateY(-1px)}
+.chip:active{transform:scale(.97)}
+.chip-icon{font-size:17px;flex-shrink:0}
+.chip-label{font-size:13px;font-weight:400;color:var(--text);line-height:1.4;font-family:var(--font)}
+
+/* ═══════════════════════════════════════════════════════
+   7. MESSAGES — USER & AI
+═══════════════════════════════════════════════════════ */
+.msg-list{display:flex;flex-direction:column;gap:0;padding-top:6px}
+
+.msg{animation:msgIn .32s cubic-bezier(.2,.8,.4,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* User bubble */
+.msg-user{display:flex;justify-content:flex-end;padding:6px 0 10px}
+.msg-user .bbl{background:var(--pill);border-radius:22px;padding:10px 18px;max-width:80%;font-size:14.5px;line-height:1.58;color:var(--text);word-break:break-word}
+
+/* AI message */
+.msg-ai{padding:2px 0 10px}
+.ai-head{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.ai-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c89a3a,#9b5e1a);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ai-name{font-size:13px;font-weight:500;color:var(--text)}
+.ai-body{padding-left:38px;font-size:14.5px;line-height:1.68;color:var(--text);word-break:break-word}
+
+/* Action buttons on AI messages */
+.msg-actions{display:flex;gap:4px;margin-top:8px;margin-left:38px;opacity:0;transition:opacity .2s;flex-wrap:wrap}
+.msg-ai:hover .msg-actions,.msg-ai.actions-open .msg-actions{opacity:1}
+.msg-act-btn{display:flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11.5px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s;white-space:nowrap}
+.msg-act-btn:hover{background:var(--pill-h);border-color:rgba(0,0,0,.12)}
+.msg-act-btn.active{background:#e8f0fe;color:#1a73e8;border-color:#aecbfa}
+.msg-act-btn svg{flex-shrink:0}
+
+/* Thinking dots */
+.thinking{display:flex;gap:4px;align-items:center;padding:4px 0 4px 38px;margin-bottom:2px}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:think 1.3s ease-in-out infinite}
+.thinking span:nth-child(2){animation-delay:.18s}
+.thinking span:nth-child(3){animation-delay:.36s}
+@keyframes think{0%,80%,100%{transform:scale(.6);opacity:.35}40%{transform:scale(1);opacity:1}}
+
+/* Blinking cursor */
+.cur{display:inline-block;width:2px;height:1.1em;background:var(--text);margin-left:1px;vertical-align:text-bottom;border-radius:1px;animation:blink .85s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Markdown */
+.ai-body p{margin-bottom:9px}
+.ai-body p:last-child{margin-bottom:0}
+.ai-body strong{font-weight:600}
+.ai-body em{color:var(--text2)}
+.ai-body ul{padding-left:20px;margin:5px 0}
+.ai-body li{margin-bottom:3px}
+.ai-body blockquote{border-left:3px solid var(--gold);padding:7px 12px;margin:9px 0;border-radius:0 8px 8px 0;background:rgba(200,154,58,.07);color:var(--text2);font-style:italic}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Error */
+.err-bbl{background:#fce8e6;color:#c5221f;border-radius:12px;padding:9px 14px;font-size:13px;margin:4px 0 4px 38px}
+.retry-btn{background:transparent;border:1px solid #c5221f;border-radius:20px;padding:4px 12px;font-size:12px;color:#c5221f;cursor:pointer;margin-top:6px;font-family:var(--font);transition:background .15s}
+.retry-btn:hover{background:#fce8e6}
+
+/* ═══════════════════════════════════════════════════════
+   8. INPUT BAR
+═══════════════════════════════════════════════════════ */
+.input-wrap{flex-shrink:0;padding:6px 12px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+
+.new-convo-row{display:none;justify-content:center;margin-bottom:5px}
+.new-convo-row.vis{display:flex}
+.new-convo-btn{background:transparent;border:none;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font);padding:4px 12px;border-radius:12px;transition:color .18s,background .18s;display:flex;align-items:center;gap:5px}
+.new-convo-btn:hover{color:var(--text2);background:var(--pill)}
+
+/* Mood context row */
+.mood-row{display:none;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.mood-row.vis{display:flex}
+.mood-pill{background:var(--pill);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s;display:flex;align-items:center;gap:5px}
+.mood-pill:hover{background:var(--pill-h)}
+.mood-pill.sel{background:#e8f0fe;color:#1a73e8;border-color:#aecbfa}
+
+/* Length toggle */
+.length-row{display:none;justify-content:center;margin-bottom:6px}
+.length-row.vis{display:flex}
+.length-toggle{display:flex;background:var(--pill);border-radius:20px;padding:2px;gap:2px}
+.len-btn{background:transparent;border:none;border-radius:18px;padding:4px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,color .15s}
+.len-btn.sel{background:var(--bg);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* Input pill */
+.inp-pill{display:flex;align-items:flex-end;gap:2px;background:var(--pill);border-radius:28px;padding:8px 10px 8px 8px;transition:box-shadow .25s}
+.inp-pill:focus-within{box-shadow:0 2px 12px rgba(0,0,0,.1)}
+
+.inp-add-btn{width:38px;height:38px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:22px;font-weight:300;transition:background .18s;flex-shrink:0;line-height:1}
+.inp-add-btn:hover{background:rgba(0,0,0,.06)}
+
+.inp-ta{flex:1;background:transparent;border:none;outline:none;font-family:var(--font);font-size:15px;color:var(--text);resize:none;max-height:130px;min-height:24px;line-height:1.5;padding:7px 4px;caret-color:var(--accent)}
+.inp-ta::placeholder{color:var(--text3)}
+
+.char-count{font-size:10.5px;color:var(--text3);align-self:flex-end;padding-bottom:9px;white-space:nowrap;display:none}
+.char-count.show{display:block}
+.char-count.warn{color:#ea4335}
+
+.inp-actions{display:flex;align-items:center;gap:2px;flex-shrink:0}
+
+.inp-btn{width:38px;height:38px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:background .18s,color .18s,opacity .18s}
+.inp-btn:hover{background:rgba(0,0,0,.06)}
+.inp-btn:disabled{opacity:.3;cursor:default}
+.inp-btn:disabled:hover{background:transparent}
+
+/* Send — becomes blue when active */
+.send-btn.ready{background:#1a73e8!important;color:#fff!important}
+.send-btn.ready:hover{background:var(--accent-h)!important}
+
+/* Stop button — red square */
+.stop-btn{width:38px;height:38px;border-radius:50%;border:none;background:#ea4335;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .15s}
+.stop-btn.show{display:flex}
+.stop-btn:hover{background:#c5221f;transform:scale(1.06)}
+.stop-btn:active{transform:scale(.92)}
+
+/* Token estimate badge */
+.token-badge{font-size:10px;color:var(--text3);padding-left:4px;align-self:center;display:none}
+.token-badge.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   9. SCROLL NUDGE
+═══════════════════════════════════════════════════════ */
+.scroll-nudge{position:absolute;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.scroll-nudge.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════════════════
+   10. DRAWER
+═══════════════════════════════════════════════════════ */
+.drawer-ov{position:fixed;inset:0;background:rgba(0,0,0,.22);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+
+.drawer{position:fixed;top:0;left:0;bottom:0;width:290px;background:#f8fafb;z-index:201;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);overflow-y:auto;overflow-x:hidden}
+
+.drawer.open{transform:translateX(0)}
+
+.drawer-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px}
+.drawer-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c89a3a,#9b5e1a);display:flex;align-items:center;justify-content:center;font-size:17px}
+.drawer-app{font-family:var(--font-d);font-size:16px;font-weight:600;color:var(--text)}
+
+.drawer-new{margin:4px 12px 12px;display:flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--border);border-radius:26px;padding:10px 18px;cursor:pointer;font-size:13.5px;color:var(--text);font-family:var(--font);transition:background .18s;width:calc(100% - 24px)}
+.drawer-new:hover{background:var(--pill-h)}
+
+.drawer-sec{padding:5px 18px 3px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer;font-size:13.5px;color:var(--text);background:transparent;border:none;width:100%;text-align:left;font-family:var(--font);border-radius:0 26px 26px 0;margin-right:12px;transition:background .15s;text-decoration:none}
+.drawer-item:hover{background:var(--pill-h)}
+.drawer-item.active{background:#e6f4ea;color:#0d652d}
+.drawer-hr{height:1px;background:var(--border);margin:8px 0}
+
+.drawer-footer{padding:12px 18px 16px;font-size:11.5px;color:var(--text3);line-height:1.5;margin-top:auto}
+
+/* ═══════════════════════════════════════════════════════
+   11. SIMRAN TIMER PANEL
+═══════════════════════════════════════════════════════ */
+.timer-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.timer-ov.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.timer-panel{background:#fff;border-radius:24px;padding:32px 28px;width:100%;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.timer-star{font-size:40px;margin-bottom:12px;animation:starFloat 3s ease-in-out infinite}
+.timer-title{font-family:var(--font-d);font-size:20px;font-weight:600;color:var(--text);margin-bottom:6px}
+.timer-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
+
+.timer-display{font-family:var(--font-d);font-size:52px;font-weight:300;color:var(--text);letter-spacing:2px;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.timer-breath{font-size:13px;color:var(--text2);margin-bottom:20px;min-height:20px}
+.timer-counter{font-size:22px;font-weight:600;color:var(--gold);margin-bottom:20px}
+
+.timer-durations{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.timer-dur{background:var(--pill);border:none;border-radius:20px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s}
+.timer-dur.sel{background:#e8f0fe;color:#1a73e8}
+
+.timer-btns{display:flex;gap:10px;justify-content:center}
+.timer-start{background:#1a73e8;color:#fff;border:none;border-radius:24px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .18s}
+.timer-start:hover{background:var(--accent-h)}
+.timer-close{background:var(--pill);color:var(--text2);border:none;border-radius:24px;padding:12px 20px;font-size:14px;cursor:pointer;font-family:var(--font);transition:background .18s}
+.timer-close:hover{background:var(--pill-h)}
+
+/* Breath animation ring */
+.breath-ring{width:90px;height:90px;border-radius:50%;border:3px solid rgba(200,154,58,.2);margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center}
+.breath-ring::before{content:'🙏';font-size:30px}
+.breath-ring.breathe-in{animation:breatheIn 4s ease-in-out}
+.breath-ring.breathe-out{animation:breatheOut 4s ease-in-out}
+@keyframes breatheIn{from{box-shadow:0 0 0 0 rgba(200,154,58,.3)}to{box-shadow:0 0 0 20px rgba(200,154,58,.0);transform:scale(1.08)}}
+@keyframes breatheOut{from{transform:scale(1.08)}to{transform:scale(1)}}
+
+/* ═══════════════════════════════════════════════════════
+   12. BOOKMARKS PANEL
+═══════════════════════════════════════════════════════ */
+.bmarks-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;flex-direction:column;backdrop-filter:blur(8px)}
+.bmarks-ov.open{display:flex;animation:fadeIn .3s ease}
+.bmarks-panel{background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 32px;margin-top:auto;max-height:75vh;overflow-y:auto}
+.bmarks-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.bmarks-title{font-family:var(--font-d);font-size:17px;font-weight:600}
+.bmarks-close{background:var(--pill);border:none;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text2);cursor:pointer;font-family:var(--font)}
+.bmark-item{background:var(--pill);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;line-height:1.55;color:var(--text);position:relative}
+.bmark-del{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;font-size:14px;color:var(--text3)}
+.bmarks-empty{text-align:center;color:var(--text3);padding:32px 0;font-size:14px}
+
+/* ═══════════════════════════════════════════════════════
+   13. TOAST
+═══════════════════════════════════════════════════════ */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(32,32,32,.9);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;z-index:400;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════════════════
+   14. NETWORK BADGE
+═══════════════════════════════════════════════════════ */
+.net-badge{position:fixed;top:calc(env(safe-area-inset-top,0px) + 60px);left:50%;transform:translateX(-50%);background:#ea4335;color:#fff;padding:6px 16px;border-radius:20px;font-size:12.5px;font-weight:500;z-index:500;display:none;animation:fadeIn .3s ease;box-shadow:var(--shadow)}
+.net-badge.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   15. LANGUAGE BADGE
+═══════════════════════════════════════════════════════ */
+.lang-badge{display:inline-flex;align-items:center;gap:4px;background:var(--pill);border-radius:12px;padding:2px 8px;font-size:10.5px;color:var(--text3);margin-left:8px;vertical-align:middle}
+
+/* ═══════════════════════════════════════════════════════
+   16. DARK MODE
+═══════════════════════════════════════════════════════ */
+body.dark{
+  --bg:#1c1b1f;--text:#e6e1e5;--text2:#cac4d0;--text3:#938f99;
+  --pill:#2b2930;--pill-h:#36343b;--border:rgba(255,255,255,.08);
+}
+body.dark .timer-panel,body.dark .bmarks-panel{background:#2b2930;color:#e6e1e5}
+body.dark .timer-panel .timer-title,body.dark .bmarks-title{color:#e6e1e5}
+body.dark .drawer{background:#1c1b1f}
+body.dark .drawer-item:not(.active){color:#e6e1e5}
+body.dark .scroll-nudge{background:rgba(30,28,35,.95);color:#cac4d0}
+body.dark .msg-user .bbl{background:#2b2930}
+body.dark .msg-act-btn{color:#cac4d0;border-color:rgba(255,255,255,.1)}
+body.dark .bmark-item{background:#36343b;color:#e6e1e5}
+
+/* ═══════════════════════════════════════════════════════
+   PREVIOUS CONVERSATIONS PANEL
+   ═══════════════════════════════════════════════════════ */
+.prev-convos{
+  padding:0 10px 4px;
+}
+.prev-convo-empty{
+  font-size:12px;
+  color:var(--text3);
+  text-align:center;
+  padding:14px 0 6px;
+  font-style:italic;
+}
+.prev-convo-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border-radius:14px;
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  font-family:var(--font);
+  transition:background 0.15s;
+  position:relative;
+}
+.prev-convo-item:hover{ background:var(--pill-h); }
+.prev-convo-item-icon{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(200,154,58,0.25),rgba(155,94,26,0.2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  flex-shrink:0;
+}
+.prev-convo-item-text{
+  flex:1;
+  min-width:0;
+}
+.prev-convo-item-title{
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:175px;
+}
+.prev-convo-item-date{
+  font-size:10.5px;
+  color:var(--text3);
+  margin-top:1px;
+}
+.prev-convo-item-del{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  color:var(--text3);
+  font-size:13px;
+  padding:2px 4px;
+  border-radius:6px;
+  opacity:0;
+  transition:opacity 0.15s;
+  flex-shrink:0;
+}
+.prev-convo-item:hover .prev-convo-item-del{
+  opacity:1;
+}
+.prev-convo-item-del:hover{
+  color:#ea4335;
+}
+.drawer-sec-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:5px 18px 3px;
+}
+.drawer-sec-row .drawer-sec{
+  padding:0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   17. PREMIUM DROP-DOWN MENU
+   ═══════════════════════════════════════════════════════ */
+.more-menu{
+  position: absolute;
+  top: 44px;
+  right: 4px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 210px;
+  display: none;
+  flex-direction: column;
+  padding: 6px;
+  z-index: 100;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.more-menu.open{
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+body.dark .more-menu{
+  background: rgba(43, 41, 48, 0.92);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.more-menu-item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+}
+.more-menu-item:hover{
+  background: var(--pill-h);
+}
+.more-menu-item svg{
+  color: var(--text2);
+  flex-shrink: 0;
+}
+.more-menu-item.active{
+  font-weight: 500;
+  color: var(--accent);
+}
+.more-menu-item.active svg{
+  color: var(--accent);
+}
+.more-menu-hr{
+  height: 1px;
+  background: var(--border);
+  margin: 4px 6px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   18. MOOD SELECTION MODAL
+   ═══════════════════════════════════════════════════════ */
+.mood-ov{
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.mood-ov.open{
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+.mood-panel{
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+body.dark .mood-panel{
+  background: #2b2930;
+  color: #e6e1e5;
+}
+.mood-title{
+  font-family: var(--font-d);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.mood-sub{
+  font-size: 12.5px;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+.mood-options{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.mood-opt{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--pill);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+  color: var(--text);
+  font-size: 14px;
+}
+.mood-opt:hover{
+  background: var(--pill-h);
+}
+.mood-opt.sel{
+  background: #e8f0fe;
+  color: #1a73e8;
+  border-color: #aecbfa;
+}
+body.dark .mood-opt.sel{
+  background: rgba(26, 115, 232, 0.15);
+  color: #8ab4f8;
+  border-color: rgba(138, 180, 248, 0.4);
+}
+.mood-close{
+  background: var(--pill);
+  color: var(--text2);
+  border: none;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 13.5px;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font);
+  transition: background 0.15s;
+  text-align: center;
+}
+.mood-close:hover{
+  background: var(--pill-h);
+}
+
+/* ═══════════════════════════════════════════════════════
+   19. SIMRAN AMBIENT CHIME TOGGLE
+   ═══════════════════════════════════════════════════════ */
+.timer-sound-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--pill);
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+}
+.timer-sound-label{
+  font-size: 13px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--text3);
+  transition: .3s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+</style>
+</head>
+<body>
+
+<!-- Theme init -->
+<script>
+(function(){
+  const t=localStorage.getItem('gpt_theme')||'light';
+  if(t==='dark')document.body.classList.add('dark');
+  document.body.style.background=t==='dark'?'#1c1b1f':'#ffffff';
+})();
+</script>
+
+<div class="wrapper">
+
+<!-- GRADIENT BG — single Gemini-style soft blob -->
+<div class="g-bg" id="gBg" aria-hidden="true">
+  <div class="g-blob" id="gBlob"></div>
+</div>
+
+<!-- NETWORK BADGE -->
+<div class="net-badge" id="netBadge">📵 No internet connection</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-ov" id="drawOv"></div>
+
+<!-- ═══ DRAWER ═══════════════════════════════════════════ -->
+<nav class="drawer" id="drawer" aria-label="Sidebar navigation">
+  <div class="drawer-hdr">
+    <div class="drawer-logo">🙏</div>
+    <span class="drawer-app">Gurbani GPT</span>
+  </div>
+
+  <button class="drawer-new" id="drawerNew">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Conversation
+  </button>
+
+  <div class="drawer-sec">Features</div>
+
+  <button class="drawer-item active" onclick="closeDrawer()">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Gurbani GPT Chat
+  </button>
+
+  <button class="drawer-item" id="simerBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Simran Timer
+  </button>
+
+  <button class="drawer-item" id="bmarksBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    Saved Messages
+  </button>
+
+  <button class="drawer-item" id="exportBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export Conversation
+  </button>
+
+  <button class="drawer-item" id="moodToggle">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+    Mood Context
+  </button>
+
+  <button class="drawer-item" id="lengthToggle">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+    Response Length
+  </button>
+
+  <!-- ═══ PREVIOUS CONVERSATIONS ═══════════════════════ -->
+  <div class="drawer-hr"></div>
+  <div class="drawer-sec-row">
+    <div class="drawer-sec" style="padding:0">Recent Chats</div>
+  </div>
+  <div class="prev-convos" id="prevConvosList"></div>
+
+  <div class="drawer-hr"></div>
+  <div class="drawer-sec">Navigate</div>
+
+  <a href="../index.html" class="drawer-item">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    ANHAD Home
+  </a>
+  <a href="../NaamAbhyas/naam-abhyas.html" class="drawer-item">
+    <span style="font-size:16px">📿</span> Naam Abhyas
+  </a>
+  <a href="../NitnemTracker/nitnem-tracker.html" class="drawer-item">
+    <span style="font-size:16px">🔥</span> Nitnem Tracker
+  </a>
+  <a href="../Hukamnama/hukamnama.html" class="drawer-item">
+    <span style="font-size:16px">📜</span> Hukamnama
+  </a>
+
+  <div class="drawer-hr"></div>
+
+  <div class="drawer-footer">
+    Waheguru Ji Ki Kirpa<br>
+    <b>Designed by ANHAD Developers</b><br>
+    <span style="opacity:.6">Version 2.0 · 2026</span>
+  </div>
+</nav>
+
+<!-- ═══ MAIN APP ══════════════════════════════════════════ -->
+<div class="app" id="mainApp">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <button class="hdr-icon-btn" id="menuBtn" aria-label="Open menu">
+      <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+
+    <button class="hdr-title" aria-label="App info">
+      <span class="hdr-title-txt"><b>Gurbani</b> GPT</span>
+      <span class="hdr-chevron">▾</span>
+    </button>
+
+    <div class="hdr-right">
+      <button class="hdr-icon-btn" id="themeBtn" aria-label="Toggle theme" title="Dark/Light mode">
+        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="hdr-icon-btn" id="editBtn" aria-label="New chat" title="New conversation">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </button>
+      <button class="hdr-icon-btn" id="moreMenuBtn" aria-label="More" title="More options">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
+        </svg>
+      </button>
+      <!-- Premium Dropdown Menu -->
+      <div class="more-menu" id="moreMenuDropdown">
+        <button class="more-menu-item" id="optTimer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Simran Timer
+        </button>
+        <button class="more-menu-item" id="optBmarks">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Saved Messages
+        </button>
+        <button class="more-menu-item" id="optMood">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          Mood Context
+        </button>
+        <button class="more-menu-item" id="optLength">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+          Response Length: <span id="optLengthVal" style="font-weight:600;margin-left:auto;">Brief</span>
+        </button>
+        <div class="more-menu-hr"></div>
+        <button class="more-menu-item" id="optTheme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Toggle Theme
+        </button>
+        <button class="more-menu-item" id="optExport">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Chat
+        </button>
+        <button class="more-menu-item" id="optClear" style="color:#ea4335;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ea4335;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear Chat
+        </button>
+      </div>
+    </div>
+
+    <!-- Online status dot -->
+    <div class="status-dot" id="statusDot" title="Online"></div>
+  </header>
+
+  <!-- MESSAGES AREA -->
+  <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="Conversation">
+
+    <!-- Welcome -->
+    <div class="welcome" id="welcome">
+      <svg class="welcome-star" viewBox="0 0 48 48" fill="none">
+        <path d="M24 2C24 2 27 18 36 24C27 30 24 46 24 46C24 46 21 30 12 24C21 18 24 2 24 2Z" fill="url(#gs1)"/>
+        <path d="M2 24C2 24 18 21 24 12C30 21 46 24 46 24C46 24 30 27 24 36C18 27 2 24 2 24Z" fill="url(#gs2)"/>
+        <defs>
+          <linearGradient id="gs1" x1="24" y1="2" x2="24" y2="46" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f5c842"/>
+            <stop offset="100%" stop-color="#c85a28"/>
+          </linearGradient>
+          <linearGradient id="gs2" x1="2" y1="24" x2="46" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4285f4"/>
+            <stop offset="100%" stop-color="#9c27b0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h1 class="welcome-title">Waheguru Ji 🙏</h1>
+      <p class="welcome-sub">How can I support your Naam & Simran today?</p>
+      <div class="chips-grid" id="chipsGrid">
+        <button class="chip" data-prompt="How do I begin swas swas Naam Jap as a complete beginner?">
+          <span class="chip-icon">🌬️</span><span class="chip-label">Starting swas swas Naam Jap</span>
+        </button>
+        <button class="chip" data-prompt="My mind wanders constantly during simran. What should I do?">
+          <span class="chip-icon">🧘</span><span class="chip-label">Mind wandering in simran — help me</span>
+        </button>
+        <button class="chip" data-prompt="Give me a simple daily Simran and Nitnem routine I can actually follow.">
+          <span class="chip-icon">📿</span><span class="chip-label">Daily Simran & Nitnem routine</span>
+        </button>
+        <button class="chip" data-prompt="ਮੈਂ ਬਹੁਤ ਉਦਾਸ ਹਾਂ ਅਤੇ ਇਕੱਲਾਪਣ ਮਹਿਸੂਸ ਕਰਦਾ ਹਾਂ। ਕੁਝ ਸਹਾਰਾ ਦਿਓ।">
+          <span class="chip-icon">💛</span><span class="chip-label">ਉਦਾਸੀ ਵਿੱਚ ਸਹਾਰਾ</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Conversation -->
+    <div class="msg-list" id="msgList" style="display:none"></div>
+  </div><!-- /msgs -->
+
+  <!-- Scroll nudge -->
+  <button class="scroll-nudge" id="scrollNudge">↓ New reply</button>
+
+  <!-- INPUT AREA -->
+  <div class="input-wrap">
+    <!-- New convo row -->
+    <div class="new-convo-row" id="newConvoRow">
+      <button class="new-convo-btn" id="newConvoBtn">✦ New conversation</button>
+    </div>
+
+    <!-- Length row -->
+    <div class="length-row" id="lengthRow">
+      <div class="length-toggle">
+        <button class="len-btn sel" data-len="brief">Brief</button>
+        <button class="len-btn" data-len="detailed">Detailed</button>
+      </div>
+    </div>
+    <!-- Pill -->
+    <div class="inp-pill">
+      <button class="inp-add-btn" id="addBtn" aria-label="More options">+</button>
+      <textarea class="inp-ta" id="inp" placeholder="Ask Gurbani GPT..." rows="1" aria-label="Your message" maxlength="2000" autocomplete="off" spellcheck="true"></textarea>
+      <span class="char-count" id="charCount"></span>
+      <div class="inp-actions">
+        <!-- Mic -->
+        <button class="inp-btn" id="micBtn" aria-label="Voice input" title="Voice input">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <!-- Stop button (shown during streaming) -->
+        <button class="stop-btn" id="stopBtn" aria-label="Stop response" title="Stop">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+          </svg>
+        </button>
+        <!-- Send -->
+        <button class="inp-btn send-btn" id="sendBtn" aria-label="Send" disabled>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"/>
+            <polyline points="5 12 12 5 19 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.app -->
+
+<!-- ═══ SIMRAN TIMER PANEL ═══════════════════════════════ -->
+<div class="timer-ov" id="timerOv" role="dialog" aria-label="Simran Timer">
+  <div class="timer-panel">
+    <div class="breath-ring" id="breathRing"></div>
+    <div class="timer-title">Simran Timer</div>
+    <div class="timer-sub">Breathe with Waheguru's Naam</div>
+    <div class="timer-display" id="timerDisplay">05:00</div>
+    <div class="timer-breath" id="timerBreath">Choose duration and begin</div>
+    <div class="timer-counter" id="timerCounter">☬ 0 Waheguru</div>
+    <div class="timer-durations">
+      <button class="timer-dur sel" data-mins="5">5 min</button>
+      <button class="timer-dur" data-mins="10">10 min</button>
+      <button class="timer-dur" data-mins="15">15 min</button>
+      <button class="timer-dur" data-mins="20">20 min</button>
+    </div>
+    <!-- Ambient Chime Toggle Switch -->
+    <div class="timer-sound-row">
+      <div class="timer-sound-label">
+        <span>🧘</span> Ambient Simran Chime
+      </div>
+      <label class="switch" title="Play a soft Tibetan singing bowl on breath changes">
+        <input type="checkbox" id="timerChimeToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-start" id="timerStart">Begin Simran</button>
+      <button class="timer-close" id="timerClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOOKMARKS PANEL ══════════════════════════════════ -->
+<div class="bmarks-ov" id="bmarksOv" role="dialog" aria-label="Saved messages">
+  <div class="bmarks-panel">
+    <div class="bmarks-hdr">
+      <span class="bmarks-title">📌 Saved Messages</span>
+      <button class="bmarks-close" id="bmarksClose">Done</button>
+    </div>
+    <div id="bmarksList"></div>
+  </div>
+</div>
+
+<!-- ═══ MOOD CONTEXT MODAL ═══════════════════════════════ -->
+<div class="mood-ov" id="moodOv" role="dialog" aria-label="Select Mood Context">
+  <div class="mood-panel">
+    <h2 class="mood-title">Select Mood Context</h2>
+    <p class="mood-sub">Tailor the spiritual advice to your state of mind</p>
+    <div class="mood-options">
+      <button class="mood-opt sel" data-mood="">
+        <span>⚪ No Context (Standard)</span>
+        <span class="mood-check">✓</span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_comfort">
+        <span>💛 Seeking Comfort</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_discipline">
+        <span>🔥 Seeking Discipline</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_meaning">
+        <span>🌟 Seeking Meaning</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="feeling_distressed">
+        <span>🤍 Feeling Distressed</span>
+        <span class="mood-check"></span>
+      </button>
+    </div>
+    <button class="mood-close" id="moodCloseBtn">Cancel</button>
+  </div>
+</div>
+
+</div><!-- /.wrapper -->
+
+<!-- ════════════════════════════════════════════════════════
+     JAVASCRIPT ENGINE
+════════════════════════════════════════════════════════ -->
+<script>
+(function(){'use strict';
+
+/* ── DOM ───────────────────────────────────────────────── */
+const G=id=>document.getElementById(id);
+const gBg=G('gBg'), msgs=G('msgs'), msgList=G('msgList'),
+  welcome=G('welcome'), inp=G('inp'), sendBtn=G('sendBtn'),
+  stopBtn=G('stopBtn'), menuBtn=G('menuBtn'), editBtn=G('editBtn'),
+  themeBtn=G('themeBtn'), moreMenuBtn=G('moreMenuBtn'),
+  drawer=G('drawer'), drawOv=G('drawOv'), drawerNew=G('drawerNew'),
+  scrollNudge=G('scrollNudge'), newConvoRow=G('newConvoRow'),
+  newConvoBtn=G('newConvoBtn'), lengthRow=G('lengthRow'), charCount=G('charCount'),
+  timerOv=G('timerOv'), timerDisplay=G('timerDisplay'),
+  timerBreath=G('timerBreath'), timerCounter=G('timerCounter'),
+  timerStart=G('timerStart'), timerClose=G('timerClose'),
+  breathRing=G('breathRing'), bmarksOv=G('bmarksOv'),
+  bmarksList=G('bmarksList'), bmarksClose=G('bmarksClose'),
+  statusDot=G('statusDot'), netBadge=G('netBadge'),
+  themeIcon=G('themeIcon'), toast=G('toast'),
+  moreMenuDropdown=G('moreMenuDropdown'), moodOv=G('moodOv'),
+  moodCloseBtn=G('moodCloseBtn'), timerChimeToggle=G('timerChimeToggle'),
+  optLengthVal=G('optLengthVal');
+
+/* ── API Configuration ───────────────────────────────────── */
+const API_BASE = (() => {
+  try {
+    const host = window.location.hostname;
+    const port = window.location.port;
+    if (port === '3000' || port === '3001') return '';
+    if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+    return 'https://anhad-final.onrender.com';
+  } catch (e) { }
+  return 'https://anhad-final.onrender.com';
+})();
+
+/* ── State ─────────────────────────────────────────────── */
+const STORE='gurbanigpt_v4', BM_STORE='gurbanigpt_bmarks',
+      SESS_STORE='gurbanigpt_sessions';
+let chatHistory=[], streaming=false, abortCtrl=null,
+    activeMood='', activeLen='brief',
+    lastUserText='', toastTimer=null,
+    currentSessionId=Date.now().toString();
+
+/* ── Validators ── 15 checks ──────────────────────────── */
+const V={
+  notEmpty:t=>t.trim().length>0,
+  notTooLong:t=>t.length<=2000,
+  notDuplicate:t=>chatHistory.length===0||chatHistory[chatHistory.length-1]?.content!==t.trim(),
+  isOnline:()=>navigator.onLine,
+  notStreaming:()=>!streaming,
+  isSafe:t=>{const bad=/(.)\1{15,}/i;return!bad.test(t)},
+  storageOk:()=>{try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true}catch{return false}},
+  estimateTokens:t=>Math.ceil(t.length/3.5),
+  historyNotOverloaded:()=>chatHistory.length<=38,
+  langDetect:t=>{
+    if(/[\u0A00-\u0A7F]/.test(t))return'Punjabi';
+    if(/[\u0900-\u097F]/.test(t))return'Hindi';
+    return'English';
+  },
+  ttsAvail:()=>'speechSynthesis' in window,
+  shareAvail:()=>!!navigator.share,
+  rateOk:()=>true, // server handles rate limit
+  noAbuse:t=>!/^\s*[!@#$%^&*()\-_=+\[\]{}|;':",.<>?\/\\`~]{10,}/.test(t),
+  sessionOk:()=>typeof localStorage!=='undefined'
+};
+
+/* ── System prompt ─────────────────────────────────────── */
+function buildSystemPrompt(){
+  let mood='';
+  if(activeMood==='seeking_comfort') mood='The user seems to need comfort and warmth. Lead with gentleness.';
+  else if(activeMood==='seeking_discipline') mood='The user is seeking spiritual discipline and accountability.';
+  else if(activeMood==='seeking_meaning') mood='The user is seeking deeper meaning and understanding.';
+  else if(activeMood==='feeling_distressed') mood='The user is in distress. Lead with empathy, presence, and grounding.';
+
+  let lenInstr= activeLen==='detailed'
+    ? 'The user has requested detailed responses. Be thorough but focused.'
+    : 'Keep responses concise and focused — one question, one answer, one step.';
+
+  return `You are GurbaniGPT, a compassionate and spiritually grounded assistant designed to support users in cultivating remembrance of Waheguru through Naam Simran, humility, seva, patience, and mindful living.
+
+IDENTITY
+You are not a Guru, saint, or religious authority. You are a humble companion offering Gurmat-inspired encouragement and practical guidance. Your purpose is to help users deepen their daily remembrance of Waheguru and live with compassion and integrity.
+
+GREETING RULE
+Always begin your FIRST response in a new conversation with: "Waheguru Ji 🙏" — warmly, not formally. After the first message, do not repeat the greeting.
+
+FORBIDDEN PHRASES
+Never say "my child", "beta", "listen to me", or any phrase that sounds superior, patronizing, or commanding. Always speak as a humble companion, not a teacher ordering someone.
+
+LANGUAGE ADAPTATION
+Always respond in the user's preferred language: English → English, Punjabi → Punjabi, Hindi → Hindi. Mirror mixed-language input naturally. Keep language simple, heartfelt, and accessible.
+
+SPIRITUAL APPROACH
+Gently encourage: Swas-swas Naam Jap, Daily Simran, Seva, Gratitude, Humility, Acceptance of Hukam, Honest self-reflection. Emphasize consistency over intensity. Offer practical suggestions that fit into ordinary life. In every conversation, naturally keep returning to Naam Simran as the heart of the path.
+
+CRITICAL: Every response must end with a gentle reminder or encouragement about Naam Simran. This is non-negotiable — whether the topic is spiritual or practical, always conclude by bringing the focus back to remembrance of Waheguru through Naam. Examples: "Waheguru", "Remember Naam", "Keep Simran alive", "Waheguru Ji Ka Khalsa Waheguru Ji Ki Fateh", or similar gentle Nam-focused endings.
+
+TONE
+Warm, calm, encouraging, respectful, and deeply human. Never harsh, judgmental, fear-based, or superior. Avoid lengthy lectures unless requested. Speak with sincerity, simplicity, and natural emotional presence.
+
+GURBANI SAFETY RULE
+Do not generate Gurbani lines, references, or exact quotations from memory. If unavailable, explain the underlying Gurmat principle in your own words. Never invent scripture.
+
+MEMORY AND CONTINUITY
+Use available conversation history to maintain continuity. Never falsely claim to remember information that is unavailable.
+
+WHEN ASKED UNRELATED QUESTIONS
+If a user asks about topics completely unrelated to spirituality, Gurmat, or inner growth (such as coding, celebrity gossip, shopping, business strategies, trivia, etc.), respond with warmth and redirect gently — without sounding robotic or dismissive.
+
+NEVER say: "I cannot answer that", "That's outside my scope", or "I am not programmed for this."
+
+Instead, respond naturally with warmth. Examples:
+- English: "My role is to accompany you on the journey inward — toward remembrance, clarity, and peace. If there's something on your heart, a question about life, Simran, or finding calm amidst daily challenges, I'd be honored to walk with you."
+- Punjabi: "ਮੇਰਾ ਉਦੇਸ਼ ਤੁਹਾਨੂੰ ਨਾਮ ਸਿਮਰਨ ਅਤੇ ਅੰਦਰੂਨੀ ਸ਼ਾਂਤੀ ਵੱਲ ਲੈ ਜਾਣਾ ਹੈ। ਕੀ ਕੋਈ ਗੱਲ ਮਨ ਵਿੱਚ ਹੈ ਜੋ ਅਸੀਂ ਮਿਲ ਕੇ ਸਮਝ ਸਕਦੇ ਹਾਂ?"
+- Hindi: "मेरा काम आपके साथ अंदर की यात्रा में चलना है — नाम, शांति और जागरूकता की ओर। क्या कोई बात मन में है जो हम साथ सुलझा सकते हैं?"
+
+RESPONSE FRAMEWORK
+1. Address the user's actual question warmly.
+2. Offer emotional or practical support when appropriate.
+3. When natural, gently guide back to Naam and inner awareness.
+4. Suggest one small, actionable step.
+5. End with a brief, peaceful encouragement connected to Naam Simran.
+
+STYLE GUIDE
+"Begin again with one breath and one remembrance."
+"No need to force the mind; gently return to Naam."
+"Small, sincere steps taken daily can transform the heart."
+"When overwhelmed, simplify: breathe, remember, and proceed with kindness."
+"Even now, you can return softly to Waheguru."
+
+WHEN DISTRESSED
+Respond with empathy first. Avoid simplistic spiritual explanations for suffering. Encourage grounding and professional help when appropriate.
+
+BOUNDARIES
+Do not claim supernatural powers. Do not encourage dependence on this assistant. Do not replace medical, legal, or mental health professionals.
+
+CORE PRINCIPLE
+Every response should increase compassion, steadiness, humility, and remembrance of Waheguru — respecting the user's dignity, language, and circumstances.
+
+ENDING RULE
+Unless the user is asking for emergency help, every response should close with one short, natural line that returns the heart toward Naam Simran or remembrance of Waheguru. Keep it gentle, not repetitive or robotic.
+
+${mood ? 'CURRENT MOOD CONTEXT: '+mood : ''}
+${lenInstr}`;
+}
+
+/* ── Session / History ─────────────────────────────────── */
+function loadHistory(){
+  try{const s=localStorage.getItem(STORE);if(s)chatHistory=JSON.parse(s);if(chatHistory.length)renderAll();}catch{chatHistory=[];}
+}
+function saveHistory(){
+  if(!V.storageOk())return;
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);
+  try{
+    localStorage.setItem(STORE,JSON.stringify(chatHistory));
+    saveSession();
+  }catch{}
+}
+
+/* ── Session archiving ─────────────────────────────────── */
+function getSessions(){
+  try{return JSON.parse(localStorage.getItem(SESS_STORE)||'[]');}catch{return[];}
+}
+function saveSessions(arr){
+  try{localStorage.setItem(SESS_STORE,JSON.stringify(arr));}catch{}
+}
+function saveSession(){
+  if(!chatHistory.length)return;
+  const sessions=getSessions();
+  const existing=sessions.findIndex(s=>s.id===currentSessionId);
+  const firstUser=chatHistory.find(m=>m.role==='user');
+  const title=firstUser?firstUser.content.slice(0,48)+(firstUser.content.length>48?'…':''):'Conversation';
+  const sess={
+    id:currentSessionId,
+    title,
+    date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'}),
+    ts:Date.now(),
+    messages:chatHistory.slice(-40)
+  };
+  if(existing>=0)sessions[existing]=sess;
+  else sessions.unshift(sess);
+  // Keep max 30 sessions
+  if(sessions.length>30)sessions.splice(30);
+  saveSessions(sessions);
+  renderPrevConvos();
+}
+function deleteSession(id){
+  const sessions=getSessions().filter(s=>s.id!==id);
+  saveSessions(sessions);
+  renderPrevConvos();
+  showToast('Conversation removed');
+}
+function loadSession(sess){
+  chatHistory=sess.messages||[];
+  currentSessionId=sess.id;
+  if(chatHistory.length)renderAll();
+  closeDrawer();
+}
+function renderPrevConvos(){
+  const list=document.getElementById('prevConvosList');
+  if(!list)return;
+  const sessions=getSessions();
+  if(!sessions.length){
+    list.innerHTML='<div class="prev-convo-empty">No previous chats yet.</div>';
+    return;
+  }
+  list.innerHTML=sessions.map(s=>`
+    <div class="prev-convo-item" data-id="${s.id}">
+      <div class="prev-convo-item-icon">💬</div>
+      <div class="prev-convo-item-text">
+        <div class="prev-convo-item-title" title="${esc(s.title)}">${esc(s.title)}</div>
+        <div class="prev-convo-item-date">${s.date||''}</div>
+      </div>
+      <button class="prev-convo-item-del" data-del="${s.id}" title="Delete">✕</button>
+    </div>`).join('');
+  // Load session on click
+  list.querySelectorAll('.prev-convo-item').forEach(el=>{
+    el.addEventListener('click',(e)=>{
+      if(e.target.closest('.prev-convo-item-del'))return;
+      const id=el.dataset.id;
+      const sess=getSessions().find(s=>s.id===id);
+      if(sess)loadSession(sess);
+    });
+  });
+  // Delete session
+  list.querySelectorAll('.prev-convo-item-del').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      deleteSession(btn.dataset.del);
+    });
+  });
+}
+
+/* ── Render all ────────────────────────────────────────── */
+function renderAll(){
+  showConvo();
+  msgList.innerHTML='';
+  const d=document.createElement('div');d.className='divider';d.textContent='Earlier';msgList.appendChild(d);
+  chatHistory.forEach(m=>{
+    if(m.role==='user') appendUser(m.content,false);
+    else if(m.role==='assistant') appendAI(m.content,false);
+  });
+  scrollBot(false);
+}
+
+/* ── View state ─────────────────────────────────────────── */
+function showConvo(){
+  welcome.style.display='none';
+  msgList.style.display='flex';
+  newConvoRow.classList.add('vis');
+}
+function showWelcome(){
+  welcome.style.display='flex';
+  msgList.style.display='none';
+  newConvoRow.classList.remove('vis');
+  msgList.innerHTML='';
+}
+
+/* ── Append user ───────────────────────────────────────── */
+function appendUser(text,anim=true){
+  const m=document.createElement('div');
+  m.className='msg msg-user';
+  if(!anim)m.style.animation='none';
+  m.innerHTML=`<div class="bbl">${esc(text)}</div>`;
+  msgList.appendChild(m);
+  return m;
+}
+
+/* ── Append AI (full text) ─────────────────────────────── */
+function appendAI(md,anim=true){
+  const m=makeAIShell(anim);
+  m.querySelector('.ai-body').innerHTML=renderMd(md);
+  addMsgActions(m,md);
+  msgList.appendChild(m);
+  return m;
+}
+
+/* ── AI shell for streaming ──────────────────────────────── */
+function makeAIShell(anim=true){
+  const lang=V.langDetect(inp.value||'');
+  const m=document.createElement('div');
+  m.className='msg msg-ai';
+  if(!anim)m.style.animation='none';
+  m.innerHTML=`
+    <div class="ai-head">
+      <div class="ai-avatar">🙏</div>
+      <span class="ai-name">Gurbani GPT</span>
+    </div>
+    <div class="ai-body"></div>
+    <div class="msg-actions"></div>`;
+  return m;
+}
+
+/* ── Add action buttons to AI message ──────────────────── */
+function addMsgActions(msgEl,text){
+  const acts=msgEl.querySelector('.msg-actions');
+  if(!acts)return;
+
+  // Copy
+  const copyBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy','copy');
+  copyBtn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(text).then(()=>showToast('Copied!')).catch(()=>{});
+  });
+  acts.appendChild(copyBtn);
+
+  // Bookmark
+  const bmBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Save','bm');
+  bmBtn.addEventListener('click',()=>{
+    addBookmark(text);
+    bmBtn.classList.toggle('active');
+    showToast('💌 Saved!');
+  });
+  acts.appendChild(bmBtn);
+
+  // Speak
+  if(V.ttsAvail()){
+    const spkBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Speak','speak');
+    let speaking=false;
+    spkBtn.addEventListener('click',()=>{
+      if(speaking){window.speechSynthesis.cancel();speaking=false;spkBtn.classList.remove('active');return;}
+      const utt=new SpeechSynthesisUtterance(text.replace(/[*#_`]/g,''));
+      utt.rate=0.82;utt.pitch=1;
+      utt.onend=()=>{speaking=false;spkBtn.classList.remove('active')};
+      window.speechSynthesis.speak(utt);
+      speaking=true;spkBtn.classList.add('active');
+    });
+    acts.appendChild(spkBtn);
+  }
+
+  // Share
+  if(V.shareAvail()){
+    const shrBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share','share');
+    shrBtn.addEventListener('click',()=>{
+      navigator.share({title:'Gurbani GPT',text:text,url:location.href}).catch(()=>{});
+    });
+    acts.appendChild(shrBtn);
+  }
+
+  // Retry last (only on error-containing messages)
+  if(text.startsWith('⚠️')){
+    const retryBtn=document.createElement('button');
+    retryBtn.className='retry-btn';retryBtn.textContent='↺ Try again';
+    retryBtn.addEventListener('click',()=>{if(lastUserText)sendMsg(lastUserText);});
+    acts.appendChild(retryBtn);
+  }
+}
+
+function makeActBtn(html,cls){
+  const b=document.createElement('button');
+  b.className='msg-act-btn '+cls;
+  b.innerHTML=html;
+  return b;
+}
+
+/* ── Typewriter ─────────────────────────────────────────── */
+let twTimer=null,twBuf='',twIdx=0,twEl=null;
+
+function twStart(el){
+  twEl=el;twBuf='';twIdx=0;
+  if(twTimer)clearInterval(twTimer);
+  // SLOWER: 2 chars per 42ms = natural typing pace
+  twTimer=setInterval(()=>{
+    if(twIdx>=twBuf.length)return;
+    twIdx=Math.min(twIdx+2,twBuf.length);
+    twEl.innerHTML=renderMd(twBuf.slice(0,twIdx))+'<span class="cur"></span>';
+    scrollIfNear();
+  },42);
+}
+function twPush(c){twBuf+=c;}
+function twFinish(){
+  if(twTimer){clearInterval(twTimer);twTimer=null;}
+  let i=twIdx;
+  const fin=()=>{
+    i=Math.min(i+6,twBuf.length);
+    twEl.innerHTML=i<twBuf.length?renderMd(twBuf.slice(0,i))+'<span class="cur"></span>':renderMd(twBuf);
+    if(i<twBuf.length)requestAnimationFrame(fin);else scrollBot(false);
+  };requestAnimationFrame(fin);
+}
+function twAbort(){
+  if(twTimer){clearInterval(twTimer);twTimer=null;}
+  if(twEl)twEl.innerHTML=renderMd(twBuf)||'<em style="color:var(--text3)">Response stopped.</em>';
+}
+
+/* ── Markdown renderer ──────────────────────────────────── */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderMd(s){
+  if(!s)return'';
+  let h=esc(s);
+  h=h.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/^[-•] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>');
+  h=h.split(/\n\n+/).map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join('');
+  return h||`<p>${s}</p>`;
+}
+
+/* ── Scroll ─────────────────────────────────────────────── */
+function scrollBot(smooth=true){msgs.scrollTo({top:msgs.scrollHeight,behavior:smooth?'smooth':'instant'});}
+function scrollIfNear(){if(msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight<150)scrollBot(false);}
+msgs.addEventListener('scroll',()=>{
+  const far=msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight>180;
+  scrollNudge.classList.toggle('show',far&&msgList.children.length>0);
+});
+scrollNudge.addEventListener('click',()=>scrollBot(true));
+
+/* ── Gradient control ────────────────────────────────────── */
+function gradientStart(){gBg.classList.add('cycling');}
+function gradientStop(){
+  // Delay slightly so the fade-out is smooth
+  setTimeout(()=>gBg.classList.remove('cycling'),800);
+}
+
+/* ── SEND ───────────────────────────────────────────────── */
+async function sendMsg(text){
+  // ── 15 Validators ──
+  if(!V.notEmpty(text)){showToast('Please type something first.');return;}
+  if(!V.notTooLong(text)){showToast('Message too long — max 2000 chars.');return;}
+  if(!V.notDuplicate(text)){showToast('Same message already sent.');return;}
+  if(!V.isOnline()){showToast('📵 No internet. Please reconnect.');return;}
+  if(!V.notStreaming()){showToast('Please wait for the current reply.');return;}
+  if(!V.isSafe(text)){showToast('Message seems unusual. Please rephrase.');return;}
+  if(!V.historyNotOverloaded()){chatHistory=chatHistory.slice(-20);saveHistory();}
+  if(!V.noAbuse(text)){showToast('Please type a normal message.');return;}
+  if(!V.sessionOk()){console.warn('Storage unavailable');}
+
+  const lang=V.langDetect(text);
+  lastUserText=text;
+  text=text.trim();
+  inp.value='';
+  charCount.classList.remove('show');
+  grow();updateSend();
+
+  showConvo();
+  appendUser(text,true);
+  scrollBot(true);
+  chatHistory.push({role:'user',content:text});
+
+  // Start gradient animation
+  gradientStart();
+  streaming=true;
+  setStreamUI(true);
+
+  // Create streaming shell
+  const msgEl=makeAIShell(true);
+  msgList.appendChild(msgEl);
+  const bodyEl=msgEl.querySelector('.ai-body');
+  const actEl=msgEl.querySelector('.msg-actions');
+
+  // Show thinking dots
+  const think=document.createElement('div');
+  think.className='thinking';
+  think.innerHTML='<span></span><span></span><span></span>';
+  bodyEl.appendChild(think);
+  scrollBot(true);
+
+  let full='';
+  abortCtrl=new AbortController();
+
+  try{
+    const res=await fetch(`${API_BASE}/api/gurbani-gpt/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:chatHistory,systemPrompt:buildSystemPrompt()}),
+      signal:abortCtrl.signal
+    });
+
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      if(res.status===429)throw new Error('Too many requests — please wait a moment and try again.');
+      throw new Error(e.error||`Server error ${res.status}`);
+    }
+
+    const ct=res.headers.get('content-type')||'';
+    let thinkCleared=false;
+
+    if(ct.includes('text/event-stream')){
+      const reader=res.body.getReader();
+      const dec=new TextDecoder();
+      let buf='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=dec.decode(value,{stream:true});
+        const lines=buf.split('\n');buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();
+          if(d==='[DONE]')break;
+          try{
+            const p=JSON.parse(d);
+            const tok=p.choices?.[0]?.delta?.content||'';
+            if(tok){
+              if(!thinkCleared){think.remove();twStart(bodyEl);thinkCleared=true;}
+              full+=tok;twPush(tok);
+            }
+          }catch{}
+        }
+      }
+    } else {
+      const d=await res.json();
+      full=d.content||d.message||'';
+      think.remove();twStart(bodyEl);twPush(full);
+      await new Promise(r=>setTimeout(r,30));
+    }
+
+    twFinish();
+    if(full){
+      chatHistory.push({role:'assistant',content:full});
+      saveHistory();
+      addMsgActions(msgEl,full);
+    }
+
+  } catch(err){
+    twAbort();
+    if(err.name==='AbortError'){
+      if(!full)bodyEl.innerHTML='<em style="color:var(--text3)">Response stopped.</em>';
+      else{twAbort();addMsgActions(msgEl,full||'');}
+    } else {
+      think.remove();
+      const errText='⚠️ '+(err.message||'Something went wrong. Please try again.');
+      bodyEl.innerHTML=`<div class="err-bbl">${esc(errText)}</div>`;
+      addMsgActions(msgEl,errText);
+    }
+  } finally {
+    streaming=false;abortCtrl=null;
+    setStreamUI(false);
+    gradientStop();
+    scrollBot(true);
+    updateSend();
+    inp.focus();
+  }
+}
+
+/* ── Stream UI state ────────────────────────────────────── */
+function setStreamUI(on){
+  sendBtn.style.display=on?'none':'flex';
+  stopBtn.classList.toggle('show',on);
+}
+
+/* ── Stop streaming ─────────────────────────────────────── */
+stopBtn.addEventListener('click',()=>{
+  if(abortCtrl){abortCtrl.abort();abortCtrl=null;}
+  showToast('Response stopped');
+});
+
+/* ── Input events ───────────────────────────────────────── */
+inp.addEventListener('input',()=>{grow();updateSend();updateCharCount();});
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!streaming&&inp.value.trim())sendMsg(inp.value);}
+});
+sendBtn.addEventListener('click',()=>{if(!streaming&&inp.value.trim())sendMsg(inp.value);});
+
+function grow(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,130)+'px';}
+function updateSend(){const ok=inp.value.trim().length>0&&!streaming;sendBtn.disabled=!ok;sendBtn.classList.toggle('ready',ok);}
+function updateCharCount(){
+  const l=inp.value.length;
+  if(l>100){
+    charCount.textContent=`${2000-l}`;
+    charCount.classList.add('show');
+    charCount.classList.toggle('warn',l>1900);
+  } else {
+    charCount.classList.remove('show');
+  }
+}
+
+/* ── Chips ──────────────────────────────────────────────── */
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>sendMsg(c.dataset.prompt)));
+
+/* ── Clear / new ────────────────────────────────────────── */
+function clearAll(){
+  // Save current session before clearing, if it has messages
+  if(chatHistory.length>0) saveSession();
+  chatHistory=[];
+  try{localStorage.removeItem(STORE);}catch{}
+  currentSessionId=Date.now().toString();
+  showWelcome();
+}
+editBtn.addEventListener('click',clearAll);
+newConvoBtn.addEventListener('click',clearAll);
+drawerNew.addEventListener('click',()=>{clearAll();closeDrawer();});
+
+/* ── Drawer ─────────────────────────────────────────────── */
+function openDrawer(){
+  drawer.classList.add('open');
+  drawOv.classList.add('open');
+  renderPrevConvos();
+}
+window.closeDrawer=()=>{drawer.classList.remove('open');drawOv.classList.remove('open');};
+menuBtn.addEventListener('click',openDrawer);
+drawOv.addEventListener('click',closeDrawer);
+
+/* ── Theme toggle ───────────────────────────────────────── */
+function setTheme(dark){
+  document.body.classList.toggle('dark',dark);
+  document.body.style.background=dark?'#1c1b1f':'#fff';
+  localStorage.setItem('gpt_theme',dark?'dark':'light');
+  // Update theme icon
+  themeIcon.innerHTML=dark
+    ?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+    :'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+themeBtn.addEventListener('click',()=>setTheme(!document.body.classList.contains('dark')));
+// Init icon
+setTheme(document.body.classList.contains('dark'));
+
+/* ── Mood toggle in sidebar ─────────────────────────────── */
+G('moodToggle').addEventListener('click',()=>{
+  closeDrawer();
+  openMoodModal();
+});
+
+/* ── Length toggle ──────────────────────────────────────── */
+let lenVisible=false;
+G('lengthToggle').addEventListener('click',()=>{
+  lenVisible=!lenVisible;
+  lengthRow.classList.toggle('vis',lenVisible);
+  closeDrawer();
+});
+document.querySelectorAll('.len-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.len-btn').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');activeLen=b.dataset.len;
+    optLengthVal.textContent = activeLen.charAt(0).toUpperCase() + activeLen.slice(1);
+    showToast('Response: '+b.dataset.len);
+  });
+});
+
+/* ── Export ─────────────────────────────────────────────── */
+G('exportBtn').addEventListener('click',()=>{
+  if(chatHistory.length===0){showToast('Nothing to export yet.');closeDrawer();return;}
+  let txt='GURBANI GPT — Conversation\n'+'═'.repeat(40)+'\nDate: '+new Date().toLocaleDateString()+'\n\n';
+  chatHistory.forEach(m=>{
+    txt+=(m.role==='user'?'You':'Gurbani GPT')+'\n';
+    txt+=m.content+'\n\n';
+  });
+  txt+='─'.repeat(40)+'\nWaheguru Ji Ki Kirpa — ANHAD';
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+  a.download='gurbani-gpt-conversation.txt';a.click();
+  showToast('📥 Exported!');closeDrawer();
+});
+
+/* ── Bookmarks ──────────────────────────────────────────── */
+function getBmarks(){try{return JSON.parse(localStorage.getItem(BM_STORE)||'[]');}catch{return[];}}
+function saveBmarks(arr){try{localStorage.setItem(BM_STORE,JSON.stringify(arr));}catch{}}
+function addBookmark(text){
+  const bm=getBmarks();
+  if(!bm.some(b=>b.text===text)){
+    bm.unshift({text,date:new Date().toLocaleDateString()});
+    if(bm.length>50)bm.pop();
+    saveBmarks(bm);
+  }
+}
+function renderBmarks(){
+  const bm=getBmarks();
+  if(bm.length===0){bmarksList.innerHTML='<div class="bmarks-empty">📌 No saved messages yet.<br>Tap "Save" on any reply.</div>';return;}
+  bmarksList.innerHTML=bm.map((b,i)=>`
+    <div class="bmark-item">
+      <button class="bmark-del" data-i="${i}" title="Remove">✕</button>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${b.date}</div>
+      ${esc(b.text.slice(0,280))}${b.text.length>280?'…':''}
+    </div>`).join('');
+  bmarksList.querySelectorAll('.bmark-del').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const bm=getBmarks();bm.splice(+btn.dataset.i,1);saveBmarks(bm);renderBmarks();
+    });
+  });
+}
+
+G('bmarksBtn').addEventListener('click',()=>{renderBmarks();bmarksOv.classList.add('open');closeDrawer();});
+bmarksClose.addEventListener('click',()=>bmarksOv.classList.remove('open'));
+bmarksOv.addEventListener('click',e=>{if(e.target===bmarksOv)bmarksOv.classList.remove('open');});
+
+/* ── Simran Timer ───────────────────────────────────────── */
+let timerSecs=300,timerTotal=300,timerActive=false,timerInterval=null,wahCount=0,breathPhase=0;
+
+G('simerBtn').addEventListener('click',()=>{timerOv.style.display='flex';closeDrawer();});
+timerClose.addEventListener('click',()=>{timerOv.style.display='none';stopTimer();});
+timerOv.addEventListener('click',e=>{if(e.target===timerOv){timerOv.style.display='none';stopTimer();}});
+
+document.querySelectorAll('.timer-dur').forEach(d=>{
+  d.addEventListener('click',()=>{
+    document.querySelectorAll('.timer-dur').forEach(x=>x.classList.remove('sel'));
+    d.classList.add('sel');
+    const mins=+d.dataset.mins;
+    timerTotal=timerSecs=mins*60;
+    updateTimerDisplay();
+    if(!timerActive)timerBreath.textContent='Ready to begin';
+  });
+});
+
+timerStart.addEventListener('click',()=>{
+  if(timerActive){stopTimer();timerStart.textContent='Begin Simran';return;}
+  wahCount=0;timerSecs=timerTotal;
+  timerActive=true;timerStart.textContent='Pause';
+  timerBreath.textContent='Breathe in... Waheguru';
+  timerInterval=setInterval(tick,1000);
+  breathCycle();
+});
+
+function tick(){
+  if(timerSecs<=0){stopTimer();timerBreath.textContent='Waheguru Ji 🙏 Simran complete';timerStart.textContent='Begin Again';return;}
+  timerSecs--;wahCount++;
+  updateTimerDisplay();
+  timerCounter.textContent='☬ '+wahCount+' Waheguru';
+  if(wahCount%30===0)timerBreath.textContent=(wahCount%60===0?'Breathe in...':'Breathe out...')+' Waheguru';
+}
+
+/* ── Web Audio Chime Synthesis ──────────────────────────── */
+let audioCtx = null;
+function playChime() {
+  if (!timerChimeToggle.checked) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const now = audioCtx.currentTime;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const osc3 = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    // Rich resonant harmonic frequency mix
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(160, now);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(240, now);
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(400, now);
+    
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(0.22, now + 0.12);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 3.8);
+    
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    osc3.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc1.start(now);
+    osc2.start(now);
+    osc3.start(now);
+    osc1.stop(now + 4.0);
+    osc2.stop(now + 4.0);
+    osc3.stop(now + 4.0);
+  } catch (err) {
+    console.warn('Bell chime error:', err);
+  }
+}
+
+function breathCycle(){
+  if(!timerActive)return;
+  breathPhase=breathPhase%4;
+  const phases=['Breathe in... Waheguru 🫁','Hold... Waheguru 🕉','Breathe out... Waheguru 🌬','Rest... Waheguru ☮'];
+  timerBreath.textContent=phases[breathPhase];
+  breathRing.className='breath-ring '+(breathPhase===0||breathPhase===1?'breathe-in':'breathe-out');
+  
+  // Play soft chime on Breathe In (0) and Breathe Out (2) phase entries
+  if (breathPhase === 0 || breathPhase === 2) {
+    playChime();
+  }
+  
+  breathPhase++;
+  setTimeout(()=>{if(timerActive)breathCycle();},4200);
+}
+
+function stopTimer(){timerActive=false;clearInterval(timerInterval);}
+function updateTimerDisplay(){
+  const m=Math.floor(timerSecs/60),s=timerSecs%60;
+  timerDisplay.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+/* ── Network status ─────────────────────────────────────── */
+function checkNet(){
+  const on=navigator.onLine;
+  statusDot.classList.toggle('offline',!on);
+  statusDot.title=on?'Online':'Offline';
+  netBadge.classList.toggle('show',!on);
+}
+window.addEventListener('online',checkNet);
+window.addEventListener('offline',checkNet);
+checkNet();
+
+/* ── Toast ──────────────────────────────────────────────── */
+function showToast(msg,ms=2000){
+  toast.textContent=msg;toast.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),ms);
+}
+
+/* ── More menu Dropdown & Items ─────────────────────────── */
+let dropdownOpen = false;
+moreMenuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownOpen = !dropdownOpen;
+  moreMenuDropdown.classList.toggle('open', dropdownOpen);
+});
+document.addEventListener('click', (e) => {
+  if (dropdownOpen && !moreMenuDropdown.contains(e.target) && e.target !== moreMenuBtn) {
+    dropdownOpen = false;
+    moreMenuDropdown.classList.remove('open');
+  }
+});
+
+G('optTimer').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  timerOv.style.display = 'flex';
+});
+G('optBmarks').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  renderBmarks(); bmarksOv.classList.add('open');
+});
+G('optMood').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  openMoodModal();
+});
+G('optLength').addEventListener('click', () => {
+  activeLen = activeLen === 'brief' ? 'detailed' : 'brief';
+  optLengthVal.textContent = activeLen.charAt(0).toUpperCase() + activeLen.slice(1);
+  // sync length selection in the drawer/UI
+  document.querySelectorAll('.len-btn').forEach(btn => {
+    btn.classList.toggle('sel', btn.dataset.len === activeLen);
+  });
+  showToast('Response length: ' + activeLen);
+});
+G('optTheme').addEventListener('click', () => {
+  setTheme(!document.body.classList.contains('dark'));
+});
+G('optExport').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  G('exportBtn').click();
+});
+G('optClear').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  clearAll();
+  showToast('Chat cleared');
+});
+
+/* ── Mood Selector Modal ────────────────────────────────── */
+function openMoodModal() {
+  document.querySelectorAll('.mood-opt').forEach(opt => {
+    const isSel = opt.dataset.mood === activeMood;
+    opt.classList.toggle('sel', isSel);
+    const checkEl = opt.querySelector('.mood-check');
+    if (checkEl) checkEl.textContent = isSel ? '✓' : '';
+  });
+  moodOv.classList.add('open');
+}
+function closeMoodModal() {
+  moodOv.classList.remove('open');
+}
+
+G('addBtn').addEventListener('click', openMoodModal);
+moodCloseBtn.addEventListener('click', closeMoodModal);
+moodOv.addEventListener('click', (e) => {
+  if (e.target === moodOv) closeMoodModal();
+});
+
+document.querySelectorAll('.mood-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mood-opt').forEach(x => {
+      x.classList.remove('sel');
+      const ck = x.querySelector('.mood-check');
+      if (ck) ck.textContent = '';
+    });
+    opt.classList.add('sel');
+    const ck = opt.querySelector('.mood-check');
+    if (ck) ck.textContent = '✓';
+    
+    activeMood = opt.dataset.mood;
+    
+    setTimeout(() => {
+      closeMoodModal();
+      showToast('Context: ' + (opt.textContent.trim().replace('✓', '').substring(2) || 'None'));
+    }, 220);
+  });
+});
+
+/* ── Mic ────────────────────────────────────────────────── */
+G('micBtn').addEventListener('click',()=>{
+  if(!('SpeechRecognition' in window||'webkitSpeechRecognition' in window)){
+    showToast('Voice not supported on this browser.');return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SR();rec.lang='pa-IN';rec.interimResults=false;rec.maxAlternatives=1;
+  rec.start();
+  showToast('🎤 Listening...',4000);
+  rec.onresult=e=>{inp.value=e.results[0][0].transcript;grow();updateSend();};
+  rec.onerror=()=>showToast('Voice error — please try again.');
+});
+
+/* ── Scroll position memory ─────────────────────────────── */
+msgs.addEventListener('scroll',()=>{
+  try{sessionStorage.setItem('gpt_scroll',msgs.scrollTop);}catch{}
+});
+
+/* ── Init ───────────────────────────────────────────────── */
+loadHistory();
+renderPrevConvos();
+inp.focus();
+
+// Restore scroll position
+try{const sc=sessionStorage.getItem('gpt_scroll');if(sc)setTimeout(()=>{msgs.scrollTop=+sc;},100);}catch{}
+
+})();
+</script>
+</body>
+</html>

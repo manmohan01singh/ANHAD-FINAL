@@ -1,0 +1,1 @@
+export function initBookmarks(){ console.log('bookmarks module'); }

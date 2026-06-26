@@ -3154,3 +3154,25 @@ button {
     from { transform: translateY(-10px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* Ambient Simran Chime Row (from Gurbani GPT) */
+.med-chime-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    margin-bottom: 8px;
+}
+
+.med-chime-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.med-chime-label span {
+    font-size: 1.2rem;
+}
