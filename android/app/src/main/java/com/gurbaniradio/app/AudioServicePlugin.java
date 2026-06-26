@@ -1,6 +1,9 @@
 package com.gurbaniradio.app;
 
 import android.content.Intent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Build;
 
 import com.getcapacitor.JSObject;
@@ -15,6 +18,28 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  */
 @CapacitorPlugin(name = "AudioService")
 public class AudioServicePlugin extends Plugin {
+    private BroadcastReceiver mediaCommandReceiver;
+
+    @Override
+    public void load() {
+        mediaCommandReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String command = intent.getStringExtra("command");
+                if (command == null) return;
+                JSObject data = new JSObject();
+                data.put("command", command);
+                notifyListeners("mediaCommand", data);
+            }
+        };
+
+        IntentFilter filter = new IntentFilter("com.gurbaniradio.app.MEDIA_COMMAND");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getContext().registerReceiver(mediaCommandReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            getContext().registerReceiver(mediaCommandReceiver, filter);
+        }
+    }
 
     @PluginMethod
     public void start(PluginCall call) {
@@ -98,5 +123,17 @@ public class AudioServicePlugin extends Plugin {
         }
 
         call.resolve();
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        if (mediaCommandReceiver != null) {
+            try {
+                getContext().unregisterReceiver(mediaCommandReceiver);
+            } catch (Exception ignored) {
+            }
+            mediaCommandReceiver = null;
+        }
+        super.handleOnDestroy();
     }
 }

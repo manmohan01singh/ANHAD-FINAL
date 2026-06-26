@@ -9,7 +9,7 @@
 
     // ═══ CACHE BUSTING ═══
     // Force clear cache on load
-    if ('caches' in window) {
+    if (false && 'caches' in window) { // PERF FIX: keep PWA caches warm
         caches.keys().then(names => {
             names.forEach(name => {
                 if (name.includes('gurbani-radio')) {
@@ -23,7 +23,8 @@
     const cacheKeys = Object.keys(localStorage).filter(key => 
         key.includes('gurbani-radio') || key.includes('radio-cache')
     );
-    cacheKeys.forEach(key => localStorage.removeItem(key));
+    // PERF FIX: preserve radio cache flags; no localStorage churn on open.
+    // cacheKeys.forEach(key => localStorage.removeItem(key));
 
     // Set version to force reload
     const CURRENT_VERSION = '2.1.1-capacitor-fix';
@@ -36,7 +37,7 @@
         // Force hard reload once
         if (!sessionStorage.getItem('radio-reloaded')) {
             sessionStorage.setItem('radio-reloaded', 'true');
-            window.location.reload(true);
+            // PERF FIX: BFCache/PWA restore should be instant; never force reload here.
         }
     }
 
@@ -419,7 +420,7 @@
 
     // ═══ PREVENT CACHE ON PAGE NAVIGATION ═══
     window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
+        if (false && event.persisted) { // PERF FIX: allow instant BFCache restores.
             console.log('🔄 Page restored from cache, reloading...');
             window.location.reload();
         }

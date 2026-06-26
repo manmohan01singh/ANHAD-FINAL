@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.4.1'; // Fix: sadhsangat-live syntax error and cache bust
+const CACHE_VERSION = 'anhad-v6.6.0'; // Perf: + virtual-live engine + StaleWhileRevalidate radio API
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -177,6 +177,11 @@ const STATIC_FILES = [
   'reminders/js/bg-alarm.js',
   'reminders/js/nitnem-sync.js',
 
+  // PERF FIX: Virtual-live engine and drift UI (precached for offline/instant radio)
+  'lib/anhad-audio-singleton.js',
+  'lib/useVirtualLive.js',
+  'components/LiveDriftBanner.js',
+
   // Gurbani Radio player files (Correct production player assets)
   'GurbaniRadio/gurbani-radio-amritvela.html',
   'GurbaniRadio/gurbani-radio-darbar.html',
@@ -290,20 +295,25 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Caching static files');
         // Cache files individually to handle failures gracefully
         return Promise.allSettled(
-          STATIC_FILES.map(file =>
-            cache.add(file).catch(() => {
+          STATIC_FILES.map(file => {
+            // Force fetch from network, bypassing HTTP cache
+            const request = new Request(file, { cache: 'no-cache' });
+            return cache.add(request).catch(() => {
               // Silently ignore cache failures — expected for missing/optional files
               // or when SW base path doesn't match dev server path
               return null;
-            })
-          )
+            });
+          })
         );
       })
       .then(() => {
         // Cache data files
         return caches.open(DATA_CACHE).then(cache => {
           return Promise.allSettled(
-            DATA_URLS.map(url => cache.add(url).catch(() => null))
+            DATA_URLS.map(url => {
+              const request = new Request(url, { cache: 'no-cache' });
+              return cache.add(request).catch(() => null);
+            })
           );
         });
       })
@@ -384,8 +394,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // NEVER cache /api/ calls — always network-only so channel additions/deletions reflect immediately
-  // This bypasses the SW for the entire Render backend (onrender.com) and any /api/ path
+  // PERF FIX: Radio/Simran live-position API: StaleWhileRevalidate so the radio page
+  // loads the cached position instantly while fresh position arrives in background.
+  // All other /api/ calls remain network-only so state changes propagate immediately.
+  const isRadioApi = url.hostname.includes('onrender.com') &&
+    (url.pathname.includes('/api/radio') || url.pathname.includes('/api/simran'));
+  if (isRadioApi) {
+    event.respondWith(staleWhileRevalidate(event.request));
+    return;
+  }
+
+  // NEVER cache other /api/ calls — always network-only so channel additions/deletions reflect immediately
   if (url.pathname.includes('/api/') || url.hostname.includes('onrender.com')) {
     event.respondWith(fetch(event.request));
     return;

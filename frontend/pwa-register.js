@@ -256,7 +256,7 @@ class PWAManager {
     this.currentVersion = localStorage.getItem('anhad_app_version') || null;
 
     // Initial check (delayed to let page fully settle)
-    setTimeout(() => this.checkVersionAndUpdate(), 8000);
+    setTimeout(() => this.checkVersionAndUpdate(), 3000);
 
     // PERF FIX: Reduced from 10s to 90s.
     // Polling every 10s = 6 network fetches/min = measurable jank on slow connections.

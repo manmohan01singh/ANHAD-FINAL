@@ -241,6 +241,10 @@
         </div>
     </div>
 
+    <!-- PERF FIX: Deterministic virtual-live math and drift UI load before the player singleton. -->
+    <script src="../lib/useVirtualLive.js?v=1.0.0"></script>
+    <script src="../components/LiveDriftBanner.js?v=1.0.0"></script>
+
     <!-- UNIFIED AUDIO SINGLETON -->
     <script src="../lib/anhad-audio-singleton.js?v=2.1.7-proxy"></script>
     <!-- REMOVED: Inline audio elements - singleton handles audio -->
@@ -1112,6 +1116,11 @@
                 }
             });
 
+            window.AnhadAudio.on('livedrift', () => {
+                // PERF FIX: Drift banner/live pill updates come from the 5s singleton heartbeat.
+                updateLiveButtonState();
+            });
+
             window.AnhadAudio.on('error', (data) => {
                 // Singleton already auto-retries errors internally (up to 3 times).
                 // DO NOT call play() or handlePlaybackError here — that would cause a reload loop.
@@ -1158,7 +1167,7 @@
                 checkTrackSync(); // Lightweight track-only check
             }
             updateLiveButtonState();
-        }, 1000); // Keep LIVE state and track metadata fresh without resyncing
+        }, 5000); // PERF FIX: Match drift cadence; avoid 1s UI wakeups.
         
         // Check URL params for stream selection
         const urlParams = new URLSearchParams(window.location.search);

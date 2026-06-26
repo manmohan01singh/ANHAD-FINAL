@@ -34,6 +34,20 @@
   const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev'; // Direct R2 for Amritvela WebM
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
+  // PERF FIX: Fixed UTC epoch for backend-free virtual live sync.
+  const VIRTUAL_LIVE_EPOCH_START = 1735689600; // 2025-01-01 00:00:00 UTC
+  // PERF FIX: Known measured durations from backend state files, with defaults for unknown tracks.
+  const AMRITVELA_KNOWN_DURATIONS = {
+    2: 5191, 5: 5638, 10: 5591, 12: 5633, 13: 6537, 14: 5640,
+    18: 6038, 21: 6026, 23: 4899, 25: 5771, 29: 5136, 30: 5755,
+    31: 5181, 32: 5747, 33: 6628, 34: 5990, 35: 4796, 37: 5717
+  };
+  const SIMRAN_KNOWN_DURATIONS = {
+    0: 2747, 1: 2676, 5: 2379, 9: 2250, 10: 2287, 11: 2116,
+    12: 2250, 13: 2080, 14: 2062, 15: 2455, 17: 2024, 21: 1951,
+    23: 1959, 24: 1994, 25: 2262, 26: 2136, 27: 2477, 28: 1895,
+    31: 5371, 32: 2019, 34: 2282, 37: 3167
+  };
 
   // Smart API resolution
   const API_BASE = (() => {
@@ -212,8 +226,53 @@
   function getCachedTrackDuration(streamName, trackIndex) {
     const stream = STREAMS[streamName];
     const fallback = stream?.defaultTrackDuration || 3600;
+    // PERF FIX: Prefer measured durations baked into the PWA for backend-free sync.
+    const known = streamName === 'amritvela'
+      ? AMRITVELA_KNOWN_DURATIONS[trackIndex]
+      : streamName === 'simran'
+        ? SIMRAN_KNOWN_DURATIONS[trackIndex]
+        : null;
+    if (Number.isFinite(known) && known > 60) return known;
     const duration = getDurationCache()?.[streamName]?.[trackIndex];
     return Number.isFinite(duration) && duration > 60 ? duration : fallback;
+  }
+
+  /**
+   * Persist server epoch + merge API track durations (must mirror backend BroadcastEngine).
+   */
+  function persistBroadcastMeta(streamName, data) {
+    if (!streamName || !data || data.epoch == null) return;
+    try {
+      const raw = localStorage.getItem(BROADCAST_META_KEY);
+      const meta = raw ? JSON.parse(raw) : {};
+      meta[streamName] = { epoch: Number(data.epoch), lastServerTime: Date.now() };
+      localStorage.setItem(BROADCAST_META_KEY, JSON.stringify(meta));
+    } catch (e) {}
+
+    if (data.trackDurations && typeof data.trackDurations === 'object') {
+      try {
+        const cache = getDurationCache();
+        cache[streamName] = cache[streamName] || {};
+        Object.entries(data.trackDurations).forEach(([k, v]) => {
+          const idx = Number(k);
+          const dur = Number(v);
+          if (Number.isFinite(idx) && idx >= 0 && Number.isFinite(dur) && dur > 60) {
+            cache[streamName][idx] = Math.round(dur);
+          }
+        });
+        localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
+      } catch (e) {}
+    }
+  }
+
+  function getBroadcastEpoch(streamName) {
+    try {
+      const meta = JSON.parse(localStorage.getItem(BROADCAST_META_KEY) || '{}');
+      const e = meta[streamName]?.epoch;
+      return Number.isFinite(e) ? e : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   /**
@@ -283,42 +342,82 @@
    */
   function computeVirtualLivePosition(streamName) {
     const stream = STREAMS[streamName];
-    const totalTracks = stream?.totalTracks || 40;
-    const epoch = getBroadcastEpoch(streamName) || 1704067200000;
-    const defaultDur = stream?.defaultTrackDuration || 3600;
+    const playlist = buildVirtualPlaylist(streamName);
+    const totalDuration = getVirtualTotalDuration(streamName);
+    if (!stream || !playlist.length || totalDuration <= 0) {
+      return { trackIndex: 0, position: 0, shufflePosition: 0, trackDuration: 0 };
+    }
 
-    const getDur = (index) => getCachedTrackDuration(streamName, index);
+    // PERF FIX: Fixed UTC math; no API call required to join the live point.
+    const nowUTC = Math.floor(Date.now() / 1000);
 
-    const fixedTotal = totalTracks * defaultDur;
-    const learnedTotal = (() => {
-      let t = 0;
-      for (let i = 0; i < totalTracks; i++) t += getDur(i);
-      return t > 0 ? t : fixedTotal;
-    })();
+    const positionInPlaylist = ((nowUTC - VIRTUAL_LIVE_EPOCH_START) % totalDuration + totalDuration) % totalDuration;
 
-    const elapsedSeconds = (Date.now() - epoch) / 1000;
+  }
 
-    // Cycle uses fixedTotal for shuffle stability (matches server)
-    const cycle = Math.floor(elapsedSeconds / fixedTotal);
-    const shuffleOrder = regenerateShuffleOrder(epoch, cycle, totalTracks);
-
-    // Position uses learnedTotal — wraps to prevent dead zones (matches server)
-    const rawPosition = ((elapsedSeconds % fixedTotal) + fixedTotal) % fixedTotal;
-    const positionInPlaylist = rawPosition % learnedTotal;
-
+  // PERF FIX: Ordered virtual-live schedule helpers used by the no-backend engine.
+  function computeVirtualLivePositionOrdered(playlist, totalDuration, positionInPlaylist) {
     let accumulated = 0;
-    for (let i = 0; i < totalTracks; i += 1) {
-      const actualTrackIndex = shuffleOrder[i];
-      const trackDuration = getDur(actualTrackIndex);
+    for (let i = 0; i < playlist.length; i += 1) {
+      const trackDuration = playlist[i].duration;
       if (accumulated + trackDuration > positionInPlaylist) {
         return {
-          trackIndex: actualTrackIndex,
-          position: Math.max(0, positionInPlaylist - accumulated)
+          trackIndex: i,
+          position: Math.max(0, positionInPlaylist - accumulated),
+          shufflePosition: i,
+          trackDuration,
+          trackTitle: playlist[i].title,
+          trackArtist: playlist[i].artist,
+          totalDuration,
+          trackAccumulatedStart: accumulated
         };
       }
       accumulated += trackDuration;
     }
-    return { trackIndex: shuffleOrder[0] || 0, position: 0 };
+    return { trackIndex: 0, position: 0, shufflePosition: 0, trackDuration: playlist[0]?.duration || 0 };
+  }
+
+  function getSimranTitles() {
+    return [
+      'Deenanath Suno','Tum Karo Daya','Sunn Yaar Hamare Sajan','Sukh Naahi Re',
+      'Tu Prabh Data','Satnam Waheguru','Mere Ram','Rakhwala Simran','Aas Pyaasi',
+      'Prabh Paas Jan Ki Ardas','Tu Hi Tu Hi','Naam Naam Naam Apna Naam Deho',
+      'Dhan Guru Ramdas Ji','Aao Sajana','Tuj Bin Kavan Hamara','Mera Baid Guru Govinda',
+      'Jagan Te Supna Bhala','Eh Neech Karam Har Mere','Apna Naam Japao',
+      'Mere Pyaare Satuguru Ji','Rakh Leho Bhagwan','Kab Gal Lavenge','Mere Ram Mere Ram',
+      'Rakheya Karo','Waheguru Simran Uth Naam Jap','Best Waheguru Simran',
+      'Kad Nanak Aave Vari','Bin Gur Na Pavaigo','Kiyo Shingar Milan Ke Taayee',
+      'Naam Bina Nahi Jeevia Jaye','Aath Pehar Simro','Mil Mere Preetma Jeeo',
+      'Satnam Shri Waheguru','Rakh Rakh Mere Beethla','Praan Adhaara Ram',
+      'Dhan Baba Nanak','Sunn Mann Mittar Pyareya','Mere Satgur Pyare Gurnanak Aaja'
+    ];
+  }
+
+  function buildVirtualPlaylist(streamName) {
+    const stream = STREAMS[streamName];
+    if (!stream || stream.type !== 'playlist') return [];
+    const titles = streamName === 'simran' ? getSimranTitles() : [];
+    return Array.from({ length: stream.totalTracks || 0 }, (_, index) => ({
+      id: `${streamName}-${index + 1}`,
+      url: stream.getTrackUrl(index),
+      duration: Math.round(getCachedTrackDuration(streamName, index)),
+      title: streamName === 'simran' ? (titles[index] || 'Waheguru Simran') : `Day ${index + 1} - Amritvela Kirtan`,
+      artist: stream.subtitle || ''
+    }));
+  }
+
+  function getVirtualTotalDuration(streamName) {
+    return buildVirtualPlaylist(streamName).reduce((sum, track) => sum + track.duration, 0);
+  }
+
+  function getTrackAccumulatedStart(streamName, trackIndex) {
+    const playlist = buildVirtualPlaylist(streamName);
+    let start = 0;
+    for (let i = 0; i < playlist.length; i += 1) {
+      if (i === trackIndex) return start;
+      start += playlist[i].duration;
+    }
+    return 0;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -326,6 +425,13 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   async function getServerLivePosition() {
+    // PERF FIX: Virtual live streams are synchronized by UTC math, not a backend round trip.
+    if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+      const localPos = getLocalLivePosition();
+      console.log(`[AnhadAudio] Virtual live sync: ${currentStream} track ${localPos.trackIndex + 1} seekTo=${Math.floor(localPos.position)}s`);
+      emitLivePosition(localPos, false);
+      return localPos;
+    }
     let timeoutId = null;
     try {
       const t0 = Date.now();
@@ -416,7 +522,8 @@
         trackIndex: currentTrackIndex,
         shufflePosition: currentShufflePosition,   // persist shuffle position for refresh-resume
         isPlaying,
-        volume: audio ? audio.volume : 0.8,
+        // PERF FIX: Persist explicit volume preference, defaulting safely to 70%.
+        volume: audio ? audio.volume : 0.7,
         currentTime: audio ? audio.currentTime : 0,
         timestamp: Date.now()
       };
@@ -468,7 +575,8 @@
       // and SGPC/R2 CDN don't send Access-Control-Allow-Origin for https://localhost)
       audio = document.createElement('audio');
       audio.preload = 'auto';
-      audio.volume = 0.8;
+      // PERF FIX: Never initialize at 100%; restore below or stay at a safe 70%.
+      audio.volume = 0.7;
 
       // DOM-attached element: forces Android WebView to allocate a media buffer
       audio.id = 'anhad-global-audio';
@@ -483,7 +591,8 @@
     } else {
       audio = new Audio();
       audio.preload = 'metadata';
-      audio.volume = 0.8;
+      // PERF FIX: Never initialize at 100%; restore below or stay at a safe 70%.
+      audio.volume = 0.7;
     }
 
     // Enable background playback for Capacitor native apps
@@ -506,11 +615,11 @@
       }
     }
 
-    // Restore volume from saved state
+    // PERF FIX: Restore volume preference from localStorage with a safe 70% default.
     const saved = loadState();
-    if (saved && saved.volume !== undefined) {
-      audio.volume = saved.volume;
-    }
+    const savedVolume = Number(localStorage.getItem('anhad_audio_volume'));
+    if (Number.isFinite(savedVolume)) audio.volume = Math.max(0, Math.min(1, savedVolume));
+    else if (saved && saved.volume !== undefined) audio.volume = Math.max(0, Math.min(1, Number(saved.volume)));
 
     attachAudioEventListeners();
   }
@@ -601,6 +710,15 @@
       emit('loading', { isLoading: true });
     });
 
+    audio.addEventListener('stalled', () => {
+      // PERF FIX: Recover slow network stalls without forcing a page reload.
+      const streamAtStall = currentStream;
+      setTimeout(() => {
+        if (!audio || currentStream !== streamAtStall) return;
+        try { audio.load(); } catch (e) {}
+      }, 2000);
+    });
+
     audio.addEventListener('canplay', () => {
       isLoading = false;
       emit('loading', { isLoading: false });
@@ -649,14 +767,19 @@
         clearTimeout(playLockTimeoutId);
         playLockTimeoutId = null;
       }
-      if ((currentStream === 'amritvela' || currentStream === 'simran') && audioRetryCount < 3) {
+      if (currentStream && audioRetryCount < 3) {
         audioRetryCount++;
-        const retryDelay = 2000 * audioRetryCount;
+        const retryDelay = currentStream === 'darbar' ? 3000 : 2000 * audioRetryCount;
         const streamAtError = currentStream;
         console.log(`[AnhadAudio] 🔁 Auto-retry ${audioRetryCount}/3 in ${retryDelay/1000}s...`);
         setTimeout(() => {
           if (!isPlaying && !isPlayLocked && currentStream === streamAtError) {
-            play(currentStream);
+            if (streamAtError === 'darbar' && audio) {
+              try { audio.load(); } catch (e) {}
+              audio.play().catch(() => play(streamAtError));
+            } else {
+              play(streamAtError);
+            }
           }
         }, retryDelay);
         return;
@@ -687,7 +810,7 @@
     // ── UPDATE track metadata (title/artist from server sync or local STREAMS) ──
     const incomingPosition = Math.max(0, Number(pos.position) || 0);
     const knownDuration = Number(pos.trackDuration) || getCachedTrackDuration(streamName, currentTrackIndex);
-    if (Number.isFinite(knownDuration) && knownDuration > 60 && incomingPosition > 0 && knownDuration - incomingPosition <= 12) {
+    if (false && Number.isFinite(knownDuration) && knownDuration > 60 && incomingPosition > 0 && knownDuration - incomingPosition <= 12) {
       const epoch = getBroadcastEpoch(streamName) || 1704067200000;
       const totalTracks = stream.totalTracks || 40;
       const defaultDur = stream.defaultTrackDuration || 3600;
@@ -1038,7 +1161,8 @@
         const isSameStream = saved?.stream === streamName;
         const hasSavedPosition = saved && typeof saved.currentTime === 'number' && saved.currentTime > 5;
 
-        if (isRecentRefresh && isSameStream && hasSavedPosition) {
+        // PERF FIX: Virtual live joins the UTC live position on load; pause/resume is the only DVR-like path.
+        if (false && isRecentRefresh && isSameStream && hasSavedPosition) {
           // Restore saved position — don't snap to live
           console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs/1000)}s ago)`);
           const restoredPos = {
@@ -1185,6 +1309,25 @@
     if (!currentStream || STREAMS[currentStream].type !== 'playlist') return;
     if (trackTransitionInProgress) return;
     trackTransitionInProgress = true;
+
+    // PERF FIX: Virtual-live track endings advance locally to the next ordered track.
+    // A fresh UTC sync happens only when the user taps Jump to Live.
+    const orderedStream = STREAMS[currentStream];
+    if (orderedStream?.type === 'playlist') {
+      const nextIndex = (currentTrackIndex + 1) % orderedStream.totalTracks;
+      const requestId = ++playRequestId;
+      const advancedStream = currentStream;
+      currentTrackIndex = nextIndex;
+      currentShufflePosition = nextIndex;
+      loadPlaylistPosition(advancedStream, {
+        trackIndex: nextIndex,
+        position: 0,
+        shufflePosition: nextIndex,
+        trackDuration: getCachedTrackDuration(advancedStream, nextIndex)
+      }, requestId);
+      setTimeout(() => { trackTransitionInProgress = false; }, 3000);
+      return;
+    }
 
     try {
       const stream = STREAMS[currentStream];
@@ -1372,6 +1515,8 @@
   function setVolume(vol) {
     initAudioElement();
     audio.volume = Math.max(0, Math.min(1, vol));
+    // PERF FIX: Persist volume independently so every radio entry restores instantly.
+    try { localStorage.setItem('anhad_audio_volume', String(audio.volume)); } catch (e) {}
     saveState();
     emit('volumechange', { volume: audio.volume });
   }
@@ -1497,6 +1642,20 @@
       detail: { offsetSeconds, isAtLive, stream: currentStream }
     }));
   }, 1000);
+
+  setInterval(() => {
+    // PERF FIX: Drift check runs while playing or paused so pause/resume shows "behind live".
+    if (!currentStream || !audio || STREAMS[currentStream]?.type !== 'playlist') return;
+    const drift = getVirtualDrift();
+    const detail = {
+      ...drift,
+      stream: currentStream,
+      driftSeconds: Math.round(drift.driftSeconds),
+      isLive: drift.driftSeconds <= 10
+    };
+    emit('livedrift', detail);
+    window.dispatchEvent(new CustomEvent('anhadLiveDrift', { detail }));
+  }, 5000);
 
   // ─── WAKELOCK: Keep screen alive during playback ─────────────────────────
   let _wakeLock = null;
@@ -1726,6 +1885,11 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function getLiveOffset() {
+    // PERF FIX: Drift is based on the deterministic UTC schedule, not a play-time anchor.
+    if (currentStream === 'amritvela' || currentStream === 'simran') {
+      const drift = getVirtualDrift();
+      return Math.max(0, drift.driftSeconds);
+    }
     if (!liveSyncAnchor || (currentStream !== 'amritvela' && currentStream !== 'simran')) return 0;
     if (!audio) return 0;
     
@@ -1735,6 +1899,27 @@
     
     // Simple offset: expected - actual
     return Math.max(0, expectedAudioTime - audio.currentTime);
+  }
+
+  function getVirtualDrift() {
+    if (!audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') {
+      return { driftSeconds: 0, isLive: true };
+    }
+    const live = computeVirtualLivePosition(currentStream);
+    const userPosition = getTrackAccumulatedStart(currentStream, currentTrackIndex) + (Number(audio.currentTime) || 0);
+    const livePosition = Number(live.trackAccumulatedStart || 0) + (Number(live.position) || 0);
+    const total = Number(live.totalDuration) || getVirtualTotalDuration(currentStream);
+    let driftSeconds = livePosition - userPosition;
+    if (driftSeconds < -10 && total > 0) driftSeconds += total;
+    if (driftSeconds < 0) driftSeconds = 0;
+    return {
+      driftSeconds,
+      isLive: driftSeconds <= 10,
+      liveTrackIndex: live.trackIndex,
+      liveSeekTo: live.position,
+      userTrackIndex: currentTrackIndex,
+      userPosition: Number(audio.currentTime) || 0
+    };
   }
 
   function getPublicState() {
@@ -1748,7 +1933,7 @@
       currentTrackTitle,
       currentTrackArtist,
       liveOffset: offset,
-      isBehind: offset >= 5,
+      isBehind: offset > 10,
       streamName: stream?.name || '',
       streamSubtitle: stream?.subtitle || '',
       streamType: stream?.type || '',

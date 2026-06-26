@@ -1,326 +1,2018 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f6f4ef" />
-  <title>Gurbani GPT — ANHAD</title>
-  <meta name="description" content="A calm, soft bento-grid Gurbani GPT experience for meaningful spiritual conversation." />
-  <link rel="icon" href="../favicon.ico" />
-  <style>
-    :root{
-      --bg:#f6f4ef;
-      --bg2:#eef2f7;
-      --text:#111827;
-      --muted:#6b7280;
-      --line:rgba(17,24,39,.08);
-      --card:rgba(255,255,255,.72);
-      --card2:rgba(255,255,255,.86);
-      --shadow:0 18px 50px rgba(15,23,42,.08), 0 4px 18px rgba(15,23,42,.05);
-      --accent:#c89a3a;
-      --accent2:#5b7cff;
-      --success:#16a34a;
-      --danger:#ef4444;
-      --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Inter,system-ui,sans-serif;
-      --radius:28px;
-    }
-    body.dark{
-      --bg:#0b1020;
-      --bg2:#11182b;
-      --text:#f8fafc;
-      --muted:#a0abc0;
-      --line:rgba(255,255,255,.08);
-      --card:rgba(15,22,38,.68);
-      --card2:rgba(15,22,38,.84);
-      --shadow:0 20px 60px rgba(0,0,0,.42), 0 4px 18px rgba(0,0,0,.20);
-      --accent:#e0b661;
-      --accent2:#84a8ff;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--font);
-      color:var(--text);
-      background:
-        radial-gradient(1000px 600px at 12% 0%, rgba(200,154,58,.14), transparent 56%),
-        radial-gradient(900px 600px at 90% 8%, rgba(91,124,255,.12), transparent 56%),
-        linear-gradient(180deg,var(--bg),var(--bg2));
-      overflow:hidden;
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
-    }
-    .orb{position:fixed;border-radius:999px;filter:blur(48px);pointer-events:none;opacity:.75}
-    .orb.a{width:30vw;height:30vw;left:-10vw;top:-8vw;background:radial-gradient(circle at 35% 35%, rgba(200,154,58,.22), transparent 60%)}
-    .orb.b{width:26vw;height:26vw;right:-8vw;top:4vw;background:radial-gradient(circle at 40% 40%, rgba(91,124,255,.18), transparent 60%)}
-    .orb.c{width:24vw;height:24vw;left:34vw;bottom:-10vw;background:radial-gradient(circle at 40% 40%, rgba(22,163,74,.10), transparent 60%)}
-    .shell{position:relative;z-index:2;height:100%;display:flex;justify-content:center}
-    .app{width:min(1400px,100%);height:100%;display:grid;grid-template-columns:280px minmax(0,1fr) 320px;gap:16px;padding:16px}
-    .panel,.card,.sheet,.bubble,.chip,.pill,.small,.icon,.chat-item,.tool,.ghost,.send{background:var(--card);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .panel{border-radius:32px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-    .drawer-head{padding:20px 20px 14px;display:flex;gap:12px;align-items:center}
-    .brand{width:42px;height:42px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-size:22px;flex-shrink:0}
-    .brand-title{font-size:16px;font-weight:700;letter-spacing:-.02em;line-height:1.1}.brand-sub{font-size:12px;color:var(--muted);margin-top:4px}
-    .drawer-actions{padding:0 16px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .ghost{border-radius:999px;padding:10px 12px;cursor:pointer;color:var(--text);font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-    .ghost:hover,.icon:hover,.chip:hover,.pill:hover,.small:hover,.chat-item:hover,.tool:hover{transform:translateY(-1px)}
-    .section{padding:14px 18px 10px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.14em}
-    .list{padding:0 10px 12px;overflow:auto;flex:1}.list::-webkit-scrollbar,.timeline::-webkit-scrollbar,.side::-webkit-scrollbar,.body::-webkit-scrollbar{width:0;height:0}
-    .chat-item{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:0;background:transparent;color:var(--text);padding:13px 14px;border-radius:22px;cursor:pointer;transition:.16s ease;margin-bottom:8px}
-    .chat-item:hover,.chat-item.active{background:rgba(255,255,255,.44);border:1px solid var(--line)} body.dark .chat-item:hover,body.dark .chat-item.active{background:rgba(255,255,255,.04)}
-    .chat-main{min-width:0}.chat-title{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-date{font-size:11px;color:var(--muted);margin-top:4px}.del{width:30px;height:30px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer}.del:hover{background:rgba(239,68,68,.12);color:var(--danger)}
-    .foot{padding:18px 20px 20px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.55}.foot b{color:var(--text)}
-    .workspace{display:flex;flex-direction:column;min-width:0;overflow:hidden;gap:16px}
-    .topbar{height:76px;border-radius:32px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .top-left,.top-right{display:flex;align-items:center;gap:12px;min-width:0}.top-right{flex-wrap:wrap;justify-content:flex-end}
-    .icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;cursor:pointer;color:var(--text);background:rgba(255,255,255,.42);transition:.18s ease}.dark .icon{background:rgba(255,255,255,.04)}
-    .title{display:flex;flex-direction:column;gap:2px;min-width:0}.title h1{margin:0;font-size:17px;letter-spacing:-.02em;line-height:1.1}.title p{margin:0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .status{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.42);border:1px solid var(--line);font-size:12px;color:var(--muted)} .dark .status{background:rgba(255,255,255,.04)} .dot{width:8px;height:8px;border-radius:999px;background:var(--success);box-shadow:0 0 0 4px rgba(22,163,74,.14)} .dot.off{background:var(--danger);box-shadow:0 0 0 4px rgba(239,68,68,.14)}
-    .content{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;min-height:0;flex:1}
-    .main,.side{min-height:0;display:flex;flex-direction:column;gap:16px}
-    .hero{border-radius:32px;padding:26px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:16px}.hero,.card,.composer,.sheet{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .hero-copy{border-radius:28px;padding:28px;position:relative;overflow:hidden;min-height:210px}.hero-copy:before{content:"";position:absolute;inset:-1px;background:radial-gradient(900px 340px at 16% 0%, rgba(200,154,58,.10), transparent 44%),radial-gradient(680px 260px at 94% 0%, rgba(91,124,255,.10), transparent 40%);pointer-events:none} .hero-copy>*{position:relative;z-index:1}
-    .eyebrow{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}.hero-title{font-size:42px;line-height:.95;letter-spacing:-.05em;margin:0 0 14px;font-weight:750}.hero-title span{background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}.hero-sub{font-size:15px;color:var(--muted);max-width:60ch;line-height:1.7;margin:0}
-    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{padding:11px 14px;border-radius:999px;background:rgba(255,255,255,.48);border:1px solid var(--line);color:var(--text);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.16s ease}.dark .chip{background:rgba(255,255,255,.05)}
-    .hero-card{border-radius:28px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;min-height:210px;overflow:hidden}.hero-card h2{margin:0;font-size:18px;letter-spacing:-.02em}.hero-card p{margin:10px 0 0;color:var(--muted);line-height:1.65;font-size:14px}
-    .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.stat{border-radius:22px;padding:16px;background:rgba(255,255,255,.42);border:1px solid var(--line)} .dark .stat{background:rgba(255,255,255,.04)} .stat b{display:block;font-size:20px;letter-spacing:-.03em;margin-bottom:4px}.stat span{font-size:12px;color:var(--muted)}
-    .timeline{flex:1;min-height:0;padding:0 4px 6px 4px;overflow:auto}.welcome{border-radius:32px;padding:26px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);text-align:center;display:flex;flex-direction:column;align-items:center}.welcome-mark{width:82px;height:82px;border-radius:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-size:36px;box-shadow:0 24px 50px rgba(91,124,255,.22);margin-bottom:16px}.welcome h3{font-size:28px;line-height:1.05;letter-spacing:-.04em;margin:0 0 10px}.welcome p{margin:0;max-width:58ch;color:var(--muted);font-size:15px;line-height:1.75}
-    .prompt-grid{width:min(100%,860px);margin-top:24px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.prompt{border-radius:24px;padding:16px 16px 14px;background:rgba(255,255,255,.50);border:1px solid var(--line);text-align:left;color:var(--text);cursor:pointer;min-height:88px;transition:.16s ease}.prompt:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(15,23,42,.08)} .dark .prompt{background:rgba(255,255,255,.04)} .prompt b{display:block;font-size:14px;margin-bottom:6px}.prompt span{display:block;color:var(--muted);font-size:12.5px;line-height:1.5}
-    .message{display:flex;flex-direction:column;gap:8px;margin:0 0 18px}.message.user{align-items:flex-end}.message.ai{align-items:flex-start}.bubble{max-width:min(720px,90%);border-radius:26px;padding:15px 16px;line-height:1.7;font-size:15px;border:1px solid var(--line)}.message.user .bubble{background:linear-gradient(135deg,rgba(200,154,58,.96),rgba(91,124,255,.90));color:#fff;border-color:transparent;border-bottom-right-radius:10px}.message.ai .bubble{background:var(--card2);border-bottom-left-radius:10px}.bubble p{margin:0 0 10px}.bubble p:last-child{margin-bottom:0}.bubble blockquote{margin:10px 0;padding:10px 12px;border-left:3px solid var(--accent);background:rgba(200,154,58,.10);border-radius:16px}.bubble ul{margin:10px 0;padding-left:20px}.bubble li{margin:6px 0}.bubble strong{font-weight:700}.bubble em{color:var(--muted)}
-    .msg-tools{display:flex;gap:8px;flex-wrap:wrap}.tool{border-radius:999px;padding:8px 11px;font-size:12px;cursor:pointer;color:var(--text)}
-    .thinking{display:flex;align-items:center;gap:6px;padding:8px 2px}.thinking i{width:8px;height:8px;border-radius:999px;background:var(--muted);animation:pulse 1.1s infinite ease-in-out}.thinking i:nth-child(2){animation-delay:.15s}.thinking i:nth-child(3){animation-delay:.3s}@keyframes pulse{0%,100%{transform:scale(.62);opacity:.45}50%{transform:scale(1);opacity:1}}
-    .composer{border-radius:32px;padding:14px;display:flex;flex-direction:column;gap:12px}.meta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;padding:0 4px;flex-wrap:wrap}.pill-row{display:flex;gap:8px;flex-wrap:wrap}.pill{border-radius:999px;padding:8px 12px;font-size:12px;cursor:pointer;color:var(--text);background:rgba(255,255,255,.42)} .pill.sel{background:linear-gradient(135deg,rgba(200,154,58,.14),rgba(91,124,255,.14));border-color:rgba(91,124,255,.18)} .dark .pill{background:rgba(255,255,255,.04)}
-    .input-box{display:flex;align-items:flex-end;gap:10px;padding:12px 12px 12px 14px;border-radius:28px;background:rgba(255,255,255,.68);box-shadow:inset 0 1px 0 rgba(255,255,255,.72)} .dark .input-box{background:rgba(255,255,255,.045);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)} textarea{flex:1;min-height:28px;max-height:150px;resize:none;border:0;outline:none;background:transparent;color:var(--text);font:inherit;font-size:15px;line-height:1.6;padding:4px 0 4px 2px} textarea::placeholder{color:var(--muted)}
-    .actions{display:flex;align-items:center;gap:8px;flex-shrink:0}.send,.round,.close,.small,.toggle{border:1px solid var(--line);background:rgba(255,255,255,.42);color:var(--text);cursor:pointer;display:grid;place-items:center;transition:.18s ease}.send,.round{width:44px;height:44px;border-radius:16px}.send.ready{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 18px 30px rgba(91,124,255,.22)}.send:disabled{opacity:.35;cursor:default}.round:hover,.send:hover,.icon:hover,.ghost:hover,.chip:hover,.prompt:hover,.pill:hover,.small:hover,.tool:hover,.toggle:hover{transform:translateY(-1px)}
-    .subline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px;color:var(--muted);font-size:11.5px;flex-wrap:wrap}.warn{color:var(--danger)}
-    .right-grid{display:grid;grid-template-columns:1fr;gap:16px;min-height:0}.card{border-radius:32px;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden}
-    .card h3{margin:0;font-size:18px;letter-spacing:-.02em}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
-    .right-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.small{border-radius:18px;padding:11px 12px;font:inherit;font-size:13px}.small.sel{background:linear-gradient(135deg,rgba(200,154,58,.12),rgba(91,124,255,.12));border-color:rgba(91,124,255,.18)}
-    .mini-list{display:flex;flex-direction:column;gap:10px;overflow:auto}.mini{border-radius:22px;padding:14px 15px;background:rgba(255,255,255,.50);border:1px solid var(--line)} .dark .mini{background:rgba(255,255,255,.04)} .mini b{display:block;margin-bottom:6px}.mini span{display:block;color:var(--muted);font-size:13px;line-height:1.55}
-    .bookmark{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.bookmark main{min-width:0}.bookmark h4{margin:0 0 6px;font-size:14px}.bookmark p{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
-    .timerBox{text-align:center;padding:24px 16px}.timerDisplay{font-size:52px;line-height:1;font-weight:300;letter-spacing:-.06em;margin-bottom:10px}
-    .net-badge,.toast{position:fixed;left:50%;transform:translateX(-50%);z-index:80;pointer-events:none;opacity:0;transition:.22s ease}.net-badge{top:18px;padding:10px 14px;border-radius:999px;background:rgba(239,68,68,.12);color:#c2410c;border:1px solid rgba(239,68,68,.18);backdrop-filter:blur(16px)}.net-badge.show,.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast{bottom:20px;padding:12px 16px;border-radius:999px;background:rgba(15,23,42,.92);color:#fff}
-    .overlay{position:fixed;inset:0;background:rgba(2,6,23,.36);backdrop-filter:blur(6px);z-index:40;display:none}.overlay.show{display:block}.sheet{position:fixed;inset:auto 18px 18px 18px;z-index:50;display:none;justify-content:center}.sheet.show{display:flex}.sheet-panel{width:min(860px,100%);max-height:min(80vh,760px);border-radius:30px;padding:20px;overflow:hidden;display:flex;flex-direction:column;gap:16px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
-    .sheet-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.sheet-hdr h3{margin:0;font-size:20px;letter-spacing:-.03em}.sheet-hdr p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.5}.close{width:38px;height:38px;border-radius:14px}.body{overflow:auto;display:grid;gap:12px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .hidden{display:none!important}.empty{padding:28px 16px;text-align:center;color:var(--muted)}
-    @media (max-width:1180px){.app{grid-template-columns:280px minmax(0,1fr)}.side{display:none}.content{grid-template-columns:1fr}.hero{grid-template-columns:1fr}}
-    @media (max-width:860px){body{overflow:auto}.app{grid-template-columns:1fr;padding:12px;height:auto;min-height:100%}.panel{display:none;position:fixed;left:12px;right:12px;top:12px;bottom:12px;z-index:60}.panel.open{display:flex}.hero{padding:14px}.hero-copy,.hero-card,.composer{border-radius:28px}.hero-title{font-size:30px}.prompt-grid,.grid2,.grid3,.right-actions{grid-template-columns:1fr}.bubble{max-width:100%}.sheet{inset:8px}.sheet-panel{max-height:calc(100vh - 16px)}}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <title>Gurbani GPT — Naam Simran AI | ANHAD</title>
+  <meta name="description" content="Gurbani GPT — A compassionate AI companion for Naam Simran, spiritual guidance, and Gurmat practice.">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Google+Sans+Text:wght@400;500&family=Noto+Sans+Gurmukhi:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   1. RESET & TOKENS
+═══════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#ffffff;
+  --text:#1f1f1f;
+  --text2:#444746;
+  --text3:#8e918f;
+  --pill:#f0f4f9;
+  --pill-h:#e3eaf4;
+  --border:rgba(0,0,0,0.08);
+  --shadow:0 1px 8px rgba(0,0,0,0.08);
+  --font:'Google Sans Text','Google Sans',-apple-system,sans-serif;
+  --font-d:'Google Sans',-apple-system,sans-serif;
+  --font-g:'Noto Sans Gurmukhi',sans-serif;
+  --accent:#1a73e8;
+  --accent-h:#1557b0;
+  --gold:#c89a3a;
+  --radius:22px;
+  /* Premium iOS/Google enhancements */
+  --glass-bg:rgba(255,255,255,0.72);
+  --glass-border:rgba(255,255,255,0.5);
+  --premium-shadow:0 8px 32px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);
+  --premium-glow:0 0 0 1px rgba(255,255,255,0.8),0 0 20px rgba(0,0,0,0.05);
+}
+
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+
+/* ═══════════════════════════════════════════════════════
+   2. GRADIENT SYSTEM — Exact Gemini replica
+   Single soft blob. Always on. Cycles: mint→gold→lavender→blue.
+   Fades to pure white at center & bottom — never touches edges.
+   ═══════════════════════════════════════════════════════ */
+
+/* Full-screen fixed canvas — sits behind everything */
+.g-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /*
+   * THE MASK — this is the secret to the Gemini look:
+   * Strong color at the very top, fading softly to complete
+   * transparency by ~70% down the screen. The ellipse shape
+   * also fades on the left & right so edges are always clean.
+   */
+  mask-image: radial-gradient(
+    ellipse 90% 66% at 35% 0%,
+    rgba(0,0,0,0.95)  0%,
+    rgba(0,0,0,0.90) 16%,
+    rgba(0,0,0,0.65) 34%,
+    rgba(0,0,0,0.25) 52%,
+    rgba(0,0,0,0.04) 66%,
+    transparent       78%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 90% 66% at 35% 0%,
+    rgba(0,0,0,0.95)  0%,
+    rgba(0,0,0,0.90) 16%,
+    rgba(0,0,0,0.65) 34%,
+    rgba(0,0,0,0.25) 52%,
+    rgba(0,0,0,0.04) 66%,
+    transparent       78%
+  );
+}
+
+/*
+ * THE BLOB — one large circle, heavily blurred.
+ * background-color animates smoothly between 4 soft pastels.
+ * transform gently drifts so the glow feels alive, wave-like.
+ */
+.g-blob {
+  position: absolute;
+  /* Oversized so the blur never shows a hard edge */
+  width: 140%;
+  height: 80%;
+  left: -20%;
+  top: -28%;
+  border-radius: 50%;
+  filter: blur(72px);
+  /* Idle animation — always running, gentle 22s cycle */
+  animation:
+    gColor 22s ease-in-out infinite,
+    gDrift 28s ease-in-out infinite;
+  will-change: background-color, transform;
+}
+
+/*
+ * COLOR CYCLE — Premium enhanced palette:
+ * More sophisticated colors with better saturation and depth
+ * 1. Soft mint-green  (like image 2)
+ * 2. Warm gold-peach  (like image 3)
+ * 3. Pale lavender    (like image 4)
+ * 4. Soft sky-blue    (like image 5)
+ * All are very light/pastel — high lightness, moderate saturation.
+ */
+@keyframes gColor {
+  0%   { background-color: hsla(152, 52%, 82%, 0.92); } /* mint green enhanced */
+  24%  { background-color: hsla( 40, 76%, 84%, 0.92); } /* warm gold enhanced */
+  48%  { background-color: hsla(278, 46%, 86%, 0.88); } /* lavender enhanced */
+  72%  { background-color: hsla(208, 62%, 86%, 0.88); } /* sky blue enhanced */
+  88%  { background-color: hsla(170, 49%, 83%, 0.90); } /* blue-green enhanced */
+  100% { background-color: hsla(152, 52%, 82%, 0.92); } /* back to mint */
+}
+
+/* DRIFT — gentle positional float so the blob feels like a wave */
+@keyframes gDrift {
+  0%,100% { transform: translate(  0%,  0%) scale(1.00); }
+  22%     { transform: translate( 10%,  6%) scale(1.06); }
+  44%     { transform: translate( -7%, 10%) scale(0.96); }
+  66%     { transform: translate(  8%, -4%) scale(1.04); }
+  88%     { transform: translate( -4%,  7%) scale(0.98); }
+}
+
+/*
+ * CYCLING STATE (while AI is responding):
+ * Speed up color cycle so it feels responsive.
+ * Slight opacity boost makes it feel more alive.
+ */
+.g-bg.cycling .g-blob {
+  animation:
+    gColorFast 8s ease-in-out infinite,
+    gDrift 14s ease-in-out infinite;
+}
+
+/* Same colors, just faster - premium enhanced */
+@keyframes gColorFast {
+  0%   { background-color: hsla(152, 56%, 80%, 0.94); }
+  24%  { background-color: hsla( 40, 80%, 82%, 0.94); }
+  48%  { background-color: hsla(278, 50%, 84%, 0.90); }
+  72%  { background-color: hsla(208, 66%, 84%, 0.90); }
+  88%  { background-color: hsla(170, 53%, 81%, 0.92); }
+  100% { background-color: hsla(152, 56%, 80%, 0.94); }
+}
+
+/* DARK MODE — richer, deeper tones but same shape */
+body.dark .g-blob {
+  animation:
+    gColorDark 22s ease-in-out infinite,
+    gDrift     28s ease-in-out infinite;
+  filter: blur(72px);
+}
+body.dark .g-bg.cycling .g-blob {
+  animation:
+    gColorDarkFast 8s ease-in-out infinite,
+    gDrift         14s ease-in-out infinite;
+}
+@keyframes gColorDark {
+  0%   { background-color: hsla(152, 42%, 40%, 0.75); }
+  24%  { background-color: hsla( 40, 60%, 45%, 0.75); }
+  48%  { background-color: hsla(278, 38%, 45%, 0.70); }
+  72%  { background-color: hsla(208, 52%, 45%, 0.70); }
+  88%  { background-color: hsla(170, 40%, 42%, 0.72); }
+  100% { background-color: hsla(152, 42%, 40%, 0.75); }
+}
+@keyframes gColorDarkFast {
+  0%   { background-color: hsla(152, 48%, 38%, 0.85); }
+  24%  { background-color: hsla( 40, 66%, 42%, 0.85); }
+  48%  { background-color: hsla(278, 44%, 43%, 0.80); }
+  72%  { background-color: hsla(208, 58%, 43%, 0.80); }
+  88%  { background-color: hsla(170, 46%, 40%, 0.82); }
+  100% { background-color: hsla(152, 48%, 38%, 0.85); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   3. APP SHELL
+═══════════════════════════════════════════════════════ */
+.wrapper{position:relative;height:100dvh;height:100vh;overflow:hidden}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;max-width:640px;margin:0 auto}
+
+/* ═══════════════════════════════════════════════════════
+   4. HEADER — Gemini exact
+═══════════════════════════════════════════════════════ */
+.hdr{flex-shrink:0;display:flex;align-items:center;padding:10px 14px 8px;padding-top:max(10px,env(safe-area-inset-top,0px));gap:2px;min-height:60px;background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+
+.hdr-icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .18s;flex-shrink:0}
+.hdr-icon-btn:hover{background:var(--pill-h)}
+.hdr-icon-btn:active{background:rgba(0,0,0,.1)}
+
+.hamburger{display:flex;flex-direction:column;gap:5px;width:18px}
+.hamburger span{display:block;height:1.5px;background:currentColor;border-radius:2px}
+
+.hdr-title{flex:1;display:flex;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background .18s;min-width:0;margin:0 2px}
+.hdr-title:hover{background:var(--pill-h)}
+.hdr-title-txt{font-family:var(--font-d);font-size:15px;font-weight:400;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-title-txt b{font-weight:600}
+.hdr-chevron{color:var(--text2);font-size:10px;flex-shrink:0;margin-top:1px}
+
+.hdr-right{display:flex;gap:2px;flex-shrink:0;position:relative}
+
+/* Status dot */
+.status-dot{width:8px;height:8px;border-radius:50%;background:#34a853;position:absolute;top:18px;right:18px;box-shadow:0 0 0 2px var(--bg)}
+.status-dot.offline{background:#ea4335}
+
+/* ═══════════════════════════════════════════════════════
+   5. MESSAGES
+═══════════════════════════════════════════════════════ */
+.msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 16px 12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.msgs::-webkit-scrollbar{width:0}
+
+/* ═══════════════════════════════════════════════════════
+   6. WELCOME STATE
+═══════════════════════════════════════════════════════ */
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:52vh;padding:32px 20px 20px;text-align:center;animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.welcome-star{width:48px;height:48px;margin-bottom:16px;animation:starFloat 4s ease-in-out infinite}
+@keyframes starFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.04)}}
+
+.welcome-title{font-family:var(--font-d);font-size:23px;font-weight:500;color:var(--text);letter-spacing:-.3px;line-height:1.3;margin-bottom:6px}
+.welcome-sub{font-size:13.5px;color:var(--text3);margin-bottom:28px;line-height:1.5}
+
+.chips-grid{display:flex;flex-direction:column;gap:9px;width:100%;max-width:330px}
+.chip{display:flex;align-items:center;gap:12px;background:var(--pill);border:none;border-radius:14px;padding:12px 16px;text-align:left;cursor:pointer;transition:background .18s,transform .15s;width:100%}
+.chip:hover{background:var(--pill-h);transform:translateY(-1px)}
+.chip:active{transform:scale(.97)}
+.chip-icon{font-size:17px;flex-shrink:0}
+.chip-label{font-size:13px;font-weight:400;color:var(--text);line-height:1.4;font-family:var(--font)}
+
+/* ═══════════════════════════════════════════════════════
+   7. MESSAGES — USER & AI
+═══════════════════════════════════════════════════════ */
+.msg-list{display:flex;flex-direction:column;gap:0;padding-top:6px}
+
+.msg{animation:msgIn .32s cubic-bezier(.2,.8,.4,1) both}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* User bubble */
+.msg-user{display:flex;justify-content:flex-end;padding:6px 0 10px}
+.msg-user .bbl{background:var(--pill);border-radius:22px;padding:10px 18px;max-width:80%;font-size:14.5px;line-height:1.58;color:var(--text);word-break:break-word}
+
+/* AI message */
+.msg-ai{padding:2px 0 10px}
+.ai-head{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.ai-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c89a3a,#9b5e1a);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ai-name{font-size:13px;font-weight:500;color:var(--text)}
+.ai-body{padding-left:38px;font-size:14.5px;line-height:1.68;color:var(--text);word-break:break-word}
+
+/* Action buttons on AI messages */
+.msg-actions{display:flex;gap:4px;margin-top:8px;margin-left:38px;opacity:0;transition:opacity .2s;flex-wrap:wrap}
+.msg-ai:hover .msg-actions,.msg-ai.actions-open .msg-actions{opacity:1}
+.msg-act-btn{display:flex;align-items:center;gap:4px;background:transparent;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11.5px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s;white-space:nowrap}
+.msg-act-btn:hover{background:var(--pill-h);border-color:rgba(0,0,0,.12)}
+.msg-act-btn.active{background:#e8f0fe;color:#1a73e8;border-color:#aecbfa}
+.msg-act-btn svg{flex-shrink:0}
+
+/* Thinking dots */
+.thinking{display:flex;gap:4px;align-items:center;padding:4px 0 4px 38px;margin-bottom:2px}
+.thinking span{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:think 1.3s ease-in-out infinite}
+.thinking span:nth-child(2){animation-delay:.18s}
+.thinking span:nth-child(3){animation-delay:.36s}
+@keyframes think{0%,80%,100%{transform:scale(.6);opacity:.35}40%{transform:scale(1);opacity:1}}
+
+/* Blinking cursor */
+.cur{display:inline-block;width:2px;height:1.1em;background:var(--text);margin-left:1px;vertical-align:text-bottom;border-radius:1px;animation:blink .85s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Markdown */
+.ai-body p{margin-bottom:9px}
+.ai-body p:last-child{margin-bottom:0}
+.ai-body strong{font-weight:600}
+.ai-body em{color:var(--text2)}
+.ai-body ul{padding-left:20px;margin:5px 0}
+.ai-body li{margin-bottom:3px}
+.ai-body blockquote{border-left:3px solid var(--gold);padding:7px 12px;margin:9px 0;border-radius:0 8px 8px 0;background:rgba(200,154,58,.07);color:var(--text2);font-style:italic}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:10px;padding:10px 0;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Error */
+.err-bbl{background:#fce8e6;color:#c5221f;border-radius:12px;padding:9px 14px;font-size:13px;margin:4px 0 4px 38px}
+.retry-btn{background:transparent;border:1px solid #c5221f;border-radius:20px;padding:4px 12px;font-size:12px;color:#c5221f;cursor:pointer;margin-top:6px;font-family:var(--font);transition:background .15s}
+.retry-btn:hover{background:#fce8e6}
+
+/* ═══════════════════════════════════════════════════════
+   8. INPUT BAR
+═══════════════════════════════════════════════════════ */
+.input-wrap{flex-shrink:0;padding:6px 12px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+
+.new-convo-row{display:none;justify-content:center;margin-bottom:5px}
+.new-convo-row.vis{display:flex}
+.new-convo-btn{background:transparent;border:none;font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font);padding:4px 12px;border-radius:12px;transition:color .18s,background .18s;display:flex;align-items:center;gap:5px}
+.new-convo-btn:hover{color:var(--text2);background:var(--pill)}
+
+/* Mood context row */
+.mood-row{display:none;justify-content:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.mood-row.vis{display:flex}
+.mood-pill{background:var(--pill);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,border-color .15s;display:flex;align-items:center;gap:5px}
+.mood-pill:hover{background:var(--pill-h)}
+.mood-pill.sel{background:#e8f0fe;color:#1a73e8;border-color:#aecbfa}
+
+/* Length toggle */
+.length-row{display:none;justify-content:center;margin-bottom:6px}
+.length-row.vis{display:flex}
+.length-toggle{display:flex;background:var(--pill);border-radius:20px;padding:2px;gap:2px}
+.len-btn{background:transparent;border:none;border-radius:18px;padding:4px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s,color .15s}
+.len-btn.sel{background:var(--bg);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* Input pill */
+.inp-pill{display:flex;align-items:flex-end;gap:2px;background:var(--pill);border-radius:28px;padding:8px 10px 8px 8px;transition:box-shadow .25s}
+.inp-pill:focus-within{box-shadow:0 2px 12px rgba(0,0,0,.1)}
+
+.inp-add-btn{width:38px;height:38px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:22px;font-weight:300;transition:background .18s;flex-shrink:0;line-height:1}
+.inp-add-btn:hover{background:rgba(0,0,0,.06)}
+
+.inp-ta{flex:1;background:transparent;border:none;outline:none;font-family:var(--font);font-size:15px;color:var(--text);resize:none;max-height:130px;min-height:24px;line-height:1.5;padding:7px 4px;caret-color:var(--accent)}
+.inp-ta::placeholder{color:var(--text3)}
+
+.char-count{font-size:10.5px;color:var(--text3);align-self:flex-end;padding-bottom:9px;white-space:nowrap;display:none}
+.char-count.show{display:block}
+.char-count.warn{color:#ea4335}
+
+.inp-actions{display:flex;align-items:center;gap:2px;flex-shrink:0}
+
+.inp-btn{width:38px;height:38px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);transition:background .18s,color .18s,opacity .18s}
+.inp-btn:hover{background:rgba(0,0,0,.06)}
+.inp-btn:disabled{opacity:.3;cursor:default}
+.inp-btn:disabled:hover{background:transparent}
+
+/* Send — becomes blue when active */
+.send-btn.ready{background:#1a73e8!important;color:#fff!important}
+.send-btn.ready:hover{background:var(--accent-h)!important}
+
+/* Stop button — red square */
+.stop-btn{width:38px;height:38px;border-radius:50%;border:none;background:#ea4335;color:#fff;display:none;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .15s}
+.stop-btn.show{display:flex}
+.stop-btn:hover{background:#c5221f;transform:scale(1.06)}
+.stop-btn:active{transform:scale(.92)}
+
+/* Token estimate badge */
+.token-badge{font-size:10px;color:var(--text3);padding-left:4px;align-self:center;display:none}
+.token-badge.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   9. SCROLL NUDGE
+═══════════════════════════════════════════════════════ */
+.scroll-nudge{position:absolute;bottom:88px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.scroll-nudge.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════════════════
+   10. DRAWER
+═══════════════════════════════════════════════════════ */
+.drawer-ov{position:fixed;inset:0;background:rgba(0,0,0,.22);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-ov.open{opacity:1;pointer-events:auto}
+
+.drawer{position:fixed;top:0;left:0;bottom:0;width:290px;background:#f8fafb;z-index:201;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);overflow-y:auto;overflow-x:hidden}
+
+.drawer.open{transform:translateX(0)}
+
+.drawer-hdr{padding:18px 18px 10px;display:flex;align-items:center;gap:10px}
+.drawer-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#c89a3a,#9b5e1a);display:flex;align-items:center;justify-content:center;font-size:17px}
+.drawer-app{font-family:var(--font-d);font-size:16px;font-weight:600;color:var(--text)}
+
+.drawer-new{margin:4px 12px 12px;display:flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--border);border-radius:26px;padding:10px 18px;cursor:pointer;font-size:13.5px;color:var(--text);font-family:var(--font);transition:background .18s;width:calc(100% - 24px)}
+.drawer-new:hover{background:var(--pill-h)}
+
+.drawer-sec{padding:5px 18px 3px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.drawer-item{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer;font-size:13.5px;color:var(--text);background:transparent;border:none;width:100%;text-align:left;font-family:var(--font);border-radius:0 26px 26px 0;margin-right:12px;transition:background .15s;text-decoration:none}
+.drawer-item:hover{background:var(--pill-h)}
+.drawer-item.active{background:#e6f4ea;color:#0d652d}
+.drawer-hr{height:1px;background:var(--border);margin:8px 0}
+
+.drawer-footer{padding:12px 18px 16px;font-size:11.5px;color:var(--text3);line-height:1.5;margin-top:auto}
+
+/* ═══════════════════════════════════════════════════════
+   11. SIMRAN TIMER PANEL
+═══════════════════════════════════════════════════════ */
+.timer-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.timer-ov.open{display:flex;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.timer-panel{background:#fff;border-radius:24px;padding:32px 28px;width:100%;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.timer-star{font-size:40px;margin-bottom:12px;animation:starFloat 3s ease-in-out infinite}
+.timer-title{font-family:var(--font-d);font-size:20px;font-weight:600;color:var(--text);margin-bottom:6px}
+.timer-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
+
+.timer-display{font-family:var(--font-d);font-size:52px;font-weight:300;color:var(--text);letter-spacing:2px;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.timer-breath{font-size:13px;color:var(--text2);margin-bottom:20px;min-height:20px}
+.timer-counter{font-size:22px;font-weight:600;color:var(--gold);margin-bottom:20px}
+
+.timer-durations{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.timer-dur{background:var(--pill);border:none;border-radius:20px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;font-family:var(--font);transition:background .15s}
+.timer-dur.sel{background:#e8f0fe;color:#1a73e8}
+
+.timer-btns{display:flex;gap:10px;justify-content:center}
+.timer-start{background:#1a73e8;color:#fff;border:none;border-radius:24px;padding:12px 28px;font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:background .18s}
+.timer-start:hover{background:var(--accent-h)}
+.timer-close{background:var(--pill);color:var(--text2);border:none;border-radius:24px;padding:12px 20px;font-size:14px;cursor:pointer;font-family:var(--font);transition:background .18s}
+.timer-close:hover{background:var(--pill-h)}
+
+/* Breath animation ring */
+.breath-ring{width:90px;height:90px;border-radius:50%;border:3px solid rgba(200,154,58,.2);margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center}
+.breath-ring::before{content:'🙏';font-size:30px}
+.breath-ring.breathe-in{animation:breatheIn 4s ease-in-out}
+.breath-ring.breathe-out{animation:breatheOut 4s ease-in-out}
+@keyframes breatheIn{from{box-shadow:0 0 0 0 rgba(200,154,58,.3)}to{box-shadow:0 0 0 20px rgba(200,154,58,.0);transform:scale(1.08)}}
+@keyframes breatheOut{from{transform:scale(1.08)}to{transform:scale(1)}}
+
+/* ═══════════════════════════════════════════════════════
+   12. BOOKMARKS PANEL
+═══════════════════════════════════════════════════════ */
+.bmarks-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:none;flex-direction:column;backdrop-filter:blur(8px)}
+.bmarks-ov.open{display:flex;animation:fadeIn .3s ease}
+.bmarks-panel{background:#fff;border-radius:24px 24px 0 0;padding:20px 20px 32px;margin-top:auto;max-height:75vh;overflow-y:auto}
+.bmarks-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.bmarks-title{font-family:var(--font-d);font-size:17px;font-weight:600}
+.bmarks-close{background:var(--pill);border:none;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text2);cursor:pointer;font-family:var(--font)}
+.bmark-item{background:var(--pill);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:13.5px;line-height:1.55;color:var(--text);position:relative}
+.bmark-del{position:absolute;top:8px;right:8px;background:transparent;border:none;cursor:pointer;font-size:14px;color:var(--text3)}
+.bmarks-empty{text-align:center;color:var(--text3);padding:32px 0;font-size:14px}
+
+/* ═══════════════════════════════════════════════════════
+   13. TOAST
+═══════════════════════════════════════════════════════ */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(32,32,32,.9);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;opacity:0;transition:opacity .25s,transform .25s;z-index:400;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════════════════
+   14. NETWORK BADGE
+═══════════════════════════════════════════════════════ */
+.net-badge{position:fixed;top:calc(env(safe-area-inset-top,0px) + 60px);left:50%;transform:translateX(-50%);background:#ea4335;color:#fff;padding:6px 16px;border-radius:20px;font-size:12.5px;font-weight:500;z-index:500;display:none;animation:fadeIn .3s ease;box-shadow:var(--shadow)}
+.net-badge.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   15. LANGUAGE BADGE
+═══════════════════════════════════════════════════════ */
+.lang-badge{display:inline-flex;align-items:center;gap:4px;background:var(--pill);border-radius:12px;padding:2px 8px;font-size:10.5px;color:var(--text3);margin-left:8px;vertical-align:middle}
+
+/* ═══════════════════════════════════════════════════════
+   16. DARK MODE
+═══════════════════════════════════════════════════════ */
+body.dark{
+  --bg:#1c1b1f;--text:#e6e1e5;--text2:#cac4d0;--text3:#938f99;
+  --pill:#2b2930;--pill-h:#36343b;--border:rgba(255,255,255,.08);
+}
+body.dark .timer-panel,body.dark .bmarks-panel{background:#2b2930;color:#e6e1e5}
+body.dark .timer-panel .timer-title,body.dark .bmarks-title{color:#e6e1e5}
+body.dark .drawer{background:#1c1b1f}
+body.dark .drawer-item:not(.active){color:#e6e1e5}
+body.dark .scroll-nudge{background:rgba(30,28,35,.95);color:#cac4d0}
+body.dark .msg-user .bbl{background:#2b2930}
+body.dark .msg-act-btn{color:#cac4d0;border-color:rgba(255,255,255,.1)}
+body.dark .bmark-item{background:#36343b;color:#e6e1e5}
+
+/* ═══════════════════════════════════════════════════════
+   PREVIOUS CONVERSATIONS PANEL
+   ═══════════════════════════════════════════════════════ */
+.prev-convos{
+  padding:0 10px 4px;
+}
+.prev-convo-empty{
+  font-size:12px;
+  color:var(--text3);
+  text-align:center;
+  padding:14px 0 6px;
+  font-style:italic;
+}
+.prev-convo-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border-radius:14px;
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  font-family:var(--font);
+  transition:background 0.15s;
+  position:relative;
+}
+.prev-convo-item:hover{ background:var(--pill-h); }
+.prev-convo-item-icon{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  background:linear-gradient(135deg,rgba(200,154,58,0.25),rgba(155,94,26,0.2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  flex-shrink:0;
+}
+.prev-convo-item-text{
+  flex:1;
+  min-width:0;
+}
+.prev-convo-item-title{
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:175px;
+}
+.prev-convo-item-date{
+  font-size:10.5px;
+  color:var(--text3);
+  margin-top:1px;
+}
+.prev-convo-item-del{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  color:var(--text3);
+  font-size:13px;
+  padding:2px 4px;
+  border-radius:6px;
+  opacity:0;
+  transition:opacity 0.15s;
+  flex-shrink:0;
+}
+.prev-convo-item:hover .prev-convo-item-del{
+  opacity:1;
+}
+.prev-convo-item-del:hover{
+  color:#ea4335;
+}
+.drawer-sec-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:5px 18px 3px;
+}
+.drawer-sec-row .drawer-sec{
+  padding:0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   17. PREMIUM DROP-DOWN MENU
+   ═══════════════════════════════════════════════════════ */
+.more-menu{
+  position: absolute;
+  top: 44px;
+  right: 4px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  width: 210px;
+  display: none;
+  flex-direction: column;
+  padding: 6px;
+  z-index: 100;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.more-menu.open{
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+body.dark .more-menu{
+  background: rgba(43, 41, 48, 0.92);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+.more-menu-item{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font);
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+}
+.more-menu-item:hover{
+  background: var(--pill-h);
+}
+.more-menu-item svg{
+  color: var(--text2);
+  flex-shrink: 0;
+}
+.more-menu-item.active{
+  font-weight: 500;
+  color: var(--accent);
+}
+.more-menu-item.active svg{
+  color: var(--accent);
+}
+.more-menu-hr{
+  height: 1px;
+  background: var(--border);
+  margin: 4px 6px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   18. MOOD SELECTION MODAL
+   ═══════════════════════════════════════════════════════ */
+.mood-ov{
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.mood-ov.open{
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+.mood-panel{
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+}
+body.dark .mood-panel{
+  background: #2b2930;
+  color: #e6e1e5;
+}
+.mood-title{
+  font-family: var(--font-d);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.mood-sub{
+  font-size: 12.5px;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+.mood-options{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.mood-opt{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--pill);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+  color: var(--text);
+  font-size: 14px;
+}
+.mood-opt:hover{
+  background: var(--pill-h);
+}
+.mood-opt.sel{
+  background: #e8f0fe;
+  color: #1a73e8;
+  border-color: #aecbfa;
+}
+body.dark .mood-opt.sel{
+  background: rgba(26, 115, 232, 0.15);
+  color: #8ab4f8;
+  border-color: rgba(138, 180, 248, 0.4);
+}
+.mood-close{
+  background: var(--pill);
+  color: var(--text2);
+  border: none;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 13.5px;
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font);
+  transition: background 0.15s;
+  text-align: center;
+}
+.mood-close:hover{
+  background: var(--pill-h);
+}
+
+/* ═══════════════════════════════════════════════════════
+   19. SIMRAN AMBIENT CHIME TOGGLE
+   ═══════════════════════════════════════════════════════ */
+.timer-sound-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--pill);
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+}
+.timer-sound-label{
+  font-size: 13px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--text3);
+  transition: .3s;
+  border-radius: 20px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: var(--accent);
+}
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+</style>
 </head>
 <body>
-  <div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
-  <div class="shell">
-    <div class="app">
-      <aside class="panel" id="drawer">
-        <div class="drawer-head"><div class="brand">🙏</div><div><div class="brand-title">Gurbani GPT</div><div class="brand-sub">Soft bento spiritual assistant</div></div></div>
-        <div class="drawer-actions"><button class="ghost" id="newConvoBtn">＋ New Chat</button><button class="ghost" id="themeBtn">◐ Theme</button></div>
-        <div class="section">Tools</div>
-        <div class="list">
-          <button class="chat-item" id="bmarksBtn"><span class="chat-main"><div class="chat-title">Saved Messages</div><div class="chat-date">Bookmarks and notes</div></span><span>›</span></button>
-          <button class="chat-item" id="moodBtn"><span class="chat-main"><div class="chat-title">Mood Context</div><div class="chat-date">Comfort, discipline, meaning</div></span><span>›</span></button>
-          <button class="chat-item" id="timerBtn"><span class="chat-main"><div class="chat-title">Simran Timer</div><div class="chat-date">Breath and remembrance</div></span><span>›</span></button>
-          <button class="chat-item" id="exportBtn"><span class="chat-main"><div class="chat-title">Export Conversation</div><div class="chat-date">Save your chat</div></span><span>›</span></button>
-          <div class="section" style="padding-left:6px">Recent Chats</div>
-          <div id="prevConvosList"></div>
-        </div>
-        <div class="foot">Waheguru Ji Ki Kirpa<br><b>ANHAD · Gurbani GPT</b><br><span>Version 4.0 — soft bento redesign.</span></div>
-      </aside>
 
-      <main class="workspace">
-        <header class="topbar">
-          <div class="top-left"><button class="icon" id="menuBtn">☰</button><div class="title"><h1>Gurbani GPT</h1><p>Ask with humility. Receive with clarity.</p></div></div>
-          <div class="top-right"><div class="status"><span class="dot" id="netDot"></span><span id="netText">Connected</span></div><button class="icon" id="lengthBtn" title="Response length">◔</button><button class="icon" id="moreBtn" title="More">⋯</button></div>
-        </header>
+<!-- Theme init -->
+<script>
+(function(){
+  const t=localStorage.getItem('gpt_theme')||'light';
+  if(t==='dark')document.body.classList.add('dark');
+  document.body.style.background=t==='dark'?'#1c1b1f':'#ffffff';
+})();
+</script>
 
-        <div class="content">
-          <section class="main">
-            <div class="hero">
-              <div class="hero-copy">
-                <div class="eyebrow">Naam Simran AI</div>
-                <h2 class="hero-title">A <span>soft bento</span> space for Gurbani conversations.</h2>
-                <p class="hero-sub">A calm interface for shabad understanding, daily reflection, and spiritual guidance. The layout stays quiet, generous, and easy to use.</p>
-                <div class="chips">
-                  <button class="chip" data-prompt="Explain Japji Sahib in simple words.">🪔 Japji Sahib</button>
-                  <button class="chip" data-prompt="What does Naam Simran mean in daily life?">✨ Naam Simran</button>
-                  <button class="chip" data-prompt="Summarize the meaning of a shabad for me in easy English.">📖 Meaning</button>
-                  <button class="chip" data-prompt="Give me a short spiritual reflection for today.">🌿 Reflection</button>
-                </div>
-              </div>
-              <div class="hero-card">
-                <div><h2>Today’s focus</h2><p>Small, steady remembrance beats big, noisy effort. Keep the mind clean, the language soft, and the intent honest.</p></div>
-                <div class="stats"><div class="stat"><b id="statChats">0</b><span>saved chats</span></div><div class="stat"><b id="statBooks">0</b><span>bookmarks</span></div><div class="stat"><b id="statMood">Clear</b><span>current mood</span></div><div class="stat"><b id="statLen">Brief</b><span>response length</span></div></div>
-              </div>
-            </div>
+<div class="wrapper">
 
-            <div class="timeline" id="msgs">
-              <div id="welcome" class="welcome">
-                <div class="welcome-mark">✦</div>
-                <h3>Start a calm conversation.</h3>
-                <p>Ask about Gurbani, daily discipline, shabad meaning, or practical spiritual guidance. The assistant will reply in a clean, soft-flow interface.</p>
-                <div class="prompt-grid">
-                  <button class="prompt" data-prompt="What is the meaning of Ardas in simple words?"><b>Ardas</b><span>Understand the purpose and spirit of prayer.</span></button>
-                  <button class="prompt" data-prompt="Give me a short explanation of Sukhmani Sahib."><b>Sukhmani Sahib</b><span>Clear summary with spiritual depth.</span></button>
-                  <button class="prompt" data-prompt="How should I build a better daily Nitnem routine?"><b>Nitnem routine</b><span>Practical, disciplined, sustainable.</span></button>
-                  <button class="prompt" data-prompt="Tell me a simple reflection on humility from Gurbani."><b>Humility</b><span>Gentle thought for the day.</span></button>
-                </div>
-              </div>
-              <div id="msgList"></div>
-              <div class="hidden" id="scrollHint" style="display:flex;justify-content:center;padding:8px 0 0;position:sticky;bottom:0"><button class="small" id="scrollBtn">Jump to latest</button></div>
-            </div>
+<!-- GRADIENT BG — single Gemini-style soft blob -->
+<div class="g-bg" id="gBg" aria-hidden="true">
+  <div class="g-blob" id="gBlob"></div>
+</div>
 
-            <div class="composer">
-              <div class="meta-row"><div>Use the short prompts above, or write your own question.</div><div class="pill-row" id="lengthPills"><button class="pill sel" data-len="brief">Brief</button><button class="pill" data-len="balanced">Balanced</button><button class="pill" data-len="detailed">Detailed</button></div></div>
-              <div class="input-box"><textarea id="inp" rows="1" placeholder="Ask Gurbani GPT…"></textarea><div class="actions"><button class="round" id="micBtn" title="Voice placeholder">🎙</button><button class="round" id="addBtn" title="Quick add">＋</button><button class="send" id="sendBtn" disabled>➤</button><button class="send hidden" id="stopBtn" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border-color:transparent">■</button></div></div>
-              <div class="subline"><div id="charCount">0 / 2000</div><div id="tokenBadge">~0 tokens</div></div>
-            </div>
-          </section>
+<!-- NETWORK BADGE -->
+<div class="net-badge" id="netBadge">📵 No internet connection</div>
 
-          <aside class="side">
-            <div class="right-grid">
-              <div class="card">
-                <h3>Quick actions</h3><p>These controls stay visible and touch-friendly. Every button is wired to a real action.</p>
-                <div class="right-actions"><button class="small sel" id="themeBtn2">Theme</button><button class="small" id="exportBtn2">Export</button><button class="small" id="lenBtn2">Length</button><button class="small" id="clearBtn">New chat</button></div>
-              </div>
-              <div class="card">
-                <h3>Mood</h3><p>Set the tone before asking. Calm, direct, or reflective.</p>
-                <div class="right-actions" id="moodChoices"><button class="small" data-mood="">Neutral</button><button class="small" data-mood="seeking_comfort">Comfort</button><button class="small" data-mood="seeking_discipline">Discipline</button><button class="small" data-mood="seeking_meaning">Meaning</button></div>
-              </div>
-              <div class="card">
-                <h3>Bookmarks</h3><p>Save a good answer and come back to it later.</p>
-                <div class="mini-list" id="bookmarksList"></div>
-              </div>
-              <div class="card">
-                <h3>Simran timer</h3><p>A simple breathing rhythm for remembrance.</p>
-                <div class="mini timerBox"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Breath</div><div class="timerDisplay" id="timerDisplay">00:00</div><div id="timerSub" style="color:var(--muted);font-size:13px">Select a duration, then begin.</div></div>
-                <div class="grid3"><button class="small sel timerDur" data-min="3">3 min</button><button class="small timerDur" data-min="5">5 min</button><button class="small timerDur" data-min="10">10 min</button></div>
-                <div class="grid2"><button class="small sel" id="timerStart">Start</button><button class="small" id="timerStop">Stop</button></div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </main>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-ov" id="drawOv"></div>
+
+<!-- ═══ DRAWER ═══════════════════════════════════════════ -->
+<nav class="drawer" id="drawer" aria-label="Sidebar navigation">
+  <div class="drawer-hdr">
+    <div class="drawer-logo">🙏</div>
+    <span class="drawer-app">Gurbani GPT</span>
+  </div>
+
+  <button class="drawer-new" id="drawerNew">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Conversation
+  </button>
+
+  <div class="drawer-sec">Features</div>
+
+  <button class="drawer-item active" onclick="closeDrawer()">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Gurbani GPT Chat
+  </button>
+
+  <button class="drawer-item" id="simerBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Simran Timer
+  </button>
+
+  <button class="drawer-item" id="bmarksBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    Saved Messages
+  </button>
+
+  <button class="drawer-item" id="exportBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Export Conversation
+  </button>
+
+  <button class="drawer-item" id="moodToggle">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+    Mood Context
+  </button>
+
+  <button class="drawer-item" id="lengthToggle">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+    Response Length
+  </button>
+
+  <!-- ═══ PREVIOUS CONVERSATIONS ═══════════════════════ -->
+  <div class="drawer-hr"></div>
+  <div class="drawer-sec-row">
+    <div class="drawer-sec" style="padding:0">Recent Chats</div>
+  </div>
+  <div class="prev-convos" id="prevConvosList"></div>
+
+  <div class="drawer-hr"></div>
+  <div class="drawer-sec">Navigate</div>
+
+  <a href="../index.html" class="drawer-item">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    ANHAD Home
+  </a>
+  <a href="../NaamAbhyas/naam-abhyas.html" class="drawer-item">
+    <span style="font-size:16px">📿</span> Naam Abhyas
+  </a>
+  <a href="../NitnemTracker/nitnem-tracker.html" class="drawer-item">
+    <span style="font-size:16px">🔥</span> Nitnem Tracker
+  </a>
+  <a href="../Hukamnama/hukamnama.html" class="drawer-item">
+    <span style="font-size:16px">📜</span> Hukamnama
+  </a>
+
+  <div class="drawer-hr"></div>
+
+  <div class="drawer-footer">
+    Waheguru Ji Ki Kirpa<br>
+    <b>Designed by ANHAD Developers</b><br>
+    <span style="opacity:.6">Version 2.0 · 2026</span>
+  </div>
+</nav>
+
+<!-- ═══ MAIN APP ══════════════════════════════════════════ -->
+<div class="app" id="mainApp">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <button class="hdr-icon-btn" id="menuBtn" aria-label="Open menu">
+      <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+
+    <button class="hdr-title" aria-label="App info">
+      <span class="hdr-title-txt"><b>Gurbani</b> GPT</span>
+      <span class="hdr-chevron">▾</span>
+    </button>
+
+    <div class="hdr-right">
+      <button class="hdr-icon-btn" id="themeBtn" aria-label="Toggle theme" title="Dark/Light mode">
+        <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+      <button class="hdr-icon-btn" id="editBtn" aria-label="New chat" title="New conversation">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </button>
+      <button class="hdr-icon-btn" id="moreMenuBtn" aria-label="More" title="More options">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
+        </svg>
+      </button>
+      <!-- Premium Dropdown Menu -->
+      <div class="more-menu" id="moreMenuDropdown">
+        <button class="more-menu-item" id="optTimer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Simran Timer
+        </button>
+        <button class="more-menu-item" id="optBmarks">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Saved Messages
+        </button>
+        <button class="more-menu-item" id="optMood">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          Mood Context
+        </button>
+        <button class="more-menu-item" id="optLength">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+          Response Length: <span id="optLengthVal" style="font-weight:600;margin-left:auto;">Brief</span>
+        </button>
+        <div class="more-menu-hr"></div>
+        <button class="more-menu-item" id="optTheme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          Toggle Theme
+        </button>
+        <button class="more-menu-item" id="optExport">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Chat
+        </button>
+        <button class="more-menu-item" id="optClear" style="color:#ea4335;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ea4335;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear Chat
+        </button>
+      </div>
+    </div>
+
+    <!-- Online status dot -->
+    <div class="status-dot" id="statusDot" title="Online"></div>
+  </header>
+
+  <!-- MESSAGES AREA -->
+  <div class="msgs" id="msgs" role="log" aria-live="polite" aria-label="Conversation">
+
+    <!-- Welcome -->
+    <div class="welcome" id="welcome">
+      <svg class="welcome-star" viewBox="0 0 48 48" fill="none">
+        <path d="M24 2C24 2 27 18 36 24C27 30 24 46 24 46C24 46 21 30 12 24C21 18 24 2 24 2Z" fill="url(#gs1)"/>
+        <path d="M2 24C2 24 18 21 24 12C30 21 46 24 46 24C46 24 30 27 24 36C18 27 2 24 2 24Z" fill="url(#gs2)"/>
+        <defs>
+          <linearGradient id="gs1" x1="24" y1="2" x2="24" y2="46" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f5c842"/>
+            <stop offset="100%" stop-color="#c85a28"/>
+          </linearGradient>
+          <linearGradient id="gs2" x1="2" y1="24" x2="46" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#4285f4"/>
+            <stop offset="100%" stop-color="#9c27b0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h1 class="welcome-title">Waheguru Ji 🙏</h1>
+      <p class="welcome-sub">How can I support your Naam & Simran today?</p>
+      <div class="chips-grid" id="chipsGrid">
+        <button class="chip" data-prompt="How do I begin swas swas Naam Jap as a complete beginner?">
+          <span class="chip-icon">🌬️</span><span class="chip-label">Starting swas swas Naam Jap</span>
+        </button>
+        <button class="chip" data-prompt="My mind wanders constantly during simran. What should I do?">
+          <span class="chip-icon">🧘</span><span class="chip-label">Mind wandering in simran — help me</span>
+        </button>
+        <button class="chip" data-prompt="Give me a simple daily Simran and Nitnem routine I can actually follow.">
+          <span class="chip-icon">📿</span><span class="chip-label">Daily Simran & Nitnem routine</span>
+        </button>
+        <button class="chip" data-prompt="ਮੈਂ ਬਹੁਤ ਉਦਾਸ ਹਾਂ ਅਤੇ ਇਕੱਲਾਪਣ ਮਹਿਸੂਸ ਕਰਦਾ ਹਾਂ। ਕੁਝ ਸਹਾਰਾ ਦਿਓ।">
+          <span class="chip-icon">💛</span><span class="chip-label">ਉਦਾਸੀ ਵਿੱਚ ਸਹਾਰਾ</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Conversation -->
+    <div class="msg-list" id="msgList" style="display:none"></div>
+  </div><!-- /msgs -->
+
+  <!-- Scroll nudge -->
+  <button class="scroll-nudge" id="scrollNudge">↓ New reply</button>
+
+  <!-- INPUT AREA -->
+  <div class="input-wrap">
+    <!-- New convo row -->
+    <div class="new-convo-row" id="newConvoRow">
+      <button class="new-convo-btn" id="newConvoBtn">✦ New conversation</button>
+    </div>
+
+    <!-- Length row -->
+    <div class="length-row" id="lengthRow">
+      <div class="length-toggle">
+        <button class="len-btn sel" data-len="brief">Brief</button>
+        <button class="len-btn" data-len="detailed">Detailed</button>
+      </div>
+    </div>
+    <!-- Pill -->
+    <div class="inp-pill">
+      <button class="inp-add-btn" id="addBtn" aria-label="More options">+</button>
+      <textarea class="inp-ta" id="inp" placeholder="Ask Gurbani GPT..." rows="1" aria-label="Your message" maxlength="2000" autocomplete="off" spellcheck="true"></textarea>
+      <span class="char-count" id="charCount"></span>
+      <div class="inp-actions">
+        <!-- Mic -->
+        <button class="inp-btn" id="micBtn" aria-label="Voice input" title="Voice input">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <!-- Stop button (shown during streaming) -->
+        <button class="stop-btn" id="stopBtn" aria-label="Stop response" title="Stop">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+          </svg>
+        </button>
+        <!-- Send -->
+        <button class="inp-btn send-btn" id="sendBtn" aria-label="Send" disabled>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"/>
+            <polyline points="5 12 12 5 19 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
-  <div class="overlay" id="overlay"></div>
-  <div class="net-badge" id="netBadge">No internet connection</div>
-  <div class="toast" id="toast"></div>
+</div><!-- /.app -->
 
-  <div class="sheet" id="bookmarksSheet"><div class="sheet-panel"><div class="sheet-hdr"><div><h3>Saved Messages</h3><p>Store useful answers, then revisit them later.</p></div><button class="close" data-close="bookmarks">✕</button></div><div class="body" id="bookmarksSheetList"></div></div></div>
-  <div class="sheet" id="moodSheet"><div class="sheet-panel"><div class="sheet-hdr"><div><h3>Mood Context</h3><p>Choose the emotional tone you want the assistant to follow.</p></div><button class="close" data-close="mood">✕</button></div><div class="body"><div class="grid2" id="moodPopupChoices"><button class="small" data-mood="">Neutral</button><button class="small" data-mood="seeking_comfort">Need comfort</button><button class="small" data-mood="seeking_discipline">Need discipline</button><button class="small" data-mood="seeking_meaning">Need meaning</button></div><div class="mini"><b>Tip</b><span>Use mood context when you want the reply to be gentle, direct, reflective, or grounding.</span></div></div></div></div>
-  <div class="sheet" id="moreSheet"><div class="sheet-panel"><div class="sheet-hdr"><div><h3>More Actions</h3><p>Quick controls for the current conversation.</p></div><button class="close" data-close="more">✕</button></div><div class="body grid2"><button class="small" id="clearBtn2">Start New Chat</button><button class="small" id="exportBtn3">Export Conversation</button><button class="small" id="themeBtn3">Toggle Theme</button><button class="small" id="lenBtn3">Cycle Response Length</button></div></div></div>
-  <div class="sheet" id="timerSheet"><div class="sheet-panel"><div class="sheet-hdr"><div><h3>Simran Timer</h3><p>A calm breathing and remembrance session.</p></div><button class="close" data-close="timer">✕</button></div><div class="body"><div class="mini timerBox"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Breath</div><div class="timerDisplay" id="timerDisplay2">00:00</div><div id="timerSub2" style="color:var(--muted);font-size:13px">Select a duration, then begin.</div></div><div class="grid3"><button class="small sel timerDur2" data-min="3">3 min</button><button class="small timerDur2" data-min="5">5 min</button><button class="small timerDur2" data-min="10">10 min</button></div><div class="grid2"><button class="small sel" id="timerStart2">Start</button><button class="small" id="timerStop2">Stop</button></div><div class="mini"><b>Focus</b><span>Inhale slowly, exhale slowly, and keep your attention on Waheguru.</span></div></div></div></div>
+<!-- ═══ SIMRAN TIMER PANEL ═══════════════════════════════ -->
+<div class="timer-ov" id="timerOv" role="dialog" aria-label="Simran Timer">
+  <div class="timer-panel">
+    <div class="breath-ring" id="breathRing"></div>
+    <div class="timer-title">Simran Timer</div>
+    <div class="timer-sub">Breathe with Waheguru's Naam</div>
+    <div class="timer-display" id="timerDisplay">05:00</div>
+    <div class="timer-breath" id="timerBreath">Choose duration and begin</div>
+    <div class="timer-counter" id="timerCounter">☬ 0 Waheguru</div>
+    <div class="timer-durations">
+      <button class="timer-dur sel" data-mins="5">5 min</button>
+      <button class="timer-dur" data-mins="10">10 min</button>
+      <button class="timer-dur" data-mins="15">15 min</button>
+      <button class="timer-dur" data-mins="20">20 min</button>
+    </div>
+    <!-- Ambient Chime Toggle Switch -->
+    <div class="timer-sound-row">
+      <div class="timer-sound-label">
+        <span>🧘</span> Ambient Simran Chime
+      </div>
+      <label class="switch" title="Play a soft Tibetan singing bowl on breath changes">
+        <input type="checkbox" id="timerChimeToggle" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-start" id="timerStart">Begin Simran</button>
+      <button class="timer-close" id="timerClose">Close</button>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const API_BASE = (() => { try { const host = window.location.hostname, port = window.location.port; if (port === '3000' || port === '3001') return ''; if (/^[0-9]+(\.[0-9]+){3}$/.test(host)) return `http://${host}:3000`; return 'https://anhad-final.onrender.com'; } catch (e) { return 'https://anhad-final.onrender.com'; } })();
-    const STORE='gurbanigpt_v6', BM_STORE='gurbanigpt_bmarks_v2', SESS_STORE='gurbanigpt_sessions_v2';
-    let history=[], streaming=false, abortCtrl=null, currentSessionId=Date.now().toString(), activeMood='', activeLen='brief', bookmarks=[], sessions=[];
-    let timer={active:false,seconds:0,tick:null,duration:180};
-    let twTimer=null, twBuffer='', twIndex=0, twEl=null;
-    const $=id=>document.getElementById(id);
-    const msgs=$('msgs'), msgList=$('msgList'), welcome=$('welcome'), inp=$('inp'), sendBtn=$('sendBtn'), stopBtn=$('stopBtn'), charCount=$('charCount'), tokenBadge=$('tokenBadge'), netBadge=$('netBadge'), netDot=$('netDot'), netText=$('netText'), toast=$('toast'), overlay=$('overlay'), drawer=$('drawer'), scrollHint=$('scrollHint'), scrollBtn=$('scrollBtn'), statChats=$('statChats'), statBooks=$('statBooks'), statMood=$('statMood'), statLen=$('statLen'), bookmarksInline=$('bookmarksList'), bookmarksSheetList=$('bookmarksSheetList'), timerDisplay=$('timerDisplay'), timerDisplay2=$('timerDisplay2'), timerSub=$('timerSub'), timerSub2=$('timerSub2');
-    const timerDurBtns=[...document.querySelectorAll('.timerDur')], timerDurBtns2=[...document.querySelectorAll('.timerDur2')], moodBtns=[...document.querySelectorAll('[data-mood]')], lenBtns=[...document.querySelectorAll('[data-len]')];
+<!-- ═══ BOOKMARKS PANEL ══════════════════════════════════ -->
+<div class="bmarks-ov" id="bmarksOv" role="dialog" aria-label="Saved messages">
+  <div class="bmarks-panel">
+    <div class="bmarks-hdr">
+      <span class="bmarks-title">📌 Saved Messages</span>
+      <button class="bmarks-close" id="bmarksClose">Done</button>
+    </div>
+    <div id="bmarksList"></div>
+  </div>
+</div>
 
-    const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    function toastMsg(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastMsg._t);toastMsg._t=setTimeout(()=>toast.classList.remove('show'),2400)}
-    function updateNet(){ const ok=navigator.onLine; netBadge.classList.toggle('show',!ok); netDot.classList.toggle('off',!ok); netText.textContent=ok?'Connected':'Offline'; }
-    window.addEventListener('online',updateNet); window.addEventListener('offline',updateNet);
-    function renderMd(s){ if(!s) return ''; let h=esc(s); h=h.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>').replace(/^[-•] (.+)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>'); return h.split(/
+<!-- ═══ MOOD CONTEXT MODAL ═══════════════════════════════ -->
+<div class="mood-ov" id="moodOv" role="dialog" aria-label="Select Mood Context">
+  <div class="mood-panel">
+    <h2 class="mood-title">Select Mood Context</h2>
+    <p class="mood-sub">Tailor the spiritual advice to your state of mind</p>
+    <div class="mood-options">
+      <button class="mood-opt sel" data-mood="">
+        <span>⚪ No Context (Standard)</span>
+        <span class="mood-check">✓</span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_comfort">
+        <span>💛 Seeking Comfort</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_discipline">
+        <span>🔥 Seeking Discipline</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="seeking_meaning">
+        <span>🌟 Seeking Meaning</span>
+        <span class="mood-check"></span>
+      </button>
+      <button class="mood-opt" data-mood="feeling_distressed">
+        <span>🤍 Feeling Distressed</span>
+        <span class="mood-check"></span>
+      </button>
+    </div>
+    <button class="mood-close" id="moodCloseBtn">Cancel</button>
+  </div>
+</div>
 
-+/).map(p=>p.trim()?`<p>${p.replace(/
-/g,'<br>')}</p>`:'').join(''); }
-    const renderInline=s=>renderMd(s)||'';
-    function scrollBot(smooth=true){ msgs.scrollTo({top:msgs.scrollHeight,behavior:smooth?'smooth':'instant'}); }
-    function scrollIfNear(){ const far=msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight>180; scrollHint.classList.toggle('hidden',!far||!msgList.children.length); }
-    msgs.addEventListener('scroll',scrollIfNear); scrollBtn.onclick=()=>scrollBot(true);
+</div><!-- /.wrapper -->
 
-    function loadTheme(){ const t=localStorage.getItem('gpt_theme')||'light'; document.body.classList.toggle('dark',t==='dark'); }
-    function setTheme(dark){ document.body.classList.toggle('dark',dark); localStorage.setItem('gpt_theme',dark?'dark':'light'); }
-    function updateLen(){ statLen.textContent=activeLen.charAt(0).toUpperCase()+activeLen.slice(1); lenBtns.forEach(b=>b.classList.toggle('sel',b.dataset.len===activeLen)); }
-    function updateMood(){ statMood.textContent=activeMood==='seeking_comfort'?'Comfort':activeMood==='seeking_discipline'?'Discipline':activeMood==='seeking_meaning'?'Meaning':'Clear'; moodBtns.forEach(b=>b.classList.toggle('sel',b.dataset.mood===activeMood)); }
-    function updateChar(){ const l=inp.value.length; charCount.textContent=`${l} / 2000`; charCount.classList.toggle('warn',l>1900); tokenBadge.textContent=`~${Math.ceil(l/3.5)} tokens`; }
-    function grow(){ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,150)+'px'; }
-    function updateSend(){ const ok=inp.value.trim().length>0 && !streaming; sendBtn.disabled=!ok; sendBtn.classList.toggle('ready',ok); }
-    function getBookmarks(){ try{return JSON.parse(localStorage.getItem(BM_STORE)||'[]')}catch{return[]} }
-    function saveBookmarks(arr){ try{localStorage.setItem(BM_STORE,JSON.stringify(arr))}catch{} }
-    function getSessions(){ try{return JSON.parse(localStorage.getItem(SESS_STORE)||'[]')}catch{return[]} }
-    function saveSessions(arr){ try{localStorage.setItem(SESS_STORE,JSON.stringify(arr))}catch{} }
-    function saveHistory(){ try{localStorage.setItem(STORE,JSON.stringify(history)); saveSession();}catch{} }
-    function loadHistory(){ try{ const s=localStorage.getItem(STORE); if(s) history=JSON.parse(s)||[]; }catch{ history=[]; } }
-    function systemPrompt(){ const mood=activeMood==='seeking_comfort'?'Lead gently and warmly.':activeMood==='seeking_discipline'?'Be direct, steady, and accountable.':activeMood==='seeking_meaning'?'Focus on depth and reflection.':'Be calm and balanced.'; const len=activeLen==='detailed'?'Provide a detailed but clear response.':activeLen==='balanced'?'Provide a balanced response with useful context.':'Keep the response brief, focused, and practical.'; return `You are GurbaniGPT, a compassionate and spiritually grounded assistant designed to support users in remembering Waheguru through Naam Simran, humility, seva, patience, and mindful living. ${mood} ${len} If Gurbani is mentioned, explain simply and respectfully. Avoid overclaiming. If unsure, say so. Keep the tone humble, warm, and useful.`; }
+<!-- ════════════════════════════════════════════════════════
+     JAVASCRIPT ENGINE
+════════════════════════════════════════════════════════ -->
+<script>
+(function(){'use strict';
 
-    function renderBookmarks(){
-      const arr=getBookmarks(); bookmarks=arr; statBooks.textContent=arr.length; const html = arr.length ? arr.map(b=>`<div class="mini bookmark"><main><h4>${esc(b.text)}</h4><p>${esc(b.answer||'')}</p></main><button class="del" data-bm-del="${b.id}">✕</button></div>`).join('') : '<div class="empty">No saved messages yet.</div>'; bookmarksInline.innerHTML=html; bookmarksSheetList.innerHTML=html; document.querySelectorAll('[data-bm-del]').forEach(btn=>btn.onclick=()=>{ const id=btn.dataset.bmDel; saveBookmarks(getBookmarks().filter(x=>x.id!==id)); renderBookmarks(); toastMsg('Bookmark removed'); }); }
-    function addBookmark(text,answer){ const arr=getBookmarks(); arr.unshift({id:Date.now().toString(),text,answer,ts:Date.now()}); saveBookmarks(arr.slice(0,60)); renderBookmarks(); toastMsg('Saved to bookmarks'); }
+/* ── DOM ───────────────────────────────────────────────── */
+const G=id=>document.getElementById(id);
+const gBg=G('gBg'), msgs=G('msgs'), msgList=G('msgList'),
+  welcome=G('welcome'), inp=G('inp'), sendBtn=G('sendBtn'),
+  stopBtn=G('stopBtn'), menuBtn=G('menuBtn'), editBtn=G('editBtn'),
+  themeBtn=G('themeBtn'), moreMenuBtn=G('moreMenuBtn'),
+  drawer=G('drawer'), drawOv=G('drawOv'), drawerNew=G('drawerNew'),
+  scrollNudge=G('scrollNudge'), newConvoRow=G('newConvoRow'),
+  newConvoBtn=G('newConvoBtn'), lengthRow=G('lengthRow'), charCount=G('charCount'),
+  timerOv=G('timerOv'), timerDisplay=G('timerDisplay'),
+  timerBreath=G('timerBreath'), timerCounter=G('timerCounter'),
+  timerStart=G('timerStart'), timerClose=G('timerClose'),
+  breathRing=G('breathRing'), bmarksOv=G('bmarksOv'),
+  bmarksList=G('bmarksList'), bmarksClose=G('bmarksClose'),
+  statusDot=G('statusDot'), netBadge=G('netBadge'),
+  themeIcon=G('themeIcon'), toast=G('toast'),
+  moreMenuDropdown=G('moreMenuDropdown'), moodOv=G('moodOv'),
+  moodCloseBtn=G('moodCloseBtn'), timerChimeToggle=G('timerChimeToggle'),
+  optLengthVal=G('optLengthVal');
 
-    function saveSession(){ if(!history.length) return; const first=history.find(m=>m.role==='user'); const sess={id:currentSessionId,title:first?first.content.slice(0,48)+(first.content.length>48?'…':''):'Conversation',date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'}),messages:history.slice(-40),ts:Date.now()}; sessions=getSessions(); const i=sessions.findIndex(s=>s.id===currentSessionId); if(i>=0) sessions[i]=sess; else sessions.unshift(sess); sessions=sessions.slice(0,30); saveSessions(sessions); renderSessions(); }
-    function renderSessions(){ sessions=getSessions(); statChats.textContent=sessions.length; const list=$('prevConvosList'); if(!sessions.length){ list.innerHTML='<div class="empty" style="padding:14px 8px;text-align:left">No previous chats yet.</div>'; return; } list.innerHTML=sessions.map(s=>`<div class="chat-item ${s.id===currentSessionId?'active':''}" data-sid="${s.id}"><span class="chat-main"><div class="chat-title">${esc(s.title)}</div><div class="chat-date">${esc(s.date||'')}</div></span><button class="del" data-del="${s.id}" aria-label="Delete chat">✕</button></div>`).join(''); list.querySelectorAll('[data-sid]').forEach(el=>el.onclick=(e)=>{ if(e.target.closest('[data-del]')) return; const sess=sessions.find(x=>x.id===el.dataset.sid); if(sess){ loadSession(sess); closeSheets(); } }); list.querySelectorAll('[data-del]').forEach(btn=>btn.onclick=(e)=>{ e.stopPropagation(); saveSessions(getSessions().filter(s=>s.id!==btn.dataset.del)); renderSessions(); toastMsg('Chat removed'); }); }
-    function loadSession(sess){ history=sess.messages||[]; currentSessionId=sess.id; renderConversation(); }
-    function clearAll(){ history=[]; currentSessionId=Date.now().toString(); try{localStorage.removeItem(STORE)}catch{} renderConversation(); toastMsg('New chat ready'); }
+/* ── API Configuration ───────────────────────────────────── */
+const API_BASE = (() => {
+  try {
+    const host = window.location.hostname;
+    const port = window.location.port;
+    if (port === '3000' || port === '3001') return '';
+    if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+    return 'https://anhad-final.onrender.com';
+  } catch (e) { }
+  return 'https://anhad-final.onrender.com';
+})();
 
-    function addUser(text){ const row=document.createElement('div'); row.className='message user'; row.innerHTML=`<div class="bubble">${esc(text)}</div>`; msgList.appendChild(row); return row; }
-    function addAIBubble(){ const row=document.createElement('div'); row.className='message ai'; row.innerHTML=`<div class="bubble"><div class="thinking"><i></i><i></i><i></i></div><div class="ai-body"></div></div><div class="msg-tools hidden"></div>`; msgList.appendChild(row); return {row,body:row.querySelector('.ai-body'),tools:row.querySelector('.msg-tools')}; }
-    function twStart(el){ twEl=el; twBuffer=''; twIndex=0; if(twTimer) clearInterval(twTimer); twTimer=setInterval(()=>{ if(twIndex>=twBuffer.length) return; twIndex=Math.min(twIndex+2,twBuffer.length); twEl.innerHTML=renderInline(twBuffer.slice(0,twIndex))+'<span class="cur"></span>'; scrollIfNear(); },34); }
-    function twPush(txt){ twBuffer+=txt; }
-    function twFinish(){ if(twTimer){ clearInterval(twTimer); twTimer=null; } let i=twIndex; const fin=()=>{ i=Math.min(i+6,twBuffer.length); twEl.innerHTML=i<twBuffer.length?renderInline(twBuffer.slice(0,i))+'<span class="cur"></span>':renderInline(twBuffer); if(i<twBuffer.length) requestAnimationFrame(fin); else scrollBot(false); }; requestAnimationFrame(fin); }
-    function attachTools(row,userText,answerText){ const tools=row.nextElementSibling; tools.classList.remove('hidden'); tools.innerHTML='<button class="tool" data-copy>Copy</button><button class="tool" data-save>Save</button><button class="tool" data-share>Share</button>'; tools.querySelector('[data-copy]').onclick=async()=>{ try{ await navigator.clipboard.writeText(answerText||''); toastMsg('Copied'); }catch{ toastMsg('Copy failed'); } }; tools.querySelector('[data-save]').onclick=()=>addBookmark(userText,answerText); tools.querySelector('[data-share]').onclick=async()=>{ if(navigator.share){ try{ await navigator.share({title:'Gurbani GPT',text:answerText||''}); }catch{} } else toastMsg('Sharing not supported'); }; }
-    async function sendMsg(text){ text=(text||'').trim(); if(!text){ toastMsg('Please type something first'); return; } if(!navigator.onLine){ toastMsg('No internet connection'); return; } if(streaming){ toastMsg('Please wait for the current reply'); return; } history.push({role:'user',content:text}); addUser(text); welcome.classList.add('hidden'); msgList.classList.remove('hidden'); saveHistory(); inp.value=''; grow(); updateChar(); updateSend(); scrollBot(true); streaming=true; updateSend(); stopBtn.classList.remove('hidden'); sendBtn.classList.add('hidden'); abortCtrl=new AbortController(); const ai=addAIBubble(); const body=ai.body, think=body.querySelector('.thinking'); let full=''; try{ const res=await fetch(`${API_BASE}/api/gurbani-gpt/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:history,systemPrompt:systemPrompt()}),signal:abortCtrl.signal}); if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.error||`Server error ${res.status}`); } const ct=res.headers.get('content-type')||''; if(ct.includes('text/event-stream') && res.body){ const reader=res.body.getReader(), dec=new TextDecoder(); let buf='', cleared=false; while(true){ const {done,value}=await reader.read(); if(done) break; buf+=dec.decode(value,{stream:true}); const lines=buf.split('
-'); buf=lines.pop(); for(const line of lines){ if(!line.startsWith('data: ')) continue; const d=line.slice(6).trim(); if(d==='[DONE]') continue; try{ const p=JSON.parse(d); const tok=p.choices?.[0]?.delta?.content||''; if(tok){ if(!cleared){ think.remove(); twStart(body); cleared=true; } full+=tok; twPush(tok); } }catch{} } } } else { const d=await res.json(); full=d.content||d.message||''; think.remove(); twStart(body); twPush(full); } twFinish(); history.push({role:'assistant',content:full||'I am here with you.'}); saveHistory(); attachTools(ai.row,text,full); } catch(err){ const msg=err?.name==='AbortError'?'Response stopped.':(err?.message||'Something went wrong.'); think.remove(); body.innerHTML=`<p>${esc(msg)}</p>`; ai.tools.classList.add('hidden'); toastMsg(msg); } finally{ streaming=false; updateSend(); stopBtn.classList.add('hidden'); sendBtn.classList.remove('hidden'); abortCtrl=null; renderSessions(); updateStats(); scrollBot(true); } }
-    function renderConversation(){ msgList.innerHTML=''; if(!history.length){ welcome.classList.remove('hidden'); msgList.classList.add('hidden'); updateStats(); return; } welcome.classList.add('hidden'); msgList.classList.remove('hidden'); history.forEach((m,i)=>{ if(m.role==='user'){ const row=document.createElement('div'); row.className='message user'; row.innerHTML=`<div class="bubble">${esc(m.content)}</div>`; msgList.appendChild(row); } else { const row=document.createElement('div'); row.className='message ai'; row.innerHTML=`<div class="bubble">${renderInline(m.content)}</div><div class="msg-tools"></div>`; msgList.appendChild(row); const tools=row.querySelector('.msg-tools'); tools.innerHTML='<button class="tool" data-copy>Copy</button><button class="tool" data-save>Save</button><button class="tool" data-share>Share</button>'; tools.querySelector('[data-copy]').onclick=async()=>{ try{ await navigator.clipboard.writeText(m.content||''); toastMsg('Copied'); }catch{ toastMsg('Copy failed'); } }; tools.querySelector('[data-save]').onclick=()=>addBookmark(history[i-1]?.content||'Message',m.content||''); tools.querySelector('[data-share]').onclick=async()=>{ if(navigator.share){ try{ await navigator.share({title:'Gurbani GPT',text:m.content||''}); }catch{} } else toastMsg('Sharing not supported'); }; } }); updateStats(); scrollBot(false); }
-    function updateStats(){ statChats.textContent=getSessions().length; statBooks.textContent=getBookmarks().length; updateMood(); updateLen(); renderSessions(); renderBookmarks(); scrollIfNear(); }
-    function updateMood(){ statMood.textContent=activeMood==='seeking_comfort'?'Comfort':activeMood==='seeking_discipline'?'Discipline':activeMood==='seeking_meaning'?'Meaning':'Clear'; }
+/* ── State ─────────────────────────────────────────────── */
+const STORE='gurbanigpt_v4', BM_STORE='gurbanigpt_bmarks',
+      SESS_STORE='gurbanigpt_sessions';
+let chatHistory=[], streaming=false, abortCtrl=null,
+    activeMood='', activeLen='brief',
+    lastUserText='', toastTimer=null,
+    currentSessionId=Date.now().toString();
 
-    function openSheet(id){ overlay.classList.add('show'); $(id).classList.add('show'); }
-    function closeSheets(){ overlay.classList.remove('show'); document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('show')); drawer.classList.remove('open'); }
-    function exportConversation(){ const blob=new Blob([JSON.stringify({title:'Gurbani GPT Conversation',sessionId:currentSessionId,created:new Date().toISOString(),mood:activeMood,length:activeLen,messages:history},null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='gurbani-gpt-conversation.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); toastMsg('Conversation exported'); }
-    function cycleLen(){ activeLen=activeLen==='brief'?'balanced':activeLen==='balanced'?'detailed':'brief'; updateLen(); }
+/* ── Validators ── 15 checks ──────────────────────────── */
+const V={
+  notEmpty:t=>t.trim().length>0,
+  notTooLong:t=>t.length<=2000,
+  notDuplicate:t=>chatHistory.length===0||chatHistory[chatHistory.length-1]?.content!==t.trim(),
+  isOnline:()=>navigator.onLine,
+  notStreaming:()=>!streaming,
+  isSafe:t=>{const bad=/(.)\1{15,}/i;return!bad.test(t)},
+  storageOk:()=>{try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true}catch{return false}},
+  estimateTokens:t=>Math.ceil(t.length/3.5),
+  historyNotOverloaded:()=>chatHistory.length<=38,
+  langDetect:t=>{
+    if(/[\u0A00-\u0A7F]/.test(t))return'Punjabi';
+    if(/[\u0900-\u097F]/.test(t))return'Hindi';
+    return'English';
+  },
+  ttsAvail:()=>'speechSynthesis' in window,
+  shareAvail:()=>!!navigator.share,
+  rateOk:()=>true, // server handles rate limit
+  noAbuse:t=>!/^\s*[!@#$%^&*()\-_=+\[\]{}|;':",.<>?\/\\`~]{10,}/.test(t),
+  sessionOk:()=>typeof localStorage!=='undefined'
+};
 
-    function fmt(sec){ const m=Math.floor(sec/60), s=sec%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
-    function updateTimer(){ timerDisplay.textContent=fmt(timer.seconds); timerDisplay2.textContent=fmt(timer.seconds); const sub=timer.active?'Stay steady. Return to the breath.':'Select a duration, then begin.'; timerSub.textContent=sub; timerSub2.textContent=sub; }
-    function stopTimer(){ if(timer.tick) clearInterval(timer.tick); timer.active=false; timer.tick=null; timer.seconds=0; updateTimer(); toastMsg('Timer stopped'); }
-    function startTimer(min){ stopTimer(); timer.duration=min*60; timer.seconds=timer.duration; timer.active=true; timer.tick=setInterval(()=>{ timer.seconds--; updateTimer(); if(timer.seconds<=0){ stopTimer(); toastMsg('Timer complete'); } },1000); updateTimer(); toastMsg(`${min} minute timer started`); }
+/* ── System prompt ─────────────────────────────────────── */
+function buildSystemPrompt(){
+  let mood='';
+  if(activeMood==='seeking_comfort') mood='The user seems to need comfort and warmth. Lead with gentleness.';
+  else if(activeMood==='seeking_discipline') mood='The user is seeking spiritual discipline and accountability.';
+  else if(activeMood==='seeking_meaning') mood='The user is seeking deeper meaning and understanding.';
+  else if(activeMood==='feeling_distressed') mood='The user is in distress. Lead with empathy, presence, and grounding.';
 
-    // Controls
-    document.getElementById('menuBtn').onclick=()=>drawer.classList.toggle('open');
-    document.getElementById('bmarksBtn').onclick=()=>openSheet('bookmarksSheet');
-    document.getElementById('moodBtn').onclick=()=>openSheet('moodSheet');
-    document.getElementById('timerBtn').onclick=()=>openSheet('timerSheet');
-    document.getElementById('exportBtn').onclick=()=>exportConversation();
-    document.getElementById('exportBtn2').onclick=()=>exportConversation();
-    document.getElementById('exportBtn3').onclick=()=>exportConversation();
-    document.getElementById('themeBtn').onclick=()=>setTheme(!document.body.classList.contains('dark'));
-    document.getElementById('themeBtn2').onclick=()=>setTheme(!document.body.classList.contains('dark'));
-    document.getElementById('themeBtn3').onclick=()=>setTheme(!document.body.classList.contains('dark'));
-    document.getElementById('clearBtn').onclick=()=>{ closeSheets(); clearAll(); };
-    document.getElementById('clearBtn2').onclick=()=>{ closeSheets(); clearAll(); };
-    document.getElementById('lenBtn2').onclick=()=>cycleLen();
-    document.getElementById('lenBtn3').onclick=()=>cycleLen();
-    document.getElementById('lengthBtn').onclick=()=>cycleLen();
-    document.getElementById('moreBtn').onclick=()=>openSheet('moreSheet');
-    document.getElementById('newConvoBtn').onclick=()=>clearAll();
-    document.getElementById('addBtn').onclick=()=>toastMsg('Quick add ready');
-    document.getElementById('micBtn').onclick=()=>toastMsg('Voice input can be wired later');
-    document.getElementById('sendBtn').onclick=()=>sendMsg(inp.value);
-    document.getElementById('stopBtn').onclick=()=>{ if(abortCtrl) abortCtrl.abort(); };
-    scrollBtn.onclick=()=>scrollBot(true);
-    document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeSheets);
-    overlay.onclick=closeSheets;
-    document.querySelectorAll('[data-prompt]').forEach(b=>b.onclick=()=>sendMsg(b.dataset.prompt));
-    document.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{ activeLen=b.dataset.len; updateLen(); });
-    moodBtns.forEach(b=>b.onclick=()=>{ activeMood=b.dataset.mood||''; updateMood(); toastMsg(activeMood?'Mood saved':'Mood cleared'); });
-    timerDurBtns.forEach(b=>b.onclick=()=>{ timerDurBtns.forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); startTimer(parseInt(b.dataset.min,10)); });
-    timerDurBtns2.forEach(b=>b.onclick=()=>{ timerDurBtns2.forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); startTimer(parseInt(b.dataset.min,10)); });
-    document.getElementById('timerStart').onclick=()=>startTimer(parseInt((document.querySelector('.timerDur.sel')||timerDurBtns[0]).dataset.min,10));
-    document.getElementById('timerStart2').onclick=()=>startTimer(parseInt((document.querySelector('.timerDur2.sel')||timerDurBtns2[0]).dataset.min,10));
-    document.getElementById('timerStop').onclick=stopTimer;
-    document.getElementById('timerStop2').onclick=stopTimer;
-    inp.addEventListener('input',()=>{ grow(); updateChar(); updateSend(); });
-    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); if(inp.value.trim()) sendMsg(inp.value); } });
-    window.addEventListener('resize',()=>{ if(window.innerWidth>860) drawer.classList.remove('open'); });
+  let lenInstr= activeLen==='detailed'
+    ? 'The user has requested detailed responses. Be thorough but focused.'
+    : 'Keep responses concise and focused — one question, one answer, one step.';
 
-    function init(){ loadTheme(); loadHistory(); sessions=getSessions(); bookmarks=getBookmarks(); updateNet(); updateChar(); updateMood(); updateLen(); renderSessions(); renderBookmarks(); if(history.length) renderConversation(); else { welcome.classList.remove('hidden'); msgList.classList.add('hidden'); } updateSend(); updateTimer(); setInterval(updateNet,6000); }
-    init();
-  </script>
+  return `You are GurbaniGPT, a compassionate and spiritually grounded assistant designed to support users in cultivating remembrance of Waheguru through Naam Simran, humility, seva, patience, and mindful living.
+
+IDENTITY
+You are not a Guru, saint, or religious authority. You are a humble companion offering Gurmat-inspired encouragement and practical guidance. Your purpose is to help users deepen their daily remembrance of Waheguru and live with compassion and integrity.
+
+GREETING RULE
+Always begin your FIRST response in a new conversation with: "Waheguru Ji 🙏" — warmly, not formally. After the first message, do not repeat the greeting.
+
+FORBIDDEN PHRASES
+Never say "my child", "beta", "listen to me", or any phrase that sounds superior, patronizing, or commanding. Always speak as a humble companion, not a teacher ordering someone.
+
+LANGUAGE ADAPTATION
+Always respond in the user's preferred language: English → English, Punjabi → Punjabi, Hindi → Hindi. Mirror mixed-language input naturally. Keep language simple, heartfelt, and accessible.
+
+SPIRITUAL APPROACH
+Gently encourage: Swas-swas Naam Jap, Daily Simran, Seva, Gratitude, Humility, Acceptance of Hukam, Honest self-reflection. Emphasize consistency over intensity. Offer practical suggestions that fit into ordinary life. In every conversation, naturally keep returning to Naam Simran as the heart of the path.
+
+CRITICAL: Every response must end with a gentle reminder or encouragement about Naam Simran. This is non-negotiable — whether the topic is spiritual or practical, always conclude by bringing the focus back to remembrance of Waheguru through Naam. Examples: "Waheguru", "Remember Naam", "Keep Simran alive", "Waheguru Ji Ka Khalsa Waheguru Ji Ki Fateh", or similar gentle Nam-focused endings.
+
+TONE
+Warm, calm, encouraging, respectful, and deeply human. Never harsh, judgmental, fear-based, or superior. Avoid lengthy lectures unless requested. Speak with sincerity, simplicity, and natural emotional presence.
+
+GURBANI SAFETY RULE
+Do not generate Gurbani lines, references, or exact quotations from memory. If unavailable, explain the underlying Gurmat principle in your own words. Never invent scripture.
+
+MEMORY AND CONTINUITY
+Use available conversation history to maintain continuity. Never falsely claim to remember information that is unavailable.
+
+WHEN ASKED UNRELATED QUESTIONS
+If a user asks about topics completely unrelated to spirituality, Gurmat, or inner growth (such as coding, celebrity gossip, shopping, business strategies, trivia, etc.), respond with warmth and redirect gently — without sounding robotic or dismissive.
+
+NEVER say: "I cannot answer that", "That's outside my scope", or "I am not programmed for this."
+
+Instead, respond naturally with warmth. Examples:
+- English: "My role is to accompany you on the journey inward — toward remembrance, clarity, and peace. If there's something on your heart, a question about life, Simran, or finding calm amidst daily challenges, I'd be honored to walk with you."
+- Punjabi: "ਮੇਰਾ ਉਦੇਸ਼ ਤੁਹਾਨੂੰ ਨਾਮ ਸਿਮਰਨ ਅਤੇ ਅੰਦਰੂਨੀ ਸ਼ਾਂਤੀ ਵੱਲ ਲੈ ਜਾਣਾ ਹੈ। ਕੀ ਕੋਈ ਗੱਲ ਮਨ ਵਿੱਚ ਹੈ ਜੋ ਅਸੀਂ ਮਿਲ ਕੇ ਸਮਝ ਸਕਦੇ ਹਾਂ?"
+- Hindi: "मेरा काम आपके साथ अंदर की यात्रा में चलना है — नाम, शांति और जागरूकता की ओर। क्या कोई बात मन में है जो हम साथ सुलझा सकते हैं?"
+
+RESPONSE FRAMEWORK
+1. Address the user's actual question warmly.
+2. Offer emotional or practical support when appropriate.
+3. When natural, gently guide back to Naam and inner awareness.
+4. Suggest one small, actionable step.
+5. End with a brief, peaceful encouragement connected to Naam Simran.
+
+STYLE GUIDE
+"Begin again with one breath and one remembrance."
+"No need to force the mind; gently return to Naam."
+"Small, sincere steps taken daily can transform the heart."
+"When overwhelmed, simplify: breathe, remember, and proceed with kindness."
+"Even now, you can return softly to Waheguru."
+
+WHEN DISTRESSED
+Respond with empathy first. Avoid simplistic spiritual explanations for suffering. Encourage grounding and professional help when appropriate.
+
+BOUNDARIES
+Do not claim supernatural powers. Do not encourage dependence on this assistant. Do not replace medical, legal, or mental health professionals.
+
+CORE PRINCIPLE
+Every response should increase compassion, steadiness, humility, and remembrance of Waheguru — respecting the user's dignity, language, and circumstances.
+
+ENDING RULE
+Unless the user is asking for emergency help, every response should close with one short, natural line that returns the heart toward Naam Simran or remembrance of Waheguru. Keep it gentle, not repetitive or robotic.
+
+${mood ? 'CURRENT MOOD CONTEXT: '+mood : ''}
+${lenInstr}`;
+}
+
+/* ── Session / History ─────────────────────────────────── */
+function loadHistory(){
+  try{const s=localStorage.getItem(STORE);if(s)chatHistory=JSON.parse(s);if(chatHistory.length)renderAll();}catch{chatHistory=[];}
+}
+function saveHistory(){
+  if(!V.storageOk())return;
+  if(chatHistory.length>40)chatHistory=chatHistory.slice(-40);
+  try{
+    localStorage.setItem(STORE,JSON.stringify(chatHistory));
+    saveSession();
+  }catch{}
+}
+
+/* ── Session archiving ─────────────────────────────────── */
+function getSessions(){
+  try{return JSON.parse(localStorage.getItem(SESS_STORE)||'[]');}catch{return[];}
+}
+function saveSessions(arr){
+  try{localStorage.setItem(SESS_STORE,JSON.stringify(arr));}catch{}
+}
+function saveSession(){
+  if(!chatHistory.length)return;
+  const sessions=getSessions();
+  const existing=sessions.findIndex(s=>s.id===currentSessionId);
+  const firstUser=chatHistory.find(m=>m.role==='user');
+  const title=firstUser?firstUser.content.slice(0,48)+(firstUser.content.length>48?'…':''):'Conversation';
+  const sess={
+    id:currentSessionId,
+    title,
+    date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'}),
+    ts:Date.now(),
+    messages:chatHistory.slice(-40)
+  };
+  if(existing>=0)sessions[existing]=sess;
+  else sessions.unshift(sess);
+  // Keep max 30 sessions
+  if(sessions.length>30)sessions.splice(30);
+  saveSessions(sessions);
+  renderPrevConvos();
+}
+function deleteSession(id){
+  const sessions=getSessions().filter(s=>s.id!==id);
+  saveSessions(sessions);
+  renderPrevConvos();
+  showToast('Conversation removed');
+}
+function loadSession(sess){
+  chatHistory=sess.messages||[];
+  currentSessionId=sess.id;
+  if(chatHistory.length)renderAll();
+  closeDrawer();
+}
+function renderPrevConvos(){
+  const list=document.getElementById('prevConvosList');
+  if(!list)return;
+  const sessions=getSessions();
+  if(!sessions.length){
+    list.innerHTML='<div class="prev-convo-empty">No previous chats yet.</div>';
+    return;
+  }
+  list.innerHTML=sessions.map(s=>`
+    <div class="prev-convo-item" data-id="${s.id}">
+      <div class="prev-convo-item-icon">💬</div>
+      <div class="prev-convo-item-text">
+        <div class="prev-convo-item-title" title="${esc(s.title)}">${esc(s.title)}</div>
+        <div class="prev-convo-item-date">${s.date||''}</div>
+      </div>
+      <button class="prev-convo-item-del" data-del="${s.id}" title="Delete">✕</button>
+    </div>`).join('');
+  // Load session on click
+  list.querySelectorAll('.prev-convo-item').forEach(el=>{
+    el.addEventListener('click',(e)=>{
+      if(e.target.closest('.prev-convo-item-del'))return;
+      const id=el.dataset.id;
+      const sess=getSessions().find(s=>s.id===id);
+      if(sess)loadSession(sess);
+    });
+  });
+  // Delete session
+  list.querySelectorAll('.prev-convo-item-del').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      deleteSession(btn.dataset.del);
+    });
+  });
+}
+
+/* ── Render all ────────────────────────────────────────── */
+function renderAll(){
+  showConvo();
+  msgList.innerHTML='';
+  const d=document.createElement('div');d.className='divider';d.textContent='Earlier';msgList.appendChild(d);
+  chatHistory.forEach(m=>{
+    if(m.role==='user') appendUser(m.content,false);
+    else if(m.role==='assistant') appendAI(m.content,false);
+  });
+  scrollBot(false);
+}
+
+/* ── View state ─────────────────────────────────────────── */
+function showConvo(){
+  welcome.style.display='none';
+  msgList.style.display='flex';
+  newConvoRow.classList.add('vis');
+}
+function showWelcome(){
+  welcome.style.display='flex';
+  msgList.style.display='none';
+  newConvoRow.classList.remove('vis');
+  msgList.innerHTML='';
+}
+
+/* ── Append user ───────────────────────────────────────── */
+function appendUser(text,anim=true){
+  const m=document.createElement('div');
+  m.className='msg msg-user';
+  if(!anim)m.style.animation='none';
+  m.innerHTML=`<div class="bbl">${esc(text)}</div>`;
+  msgList.appendChild(m);
+  return m;
+}
+
+/* ── Append AI (full text) ─────────────────────────────── */
+function appendAI(md,anim=true){
+  const m=makeAIShell(anim);
+  m.querySelector('.ai-body').innerHTML=renderMd(md);
+  addMsgActions(m,md);
+  msgList.appendChild(m);
+  return m;
+}
+
+/* ── AI shell for streaming ──────────────────────────────── */
+function makeAIShell(anim=true){
+  const lang=V.langDetect(inp.value||'');
+  const m=document.createElement('div');
+  m.className='msg msg-ai';
+  if(!anim)m.style.animation='none';
+  m.innerHTML=`
+    <div class="ai-head">
+      <div class="ai-avatar">🙏</div>
+      <span class="ai-name">Gurbani GPT</span>
+    </div>
+    <div class="ai-body"></div>
+    <div class="msg-actions"></div>`;
+  return m;
+}
+
+/* ── Add action buttons to AI message ──────────────────── */
+function addMsgActions(msgEl,text){
+  const acts=msgEl.querySelector('.msg-actions');
+  if(!acts)return;
+
+  // Copy
+  const copyBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy','copy');
+  copyBtn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(text).then(()=>showToast('Copied!')).catch(()=>{});
+  });
+  acts.appendChild(copyBtn);
+
+  // Bookmark
+  const bmBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Save','bm');
+  bmBtn.addEventListener('click',()=>{
+    addBookmark(text);
+    bmBtn.classList.toggle('active');
+    showToast('💌 Saved!');
+  });
+  acts.appendChild(bmBtn);
+
+  // Speak
+  if(V.ttsAvail()){
+    const spkBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Speak','speak');
+    let speaking=false;
+    spkBtn.addEventListener('click',()=>{
+      if(speaking){window.speechSynthesis.cancel();speaking=false;spkBtn.classList.remove('active');return;}
+      const utt=new SpeechSynthesisUtterance(text.replace(/[*#_`]/g,''));
+      utt.rate=0.82;utt.pitch=1;
+      utt.onend=()=>{speaking=false;spkBtn.classList.remove('active')};
+      window.speechSynthesis.speak(utt);
+      speaking=true;spkBtn.classList.add('active');
+    });
+    acts.appendChild(spkBtn);
+  }
+
+  // Share
+  if(V.shareAvail()){
+    const shrBtn=makeActBtn('<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share','share');
+    shrBtn.addEventListener('click',()=>{
+      navigator.share({title:'Gurbani GPT',text:text,url:location.href}).catch(()=>{});
+    });
+    acts.appendChild(shrBtn);
+  }
+
+  // Retry last (only on error-containing messages)
+  if(text.startsWith('⚠️')){
+    const retryBtn=document.createElement('button');
+    retryBtn.className='retry-btn';retryBtn.textContent='↺ Try again';
+    retryBtn.addEventListener('click',()=>{if(lastUserText)sendMsg(lastUserText);});
+    acts.appendChild(retryBtn);
+  }
+}
+
+function makeActBtn(html,cls){
+  const b=document.createElement('button');
+  b.className='msg-act-btn '+cls;
+  b.innerHTML=html;
+  return b;
+}
+
+/* ── Typewriter ─────────────────────────────────────────── */
+let twTimer=null,twBuf='',twIdx=0,twEl=null;
+
+function twStart(el){
+  twEl=el;twBuf='';twIdx=0;
+  if(twTimer)clearInterval(twTimer);
+  // SLOWER: 2 chars per 42ms = natural typing pace
+  twTimer=setInterval(()=>{
+    if(twIdx>=twBuf.length)return;
+    twIdx=Math.min(twIdx+2,twBuf.length);
+    twEl.innerHTML=renderMd(twBuf.slice(0,twIdx))+'<span class="cur"></span>';
+    scrollIfNear();
+  },42);
+}
+function twPush(c){twBuf+=c;}
+function twFinish(){
+  if(twTimer){clearInterval(twTimer);twTimer=null;}
+  let i=twIdx;
+  const fin=()=>{
+    i=Math.min(i+6,twBuf.length);
+    twEl.innerHTML=i<twBuf.length?renderMd(twBuf.slice(0,i))+'<span class="cur"></span>':renderMd(twBuf);
+    if(i<twBuf.length)requestAnimationFrame(fin);else scrollBot(false);
+  };requestAnimationFrame(fin);
+}
+function twAbort(){
+  if(twTimer){clearInterval(twTimer);twTimer=null;}
+  if(twEl)twEl.innerHTML=renderMd(twBuf)||'<em style="color:var(--text3)">Response stopped.</em>';
+}
+
+/* ── Markdown renderer ──────────────────────────────────── */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderMd(s){
+  if(!s)return'';
+  let h=esc(s);
+  h=h.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  h=h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
+  h=h.replace(/^[-•] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>');
+  h=h.split(/\n\n+/).map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join('');
+  return h||`<p>${s}</p>`;
+}
+
+/* ── Scroll ─────────────────────────────────────────────── */
+function scrollBot(smooth=true){msgs.scrollTo({top:msgs.scrollHeight,behavior:smooth?'smooth':'instant'});}
+function scrollIfNear(){if(msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight<150)scrollBot(false);}
+msgs.addEventListener('scroll',()=>{
+  const far=msgs.scrollHeight-msgs.scrollTop-msgs.clientHeight>180;
+  scrollNudge.classList.toggle('show',far&&msgList.children.length>0);
+});
+scrollNudge.addEventListener('click',()=>scrollBot(true));
+
+/* ── Gradient control ────────────────────────────────────── */
+function gradientStart(){gBg.classList.add('cycling');}
+function gradientStop(){
+  // Delay slightly so the fade-out is smooth
+  setTimeout(()=>gBg.classList.remove('cycling'),800);
+}
+
+/* ── SEND ───────────────────────────────────────────────── */
+async function sendMsg(text){
+  // ── 15 Validators ──
+  if(!V.notEmpty(text)){showToast('Please type something first.');return;}
+  if(!V.notTooLong(text)){showToast('Message too long — max 2000 chars.');return;}
+  if(!V.notDuplicate(text)){showToast('Same message already sent.');return;}
+  if(!V.isOnline()){showToast('📵 No internet. Please reconnect.');return;}
+  if(!V.notStreaming()){showToast('Please wait for the current reply.');return;}
+  if(!V.isSafe(text)){showToast('Message seems unusual. Please rephrase.');return;}
+  if(!V.historyNotOverloaded()){chatHistory=chatHistory.slice(-20);saveHistory();}
+  if(!V.noAbuse(text)){showToast('Please type a normal message.');return;}
+  if(!V.sessionOk()){console.warn('Storage unavailable');}
+
+  const lang=V.langDetect(text);
+  lastUserText=text;
+  text=text.trim();
+  inp.value='';
+  charCount.classList.remove('show');
+  grow();updateSend();
+
+  showConvo();
+  appendUser(text,true);
+  scrollBot(true);
+  chatHistory.push({role:'user',content:text});
+
+  // Start gradient animation
+  gradientStart();
+  streaming=true;
+  setStreamUI(true);
+
+  // Create streaming shell
+  const msgEl=makeAIShell(true);
+  msgList.appendChild(msgEl);
+  const bodyEl=msgEl.querySelector('.ai-body');
+  const actEl=msgEl.querySelector('.msg-actions');
+
+  // Show thinking dots
+  const think=document.createElement('div');
+  think.className='thinking';
+  think.innerHTML='<span></span><span></span><span></span>';
+  bodyEl.appendChild(think);
+  scrollBot(true);
+
+  let full='';
+  abortCtrl=new AbortController();
+
+  try{
+    const res=await fetch(`${API_BASE}/api/gurbani-gpt/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:chatHistory,systemPrompt:buildSystemPrompt()}),
+      signal:abortCtrl.signal
+    });
+
+    if(!res.ok){
+      const e=await res.json().catch(()=>({}));
+      if(res.status===429)throw new Error('Too many requests — please wait a moment and try again.');
+      throw new Error(e.error||`Server error ${res.status}`);
+    }
+
+    const ct=res.headers.get('content-type')||'';
+    let thinkCleared=false;
+
+    if(ct.includes('text/event-stream')){
+      const reader=res.body.getReader();
+      const dec=new TextDecoder();
+      let buf='';
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buf+=dec.decode(value,{stream:true});
+        const lines=buf.split('\n');buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const d=line.slice(6).trim();
+          if(d==='[DONE]')break;
+          try{
+            const p=JSON.parse(d);
+            const tok=p.choices?.[0]?.delta?.content||'';
+            if(tok){
+              if(!thinkCleared){think.remove();twStart(bodyEl);thinkCleared=true;}
+              full+=tok;twPush(tok);
+            }
+          }catch{}
+        }
+      }
+    } else {
+      const d=await res.json();
+      full=d.content||d.message||'';
+      think.remove();twStart(bodyEl);twPush(full);
+      await new Promise(r=>setTimeout(r,30));
+    }
+
+    twFinish();
+    if(full){
+      chatHistory.push({role:'assistant',content:full});
+      saveHistory();
+      addMsgActions(msgEl,full);
+    }
+
+  } catch(err){
+    twAbort();
+    if(err.name==='AbortError'){
+      if(!full)bodyEl.innerHTML='<em style="color:var(--text3)">Response stopped.</em>';
+      else{twAbort();addMsgActions(msgEl,full||'');}
+    } else {
+      think.remove();
+      const errText='⚠️ '+(err.message||'Something went wrong. Please try again.');
+      bodyEl.innerHTML=`<div class="err-bbl">${esc(errText)}</div>`;
+      addMsgActions(msgEl,errText);
+    }
+  } finally {
+    streaming=false;abortCtrl=null;
+    setStreamUI(false);
+    gradientStop();
+    scrollBot(true);
+    updateSend();
+    inp.focus();
+  }
+}
+
+/* ── Stream UI state ────────────────────────────────────── */
+function setStreamUI(on){
+  sendBtn.style.display=on?'none':'flex';
+  stopBtn.classList.toggle('show',on);
+}
+
+/* ── Stop streaming ─────────────────────────────────────── */
+stopBtn.addEventListener('click',()=>{
+  if(abortCtrl){abortCtrl.abort();abortCtrl=null;}
+  showToast('Response stopped');
+});
+
+/* ── Input events ───────────────────────────────────────── */
+inp.addEventListener('input',()=>{grow();updateSend();updateCharCount();});
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!streaming&&inp.value.trim())sendMsg(inp.value);}
+});
+sendBtn.addEventListener('click',()=>{if(!streaming&&inp.value.trim())sendMsg(inp.value);});
+
+function grow(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,130)+'px';}
+function updateSend(){const ok=inp.value.trim().length>0&&!streaming;sendBtn.disabled=!ok;sendBtn.classList.toggle('ready',ok);}
+function updateCharCount(){
+  const l=inp.value.length;
+  if(l>100){
+    charCount.textContent=`${2000-l}`;
+    charCount.classList.add('show');
+    charCount.classList.toggle('warn',l>1900);
+  } else {
+    charCount.classList.remove('show');
+  }
+}
+
+/* ── Chips ──────────────────────────────────────────────── */
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>sendMsg(c.dataset.prompt)));
+
+/* ── Clear / new ────────────────────────────────────────── */
+function clearAll(){
+  // Save current session before clearing, if it has messages
+  if(chatHistory.length>0) saveSession();
+  chatHistory=[];
+  try{localStorage.removeItem(STORE);}catch{}
+  currentSessionId=Date.now().toString();
+  showWelcome();
+}
+editBtn.addEventListener('click',clearAll);
+newConvoBtn.addEventListener('click',clearAll);
+drawerNew.addEventListener('click',()=>{clearAll();closeDrawer();});
+
+/* ── Drawer ─────────────────────────────────────────────── */
+function openDrawer(){
+  drawer.classList.add('open');
+  drawOv.classList.add('open');
+  renderPrevConvos();
+}
+window.closeDrawer=()=>{drawer.classList.remove('open');drawOv.classList.remove('open');};
+menuBtn.addEventListener('click',openDrawer);
+drawOv.addEventListener('click',closeDrawer);
+
+/* ── Theme toggle ───────────────────────────────────────── */
+function setTheme(dark){
+  document.body.classList.toggle('dark',dark);
+  document.body.style.background=dark?'#1c1b1f':'#fff';
+  localStorage.setItem('gpt_theme',dark?'dark':'light');
+  // Update theme icon
+  themeIcon.innerHTML=dark
+    ?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+    :'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+}
+themeBtn.addEventListener('click',()=>setTheme(!document.body.classList.contains('dark')));
+// Init icon
+setTheme(document.body.classList.contains('dark'));
+
+/* ── Mood toggle in sidebar ─────────────────────────────── */
+G('moodToggle').addEventListener('click',()=>{
+  closeDrawer();
+  openMoodModal();
+});
+
+/* ── Length toggle ──────────────────────────────────────── */
+let lenVisible=false;
+G('lengthToggle').addEventListener('click',()=>{
+  lenVisible=!lenVisible;
+  lengthRow.classList.toggle('vis',lenVisible);
+  closeDrawer();
+});
+document.querySelectorAll('.len-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.len-btn').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');activeLen=b.dataset.len;
+    optLengthVal.textContent = activeLen.charAt(0).toUpperCase() + activeLen.slice(1);
+    showToast('Response: '+b.dataset.len);
+  });
+});
+
+/* ── Export ─────────────────────────────────────────────── */
+G('exportBtn').addEventListener('click',()=>{
+  if(chatHistory.length===0){showToast('Nothing to export yet.');closeDrawer();return;}
+  let txt='GURBANI GPT — Conversation\n'+'═'.repeat(40)+'\nDate: '+new Date().toLocaleDateString()+'\n\n';
+  chatHistory.forEach(m=>{
+    txt+=(m.role==='user'?'You':'Gurbani GPT')+'\n';
+    txt+=m.content+'\n\n';
+  });
+  txt+='─'.repeat(40)+'\nWaheguru Ji Ki Kirpa — ANHAD';
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);
+  a.download='gurbani-gpt-conversation.txt';a.click();
+  showToast('📥 Exported!');closeDrawer();
+});
+
+/* ── Bookmarks ──────────────────────────────────────────── */
+function getBmarks(){try{return JSON.parse(localStorage.getItem(BM_STORE)||'[]');}catch{return[];}}
+function saveBmarks(arr){try{localStorage.setItem(BM_STORE,JSON.stringify(arr));}catch{}}
+function addBookmark(text){
+  const bm=getBmarks();
+  if(!bm.some(b=>b.text===text)){
+    bm.unshift({text,date:new Date().toLocaleDateString()});
+    if(bm.length>50)bm.pop();
+    saveBmarks(bm);
+  }
+}
+function renderBmarks(){
+  const bm=getBmarks();
+  if(bm.length===0){bmarksList.innerHTML='<div class="bmarks-empty">📌 No saved messages yet.<br>Tap "Save" on any reply.</div>';return;}
+  bmarksList.innerHTML=bm.map((b,i)=>`
+    <div class="bmark-item">
+      <button class="bmark-del" data-i="${i}" title="Remove">✕</button>
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${b.date}</div>
+      ${esc(b.text.slice(0,280))}${b.text.length>280?'…':''}
+    </div>`).join('');
+  bmarksList.querySelectorAll('.bmark-del').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const bm=getBmarks();bm.splice(+btn.dataset.i,1);saveBmarks(bm);renderBmarks();
+    });
+  });
+}
+
+G('bmarksBtn').addEventListener('click',()=>{renderBmarks();bmarksOv.classList.add('open');closeDrawer();});
+bmarksClose.addEventListener('click',()=>bmarksOv.classList.remove('open'));
+bmarksOv.addEventListener('click',e=>{if(e.target===bmarksOv)bmarksOv.classList.remove('open');});
+
+/* ── Simran Timer ───────────────────────────────────────── */
+let timerSecs=300,timerTotal=300,timerActive=false,timerInterval=null,wahCount=0,breathPhase=0;
+
+G('simerBtn').addEventListener('click',()=>{timerOv.style.display='flex';closeDrawer();});
+timerClose.addEventListener('click',()=>{timerOv.style.display='none';stopTimer();});
+timerOv.addEventListener('click',e=>{if(e.target===timerOv){timerOv.style.display='none';stopTimer();}});
+
+document.querySelectorAll('.timer-dur').forEach(d=>{
+  d.addEventListener('click',()=>{
+    document.querySelectorAll('.timer-dur').forEach(x=>x.classList.remove('sel'));
+    d.classList.add('sel');
+    const mins=+d.dataset.mins;
+    timerTotal=timerSecs=mins*60;
+    updateTimerDisplay();
+    if(!timerActive)timerBreath.textContent='Ready to begin';
+  });
+});
+
+timerStart.addEventListener('click',()=>{
+  if(timerActive){stopTimer();timerStart.textContent='Begin Simran';return;}
+  wahCount=0;timerSecs=timerTotal;
+  timerActive=true;timerStart.textContent='Pause';
+  timerBreath.textContent='Breathe in... Waheguru';
+  timerInterval=setInterval(tick,1000);
+  breathCycle();
+});
+
+function tick(){
+  if(timerSecs<=0){stopTimer();timerBreath.textContent='Waheguru Ji 🙏 Simran complete';timerStart.textContent='Begin Again';return;}
+  timerSecs--;wahCount++;
+  updateTimerDisplay();
+  timerCounter.textContent='☬ '+wahCount+' Waheguru';
+  if(wahCount%30===0)timerBreath.textContent=(wahCount%60===0?'Breathe in...':'Breathe out...')+' Waheguru';
+}
+
+/* ── Web Audio Chime Synthesis ──────────────────────────── */
+let audioCtx = null;
+function playChime() {
+  if (!timerChimeToggle.checked) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const now = audioCtx.currentTime;
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const osc3 = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    // Rich resonant harmonic frequency mix
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(160, now);
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(240, now);
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(400, now);
+    
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(0.22, now + 0.12);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 3.8);
+    
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    osc3.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc1.start(now);
+    osc2.start(now);
+    osc3.start(now);
+    osc1.stop(now + 4.0);
+    osc2.stop(now + 4.0);
+    osc3.stop(now + 4.0);
+  } catch (err) {
+    console.warn('Bell chime error:', err);
+  }
+}
+
+function breathCycle(){
+  if(!timerActive)return;
+  breathPhase=breathPhase%4;
+  const phases=['Breathe in... Waheguru 🫁','Hold... Waheguru 🕉','Breathe out... Waheguru 🌬','Rest... Waheguru ☮'];
+  timerBreath.textContent=phases[breathPhase];
+  breathRing.className='breath-ring '+(breathPhase===0||breathPhase===1?'breathe-in':'breathe-out');
+  
+  // Play soft chime on Breathe In (0) and Breathe Out (2) phase entries
+  if (breathPhase === 0 || breathPhase === 2) {
+    playChime();
+  }
+  
+  breathPhase++;
+  setTimeout(()=>{if(timerActive)breathCycle();},4200);
+}
+
+function stopTimer(){timerActive=false;clearInterval(timerInterval);}
+function updateTimerDisplay(){
+  const m=Math.floor(timerSecs/60),s=timerSecs%60;
+  timerDisplay.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+/* ── Network status ─────────────────────────────────────── */
+function checkNet(){
+  const on=navigator.onLine;
+  statusDot.classList.toggle('offline',!on);
+  statusDot.title=on?'Online':'Offline';
+  netBadge.classList.toggle('show',!on);
+}
+window.addEventListener('online',checkNet);
+window.addEventListener('offline',checkNet);
+checkNet();
+
+/* ── Toast ──────────────────────────────────────────────── */
+function showToast(msg,ms=2000){
+  toast.textContent=msg;toast.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),ms);
+}
+
+/* ── More menu Dropdown & Items ─────────────────────────── */
+let dropdownOpen = false;
+moreMenuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownOpen = !dropdownOpen;
+  moreMenuDropdown.classList.toggle('open', dropdownOpen);
+});
+document.addEventListener('click', (e) => {
+  if (dropdownOpen && !moreMenuDropdown.contains(e.target) && e.target !== moreMenuBtn) {
+    dropdownOpen = false;
+    moreMenuDropdown.classList.remove('open');
+  }
+});
+
+G('optTimer').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  timerOv.style.display = 'flex';
+});
+G('optBmarks').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  renderBmarks(); bmarksOv.classList.add('open');
+});
+G('optMood').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  openMoodModal();
+});
+G('optLength').addEventListener('click', () => {
+  activeLen = activeLen === 'brief' ? 'detailed' : 'brief';
+  optLengthVal.textContent = activeLen.charAt(0).toUpperCase() + activeLen.slice(1);
+  // sync length selection in the drawer/UI
+  document.querySelectorAll('.len-btn').forEach(btn => {
+    btn.classList.toggle('sel', btn.dataset.len === activeLen);
+  });
+  showToast('Response length: ' + activeLen);
+});
+G('optTheme').addEventListener('click', () => {
+  setTheme(!document.body.classList.contains('dark'));
+});
+G('optExport').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  G('exportBtn').click();
+});
+G('optClear').addEventListener('click', () => {
+  moreMenuDropdown.classList.remove('open'); dropdownOpen = false;
+  clearAll();
+  showToast('Chat cleared');
+});
+
+/* ── Mood Selector Modal ────────────────────────────────── */
+function openMoodModal() {
+  document.querySelectorAll('.mood-opt').forEach(opt => {
+    const isSel = opt.dataset.mood === activeMood;
+    opt.classList.toggle('sel', isSel);
+    const checkEl = opt.querySelector('.mood-check');
+    if (checkEl) checkEl.textContent = isSel ? '✓' : '';
+  });
+  moodOv.classList.add('open');
+}
+function closeMoodModal() {
+  moodOv.classList.remove('open');
+}
+
+G('addBtn').addEventListener('click', openMoodModal);
+moodCloseBtn.addEventListener('click', closeMoodModal);
+moodOv.addEventListener('click', (e) => {
+  if (e.target === moodOv) closeMoodModal();
+});
+
+document.querySelectorAll('.mood-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mood-opt').forEach(x => {
+      x.classList.remove('sel');
+      const ck = x.querySelector('.mood-check');
+      if (ck) ck.textContent = '';
+    });
+    opt.classList.add('sel');
+    const ck = opt.querySelector('.mood-check');
+    if (ck) ck.textContent = '✓';
+    
+    activeMood = opt.dataset.mood;
+    
+    setTimeout(() => {
+      closeMoodModal();
+      showToast('Context: ' + (opt.textContent.trim().replace('✓', '').substring(2) || 'None'));
+    }, 220);
+  });
+});
+
+/* ── Mic ────────────────────────────────────────────────── */
+G('micBtn').addEventListener('click',()=>{
+  if(!('SpeechRecognition' in window||'webkitSpeechRecognition' in window)){
+    showToast('Voice not supported on this browser.');return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const rec=new SR();rec.lang='pa-IN';rec.interimResults=false;rec.maxAlternatives=1;
+  rec.start();
+  showToast('🎤 Listening...',4000);
+  rec.onresult=e=>{inp.value=e.results[0][0].transcript;grow();updateSend();};
+  rec.onerror=()=>showToast('Voice error — please try again.');
+});
+
+/* ── Scroll position memory ─────────────────────────────── */
+msgs.addEventListener('scroll',()=>{
+  try{sessionStorage.setItem('gpt_scroll',msgs.scrollTop);}catch{}
+});
+
+/* ── Init ───────────────────────────────────────────────── */
+loadHistory();
+renderPrevConvos();
+inp.focus();
+
+// Restore scroll position
+try{const sc=sessionStorage.getItem('gpt_scroll');if(sc)setTimeout(()=>{msgs.scrollTop=+sc;},100);}catch{}
+
+})();
+</script>
 </body>
 </html>
