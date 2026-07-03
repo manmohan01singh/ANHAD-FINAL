@@ -2400,12 +2400,12 @@ const HeaderManager = {
                 50% { box-shadow: 0 4px 20px rgba(255, 149, 0, 0.15); }
             }
 
-            /* â”€â”€ FEATURE 5: SVG Smooth Draw â”€â”€ */
+            /* ── FEATURE 5: SVG Smooth Draw ── */
             .progress-ring-circle, .time-ring-circle {
                 transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-            /* â”€â”€ FEATURE 6: Milestone Sparkles â”€â”€ */
+            /* ── FEATURE 6: Milestone Sparkles ── */
                 position: absolute;
                 inset: -10px;
                 background-image: 
@@ -4956,7 +4956,7 @@ const NitnemTrackerApp = {
 // }
 
 // Cleanup on page unload
-window.addEventListener('beforeunload', () => {
+window.addEventListener('pagehide', () => {
     NitnemTrackerApp.destroy();
 });
 
@@ -10837,7 +10837,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Handle beforeunload - save any pending data
-window.addEventListener('beforeunload', () => {
+window.addEventListener('pagehide', () => {
     MalaManager.saveTodayData();
 });
 

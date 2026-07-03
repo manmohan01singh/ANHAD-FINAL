@@ -33,7 +33,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.2s var(--spring) !important;
+    transition: transform 0.2s var(--spring) !important, box-shadow 0.2s var(--spring) !important;
     box-shadow: var(--shadow-outer) !important;
     flex-shrink: 0 !important;
     pointer-events: auto !important;

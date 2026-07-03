@@ -9,7 +9,7 @@
 @font-face {
     font-family: 'Raavi';
     src: local('Raavi'), local('Raavi Regular');
-    font-display: swap;
+    font-display: optional;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

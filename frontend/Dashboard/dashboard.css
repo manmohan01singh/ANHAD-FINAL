@@ -196,7 +196,7 @@ html.dark-mode .top-nav-orb {
   justify-content: center;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.3s var(--dash-spring);
+  transition: transform 0.3s var(--dash-spring), opacity 0.3s var(--dash-spring);
   font-size: 16px;
 }
 
@@ -247,7 +247,7 @@ html.dark-mode .header__title {
   box-shadow: var(--dash-card-shadow);
   border: none;
   transform: perspective(1000px) translateZ(0);
-  transition: all 0.4s var(--dash-spring);
+  transition: transform 0.4s var(--dash-spring), opacity 0.4s var(--dash-spring);
 }
 
 html.dark-mode .streak-hero {
@@ -379,7 +379,7 @@ html.dark-mode .section-title {
   padding: 24px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s var(--dash-spring);
+  transition: transform 0.4s var(--dash-spring), opacity 0.4s var(--dash-spring);
   display: flex;
   flex-direction: column;
   transform: translateZ(0);
@@ -466,7 +466,7 @@ html.dark-mode .stat-card__label {
   background: var(--dash-bg-primary);
   box-shadow: var(--dash-card-shadow);
   border: none;
-  transition: all 0.4s var(--dash-spring);
+  transition: transform 0.4s var(--dash-spring), opacity 0.4s var(--dash-spring);
   transform: translateZ(0);
 }
 
@@ -742,7 +742,7 @@ html.dark-mode .chart-body {
   max-height: 144px; /* 90% of 160px container to prevent overflow */
   border-radius: 6px 6px 0 0;
   position: relative;
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
   box-shadow: 
     inset 0 2px 4px rgba(255, 255, 255, 0.5),
@@ -850,7 +850,7 @@ html.dark-mode .chart-insight {
   padding: 4px 20px 24px 2px;
   margin-bottom: 24px;
   scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 .milestones::-webkit-scrollbar { display: none; }
@@ -869,7 +869,7 @@ html.dark-mode .chart-insight {
   border: 1px solid rgba(0, 0, 0, 0.06);
   opacity: 0.5;
   filter: grayscale(1) opacity(0.7);
-  transition: all 0.4s var(--dash-spring);
+  transition: transform 0.4s var(--dash-spring), opacity 0.4s var(--dash-spring);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1003,7 +1003,7 @@ html.dark-mode .bottom-nav__glass {
   text-decoration: none;
   color: rgba(0, 0, 0, 0.35);
   cursor: pointer;
-  transition: all 0.3s var(--dash-spring);
+  transition: transform 0.3s var(--dash-spring), opacity 0.3s var(--dash-spring);
   -webkit-tap-highlight-color: transparent;
   min-width: 56px;
   position: relative;
@@ -1021,7 +1021,7 @@ html.dark-mode .nav-tab {
 .ios-emoji--nav {
   font-size: 22px;
   line-height: 1;
-  transition: all 0.3s var(--dash-spring);
+  transition: transform 0.3s var(--dash-spring), opacity 0.3s var(--dash-spring);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
@@ -1186,7 +1186,7 @@ html.dark-mode .nav-tab--active .ios-emoji--nav {
   box-shadow: var(--dash-card-shadow);
   border: none;
   margin-bottom: 40px;
-  transition: all 0.4s var(--dash-spring);
+  transition: transform 0.4s var(--dash-spring), opacity 0.4s var(--dash-spring);
 }
 
 html.dark-mode .nitnem-progress-chart {
@@ -1218,7 +1218,7 @@ html.dark-mode .nitnem-progress-chart {
   background: linear-gradient(145deg, rgba(0,0,0,0.03), rgba(0,0,0,0.06));
   border-radius: 12px 12px 8px 8px;
   position: relative;
-  transition: all 0.6s var(--dash-spring);
+  transition: transform 0.6s var(--dash-spring), opacity 0.6s var(--dash-spring);
   box-shadow:
     inset 3px 3px 8px rgba(0, 0, 0, 0.08),
     inset -2px -2px 6px rgba(255, 255, 255, 0.8),

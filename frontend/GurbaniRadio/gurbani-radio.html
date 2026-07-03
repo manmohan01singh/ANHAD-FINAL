@@ -24,7 +24,6 @@
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <link rel="stylesheet" href="../css/nav-glass.css">
 
@@ -45,7 +44,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=optional" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- <link rel="stylesheet" href="../css/anhad-clay.css?v=1"> removed: conflicts with iOS design -->
     <!-- REMOVED: global-mini-player.css - using overlay-player styles instead -->
@@ -60,7 +59,7 @@
 <body>
     <!-- AMBIENT BACKGROUND -->
     <div class="bg-container">
-        <img class="bg-image" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="" id="bgDarbar">
+        <img decoding="async" class="bg-image" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="" id="bgDarbar">
         <script>
             (function() {
                 try {
@@ -77,7 +76,7 @@
                 } catch(e) {}
             })();
         </script>
-        <img class="bg-image" src="../assets/darbar-sahib-day.webp" alt="" id="bgDay" style="opacity:0">
+        <img decoding="async" class="bg-image" src="../assets/darbar-sahib-day.webp" alt="" id="bgDay" style="opacity:0">
         <div class="bloom-orb o1" id="bloomO1"></div>
         <div class="bloom-orb o2" id="bloomO2"></div>
         <div class="bloom-orb o3" id="bloomO3"></div>
@@ -134,7 +133,7 @@
             <div class="artwork-glow" id="artworkGlow"></div>
             <div class="artwork-clay" id="artworkContainer">
                 <div class="artwork-inner">
-                    <img class="artwork-img" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="Sri Darbar Sahib" id="artworkImg">
+                    <img decoding="async" class="artwork-img" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="Sri Darbar Sahib" id="artworkImg">
                     <script>
                         (function() {
                             try {
@@ -1043,7 +1042,7 @@
         });
         
         // Before unload
-        window.addEventListener('beforeunload', saveState);
+        window.addEventListener('pagehide', saveState);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════════

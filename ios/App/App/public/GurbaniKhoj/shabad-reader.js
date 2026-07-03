@@ -134,8 +134,8 @@ const State = {
     autoscrollVisible: true,
     autoscrollActive: false,
     autoscrollSpeed: 1.0,
-    fontSizeBase: 22,
-    lineSpacing: 1.9,
+    fontSizeBase: 23,
+    lineSpacing: 1.35,
     fontGurmukhi: 'pothi', // pothi, court, modern, royal
     textAlign: 'center', // left, center, right
 
@@ -440,13 +440,15 @@ function renderShabad(data) {
             </div>
             ${showDivider ? `
                 <div class="verse-divider">
-                    <svg viewBox="0 0 100 15" width="100" height="15">
-                        <line x1="10" y1="7.5" x2="40" y2="7.5" stroke="#d4af37" stroke-width="1.5" />
-                        <circle cx="50" cy="7.5" r="4" fill="none" stroke="#d4af37" stroke-width="1.8" />
-                        <circle cx="50" cy="7.5" r="1.2" fill="#d4af37" />
-                        <line x1="60" y1="7.5" x2="90" y2="7.5" stroke="#d4af37" stroke-width="1.5" />
-                        <circle cx="35" cy="7.5" r="1.2" fill="#d4af37" />
-                        <circle cx="65" cy="7.5" r="1.2" fill="#d4af37" />
+                    <svg viewBox="0 0 120 18" width="120" height="18">
+                        <line x1="10" y1="9" x2="42" y2="9" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
+                        <circle cx="52" cy="9" r="1.5" fill="#d4af37" opacity="0.4"/>
+                        <circle cx="56" cy="9" r="2.5" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+                        <circle cx="60" cy="9" r="3.5" class="divider-center" fill="none" stroke="#d4af37" stroke-width="1.8"/>
+                        <circle cx="60" cy="9" r="1.2" fill="#d4af37"/>
+                        <circle cx="64" cy="9" r="2.5" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+                        <circle cx="68" cy="9" r="1.5" fill="#d4af37" opacity="0.4"/>
+                        <line x1="78" y1="9" x2="110" y2="9" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
                     </svg>
                 </div>
             ` : ''}
@@ -729,7 +731,7 @@ const Settings = {
 
         this.setFont(localStorage.getItem('gurbaniFont') || 'pothi');
 
-        this.setLineSpacing(parseFloat(localStorage.getItem('reader_line_spacing')) || 1.9);
+        this.setLineSpacing(parseFloat(localStorage.getItem('reader_line_spacing')) || 1.35);
         this.setTextAlign(localStorage.getItem('reader_text_align') || 'center');
 
         this.toggleTranslitEn(localStorage.getItem('shabadTranslitEn') === 'on');

@@ -367,10 +367,8 @@ const simranBroadcast = new BroadcastEngine('Waheguru Simran', SIMRAN_PLAYLIST, 
 // MIDDLEWARE
 // ═══════════════════════════════════════════════════════════════════
 
-// Parse JSON body — 10kb limit prevents oversized payload attacks
-app.use(express.json({ limit: '10kb' }));
-
-// CORS — allow localhost variants for development, env-controlled for production
+// CORS must run BEFORE body parser so error responses (413, etc.) include CORS headers
+// and browsers don't misreport size errors as CORS failures.
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
     'http://localhost:3000,http://127.0.0.1:3000,https://localhost,https://localhost:3000,https://anhad.vercel.app,https://anhadnaam.vercel.app,capacitor://localhost,ionic://localhost')
     .split(',').map(o => o.trim()).filter(Boolean);
@@ -409,6 +407,9 @@ app.use((req, res, next) => {
     }
     next();
 });
+
+// Parse JSON body — CORS already ran so error responses include proper headers
+app.use(express.json({ limit: '500kb' }));
 
 // Rate limiting — 60 requests/minute per IP on all API routes
 // NOTE: When using Cloudflare, this limits per Cloudflare edge IP

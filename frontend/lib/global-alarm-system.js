@@ -1393,7 +1393,22 @@
             const reminder = data?.reminders?.find(r => r.id === reminderId);
             if (reminder) fireAlarm(reminder, false, data.settings);
         },
-        getState: () => State
+        getState: () => State,
+        // Register Naam Abhyas alarms with the global alarm system
+        registerNaamAbhyasAlarm: (alarm) => {
+            if (!alarm || !alarm.enabled) return;
+            const timeVal = alarm.hour * 60 + alarm.minute;
+            const nextTime = getNextOccurrence(timeVal);
+            if (!nextTime) return;
+            const reminder = {
+                id: alarm.id,
+                title: alarm.title || 'Naam Abhyas',
+                time: timeVal,
+                enabled: true
+            };
+            const settings = loadReminders()?.settings || {};
+            scheduleAlarm(reminder, nextTime, false, settings);
+        }
     };
 
 })();

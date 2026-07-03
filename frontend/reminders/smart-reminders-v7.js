@@ -723,7 +723,7 @@
                 alarmId: alarm.id,
                 alarmLabel: alarm.label || alarm.title || 'Alarm',
                 alarmTime: alarm.time || '',
-                alarmIcon: alarm.icon || 'ðŸ””',
+                alarmIcon: alarm.icon || '🔔',
                 alarmTone: alarm.tone || 'audio1',
                 url: window.location.href
               }

@@ -307,10 +307,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet"></noscript>
   <!-- DECORATIVE FONTS: Loaded lazily after first paint -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=optional" media="print" onload="this.media='all'">
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
   <link rel="stylesheet" href="css/trendora-premium.css?v=9">
@@ -1914,7 +1914,7 @@
   <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar"
          style="display:none">
     <div class="desktop-sidebar__brand">
-      <img src="assets/app-logo.png" alt="ANHAD" class="desktop-sidebar__logo">
+      <img decoding="async" src="assets/app-logo.png" alt="ANHAD" class="desktop-sidebar__logo">
       <div>
         <div class="desktop-sidebar__title">ANHAD</div>
         <span class="desktop-sidebar__gurmukhi">ਅਨਹਦ</span>
@@ -2019,7 +2019,7 @@
            title="Back to Welcome"
            style="text-decoration:none; display: flex; align-items: center; justify-content: center;"
            onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
-          <img src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
+          <img decoding="async" src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
         </a>
         <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
@@ -2093,7 +2093,7 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img class="hero-card__image" id="heroCard1Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
@@ -2133,7 +2133,7 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img class="hero-card__image" id="heroCard2Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
@@ -2173,7 +2173,7 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img class="hero-card__image" id="heroCard3Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
@@ -2305,7 +2305,7 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
+          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
         </div>
       </div>
       <div class="event-card__days-badge">
@@ -2496,7 +2496,7 @@
   <div class="install-banner" id="installBanner" role="alert" style="display: none; transform:translateY(100%); opacity: 0;">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
-        <img src="assets/app-logo.png" alt="ANHAD Logo">
+        <img decoding="async" src="assets/app-logo.png" alt="ANHAD Logo">
       </div>
       <div class="install-banner__text">
         <div class="install-banner__title">Install ANHAD</div>

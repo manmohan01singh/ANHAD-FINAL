@@ -40,7 +40,7 @@ body {
     flex: 1 !important;
     overflow: visible !important;
     overflow-y: visible !important;
-    -webkit-overflow-scrolling: auto !important;
+
 }
 
 /* Hide distracting gradient background effects */
@@ -192,7 +192,7 @@ body {
         -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
         inset 8px 8px 16px rgba(255,255,255,1),
         inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
-    transition: all 0.4s var(--clay-spring) !important;
+    transition: background-color 0.4s var(--clay-spring) !important, color 0.4s var(--clay-spring) !important, transform 0.4s var(--clay-spring) !important;
     overflow: visible !important;
     padding: 24px !important;
 }
@@ -264,7 +264,7 @@ body {
         6px 6px 12px rgba(0,0,0,0.05),
         -6px -6px 12px rgba(255,255,255,0.85),
         inset 2px 2px 6px rgba(255,255,255,1) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .sunrise-icon {
@@ -352,7 +352,7 @@ body {
         -8px -8px 16px rgba(255,255,255,0.80),
         inset 4px 4px 8px rgba(255,255,255,0.8),
         inset -4px -4px 8px rgba(0,0,0,0.04) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .present-btn:hover {
@@ -412,7 +412,7 @@ body {
         -8px -8px 16px rgba(255,255,255,0.80),
         inset 4px 4px 8px rgba(255,255,255,1),
         inset -4px -4px 8px rgba(0,0,0,0.03) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .mala-action-btn.primary {
@@ -474,7 +474,7 @@ body {
         -6px -6px 12px rgba(255,255,255,0.80),
         inset 2px 2px 4px rgba(255,255,255,0.9),
         inset -2px -2px 4px rgba(0,0,0,0.02) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .bani-item:hover {
@@ -506,7 +506,7 @@ body {
         -12px -12px 24px rgba(255,255,255,0.90),
         inset 6px 6px 12px rgba(255,255,255,1),
         inset -6px -6px 12px rgba(0,0,0,0.04) !important;
-    transition: all 0.15s var(--clay-spring) !important;
+    transition: background-color 0.15s var(--clay-spring) !important, color 0.15s var(--clay-spring) !important;
 }
 
 [data-theme="dark"] .mala-center-btn,
@@ -697,7 +697,7 @@ body {
         -8px -8px 16px rgba(255,255,255,0.85),
         inset 4px 4px 8px rgba(255,255,255,1),
         inset -4px -4px 8px rgba(0,0,0,0.03) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .achievement-card.locked {
@@ -834,7 +834,7 @@ select,
         inset 4px 4px 10px rgba(0,0,0,0.06),
         inset -4px -4px 10px rgba(255,255,255,0.8),
         0 2px 4px rgba(255,255,255,0.7) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 input[type="text"]:focus,
@@ -1143,7 +1143,7 @@ button:focus-visible, input:focus-visible {
     display: flex !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+
     gap: 8px;
     padding-bottom: 8px;
 }
@@ -1262,7 +1262,7 @@ button:focus-visible, input:focus-visible {
     gap: 8px;
     padding: 16px 20px;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 .date-chip {
@@ -1453,7 +1453,7 @@ button:focus-visible, input:focus-visible {
     overflow-x: auto;
     padding-bottom: 8px;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+
 }
 .date-strip-scroll::-webkit-scrollbar { display: none; }
 
@@ -1627,7 +1627,7 @@ button:focus-visible, input:focus-visible {
 .date-strip-scroll,
 .week-attendance-grid {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+
     overscroll-behavior-x: contain;
 }
 

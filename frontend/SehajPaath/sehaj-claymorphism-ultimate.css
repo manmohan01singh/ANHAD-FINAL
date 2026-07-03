@@ -112,7 +112,7 @@ html.dark-mode .header-btn, [data-theme="dark"] .header-btn,
         -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
         inset 8px 8px 16px rgba(255,255,255,1),
         inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
-    transition: all 0.4s var(--clay-spring) !important;
+    transition: box-shadow 0.4s var(--clay-spring) !important;
     overflow: visible !important;
     margin-bottom: 24px !important;
 }
@@ -196,7 +196,7 @@ html.dark-mode .nav-icon, [data-theme="dark"] .nav-icon,
         -8px -8px 16px rgba(255,255,255,0.80),
         inset 4px 4px 8px rgba(255,255,255,1),
         inset -4px -4px 8px rgba(0,0,0,0.03) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: transform 0.3s var(--clay-spring) !important, box-shadow 0.3s var(--clay-spring) !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 16px 12px !important;
@@ -245,7 +245,7 @@ html.dark-mode .clay-action-btn:active, [data-theme="dark"] .clay-action-btn:act
         -8px -8px 16px rgba(255,255,255,0.80),
         inset 4px 4px 8px rgba(255,255,255,0.8),
         inset -4px -4px 8px rgba(0,0,0,0.04) !important;
-    transition: all 0.3s var(--clay-spring) !important;
+    transition: background-color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
     font-weight: 700 !important;
 }
 

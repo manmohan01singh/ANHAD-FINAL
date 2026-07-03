@@ -284,7 +284,7 @@ body {
     backdrop-filter: blur(var(--glass-blur)) saturate(180%);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
     border-bottom: 0.5px solid var(--header-border);
-    transition: all var(--duration-normal) var(--ease-ios);
+    transition: background-color var(--duration-normal) var(--ease-ios), color var(--duration-normal) var(--ease-ios);
 }
 
 .app-header.scrolled {
@@ -322,7 +322,7 @@ body {
     color: var(--system-blue);
     border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .header-btn:hover {
@@ -466,7 +466,7 @@ body {
     cursor: pointer;
     padding: var(--space-xs);
     border-radius: var(--radius-sm);
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .section-action:hover {
@@ -489,7 +489,7 @@ body {
     margin-bottom: var(--space-sm);
     border: 1px solid var(--card-border);
     box-shadow: var(--card-shadow);
-    transition: all var(--duration-normal) var(--ease-spring);
+    transition: background-color var(--duration-normal) var(--ease-spring), color var(--duration-normal) var(--ease-spring), transform var(--duration-normal) var(--ease-spring);
     overflow: hidden;
     cursor: pointer;
     contain: layout style paint;
@@ -648,7 +648,7 @@ body {
     color: var(--system-blue);
     border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .alarm-edit-btn:hover {
@@ -868,7 +868,7 @@ body {
     font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
     border: none;
 }
 
@@ -1085,7 +1085,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 8px 30px rgba(255, 149, 0, 0.4);
-    transition: all var(--duration-normal) var(--ease-spring);
+    transition: background-color var(--duration-normal) var(--ease-spring), color var(--duration-normal) var(--ease-spring), transform var(--duration-normal) var(--ease-spring);
 }
 
 .fab:hover {
@@ -1115,7 +1115,7 @@ body {
     -webkit-backdrop-filter: blur(8px);
     opacity: 0;
     visibility: hidden;
-    transition: all var(--duration-normal) var(--ease-ios);
+    transition: background-color var(--duration-normal) var(--ease-ios), color var(--duration-normal) var(--ease-ios);
 }
 
 .sheet-backdrop.open {
@@ -1188,7 +1188,7 @@ body {
     color: var(--text-secondary);
     border-radius: 50%;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .sheet-close:hover {
@@ -1231,7 +1231,7 @@ body {
     font-size: var(--text-base);
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
     border: none;
 }
 
@@ -1279,7 +1279,7 @@ body {
     border-radius: var(--radius-md);
     font-size: var(--text-base);
     color: var(--text-primary);
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
     outline: none;
 }
 
@@ -1354,7 +1354,7 @@ body {
     font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .day-chip:hover {
@@ -1386,7 +1386,7 @@ body {
     border: 2px solid transparent;
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .sound-option:hover {
@@ -1435,7 +1435,7 @@ body {
     color: #FFFFFF;
     border-radius: 50%;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
 }
 
 .sound-preview-btn:hover {
@@ -1677,7 +1677,7 @@ body {
     border: 2px solid transparent;
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios);
     text-align: center;
 }
 

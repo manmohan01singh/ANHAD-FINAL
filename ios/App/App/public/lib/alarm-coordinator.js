@@ -30,6 +30,18 @@
             return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         }
 
+        _postMessage(msg) {
+            try {
+                this.bc.postMessage(msg);
+            } catch (e) {
+                if (e.name === 'InvalidStateError') {
+                    console.warn('[AlarmCoordinator] Channel closed, skipping message');
+                } else {
+                    console.error('[AlarmCoordinator] postMessage error:', e);
+                }
+            }
+        }
+
         _init() {
             // Setup BroadcastChannel listener
             this.bc.onmessage = (event) => {
@@ -43,7 +55,7 @@
             this.intervals.push(setInterval(() => this._checkLeaderHealth(), HEARTBEAT_INTERVAL));
 
             // Announce presence
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'presence',
                 tabId: this.tabId,
                 timestamp: Date.now()
@@ -101,7 +113,7 @@
             if (this._isLeader) return;
 
             // Broadcast election intent with tabId (lower = older = leader)
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'election',
                 tabId: this.tabId,
                 timestamp: Date.now()
@@ -120,7 +132,7 @@
             this.leaderId = this.tabId;
             console.log('[AlarmCoordinator] Became LEADER');
             
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'heartbeat',
                 tabId: this.tabId,
                 isLeader: true,
@@ -135,7 +147,7 @@
 
         _sendHeartbeat() {
             if (this._isLeader) {
-                this.bc.postMessage({
+                this._postMessage({
                     type: 'heartbeat',
                     tabId: this.tabId,
                     isLeader: true,
@@ -156,12 +168,12 @@
         }
 
         _cleanup() {
-            // Clear all intervals
+            // Clear all intervals first to prevent any postMessage calls after close
             this.intervals.forEach(clearInterval);
             this.intervals = [];
 
             // Announce departure
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'departure',
                 tabId: this.tabId
             });
@@ -318,7 +330,7 @@
                 return;
             }
 
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'alarm_fired',
                 alarmId,
                 reminder,
@@ -331,7 +343,7 @@
          * Acknowledge alarm (snooze/dismiss)
          */
         acknowledgeAlarm(alarmId, action) {
-            this.bc.postMessage({
+            this._postMessage({
                 type: 'alarm_acknowledged',
                 alarmId,
                 action,

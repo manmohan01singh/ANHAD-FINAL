@@ -63,7 +63,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional" rel="stylesheet">
 
   <!-- Base stylesheets -->
   <link rel="stylesheet" href="../css/mobile-lock.css">
@@ -227,7 +227,7 @@
             <div class="banner-subtitle" id="resultsSourceDetail">Shabads from Shri Guru Granth Sahib Ji</div>
           </div>
         </div>
-        <img src="../assets/darbar-sahib-evening.webp" alt="Darbar Sahib" class="banner-thumbnail" onerror="this.style.display='none'">
+        <img decoding="async" src="../assets/darbar-sahib-evening.webp" alt="Darbar Sahib" class="banner-thumbnail" onerror="this.style.display='none'">
       </div>
 
       <!-- Results List container -->
@@ -275,21 +275,21 @@
           <!-- Row 1: 3 cards -->
           <button class="quick-card card-sggs" data-source="G">
             <div class="card-icon-wrapper color-blue">
-              <img src="../assets/sggs-transparent.webp" class="card-icon-img" alt="Sri Guru Granth Sahib Ji">
+              <img decoding="async" src="../assets/sggs-transparent.webp" class="card-icon-img" alt="Sri Guru Granth Sahib Ji">
             </div>
             <span class="card-title-punjabi">ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ</span>
           </button>
           
           <button class="quick-card card-dasam" data-source="D">
             <div class="card-icon-wrapper color-orange">
-              <img src="../assets/dasam-granth-transparent.webp" class="card-icon-img" alt="Dasam Granth">
+              <img decoding="async" src="../assets/dasam-granth-transparent.webp" class="card-icon-img" alt="Dasam Granth">
             </div>
             <span class="card-title-punjabi">ਦਸਮ ਗ੍ਰੰਥ</span>
           </button>
           
           <button class="quick-card card-bhai" data-source="B">
             <div class="card-icon-wrapper color-green">
-              <img src="../assets/sarbloh-granth-transparent.webp" class="card-icon-img" alt="ਭਾਈ ਗੁਰਦਾਸ ਜੀ">
+              <img decoding="async" src="../assets/sarbloh-granth-transparent.webp" class="card-icon-img" alt="ਭਾਈ ਗੁਰਦਾਸ ਜੀ">
             </div>
             <span class="card-title-punjabi">ਭਾਈ ਗੁਰਦਾਸ ਜੀ</span>
           </button>
@@ -802,8 +802,8 @@
 
 <!-- Legacy DOM ids for background manager compatibility (hidden) -->
 <div id="guruBgContainer" class="guru-bg-container" style="display:none;">
-  <img id="guruBgImg1" src="" alt="">
-  <img id="guruBgImg2" src="" alt="">
+  <img decoding="async" id="guruBgImg1" src="" alt="">
+  <img decoding="async" id="guruBgImg2" src="" alt="">
 </div>
 
 <!-- Scripts -->

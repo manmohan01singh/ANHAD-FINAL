@@ -30,7 +30,7 @@ class PWAManager {
     this.currentVersion = null;
     this.versionCheckInterval = null;
     this._hasReloaded = false; // in-memory guard
-    
+
     // Resolve app root from script location (robustly handles query strings)
     const scriptTag = document.querySelector('script[src*="pwa-register.js"]');
     if (scriptTag) {
@@ -56,7 +56,7 @@ class PWAManager {
         const elapsed = Date.now() - parseInt(lastReload, 10);
         // 30 second cooldown — if we reloaded within 30s, don't reload again
         if (elapsed < 30000) {
-          console.log(`[PWA] Reload cooldown active (${Math.round(elapsed/1000)}s ago)`);
+          console.log(`[PWA] Reload cooldown active (${Math.round(elapsed / 1000)}s ago)`);
           return true;
         }
       }
@@ -152,7 +152,7 @@ class PWAManager {
       if (window.innerWidth > window.innerHeight && window.innerWidth <= 1024) {
         console.warn('⚠️ Please rotate your device to portrait mode for the best experience');
       }
-    });
+    }, { passive: true });
   }
 
   async init() {
@@ -165,7 +165,7 @@ class PWAManager {
     // SW registration + controllerchange + version polling cause infinite reload loops
     // inside the Android/iOS WebView where content is served from bundled assets
     const isCapacitor = typeof window.Capacitor !== 'undefined' ||
-                        navigator.userAgent.includes('Capacitor');
+      navigator.userAgent.includes('Capacitor');
     if (isCapacitor) {
       console.log('[PWA] Running in Capacitor — skipping SW registration & version polling');
       this.lockOrientation();
@@ -213,7 +213,7 @@ class PWAManager {
       this.registration.addEventListener('updatefound', () => {
         const newWorker = this.registration.installing;
         console.log('[PWA] New service worker installing...');
-        
+
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             console.log('[PWA] New SW ready — activating silently');
@@ -291,7 +291,7 @@ class PWAManager {
 
       if (serverVersion !== this.currentVersion) {
         console.log(`[PWA] 🔄 VERSION CHANGED: ${this.currentVersion} → ${serverVersion}`);
-        
+
         // Update stored version FIRST (so after reload it won't re-trigger)
         this.currentVersion = serverVersion;
         localStorage.setItem('anhad_app_version', serverVersion);
@@ -336,13 +336,13 @@ class PWAManager {
    */
   applyUpdateSilently() {
     console.log('[PWA] Telling waiting SW to skip waiting');
-    
+
     // Remove any existing update notification banners
     const existingBanner = document.querySelector('.pwa-update-banner');
     if (existingBanner) existingBanner.remove();
     const existingNotif = document.getElementById('pwa-update-notification');
     if (existingNotif) existingNotif.remove();
-    
+
     if (this.registration?.waiting) {
       this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }

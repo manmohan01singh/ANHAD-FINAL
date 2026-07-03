@@ -39,7 +39,7 @@
     border: 1px solid var(--glass-border-light);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .folder-item:hover {
@@ -76,7 +76,7 @@
     border-radius: var(--radius-lg);
     color: var(--text-tertiary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: border-color 0.2s, color 0.2s;
 }
 
 .add-folder-btn:hover {
@@ -111,7 +111,7 @@
     background: var(--glass-bg);
     border: 1px solid var(--glass-border-light);
     border-radius: var(--radius-lg);
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
 .bookmark-item:hover {
@@ -177,7 +177,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: background-color 0.2s, border-color 0.2s;
     flex-shrink: 0;
 }
 

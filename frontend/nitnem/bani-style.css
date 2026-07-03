@@ -798,7 +798,7 @@ body::after {
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   position: relative;
   overflow: hidden;
   box-shadow:
@@ -901,7 +901,7 @@ body::after {
   font-family: inherit;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   position: relative;
   z-index: 1;
 }
@@ -1103,7 +1103,7 @@ body.lens-mode .verses-container {
   bottom: 18px;
   z-index: 10;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+
   scroll-snap-type: y mandatory;
   padding: 0 5vw;
 }
@@ -1311,7 +1311,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   margin-top: 0.5rem;
   box-shadow: var(--shadow-md);
 }
@@ -1441,7 +1441,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   background: var(--gradient-card);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-light);
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   position: relative;
   overflow: hidden;
   box-shadow:
@@ -1522,7 +1522,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   margin-bottom: 1.25rem;
   text-align: center;
   text-shadow: 0 0 30px var(--accent-glow);
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 .verse:hover .verse__gurmukhi {
@@ -1587,7 +1587,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
   z-index: 50;
   display: flex;
@@ -1659,7 +1659,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   backdrop-filter: blur(5px);
   opacity: 0;
   visibility: hidden;
-  transition: all var(--transition-normal);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
   z-index: 200;
 }
 
@@ -1877,7 +1877,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .settings-close:hover {
@@ -1930,7 +1930,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .size-btn:hover {
@@ -1973,7 +1973,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .theme-btn i {
@@ -2023,7 +2023,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .spacing-btn.active {
@@ -2052,7 +2052,7 @@ body.lens-mode .verse.pankti-active .verse__gurmukhi {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .reset-btn:hover {

@@ -59,7 +59,7 @@
       if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
       if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
       return 'https://anhad-final.onrender.com';
-    } catch (e) {}
+    } catch (e) { }
     return 'https://anhad-final.onrender.com';
   })();
 
@@ -72,7 +72,7 @@
           return s.src.replace(/lib\/anhad-audio-singleton\.js.*$/, '');
         }
       }
-    } catch (e) {}
+    } catch (e) { }
     return '';
   })();
 
@@ -164,7 +164,7 @@
   let currentTrackIndex = 0;
   let currentShufflePosition = 0; // Position in shuffle order for seamless advancing
   let currentTrackTitle = '';   // Live track title from server (e.g. "Deenanath Suno")
-    let currentTrackArtist = '';  // Live track artist from server
+  let currentTrackArtist = '';  // Live track artist from server
   let liveSyncAnchor = null;    // { wallTime, audioTime, trackIndex }
   let isPlaying = false;
   let isLoading = false;
@@ -197,11 +197,12 @@
   function on(event, fn) {
     if (!listeners.has(event)) listeners.set(event, new Set());
     listeners.get(event).add(fn);
-    return () => listeners.get(event)?.delete(fn);
+    var _set = listeners.get(event);
+    return function () { if (_set) _set.delete(fn); };
   }
 
   function off(event, fn) {
-    listeners.get(event)?.delete(fn);
+    var _s2 = listeners.get(event); if (_s2) _s2.delete(fn);
   }
 
   function getDurationCache() {
@@ -220,12 +221,12 @@
       cache[streamName] = cache[streamName] || {};
       cache[streamName][trackIndex] = Math.round(duration);
       localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function getCachedTrackDuration(streamName, trackIndex) {
     const stream = STREAMS[streamName];
-    const fallback = stream?.defaultTrackDuration || 3600;
+    const fallback = stream && stream.defaultTrackDuration || 3600;
     // PERF FIX: Prefer measured durations baked into the PWA for backend-free sync.
     const known = streamName === 'amritvela'
       ? AMRITVELA_KNOWN_DURATIONS[trackIndex]
@@ -233,7 +234,7 @@
         ? SIMRAN_KNOWN_DURATIONS[trackIndex]
         : null;
     if (Number.isFinite(known) && known > 60) return known;
-    const duration = getDurationCache()?.[streamName]?.[trackIndex];
+    const duration = getDurationCache() && getDurationCache()[streamName] && getDurationCache()[streamName][trackIndex];
     return Number.isFinite(duration) && duration > 60 ? duration : fallback;
   }
 
@@ -247,7 +248,7 @@
       const meta = raw ? JSON.parse(raw) : {};
       meta[streamName] = { epoch: Number(data.epoch), lastServerTime: Date.now() };
       localStorage.setItem(BROADCAST_META_KEY, JSON.stringify(meta));
-    } catch (e) {}
+    } catch (e) { }
 
     if (data.trackDurations && typeof data.trackDurations === 'object') {
       try {
@@ -261,14 +262,14 @@
           }
         });
         localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
   function getBroadcastEpoch(streamName) {
     try {
       const meta = JSON.parse(localStorage.getItem(BROADCAST_META_KEY) || '{}');
-      const e = meta[streamName]?.epoch;
+      const e = meta[streamName] && meta[streamName].epoch;
       return Number.isFinite(e) ? e : null;
     } catch (e) {
       return null;
@@ -285,7 +286,7 @@
       const meta = raw ? JSON.parse(raw) : {};
       meta[streamName] = { epoch: Number(data.epoch), lastServerTime: Date.now() };
       localStorage.setItem(BROADCAST_META_KEY, JSON.stringify(meta));
-    } catch (e) {}
+    } catch (e) { }
 
     if (data.trackDurations && typeof data.trackDurations === 'object') {
       try {
@@ -299,14 +300,14 @@
           }
         });
         localStorage.setItem(DURATION_CACHE_KEY, JSON.stringify(cache));
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
   function getBroadcastEpoch(streamName) {
     try {
       const meta = JSON.parse(localStorage.getItem(BROADCAST_META_KEY) || '{}');
-      const e = meta[streamName]?.epoch;
+      const e = meta[streamName] && meta[streamName].epoch;
       return Number.isFinite(e) ? e : null;
     } catch (e) {
       return null;
@@ -374,22 +375,22 @@
       }
       accumulated += trackDuration;
     }
-    return { trackIndex: 0, position: 0, shufflePosition: 0, trackDuration: playlist[0]?.duration || 0 };
+    return { trackIndex: 0, position: 0, shufflePosition: 0, trackDuration: playlist[0] && playlist[0].duration || 0 };
   }
 
   function getSimranTitles() {
     return [
-      'Deenanath Suno','Tum Karo Daya','Sunn Yaar Hamare Sajan','Sukh Naahi Re',
-      'Tu Prabh Data','Satnam Waheguru','Mere Ram','Rakhwala Simran','Aas Pyaasi',
-      'Prabh Paas Jan Ki Ardas','Tu Hi Tu Hi','Naam Naam Naam Apna Naam Deho',
-      'Dhan Guru Ramdas Ji','Aao Sajana','Tuj Bin Kavan Hamara','Mera Baid Guru Govinda',
-      'Jagan Te Supna Bhala','Eh Neech Karam Har Mere','Apna Naam Japao',
-      'Mere Pyaare Satuguru Ji','Rakh Leho Bhagwan','Kab Gal Lavenge','Mere Ram Mere Ram',
-      'Rakheya Karo','Waheguru Simran Uth Naam Jap','Best Waheguru Simran',
-      'Kad Nanak Aave Vari','Bin Gur Na Pavaigo','Kiyo Shingar Milan Ke Taayee',
-      'Naam Bina Nahi Jeevia Jaye','Aath Pehar Simro','Mil Mere Preetma Jeeo',
-      'Satnam Shri Waheguru','Rakh Rakh Mere Beethla','Praan Adhaara Ram',
-      'Dhan Baba Nanak','Sunn Mann Mittar Pyareya','Mere Satgur Pyare Gurnanak Aaja'
+      'Deenanath Suno', 'Tum Karo Daya', 'Sunn Yaar Hamare Sajan', 'Sukh Naahi Re',
+      'Tu Prabh Data', 'Satnam Waheguru', 'Mere Ram', 'Rakhwala Simran', 'Aas Pyaasi',
+      'Prabh Paas Jan Ki Ardas', 'Tu Hi Tu Hi', 'Naam Naam Naam Apna Naam Deho',
+      'Dhan Guru Ramdas Ji', 'Aao Sajana', 'Tuj Bin Kavan Hamara', 'Mera Baid Guru Govinda',
+      'Jagan Te Supna Bhala', 'Eh Neech Karam Har Mere', 'Apna Naam Japao',
+      'Mere Pyaare Satuguru Ji', 'Rakh Leho Bhagwan', 'Kab Gal Lavenge', 'Mere Ram Mere Ram',
+      'Rakheya Karo', 'Waheguru Simran Uth Naam Jap', 'Best Waheguru Simran',
+      'Kad Nanak Aave Vari', 'Bin Gur Na Pavaigo', 'Kiyo Shingar Milan Ke Taayee',
+      'Naam Bina Nahi Jeevia Jaye', 'Aath Pehar Simro', 'Mil Mere Preetma Jeeo',
+      'Satnam Shri Waheguru', 'Rakh Rakh Mere Beethla', 'Praan Adhaara Ram',
+      'Dhan Baba Nanak', 'Sunn Mann Mittar Pyareya', 'Mere Satgur Pyare Gurnanak Aaja'
     ];
   }
 
@@ -426,7 +427,7 @@
 
   async function getServerLivePosition() {
     // PERF FIX: Virtual live streams are synchronized by UTC math, not a backend round trip.
-    if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+    if (currentStream && STREAMS[currentStream] && STREAMS[currentStream].type === 'playlist') {
       const localPos = getLocalLivePosition();
       console.log(`[AnhadAudio] Virtual live sync: ${currentStream} track ${localPos.trackIndex + 1} seekTo=${Math.floor(localPos.position)}s`);
       emitLivePosition(localPos, false);
@@ -435,7 +436,7 @@
     let timeoutId = null;
     try {
       const t0 = Date.now();
-      const apiEndpoint = STREAMS[currentStream]?.liveApi || '/api/radio/live';
+      const apiEndpoint = STREAMS[currentStream] && STREAMS[currentStream].liveApi || '/api/radio/live';
       // FIX: Use deterministic time bucket (5s) instead of Math.random() to prevent cache-busting loops
       const url = `${API_BASE}${apiEndpoint}?t=${Math.floor(Date.now() / 5000) * 5000}`;
       console.log(`[AnhadAudio] Fetching live position from: ${url}`);
@@ -488,7 +489,7 @@
   }
 
   function emitLivePosition(pos, fromServer) {
-    if (!pos || !currentStream || STREAMS[currentStream]?.type !== 'playlist') return;
+    if (!pos || !currentStream || STREAMS[currentStream] && STREAMS[currentStream].type !== 'playlist') return;
     const localTime = audio ? Number(audio.currentTime) || 0 : 0;
     const sameTrack = pos.trackIndex === currentTrackIndex;
     const drift = sameTrack ? Math.abs((Number(pos.position) || 0) - localTime) : Infinity;
@@ -529,7 +530,7 @@
       };
       localStorage.setItem(STATE_KEY, JSON.stringify(data));
       // NOTE: Removed duplicate write to gurbani_radio_state to prevent double I/O
-    } catch (e) {}
+    } catch (e) { }
   }
 
   function loadState() {
@@ -564,7 +565,7 @@
       }
       // Clear the preloaded reference
       window.__anhadPreloadedAudio = null;
-      
+
       // Re-attach event listeners to the adopted element
       attachAudioEventListeners();
       return;
@@ -600,7 +601,7 @@
       // Configure for background audio on iOS/Android
       audio.setAttribute('playsinline', '');
       audio.setAttribute('webkit-playsinline', '');
-      
+
       // Prevent screen from sleeping during playback
       if ('wakeLock' in navigator) {
         document.addEventListener('visibilitychange', async () => {
@@ -626,7 +627,7 @@
 
   function attachAudioEventListeners() {
     if (!audio) return;
-    
+
     audio.addEventListener('playing', () => {
       isPlaying = true;
       isLoading = false;
@@ -637,14 +638,14 @@
       }
       emit('loading', { isLoading: false });
       audioRetryCount = 0;
-      
+
       // Update anchor on every play to maintain accuracy
       if (currentStream === 'amritvela' || currentStream === 'simran') {
-          liveSyncAnchor = {
-              wallTime: Date.now(),
-              audioTime: audio.currentTime,
-              trackIndex: currentTrackIndex
-          };
+        liveSyncAnchor = {
+          wallTime: Date.now(),
+          audioTime: audio.currentTime,
+          trackIndex: currentTrackIndex
+        };
       }
       saveState();
       updateMediaSession();
@@ -715,7 +716,7 @@
       const streamAtStall = currentStream;
       setTimeout(() => {
         if (!audio || currentStream !== streamAtStall) return;
-        try { audio.load(); } catch (e) {}
+        try { audio.load(); } catch (e) { }
       }, 2000);
     });
 
@@ -771,11 +772,11 @@
         audioRetryCount++;
         const retryDelay = currentStream === 'darbar' ? 3000 : 2000 * audioRetryCount;
         const streamAtError = currentStream;
-        console.log(`[AnhadAudio] 🔁 Auto-retry ${audioRetryCount}/3 in ${retryDelay/1000}s...`);
+        console.log(`[AnhadAudio] 🔁 Auto-retry ${audioRetryCount}/3 in ${retryDelay / 1000}s...`);
         setTimeout(() => {
           if (!isPlaying && !isPlayLocked && currentStream === streamAtError) {
             if (streamAtError === 'darbar' && audio) {
-              try { audio.load(); } catch (e) {}
+              try { audio.load(); } catch (e) { }
               audio.play().catch(() => play(streamAtError));
             } else {
               play(streamAtError);
@@ -835,17 +836,17 @@
     } else if (streamName === 'simran') {
       // Build title from filename: extract human-readable part
       const simranTitles = [
-        'Deenanath Suno','Tum Karo Daya','Sunn Yaar Hamare Sajan','Sukh Naahi Re',
-        'Tu Prabh Data','Satnam Waheguru','Mere Ram','Rakhwala Simran','Aas Pyaasi',
-        'Prabh Paas Jan Ki Ardas','Tu Hi Tu Hi','Naam Naam Naam Apna Naam Deho',
-        'Dhan Guru Ramdas Ji','Aao Sajana','Tuj Bin Kavan Hamara','Mera Baid Guru Govinda',
-        'Jagan Te Supna Bhala','Eh Neech Karam Har Mere','Apna Naam Japao',
-        'Mere Pyaare Satuguru Ji','Rakh Leho Bhagwan','Kab Gal Lavenge','Mere Ram Mere Ram',
-        'Rakheya Karo','Waheguru Simran Uth Naam Jap','Best Waheguru Simran',
-        'Kad Nanak Aave Vari','Bin Gur Na Pavaigo','Kiyo Shingar Milan Ke Taayee',
-        'Naam Bina Nahi Jeevia Jaye','Aath Pehar Simro','Mil Mere Preetma Jeeo',
-        'Satnam Shri Waheguru','Rakh Rakh Mere Beethla','Praan Adhaara Ram',
-        'Dhan Baba Nanak','Sunn Mann Mittar Pyareya','Mere Satgur Pyare Gurnanak Aaja'
+        'Deenanath Suno', 'Tum Karo Daya', 'Sunn Yaar Hamare Sajan', 'Sukh Naahi Re',
+        'Tu Prabh Data', 'Satnam Waheguru', 'Mere Ram', 'Rakhwala Simran', 'Aas Pyaasi',
+        'Prabh Paas Jan Ki Ardas', 'Tu Hi Tu Hi', 'Naam Naam Naam Apna Naam Deho',
+        'Dhan Guru Ramdas Ji', 'Aao Sajana', 'Tuj Bin Kavan Hamara', 'Mera Baid Guru Govinda',
+        'Jagan Te Supna Bhala', 'Eh Neech Karam Har Mere', 'Apna Naam Japao',
+        'Mere Pyaare Satuguru Ji', 'Rakh Leho Bhagwan', 'Kab Gal Lavenge', 'Mere Ram Mere Ram',
+        'Rakheya Karo', 'Waheguru Simran Uth Naam Jap', 'Best Waheguru Simran',
+        'Kad Nanak Aave Vari', 'Bin Gur Na Pavaigo', 'Kiyo Shingar Milan Ke Taayee',
+        'Naam Bina Nahi Jeevia Jaye', 'Aath Pehar Simro', 'Mil Mere Preetma Jeeo',
+        'Satnam Shri Waheguru', 'Rakh Rakh Mere Beethla', 'Praan Adhaara Ram',
+        'Dhan Baba Nanak', 'Sunn Mann Mittar Pyareya', 'Mere Satgur Pyare Gurnanak Aaja'
       ];
       currentTrackTitle = simranTitles[currentTrackIndex] || 'Waheguru Simran';
     } else if (streamName === 'amritvela') {
@@ -887,7 +888,7 @@
     // On PWA: call load() to reset media pipeline for reused elements.
     // On Capacitor: do NOT call load() — it jams Android's native MediaPlayer.
     if (!window.Capacitor) {
-      try { audio.load(); } catch (e) {}
+      try { audio.load(); } catch (e) { }
     }
 
     // SAFARI AUTOPLAY FIX: Safari iOS pauses the media element on `ended`. If we don't call
@@ -895,11 +896,11 @@
     // AND refuses to load metadata (causing the 8s metadata timeout deadlock).
     audio.volume = 0; // Mute temporarily to avoid glitch before seek
     try {
-        const initPlay = audio.play();
-        if (initPlay && initPlay.catch) initPlay.catch(() => {});
-    } catch(e) {}
+      const initPlay = audio.play();
+      if (initPlay && initPlay.catch) initPlay.catch(() => { });
+    } catch (e) { }
 
-        // Update live sync anchor after load
+    // Update live sync anchor after load
     liveSyncAnchor = {
       wallTime: Date.now(),
       audioTime: requestedPosition,
@@ -927,7 +928,7 @@
         console.log(`[AnhadAudio] ▶️ Track transition: playing from 0:00 (${reason})`);
         try {
           if (audio.currentTime > 2) audio.currentTime = 0;
-        } catch (e) {}
+        } catch (e) { }
         audio.volume = 0.8; // RESTORE VOLUME from the Safari autoplay fix
         audio.play()
           .then(() => { isPlaying = true; isLoading = false; emit('statechange', getPublicState()); })
@@ -950,15 +951,15 @@
           if (!afterPlay) console.warn('[AnhadAudio] ⚠️ Duration still unknown at seek-time, will retry post-play');
           return false;
         }
-        
+
         const clampedSeek = Math.min(seekPos, audio.duration - 1);
 
         // CAPACITOR FIX: Delay manual seek on Android until after playback has started!
         // If we set currentTime while the MediaPlayer is still initializing the buffer,
         // it permanently locks up ("infinite buffering").
         if (window.Capacitor && !afterPlay) {
-            console.log(`[AnhadAudio] ⏳ Capacitor: Deferring seek to post-play to prevent buffer lock...`);
-            return true; // We will seek in the .then() block of audio.play()
+          console.log(`[AnhadAudio] ⏳ Capacitor: Deferring seek to post-play to prevent buffer lock...`);
+          return true; // We will seek in the .then() block of audio.play()
         }
 
         if (Math.abs(audio.currentTime - clampedSeek) > 3) {
@@ -1004,13 +1005,13 @@
         setTimeout(() => { if (audio && audio.volume < 0.1) audio.volume = 0.8; }, 5000);
       } else {
         performSeek(false);
-        
+
         // FADE-IN FIX: Smooth transition when starting a new track or playing from beginning
         const isFromBeginning = seekPos <= 2;
         if (isFromBeginning) {
-            audio.volume = 0;
+          audio.volume = 0;
         } else {
-            audio.volume = 0.8;
+          audio.volume = 0.8;
         }
 
         audio.play().then(() => {
@@ -1020,20 +1021,20 @@
           console.log(`[AnhadAudio] ▶️ Playing from ${Math.floor(audio.currentTime)}s (${reason})`);
 
           if (isFromBeginning) {
-              const targetVol = 0.8;
-              const fadeMs = 2000;
-              const steps = 20;
-              let step = 0;
-              const interval = setInterval(() => {
-                  step++;
-                  if (audio) {
-                      audio.volume = targetVol * (step / steps);
-                  }
-                  if (step >= steps) {
-                      clearInterval(interval);
-                      if (audio) audio.volume = targetVol;
-                  }
-              }, fadeMs / steps);
+            const targetVol = 0.8;
+            const fadeMs = 2000;
+            const steps = 20;
+            let step = 0;
+            const interval = setInterval(() => {
+              step++;
+              if (audio) {
+                audio.volume = targetVol * (step / steps);
+              }
+              if (step >= steps) {
+                clearInterval(interval);
+                if (audio) audio.volume = targetVol;
+              }
+            }, fadeMs / steps);
           }
         }).catch(e => {
           console.warn('[AnhadAudio] ❌ Play failed:', e.message);
@@ -1128,14 +1129,14 @@
         const baseUrl = (window.Capacitor && streamName === 'darbar')
           ? SGPC_LIVE
           : stream.url;
-        const freshUrl = stream.skipCacheBuster 
-          ? baseUrl 
+        const freshUrl = stream.skipCacheBuster
+          ? baseUrl
           : (baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 5000) * 5000);
         console.log('[AnhadAudio] 🔴 LIVE: ' + freshUrl);
         audio.src = freshUrl;
         // PWA only: call load() to reset pipeline
         if (!window.Capacitor) {
-          try { audio.load(); } catch (e) {}
+          try { audio.load(); } catch (e) { }
         }
         try {
           await audio.play();
@@ -1156,15 +1157,15 @@
         // They can click LIVE to jump back. This prevents the jarring track-change
         // that happens when the server is at a different position than where they left off.
         const saved = loadState();
-        const savedAgeMs = Date.now() - (saved?.timestamp || 0);
+        const savedAgeMs = Date.now() - (saved && saved.timestamp || 0);
         const isRecentRefresh = savedAgeMs < 15 * 60 * 1000; // 15 minutes
-        const isSameStream = saved?.stream === streamName;
+        const isSameStream = saved && saved.stream === streamName;
         const hasSavedPosition = saved && typeof saved.currentTime === 'number' && saved.currentTime > 5;
 
         // PERF FIX: Virtual live joins the UTC live position on load; pause/resume is the only DVR-like path.
         if (false && isRecentRefresh && isSameStream && hasSavedPosition) {
           // Restore saved position — don't snap to live
-          console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs/1000)}s ago)`);
+          console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs / 1000)}s ago)`);
           const restoredPos = {
             trackIndex: saved.trackIndex || 0,
             position: saved.currentTime,
@@ -1172,7 +1173,7 @@
           };
           loadPlaylistPosition(streamName, restoredPos, requestId);
           // Fetch server data in background to update duration cache and live offset anchor
-          getServerLivePosition().catch(() => {});
+          getServerLivePosition().catch(() => { });
         } else {
           // New session or too old — sync to live server position
           try {
@@ -1229,7 +1230,7 @@
       }
     }
 
-    if (currentStream && STREAMS[currentStream]?.type === 'playlist') {
+    if (currentStream && STREAMS[currentStream] && STREAMS[currentStream].type === 'playlist') {
       console.log('[AnhadAudio] No loaded source for playlist, rejoining live timeline');
       await play(currentStream);
       return;
@@ -1313,7 +1314,7 @@
     // PERF FIX: Virtual-live track endings advance locally to the next ordered track.
     // A fresh UTC sync happens only when the user taps Jump to Live.
     const orderedStream = STREAMS[currentStream];
-    if (orderedStream?.type === 'playlist') {
+    if (orderedStream && orderedStream.type === 'playlist') {
       const nextIndex = (currentTrackIndex + 1) % orderedStream.totalTracks;
       const requestId = ++playRequestId;
       const advancedStream = currentStream;
@@ -1424,7 +1425,7 @@
   }
 
   async function correctLiveDrift() {
-    if (!isPlaying || !audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') return;
+    if (!isPlaying || !audio || !currentStream || STREAMS[currentStream] && STREAMS[currentStream].type !== 'playlist') return;
     if (trackTransitionInProgress || isPlayLocked || isLoading) return;
     if (Date.now() - lastLiveDriftCheckAt < 25000) return;
     lastLiveDriftCheckAt = Date.now();
@@ -1442,11 +1443,11 @@
         // Let them finish their current track naturally.
         const stream = STREAMS[currentStream];
         if (stream && stream.type === 'playlist') {
-            console.log(`[AnhadAudio] Live drift: track mismatch (${currentTrackIndex + 1} vs server ${pos.trackIndex + 1}), but staying at user position (Playlist DVR mode).`);
-            emit('statechange', getPublicState());
-            return;
+          console.log(`[AnhadAudio] Live drift: track mismatch (${currentTrackIndex + 1} vs server ${pos.trackIndex + 1}), but staying at user position (Playlist DVR mode).`);
+          emit('statechange', getPublicState());
+          return;
         }
-        
+
         console.log(`[AnhadAudio] Live drift: significant track mismatch ${currentTrackIndex + 1} -> ${pos.trackIndex + 1}, rejoining server timeline`);
         const requestId = ++playRequestId;
         loadPlaylistPosition(currentStream, pos, requestId);
@@ -1516,7 +1517,7 @@
     initAudioElement();
     audio.volume = Math.max(0, Math.min(1, vol));
     // PERF FIX: Persist volume independently so every radio entry restores instantly.
-    try { localStorage.setItem('anhad_audio_volume', String(audio.volume)); } catch (e) {}
+    try { localStorage.setItem('anhad_audio_volume', String(audio.volume)); } catch (e) { }
     saveState();
     emit('volumechange', { volume: audio.volume });
   }
@@ -1555,7 +1556,7 @@
     // For other streams, use app logo
     const isKirtanStream = currentStream === 'amritvela' || currentStream === 'simran';
     const primaryArt = stream.artwork || resolveAsset('icons/icon-1024x1024.png');
-    
+
     let artworkList;
     if (isKirtanStream && stream.artwork) {
       // Use stream artwork for all sizes for Kirtan playing
@@ -1569,42 +1570,42 @@
     } else {
       // Use app logo for non-Kirtan streams or fallback
       artworkList = [
-        { src: resolveAsset('icons/icon-72x72.png'),   sizes: '72x72',     type: 'image/png' },
-        { src: resolveAsset('icons/icon-152x152.png'), sizes: '152x152',   type: 'image/png' },
-        { src: resolveAsset('icons/icon-192x192.png'), sizes: '192x192',   type: 'image/png' },
-        { src: resolveAsset('icons/icon-512x512.png'), sizes: '512x512',   type: 'image/png' },
-        { src: primaryArt,                             sizes: '1024x1024', type: 'image/png' }
+        { src: resolveAsset('icons/icon-72x72.png'), sizes: '72x72', type: 'image/png' },
+        { src: resolveAsset('icons/icon-152x152.png'), sizes: '152x152', type: 'image/png' },
+        { src: resolveAsset('icons/icon-192x192.png'), sizes: '192x192', type: 'image/png' },
+        { src: resolveAsset('icons/icon-512x512.png'), sizes: '512x512', type: 'image/png' },
+        { src: primaryArt, sizes: '1024x1024', type: 'image/png' }
       ];
     }
 
     // Show actual track title on lock screen for playlist streams (e.g. Simran track names)
     navigator.mediaSession.metadata = new MediaMetadata({
-      title:   currentTrackTitle  || stream.name,
-      artist:  currentTrackArtist || stream.subtitle,
-      album:   'ANHAD - Gurbani Radio',
+      title: currentTrackTitle || stream.name,
+      artist: currentTrackArtist || stream.subtitle,
+      album: 'ANHAD - Gurbani Radio',
       artwork: artworkList
     });
 
     // PLAY: resume in-place so lock screen play does NOT re-sync to live position
-    navigator.mediaSession.setActionHandler('play',          () => resumeInPlace());
-    navigator.mediaSession.setActionHandler('pause',         () => pause());
-    navigator.mediaSession.setActionHandler('stop',          () => stop());
+    navigator.mediaSession.setActionHandler('play', () => resumeInPlace());
+    navigator.mediaSession.setActionHandler('pause', () => pause());
+    navigator.mediaSession.setActionHandler('stop', () => stop());
     // PREVIOUS = jump to live (server position re-sync)
     navigator.mediaSession.setActionHandler('previoustrack', () => play(currentStream));
 
     if (stream.type === 'playlist') {
-      navigator.mediaSession.setActionHandler('nexttrack',    () => playNextTrack());
+      navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack());
       navigator.mediaSession.setActionHandler('seekbackward', () => {
         if (audio) audio.currentTime = Math.max(0, audio.currentTime - 10);
       });
-      navigator.mediaSession.setActionHandler('seekforward',  () => {
+      navigator.mediaSession.setActionHandler('seekforward', () => {
         if (audio) audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
       });
     } else {
       // Live stream — disable seek/next controls
-      try { navigator.mediaSession.setActionHandler('nexttrack',    null); } catch(e) {}
-      try { navigator.mediaSession.setActionHandler('seekbackward', null); } catch(e) {}
-      try { navigator.mediaSession.setActionHandler('seekforward',  null); } catch(e) {}
+      try { navigator.mediaSession.setActionHandler('nexttrack', null); } catch (e) { }
+      try { navigator.mediaSession.setActionHandler('seekbackward', null); } catch (e) { }
+      try { navigator.mediaSession.setActionHandler('seekforward', null); } catch (e) { }
     }
 
     // Update position state for lock screen seek bar
@@ -1615,7 +1616,7 @@
           playbackRate: audio.playbackRate || 1,
           position: audio.currentTime
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
@@ -1624,9 +1625,13 @@
     if (window.AnhadAudio) window.AnhadAudio.getLiveOffset = getLiveOffset;
   }
 
+  // ─── INTERVAL CLEANUP ─────────────────────────────────────────────────────
+  // All page-lifecycle intervals stored for cleanup on pagehide.
+  const _pageIntervals = [];
+
   // ─── LIVE OFFSET HEARTBEAT — Emits every second while playing ────────────
   // Powers the YouTube-style live indicator on player pages.
-  setInterval(() => {
+  _pageIntervals.push(setInterval(() => {
     if (!isPlaying || !currentStream || !audio) return;
     const stream = STREAMS[currentStream];
     if (!stream || stream.type !== 'playlist') return;
@@ -1641,11 +1646,11 @@
     window.dispatchEvent(new CustomEvent('anhadLiveOffset', {
       detail: { offsetSeconds, isAtLive, stream: currentStream }
     }));
-  }, 1000);
+  }, 1000));
 
-  setInterval(() => {
+  _pageIntervals.push(setInterval(() => {
     // PERF FIX: Drift check runs while playing or paused so pause/resume shows "behind live".
-    if (!currentStream || !audio || STREAMS[currentStream]?.type !== 'playlist') return;
+    if (!currentStream || !audio || STREAMS[currentStream] && STREAMS[currentStream].type !== 'playlist') return;
     const drift = getVirtualDrift();
     const detail = {
       ...drift,
@@ -1655,16 +1660,16 @@
     };
     emit('livedrift', detail);
     window.dispatchEvent(new CustomEvent('anhadLiveDrift', { detail }));
-  }, 5000);
+  }, 5000));
 
   // ─── WAKELOCK: Keep screen alive during playback ─────────────────────────
   let _wakeLock = null;
   async function acquireWakeLock() {
     if (!('wakeLock' in navigator)) return;
-    try { _wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    try { _wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { }
   }
   function releaseWakeLock() {
-    if (_wakeLock) { try { _wakeLock.release(); } catch(e) {} _wakeLock = null; }
+    if (_wakeLock) { try { _wakeLock.release(); } catch (e) { } _wakeLock = null; }
   }
 
   // ─── FOREGROUND SERVICE: Keep app alive in background for audio ────────
@@ -1676,23 +1681,23 @@
           title: stream ? stream.name : 'ANHAD Kirtan',
           artist: stream ? stream.subtitle : 'Playing',
           stream: currentStream || 'darbar'
-        }).catch(function(e) {
+        }).catch(function (e) {
           // If start fails, reset the flag so it can be retried next time
           foregroundServiceActive = false;
           console.warn('[AudioService] Foreground service start failed:', e);
         });
         console.log('[AudioService] Foreground service STARTED');
       }
-    } catch(e) { console.warn('[AudioService] Start failed:', e); }
+    } catch (e) { console.warn('[AudioService] Start failed:', e); }
   }
   function stopForegroundService() {
     foregroundServiceActive = false; // Reset flag so service can start again on next play
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
-        window.Capacitor.Plugins.AudioService.stop().catch(function() {});
+        window.Capacitor.Plugins.AudioService.stop().catch(function () { });
         console.log('[AudioService] Foreground service STOPPED');
       }
-    } catch(e) {}
+    } catch (e) { }
   }
   function updateForegroundServiceNotification() {
     try {
@@ -1702,22 +1707,22 @@
           title: stream ? stream.name : 'ANHAD Kirtan',
           artist: stream ? stream.subtitle : 'Playing',
           stream: currentStream || 'darbar'
-        }).catch(function() {});
+        }).catch(function () { });
       }
-    } catch(e) {}
+    } catch (e) { }
   }
   function syncNativeState(action) {
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
-        window.Capacitor.Plugins.AudioService.updateState({ action }).catch(function() {});
+        window.Capacitor.Plugins.AudioService.updateState({ action }).catch(function () { });
         console.log('[AudioService] Native state synced:', action);
       }
-    } catch(e) { console.warn('[AudioService] State sync failed:', e); }
+    } catch (e) { console.warn('[AudioService] State sync failed:', e); }
   }
 
   // ─── AUDIO FOCUS: Pause on phone call, resume after ───────────────────────
   let _wasPlayingBeforeInterrupt = false;
-  
+
   // Capacitor uses App plugin for lifecycle, NOT document pause/resume (that's Cordova)
   function setupAudioFocusHandling() {
     try {
@@ -1736,7 +1741,7 @@
         });
         console.log('[AnhadAudio] Capacitor audio focus handling registered');
       }
-    } catch(e) {}
+    } catch (e) { }
   }
   // Retry until Capacitor is ready
   if (window.Capacitor) {
@@ -1761,7 +1766,7 @@
   });
 
   // Update position state periodically for lock screen seek bar
-  setInterval(() => {
+  _pageIntervals.push(setInterval(() => {
     if (window.Capacitor) return; // Skip for Capacitor - native handles it
     if (isPlaying && audio && 'mediaSession' in navigator) {
       try {
@@ -1772,16 +1777,16 @@
             position: audio.currentTime
           });
         }
-      } catch (e) {}
+      } catch (e) { }
     }
-  }, 5000);
+  }, 5000));
 
-  setInterval(() => {
+  _pageIntervals.push(setInterval(() => {
     correctLiveDrift();
-  }, 15000); // Tighter sync (15s instead of 30s)
+  }, 15000)); // Tighter sync (15s instead of 30s)
 
-  setInterval(() => {
-    if (!isPlaying || !audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') return;
+  _pageIntervals.push(setInterval(() => {
+    if (!isPlaying || !audio || !currentStream || STREAMS[currentStream] && STREAMS[currentStream].type !== 'playlist') return;
     if (trackTransitionInProgress) return; // Don't interfere during a transition
 
     // ── GRACE PERIOD: Don't stall-detect while CDN is still buffering to seek position ──
@@ -1809,23 +1814,23 @@
       if (now - lastPlaylistEndedAt < 3000) return; // ended handler already handled this
       lastPlaylistEndedAt = now;
       console.log('[AnhadAudio] 🕐 Watchdog: near end of track, advancing with fade-out...');
-      
+
       // FADE OUT OVER 3 SECONDS BEFORE ADVANCING
       const fadeOutMs = 3000;
       const steps = 15;
       let step = 0;
       const startVol = audio.volume;
       const interval = setInterval(() => {
-          step++;
-          if (audio) {
-              audio.volume = Math.max(0, startVol * (1 - step / steps));
-          }
-          if (step >= steps) {
-              clearInterval(interval);
-              advanceToNextTrack();
-          }
+        step++;
+        if (audio) {
+          audio.volume = Math.max(0, startVol * (1 - step / steps));
+        }
+        if (step >= steps) {
+          clearInterval(interval);
+          advanceToNextTrack();
+        }
       }, fadeOutMs / steps);
-      
+
       return;
     }
 
@@ -1854,7 +1859,7 @@
       console.warn(`[AnhadAudio] 🔄 Playlist stalled ${stallThreshold * 15}s, re-syncing to live position...`);
       play(currentStream);
     }
-  }, 15000);
+  }, 15000));
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-RESUME on page load
@@ -1892,17 +1897,17 @@
     }
     if (!liveSyncAnchor || (currentStream !== 'amritvela' && currentStream !== 'simran')) return 0;
     if (!audio) return 0;
-    
+
     // Expected audio position if we were at the live edge
     const elapsedSinceSync = (Date.now() - liveSyncAnchor.wallTime) / 1000;
     const expectedAudioTime = liveSyncAnchor.audioTime + elapsedSinceSync;
-    
+
     // Simple offset: expected - actual
     return Math.max(0, expectedAudioTime - audio.currentTime);
   }
 
   function getVirtualDrift() {
-    if (!audio || !currentStream || STREAMS[currentStream]?.type !== 'playlist') {
+    if (!audio || !currentStream || STREAMS[currentStream] && STREAMS[currentStream].type !== 'playlist') {
       return { driftSeconds: 0, isLive: true };
     }
     const live = computeVirtualLivePosition(currentStream);
@@ -1937,14 +1942,14 @@
       currentTrackArtist,
       liveOffset: offset,
       isBehind: offset > 10,
-      streamName: stream?.name || '',
-      streamSubtitle: stream?.subtitle || '',
-      streamType: stream?.type || '',
-      artwork: stream?.artwork || '',
-      playerPage: stream?.playerPage || '',
-      volume: audio?.volume || 0.8,
-      currentTime: audio?.currentTime || 0,
-      duration: audio?.duration || 0
+      streamName: stream && stream.name || '',
+      streamSubtitle: stream && stream.subtitle || '',
+      streamType: stream && stream.type || '',
+      artwork: stream && stream.artwork || '',
+      playerPage: stream && stream.playerPage || '',
+      volume: audio && audio.volume || 0.8,
+      currentTime: audio && audio.currentTime || 0,
+      duration: audio && audio.duration || 0
     };
   }
 
@@ -1967,7 +1972,6 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   window.addEventListener('pagehide', saveState);
-  window.addEventListener('beforeunload', saveState);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // EXPOSE GLOBAL API
@@ -2052,21 +2056,21 @@
     if (window.LegacyAnhadAudio && !window.LegacyAnhadAudio._legacy) {
       console.warn('[AnhadAudio] ⚠️ Detected legacy audio system using wrong namespace - forcing cleanup');
     }
-    
+
     // Check for GlobalMiniPlayer (global-mini-player.js)
     if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.getAudio) {
       const gmpAudio = window.GlobalMiniPlayer.getAudio();
       if (gmpAudio && !gmpAudio.paused) {
         console.warn('[AnhadAudio] ⚠️ Detected active GlobalMiniPlayer - pausing it');
         window.GlobalMiniPlayer.pause();
-        window.GlobalMiniPlayer.stop?.();
+        window.GlobalMiniPlayer.stop && GlobalMiniPlayer.stop();
       }
       // Unregister from coordinator if registered
       if (window.AudioCoordinator) {
         window.AudioCoordinator.unregister('GlobalMiniPlayer');
       }
     }
-    
+
     // Check for any orphaned <audio> elements on the page
     document.querySelectorAll('audio').forEach(el => {
       if (el.id !== 'anhad-global-audio' && !el.paused) {
@@ -2076,7 +2080,7 @@
         el.removeAttribute('src');
       }
     });
-    
+
     // Log detection summary
     console.log('[AnhadAudio] ✅ Competing system check complete');
   }
@@ -2088,11 +2092,11 @@
 
   // Listen for external play requests (from hero cards etc.)
   window.addEventListener('anhadPlayStream', (e) => {
-    const stream = e.detail?.stream;
+    const stream = e.detail && e.detail.stream;
     if (stream) play(stream);
   });
   window.addEventListener('anhadRequestPlay', (e) => {
-    const stream = e.detail?.stream;
+    const stream = e.detail && e.detail.stream;
     if (stream) play(stream);
   });
 

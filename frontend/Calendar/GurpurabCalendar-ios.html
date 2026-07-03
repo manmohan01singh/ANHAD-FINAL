@@ -2,7 +2,6 @@
 <html lang="en" dir="ltr">
 <head>
   <meta name="color-scheme" content="light dark">
-  <!-- Theme blocker - MUST run before paint -->
   <script>
     (function() {
       try {
@@ -33,12 +32,12 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=SF+Pro+Display:wght@300;400;500;600;700;800&display=optional" rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
-  <link rel="stylesheet" href="gurpurab-calendar-ios.css?v=1">
+  <link rel="stylesheet" href="gurpurab-calendar-ios.css?v=2">
 
   <!-- Global Theme System -->
   <script src="../lib/global-theme.js"></script>
@@ -55,45 +54,92 @@
 </head>
 <body>
 
+  <!-- Background Ornaments -->
+  <div class="bg-ornaments" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Grain Texture Overlay -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
   <!-- Loader -->
   <div id="loader">
-    <div class="spinner"></div>
-    <div class="loader-text">Loading Calendar...</div>
+    <div class="loader-content">
+      <div class="loader-ring">
+        <div class="loader-ring-inner"></div>
+      </div>
+      <div class="loader-icon">☬</div>
+      <div class="loader-text">Gurpurab Calendar</div>
+      <div class="loader-sub">Loading sacred dates…</div>
+    </div>
   </div>
 
   <!-- Navigation -->
-  <header class="nav-bar">
-    <button class="nav-btn" id="backBtn" type="button" aria-label="Back">
-      <span class="chevron">&#8249;</span>
-    </button>
-    <h1 class="nav-title">Gurpurab Calendar</h1>
-    <button class="nav-btn primary" id="btnToday" type="button" aria-label="Today">Today</button>
+  <header class="nav-bar" id="navBar">
+    <div class="nav-bar-inner">
+      <button class="nav-btn" id="btnBack" type="button" aria-label="Back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 12H6M12 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <div class="nav-title-group">
+        <h1 class="nav-title">Gurpurab Calendar</h1>
+        <span class="nav-subtitle" id="navSubtitle">Sacred Sikh Dates</span>
+      </div>
+      <button class="nav-btn nav-btn-today" id="btnToday" type="button" aria-label="Today">
+        <span class="today-dot"></span>
+        Today
+      </button>
+    </div>
+    <div class="nav-bar-glow"></div>
   </header>
 
   <main class="container">
 
     <!-- Today Section -->
-    <section class="section">
+    <section class="section today-section">
       <div class="section-header">
-        <span class="section-title">Today</span>
+        <div class="section-header-inner">
+          <span class="section-icon">☬</span>
+          <span class="section-title">Today</span>
+        </div>
+        <div class="section-header-line"></div>
       </div>
-      <div class="today-card">
-        <div class="today-nk" id="todayNk">—</div>
-        <div class="today-g" id="todayG">—</div>
+      <div class="today-card glass-card">
+        <div class="today-card-bg"></div>
+        <div class="today-card-content">
+          <div class="today-nk" id="todayNk">—</div>
+          <div class="today-g" id="todayG">—</div>
+        </div>
+        <div class="today-card-shimmer"></div>
       </div>
     </section>
 
     <!-- Calendar Section -->
     <section class="section calendar-section">
       <div class="calendar-header">
-        <div class="month-nav">
-          <button class="month-btn" id="btnPrev" type="button" aria-label="Previous month">
-            <span class="chevron">&#8249;</span>
-          </button>
-          <div class="month-label" id="monthLabel">—</div>
-          <button class="month-btn" id="btnNext" type="button" aria-label="Next month">
-            <span class="chevron">&#8250;</span>
-          </button>
+        <div class="section-header">
+          <div class="section-header-inner">
+            <span class="section-icon">📅</span>
+            <span class="section-title">Calendar</span>
+          </div>
+        </div>
+        <div class="month-nav-container">
+          <div class="month-nav glass-card">
+            <button class="month-btn" id="btnPrev" type="button" aria-label="Previous month">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <div class="month-label" id="monthLabel">—</div>
+            <button class="month-btn" id="btnNext" type="button" aria-label="Next month">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -113,9 +159,13 @@
     <!-- Upcoming Events Section -->
     <section class="section upcoming-section">
       <div class="section-header">
-        <span class="section-title" id="upcomingTitle">Upcoming</span>
+        <div class="section-header-inner">
+          <span class="section-icon">✨</span>
+          <span class="section-title" id="upcomingTitle">Upcoming</span>
+        </div>
+        <div class="section-header-line"></div>
       </div>
-      <div class="upcoming-list" id="upcomingList" role="list"></div>
+      <div class="upcoming-list glass-card" id="upcomingList" role="list"></div>
     </section>
 
   </main>

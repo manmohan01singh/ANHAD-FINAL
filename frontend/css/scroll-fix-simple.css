@@ -7,7 +7,7 @@ html {
 
 /* Fix iOS momentum scrolling */
 * {
-  -webkit-overflow-scrolling: touch;
+
 }
 
 /* Prevent horizontal scroll on mobile */
@@ -18,7 +18,7 @@ body {
 /* Fix scroll container issues */
 .scroll-container {
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 /* Hide scrollbar for cleaner look */

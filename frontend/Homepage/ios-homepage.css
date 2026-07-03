@@ -13,7 +13,7 @@
    L7: UI layer (header, wave, footer) — NOW WITH EXTREME CLAYMORPHISM
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional');
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS — Enhanced with Claymorphism Palette
@@ -496,7 +496,7 @@ body {
         /* Inner highlights (molded look) */
         inset 0 2px 4px rgba(255, 255, 255, 0.4),
         inset 0 -2px 4px rgba(0, 0, 0, 0.15);
-    transition: all 0.35s var(--ease-spring);
+    transition: opacity 0.35s var(--ease-spring), transform 0.35s var(--ease-spring);
     opacity: 1;
     transform: translateY(0);
     position: relative;

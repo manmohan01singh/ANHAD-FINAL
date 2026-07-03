@@ -2008,7 +2008,7 @@ var LiquidGlass = class _LiquidGlass {
     }
     const rootRect = this.root.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const elementDOMRect = rectOverride ?? element.getBoundingClientRect();
+    const elementDOMRect = rectOverride !== undefined && rectOverride !== null ? rectOverride : element.getBoundingClientRect();
     const elementBox = this._getPixelRect(
       elementDOMRect,
       rootRect,
@@ -2266,7 +2266,7 @@ var LiquidGlass = class _LiquidGlass {
   // ────────────────────────────────────────────
   _getConfig(el) {
     const cachedEl = el;
-    const configKey = el.dataset.config ?? "";
+    const configKey = el.dataset.config !== undefined && el.dataset.config !== null ? el.dataset.config : "";
     if (cachedEl.configCacheKey !== configKey) {
       let perElement = {};
       if (configKey) {

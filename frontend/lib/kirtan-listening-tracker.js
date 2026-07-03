@@ -157,7 +157,7 @@
     // CLEANUP ON PAGE UNLOAD
     // ═══════════════════════════════════════════════════════════════════════════
 
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('pagehide', () => {
         stopListening();
     });
 

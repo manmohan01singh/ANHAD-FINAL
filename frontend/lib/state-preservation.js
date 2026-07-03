@@ -265,7 +265,7 @@
   });
 
   // Save state before navigation
-  window.addEventListener('beforeunload', function() {
+  window.addEventListener('pagehide', function() {
     StatePreservation.saveState();
   });
 

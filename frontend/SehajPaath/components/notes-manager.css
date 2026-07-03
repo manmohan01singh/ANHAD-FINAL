@@ -98,7 +98,7 @@ body:has(.mini-player--visible) .notes-list {
     font-size: var(--text-xs);
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
 .note-btn:hover {

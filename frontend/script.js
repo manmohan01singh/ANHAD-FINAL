@@ -2628,7 +2628,7 @@ class UIController extends EventEmitter {
                 if (window.Capacitor?.isNativePlatform?.()) {
                     navigator.clipboard?.writeText(url).catch(() => {});
                 } else {
-                    window.open(url, '_blank', 'width=600,height=400');
+                    window.open(url, '_blank', 'noopener,width=600,height=400');
                 }
                 Utils.haptic('light');
             });
@@ -3016,7 +3016,7 @@ class GurbaniRadioApp {
         });
 
         // Handle page unload
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('pagehide', () => {
             if (this.audioEngine) {
                 Utils.storage.set('lastVolume', this.audioEngine.volume);
                 Utils.storage.set('lastTrackIndex', this.audioEngine.currentTrackIndex);

@@ -761,7 +761,7 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s var(--ease-ios);
+    transition: transform 0.3s var(--ease-ios), box-shadow 0.3s var(--ease-ios);
     box-shadow: 0 4px 20px var(--saffron-glow);
 }
 
@@ -787,7 +787,7 @@
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s var(--ease-ios);
+    transition: background-color 0.3s var(--ease-ios), transform 0.3s var(--ease-ios);
 }
 
 .btn-divine-outline:hover {
@@ -803,7 +803,7 @@
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 20px;
-    transition: all 0.3s var(--ease-ios);
+    transition: border-color 0.3s var(--ease-ios), box-shadow 0.3s var(--ease-ios);
 }
 
 .glass-card:hover {

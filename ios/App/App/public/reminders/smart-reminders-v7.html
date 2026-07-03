@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint - Syncs with main index.html -->
   <script>
     (function() {
       try {
         const theme = localStorage.getItem('anhad_theme') || 'light';
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.style.colorScheme = theme;
-        
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
           document.documentElement.classList.add('dark-mode');
@@ -24,428 +22,313 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0A0A0A">
   <meta name="description" content="Smart Reminders - Spiritual discipline tracker with Nitnem sync">
   <title>ਯਾਦ ਕਰਵਾਓ | Smart Reminders</title>
-  
-  <!-- Core Styles -->
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
-  <link rel="stylesheet" href="smart-reminders-v7.css">
-  
-  <!-- Favicon -->
+  <link rel="stylesheet" href="smart-reminders-v7.css?v=3">
   <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
   <link rel="manifest" href="../manifest.json">
 </head>
 <body>
-  <!-- ════════════════════════════════════════════════════════════════════════
-       APP SHELL - Consistent with Nitnem Tracker
-       ════════════════════════════════════════════════════════════════════════ -->
-  
-  <!-- Loading Screen -->
-  <div class="app-loading" id="appLoading">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">ਵਾਹਿਗੁਰੂ</div>
-    <div class="loading-subtext">Loading Smart Reminders...</div>
+
+  <!-- Ambient Canvas -->
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient-mesh"></div>
+    <div class="ambient-ember e1"></div>
+    <div class="ambient-ember e2"></div>
+    <div class="ambient-ember e3"></div>
+    <div class="ambient-khanda">☬</div>
   </div>
 
-  <!-- Header - Frosted Glass -->
-  <header class="app-header" id="appHeader">
-    <div class="header-content">
-      <div class="header-left">
-        <button class="header-btn" id="backBtn" aria-label="Back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
-        </button>
+  <!-- Loading -->
+  <div class="app-loading" id="appLoading">
+    <div class="load-ring">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2" opacity="0.1"/>
+        <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2" stroke-dasharray="176" stroke-dashoffset="176" class="load-arc"/>
+      </svg>
+      <span class="load-icon">☬</span>
+    </div>
+    <div class="load-label">ਵਾਹਿਗੁਰੂ</div>
+    <div class="load-sub">Preparing your reminders</div>
+  </div>
+
+  <!-- Header -->
+  <header class="top" id="appHeader">
+    <div class="top-inner">
+      <button class="top-btn" id="backBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="top-brand">
+        <span class="top-brand-icon">☬</span>
+        <div>
+          <div class="top-brand-name">ਯਾਦ ਕਰਵਾਓ</div>
+          <div class="top-brand-sub">Smart Reminders</div>
+        </div>
       </div>
-      <div class="header-title">
-        <span class="gurmukhi">ਯਾਦ ਕਰਵਾਓ</span>
-        <span class="subtitle">Smart Reminders</span>
-      </div>
-      <div class="header-right">
-        <button class="header-btn" id="settingsBtn" aria-label="Settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"/>
-          </svg>
-        </button>
-      </div>
+      <button class="top-btn" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"/>
+        </svg>
+      </button>
     </div>
   </header>
 
-  <!-- Status Bar - Dynamic Island Style -->
-  <div class="status-bar" id="statusBar">
-    <div class="status-pill" id="statusPill">
-      <span class="pulse"></span>
-      <span class="status-text" id="statusText">3 Active Alarms</span>
+  <!-- Horizon - Next alarm -->
+  <div class="horizon" id="heroCard">
+    <div class="horizon-fx"></div>
+    <div class="horizon-body">
+      <div class="horizon-badge">⏰ Next Alarm</div>
+      <div class="horizon-icon" id="heroIcon">🌅</div>
+      <div class="horizon-name" id="heroLabel">Amritvela Simran</div>
+      <div class="horizon-time">
+        <span class="horizon-digits" id="heroTime">04:00</span>
+        <span class="horizon-ampm" id="heroPeriod">AM</span>
+      </div>
+      <div class="horizon-extra" id="heroDays">Every day</div>
+      <div class="horizon-ticker" id="heroCountdown">in <strong>8 hrs</strong></div>
+      <button class="horizon-snooze" id="snoozeHeroBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Snooze
+      </button>
     </div>
-    <div class="next-alarm" id="nextAlarm">
-      <span class="next-label">Next:</span>
-      <span class="next-time" id="nextTime">--:--</span>
-      <span class="next-countdown" id="nextCountdown">--</span>
+    <div class="horizon-sync" id="heroSync">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+      <span>Synced with Nitnem Tracker</span>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <main class="app-container">
-    <!-- Hero Card - Next Alarm -->
-    <div class="hero-card" id="heroCard">
-      <div class="hero-background">
-        <div class="hero-gradient"></div>
-        <div class="hero-pattern"></div>
-      </div>
-      <div class="hero-content">
-        <div class="hero-badge">⏰ Up Next</div>
-        <div class="hero-icon" id="heroIcon">🌅</div>
-        <div class="hero-label" id="heroLabel">Amritvela Simran</div>
-        <div class="hero-time-row">
-          <span class="hero-time" id="heroTime">04:00</span>
-          <span class="hero-period" id="heroPeriod">AM</span>
-        </div>
-        <div class="hero-days" id="heroDays">Every day</div>
-        <div class="hero-countdown" id="heroCountdown">in <span class="time-value">8 hrs</span></div>
-        <div class="hero-actions">
-          <button class="hero-btn secondary" id="snoozeHeroBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            Later
-          </button>
-        </div>
-      </div>
-      <div class="hero-sync" id="heroSync">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
-        </svg>
-        <span>Synced with Nitnem Tracker</span>
-      </div>
+  <!-- Status bar -->
+  <div class="ticker" id="statusBar">
+    <div class="ticker-pill" id="statusPill">
+      <span class="ticker-led"></span>
+      <span class="ticker-label" id="statusText">3 Active Alarms</span>
     </div>
+    <div class="ticker-next">Next: <strong id="nextTime">--:--</strong> · <span id="nextCountdown">--</span></div>
+  </div>
 
-    <!-- Core Alarms Section -->
-    <section class="alarm-section">
-      <div class="section-header">
-        <div class="section-title">
-          <span class="section-emoji">🙏</span>
-          <span class="section-name">Core Spiritual Times</span>
-        </div>
+  <!-- Main -->
+  <main class="app-container">
+
+    <!-- Core Alarms -->
+    <section class="seg">
+      <div class="seg-head">
+        <span class="seg-icon">🙏</span>
+        <span class="seg-title">Core</span>
       </div>
-      <div class="alarm-list" id="coreAlarmsList">
-        <!-- Core alarms rendered here -->
+      <div class="seg-body" id="coreAlarmsList"></div>
+    </section>
+
+    <!-- Custom Alarms -->
+    <section class="seg">
+      <div class="seg-head">
+        <span class="seg-icon">⏰</span>
+        <span class="seg-title">Custom</span>
+        <button class="seg-add" id="addCustomBtn">+ Add</button>
+      </div>
+      <div class="seg-body" id="customAlarmsList"></div>
+      <div class="seg-empty" id="customEmptyState" style="display:none">
+        <div class="seg-empty-icon">⏰</div>
+        <div class="seg-empty-title">No Custom Reminders</div>
+        <div class="seg-empty-sub">Add reminders for your daily practice</div>
       </div>
     </section>
 
-    <!-- Custom Alarms Section -->
-    <section class="alarm-section">
-      <div class="section-header">
-        <div class="section-title">
-          <span class="section-emoji">⏰</span>
-          <span class="section-name">Custom Reminders</span>
-        </div>
-        <button class="section-action" id="addCustomBtn">+ Add</button>
-      </div>
-      <div class="alarm-list" id="customAlarmsList">
-        <!-- Custom alarms rendered here -->
-      </div>
-      <div class="empty-state" id="customEmptyState" style="display: none;">
-        <div class="empty-icon">⏰</div>
-        <div class="empty-title">No Custom Reminders</div>
-        <div class="empty-subtitle">Add personal reminders for your daily routine</div>
-      </div>
-    </section>
-
-    <!-- Nitnem Tracker Link -->
-    <section class="link-section">
-      <button class="link-card" id="nitnemLinkBtn">
-        <div class="link-icon">📊</div>
-        <div class="link-content">
-          <div class="link-title">Nitnem Tracker</div>
-          <div class="link-subtitle">View your progress and streaks</div>
-        </div>
-        <div class="link-arrow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </div>
+    <!-- Nitnem Link -->
+    <section class="seg">
+      <button class="seg-link" id="nitnemLinkBtn">
+        <span class="seg-link-icon">📊</span>
+        <span class="seg-link-txt">
+          <strong>Nitnem Tracker</strong>
+          <small>View progress &amp; streaks</small>
+        </span>
+        <svg class="seg-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M9 18l6-6-6-6"/></svg>
       </button>
     </section>
 
-    <!-- Quick Stats -->
-    <section class="stats-section">
-      <div class="stat-card">
-        <div class="stat-value" id="streakValue">0</div>
-        <div class="stat-label">Day Streak</div>
+    <!-- Stats -->
+    <section class="seg stat-grid">
+      <div class="stat">
+        <div class="stat-num" id="streakValue">0</div>
+        <div class="stat-lbl">Streak</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" id="completedValue">0</div>
-        <div class="stat-label">Completed</div>
+      <div class="stat">
+        <div class="stat-num" id="completedValue">0</div>
+        <div class="stat-lbl">Done</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-value" id="obedienceValue">0%</div>
-        <div class="stat-label">Obedience</div>
+      <div class="stat">
+        <div class="stat-num" id="obedienceValue">0%</div>
+        <div class="stat-lbl">Accuracy</div>
       </div>
     </section>
+
+    <div class="app-footer">
+      <span>☬</span> Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh
+    </div>
+
   </main>
 
-  <!-- Add Alarm Button (FAB) -->
+  <!-- FAB -->
   <button class="fab" id="fabAddAlarm" aria-label="Add Alarm">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 5v14M5 12h14"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M12 5v14M5 12h14"/></svg>
   </button>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-       MODALS & SHEETS
-       ════════════════════════════════════════════════════════════════════════ -->
-
   <!-- Backdrop -->
-  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="veil" id="modalBackdrop"></div>
 
-  <!-- Edit Alarm Sheet -->
-  <div class="bottom-sheet" id="editSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h3 class="sheet-title" id="editSheetTitle">Edit Alarm</h3>
-      <button class="sheet-close" id="closeEditSheet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+  <!-- Edit Sheet -->
+  <div class="drawer" id="editSheet">
+    <div class="drawer-notch"></div>
+    <div class="drawer-head">
+      <h3 class="drawer-title" id="editSheetTitle">Edit Alarm</h3>
+      <button class="drawer-x" id="closeEditSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
-    <div class="sheet-body">
-      <div class="form-group">
-        <label class="form-label">Label</label>
-        <input type="text" class="form-input" id="editLabel" placeholder="Alarm name">
+    <div class="drawer-body">
+      <div class="fld">
+        <label class="fld-label">Label</label>
+        <input class="fld-inp" id="editLabel" placeholder="Alarm name">
       </div>
-      
-      <div class="form-group">
-        <label class="form-label">Time</label>
-        <input type="time" class="form-input time-input" id="editTime">
+      <div class="fld">
+        <label class="fld-label">Time</label>
+        <input class="fld-inp fld-time" id="editTime" type="time">
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Repeat</label>
-        <div class="day-selector" id="editDays">
-          <button class="day-chip" data-day="0">S</button>
-          <button class="day-chip" data-day="1">M</button>
-          <button class="day-chip" data-day="2">T</button>
-          <button class="day-chip" data-day="3">W</button>
-          <button class="day-chip" data-day="4">T</button>
-          <button class="day-chip" data-day="5">F</button>
-          <button class="day-chip" data-day="6">S</button>
+      <div class="fld">
+        <label class="fld-label">Repeat</label>
+        <div class="chip-row" id="editDays">
+          <button class="chip" data-day="0">S</button>
+          <button class="chip" data-day="1">M</button>
+          <button class="chip" data-day="2">T</button>
+          <button class="chip" data-day="3">W</button>
+          <button class="chip" data-day="4">T</button>
+          <button class="chip" data-day="5">F</button>
+          <button class="chip" data-day="6">S</button>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Sound</label>
-        <div class="sound-selector" id="soundSelector">
-          <!-- Sound options rendered here -->
-        </div>
+      <div class="fld">
+        <label class="fld-label">Sound</label>
+        <div class="sound-selector" id="soundSelector"></div>
       </div>
-
-      <div class="form-group">
-        <label class="form-row">
+      <div class="fld">
+        <label class="fld-row">
           <span>Sync to Nitnem Tracker</span>
           <input type="checkbox" class="ios-toggle" id="editNitnemSync" checked>
         </label>
-        <p class="form-hint">Track your alarm responses in Nitnem Tracker</p>
       </div>
-
-      <div class="form-actions">
-        <button class="btn-secondary" id="cancelEditBtn">Cancel</button>
-        <button class="btn-primary" id="saveAlarmBtn">Save</button>
+      <div class="fld-acts">
+        <button class="btn btn-muted" id="cancelEditBtn">Cancel</button>
+        <button class="btn btn-prime" id="saveAlarmBtn">Save</button>
       </div>
-      <button class="btn-delete" id="deleteAlarmBtn" style="display: none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-        </svg>
-        Delete Alarm
+      <button class="btn btn-del" id="deleteAlarmBtn" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Delete
       </button>
     </div>
   </div>
 
-  <!-- Add Alarm Sheet -->
-  <div class="bottom-sheet" id="addSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h3 class="sheet-title">Add Custom Alarm</h3>
-      <button class="sheet-close" id="closeAddSheet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+  <!-- Add Sheet -->
+  <div class="drawer" id="addSheet">
+    <div class="drawer-notch"></div>
+    <div class="drawer-head">
+      <h3 class="drawer-title">Add Custom Alarm</h3>
+      <button class="drawer-x" id="closeAddSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
-    <div class="sheet-body">
-      <div class="form-group">
-        <label class="form-label">Label</label>
-        <input type="text" class="form-input" id="addLabel" placeholder="e.g., Evening Simran">
+    <div class="drawer-body">
+      <div class="fld">
+        <label class="fld-label">Label</label>
+        <input class="fld-inp" id="addLabel" placeholder="e.g. Evening Simran">
       </div>
-      
-      <div class="form-group">
-        <label class="form-label">Time</label>
-        <input type="time" class="form-input time-input" id="addTime">
+      <div class="fld">
+        <label class="fld-label">Time</label>
+        <input class="fld-inp fld-time" id="addTime" type="time">
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Repeat</label>
-        <div class="day-selector" id="addDays">
-          <button class="day-chip active" data-day="0">S</button>
-          <button class="day-chip active" data-day="1">M</button>
-          <button class="day-chip active" data-day="2">T</button>
-          <button class="day-chip active" data-day="3">W</button>
-          <button class="day-chip active" data-day="4">T</button>
-          <button class="day-chip active" data-day="5">F</button>
-          <button class="day-chip active" data-day="6">S</button>
+      <div class="fld">
+        <label class="fld-label">Repeat</label>
+        <div class="chip-row" id="addDays">
+          <button class="chip active" data-day="0">S</button>
+          <button class="chip active" data-day="1">M</button>
+          <button class="chip active" data-day="2">T</button>
+          <button class="chip active" data-day="3">W</button>
+          <button class="chip active" data-day="4">T</button>
+          <button class="chip active" data-day="5">F</button>
+          <button class="chip active" data-day="6">S</button>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label">Sound</label>
-        <div class="sound-selector" id="addSoundSelector">
-          <!-- Sound options rendered here -->
-        </div>
+      <div class="fld">
+        <label class="fld-label">Sound</label>
+        <div class="sound-selector" id="addSoundSelector"></div>
       </div>
-
-      <div class="form-actions">
-        <button class="btn-secondary" id="cancelAddBtn">Cancel</button>
-        <button class="btn-primary" id="createAlarmBtn">Create Alarm</button>
+      <div class="fld-acts">
+        <button class="btn btn-muted" id="cancelAddBtn">Cancel</button>
+        <button class="btn btn-prime" id="createAlarmBtn">Create</button>
       </div>
     </div>
   </div>
 
   <!-- Settings Sheet -->
-  <div class="bottom-sheet" id="settingsSheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header">
-      <h3 class="sheet-title">Settings</h3>
-      <button class="sheet-close" id="closeSettingsSheet">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
+  <div class="drawer" id="settingsSheet">
+    <div class="drawer-notch"></div>
+    <div class="drawer-head">
+      <h3 class="drawer-title">Settings</h3>
+      <button class="drawer-x" id="closeSettingsSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
-    <div class="sheet-body">
-      <div class="settings-group">
-        <h4 class="settings-group-title">Notifications</h4>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Never Miss Mode</span>
-            <span class="settings-desc">Alarm continues until you respond</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="neverMissToggle">
-        </label>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Smart Snooze</span>
-            <span class="settings-desc">Auto-snooze with increasing intervals</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="smartSnoozeToggle" checked>
-        </label>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Pre-Reminder</span>
-            <span class="settings-desc">Gentle notification before alarm</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="preReminderToggle">
-        </label>
+    <div class="drawer-body">
+      <div class="set-grp">
+        <div class="set-grp-title">Notifications</div>
+        <label class="set-row"><span><strong>Never Miss Mode</strong><small>Alarm repeats until you respond</small></span><input type="checkbox" class="ios-toggle" id="neverMissToggle"></label>
+        <label class="set-row"><span><strong>Smart Snooze</strong><small>Increasing intervals</small></span><input type="checkbox" class="ios-toggle" id="smartSnoozeToggle" checked></label>
+        <label class="set-row"><span><strong>Pre-Reminder</strong><small>Gentle nudge before alarm</small></span><input type="checkbox" class="ios-toggle" id="preReminderToggle"></label>
       </div>
-
-      <div class="settings-group">
-        <h4 class="settings-group-title">Sync</h4>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Nitnem Tracker Sync</span>
-            <span class="settings-desc">Share alarm data with Nitnem Tracker</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="nitnemSyncToggle" checked>
-        </label>
-        <button class="settings-action" id="forceSyncBtn">
-          <span>Force Sync Now</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
-          </svg>
-        </button>
+      <div class="set-grp">
+        <div class="set-grp-title">Sync</div>
+        <label class="set-row"><span><strong>Nitnem Sync</strong><small>Share with Nitnem Tracker</small></span><input type="checkbox" class="ios-toggle" id="nitnemSyncToggle" checked></label>
+        <button class="set-act" id="forceSyncBtn"><span>Force Sync</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg></button>
       </div>
-
-      <div class="settings-group">
-        <h4 class="settings-group-title">Appearance</h4>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Vibration</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="vibrationToggle" checked>
-        </label>
-        <label class="settings-row">
-          <div class="settings-info">
-            <span class="settings-name">Sound</span>
-          </div>
-          <input type="checkbox" class="ios-toggle" id="soundToggle" checked>
-        </label>
+      <div class="set-grp">
+        <div class="set-grp-title">Appearance</div>
+        <label class="set-row"><span><strong>Vibration</strong></span><input type="checkbox" class="ios-toggle" id="vibrationToggle" checked></label>
+        <label class="set-row"><span><strong>Sound</strong></span><input type="checkbox" class="ios-toggle" id="soundToggle" checked></label>
       </div>
     </div>
   </div>
 
-  <!-- Alarm Trigger Modal -->
-  <div class="alarm-modal" id="alarmModal">
-    <div class="alarm-modal-backdrop"></div>
-    <div class="alarm-modal-content">
-      <div class="alarm-visual">
-        <div class="alarm-ripple"></div>
-        <div class="alarm-ripple"></div>
-        <div class="alarm-icon" id="alarmModalIcon">🌅</div>
+  <!-- Alarm Modal -->
+  <div class="flare" id="alarmModal">
+    <div class="flare-bg"></div>
+    <div class="flare-card">
+      <div class="flare-ring">
+        <span></span><span></span>
+        <div class="flare-ico" id="alarmModalIcon">🌅</div>
       </div>
-      <div class="alarm-info">
-        <div class="alarm-time" id="alarmModalTime">04:00</div>
-        <div class="alarm-label" id="alarmModalLabel">Amritvela Simran</div>
-      </div>
-      <div class="alarm-actions">
-        <button class="alarm-btn snooze" id="modalSnoozeBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
-          </svg>
+      <div class="flare-digits" id="alarmModalTime">04:00</div>
+      <div class="flare-name" id="alarmModalLabel">Amritvela Simran</div>
+      <div class="flare-acts">
+        <button class="flare-btn flare-snooze" id="modalSnoozeBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
           Snooze
         </button>
-        <button class="alarm-btn complete" id="modalCompleteBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 13l4 4L19 7"/>
-          </svg>
+        <button class="flare-btn flare-go" id="modalCompleteBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><path d="M5 13l4 4L19 7"/></svg>
           Complete
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Toast -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ════════════════════════════════════════════════════════════════════════
-       SCRIPTS
-       ════════════════════════════════════════════════════════════════════════ -->
   <script src="../lib/global-theme.js"></script>
   <script src="smart-reminders-v7.js"></script>
-  
-  <!-- Background Alarm System -->
   <script src="../lib/capacitor-notifications.js"></script>
   <script src="../lib/native-notifications.js"></script>
-  <script>
-    // Only load bg-alarm.js on web (not on Capacitor native platform)
-    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
-      document.write('<script src="js/bg-alarm.js"><\/script>');
-      document.write('<script src="../lib/global-alarm-system.js"><\/script>');
-    }
-  </script>
+  <script>if(!window.Capacitor||!window.Capacitor.isNativePlatform()){document.write('<script src="js/bg-alarm.js"><\/script><script src="../lib/global-alarm-system.js"><\/script>')}</script>
   <script src="js/nitnem-sync.js"></script>
-  
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('../sw.js', { scope: '/' }).catch(() => {});
-    }
-  </script>
-    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
-    <script src="../lib/capacitor-notifications-global.js"></script>
-    <script src="../lib/anhad-widget-bridge.js"></script>
-    <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js',{scope:'/'}).catch(()=>{})</script>
+  <script src="../lib/capacitor-notifications-global.js"></script>
+  <script src="../lib/anhad-widget-bridge.js"></script>
+  <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
 </body>
 </html>

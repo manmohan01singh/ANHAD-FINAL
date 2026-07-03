@@ -18,7 +18,7 @@
   let unsubscribeLoading = null;
   let unsubscribeTimeUpdate = null;
   let retryCount = 0;
-  const MAX_RETRIES = 50; // 5 seconds max
+  const MAX_RETRIES = 200; // 20 seconds max
 
   /**
    * Initialize the UI wrapper

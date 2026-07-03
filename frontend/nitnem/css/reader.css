@@ -431,7 +431,7 @@ body {
     font-size: 13px;
     font-weight: 500;
     color: var(--text-secondary);
-    transition: all 0.2s var(--ios-spring);
+    transition: background-color 0.2s var(--ios-spring), color 0.2s var(--ios-spring), transform 0.2s var(--ios-spring);
     cursor: pointer;
     border-radius: 8px;
 }
@@ -778,7 +778,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     border: none;
     cursor: pointer;
     min-width: 220px;
-    transition: all 0.3s var(--ios-spring);
+    transition: background-color 0.3s var(--ios-spring), color 0.3s var(--ios-spring), transform 0.3s var(--ios-spring);
 }
 
 .end-btn:active {
@@ -821,7 +821,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
-    transition: all 0.3s var(--ios-spring);
+    transition: background-color 0.3s var(--ios-spring), color 0.3s var(--ios-spring), transform 0.3s var(--ios-spring);
     z-index: 50;
     cursor: pointer;
 }
@@ -933,7 +933,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 .settings-body {
     flex: 1;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+
     padding: 0 16px 40px;
 }
 
@@ -1009,7 +1009,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     border: none;
     border-radius: 16px;
     cursor: pointer;
-    transition: all 0.3s var(--ios-spring);
+    transition: background-color 0.3s var(--ios-spring), color 0.3s var(--ios-spring), transform 0.3s var(--ios-spring);
     flex-shrink: 0;
 }
 
@@ -1385,7 +1385,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     color: #000;
     font-weight: 600;
     font-size: 17px;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
     box-shadow: 0 6px 24px rgba(var(--accent-rgb), 0.35);
 }
 

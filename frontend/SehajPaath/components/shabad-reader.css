@@ -654,7 +654,7 @@ body.hide-translation .verse-translation {
     background: var(--bg-tertiary);
     border: 2px solid transparent;
     border-radius: 12px;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: border-color var(--duration-fast) var(--ease-ios), background-color var(--duration-fast) var(--ease-ios);
 }
 
 .theme-btn.active {
@@ -743,7 +743,7 @@ body.hide-translation .verse-translation {
     border: 2px solid transparent;
     border-radius: 8px;
     color: var(--text-secondary);
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: border-color var(--duration-fast) var(--ease-ios), background-color var(--duration-fast) var(--ease-ios);
 }
 
 .font-btn:nth-child(1) {

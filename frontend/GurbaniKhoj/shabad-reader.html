@@ -12,13 +12,16 @@
       effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
     }
     
-    // Protect card contrast: if in dynamic/auto mode, dynamically align the reader theme.
-    // Otherwise, read the saved reader theme.
+    // Protect card contrast: align reader theme with effective theme
     var readerTheme;
     if (theme === 'auto') {
       readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
     } else {
-      readerTheme = localStorage.getItem('gurbani_reader_theme') || 'paper';
+      // Sync reader theme to match global theme (dark→charcoal, light→paper)
+      readerTheme = localStorage.getItem('gurbani_reader_theme');
+      if (!readerTheme) {
+        readerTheme = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
+      }
     }
     
     var sacredTheme = localStorage.getItem('gurbani_sacred_theme') || 'royal-rose';
@@ -65,7 +68,7 @@
   <title>Shabad Reader • ANHAD</title>
   
   <!-- Google Fonts for multi-script typography pairing -->
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Paaji+2:wght@400;600;800&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Noto+Serif+Devanagari:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&family=Rozha+One&family=Yatra+One&display=optional" rel="stylesheet">
   
   <link rel="stylesheet" href="shabad-reader.css?v=2">
   
@@ -87,6 +90,23 @@
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <div class="orb orb-5"></div>
+        <div class="orb orb-6"></div>
+    </div>
+    
+    <!-- Floating Sparkle Particles -->
+    <div class="sparkle-container" aria-hidden="true">
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
+        <div class="sparkle"></div>
     </div>
     
     <!-- ═══════════════════════════════════════════════════════════
@@ -101,6 +121,7 @@
         <div class="nav-title-container">
             <h1 class="nav-title-main" id="navTitle">ਸੋਰਠਿ ਮਹਲਾ ੫</h1>
             <span class="nav-subtitle" id="navSubtitle">Sri Guru Granth Sahib Ji</span>
+            <span class="nav-meta" id="navMeta">Ang 12</span>
         </div>
         <div class="nav-right-actions">
             <button class="nav-action-icon-btn" id="bookmarkBtn" title="Bookmark" aria-label="Bookmark">
@@ -125,43 +146,23 @@
 
         <!-- Sacred Theme Switcher was moved to settings -->
 
-        <!-- ════════════════════ POTHI CARD ════════════════════ -->
-        <div class="pothi-card" id="pothiCard">
+        <!-- Reading Progress Bar -->
+        <div class="progress-track" id="progressTrack">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
 
-            <!-- ── THEME-BASED BOTANICAL ORNAMENTS ── -->
-            <img id="cornerTL" class="pothi-corner-img tl" src="" alt="" aria-hidden="true">
-            <img id="cornerTR" class="pothi-corner-img tr" src="" alt="" aria-hidden="true">
-            <img id="cornerBL" class="pothi-corner-img bl" src="" alt="" aria-hidden="true">
-            <img id="cornerBR" class="pothi-corner-img br" src="" alt="" aria-hidden="true">
-
-
-
-            <!-- ── TOP ORNAMENTAL LINE ── -->
-            <div class="pothi-top-ornament" aria-hidden="true">
-                <svg width="200" height="14" viewBox="0 0 200 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="0" y1="7" x2="80" y2="7" stroke="var(--card-border-color)" stroke-width="0.8" opacity="0.5"/>
-                    <circle cx="88" cy="7" r="2" fill="var(--floral-accent)" opacity="0.6"/>
-                    <circle cx="96" cy="7" r="3" fill="var(--floral-primary)" opacity="0.7"/>
-                    <circle cx="100" cy="7" r="1.5" fill="var(--card-border-color)" opacity="0.9"/>
-                    <circle cx="104" cy="7" r="3" fill="var(--floral-primary)" opacity="0.7"/>
-                    <circle cx="112" cy="7" r="2" fill="var(--floral-accent)" opacity="0.6"/>
-                    <line x1="120" y1="7" x2="200" y2="7" stroke="var(--card-border-color)" stroke-width="0.8" opacity="0.5"/>
-                </svg>
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState" style="text-align:center;padding:80px 0;">
+            <div class="loader" style="margin:0 auto;">
+                <div class="loader-ring"></div>
+                <span class="loader-icon">☬</span>
             </div>
+            <p style="color: var(--text-secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.04em;margin-top:16px;">Loading Shabad...</p>
+        </div>
+        
+        <!-- Shabad Lines — full width, no card -->
+        <div class="shabad-lines" id="shabadLines"></div>
 
-            <!-- Loading State -->
-            <div class="loading-state active" id="loadingState">
-                <div class="loader">
-                    <div class="loader-ring"></div>
-                    <span class="loader-icon">☬</span>
-                </div>
-                <p style="color: var(--text-secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.04em;">Loading Pothi...</p>
-            </div>
-            
-            <!-- Shabad Lines -->
-            <div class="shabad-lines" id="shabadLines"></div>
-
-        </div><!-- /pothi-card -->
     </main>
 
     <!-- ═══════════════════════════════════════════════════════════
@@ -241,9 +242,9 @@
                     <div class="settings-row">
                         <span class="row-label">Line Spacing</span>
                         <div class="ios-segmented-control" id="lineSpacingSegmented">
-                            <button class="segment-btn" data-spacing="1.4" title="Tight"><span>⁝</span></button>
-                            <button class="segment-btn active" data-spacing="2.0" title="Normal"><span>≡</span></button>
-                            <button class="segment-btn" data-spacing="2.7" title="Loose"><span>⁞</span></button>
+                            <button class="segment-btn active" data-spacing="1.2" title="Tight"><span>⁝</span></button>
+                            <button class="segment-btn" data-spacing="1.5" title="Normal"><span>≡</span></button>
+                            <button class="segment-btn" data-spacing="2.0" title="Loose"><span>⁞</span></button>
                         </div>
                     </div>
                     <!-- Text Alignment -->
@@ -366,6 +367,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Keyboard Shortcut Hint -->
+    <div class="kbd-hint" id="kbdHint">
+        <kbd>F</kbd> Focus &nbsp;·&nbsp; <kbd>Space</kbd> Scroll &nbsp;·&nbsp; <kbd>P</kbd> <kbd>N</kbd> Prev/Next
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════

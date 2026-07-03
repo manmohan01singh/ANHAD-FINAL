@@ -7,7 +7,7 @@
 /* ── GLOBAL OVERSCROLL ── */
 body, html {
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 /* ── MAIN APP CONTAINER ── */
@@ -19,7 +19,7 @@ body, html {
   padding-bottom: 0;
   overflow-y: auto;
   overscroll-behavior-y: auto;
-  -webkit-overflow-scrolling: touch;
+
   will-change: scroll-position;
   contain: layout;
 }
