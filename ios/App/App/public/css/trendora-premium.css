@@ -1230,6 +1230,7 @@ a:active {
   gap: var(--space-3);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   scrollbar-width: none;
   will-change: scroll-position;
 

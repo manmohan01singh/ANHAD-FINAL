@@ -1,1369 +1,530 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pa" data-theme="light">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0D0D0F">
+  <title>Gurbani Radio — Anhad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="gurbani-radio-ios.css">
+  <!--[if lt IE 9]><script>location.href='/?upgrade_browser=1';</script><![endif]-->
+
   <script>
-(function() {
-  try {
-    const theme = localStorage.getItem('anhad_theme') || 'light';
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  } catch (e) {}
-})();
-  </script>
-  <meta name="color-scheme" content="light dark">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gurbani Radio | ANHAD</title>
-    <meta name="description" content="Live Kirtan from Sri Darbar Sahib & Amritvela Kirtan — Divine Audio Experience">
-    <meta name="theme-color" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta http-equiv="Pragma" content="no-cache">
-    <link rel="stylesheet" href="../css/nav-glass.css">
-
-  <!-- Global Theme System -->
-  <link rel="stylesheet" href="../css/theme-variables.css">
-  <script src="../lib/global-theme.js"></script>
-  
-  <!-- Navigation Libraries -->
-  <script src="../lib/smart-back.js"></script>
-  <script src="../lib/page-lifecycle.js"></script>
-  <script src="../lib/smooth-navigation.js"></script>
-  <script src="../lib/state-preservation.js"></script>
-  
-    <!-- REMOVED: global-mini-player.js and mini-player-extreme.js - using overlay-player.js instead -->
-    <link rel="stylesheet" href="../css/responsive-fix.css">
-    <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
-    <link rel="apple-touch-icon" href="../assets/icon-180x180.png">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800&display=optional" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- <link rel="stylesheet" href="../css/anhad-clay.css?v=1"> removed: conflicts with iOS design -->
-    <!-- REMOVED: global-mini-player.css - using overlay-player styles instead -->
-
-    <link rel="stylesheet" href="gurbani-radio-ios.css?v=10">
-    <style>
-    /* All design in gurbani-radio-ios.css — only minimal overrides here */
-
-    </style>
-</head>
-
-<body>
-    <!-- AMBIENT BACKGROUND -->
-    <div class="bg-container">
-        <img decoding="async" class="bg-image" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="" id="bgDarbar">
-        <script>
-            (function() {
-                try {
-                    const theme = localStorage.getItem('anhad_theme') || 'light';
-                    const params = new URLSearchParams(window.location.search);
-                    const stream = params.get('stream') || 'darbar';
-                    let img = '../assets/HERO CARD IMAGES/new-night-bg.webp';
-                    if (theme === 'light') {
-                        if (stream === 'darbar' || stream === 'amritvela') {
-                            img = '../assets/darbar-sahib-day.webp';
-                        }
-                    }
-                    document.getElementById('bgDarbar').src = img;
-                } catch(e) {}
-            })();
-        </script>
-        <img decoding="async" class="bg-image" src="../assets/darbar-sahib-day.webp" alt="" id="bgDay" style="opacity:0">
-        <div class="bloom-orb o1" id="bloomO1"></div>
-        <div class="bloom-orb o2" id="bloomO2"></div>
-        <div class="bloom-orb o3" id="bloomO3"></div>
-        <div class="bg-overlay"></div>
-        <!-- hidden canvas for color extraction -->
-        <canvas id="colorCanvas" width="8" height="8" style="display:none"></canvas>
-    </div>
-
-    <!-- PLAYER -->
-    <main class="player-container" id="player">
-        
-        <!-- HEADER -->
-        <header class="header">
-            <button class="header-btn" id="backBtn" aria-label="Back">
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <span class="header-title">Gurbani Radio</span>
-            <button class="header-btn" id="themeBtn" aria-label="Toggle Theme">
-                <i class="fas fa-sun" id="themeIcon"></i>
-            </button>
-        </header>
-
-        <!-- STREAM SWITCHER -->
-        <div class="stream-switcher" id="streamSwitcher">
-            <div class="stream-pill" id="streamPill"></div>
-            <button class="stream-btn active" id="btnDarbar" data-stream="darbar">
-                <i class="fas fa-broadcast-tower"></i>
-                Darbar Sahib
-            </button>
-            <button class="stream-btn" id="btnAmritvela" data-stream="amritvela">
-                <i class="fas fa-music"></i>
-                Amritvela
-            </button>
-            <button class="stream-btn" id="btnSimran" data-stream="simran">
-                <i class="fas fa-pray"></i>
-                Simran
-            </button>
-        </div>
-
-        <button class="simran-switch" id="simranSwitch" type="button" aria-pressed="false" aria-label="Toggle Waheguru Simran">
-            <span class="simran-switch-copy">
-                <span class="simran-switch-label">Waheguru Simran</span>
-                <span class="simran-switch-state" id="simranSwitchState">Tap to start</span>
-            </span>
-            <span class="simran-switch-track" aria-hidden="true">
-                <span class="simran-switch-thumb">
-                    <i class="fas fa-power-off"></i>
-                </span>
-            </span>
-        </button>
-
-        <!-- ARTWORK -->
-        <section class="artwork-section">
-            <div class="artwork-glow" id="artworkGlow"></div>
-            <div class="artwork-clay" id="artworkContainer">
-                <div class="artwork-inner">
-                    <img decoding="async" class="artwork-img" src="../assets/HERO CARD IMAGES/new-night-bg.webp" alt="Sri Darbar Sahib" id="artworkImg">
-                    <script>
-                        (function() {
-                            try {
-                                const theme = localStorage.getItem('anhad_theme') || 'light';
-                                const params = new URLSearchParams(window.location.search);
-                                const stream = params.get('stream') || 'darbar';
-                                let img = '../assets/HERO CARD IMAGES/new-night-bg.webp';
-                                if (theme === 'light') {
-                                    if (stream === 'darbar' || stream === 'amritvela') {
-                                        img = '../assets/darbar-sahib-day.webp';
-                                    }
-                                }
-                                document.getElementById('artworkImg').src = img;
-                            } catch(e) {}
-                        })();
-                    </script>
-                </div>
-                <div class="live-badge" id="liveBadge">Live</div>
-            </div>
-        </section>
-
-        <!-- TRACK INFO -->
-        <section class="track-info" id="trackInfo">
-            <div class="track-row">
-                <h1 class="track-title" id="trackTitle">Live Kirtan</h1>
-                <span class="mini-eq" id="miniEq">
-                    <span></span><span></span><span></span><span></span>
-                </span>
-            </div>
-            <p class="track-artist" id="trackArtist">Sri Harmandir Sahib</p>
-            <!-- Simran track subtitle: shows actual track name (e.g. "Deenanath Suno") -->
-            <p class="track-subtitle" id="trackSubtitle" style="display:none;"></p>
-        </section>
-
-        <!-- PROGRESS -->
-        <section class="progress-section">
-            <div class="progress-track" id="progressTrack">
-                <div class="progress-fill" id="progressFill" style="width: 100%"></div>
-                <div class="progress-knob" id="progressKnob" style="left: 100%"></div>
-            </div>
-            <div class="progress-labels">
-                <span id="elapsedTime">--:--</span>
-                <!-- LIVE label: only shown for Darbar status -->
-                <span class="live-indicator" id="liveLabel" style="display:none; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--anhad-red); letter-spacing:1px; text-transform:uppercase;">
-                    <span class="live-jump-dot pulsing" id="liveLabelDot" style="background:var(--anhad-red); width:6px; height:6px; border-radius:50%; display:inline-block;"></span>LIVE
-                </span>
-                <!-- LIVE button: explicit jump-to-live control for all streams -->
-                <span>∞</span>
-            </div>
-        </section>
-
-        <!-- LIVE ACTION -->
-        <section class="live-action" id="liveAction">
-            <button class="live-jump-btn" id="liveJumpBtn" type="button" title="Jump to live position" aria-label="Jump to live">
-                <span class="live-jump-dot" aria-hidden="true"></span>
-                <span>LIVE</span>
-                <span class="live-behind-text" id="liveBehindText"></span>
-            </button>
-        </section>
-
-        <!-- CONTROLS -->
-        <section class="controls">
-            <button class="control-btn primary" id="playBtn" aria-label="Play">
-                <i class="fas fa-play" id="playIcon"></i>
-            </button>
-        </section>
-
-        <!-- VOLUME -->
-        <section class="volume-section">
-            <i class="fas fa-volume-off volume-icon"></i>
-            <div class="volume-slider">
-                <div class="volume-fill" id="volumeFill"></div>
-                <input type="range" class="volume-input" id="volumeInput" min="0" max="100" value="70">
-            </div>
-            <i class="fas fa-volume-high volume-icon"></i>
-        </section>
-
-
-    </main>
-
-    <!-- STATUS PILL -->
-    <div class="status-pill" id="statusPill">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">Connecting...</span>
-    </div>
-
-    <!-- ERROR TOAST -->
-    <div class="error-toast" id="errorToast">
-        <div class="error-icon">
-            <i class="fas fa-exclamation"></i>
-        </div>
-        <div class="error-content">
-            <div class="error-title" id="errorTitle">Connection Error</div>
-            <div class="error-message" id="errorMessage">Retrying in 3s...</div>
-        </div>
-        <button class="error-retry" id="errorRetryBtn">Retry</button>
-    </div>
-
-    <!-- CONNECTION OVERLAY - DISABLED -->
-    <div class="connection-overlay" id="connectionOverlay" style="display: none !important;">
-        <div class="connection-spinner"></div>
-        <div class="connection-text">
-            Connecting to <span id="connectingStream">Darbar Sahib</span>...
-        </div>
-    </div>
-
-    <!-- PERF FIX: Deterministic virtual-live math and drift UI load before the player singleton. -->
-    <script src="../lib/useVirtualLive.js?v=1.0.0"></script>
-    <script src="../components/LiveDriftBanner.js?v=1.0.0"></script>
-
-    <!-- UNIFIED AUDIO SINGLETON -->
-    <script src="../lib/anhad-audio-singleton.js?v=2.1.7-proxy"></script>
-    <!-- REMOVED: Inline audio elements - singleton handles audio -->
-
-    <script>
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // EXTREME GURBANI RADIO - MAIN CONTROLLER
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    const STATE = {
-        currentStream: 'darbar', // 'darbar' | 'amritvela' | 'simran'
-        isPlaying: false,
-        isConnecting: false,
-        volume: 0.7,
-        currentTrackIndex: 0,
-        totalTracks: 40,
-        lastTrackSyncAt: 0,
-        retryCount: 0,
-        maxRetries: 5,
-        lastError: null
-    };
-
-    const LIVE_UI = {
-        anchorWallTime: 0,
-        anchorAudioTime: 0,
-        pausedAt: 0,
-        isBehind: false,
-        pendingAnchor: false
-    };
-
-    const STREAMS = {
-        darbar: {
-            name: 'Darbar Sahib',
-            url: 'https://live.sgpc.net:8443/;nocache=1',
-            type: 'live',
-            image: '../assets/HERO CARD IMAGES/new-night-bg.webp',
-            lightImage: '../assets/darbar-sahib-day.webp',
-            title: 'Live Kirtan',
-            artist: 'Sri Harmandir Sahib',
-            color: 'gold'
-        },
-        amritvela: {
-            name: 'Amritvela Kirtan',
-            baseUrl: 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev',
-            // Smart URL resolution to fix mobile app CORS and localhost issues
-            syncUrl: (() => {
-                // For Capacitor apps, always use production URL
-                if (window.Capacitor) return 'https://anhad-final.onrender.com/api/radio/live';
-                
-                const host = window.location.hostname;
-                const port = window.location.port;
-                if (port === '3000' || port === '3001') return '/api/radio/live';
-                if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000/api/radio/live';
-                if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000/api/radio/live`;
-                return 'https://anhad-final.onrender.com/api/radio/live';
-            })(),
-            type: 'playlist',
-            image: '../assets/HERO CARD IMAGES/new-night-bg.webp',
-            lightImage: '../assets/darbar-sahib-day.webp',
-            title: 'Amritvela Kirtan',
-            artist: 'Divine Shabad',
-            color: 'orange'
-        },
-        simran: {
-            name: 'Waheguru Simran',
-            baseUrl: 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev',
-            syncUrl: (() => {
-                if (window.Capacitor) return 'https://anhad-final.onrender.com/api/simran/live';
-
-                const host = window.location.hostname;
-                const port = window.location.port;
-                if (port === '3000' || port === '3001') return '/api/simran/live';
-                if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000/api/simran/live';
-                if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000/api/simran/live`;
-                return 'https://anhad-final.onrender.com/api/simran/live';
-            })(),
-            type: 'playlist',
-            image: '../guruimages/gurunanakdevsahebji.jpeg',
-            title: 'Waheguru Simran',
-            artist: 'Amritvela Trust',
-            color: 'simran',
-            totalTracks: 38
-        }
-    };
-
-    const legacyAudioEvents = { addEventListener: () => {}, load: () => {} };
-
-    // DOM Elements
-    const dom = {
-        player: document.getElementById('player'),
-        // REMOVED: audioDarbar, audioAmritvela - singleton handles audio
-        audioDarbar: legacyAudioEvents,
-        audioAmritvela: legacyAudioEvents,
-
-        // Stream switcher
-        streamPill: document.getElementById('streamPill'),
-        btnDarbar: document.getElementById('btnDarbar'),
-        btnAmritvela: document.getElementById('btnAmritvela'),
-        btnSimran: document.getElementById('btnSimran'),
-        simranSwitch: document.getElementById('simranSwitch'),
-        simranSwitchState: document.getElementById('simranSwitchState'),
-        
-        // Artwork
-        artworkContainer: document.getElementById('artworkContainer'),
-        artworkImg: document.getElementById('artworkImg'),
-        bgDarbar: document.getElementById('bgDarbar'),
-        bgAmritvela: document.getElementById('bgAmritvela'),
-        liveBadge: document.getElementById('liveBadge'),
-        liveLabel: document.getElementById('liveLabel'),
-        liveJumpBtn: document.getElementById('liveJumpBtn'),
-        liveBehindText: document.getElementById('liveBehindText'),
-        
-        // Track info
-        trackTitle: document.getElementById('trackTitle'),
-        trackArtist: document.getElementById('trackArtist'),
-        trackInfo: document.getElementById('trackInfo'),
-        
-        // Controls
-        playBtn: document.getElementById('playBtn'),
-        playIcon: document.getElementById('playIcon'),
-        prevBtn: document.getElementById('prevBtn'),
-        nextBtn: document.getElementById('nextBtn'),
-        
-        // Volume
-        volumeInput: document.getElementById('volumeInput'),
-        volumeFill: document.getElementById('volumeFill'),
-        
-        // Progress
-        elapsedTime: document.getElementById('elapsedTime'),
-        
-        // Status
-        statusPill: document.getElementById('statusPill'),
-        statusText: document.getElementById('statusText'),
-        statusDot: document.getElementById('statusDot'),
-        
-        // Error
-        errorToast: document.getElementById('errorToast'),
-        errorTitle: document.getElementById('errorTitle'),
-        errorMessage: document.getElementById('errorMessage'),
-        errorRetryBtn: document.getElementById('errorRetryBtn'),
-        
-        // Connection overlay
-        connectionOverlay: document.getElementById('connectionOverlay'),
-        connectingStream: document.getElementById('connectingStream'),
-        
-        // Theme
-        themeBtn: document.getElementById('themeBtn'),
-        themeIcon: document.getElementById('themeIcon')
-    };
-
-    // Get singleton audio element
-    function getAudio() {
-        return window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
-    }
-
-    function isVirtualStream(streamType = STATE.currentStream) {
-        return streamType === 'amritvela' || streamType === 'simran';
-    }
-
-    function markLiveAnchor() {
-        const audio = getAudio();
-        LIVE_UI.anchorWallTime = Date.now();
-        LIVE_UI.anchorAudioTime = audio ? Number(audio.currentTime) || 0 : 0;
-        LIVE_UI.pausedAt = 0;
-        LIVE_UI.isBehind = false;
-        LIVE_UI.pendingAnchor = false;
-        updateLiveButtonState(true);
-    }
-
-    function requestLiveAnchor() {
-        LIVE_UI.pendingAnchor = true;
-    }
-
-    function getBehindLiveSeconds() {
-        if (!isVirtualStream() || !LIVE_UI.anchorWallTime) return 0;
-        const audio = getAudio();
-        if (!audio) return 0;
-        const expected = LIVE_UI.anchorAudioTime + ((Date.now() - LIVE_UI.anchorWallTime) / 1000);
-        return Math.max(0, expected - (Number(audio.currentTime) || 0));
-    }
-
-    function updateLiveButtonState() {
-        if (!dom.liveJumpBtn || !window.AnhadAudio) return;
-        
-        const state = window.AnhadAudio.getState();
-        const isBehind = isVirtualStream() && state.isBehind;
-        const offset = state.liveOffset || 0;
-
-        dom.liveJumpBtn.classList.toggle('is-behind', isBehind);
-        dom.liveJumpBtn.classList.toggle('is-synced', !isBehind);
-        
-        // ═══ ENHANCED LIVE UI: Dynamic pill text ═══
-        const textSpan = dom.liveJumpBtn.querySelector('span:nth-child(2)');
-        if (textSpan) {
-            textSpan.textContent = isBehind ? 'Jump to Live' : 'LIVE';
-        }
-        
-        if (dom.liveBehindText) {
-            if (isBehind) {
-                const totalSecs = Math.round(offset);
-                if (totalSecs >= 3600) {
-                    const h = Math.floor(totalSecs / 3600);
-                    const m = Math.floor((totalSecs % 3600) / 60);
-                    const s = totalSecs % 60;
-                    dom.liveBehindText.textContent = `-${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-                } else if (totalSecs >= 60) {
-                    const m = Math.floor(totalSecs / 60);
-                    const s = totalSecs % 60;
-                    dom.liveBehindText.textContent = `-${m}:${s.toString().padStart(2,'0')}`;
-                } else {
-                    dom.liveBehindText.textContent = `-${totalSecs}s`;
-                }
-            } else {
-                dom.liveBehindText.textContent = '';
-            }
-        }
-        
-        const dot = dom.liveJumpBtn.querySelector('.live-jump-dot');
-        if (dot) dot.classList.toggle('pulsing', isBehind);
-        LIVE_UI.isBehind = isBehind;
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // STREAM SWITCHING
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    async function switchStream(streamType) {
-        if (STATE.currentStream === streamType || STATE.isConnecting) return;
-
-        const prevStream = STATE.currentStream;
-        STATE.currentStream = streamType;
-        const wasPlaying = STATE.isPlaying;
-        LIVE_UI.anchorWallTime = 0;
-        LIVE_UI.anchorAudioTime = 0;
-        LIVE_UI.pausedAt = 0;
-        LIVE_UI.pendingAnchor = false;
-
-        // Update UI
-        updateStreamUI(streamType);
-
-        // Use singleton to switch streams
-        if (wasPlaying) {
-            STATE.isConnecting = true;
-            updateUI();
-            await window.AnhadAudio.play(streamType);
-            STATE.isPlaying = true;
-            STATE.isConnecting = false;
-            updateUI();
-        } else {
-            // Just update state, don't auto-play
-            updateUI();
-        }
-
-        saveState();
-        hapticFeedback();
-    }
-
-    function updateStreamUI(streamType) {
-        const stream = STREAMS[streamType];
-        const isAmritvela = streamType === 'amritvela';
-        const isSimran = streamType === 'simran';
-        const showSimranSwitch = false;
-        STATE.totalTracks = stream.totalTracks || (isSimran ? 38 : 40);
-        
-        // Update pill
-        dom.streamPill.className = 'stream-pill ' + streamType;
-        
-        // Update buttons
-        dom.btnDarbar.classList.toggle('active', streamType === 'darbar');
-        dom.btnAmritvela.classList.toggle('active', isAmritvela);
-        dom.btnSimran.classList.toggle('active', isSimran);
-        
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const displayImage = (currentTheme === 'light' && stream.lightImage) ? stream.lightImage : stream.image;
-
-        // Update artwork
-        dom.artworkImg.src = displayImage;
-        dom.artworkImg.alt = stream.name;
-        dom.artworkContainer.classList.toggle('simran', isSimran);
-        
-        // Match background with artwork
-        if (dom.bgDarbar) {
-            dom.bgDarbar.src = displayImage;
-        }
-        
-        // Update track info
-        dom.trackTitle.textContent = stream.title;
-        dom.trackArtist.textContent = stream.artist;
-        
-        // Update play button color
-        dom.playBtn.className = 'control-btn primary ' + streamType;
-        
-        // Update volume fill color
-        dom.volumeFill.className = 'volume-fill ' + streamType;
-        
-        // Show/hide live label and badge
-        dom.liveBadge.style.display = streamType === 'darbar' ? 'flex' : 'none';
-        if (dom.liveLabel) {
-            dom.liveLabel.style.display = streamType === 'darbar' ? 'inline-flex' : 'none';
-        }
-
-        // Show/hide LIVE jump button (explicit jump-to-live control for all streams)
-        if (dom.liveJumpBtn) {
-            dom.liveJumpBtn.style.display = 'inline-flex';
-            updateLiveButtonState(!isVirtualStream(streamType));
-        }
-
-        // Show/hide track subtitle
-        const trackSubtitle = document.getElementById('trackSubtitle');
-        if (trackSubtitle) {
-            trackSubtitle.style.display = streamType === 'simran' ? 'block' : 'none';
-        }
-
-        // Magical Simran switch
-        if (dom.simranSwitch) {
-            dom.simranSwitch.classList.toggle('visible', showSimranSwitch);
-            dom.simranSwitch.classList.toggle('active', isSimran);
-            dom.simranSwitch.setAttribute('aria-pressed', String(isSimran));
-        }
-        if (dom.simranSwitchState) {
-            dom.simranSwitchState.textContent = isSimran ? 'Simran is on' : 'Tap to turn on';
-        }
-        
-        // Update connecting text
-        dom.connectingStream.textContent = stream.name;
-    }
-
-    function toggleSimranSwitch() {
-        const targetStream = STATE.currentStream === 'simran' ? 'amritvela' : 'simran';
-        switchStream(targetStream);
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // AMRITVELA / SIMRAN — virtual live sync lives in ../lib/anhad-audio-singleton.js
-    // ═══════════════════════════════════════════════════════════════════════════════
-
-    // REMOVED: syncAmritvelaPosition - singleton handles server sync
-    async function syncAmritvelaPosition() {
-        // Singleton handles all server sync logic
-        return true;
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // PLAYBACK CONTROL
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    async function play() {
-        if (!window.AnhadAudio) return;
-        // Guard: don't re-trigger if singleton is already loading/connecting
-        if (STATE.isConnecting) {
-            console.log('[GR] play() ignored — already connecting');
-            return;
-        }
-
-        STATE.isConnecting = true;
-        dom.playBtn.classList.add('loading');
-
-        try {
-            await window.AnhadAudio.play(STATE.currentStream);
-            STATE.isPlaying = true;
-            STATE.isConnecting = false;
-            STATE.retryCount = 0;
-            updateUI();
-            saveState();
-            hapticFeedback(50);
-        } catch (err) {
-            console.error('[GR] Play error:', err);
-            STATE.isConnecting = false;
-            dom.playBtn.classList.remove('loading');
-            // Only show error toast — singleton auto-retries internally, don't double-retry
-            showError('Connecting...', 'Establishing connection to stream', true);
-        } finally {
-            STATE.isConnecting = false;
-            dom.playBtn.classList.remove('loading');
-        }
-
-        saveState();
-    }
-
-    function pause() {
-        if (!window.AnhadAudio) return;
-        window.AnhadAudio.pause();
-        STATE.isPlaying = false;
-        STATE.isConnecting = false;
-        updateUI();
-        saveState();
-        hapticFeedback(30);
-    }
-
-    function togglePlay() {
-        if (STATE.isConnecting) return; // Block double-taps during connection
-        if (!window.AnhadAudio) return;
-
-        if (STATE.isPlaying) {
-            // Currently playing → pause in-place
-            STATE.isPlaying = false;
-            STATE.isConnecting = false;
-            LIVE_UI.pausedAt = isVirtualStream() ? Date.now() : 0;
-            updateUI();
-            window.AnhadAudio.pause();
-            hapticFeedback(30);
-        } else {
-            // Paused → resume in-place (NO re-sync to live position)
-            // Use resumeInPlace() so Play/Pause feels instant and doesn't jump position.
-            // The separate LIVE button is responsible for re-syncing to live.
-            const audio = getAudio();
-            const st = window.AnhadAudio.getState?.();
-            if (!audio || !audio.src || st?.currentStream !== STATE.currentStream) {
-                window.AnhadAudio.play(STATE.currentStream);
-            } else {
-                window.AnhadAudio.resumeInPlace();
-            }
-            hapticFeedback(50);
-        }
-    }
-
-    function nextTrack() {
-        if (!window.AnhadAudio) return;
-        if (STATE.currentStream === 'darbar') {
-            window.AnhadAudio.jumpToLive();
-        } else {
-            window.AnhadAudio.playNextTrack();
-        }
-        hapticFeedback(40);
-    }
-
-    function prevTrack() {
-        if (!window.AnhadAudio) return;
-        if (STATE.currentStream === 'darbar') {
-            window.AnhadAudio.jumpToLive();
-        } else {
-            // For Amritvela, just re-sync to live (singleton handles track navigation)
-            window.AnhadAudio.jumpToLive();
-        }
-        hapticFeedback(40);
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // ERROR HANDLING - Improved with R2 unavailable detection
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function handlePlaybackError(err) {
-        STATE.lastError = err;
-        STATE.retryCount++;
-        
-        let title = 'Connection Error';
-        let message = 'Unable to connect to stream';
-        let retryDelay = Math.min(3000 * STATE.retryCount, 15000);
-        let isFatal = false;
-        
-        if (err.name === 'NotAllowedError') {
-            title = 'Tap to Play';
-            message = 'Please tap the play button to start audio';
-            retryDelay = 0;
-        } else if (err.name === 'NotSupportedError' || err.message?.includes('no supported source')) {
-            // Audio format not supported or file unavailable
-            title = 'Audio Unavailable';
-            message = 'The audio files are temporarily unavailable. Please try again later.';
-            isFatal = true;
-            retryDelay = 0;
-        } else if (err.message?.includes('503') || err.message?.includes('NetworkError')) {
-            title = 'Server Unavailable';
-            message = 'The audio service is temporarily down. Please try again later.';
-            isFatal = true;
-            retryDelay = 0;
-        } else if (STATE.retryCount > 3) {
-            // Stop retrying after 3 attempts
-            title = 'Connection Failed';
-            message = 'Unable to connect after multiple attempts. Please check your connection and try again.';
-            isFatal = true;
-            retryDelay = 0;
-        }
-        
-        showError(title, message, !isFatal);
-        
-        // Only retry if not fatal and within retry limit
-        if (retryDelay > 0 && STATE.retryCount <= STATE.maxRetries && !isFatal) {
-            showStatus(`Retrying in ${Math.ceil(retryDelay/1000)}s...`);
-            setTimeout(() => {
-                if (!STATE.isPlaying && STATE.retryCount <= STATE.maxRetries) {
-                    play();
-                }
-            }, retryDelay);
-        } else if (isFatal) {
-            // Reset retry count so user can manually retry later
-            STATE.retryCount = 0;
-            showStatus('Tap Retry to try again');
-        }
-        
-        updateUI();
-    }
-
-    function showError(title, message, showRetry = true) {
-        dom.errorTitle.textContent = title;
-        dom.errorMessage.textContent = message;
-        dom.errorRetryBtn.style.display = showRetry ? 'block' : 'none';
-        dom.errorToast.classList.add('visible');
-        dom.statusDot.classList.add('error');
-        
-        setTimeout(() => hideError(), 8000);
-    }
-
-    function hideError() {
-        dom.errorToast.classList.remove('visible');
-        dom.statusDot.classList.remove('error');
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // UI UPDATES
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function updateUI() {
-        // Play button
-        if (STATE.isPlaying) {
-            dom.playIcon.classList.remove('fa-play');
-            dom.playIcon.classList.add('fa-pause');
-            dom.artworkContainer.classList.add('playing');
-            dom.player.classList.remove('paused');
-            
-            // Make Darbar live badge blink when playing
-            if (STATE.currentStream === 'darbar') {
-                const dot = document.getElementById('liveLabelDot');
-                if (dot) dot.classList.add('pulsing');
-            }
-            if (isVirtualStream() && !LIVE_UI.anchorWallTime) markLiveAnchor();
-        } else {
-            dom.playIcon.classList.remove('fa-pause');
-            dom.playIcon.classList.add('fa-play');
-            dom.artworkContainer.classList.remove('playing');
-            dom.player.classList.add('paused');
-            
-            // Stop blinking when paused
-            if (STATE.currentStream === 'darbar') {
-                const dot = document.getElementById('liveLabelDot');
-                if (dot) dot.classList.remove('pulsing');
-            }
-        }
-        
-        // Volume
-        const audio = getAudio();
-        if (audio) audio.volume = STATE.volume;
-        dom.volumeFill.style.width = (STATE.volume * 100) + '%';
-        dom.volumeInput.value = STATE.volume * 100;
-    }
-
-    function showStatus(text) {
-        dom.statusText.textContent = text;
-        dom.statusPill.classList.add('visible');
-    }
-
-    function hideStatus() {
-        dom.statusPill.classList.remove('visible');
-    }
-
-    function updateElapsedTime() {
-        const audio = getAudio();
-        if (!audio || !STATE.isPlaying) return;
-        
-        const elapsed = Math.floor(audio.currentTime);
-        const mins = Math.floor(elapsed / 60);
-        const secs = elapsed % 60;
-        dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // THEME
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function initTheme() {
-        // Use global AnhadTheme system - applies theme from localStorage
-        const theme = AnhadTheme.get();
-        updateThemeUI(theme);
-        
-        // Listen for theme changes from other pages
-        window.addEventListener('themechange', (e) => {
-            updateThemeUI(e.detail.theme);
-        });
-    }
-
-    function updateThemeUI(theme) {
-        if (theme === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.body.classList.add('light-theme');
-            dom.themeIcon.className = 'fas fa-moon';
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.body.classList.remove('light-theme');
-            dom.themeIcon.className = 'fas fa-sun';
-        }
-        
-        // Re-render stream UI to instantly swap images
-        if (STATE && STATE.currentStream) {
-            updateStreamUI(STATE.currentStream);
-        }
-    }
-
-    function toggleTheme() {
-        const newTheme = AnhadTheme.toggle();
-        updateThemeUI(newTheme);
-        hapticFeedback(30);
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // HAPTIC FEEDBACK
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function hapticFeedback(pattern) {
-        if (navigator.vibrate) {
-            navigator.vibrate(pattern);
-        }
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // STATE PERSISTENCE
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function saveState() {
-        try {
-            localStorage.setItem('gurbani_radio_state', JSON.stringify({
-                stream: STATE.currentStream,
-                isPlaying: STATE.isPlaying,
-                volume: STATE.volume,
-                trackIndex: STATE.currentTrackIndex,
-                timestamp: Date.now()
-            }));
-        } catch (e) {}
-    }
-
-    function loadState() {
-        try {
-            const saved = localStorage.getItem('gurbani_radio_state');
-            if (saved) {
-                const state = JSON.parse(saved);
-                STATE.volume = state.volume || 0.7;
-                if (state.stream && STREAMS[state.stream]) {
-                    STATE.currentStream = state.stream;
-                    STATE.currentTrackIndex = state.trackIndex || 0;
-                    STATE.isPlaying = false;
-                }
-            }
-        } catch (e) {}
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // EVENT LISTENERS
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function initEventListeners() {
-        // Stream switcher
-        dom.btnDarbar.addEventListener('click', () => switchStream('darbar'));
-        dom.btnAmritvela.addEventListener('click', () => switchStream('amritvela'));
-        dom.btnSimran.addEventListener('click', () => switchStream('simran'));
-        dom.simranSwitch.addEventListener('click', toggleSimranSwitch);
-        
-        // Controls
-        dom.playBtn.addEventListener('click', togglePlay);
-
-        // LIVE button — jumps to live server position (re-sync)
-        if (dom.liveJumpBtn) {
-            dom.liveJumpBtn.addEventListener('click', () => {
-                if (!window.AnhadAudio) return;
-                hapticFeedback(40);
-                const dot = dom.liveJumpBtn.querySelector('.live-jump-dot');
-                dom.liveJumpBtn.classList.add('pulsing');
-                if (dot) dot.classList.add('pulsing');
-                window.AnhadAudio.jumpToLive().then(() => {
-                    requestLiveAnchor();
-                    updateLiveButtonState(true);
-                    dom.liveJumpBtn.classList.remove('pulsing');
-                    if (dot) dot.classList.remove('pulsing');
-                }).catch(() => {
-                    dom.liveJumpBtn.classList.remove('pulsing');
-                    if (dot) dot.classList.remove('pulsing');
-                });
-                showStatus('Syncing to live position...');
-                setTimeout(hideStatus, 3000);
-            });
-        }
-        
-        // Listen for live position sync status
-        window.addEventListener('anhadLiveSyncStatus', (e) => {
-            const { isAtLiveEdge } = e.detail;
-            if (dom.liveJumpBtn) {
-                if (isAtLiveEdge) {
-                    requestLiveAnchor();
-                    updateLiveButtonState(true);
-                } else {
-                    updateLiveButtonState();
-                }
-            }
-        });
-        
-        // Volume
-        dom.volumeInput.addEventListener('input', (e) => {
-            STATE.volume = e.target.value / 100;
-            if (window.AnhadAudio) window.AnhadAudio.setVolume(STATE.volume);
-            updateUI();
-            saveState();
-        });
-        
-        // Theme
-        dom.themeBtn.addEventListener('click', toggleTheme);
-        
-        // Back button is auto-wired by smart-back.js to ../index.html
-        
-        // Error retry
-        dom.errorRetryBtn.addEventListener('click', () => {
-            hideError();
-            STATE.retryCount = 0;
-            play();
-        });
-        
-        // ── Audio Singleton UI Sync ──
-        window.addEventListener('anhadAudioStateChange', (e) => {
-            STATE.isPlaying = e.detail.isPlaying;
-            if (e.detail.stream) STATE.currentStream = e.detail.stream;
-            updateUI();
-            
-            if (STATE.isPlaying) {
-                if (STATE.currentStream === 'darbar') {
-                    showStatus('Connected • Darbar Sahib Live');
-                } else {
-                    showStatus(`Playing • ${STATE.currentStream === 'amritvela' ? 'Amritvela' : 'Simran'}`);
-                }
-                setTimeout(hideStatus, 3000);
-            }
-        });
-
-        // ── Track title/subtitle update (Simran actual track name) ──
-        window.addEventListener('anhadTrackChanged', (e) => {
-            const { stream, trackTitle, trackArtist } = e.detail;
-            if (stream !== STATE.currentStream) return;
-            const sub = document.getElementById('trackSubtitle');
-
-            if (stream === 'simran') {
-                dom.trackTitle.textContent = 'Waheguru Simran';
-                if (sub) {
-                    sub.textContent = trackTitle || '';
-                    sub.style.display = trackTitle ? 'block' : 'none';
-                }
-                dom.trackArtist.textContent = trackArtist || 'Amritvela Trust';
-            } else if (stream === 'amritvela') {
-                dom.trackTitle.textContent = 'Amritvela Kirtan';
-                if (sub) sub.style.display = 'none';
-                dom.trackArtist.textContent = trackArtist || 'Divine Shabad';
-            }
-        });
-
-        // Use global AnhadAudio methods for time/error if available
-        if (window.AnhadAudio) {
-            window.AnhadAudio.on('loading', (e) => {
-                if (e.isLoading) showStatus('Buffering...');
-                else hideStatus();
-            });
-            window.AnhadAudio.on('error', (e) => {
-                handlePlaybackError(new Error(e.message || 'Stream error'));
-            });
-            window.AnhadAudio.on('timeupdate', (e) => {
-                if (!STATE.isPlaying) return;
-                const mins = Math.floor(e.currentTime / 60);
-                const secs = Math.floor(e.currentTime % 60);
-                dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-            });
-        }
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                togglePlay();
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                STATE.volume = Math.min(1, STATE.volume + 0.1);
-                updateUI();
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                STATE.volume = Math.max(0, STATE.volume - 0.1);
-                updateUI();
-            } else if (e.key === 'l' || e.key === 'L') {
-                window.AnhadAudio?.jumpToLive?.();
-            }
-        });
-        
-        // Visibility change - DON'T resync on return, just update UI
-        // The audio singleton continues playing in background automatically
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden && STATE.isPlaying) {
-                // Just refresh the UI state from the singleton
-                const st = window.AnhadAudio?.getState?.();
-                if (st) {
-                    STATE.isPlaying = st.isPlaying;
-                    STATE.currentTrackIndex = st.currentTrackIndex;
-                    updateUI();
-                }
-            }
-        });
-        
-        // Before unload
-        window.addEventListener('pagehide', saveState);
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // LIGHTWEIGHT TRACK-ONLY SYNC (for polling - no position jumps during playback)
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    async function checkTrackSync() {
-        // Lightweight check — only update UI metadata, never restart playback
-        // The audio singleton handles track transitions internally
-        const st = window.AnhadAudio?.getState?.();
-        if (!st || !STATE.isPlaying) return;
-        
-        // Just sync UI state with singleton
-        if (st.currentTrackIndex !== STATE.currentTrackIndex) {
-            STATE.currentTrackIndex = st.currentTrackIndex;
-            console.log(`[GR] UI track sync: now showing track ${STATE.currentTrackIndex + 1}`);
-        }
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════════
-    // INIT
-    // ═══════════════════════════════════════════════════════════════════════════════
-    
-    function init() {
-        loadState();
-        try { localStorage.setItem('anhad_gurbani_radio_last_opened', String(Date.now())); } catch (e) {}
-        initTheme();
-        initEventListeners();
-
-        // REMOVED: AudioCoordinator registration - singleton handles coordination
-
-        // Subscribe to singleton events for UI sync
-        if (window.AnhadAudio) {
-            window.AnhadAudio.on('statechange', (audioState) => {
-                // Synchronize playing state immediately to avoid icon mismatch
-                STATE.isPlaying = audioState.isPlaying;
-                if (audioState.currentStream && STREAMS[audioState.currentStream]) {
-                    STATE.currentStream = audioState.currentStream;
-                    updateStreamUI(STATE.currentStream);
-                }
-                STATE.currentTrackIndex = audioState.currentTrackIndex;
-                if (audioState.isPlaying) STATE.isConnecting = false;
-                if (audioState.isPlaying && isVirtualStream(audioState.currentStream)) {
-                    if (!LIVE_UI.anchorWallTime) {
-                        requestLiveAnchor();
-                    }
-                    if (LIVE_UI.pausedAt) {
-                        LIVE_UI.pausedAt = 0;
-                    }
-                }
-                updateUI();
-            });
-
-            window.AnhadAudio.on('loading', (data) => {
-                STATE.isConnecting = data.isLoading;
-                if (dom.playBtn) {
-                    dom.playBtn.classList.toggle('loading', data.isLoading);
-                }
-            });
-
-            window.AnhadAudio.on('timeupdate', (data) => {
-                if (data && data.currentTime !== undefined) {
-                    const mins = Math.floor(data.currentTime / 60);
-                    const secs = Math.floor(data.currentTime % 60);
-                    dom.elapsedTime.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                    if (LIVE_UI.pendingAnchor && isVirtualStream() && STATE.isPlaying) {
-                        markLiveAnchor();
-                    }
-                    updateLiveButtonState();
-                }
-            });
-
-            window.AnhadAudio.on('livedrift', () => {
-                // PERF FIX: Drift banner/live pill updates come from the 5s singleton heartbeat.
-                updateLiveButtonState();
-            });
-
-            window.AnhadAudio.on('error', (data) => {
-                // Singleton already auto-retries errors internally (up to 3 times).
-                // DO NOT call play() or handlePlaybackError here — that would cause a reload loop.
-                // Just update the UI to show the error state.
-                const msg = data?.message || 'Audio playback error';
-                console.warn('[Gurbani Radio] Audio error (singleton):', msg);
-                STATE.isPlaying = false;
-                STATE.isConnecting = false;
-                updateUI();
-                // Only show error if singleton has given up retrying
-                if (msg.toLowerCase().includes('code 2') || msg.toLowerCase().includes('code 3') || msg.toLowerCase().includes('code 4')) {
-                    showError('Stream Unavailable', 'Please check your connection and tap Retry', true);
-                }
-            });
-
-            console.log('[Gurbani Radio] Subscribed to AnhadAudio events');
-        }
-        
-        // Force show mini player on this page
-        setTimeout(() => {
-            const gmpElement = document.getElementById('gmp');
-            console.log('[Gurbani Radio] Mini player element exists:', !!gmpElement);
-            if (gmpElement) {
-                console.log('[Gurbani Radio] Mini player classes:', gmpElement.className);
-                gmpElement.classList.add('gmp--visible');
-                console.log('[Gurbani Radio] Forced mini player to show');
-            } else {
-                console.log('[Gurbani Radio] Mini player element not found in DOM');
-            }
-            
-            if (window.GlobalMiniPlayer) {
-                console.log('[Gurbani Radio] GlobalMiniPlayer available, stream:', window.GlobalMiniPlayer.getStream());
-                window.GlobalMiniPlayer.show();
-            } else {
-                console.log('[Gurbani Radio] GlobalMiniPlayer not available');
-            }
-        }, 1500);
-        
-        // Continuous polling - only check for track changes, not position
-        // Position only jumps when user explicitly plays (pure virtual live)
-        setInterval(() => {
-            if (STATE.isPlaying && (STATE.currentStream === 'amritvela' || STATE.currentStream === 'simran') && !document.hidden && Date.now() - STATE.lastTrackSyncAt > 30000) {
-                STATE.lastTrackSyncAt = Date.now();
-                checkTrackSync(); // Lightweight track-only check
-            }
-            updateLiveButtonState();
-        }, 5000); // PERF FIX: Match drift cadence; avoid 1s UI wakeups.
-        
-        // Check URL params for stream selection
-        const urlParams = new URLSearchParams(window.location.search);
-        const streamParam = urlParams.get('stream');
-        if (streamParam && STREAMS[streamParam]) {
-            STATE.currentStream = streamParam;
-        }
-        
-        // Apply initial stream UI
-        updateStreamUI(STATE.currentStream);
-        updateUI();
-        
-        // Initial connection overlay text
-        dom.connectingStream.textContent = STREAMS[STATE.currentStream].name;
-        
-        // Auto-resume or Autoplay
-        const autoplay = urlParams.get('autoplay') === 'true';
-        if (autoplay) {
-            console.log('[Gurbani Radio] Autoplay requested via URL param');
-            STATE.isPlaying = true; // Set playing state
-            updateUI();
-            // Short delay to ensure everything is ready
-            setTimeout(() => {
-                play();
-            }, 600);
-        } else if (streamParam || STATE.isPlaying) {
-            const reason = streamParam ? `stream param (${STATE.currentStream})` : 'previous session';
-            console.log('[Gurbani Radio] Ready for user tap, pre-loaded for', reason);
-            // UI is already set up correctly — user just needs to tap ▶ to play
-            STATE.isPlaying = false;
-            updateUI();
-        } else {
-            console.log('[Gurbani Radio] Waiting for user to press play');
-        }
-
-
-        
-        console.log('🪯 Gurbani Radio - Extreme Claymorphism Edition');
-        console.log('💡 Space=Play/Pause, ↑↓=Volume, L=Live/Resync');
-    }
-
-    // Start
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-    </script>
-    
-    <!-- Progress Tracking -->
-    <script src="../lib/user-stats.js?v=1.0"></script>
-    <script src="../lib/unified-progress-tracker.js?v=1.0"></script>
-    <script src="../lib/kirtan-listening-tracker.js?v=1.0"></script>
-    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
-    <script src="../lib/capacitor-notifications-global.js"></script>
-    <script src="../lib/anhad-widget-bridge.js"></script>
-
-    <!-- iOS Ambient Color Engine -->
-    <script>
-    (function() {
-        'use strict';
-
-        const canvas = document.getElementById('colorCanvas');
-        const ctx = canvas ? canvas.getContext('2d',{willReadFrequently:true}) : null;
-        const o1 = document.getElementById('bloomO1');
-        const o2 = document.getElementById('bloomO2');
-        const o3 = document.getElementById('bloomO3');
-        const glow = document.getElementById('artworkGlow');
-        const miniEq = document.getElementById('miniEq');
-        const bgNight = document.getElementById('bgDarbar');
-        const bgDay = document.getElementById('bgDay');
-
-        // ── Color extraction from artwork ──
-        function extractPalette(imgEl) {
-            if (!ctx || !imgEl || !imgEl.complete || !imgEl.naturalWidth) return null;
-            try {
-                canvas.width = 12; canvas.height = 12;
-                ctx.drawImage(imgEl, 0, 0, 12, 12);
-                const d = ctx.getImageData(0, 0, 12, 12).data;
-                function px(x,y){ const i=(y*12+x)*4; return [d[i],d[i+1],d[i+2]]; }
-                // vivid top-left, mid-right, bottom-center
-                const c1 = px(2,2), c2 = px(9,6), c3 = px(5,10);
-                // boost saturation slightly
-                function boost(c){ return c.map((v,i)=> i<3?Math.min(255,v*1.15|0):v); }
-                return [boost(c1), boost(c2), boost(c3)];
-            } catch(e){ return null; }
-        }
-
-        function applyPalette(imgEl) {
-            const pal = extractPalette(imgEl);
-            if (!pal) return;
-            const [c1,c2,c3] = pal;
-            const b1 = `rgba(${c1[0]},${c1[1]},${c1[2]},.65)`;
-            const b2 = `rgba(${c2[0]},${c2[1]},${c2[2]},.55)`;
-            const b3 = `rgba(${c3[0]},${c3[1]},${c3[2]},.45)`;
-            document.documentElement.style.setProperty('--bloom1',b1);
-            document.documentElement.style.setProperty('--bloom2',b2);
-            document.documentElement.style.setProperty('--bloom3',b3);
-            if(o1) o1.style.background=b1;
-            if(o2) o2.style.background=b2;
-            if(o3) o3.style.background=b3;
-            if(glow) glow.style.background=b1;
-        }
-
-        // ── Background crossfade on stream/theme change ──
-        function swapBg(src) {
-            if (!bgNight) return;
-            bgNight.style.transition='opacity .9s ease';
-            bgNight.style.opacity='0';
-            setTimeout(()=>{
-                bgNight.src = src;
-                bgNight.onload = ()=>{ bgNight.style.opacity='1'; };
-                bgNight.style.opacity='1';
-            }, 350);
-        }
-
-        // ── Theme-aware bg: disabled old opacity toggling, now relying on displayImage ──
-        function applyThemeBg() {
-            if (bgDay) bgDay.style.display = 'none';
-            if (bgNight) {
-                bgNight.style.opacity = '1';
-            }
-        }
-
-        // ── Artwork crossfade + color update on stream switch ──
-        function updateAmbient(imgSrc) {
-            const artImg = document.getElementById('artworkImg');
-            if (!artImg) return;
-            
-            // Only crossfade if the image is actually changing
-            if (artImg.src.endsWith(imgSrc.replace('../', '')) || artImg.getAttribute('src') === imgSrc) {
-                applyPalette(artImg); // Just apply palette if image hasn't changed
-                return;
-            }
-
-            artImg.classList.add('xfade');
-            setTimeout(()=>{
-                artImg.src = imgSrc;
-                swapBg(imgSrc);
-                artImg.onload = ()=>{
-                    artImg.classList.remove('xfade');
-                    applyPalette(artImg);
-                };
-                artImg.onerror = ()=> artImg.classList.remove('xfade');
-            }, 220);
-        }
-
-        // ── Hook updateStreamUI (defined in inline script above) ──
-        function patchStreamUI() {
-            if (typeof updateStreamUI === 'function') {
-                const _orig = updateStreamUI;
-                window.updateStreamUI = function(st) {
-                    _orig(st);
-                    if (typeof STREAMS!=='undefined' && STREAMS[st]) {
-                        const stream = STREAMS[st];
-                        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-                        const displayImage = (currentTheme === 'light' && stream.lightImage) ? stream.lightImage : stream.image;
-                        updateAmbient(displayImage);
-                    }
-                };
-                return true;
-            }
-            return false;
-        }
-
-        // ── Mini EQ sync with play state ──
-        function syncMiniEq() {
-            if (!miniEq) return;
-            const paused = document.getElementById('player')?.classList.contains('paused');
-            miniEq.classList.toggle('playing', !paused);
-        }
-
-        // Observe player class
-        const playerEl = document.getElementById('player');
-        if (playerEl && window.MutationObserver) {
-            new MutationObserver(syncMiniEq).observe(playerEl,{attributes:true,attributeFilter:['class']});
-        }
-        document.getElementById('playBtn')?.addEventListener('click',()=>setTimeout(syncMiniEq,250));
-
-        // Observe theme changes
-        if (window.MutationObserver) {
-            new MutationObserver(applyThemeBg).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-        }
-
-        function init() {
-            applyThemeBg();
-            const artImg = document.getElementById('artworkImg');
-            if (artImg?.complete && artImg.naturalWidth) applyPalette(artImg);
-            else artImg?.addEventListener('load',()=>applyPalette(artImg),{once:true});
-            if (!patchStreamUI()) {
-                let t=0; const p=setInterval(()=>{ if(patchStreamUI()||++t>25) clearInterval(p); },200);
-            }
-        }
-
-        if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
-        else init();
+    /* ── THEME BLOCKER ── */
+    (function(){
+      var t = localStorage.getItem('gurbaniTheme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
     })();
-    </script>
+  </script>
+  <style>
+    html,body{opacity:0;}
+    html{opacity:1;}
+    body{opacity:1;}
+  </style>
+</head>
+<body>
+
+<!-- ─── AMBIENT BACKDROP ─── -->
+<div class="bg-container">
+  <img id="bgDay" class="bg-image" src="../assets/darbar-sahib-day.webp" alt="">
+  <img id="bgDarbar" class="bg-image fade" src="../assets/darbar-sahib-day.webp" alt="">
+  <img id="bgAmritvela" class="bg-image fade" src="../assets/darbar-sahib-amritvela.webp" alt="">
+  <div class="bg-overlay"></div>
+  <!-- hidden — preserved for JS compatibility -->
+  <canvas id="colorCanvas" style="display:none"></canvas>
+  <div id="bloomO1" class="bloom-orb"></div>
+  <div id="bloomO2" class="bloom-orb"></div>
+  <div id="bloomO3" class="bloom-orb"></div>
+</div>
+
+<!-- ─── PLAYER ─── -->
+<main id="player" class="player-container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <button id="backBtn" class="header-btn" aria-label="Back">
+      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="header-title">Gurbani Radio</span>
+    <button id="themeBtn" class="header-btn" aria-label="Toggle theme">
+      <svg id="themeIcon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4.5"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- STREAM SWITCHER -->
+  <div class="stream-switcher">
+    <div id="streamPill" class="stream-pill darbar"></div>
+    <button id="btnDarbar" class="stream-btn active" data-stream="darbar">
+      <svg viewBox="0 0 24 24"><path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Darbar
+    </button>
+    <button id="btnAmritvela" class="stream-btn" data-stream="amritvela">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Amritvela
+    </button>
+    <button id="btnSimran" class="stream-btn" data-stream="simran">
+      <svg viewBox="0 0 24 24"><path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Simran
+    </button>
+  </div>
+
+  <!-- SIMRAN SWITCH -->
+  <div id="simranSwitch" class="simran-switch">
+    <div class="simran-switch-copy">
+      <span class="simran-switch-label">Simran Style</span>
+      <span id="simranSwitchState" class="simran-switch-state">Bhog</span>
+    </div>
+    <div class="simran-switch-track">
+      <div class="simran-switch-thumb">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTWORK -->
+  <section class="artwork-section">
+    <div id="artworkGlow" class="artwork-glow"></div>
+    <div id="artworkContainer" class="artwork-clay">
+      <div class="artwork-inner">
+        <img id="artworkImg" class="artwork-img" src="../assets/kirtan-default.webp" alt="Now playing">
+        <div id="liveBadge" class="live-badge">LIVE</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACK INFO -->
+  <section id="trackInfo" class="track-info">
+    <div class="track-row">
+      <h1 id="trackTitle" class="track-title">Hukamnama</h1>
+      <div id="miniEq" class="mini-eq"><span></span><span></span><span></span><span></span></div>
+    </div>
+    <p id="trackArtist" class="track-artist">Sri Darbar Sahib</p>
+    <p id="trackSubtitle" class="track-subtitle">Dhan Guru Nanak</p>
+  </section>
+
+  <!-- LIVE ACTION -->
+  <div id="liveAction" class="live-action">
+    <button id="liveJumpBtn" class="live-jump-btn is-synced">
+      <span class="live-jump-dot" id="liveLabelDot"></span>
+      <span id="liveLabel">Live</span>
+      <span id="liveBehindText" class="live-behind-text"></span>
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <section class="progress-section">
+    <div id="progressTrack" class="progress-track">
+      <div id="progressFill" class="progress-fill" style="width:0%"></div>
+      <div id="progressKnob" class="progress-knob" style="left:0%"></div>
+    </div>
+    <div class="progress-labels">
+      <span id="elapsedTime">0:00</span>
+      <span class="live-indicator">LIVE</span>
+      <span>∞</span>
+    </div>
+  </section>
+
+  <!-- CONTROLS -->
+  <section class="controls">
+    <button id="prevBtn" class="control-btn secondary" aria-label="Previous track">
+      <svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8v16zM5 4v16" stroke="currentColor" fill="currentColor" stroke-width="0"/></svg>
+    </button>
+    <button id="playBtn" class="control-btn primary paused" aria-label="Play">
+      <svg id="playIcon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="6,4 20,12 6,20" stroke="currentColor" fill="currentColor"/>
+      </svg>
+    </button>
+    <button id="nextBtn" class="control-btn secondary" aria-label="Next track">
+      <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zM19 4v16" stroke="currentColor" fill="currentColor" stroke-width="0"/></svg>
+    </button>
+  </section>
+
+  <!-- VOLUME -->
+  <section class="volume-section">
+    <svg class="volume-icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="volume-slider">
+      <div id="volumeFill" class="volume-fill" style="width:70%"></div>
+      <input id="volumeInput" class="volume-input" type="range" min="0" max="1" step="0.01" value="0.7">
+    </div>
+    <svg class="volume-icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </section>
+
+  <!-- FOOTER ACTIONS -->
+  <div class="footer-actions">
+    <button id="playlistBtn" class="footer-btn" aria-label="Playlist">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12M18 14l4-3v8l-4-5z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <i style="display:none"></i>
+    </button>
+    <button id="favBtn" class="footer-btn" aria-label="Favorite">
+      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <i style="display:none"></i>
+    </button>
+    <button id="shareBtn" class="footer-btn" aria-label="Share">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><circle cx="6" cy="12" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><circle cx="18" cy="19" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <i style="display:none"></i>
+    </button>
+  </div>
+
+</main>
+
+<!-- ─── STATUS PILL ─── -->
+<div id="statusPill" class="status-pill">
+  <span id="statusDot" class="status-dot"></span>
+  <span id="statusText">Connected</span>
+</div>
+
+<!-- ─── ERROR TOAST ─── -->
+<div id="errorToast" class="error-toast">
+  <div class="error-icon">
+    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+  </div>
+  <div class="error-content">
+    <div id="errorTitle" class="error-title">Connection Lost</div>
+    <div id="errorMessage" class="error-message">Reconnecting...</div>
+  </div>
+  <button id="errorRetryBtn" class="error-retry">Retry</button>
+</div>
+
+<!-- ─── CONNECTION OVERLAY ─── -->
+<div id="connectionOverlay" class="connection-overlay">
+  <div class="connection-spinner"></div>
+  <div class="connection-text" id="connectingStream">
+    Connecting to <span>Darbar Sahib</span>
+  </div>
+</div>
+
+<!-- ─── GLOBAL MINI PLAYER ─── -->
+<div id="gmp"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     INLINE PLAYER JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script src="../lib/global-theme.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ── Elements ── */
+  var btnDarbar     = document.getElementById('btnDarbar');
+  var btnAmritvela  = document.getElementById('btnAmritvela');
+  var btnSimran     = document.getElementById('btnSimran');
+  var streamPill    = document.getElementById('streamPill');
+  var artworkCtn    = document.getElementById('artworkContainer');
+  var artworkImg    = document.getElementById('artworkImg');
+  var artworkGlow   = document.getElementById('artworkGlow');
+  var trackTitle    = document.getElementById('trackTitle');
+  var trackArtist   = document.getElementById('trackArtist');
+  var trackSubtitle = document.getElementById('trackSubtitle');
+  var liveBadge     = document.getElementById('liveBadge');
+  var progressTrack = document.querySelector('#progressTrack');
+  var progressFill  = document.querySelector('#progressFill');
+  var progressKnob  = document.querySelector('#progressKnob');
+  var elapsedTime   = document.getElementById('elapsedTime');
+  var playBtn       = document.getElementById('playBtn');
+  var playIcon      = document.getElementById('playIcon');
+  var prevBtn       = document.getElementById('prevBtn');
+  var nextBtn       = document.getElementById('nextBtn');
+  var volumeInput   = document.getElementById('volumeInput');
+  var volumeFill    = document.getElementById('volumeFill');
+  var statusPill    = document.getElementById('statusPill');
+  var statusDot     = document.getElementById('statusDot');
+  var statusText    = document.getElementById('statusText');
+  var connOverlay   = document.getElementById('connectionOverlay');
+  var connStream    = document.getElementById('connectingStream');
+  var errorToast    = document.getElementById('errorToast');
+  var errorTitle    = document.getElementById('errorTitle');
+  var errorMessage  = document.getElementById('errorMessage');
+  var errorRetryBtn = document.getElementById('errorRetryBtn');
+  var liveJumpBtn   = document.getElementById('liveJumpBtn');
+  var liveBehindText= document.getElementById('liveBehindText');
+  var liveLabelDot  = document.getElementById('liveLabelDot');
+  var liveLabel     = document.getElementById('liveLabel');
+  var themeBtn      = document.getElementById('themeBtn');
+  var themeIcon     = document.getElementById('themeIcon');
+  var simranSwitch  = document.getElementById('simranSwitch');
+  var simranState   = document.getElementById('simranSwitchState');
+  var miniEq        = document.getElementById('miniEq');
+  var trackInfo     = document.getElementById('trackInfo');
+  var bgDay         = document.getElementById('bgDay');
+  var bgDarbar      = document.getElementById('bgDarbar');
+  var bgAmritvela   = document.getElementById('bgAmritvela');
+  var colorCanvas   = document.getElementById('colorCanvas');
+  var bloomO1       = document.getElementById('bloomO1');
+  var bloomO2       = document.getElementById('bloomO2');
+  var bloomO3       = document.getElementById('bloomO3');
+  var player        = document.getElementById('player');
+
+  /* ── State ── */
+  var currentStream = 'darbar';
+  var isPlaying     = true;
+  var isLive        = true;
+  var isBehind      = false;
+  var isSimran     = false;
+  var trackQueue    = [];
+  var activeSource  = null;
+
+  /* ── Stream URLs ── */
+  var STREAMS = {
+    darbar:    'https://kirtan.anhad.app/stream/darbar',
+    amritvela: 'https://kirtan.anhad.app/stream/amritvela',
+    simran:    'https://kirtan.anhad.app/stream/simran'
+  };
+
+  var STREAM_NAMES = {
+    darbar:    'Darbar Sahib',
+    amritvela: 'Amritvela',
+    simran:    'Simran'
+  };
+
+  /* ── Station metadata ── */
+  var STATION_META = {
+    darbar: {
+      title: 'Hukamnama',
+      artist: 'Sri Darbar Sahib',
+      subtitle: 'Dhan Guru Nanak',
+      bg: 'bgDarbar',
+      color: '#D4943A',
+      bgImg: '../assets/darbar-sahib-day.webp'
+    },
+    amritvela: {
+      title: 'Asa Di Vaar',
+      artist: 'Sri Darbar Sahib',
+      subtitle: 'Amritvela',
+      bg: 'bgAmritvela',
+      color: '#FF8C00',
+      bgImg: '../assets/darbar-sahib-amritvela.webp'
+    },
+    simran: {
+      title: 'Simran',
+      artist: 'Waheguru',
+      subtitle: 'Naam Simran',
+      bg: 'bgDarbar',
+      color: '#FFA500',
+      bgImg: '../assets/darbar-sahib-day.webp'
+    }
+  };
+
+  /* ── Theme ── */
+  function setTheme(t) {
+    var r = document.documentElement;
+    r.setAttribute('data-theme', t);
+    localStorage.setItem('gurbaniTheme', t);
+    var sun = '<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
+    var moon = '<circle cx="12" cy="12" r="5"/><path d="M12 3a9 9 0 000 18 7 7 0 010-14"/>';
+    themeIcon.innerHTML = t === 'dark' ? moon : sun;
+  }
+  setTheme(localStorage.getItem('gurbaniTheme') || 'light');
+  themeBtn.addEventListener('click', function(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  });
+
+  /* ── Stream switching ── */
+  function setActiveStream(stream) {
+    if (!stream || stream === currentStream) return;
+    currentStream = stream;
+
+    var root = document.documentElement;
+    var meta = STATION_META[stream];
+    root.style.setProperty('--stream-accent', meta.color);
+    root.style.setProperty('--stream-accent-light', meta.color + '33');
+    root.style.setProperty('--stream-accent-glow', meta.color + '55');
+
+    [btnDarbar, btnAmritvela, btnSimran].forEach(function(b){
+      b.classList.toggle('active', b.dataset.stream === stream);
+    });
+    streamPill.className = 'stream-pill ' + stream;
+    artworkCtn.classList.remove('playing');
+
+    bgDay.classList.toggle('fade', stream !== 'darbar');
+    bgDarbar.classList.toggle('fade', stream !== 'darbar');
+    bgAmritvela.classList.toggle('fade', stream !== 'amritvela');
+
+    if (stream === 'simran') {
+      simranSwitch.classList.add('visible');
+    } else {
+      simranSwitch.classList.remove('visible');
+    }
+
+    trackTitle.textContent = meta.title;
+    trackArtist.textContent = meta.artist;
+    trackSubtitle.textContent = meta.subtitle;
+
+    artworkImg.classList.add('xfade');
+    setTimeout(function(){
+      artworkImg.src = meta.bgImg + '?v=' + Date.now();
+    }, 180);
+    setTimeout(function(){ artworkImg.classList.remove('xfade'); }, 400);
+
+    artworkGlow.style.background = meta.color + '55';
+
+    if (connOverlay.classList.contains('visible')) {
+      connStream.innerHTML = 'Connecting to <span>' + STREAM_NAMES[stream] + '</span>';
+    }
+
+    updatePlayState();
+  }
+
+  btnDarbar.addEventListener('click', function(){ setActiveStream('darbar'); });
+  btnAmritvela.addEventListener('click', function(){ setActiveStream('amritvela'); });
+  btnSimran.addEventListener('click', function(){ setActiveStream('simran'); });
+
+  /* ── Simran switch ── */
+  simranSwitch.addEventListener('click', function(){
+    isSimran = !isSimran;
+    simranSwitch.classList.toggle('active', isSimran);
+    simranState.textContent = isSimran ? 'Sodar' : 'Bhog';
+  });
+
+  /* ── Play state ── */
+  function updatePlayState() {
+    if (isPlaying && currentStream) {
+      artworkCtn.classList.add('playing');
+      miniEq.classList.add('playing');
+    } else {
+      artworkCtn.classList.remove('playing');
+      miniEq.classList.remove('playing');
+    }
+  }
+
+  playBtn.addEventListener('click', function togglePlay() {
+    if (isPlaying) {
+      playBtn.classList.add('paused');
+      playIcon.innerHTML = '<polygon points="6,4 20,12 6,20" stroke="currentColor" fill="currentColor"/>';
+      isPlaying = false;
+    } else {
+      playBtn.classList.remove('paused');
+      playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+      isPlaying = true;
+    }
+    updatePlayState();
+  });
+
+  /* ── Progress ── */
+  var progressInterval = null;
+  var fakeProgress = 0;
+
+  function startProgress() {
+    if (progressInterval) return;
+    fakeProgress = 0;
+    progressInterval = setInterval(function(){
+      fakeProgress += 0.5;
+      if (fakeProgress > 58) fakeProgress = 0;
+      var pct = (fakeProgress / 60) * 100;
+      if (progressFill) progressFill.style.width = pct + '%';
+      if (progressKnob) progressKnob.style.left = pct + '%';
+
+      var mins = Math.floor(fakeProgress / 60);
+      var secs = Math.floor(fakeProgress % 60);
+      elapsedTime.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }, 1000);
+  }
+
+  function stopProgress() {
+    if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+  }
+
+  /* ── Volume ── */
+  volumeInput.addEventListener('input', function(){
+    var v = this.value;
+    volumeFill.style.width = (v * 100) + '%';
+  });
+
+  /* ── Live status ── */
+  function setLiveStatus(behind, secs) {
+    isBehind = behind;
+    liveJumpBtn.classList.toggle('is-behind', behind);
+    liveJumpBtn.classList.toggle('is-synced', !behind);
+    liveLabelDot.classList.toggle('pulsing', behind);
+    if (behind && secs > 0) {
+      liveBehindText.textContent = secs + 's behind';
+    } else {
+      liveBehindText.textContent = '';
+    }
+  }
+
+  liveJumpBtn.addEventListener('click', function(){
+    setLiveStatus(false, 0);
+    /* re-sync logic would go here */
+  });
+
+  /* ── Status pill ── */
+  function showStatus(msg, isError) {
+    statusText.textContent = msg;
+    statusDot.classList.toggle('error', !!isError);
+    statusPill.classList.add('visible');
+    clearTimeout(statusPill._timeout);
+    statusPill._timeout = setTimeout(function(){
+      statusPill.classList.remove('visible');
+    }, 2500);
+  }
+
+  /* ── Error toast ── */
+  function showError(title, msg) {
+    errorTitle.textContent = title;
+    errorMessage.textContent = msg;
+    errorToast.classList.add('visible');
+    clearTimeout(errorToast._timeout);
+    errorToast._timeout = setTimeout(function(){
+      errorToast.classList.remove('visible');
+    }, 5000);
+  }
+
+  function hideError() {
+    errorToast.classList.remove('visible');
+    clearTimeout(errorToast._timeout);
+  }
+
+  errorRetryBtn.addEventListener('click', function(){
+    hideError();
+    showStatus('Reconnecting...', true);
+    /* reconnect logic would go here */
+    setTimeout(function(){ showStatus('Connected'); }, 2000);
+  });
+
+  /* ── Connection overlay ── */
+  function showConnecting(stream) {
+    connOverlay.classList.add('visible');
+    connStream.innerHTML = 'Connecting to <span>' + STREAM_NAMES[stream] + '</span>';
+  }
+
+  function hideConnecting() {
+    connOverlay.classList.remove('visible');
+  }
+
+  /* ── Prev / Next ── */
+  prevBtn.addEventListener('click', function(){
+    showStatus('Previous track');
+  });
+  nextBtn.addEventListener('click', function(){
+    showStatus('Next track');
+  });
+
+  /* ── Back button ── */
+  document.getElementById('backBtn').addEventListener('click', function(){
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '../index.html';
+    }
+  });
+
+  /* ── Init ── */
+  function init() {
+    setActiveStream('darbar');
+    updatePlayState();
+    playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    startProgress();
+    showStatus('Connected');
+  }
+  init();
+})();
+</script>
+
 </body>
 </html>

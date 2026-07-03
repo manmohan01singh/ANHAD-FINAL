@@ -174,10 +174,9 @@ html[data-theme="light"] {
 }
 
 .header-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 3px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   color: #ffffff;
 }
 
@@ -485,11 +484,11 @@ html[data-theme="light"] .simran-switch-label {
 }
 
 .track-title {
-  font-family: 'Cinzel Decorative', sans-serif;
-  font-size: 24px;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  line-height: 1.15;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
   color: #fff;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8)
 }
@@ -768,115 +767,40 @@ html[data-theme="light"] .control-btn.secondary {
   box-shadow: 0 4px 16px rgba(0, 0, 0, .2)
 }
 
-/* primary — large liquid glass play button */
+/* primary — large iOS-style play button */
 .control-btn.primary {
-  width: 100px;
-  height: 100px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  background: rgba(232, 168, 56, 0.15);
+  background: rgba(232, 168, 56, 0.2);
   backdrop-filter: blur(30px) saturate(2);
   -webkit-backdrop-filter: blur(30px) saturate(2);
-  border: 2px solid rgba(232, 168, 56, 0.8);
+  border: none;
   font-size: 38px;
   color: #fff;
   box-shadow:
-    0 12px 40px rgba(232, 168, 56, .4),
-    inset 0 4px 20px rgba(232, 168, 56, .3),
-    inset 0 1px 2px rgba(255, 255, 255, .5);
-  animation: pglow 2.6s ease-in-out infinite;
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s var(--spring), background 0.2s ease, box-shadow 0.2s ease;
   position: relative;
 }
 
-.control-btn.primary::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid rgba(232, 168, 56, .5);
-  animation: ringPulse 2.6s ease-in-out infinite;
-}
-
-@keyframes ringPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: .6
-  }
-
-  50% {
-    transform: scale(1.08);
-    opacity: 0
-  }
+.control-btn.primary:active {
+  transform: scale(0.88);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .paused .control-btn.primary {
-  animation: none;
-  box-shadow: 0 8px 32px rgba(232, 168, 56, .2), inset 0 4px 12px rgba(232, 168, 56, .15), inset 0 1px 2px rgba(255, 255, 255, .3)
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
 }
 
-.paused .control-btn.primary::before {
-  animation: none;
-  opacity: 0
-}
-
-@keyframes pglow {
-
-  0%,
-  100% {
-    box-shadow: 0 12px 40px rgba(232, 168, 56, .4), inset 0 4px 20px rgba(232, 168, 56, .3), inset 0 1px 2px rgba(255, 255, 255, .5)
-  }
-
-  50% {
-    box-shadow: 0 16px 50px rgba(232, 168, 56, .6), inset 0 6px 24px rgba(232, 168, 56, .4), inset 0 1px 2px rgba(255, 255, 255, .6)
-  }
-}
-
-.control-btn.primary:active {
-  transform: scale(0.88)
-}
-
-/* Darbar maps exactly to default primary in dark mode */
 .control-btn.primary.darbar {
-  background: rgba(232, 168, 56, 0.15);
-  border-color: rgba(232, 168, 56, 0.8);
-  box-shadow: 0 12px 40px rgba(232, 168, 56, .4), inset 0 4px 20px rgba(232, 168, 56, .3), inset 0 1px 2px rgba(255, 255, 255, .5);
+  background: rgba(232, 168, 56, 0.2);
 }
 
-.control-btn.primary.darbar::before {
-  border-color: rgba(232, 168, 56, .5)
-}
-
-/* ── SIMRAN: Unchanged Orange (Both Modes) ── */
-.control-btn.primary.simran,
-html[data-theme="light"] .control-btn.primary.simran {
-  background: rgba(255, 165, 0, 0.15);
-  border-color: rgba(255, 165, 0, 0.8);
-  box-shadow: 0 12px 40px rgba(255, 165, 0, .4), inset 0 4px 20px rgba(255, 165, 0, .3), inset 0 1px 2px rgba(255, 255, 255, .5);
-  animation: pglowSimran 2.6s ease-in-out infinite;
-}
-
-.control-btn.primary.simran::before,
-html[data-theme="light"] .control-btn.primary.simran::before {
-  border-color: rgba(255, 165, 0, .5);
-}
-
-.paused .control-btn.primary.simran,
-html[data-theme="light"] .paused .control-btn.primary.simran {
-  animation: none;
-  box-shadow: 0 8px 32px rgba(255, 165, 0, .2), inset 0 4px 12px rgba(255, 165, 0, .15), inset 0 1px 2px rgba(255, 255, 255, .3);
-}
-
-@keyframes pglowSimran {
-
-  0%,
-  100% {
-    box-shadow: 0 12px 40px rgba(255, 165, 0, .4), inset 0 4px 20px rgba(255, 165, 0, .3), inset 0 1px 2px rgba(255, 255, 255, .5)
-  }
-
-  50% {
-    box-shadow: 0 16px 50px rgba(255, 165, 0, .6), inset 0 6px 24px rgba(255, 165, 0, .5), inset 0 1px 2px rgba(255, 255, 255, .6)
-  }
+/* ── SIMRAN ── */
+.control-btn.primary.simran {
+  background: rgba(255, 165, 0, 0.2);
 }
 
 .control-btn.loading {
