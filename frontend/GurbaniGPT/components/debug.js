@@ -158,6 +158,17 @@ export function initDebugPanel() {
       return;
     }
 
+    // Pipeline summary header
+    const elapsed = trace.timestamp ? Math.round((Date.now() - trace.timestamp) / 100) / 10 + 's' : '—';
+    const totalCandidates = trace.related ? trace.related.length + (trace.belowThreshold ? trace.belowThreshold.length : 0) + 1 : '—';
+    addSection(body, 'Pipeline Summary', '\
+      <div class="anhad-debug-value" style="display:flex;gap:12px;flex-wrap:wrap">\
+        <span><strong>Time:</strong> ' + elapsed + '</span>\
+        <span><strong>Candidates:</strong> ' + totalCandidates + '</span>\
+        <span><strong>Primary:</strong> ' + (trace.primary ? (trace.primary.verseId || trace.primary.shabadId || 'yes') : 'none') + '</span>\
+      </div>\
+    ');
+
     // Input section
     addSection(body, 'Input', '<div class="anhad-debug-value">' + escapeHtml(trace.input || '') + '</div>');
 
@@ -229,6 +240,15 @@ export function initDebugPanel() {
         queriesHtml += '<div class="anhad-debug-value" style="font-size:10px">\u2022 <strong>[' + q.type + ']</strong> ' + escapeHtml(q.query) + ' <span class="anhad-debug-score ' + (q.weight > 0.7 ? 'high' : q.weight > 0.4 ? 'med' : 'low') + '">' + Math.round(q.weight * 100) + '%</span></div>';
       }
       addSection(body, 'Multi-Query <span style="font-weight:400;opacity:0.5">(' + multiQueryStage.queries.length + ' queries)</span>', queriesHtml);
+    }
+
+    // Diversity Prep section
+    const diversityPrepStage = trace.stages ? trace.stages.find(function(s) { return s.name === 'diversity_prep'; }) : null;
+    if (diversityPrepStage) {
+      addSection(body, 'Diversity Prep', '\
+        <div class="anhad-debug-value"><strong>Total candidates:</strong> ' + (diversityPrepStage.candidatesTotal || 0) + '</div>\
+        <div class="anhad-debug-value"><strong>Fallback added:</strong> ' + (diversityPrepStage.fallbackAdded || 0) + '</div>\
+      ');
     }
 
     // Multi-Recall section
@@ -322,6 +342,15 @@ export function initDebugPanel() {
         <div class="anhad-debug-value" style="font-size:11px"><strong>Transition:</strong> ' + escapeHtml(p.transition || '') + '</div>\
         <div class="anhad-debug-value" style="font-size:11px"><strong>Closing:</strong> ' + escapeHtml(p.closing || '') + '</div>\
         <div class="anhad-debug-value" style="font-size:10px;opacity:0.7"><strong>Focus:</strong> ' + escapeHtml(p.teachingFocus || 'none') + '</div>\
+      ');
+    }
+
+    // Prompt built section
+    const promptStage = trace.stages ? trace.stages.find(function(s) { return s.name === 'prompt_built'; }) : null;
+    if (promptStage) {
+      addSection(body, 'Prompt <span style="font-weight:400;opacity:0.5">(' + (promptStage.promptLength || 0) + ' chars)</span>', '\
+        <div class="anhad-debug-value" style="font-size:10px;opacity:0.7"><strong>Length:</strong> ' + (promptStage.promptLength || 0) + ' characters</div>\
+        <div class="anhad-debug-value" style="font-size:10px;opacity:0.5">The full prompt was sent to the LLM. View in browser DevTools Network tab for complete text.</div>\
       ');
     }
 

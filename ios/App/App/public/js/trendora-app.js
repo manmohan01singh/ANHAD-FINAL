@@ -1574,7 +1574,7 @@
 
       dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
-          track.scrollTo({ left: i * track.offsetWidth, behavior: 'smooth' });
+          track.scrollLeft = i * track.offsetWidth;
         });
       });
 
@@ -1582,7 +1582,7 @@
       this._autoTimer = setInterval(() => {
         if (this._paused) return;
         current = (current + 1) % totalSlides;
-        track.scrollTo({ left: current * track.offsetWidth, behavior: 'smooth' });
+        track.scrollLeft = current * track.offsetWidth;
         dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === current));
       }, 7000);
 

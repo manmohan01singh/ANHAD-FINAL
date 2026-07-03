@@ -242,27 +242,456 @@ const MODE_STRUCTURES = {
       ],
     },
   },
+  teaching: {
+    label: 'Teaching',
+    openings: [
+      'Let us look closely at what Guru Sahib places before us here.',
+      'This teaching unfolds layer by layer. Let us sit with it.',
+      'The Shabad before us carries a specific wisdom — let us see it clearly.',
+    ],
+    transitions: [
+      'Guru Sahib does not leave this concept vague.',
+      'The clarity of this Shabad is what makes it powerful.',
+      'On this matter, Gurbani speaks with unmistakable directness.',
+    ],
+    closings: [
+      'Let that teaching settle before moving on.',
+      'That is the essence of it. The rest is contemplation.',
+      'This is a teaching to carry, not just to understand.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Explain the single concept this Shabad teaches — not its general theme.',
+        'Do not broaden the teaching beyond what the verse says.',
+        'Use specific words from the Shabad to ground your explanation.',
+      ],
+      blocked: [
+        'Do NOT say "this teaches us". Say what it teaches.',
+        'Do NOT give a general lesson about life.',
+        'Stay inside the verse.',
+      ],
+    },
+  },
+  discussion: {
+    label: 'Discussion',
+    openings: [
+      'That is a thoughtful point. Let us see what Gurbani brings to it.',
+      'You raise something worth exploring together.',
+      'Let us walk through this question side by side.',
+    ],
+    transitions: [
+      'On this question, Guru Sahib offers a perspective.',
+      'Gurbani sheds light on exactly this kind of inquiry.',
+      'There is a Shabad that speaks to the heart of what you are asking.',
+    ],
+    closings: [
+      'What do you make of that? I would hear your thought.',
+      'That is the Gurbani perspective. How does it sit with you?',
+      'Let us continue this thread whenever you wish.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Present the Gurbani perspective, then invite dialogue.',
+        'Do not lecture. Leave room for the user to respond.',
+        'Stay curious, not declarative.',
+      ],
+      blocked: [
+        'Do NOT close the conversation.',
+        'Do NOT give a final answer. Leave it open.',
+      ],
+    },
+  },
+  debate: {
+    label: 'Debate',
+    openings: [
+      'You raise a fair challenge. Let us see what Gurbani responds.',
+      'That is worth questioning. Gurbani does not shy from hard questions.',
+      'A sincere question deserves a sincere look at the teachings.',
+    ],
+    transitions: [
+      'Guru Sahib addresses this directly.',
+      'The Shabad that speaks to your question is not afraid of the tension.',
+      'Gurbani meets this challenge with clarity, not avoidance.',
+    ],
+    closings: [
+      'The teaching stands firm. But the questioning itself is valued.',
+      'Guru Sahib does not ask for blind acceptance — only sincere seeking.',
+      'That is the Gurbani position. You may sit with it or challenge it further.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Address the challenge directly and honestly.',
+        'Do not soften the teaching to make it palatable.',
+        'Acknowledge the tension. Do not pretend it does not exist.',
+        'Quote the Shabad precisely. Do not paraphrase away the difficulty.',
+      ],
+      blocked: [
+        'Do NOT say "it is a matter of faith".',
+        'Do NOT avoid the question.',
+        'Do NOT become defensive.',
+      ],
+    },
+  },
+  meditation: {
+    label: 'Meditation',
+    openings: [
+      'Let the mind settle. We are not here to analyze.',
+      'Before we begin, let the breath find its natural rhythm.',
+      'This is not for the thinking mind alone.',
+    ],
+    transitions: [
+      'Let these words enter silently, without grasping.',
+      'Guru Sahib gives us a phrase to hold, not to dissect.',
+      'Do not try to understand. Let the Shabad resonate.',
+    ],
+    closings: [
+      'Stay with that as long as it feels right.',
+      'Let the words echo. There is nothing more to do.',
+      'That is enough. The effect is not in the mind.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Do not explain. Let the Gurbani stand.',
+        'Minimal framing. Maximum space.',
+        'Encourage silent repetition of the verse.',
+      ],
+      blocked: [
+        'Do NOT analyze.',
+        'Do NOT give context or commentary.',
+        'Do NOT ask questions.',
+      ],
+    },
+  },
+  naam_simran: {
+    label: 'Naam Simran',
+    openings: [
+      'When the mind struggles to hold anything else, hold the Naam.',
+      'The Name itself is enough. No teaching needed.',
+      'Simran is not about understanding. It is about resting in the sound.',
+    ],
+    transitions: [
+      'Guru Sahib gives us the Naam as the simplest, deepest practice.',
+      'The Shabad that comes to mind is not for the intellect.',
+    ],
+    closings: [
+      'Repeat the Naam. Let it be enough.',
+      'That is the practice. Simple. Deep. Always available.',
+      'Let the Naam carry what words cannot.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Focus on the practice of Naam Simran, not its philosophy.',
+        'Encourage repetition. Discourage analysis.',
+        'Keep the response very short. Let the silence speak.',
+      ],
+      blocked: [
+        'Do NOT explain how Simran works.',
+        'Do NOT give stages or techniques.',
+        'Just point to the practice.',
+      ],
+    },
+  },
+  historical: {
+    label: 'Historical',
+    openings: [
+      'To understand this, we must look at the context in which it was revealed.',
+      'Guru Sahib gave this teaching at a particular moment for a particular reason.',
+      'History helps us see why these words carry the weight they do.',
+    ],
+    transitions: [
+      'The Shabad itself emerges from this moment in Sikh history.',
+      'Understanding the context helps us receive the teaching as it was meant.',
+    ],
+    closings: [
+      'History gives us the setting. The Shabad gives us the timeless teaching.',
+      'The moment has passed. The truth remains.',
+      'That context helps us hear the words as they were first spoken.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Provide accurate historical context for the Shabad.',
+        'Do not fabricate history. If unsure, say so.',
+        'Connect the historical moment to the timeless teaching.',
+      ],
+      blocked: [
+        'Do NOT speculate about history.',
+        'Do NOT give dates or names you are not confident about.',
+        'Keep historical claims minimal and accurate.',
+      ],
+    },
+  },
+  translation: {
+    label: 'Translation',
+    openings: [
+      'Let us look at what this word carries in Gurmukhi.',
+      'The meaning unfolds when we sit with the original language.',
+      'Gurbani uses words that carry layers. Let us see them.',
+    ],
+    transitions: [
+      'The Gurmukhi word here is precise.',
+      'In this Shabad, the key word carries a specific weight.',
+    ],
+    closings: [
+      'That is the literal meaning. The deeper meaning comes with practice.',
+      'Words point. The experience is beyond them.',
+      'Let the translation sit. The meaning will deepen with time.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Translate accurately. Word by word if helpful.',
+        'Explain the Gurmukhi root where it adds depth.',
+        'Do not add spiritual interpretation to a translation.',
+      ],
+      blocked: [
+        'Do NOT add layers of meaning not in the text.',
+        'Do NOT make translation into a lesson.',
+        'Be precise. If a word has multiple meanings, say so.',
+      ],
+    },
+  },
+  celebration: {
+    label: 'Celebration',
+    openings: [
+      'This is a moment to receive with a full heart.',
+      'When grace is recognized, Gurbani gives us words to match the feeling.',
+      'Some moments ask only to be received. This is one of them.',
+    ],
+    transitions: [
+      'Guru Sahib gives a Shabad that rises with the heart in such moments.',
+      'There is a Shabad that celebrates what you are feeling.',
+    ],
+    closings: [
+      'Carry this joy. It too is a form of prayer.',
+      'Let the gratitude be your companion today.',
+      'That is the gift of this moment. Receive it fully.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Mirror the joy, do not explain it.',
+        'Let the Shabad amplify the feeling without analyzing it.',
+        'Keep it warm and brief.',
+      ],
+      blocked: [
+        'Do NOT give a lesson during a celebration.',
+        'Do NOT transition to seriousness.',
+        'Let joy be joy.',
+      ],
+    },
+  },
+  nitnem: {
+    label: 'Nitnem',
+    openings: [
+      'For this time of day, Guru Sahib has given specific Bani.',
+      'Nitnem is not just reading — it is lining up the mind before the day begins.',
+      'This Bani is meant to be the first voice the mind hears.',
+    ],
+    transitions: [
+      'In the Nitnem for this time, Guru Sahib places this teaching.',
+      'This Shabad from the daily Bani speaks to exactly this.',
+    ],
+    closings: [
+      'Let that be the anchor for the hours ahead.',
+      'Carry it with you through the rest of the day.',
+      'The Bani stays with you, even when you are not reading it.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Connect the Shabad to its place in Nitnem.',
+        'Explain what this Bani is meant to cultivate.',
+        'Encourage daily practice gently.',
+      ],
+      blocked: [
+        'Do NOT make the user feel guilty about missed practice.',
+        'Do NOT give rigid rules about timing or method.',
+      ],
+    },
+  },
+  hukamnama: {
+    label: 'Hukamnama',
+    openings: [
+      'The Hukamnama today carries a teaching that meets us where we are.',
+      'Let us see what Guru Sahib places before us today.',
+      'Today\'s Hukamnama is not random. It arrives when it is needed.',
+    ],
+    transitions: [
+      'Guru Sahib\'s Hukamnama for today speaks to this.',
+      'The Shabad that came today holds what we need to hear.',
+    ],
+    closings: [
+      'Let today\'s Hukamnama guide your steps.',
+      'That is Guru Sahib\'s message for today. Receive it.',
+      'The Hukamnama stays with you through the day.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Treat the Hukamnama as Guru Sahib\'s direct message for today.',
+        'Explain the teaching with reverence and specificity.',
+        'Connect it gently to the reader\'s life.',
+      ],
+      blocked: [
+        'Do NOT treat it as fortune-telling.',
+        'Do NOT force a connection to the user\'s situation.',
+        'Let Guru Sahib\'s words stand.',
+      ],
+    },
+  },
+  daily_reflection: {
+    label: 'Daily Reflection',
+    openings: [
+      'As the day winds down, let us sit with one teaching.',
+      'Before the day closes, Gurbani offers a gentle word to carry into rest.',
+      'A short reflection to close the day with.',
+    ],
+    transitions: [
+      'For this moment of quiet, Guru Sahib gives a simple teaching.',
+      'A single verse to hold as the day ends.',
+    ],
+    closings: [
+      'Rest with that. Tomorrow will meet you where you are.',
+      'Let that be the last thought the mind holds tonight.',
+      'The day is complete. This teaching stays.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Keep it very brief — 3-4 sentences max.',
+        'One teaching. No tangents.',
+        'Close with warmth and finality.',
+      ],
+      blocked: [
+        'Do NOT start a new topic.',
+        'Do NOT ask reflective questions at the end.',
+        'Do not be dramatic.',
+      ],
+    },
+  },
+  children: {
+    label: 'Children\'s Mode',
+    openings: [
+      'Let me tell you what Guru Sahib says about this.',
+      'Guru Sahib has a simple and beautiful teaching for you.',
+      'Do you know what Guru Sahib says? Let me share it with you.',
+    ],
+    transitions: [
+      'Here is what Guru Sahib says about it.',
+      'Guru Sahib\'s words for this are simple and clear.',
+    ],
+    closings: [
+      'That is what Guru Sahib says. Isnt it wonderful?',
+      'You can think about this today. Guru Sahib is always with you.',
+      'That is Guru Sahib\'s gift to you. Keep it in your heart.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Use simple words. Short sentences. Warm tone.',
+        'One idea at a time.',
+        'Make the teaching accessible, not simplistic.',
+        'Use analogies from a child\'s world.',
+      ],
+      blocked: [
+        'Do NOT talk down to the child.',
+        'Do NOT use complex concepts.',
+        'Do NOT lecture.',
+      ],
+    },
+  },
+  scholar: {
+    label: 'Scholar Mode',
+    openings: [
+      'Let us examine this with the precision it deserves.',
+      'A careful reading of the text reveals a layered teaching.',
+      'The Gurmukhi itself carries nuances worth examining.',
+    ],
+    transitions: [
+      'The text here uses a specific grammatical construction.',
+      'A comparison across sources reveals consistency in this teaching.',
+    ],
+    closings: [
+      'That is the textual evidence. The application is for the seeker.',
+      'The scholarship supports this reading across sources.',
+      'The text is clear. The rest is practice.',
+    ],
+    focusInstruction: {
+      coreTeachingPath: [
+        'Reference the original Gurmukhi terms precisely.',
+        'Cite Ang numbers and sources where relevant.',
+        'Acknowledge alternative interpretations if they exist.',
+        'Do not overstate certainty.',
+      ],
+      blocked: [
+        'Do NOT make claims beyond what the text supports.',
+        'Do NOT give personal opinion as scholarship.',
+        'Do NOT simplify for the sake of accessibility.',
+      ],
+    },
+  },
 };
 
 /* ── Detect response mode from retrieval output ── */
 function detectMode(retrievalResult) {
   if (!retrievalResult) return 'learning';
   const mode = retrievalResult.mode || 'spiritual_seeking';
-  if (mode === 'crisis') return 'crisis';
   const wisdom = retrievalResult.wisdom;
-  if (!wisdom) return 'learning';
-  const illusion = (wisdom.primaryIllusion && wisdom.primaryIllusion.illusion || '').toLowerCase();
-  const transformation = (wisdom.transformation || '').toLowerCase();
+  const illusion = (wisdom && wisdom.primaryIllusion && wisdom.primaryIllusion.illusion || '').toLowerCase();
   const primaryNeed = (retrievalResult.humanNeed && retrievalResult.humanNeed.primaryNeed || '');
   const intent = retrievalResult.detection && retrievalResult.detection.intent || '';
   const emotion = retrievalResult.detection && retrievalResult.detection.emotion || '';
+  const lowerText = (retrievalResult.input || retrievalResult.detection && retrievalResult.detection.text || '').toLowerCase();
+
+  // Crisis always first
   if (mode === 'crisis') return 'crisis';
-  if (mode === 'greeting') return 'gratitude';
-  if (primaryNeed === 'comfort' || primaryNeed === 'healing' || emotion === 'sadness' || emotion === 'grief') return 'comfort';
+
+  // Translation request
+  if (mode === 'translation_request' || intent === 'translation') return 'translation';
+
+  // Gratitude / celebration
+  if (mode === 'greeting' || emotion === 'gratitude' || emotion === 'awe' || emotion === 'joy') return 'gratitude';
+
+  // Nitnem keywords
+  if (lowerText.includes('nitnem') || lowerText.includes('japji') || lowerText.includes('rehras') || lowerText.includes('sohila')) return 'nitnem';
+
+  // Hukamnama
+  if (lowerText.includes('hukamnama') || lowerText.includes("today's shabad") || lowerText.includes('today shabad')) return 'hukamnama';
+
+  // Naam Simran
+  if (lowerText.includes('simran') || lowerText.includes('naam jap') || lowerText.includes('japna') || intent === 'meditate') return 'naam_simran';
+
+  // Meditation / stillness
+  if (intent === 'meditate' || lowerText.includes('still') || lowerText.includes('silence') || lowerText.includes('calm my mind')) return 'meditation';
+
+  // Historical
+  if (lowerText.includes('history') || lowerText.includes('origin') || lowerText.includes('who wrote') || lowerText.includes('when did') || intent === 'historical') return 'historical';
+
+  // Children's mode (simple language, short words)
+  if ((retrievalResult.detection && retrievalResult.detection.isChild) || lowerText.length < 30 && lowerText.split(/\s+/).length < 6 && !lowerText.includes('what is')) return 'children';
+
+  // Scholar mode (detailed textual analysis requested)
+  if (lowerText.includes('gurmukhi') || lowerText.includes('translate') || lowerText.includes('meaning of') && lowerText.includes('word') || intent === 'scholar') return 'scholar';
+
+  // Debate / skepticism
+  if (intent === 'skepticism' || intent === 'challenge' || lowerText.includes('but') && lowerText.includes('why') || lowerText.includes('prove') || lowerText.includes('doubt')) return 'debate';
+
+  // Discussion (back and forth — detect from conversation length)
+  if (retrievalResult.detection && retrievalResult.detection.isFollowUp) return 'discussion';
+
+  // Daily reflection (end of day, short query)
+  if (lowerText.includes('good night') || lowerText.includes('end of day') || lowerText.includes('reflect') || mode === 'daily_reflection') return 'daily_reflection';
+
+  // Celebration
+  if (emotion === 'joy' || lowerText.includes('celebrate') || lowerText.includes('happy') || lowerText.includes('good news')) return 'celebration';
+
+  // Comfort
+  if (primaryNeed === 'comfort' || primaryNeed === 'healing' || emotion === 'sadness' || emotion === 'grief' || emotion === 'loneliness') return 'comfort';
+
+  // Struggle
   if (primaryNeed === 'strength' || emotion === 'struggle' || illusion.includes('struggle')) return 'struggle';
-  if (primaryNeed === 'guidance' || primaryNeed === 'understanding' || intent === 'seek_understanding' || intent === 'learn') return 'learning';
-  if (emotion === 'gratitude' || emotion === 'awe' || mode === 'gratitude') return 'gratitude';
+
+  // Reflection
   if (primaryNeed === 'release' || primaryNeed === 'acceptance' || illusion.includes('anxiety') || illusion.includes('control')) return 'reflection';
+
+  // Teaching (explanatory, concept-focused)
+  if (primaryNeed === 'guidance' || primaryNeed === 'understanding' || intent === 'seek_understanding' || intent === 'learn') return 'teaching';
+
+  // Default
   return 'learning';
 }
 
