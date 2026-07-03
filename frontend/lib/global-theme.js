@@ -176,7 +176,7 @@
             const iconClass = theme === 'auto' ? 'fas fa-magic' : (effectiveTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon');
             _themeIcons.forEach(icon => {
                 if (icon.tagName === 'SPAN') icon.textContent = iconText;
-                else icon.className = iconClass;
+                else icon.setAttribute('class', iconClass);
             });
         }
     }
