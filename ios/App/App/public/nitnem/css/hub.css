@@ -80,7 +80,7 @@ body {
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .hub-header__back:hover {
@@ -104,7 +104,7 @@ body {
     border-radius: 50%;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .hub-action-btn:hover {
@@ -315,7 +315,7 @@ body {
     cursor: pointer;
     padding: 0.25rem 0.5rem;
     border-radius: var(--radius-sm);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .hub-section__action:hover {
@@ -337,7 +337,7 @@ body {
     border-radius: var(--radius-xl);
     cursor: pointer;
     text-align: left;
-    transition: all 0.3s var(--ease-spring);
+    transition: background-color 0.3s var(--ease-spring), color 0.3s var(--ease-spring), transform 0.3s var(--ease-spring);
 }
 
 .quick-action:hover {
@@ -405,7 +405,7 @@ body {
     text-decoration: none;
     color: inherit;
     overflow: hidden;
-    transition: all 0.3s var(--ease-out);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
     cursor: pointer;
 }
 
@@ -511,7 +511,7 @@ body {
     border-radius: var(--radius-md);
     color: var(--text-tertiary);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .view-toggle__btn.active {
@@ -528,7 +528,7 @@ body {
     flex-direction: column;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s var(--ease-out);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 
 .search-modal[aria-hidden="false"],
@@ -642,7 +642,7 @@ body {
     align-items: flex-end;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s var(--ease-out);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
 }
 
 .settings-panel[aria-hidden="false"],
@@ -691,7 +691,7 @@ body {
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .settings-close:hover {

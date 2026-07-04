@@ -4402,6 +4402,70 @@ app.use('/api/banidb', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════
+// 🤖 CHAT COMPLETIONS PROXY — Proxies LLM requests to Groq API
+// ═══════════════════════════════════════════════════════════════════
+
+/**
+ * POST /api/chat/completions
+ *
+ * Proxies chat completion requests to Groq API using the server's
+ * GROQ_API_KEY environment variable. The frontend calls this endpoint
+ * so it doesn't need to expose the API key to clients.
+ *
+ * Supports both streaming and non-streaming responses.
+ */
+app.post('/api/chat/completions', async (req, res) => {
+    const groqApiKey = CONFIG.GROQ_API_KEY;
+    if (!groqApiKey) {
+        return res.status(502).json({
+            error: 'LLM proxy unavailable',
+            message: 'Server GROQ_API_KEY is not configured. Set GROQ_API_KEY in backend/.env'
+        });
+    }
+
+    try {
+        const groqResponse = await fetch(CONFIG.GROQ_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + groqApiKey
+            },
+            body: JSON.stringify(req.body)
+        });
+
+        if (!groqResponse.ok) {
+            const errorText = await groqResponse.text();
+            console.error('[ChatProxy] Groq API error:', groqResponse.status, errorText.slice(0, 500));
+            return res.status(groqResponse.status).json({
+                error: 'Groq API error',
+                status: groqResponse.status,
+                detail: errorText.slice(0, 500)
+            });
+        }
+
+        const contentType = groqResponse.headers.get('content-type') || '';
+        if (contentType.includes('stream') || req.body.stream) {
+            res.setHeader('Content-Type', 'text/event-stream');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Connection', 'keep-alive');
+            const stream = Readable.fromWeb(groqResponse.body);
+            stream.pipe(res);
+            stream.on('error', () => res.end());
+            res.on('close', () => stream.destroy());
+        } else {
+            const data = await groqResponse.json();
+            res.json(data);
+        }
+    } catch (error) {
+        console.error('[ChatProxy] Proxy error:', error.message);
+        res.status(502).json({
+            error: 'LLM proxy error',
+            message: error.message
+        });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
 // STATIC FILES - MUST be after all API routes
 // ═══════════════════════════════════════════════════════════════════
 

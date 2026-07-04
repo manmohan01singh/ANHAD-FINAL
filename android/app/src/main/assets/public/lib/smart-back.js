@@ -1,14 +1,14 @@
 /**
- * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD — Smart Back Navigation v2.0
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ANHAD â€” Smart Back Navigation v2.0
  * 
  * Universal, state-preserving back navigation:
- * 1. Tracks referrer for every page → knows where user came FROM
- * 2. Saves scroll position before leaving → restores it on return
+ * 1. Tracks referrer for every page â†’ knows where user came FROM
+ * 2. Saves scroll position before leaving â†’ restores it on return
  * 3. Uses history.back() when referrer exists, fallback URL otherwise
  * 4. Auto-wires all common back-button selectors across the entire app
  * 5. Integrates with bfcache (pageshow) for instant restore
- * ═══════════════════════════════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 (function() {
   'use strict';
@@ -16,7 +16,7 @@
   var REFERRER_KEY  = 'anhad_nav_referrer';   // { url: referrerUrl } keyed by current page
   var SCROLL_KEY    = 'anhad_nav_scroll';     // { scrollY, scrollX, containers } keyed by page URL
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
+  // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /** Get a normalized page key (pathname + search, no hash) */
   function pageKey(url) {
@@ -49,7 +49,7 @@
     return '';
   }
 
-  // ─── 1. Referrer Tracking ────────────────────────────────────────────────
+  // â”€â”€â”€ 1. Referrer Tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // On every page load, record document.referrer so we know "who sent me here"
 
   function recordReferrer() {
@@ -73,7 +73,7 @@
     return map[key] || null;
   }
 
-  // ─── 2. Scroll State ────────────────────────────────────────────────────
+  // â”€â”€â”€ 2. Scroll State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /** Save current scroll position for this page */
   function saveScrollState() {
@@ -146,7 +146,7 @@
     saveMap(SCROLL_KEY, map);
   }
 
-  // ─── 3. Smart Back Navigation ────────────────────────────────────────────
+  // â”€â”€â”€ 3. Smart Back Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /**
    * Navigate back intelligently.
@@ -160,7 +160,7 @@
    * CRITICAL: ALWAYS set session flags before going to index.html so
    * welcome-check.js NEVER redirects to the splash screen.
    *
-   * @param {string} [fallbackUrl] — URL to go to if no history
+   * @param {string} [fallbackUrl] â€” URL to go to if no history
    */
   window.anhadGoBack = function(fallbackUrl) {
     // Always ensure session is marked so index.html never triggers splash
@@ -201,9 +201,9 @@
 
     if (isBackToHome) {
       resolvedTarget = globalHome1;
-      console.log('[SmartBack] Back-to-Home → resolved to:', resolvedTarget);
+      console.log('[SmartBack] Back-to-Home â†’ resolved to:', resolvedTarget);
     } else {
-      console.log('[SmartBack] Local Back → resolved to:', resolvedTarget);
+      console.log('[SmartBack] Local Back â†’ resolved to:', resolvedTarget);
     }
 
     // 2. Use history.back() when we have real browser history.
@@ -291,7 +291,7 @@
     }
   };
 
-  // ─── 4. Auto-Wire Back Buttons ───────────────────────────────────────────
+  // â”€â”€â”€ 4. Auto-Wire Back Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /**
    * Auto-wire any element matching these selectors to use anhadGoBack.
@@ -325,7 +325,7 @@
           fallback = el.getAttribute('href');
         }
 
-        // Only remove conflicting onclick handlers — preserve session-flag setters
+        // Only remove conflicting onclick handlers â€” preserve session-flag setters
         if (el.hasAttribute('onclick')) {
           var oc = el.getAttribute('onclick');
           if (!oc.includes('anhadGoBack') && !oc.includes('anhad_welcome')) {
@@ -352,7 +352,7 @@
     });
   }
 
-  // ─── 5. Lifecycle Integration ────────────────────────────────────────────
+  // â”€â”€â”€ 5. Lifecycle Integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   // Record referrer on page load
   recordReferrer();
@@ -385,14 +385,14 @@
   });
 
   // Save scroll state before navigating away
-  window.addEventListener('beforeunload', function() {
+  window.addEventListener('pagehide', function() {
     saveScrollState();
   });
 
   // Handle bfcache restoration (back/forward cache)
   window.addEventListener('pageshow', function(event) {
     if (event.persisted) {
-      // Page was restored from bfcache — scroll is already correct
+      // Page was restored from bfcache â€” scroll is already correct
       // Just re-wire in case DOM changed
       autoWire();
     }

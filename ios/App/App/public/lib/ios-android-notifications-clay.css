@@ -160,7 +160,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .ios-prompt-close:hover {
@@ -352,7 +352,7 @@
     color: var(--ios-accent);
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
 .ios-prompt-dismiss:hover {

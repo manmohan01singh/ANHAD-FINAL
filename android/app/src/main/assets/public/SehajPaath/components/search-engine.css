@@ -322,7 +322,7 @@ a {
     color: var(--text-tertiary);
     padding: var(--space-xs) var(--space-md);
     border-radius: 6px;
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: color var(--duration-fast) var(--ease-ios), background-color var(--duration-fast) var(--ease-ios);
 }
 
 .mode-btn.active {
@@ -846,7 +846,7 @@ a {
     padding: var(--space-sm) var(--space-md);
     border-radius: 8px;
     background: var(--fill-tertiary);
-    transition: all var(--duration-fast) var(--ease-ios);
+    transition: color var(--duration-fast) var(--ease-ios), background-color var(--duration-fast) var(--ease-ios);
 }
 
 .lang-btn.active {

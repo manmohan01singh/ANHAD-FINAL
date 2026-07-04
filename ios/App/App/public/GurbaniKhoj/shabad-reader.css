@@ -7,7 +7,7 @@
  * ╚══════════════════════════════════════════════════════════════════════════╝
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&family=Mukta+Mahee:wght@300;400;500;600;700&display=optional');
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MASTER DESIGN TOKENS — DEFAULT (ROYAL ROSE)
@@ -190,7 +190,24 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   READER THEME OVERRIDES (legacy: white / paper / charcoal / midnight)
+   GLOBAL THEME FALLBACK — dark mode variables for reader
+   (overrides sacred theme defaults when data-theme="dark",
+    but still overridable by explicit [data-reader-theme] below)
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] {
+    --bg: #1c1c1e; --bg-soft: #2c2c2e; --bg-card: #242428;
+    --text: #f5f5f7; --text-secondary: rgba(245,245,247,0.65);
+    --text-tertiary: rgba(245,245,247,0.4); --border: rgba(255,255,255,0.08);
+    --shadow: rgba(0,0,0,0.25); --player-bg: rgba(28,28,30,0.92);
+    --floral-primary: rgba(212,175,55,0.6); --card-border-color: rgba(212,175,55,0.4);
+    --player-border: rgba(255,255,255,0.08);
+    --theme-switcher-glow: rgba(212,175,55,0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   READER THEME OVERRIDES (white / paper / charcoal / midnight)
+   These explicitly override both sacred themes AND [data-theme="dark"] fallback
+   because they come later in the CSS with equal specificity.
    ═══════════════════════════════════════════════════════════════════════════ */
 [data-reader-theme="white"] {
     --bg: #ffffff; --bg-soft: #ffffff; --bg-card: #ffffff;
@@ -341,6 +358,7 @@ html, body {
     flex: 1;
     padding: 0 12px;
     min-width: 0;
+    line-height: 1.3;
 }
 
 .nav-title-main {
@@ -363,6 +381,15 @@ html, body {
     margin-top: 1px;
     letter-spacing: 0.02em;
     text-transform: uppercase;
+}
+
+.nav-meta {
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 1px;
 }
 
 /* Right Action Icons */
@@ -447,81 +474,13 @@ html, body {
    READING AREA SCROLL CONTAINER
    ═══════════════════════════════════════════════════════════════════════════ */
 .shabad-content {
-    padding-top: calc(var(--nav-height) + var(--safe-top) + 10px);
+    background: var(--bg);
+    padding-top: calc(var(--nav-height) + var(--safe-top) + 4px);
     padding-bottom: calc(160px + var(--safe-bottom));
     position: relative;
     z-index: 1;
     min-height: 100dvh;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   POTHI CARD — THE SACRED PAGE
-   ═══════════════════════════════════════════════════════════════════════════ */
-.pothi-card {
-    background: var(--bg-card);
-    margin: 0 14px 16px;
-    padding: 75px 24px 90px;
-    position: relative;
-    border-radius: 18px;
-    box-shadow:
-        0 2px 0 var(--card-border-color),
-        inset 0 0 0 2px var(--card-border-color),
-        0 12px 48px var(--shadow),
-        0 2px 8px var(--shadow),
-        /* Page edge depth */
-        inset 0 2px 0 rgba(255,255,255,0.3),
-        inset 0 -1px 0 rgba(0,0,0,0.03),
-        /* Warm side glow */
-        0 0 60px -20px var(--floral-primary);
-    min-height: calc(100dvh - 260px);
-    transition: background-color 0.5s, box-shadow 0.5s;
-    overflow: hidden;
-}
-
-[data-theme="dark"] .pothi-card {
-    box-shadow:
-        0 2px 0 var(--card-border-color),
-        inset 0 0 0 2px var(--card-border-color),
-        0 12px 48px var(--shadow),
-        0 2px 8px var(--shadow),
-        inset 0 2px 0 rgba(255,255,255,0.02),
-        0 0 60px -20px var(--floral-primary);
-}
-
-/* Inner golden-line double border */
-.pothi-card::before {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border-radius: 13px;
-    border: 1px solid var(--border);
-    pointer-events: none;
-    transition: border-color 0.5s;
-}
-
-/* Paper grain texture overlay */
-.pothi-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 18px;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.35;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
-    background-size: 256px 256px;
-}
-
-/* Warm vignette overlay on card */
-.pothi-card .vignette-overlay,
-.pothi-card::after {
-    /* combined with grain above */
-}
-
-[data-theme="dark"] .pothi-card::after {
-    opacity: 0.2;
-    mix-blend-mode: screen;
+    transition: background-color 0.5s ease;
 }
 
 /* Subtle warm radial glow behind verses */
@@ -544,47 +503,6 @@ html, body {
     opacity: 0.06;
 }
 
-/* ─── SVG BOTANICAL CORNER ORNAMENTS ─── */
-.pothi-corner {
-    position: absolute;
-    width: 72px; height: 72px;
-    pointer-events: none;
-    z-index: 2;
-    transition: opacity 0.5s;
-}
-
-.pothi-corner.tl { top: 4px;  left: 4px; }
-.pothi-corner.tr { top: 4px;  right: 4px;  transform: scaleX(-1); }
-.pothi-corner.bl { bottom: 4px; left: 4px;  transform: scaleY(-1); }
-.pothi-corner.br { bottom: 4px; right: 4px; transform: scale(-1); }
-
-/* ─── SVG SIDE VINE LINES ─── */
-.pothi-vine-left,
-.pothi-vine-right {
-    position: absolute;
-    top: 80px;
-    bottom: 80px;
-    width: 20px;
-    pointer-events: none;
-    z-index: 2;
-    opacity: var(--ornament-opacity);
-}
-
-.pothi-vine-left  { left:  8px; }
-.pothi-vine-right { right: 8px; transform: scaleX(-1); }
-
-/* ─── TOP ORNAMENTAL SEPARATOR ─── */
-.pothi-top-ornament {
-    position: absolute;
-    top: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    pointer-events: none;
-    z-index: 2;
-    opacity: var(--ornament-opacity);
-    white-space: nowrap;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    GURBANI TEXT — THE KING OF THE PAGE
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -595,12 +513,13 @@ html, body {
     position: relative;
     z-index: 3;
     isolation: isolate;
+    padding: 6px 18px 0;
 }
 
 .shabad-line {
     padding: 8px 0;
     border-bottom: 1px solid var(--border-soft);
-    transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: background-color 0.35s cubic-bezier(0.19, 1, 0.22, 1), border-color 0.35s cubic-bezier(0.19, 1, 0.22, 1);
     text-align: var(--text-align);
     position: relative;
 }
@@ -608,66 +527,37 @@ html, body {
 /*  Highlighted Verse (Pankti) Styling — Divine Spotlight  */
 .shabad-line.highlighted {
     position: relative;
-    background: linear-gradient(90deg, 
-        var(--accent-light) 0%, 
-        transparent 8%, 
-        transparent 92%, 
-        var(--accent-light) 100%
-    );
-    border-radius: 12px;
-    padding-left: 20px;
-    padding-right: 20px;
-    margin-left: -12px;
-    margin-right: -12px;
+    background: var(--accent-light);
+    border-radius: 10px;
+    padding-left: 22px;
+    padding-right: 22px;
+    margin-left: -6px;
+    margin-right: -6px;
     box-shadow: 
-        0 0 30px -8px var(--floral-primary),
-        inset 0 0 30px -10px var(--floral-primary);
-    border-bottom: 1px solid var(--border);
-    transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+        0 0 40px -8px var(--floral-primary),
+        inset 0 0 30px -6px var(--floral-primary);
+    border-left: 4px solid var(--accent);
+    transition: box-shadow 0.35s cubic-bezier(0.19, 1, 0.22, 1), border-color 0.35s cubic-bezier(0.19, 1, 0.22, 1);
     animation: verseGlow 4s ease-in-out infinite;
 }
 
 @keyframes verseGlow {
-    0%, 100% { box-shadow: 0 0 30px -8px var(--floral-primary), inset 0 0 30px -10px var(--floral-primary); }
-    50%      { box-shadow: 0 0 40px -6px var(--floral-primary), inset 0 0 40px -8px var(--floral-primary); }
+    0%, 100% { box-shadow: 0 0 40px -8px var(--floral-primary), inset 0 0 30px -6px var(--floral-primary); }
+    50%      { box-shadow: 0 0 56px -4px var(--floral-primary), inset 0 0 40px -4px var(--floral-primary); }
 }
 
-/* Gold gradient text for highlighted verse Gurmukhi */
+/* Highlighted verse Gurmukhi — bold accent color */
 .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, var(--text) 30%, var(--floral-primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    transform: scale(1.02);
+    color: var(--accent);
+    font-weight: 800;
+    transform: scale(1.03);
     transform-origin: center;
 }
 
-/* Left golden accent border for highlighted verse */
-.shabad-line.highlighted::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 4px;
-    bottom: 4px;
-    width: 4px;
-    background: linear-gradient(180deg, 
-        transparent 0%, 
-        var(--floral-primary) 20%, 
-        var(--gold) 50%, 
-        var(--floral-primary) 80%, 
-        transparent 100%
-    );
-    border-radius: 0 3px 3px 0;
-    opacity: 0.9;
-    box-shadow: 0 0 12px var(--floral-primary);
-}
-
-/* Gold accent text for highlighted verse - other scripts */
+/* Highlighted verse other scripts — bold accent */
 .shabad-line.highlighted .hindi-gurbani {
-    background: linear-gradient(135deg, var(--text) 30%, var(--floral-primary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--accent);
+    font-weight: 700;
 }
 
 /* Subtle text-shadow on all Gurmukhi for letterpress depth */
@@ -770,13 +660,10 @@ html, body {
 
 /* ── Verse Divider ── */
 .verse-divider {
-    display: flex;
-    justify-content: center;
-    padding: 5px 0;
-    opacity: 0.7;
-    font-size: 14px;
-    color: var(--floral-primary);
-    letter-spacing: 0.3em;
+    height: 1px;
+    margin: 5px 40px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    opacity: 0.5;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1108,7 +995,7 @@ html, body {
     overflow-y: auto;
     padding: 8px 16px;
     padding-bottom: calc(40px + var(--safe-bottom));
-    -webkit-overflow-scrolling: touch;
+
 }
 
 .settings-section-label {
@@ -1392,7 +1279,7 @@ html, body {
     font-size: 14px;
     font-weight: 600;
     opacity: 0;
-    transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: opacity 0.35s cubic-bezier(0.19, 1, 0.22, 1), transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
     z-index: 800;
     pointer-events: none;
     white-space: nowrap;
@@ -1412,9 +1299,7 @@ html, body {
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.pothi-card {
-    animation: fadeInCard 0.6s cubic-bezier(0.19, 1, 0.22, 1) both;
-}
+
 
 /* Smooth sacred theme transitions */
 html[data-sacred-theme] * {
@@ -1463,28 +1348,7 @@ html {
     scrollbar-color: var(--floral-primary) transparent;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   THEME-SPECIFIC CORNERS, ARCHES, AND DETAILED FLORALS
-   ═══════════════════════════════════════════════════════════════════════════ */
-.pothi-corner-img {
-    position: absolute;
-    width: 72px;
-    height: 72px;
-    object-fit: contain;
-    pointer-events: none;
-    z-index: 2;
-    opacity: 0.85;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.pothi-corner-img.tl { top: 8px; left: 8px; }
-.pothi-corner-img.tr { top: 8px; right: 8px; transform: scaleX(-1); }
-.pothi-corner-img.bl { bottom: 8px; left: 8px; transform: scaleY(-1); }
-.pothi-corner-img.br { bottom: 8px; right: 8px; transform: scale(-1); }
 
-/* Blends white background out on light reader themes */
-[data-theme="light"] .pothi-corner-img {
-    mix-blend-mode: multiply;
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    GOOGLE FONTS DYNAMIC PAIRINGS
@@ -1512,6 +1376,18 @@ html[data-font="royal"] {
     --font-devnagari: 'Rozha One', serif;
     --font-serif: 'Cinzel Decorative', serif;
     --font-english: 'Cinzel Decorative', serif;
+}
+html[data-font="punjabi-script"] {
+    --font-gurmukhi: 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
+    --font-devnagari: 'Noto Serif Devanagari', serif;
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-english: 'Cormorant Garamond', Georgia, serif;
+}
+html[data-font="gurbani-akhar"] {
+    --font-gurmukhi: 'Baloo Paaji 2', 'Noto Sans Gurmukhi', sans-serif;
+    --font-devnagari: 'Rozha One', cursive, serif;
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-english: 'Playfair Display', Georgia, serif;
 }
 
 /* Typography styles for script elements */
@@ -1561,7 +1437,7 @@ html[data-font="royal"] {
     filter: blur(1.2px);
     transform: scale(0.95);
     border-bottom-color: transparent;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: opacity 0.6s cubic-bezier(0.19, 1, 0.22, 1), filter 0.6s cubic-bezier(0.19, 1, 0.22, 1), transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .shabad-lines.focus-mode-active .shabad-line.highlighted {
@@ -1612,25 +1488,6 @@ html[data-font="royal"] {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ANIMATED VERSE DIVIDER — GOLDEN MANDALA
-   ═══════════════════════════════════════════════════════════════════════════ */
-.verse-divider svg {
-    width: 120px;
-    height: 18px;
-    filter: drop-shadow(0 0 4px var(--floral-primary));
-}
-
-.verse-divider svg .divider-center {
-    animation: dividerPulse 3s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes dividerPulse {
-    0%, 100% { r: 3; opacity: 1; }
-    50%      { r: 4.5; opacity: 0.7; }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
    CASCADING VERSE ENTRY ANIMATION
    ═══════════════════════════════════════════════════════════════════════════ */
 .shabad-line {
@@ -1668,117 +1525,71 @@ html[data-font="royal"] {
 /* ═══════════════════════════════════════════════════════════════════════════
    THEME-SPECIFIC PREMIUM TREATMENTS
    ═══════════════════════════════════════════════════════════════════════════ */
-/* Royal Rose — Deep warm amber glow for highlighted verse */
-[data-sacred-theme="royal-rose"] .shabad-line.highlighted {
-    background: linear-gradient(90deg, rgba(200,145,58,0.08) 0%, transparent 8%, transparent 92%, rgba(200,145,58,0.08) 100%);
-}
+/* Royal Rose — Deep warm amber */
 [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #2a1a0e 30%, #c8913a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #a06020;
+    font-weight: 800;
 }
 
-/* Lotus Grace — Cool silver-blue glow */
-[data-sacred-theme="lotus-grace"] .shabad-line.highlighted {
-    background: linear-gradient(90deg, rgba(122,175,206,0.08) 0%, transparent 8%, transparent 92%, rgba(122,175,206,0.08) 100%);
-}
+/* Lotus Grace — Cool silver-blue */
 [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #1a2535 30%, #7aafce 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-[data-sacred-theme="lotus-grace"] .shabad-line.highlighted::before {
-    background: linear-gradient(180deg, transparent, #7aafce, #d4a8c0, #7aafce, transparent);
-    box-shadow: 0 0 12px #7aafce;
+    color: #3a6a8a;
+    font-weight: 800;
 }
 
-/* Golden Marigold — Intense warm golden glow */
-[data-sacred-theme="golden-marigold"] .shabad-line.highlighted {
-    background: linear-gradient(90deg, rgba(212,134,10,0.08) 0%, transparent 8%, transparent 92%, rgba(212,134,10,0.08) 100%);
-}
+/* Golden Marigold — Intense warm golden */
 [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #2c1a00 30%, #d4860a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-[data-sacred-theme="golden-marigold"] .shabad-line.highlighted::before {
-    background: linear-gradient(180deg, transparent, #d4860a, #c86020, #d4860a, transparent);
-    box-shadow: 0 0 12px #d4860a;
+    color: #b07000;
+    font-weight: 800;
 }
 
-/* Blue Blossom — Deep royal blue glow */
-[data-sacred-theme="blue-blossom"] .shabad-line.highlighted {
-    background: linear-gradient(90deg, rgba(61,111,181,0.08) 0%, transparent 8%, transparent 92%, rgba(61,111,181,0.08) 100%);
-}
+/* Blue Blossom — Deep royal blue */
 [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #0d1829 30%, #3d6fb5 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-[data-sacred-theme="blue-blossom"] .shabad-line.highlighted::before {
-    background: linear-gradient(180deg, transparent, #3d6fb5, #6888b5, #3d6fb5, transparent);
-    box-shadow: 0 0 12px #3d6fb5;
+    color: #2a5090;
+    font-weight: 800;
 }
 
-/* Dark mode gradient overrides for highlighted text — lighter tones */
+/* Dark mode highlight text colors — lighter tones for readability */
 [data-theme="dark"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] [data-sacred-theme="royal-rose"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #f5e6d3 30%, #e8b84a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #e8b84a;
 }
 [data-theme="dark"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] [data-sacred-theme="lotus-grace"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #dce8f0 30%, #90c8e0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #90c8e0;
 }
 [data-theme="dark"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] [data-sacred-theme="golden-marigold"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #f5e0b0 30%, #e8a020 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #e8a020;
 }
 [data-theme="dark"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="charcoal"] [data-sacred-theme="blue-blossom"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(135deg, #c0d8ec 30%, #6090d0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #70a0d0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    APPLE-QUALITY RESPONSIVE REFINEMENTS
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 380px) {
-    .pothi-card {
-        padding-left: 16px;
-        padding-right: 16px;
-        margin-left: 8px;
-        margin-right: 8px;
+    .shabad-lines {
+        padding-left: 12px;
+        padding-right: 12px;
     }
     .shabad-line.highlighted {
         padding-left: 14px;
         padding-right: 14px;
-        margin-left: -8px;
-        margin-right: -8px;
+        margin-left: -4px;
+        margin-right: -4px;
     }
 }
 
 @media (min-width: 768px) {
-    .pothi-card {
-        max-width: 600px;
+    .shabad-lines {
+        max-width: 640px;
         margin-left: auto;
         margin-right: auto;
-        padding-left: 40px;
-        padding-right: 40px;
+        padding-left: 24px;
+        padding-right: 24px;
     }
     :root {
         --font-size-base: 26px;
@@ -1804,3 +1615,115 @@ html[data-font="royal"] {
         transform: none !important;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FEATURE 1 — READING PROGRESS BAR (GOLD)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.progress-track {
+    position: fixed;
+    top: calc(var(--nav-height) + var(--safe-top));
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 90;
+    background: transparent;
+    pointer-events: none;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--floral-accent), var(--floral-primary), var(--gold));
+    border-radius: 0 2px 2px 0;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px var(--floral-primary);
+}
+
+[data-theme="dark"] .progress-fill {
+    box-shadow: 0 0 12px var(--floral-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FEATURE 2 — VERSE NUMBER BADGES
+   ═══════════════════════════════════════════════════════════════════════════ */
+.verse-number {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    opacity: 0.4;
+    transition: opacity 0.3s, color 0.3s;
+    width: 24px;
+    text-align: right;
+    pointer-events: none;
+    user-select: none;
+}
+
+.shabad-line:hover .verse-number {
+    opacity: 0.8;
+    color: var(--accent);
+}
+
+.shabad-line.highlighted .verse-number {
+    opacity: 1;
+    color: var(--accent);
+    font-size: 11px;
+}
+
+[data-theme="dark"] .verse-number {
+    opacity: 0.3;
+}
+
+[data-theme="dark"] .shabad-line:hover .verse-number {
+    opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FEATURE 3 — KEYBOARD SHORTCUT HINT
+   ═══════════════════════════════════════════════════════════════════════════ */
+.kbd-hint {
+    position: fixed;
+    bottom: calc(100px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    z-index: 140;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    background: var(--player-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 6px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    white-space: nowrap;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.kbd-hint.show {
+    opacity: 1;
+}
+
+.kbd-hint kbd {
+    display: inline-block;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-soft);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin: 0 1px;
+    color: var(--text-secondary);
+}
+

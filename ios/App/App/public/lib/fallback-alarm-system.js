@@ -44,7 +44,7 @@ class FallbackAlarmSystem {
             }, 60000);
             
             // Save alarms before page unload
-            window.addEventListener('beforeunload', () => {
+            window.addEventListener('pagehide', () => {
                 this.saveAlarms();
             });
 

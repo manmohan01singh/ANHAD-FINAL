@@ -824,7 +824,7 @@ ol {
     border: 1px solid var(--glass-border-light);
     border-radius: var(--radius-full);
     color: var(--text-primary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     box-shadow: var(--glass-shadow);
 }
 
@@ -1197,7 +1197,7 @@ ol {
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
     border: 1px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .time-slot.active {
@@ -1273,7 +1273,7 @@ ol {
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4),
         inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .present-btn:hover {
@@ -1469,7 +1469,7 @@ ol {
     font-size: var(--text-sm);
     color: var(--text-secondary);
     white-space: nowrap;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     flex: 1;
     justify-content: center;
 }
@@ -1575,7 +1575,7 @@ ol {
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
     color: var(--ios-blue);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .add-bani-mini-btn:hover {
@@ -1596,7 +1596,7 @@ ol {
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     border: 1px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
 }
 
@@ -1617,7 +1617,7 @@ ol {
     border-radius: var(--radius-full);
     border: 2px solid var(--glass-border);
     background: transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     flex-shrink: 0;
 }
 
@@ -1685,7 +1685,7 @@ ol {
     border-radius: var(--radius-full);
     color: var(--text-quaternary);
     opacity: 0;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .bani-item:hover .bani-remove-btn {
@@ -1719,7 +1719,7 @@ ol {
     border-radius: var(--radius-lg);
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .add-bani-btn {
@@ -1996,7 +1996,7 @@ ol {
     background: var(--bg-secondary);
     color: var(--text-tertiary);
     margin-left: auto;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .mala-settings-btn:hover {
@@ -2044,7 +2044,7 @@ ol {
 
 .mala-bead {
     fill: var(--glass-border);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
 }
 
@@ -2080,7 +2080,7 @@ ol {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.2),
         inset 0 2px 4px rgba(255, 255, 255, 0.2),
@@ -2138,7 +2138,7 @@ ol {
     color: var(--text-primary);
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .mala-center-btn:active .count-number {
@@ -2274,7 +2274,7 @@ ol {
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     border: 1px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
 }
 
@@ -2325,7 +2325,7 @@ ol {
     background: var(--bg-secondary);
     color: var(--text-secondary);
     border: 1px solid var(--glass-border-light);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .mala-action-btn:hover {
@@ -2372,7 +2372,7 @@ ol {
     font-weight: var(--font-semibold);
     color: var(--ios-teal);
     margin-left: auto;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .link-reminders-btn:hover {
@@ -2413,7 +2413,7 @@ ol {
     border-radius: var(--radius-full);
     background: var(--bg-secondary);
     color: var(--text-secondary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .week-nav-btn:hover {
@@ -2441,7 +2441,7 @@ color: var(--text-primary);
 .week-days-scroll-container {
 overflow-x: auto;
 overflow-y: hidden;
--webkit-overflow-scrolling: touch;
+
 scrollbar-width: none;
 -ms-overflow-style: none;
 padding-bottom: var(--space-2);
@@ -2467,7 +2467,7 @@ display: none;
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
     border: 1px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
     min-width: 48px;
     flex-shrink: 0;
@@ -2543,7 +2543,7 @@ display: none;
     padding: var(--space-3);
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .alarm-stat-card:hover {
@@ -2635,7 +2635,7 @@ display: none;
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     border-left: 3px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .alarm-item.pending {
@@ -2739,7 +2739,7 @@ display: none;
     border-radius: var(--radius-full);
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .sync-reminders-btn:hover {
@@ -2872,7 +2872,7 @@ display: none;
     line-height: 1;
     font-variant-numeric: tabular-nums;
     text-shadow: 0 4px 20px rgba(255, 59, 48, 0.3);
-    transition: all var(--duration-normal) var(--ease-out-expo);
+    transition: background-color var(--duration-normal) var(--ease-out-expo), color var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
 }
 
 .streak-card.active .streak-number {
@@ -2965,7 +2965,7 @@ display: none;
     border-radius: var(--radius-lg);
     border: 1px solid transparent;
     text-align: center;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
 }
 
@@ -3049,7 +3049,7 @@ display: none;
     font-size: var(--text-xs);
     font-weight: var(--font-semibold);
     color: var(--text-tertiary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .report-tab:hover {
@@ -3230,7 +3230,7 @@ display: none;
     border-radius: var(--radius-full);
     background: var(--bg-secondary);
     color: var(--text-secondary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .calendar-nav:hover {
@@ -3278,7 +3278,7 @@ display: none;
     font-weight: var(--font-medium);
     color: var(--text-secondary);
     border-radius: var(--radius-sm);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
     position: relative;
 }
@@ -3383,7 +3383,7 @@ display: none;
     border-radius: var(--radius-lg);
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .export-btn {
@@ -3471,7 +3471,7 @@ display: none;
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-lg);
     color: var(--text-tertiary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     min-width: 64px;
 }
 
@@ -3495,7 +3495,7 @@ display: none;
     width: 24px;
     height: 24px;
     stroke-width: 1.8;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .tab-item.active .tab-icon {
@@ -3507,7 +3507,7 @@ display: none;
     font-size: 10px;
     font-weight: var(--font-medium);
     margin-top: 2px;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .tab-item.active .tab-label {
@@ -3630,7 +3630,7 @@ display: none;
     border-radius: var(--radius-full);
     background: var(--bg-secondary);
     color: var(--text-secondary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .modal-close-btn:hover,
@@ -3676,7 +3676,7 @@ display: none;
     border-radius: var(--radius-lg);
     font-size: var(--text-base);
     font-weight: var(--font-semibold);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .modal-btn.secondary {
@@ -3730,7 +3730,7 @@ display: none;
     border-radius: var(--radius-lg);
     font-size: var(--text-base);
     color: var(--text-primary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .search-input::placeholder {
@@ -3770,7 +3770,7 @@ display: none;
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
     color: var(--text-secondary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .period-btn:hover {
@@ -3802,7 +3802,7 @@ display: none;
     gap: var(--space-3);
     padding: var(--space-4);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .category-header:hover {
@@ -3852,7 +3852,7 @@ display: none;
     border-radius: var(--radius-md);
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .bani-select-item:hover {
@@ -3874,7 +3874,7 @@ display: none;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .bani-select-item.selected .bani-select-checkbox {
@@ -3888,7 +3888,7 @@ display: none;
     color: white;
     opacity: 0;
     transform: scale(0);
-    transition: all var(--duration-fast) var(--ease-spring);
+    transition: background-color var(--duration-fast) var(--ease-spring), color var(--duration-fast) var(--ease-spring), transform var(--duration-fast) var(--ease-spring);
 }
 
 .bani-select-item.selected .bani-select-checkbox svg {
@@ -3954,7 +3954,7 @@ display: none;
     padding: var(--space-4);
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .setting-item.clickable {
@@ -4005,7 +4005,7 @@ display: none;
     background: var(--bg-tertiary);
     border-radius: var(--radius-full);
     border: 1px solid var(--glass-border-light);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .toggle-slider::before {
@@ -4018,7 +4018,7 @@ display: none;
     background: white;
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .toggle-switch input:checked+.toggle-slider {
@@ -4040,7 +4040,7 @@ display: none;
     font-weight: var(--font-medium);
     color: var(--text-primary);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -4069,7 +4069,7 @@ display: none;
     border-radius: var(--radius-lg);
     border: 2px solid transparent;
     background: var(--bg-tertiary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     cursor: pointer;
 }
 
@@ -4239,7 +4239,7 @@ display: none;
     text-align: center;
     transform: scale(0.8);
     opacity: 0;
-    transition: all var(--duration-normal) var(--ease-spring);
+    transition: background-color var(--duration-normal) var(--ease-spring), color var(--duration-normal) var(--ease-spring), transform var(--duration-normal) var(--ease-spring);
 }
 
 .celebration-overlay.active .celebration-content {
@@ -4290,7 +4290,7 @@ display: none;
     font-size: var(--text-lg);
     font-weight: var(--font-semibold);
     box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .celebration-btn:hover {
@@ -4464,7 +4464,7 @@ display: none;
     height: 24px;
     border-radius: var(--radius-full);
     color: var(--text-tertiary);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     flex-shrink: 0;
 }
 
@@ -5111,7 +5111,7 @@ display: none;
     transform: scale(1.3);
     background: var(--ios-green);
     border-color: var(--ios-green);
-    transition: all 0.2s var(--ease-spring);
+    transition: background-color 0.2s var(--ease-spring), color 0.2s var(--ease-spring), transform 0.2s var(--ease-spring);
 }
 
 @keyframes checkBounce {
@@ -5424,7 +5424,7 @@ display: none;
     font-weight: var(--font-semibold);
     color: var(--text-primary);
     text-align: center;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .goal-preset:hover {
@@ -5529,7 +5529,7 @@ display: none;
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     border: 2px solid transparent;
 }
 
@@ -5689,7 +5689,7 @@ display: none;
     border-radius: var(--radius-full);
     border: 1px solid var(--glass-border-light);
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     z-index: 10;
 }
 
@@ -5953,7 +5953,7 @@ display: none;
     padding: var(--space-3);
     background: var(--bg-secondary);
     border-radius: var(--radius-md);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .carry-item.completed {
@@ -6066,7 +6066,7 @@ display: none;
     border-radius: var(--radius-lg);
     color: var(--text-secondary);
     font-size: var(--text-sm);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .set-goal-btn:hover {
@@ -6324,7 +6324,7 @@ display: none;
     border-radius: var(--radius-md);
     font-size: var(--text-xs);
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .week-view-btn:hover {
@@ -6343,7 +6343,7 @@ display: none;
 
 .clickable-stat {
     cursor: pointer !important;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     border-radius: var(--radius-md);
     padding: var(--space-2);
     margin: calc(-1 * var(--space-2));
@@ -6396,7 +6396,7 @@ display: none;
     border-radius: var(--radius-lg);
     font-weight: var(--font-semibold);
     font-size: var(--text-base);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .primary-btn:hover {
@@ -6440,7 +6440,7 @@ display: none;
     align-items: center;
     gap: var(--space-2);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     flex-shrink: 0;
     opacity: 0.8;
 }
@@ -6471,7 +6471,7 @@ display: none;
     height: 48px;
     border-radius: var(--radius-lg);
     border: 2px solid transparent;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
     box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
@@ -6559,7 +6559,7 @@ display: none;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
@@ -6743,7 +6743,7 @@ display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     color: var(--text-tertiary, #8e8e93);
 }
 
@@ -6811,7 +6811,7 @@ display: none;
     border-radius: 14px;
     cursor: pointer;
     box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .sync-reminders-btn.premium-btn:hover {
@@ -6873,7 +6873,7 @@ display: none;
     justify-content: center;
     padding: 16px;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0));
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .alarm-action-sheet-overlay.visible {
@@ -6892,7 +6892,7 @@ display: none;
     overflow: hidden;
     transform: translateY(100%);
     opacity: 0;
-    transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: background-color 0.4s cubic-bezier(0.32, 0.72, 0, 1), color 0.4s cubic-bezier(0.32, 0.72, 0, 1), transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     box-shadow: 0 -10px 60px rgba(0, 0, 0, 0.2);
 }
 
@@ -6949,7 +6949,7 @@ display: none;
     border: none;
     border-radius: 14px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     text-align: left;
 }
 
@@ -7024,7 +7024,7 @@ display: none;
     font-weight: 600;
     color: #007AFF;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .action-sheet-cancel:hover {

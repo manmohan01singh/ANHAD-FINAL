@@ -353,7 +353,7 @@ function checkAndTriggerAlarms() {
 const alarmCheckInterval = setInterval(checkAndTriggerAlarms, 60000);
 
 // Cleanup on service worker termination (best effort)
-self.addEventListener('beforeunload', () => {
+self.addEventListener('pagehide', () => {
     clearInterval(alarmCheckInterval);
 });
 

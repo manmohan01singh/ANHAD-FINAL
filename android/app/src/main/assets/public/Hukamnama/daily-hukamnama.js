@@ -16,17 +16,18 @@
             BY_DATE: '/hukamnamas/{year}/{month}/{day}'
         },
         GURU_MAP: {
-            1: 'gurunanakdevsahebji.jpeg',
-            2: 'guruangaddevsahebji.jpeg',
-            3: 'guruamardasji.jpeg',
-            4: 'gururamdassahebji.jpeg',
-            5: 'guruarjanddevsahebji.jpeg',
-            6: 'guruhargobindsahebji.jpeg',
-            7: 'guruharraisahebji.jpeg',
-            8: 'guruharkrishansahebji.jpeg',
-            9: 'gurutegbahadursahebji.jpeg',
-            10: 'gurugobindsinghsahebji.jpeg'
+            1: { file: 'gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+            2: { file: 'guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+            3: { file: 'guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+            4: { file: 'gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+            5: { file: 'guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+            6: { file: 'guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+            7: { file: 'guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+            8: { file: 'guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+            9: { file: 'gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+            10: { file: 'gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' }
         },
+        GURU_GRANTH: { file: 'gurugranthsahebji.jpeg', name: 'Sri Guru Granth Sahib Ji' },
         SGPC_HUKAM_AUDIO: 'https://corsproxy.io/?url=http://live.sgpc.net:8443/;nocache=1'
     };
 
@@ -73,13 +74,52 @@
     }
 
     function setupListeners() {
-        // Scroll header effect
+        let lastScrollY = 0;
+        let scrollDirTimer = null;
         elements.mainScroll.addEventListener('scroll', () => {
-            if (elements.mainScroll.scrollTop > 100) {
+            const sy = elements.mainScroll.scrollTop;
+            const goingDown = sy > lastScrollY && sy > 80;
+            const goingUp = sy < lastScrollY;
+            const atTop = sy < 10;
+
+            if (sy > 40) {
                 elements.header.classList.add('scrolled');
             } else {
                 elements.header.classList.remove('scrolled');
             }
+
+            if (goingDown && !atTop) {
+                elements.header.classList.add('hidden-header');
+            } else if (goingUp || atTop) {
+                elements.header.classList.remove('hidden-header');
+            }
+
+            const actionBar = document.getElementById('actionBar');
+            if (actionBar && !actionBar.classList.contains('player-open')) {
+                if (goingDown && sy > 200) {
+                    actionBar.classList.add('hidden-bar');
+                } else if (goingUp || atTop || sy < 150) {
+                    actionBar.classList.remove('hidden-bar');
+                }
+            }
+
+            // Progressive hero collapse
+            const hero = document.getElementById('hero');
+            if (hero) {
+                const heroHeight = hero.offsetHeight;
+                const collapseDistance = heroHeight * 0.7 || 1;
+                const progress = Math.min(1, Math.max(0, sy / collapseDistance));
+                hero.style.setProperty('--scroll-progress', progress);
+                hero.setAttribute('data-collapsing', 'true');
+            }
+
+            lastScrollY = sy;
+            clearTimeout(scrollDirTimer);
+            scrollDirTimer = setTimeout(() => {
+                lastScrollY = sy;
+                const hero = document.getElementById('hero');
+                if (hero) hero.removeAttribute('data-collapsing');
+            }, 100);
         });
 
         // Settings
@@ -109,12 +149,15 @@
             shareBtn.addEventListener('click', async () => {
                 hapticFeedback();
                 try {
-                    const text = `Daily Hukamnama - ${state.data?.date || ''}\n${state.data?.raag || ''} • ${state.data?.writer || ''}\n\nRead more at: ${window.location.href}`;
+                    const firstVerse = state.data?.verses?.[0]?.gurmukhi || '';
+                    const dateStr = state.data?.date || '';
+                    const raagStr = state.data?.raag || '';
+                    const writerStr = state.data?.writer || '';
+                    const text = `🌸 Daily Hukamnama — ${dateStr}\n${raagStr} • ${writerStr}\n\n${firstVerse}\n\nRead more on ANHAD`;
                     if (navigator.share) {
                         await navigator.share({ title: 'Daily Hukamnama', text });
                     } else {
                         await navigator.clipboard.writeText(text);
-                        alert('Link copied to clipboard');
                     }
                 } catch (e) {}
             });
@@ -125,7 +168,21 @@
         if (calendarBtn) {
             calendarBtn.addEventListener('click', () => {
                 hapticFeedback();
-                window.open('https://sgpc.net/hukamnama-sahib-archives/', '_blank');
+                window.open('https://sgpc.net/hukamnama-sahib-archives/', '_blank', 'noopener');
+            });
+        }
+
+        // Reading Mode Toggle
+        const readingBtn = document.getElementById('readingBtn');
+        const mainScroll = elements.mainScroll;
+        if (readingBtn) {
+            readingBtn.addEventListener('click', () => {
+                hapticFeedback();
+                const isActive = mainScroll.classList.toggle('reading-mode');
+                readingBtn.classList.toggle('active', isActive);
+                if (isActive) {
+                    mainScroll.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
         }
 
@@ -276,7 +333,7 @@
             this.setSub('Tap here to listen on SGPC →');
             document.getElementById('hukamPlayerSub').style.cursor = 'pointer';
             document.getElementById('hukamPlayerSub').onclick = () => {
-                window.open('https://sgpc.net/hukamnama-sahib/', '_blank');
+                window.open('https://sgpc.net/hukamnama-sahib/', '_blank', 'noopener');
             };
         },
 
@@ -466,40 +523,45 @@
         // Update Guru Image
         updateGuruImage(d.writerId, d.writer);
 
-        // Render Content
-        elements.hukamContent.innerHTML = d.verses.map(v => `
-            <div class="verse-container">
+        // Render Content with staggered animation
+        elements.hukamContent.innerHTML = d.verses.map((v, i) => {
+            const delay = Math.min(i * 60, 400);
+            return `
+            <div class="verse-block" style="animation-delay:${delay}ms">
                 <div class="verse-gurmukhi">${v.gurmukhi}</div>
                 ${state.settings.showTranslit && v.translit ? `<div class="verse-translit">${v.translit}</div>` : ''}
                 ${state.settings.showEnglish && v.english ? `<div class="verse-translation">${v.english}</div>` : ''}
                 ${state.settings.showPunjabi && v.punjabi ? `<div class="verse-punjabi">${v.punjabi}</div>` : ''}
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
 
         updateDisplay();
+
+        // Trigger hero entrance animation
+        const heroEl = document.getElementById('hero');
+        if (heroEl) heroEl.classList.add('entered');
     }
 
     function updateGuruImage(writerId, writerName) {
-        let imageName = 'gurugranthsahebji.jpeg';
+        let guruData = CONFIG.GURU_GRANTH;
         const name = writerName.toLowerCase();
         
-        // 1. Direct mapping by ID
         if (CONFIG.GURU_MAP[writerId]) {
-            imageName = CONFIG.GURU_MAP[writerId];
-        } 
-        // 2. String-based fallback (Detects "Mahala X" or name)
-        else if (name.includes('nanak') || name.includes('mahala 1')) imageName = CONFIG.GURU_MAP[1];
-        else if (name.includes('angad') || name.includes('mahala 2')) imageName = CONFIG.GURU_MAP[2];
-        else if (name.includes('amar') || name.includes('mahala 3')) imageName = CONFIG.GURU_MAP[3];
-        else if (name.includes('ram') || name.includes('mahala 4')) imageName = CONFIG.GURU_MAP[4];
-        else if (name.includes('arjan') || name.includes('mahala 5')) imageName = CONFIG.GURU_MAP[5];
-        else if (name.includes('hargobind') || name.includes('mahala 6')) imageName = CONFIG.GURU_MAP[6];
-        else if (name.includes('rai') || name.includes('mahala 7')) imageName = CONFIG.GURU_MAP[7];
-        else if (name.includes('krishan') || name.includes('mahala 8')) imageName = CONFIG.GURU_MAP[8];
-        else if (name.includes('teg') || name.includes('mahala 9')) imageName = CONFIG.GURU_MAP[9];
-        else if (name.includes('gobind') || name.includes('mahala 10')) imageName = CONFIG.GURU_MAP[10];
+            guruData = CONFIG.GURU_MAP[writerId];
+        } else if (name.includes('nanak') || name.includes('mahala 1')) guruData = CONFIG.GURU_MAP[1];
+        else if (name.includes('angad') || name.includes('mahala 2')) guruData = CONFIG.GURU_MAP[2];
+        else if (name.includes('amar') || name.includes('mahala 3')) guruData = CONFIG.GURU_MAP[3];
+        else if (name.includes('ram') || name.includes('mahala 4')) guruData = CONFIG.GURU_MAP[4];
+        else if (name.includes('arjan') || name.includes('mahala 5')) guruData = CONFIG.GURU_MAP[5];
+        else if (name.includes('hargobind') || name.includes('mahala 6')) guruData = CONFIG.GURU_MAP[6];
+        else if (name.includes('rai') || name.includes('mahala 7')) guruData = CONFIG.GURU_MAP[7];
+        else if (name.includes('krishan') || name.includes('mahala 8')) guruData = CONFIG.GURU_MAP[8];
+        else if (name.includes('teg') || name.includes('mahala 9')) guruData = CONFIG.GURU_MAP[9];
+        else if (name.includes('gobind') || name.includes('mahala 10')) guruData = CONFIG.GURU_MAP[10];
 
-        elements.guruImage.src = `../guruimages/${imageName}`;
+        elements.guruImage.src = `../guruimages/${guruData.file}`;
+        const nameDisplay = document.getElementById('guruNameDisplay');
+        if (nameDisplay) nameDisplay.textContent = guruData.name;
     }
 
     function hapticFeedback() {
@@ -514,14 +576,16 @@
         if (state.data) {
             // Re-render content to apply toggle changes
             const d = state.data;
-            elements.hukamContent.innerHTML = d.verses.map(v => `
-                <div class="verse-container">
+            elements.hukamContent.innerHTML = d.verses.map((v, i) => {
+                const delay = Math.min(i * 60, 400);
+                return `
+                <div class="verse-block" style="animation-delay:${delay}ms">
                     <div class="verse-gurmukhi" style="font-size: ${state.settings.fontSize}px">${v.gurmukhi}</div>
                     ${state.settings.showTranslit && v.translit ? `<div class="verse-translit">${v.translit}</div>` : ''}
                     ${state.settings.showEnglish && v.english ? `<div class="verse-translation">${v.english}</div>` : ''}
                     ${state.settings.showPunjabi && v.punjabi ? `<div class="verse-punjabi">${v.punjabi}</div>` : ''}
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
     }
 
@@ -537,11 +601,11 @@
     function showError() {
         hideLoader();
         elements.hukamContent.innerHTML = `
-            <div style="text-align:center; padding: 50px 20px;">
-                <div style="font-size: 3rem; margin-bottom: 20px;">🙏</div>
-                <h3 style="color: var(--hukam-gold)">Unable to load Hukamnama</h3>
-                <p style="opacity: 0.6">Please check your internet connection and try again.</p>
-                <button onclick="window.location.reload()" style="background: var(--hukam-gold); border:none; padding:12px 24px; border-radius:20px; font-weight:700; margin-top:20px;">Retry</button>
+            <div style="text-align:center;padding:80px 24px;">
+                <div style="font-size:2.5rem;margin-bottom:20px;">🙏</div>
+                <p style="color:var(--text-secondary);margin-bottom:8px;font-size:1rem;">Unable to load Hukamnama</p>
+                <p style="color:var(--text-tertiary);font-size:0.85rem;margin-bottom:24px;">Please check your connection and try again.</p>
+                <button onclick="window.location.reload()" style="background:var(--accent,#C9A84C);border:none;padding:10px 28px;border-radius:20px;font-weight:500;font-size:0.9rem;color:#000;cursor:pointer;">Retry</button>
             </div>
         `;
     }

@@ -1314,7 +1314,7 @@
     // PERF FIX: Virtual-live track endings advance locally to the next ordered track.
     // A fresh UTC sync happens only when the user taps Jump to Live.
     const orderedStream = STREAMS[currentStream];
-    if (orderedstream && stream.type === 'playlist') {
+    if (orderedStream && orderedStream.type === 'playlist') {
       const nextIndex = (currentTrackIndex + 1) % orderedStream.totalTracks;
       const requestId = ++playRequestId;
       const advancedStream = currentStream;

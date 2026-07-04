@@ -381,7 +381,7 @@
     }
 
     // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('pagehide', () => {
         // Final backup before leaving
         createFullBackup();
         persistAllToIndexedDB();

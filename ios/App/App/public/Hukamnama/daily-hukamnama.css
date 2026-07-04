@@ -440,7 +440,7 @@ a {
     color: var(--text-primary);
     background: transparent;
     border: none;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header-action:active {
@@ -738,7 +738,7 @@ a {
     justify-content: center;
     border-radius: 50%;
     color: var(--text-secondary);
-    transition: all 0.2s var(--ease-out);
+    transition: background-color 0.2s var(--ease-out), color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 
 .control-btn:active {
@@ -774,7 +774,7 @@ a {
     z-index: 200;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.35s var(--ease-standard);
+    transition: background-color 0.35s var(--ease-standard), color 0.35s var(--ease-standard), transform 0.35s var(--ease-standard);
 }
 
 .sheet-overlay.active {
@@ -917,7 +917,7 @@ a {
     color: var(--accent);
     font-size: 18px;
     font-weight: 600;
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .stepper-btn:active {
@@ -944,7 +944,7 @@ a {
     border: 2px solid transparent;
     border-radius: var(--radius-md);
     text-align: center;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .theme-btn.active {
@@ -979,7 +979,7 @@ a {
     font-weight: 500;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s var(--ease-out);
+    transition: background-color 0.3s var(--ease-out), color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
@@ -1109,7 +1109,7 @@ a {
     background: var(--surface-card);
     border: 1px solid var(--separator);
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .nav-arrow:active {

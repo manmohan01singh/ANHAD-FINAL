@@ -1,4 +1,4 @@
-/* ANHAD — TRENDORA-INSPIRED PREMIUM APPLICATION LOGIC V2 */
+﻿/* ANHAD — TRENDORA-INSPIRED PREMIUM APPLICATION LOGIC V2 */
 (function() {
   'use strict';
 
@@ -152,29 +152,29 @@
   const Greeting = {
     _tuks: {
       amritvela: [
-        { gurmukhi: 'ਜਾਗ ਲੇਹੁ ਰੇ ਮਨਾ ਜਾਗ ਲੇਹੁ ਕਹਾ ਗਾਫਲ ਸੋਇਆ ॥', translation: 'Wake up, O my mind! Wake up! Why are you sleeping unaware?' },
-        { gurmukhi: 'ਕੁਰਬਾਣੁ ਜਾਈ ਉਸੁ ਵੇਲਾ ਸੁਹਾਵੀ ਜਿਤੁ ਤੁਮਰੈ ਦੁਆਰੈ ਆਇਆ ॥', translation: 'I am a sacrifice to that beautiful time, when I come to Your Door.' },
-        { gurmukhi: 'ਚੋਜੀ ਮੇਰੇ ਗੋਵਿੰਦਾ ਚੋਜੀ ਮੇਰੇ ਪਿਆਰਿਆ ਹਰਿ ਪ੍ਰਭੁ ਮੇਰਾ ਚੋਜੀ ਜੀਉ ॥', translation: 'Playful is my Lord of the Universe, Playful is my Beloved. My Lord God is Playful.' }
+        { gurmukhi: 'ਜਾਗ ਲੇਹੁ ਰੇ ਮਨਾ ਜਾਗ ਲੇਹੁ ਕਹਾ ਗਾਫਲ ਸੋਇਆ', translation: 'Wake up, O my mind! Wake up! Why are you sleeping unaware?' },
+        { gurmukhi: 'ਕੁਰਬਾਣੁ ਜਾਈ ਉਸੁ ਵੇਲਾ ਸੁਹਾਵੀ ਜਿਤੁ ਤੁਮਰੈ ਦੁਆਰੈ ਆਇਆ', translation: 'I am a sacrifice to that beautiful time, when I come to Your Door.' },
+        { gurmukhi: 'ਚੋਜੀ ਮੇਰੇ ਗੋਵਿੰਦਾ ਚੋਜੀ ਮੇਰੇ ਪਿਆਰਿਆ ਹਰਿ ਪ੍ਰਭੁ ਮੇਰਾ ਚੋਜੀ ਜੀਉ', translation: 'Playful is my Lord of the Universe, Playful is my Beloved. My Lord God is Playful.' }
       ],
       morning: [
-        { gurmukhi: 'ਹਰਿ ਕੀ ਵਡਿਆਈ ਦੇਖਹੁ ਸੰਤਹੁ ਹਰਿ ਨਿਮਾਣਿਆ ਮਾਣੁ ਦੇਵਾਏ ॥', translation: 'Behold the glorious greatness of the Lord, O Saints; the Lord bestows honor upon the dishonored.' },
-        { gurmukhi: 'ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ ॥', translation: 'O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.' },
+        { gurmukhi: 'ਹਰਿ ਕੀ ਵਡਿਆਈ ਦੇਖਹੁ ਸੰਤਹੁ ਹਰਿ ਨਿਮਾਣਿਆ ਮਾਣੁ ਦੇਵਾਏ', translation: 'Behold the glorious greatness of the Lord, O Saints; the Lord bestows honor upon the dishonored.' },
+        { gurmukhi: 'ਏ ਮਨ ਹਰਿ ਜੀ ਧਿਆਇ ਤੂ ਇਕ ਮਨਿ ਇਕ ਚਿਤਿ ਭਾਇ', translation: 'O mind, meditate on the Dear Lord, with single-minded consciousness and loving focus.' },
         { gurmukhi: 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ ॥੫॥', translation: 'The One Name is the Lord\'s Command; O Nanak, the True Guru has given me this understanding.' }
       ],
       afternoon: [
-        { gurmukhi: 'ਓਇ ਸਾਜਨ ਓਇ ਮੀਤ ਪਿਆਰੇ ॥', translation: 'They are my friends, they are my beloved companions.' },
-        { gurmukhi: 'ਜੋ ਮਾਗਹਿ ਠਾਕੁਰ ਅਪੁਨੇ ਤੇ ਸੋਈ ਸੋਈ ਦੇਵੈ ॥', translation: 'Whatever one asks of his Lord and Master, He gives that very thing.' },
-        { gurmukhi: 'ਹਉ ਬਲਿਹਾਰੀ ਤਿੰਨ ਕੰਉ ਜੋ ਗੁਰਮੁਖਿ ਸਿਖਾ ॥', translation: 'I am a sacrifice to those Sikhs who live as Gurmukhs.' }
+        { gurmukhi: 'ਓਇ ਸਾਜਨ ਓਇ ਮੀਤ ਪਿਆਰੇ', translation: 'They are my friends, they are my beloved companions.' },
+        { gurmukhi: 'ਜੋ ਮਾਗਹਿ ਠਾਕੁਰ ਅਪੁਨੇ ਤੇ ਸੋਈ ਸੋਈ ਦੇਵੈ', translation: 'Whatever one asks of his Lord and Master, He gives that very thing.' },
+        { gurmukhi: 'ਹਉ ਬਲਿਹਾਰੀ ਤਿਨ ਕਉ ਜੋ ਗੁਰਮੁਖਿ ਸਿਖਾ', translation: 'I am a sacrifice to those Sikhs who live as Gurmukhs.' }
       ],
       evening: [
-        { gurmukhi: 'ਪ੍ਰੀਤਮ ਜਾਨਿ ਲੇਹੁ ਮਨ ਮਾਹੀ ॥', translation: 'O Beloved, please know this in Your Mind.' },
-        { gurmukhi: 'ਵਿਣੁ ਮਨੁ ਮਾਰੇ ਕੋਇ ਨ ਸਿਝਈ ਵੇਖਹੁ ਕੋ ਲਿਵ ਲਾਇ ॥', translation: 'Without subduing the mind, no one succeeds; let anyone carefully reflect on this.' },
-        { gurmukhi: 'ਰੰਗਿ ਰਤਾ ਮੇਰਾ ਸਾਹਿਬੁ ਰਵਿ ਰਹਿਆ ਭਰਪੂਰਿ ॥੧॥ ਰਹਾਉ ॥', translation: 'Imbued with Love, my Lord and Master is pervading and permeating all. ||1||Pause||' }
+        { gurmukhi: 'ਪ੍ਰੀਤਮ ਜਾਨਿ ਲੇਹੁ ਮਨ ਮਾਹੀ', translation: 'O Beloved, please know this in Your Mind.' },
+        { gurmukhi: 'ਵਿਣੁ ਮਨੁ ਮਾਰੇ ਕੋਈ ਨ ਸਿਝਈ ਵੇਖਹੁ ਕੋ ਲਿਵ ਲਾਇ', translation: 'Without subduing the mind, no one succeeds; let anyone carefully reflect on this.' },
+        { gurmukhi: 'ਰੰਗਿ ਰਤਾ ਮੇਰਾ ਸਾਹਿਬੁ ਰਵਿ ਰਹਿਆ ਭਰਪੂਰਿ', translation: 'Imbued with Love, my Lord and Master is pervading and permeating all. ||1||Pause||' }
       ],
       night: [
-        { gurmukhi: 'ਚੇਤਨਾ ਹੈ ਤਉ ਚੇਤ ਲੈ ਨਿਸਿ ਦਿਨਿ ਮੈ ਪ੍ਰਾਨੀ ॥', translation: 'If you are going to become conscious, then be conscious of Him, night and day, O mortal.' },
-        { gurmukhi: 'ਮੀਤੁ ਕਰੈ ਸੋਈ ਹਮ ਮਾਨਾ ॥', translation: 'Whatever my Friend does, I accept.' },
-        { gurmukhi: 'ਭਉ ਨ ਵਿਆਪੈ ਤੇਰੀ ਸਰਣਾ ॥', translation: 'Fear does not overtake one who seeks Your Sanctuary.' }
+        { gurmukhi: 'ਚੇਤਨਾ ਹੈ ਤਉ ਚੇਤ ਲੈ ਨਿਸਿ ਦਿਨਿ ਮੈ ਪ੍ਰਾਨੀ', translation: 'If you are going to become conscious, then be conscious of Him, night and day, O mortal.' },
+        { gurmukhi: 'ਮੀਤੁ ਕਰੈ ਸੋਈ ਹਮ ਮਾਨਾ', translation: 'Whatever my Friend does, I accept.' },
+        { gurmukhi: 'ਭਉ ਨ ਵਿਆਪੈ ਤੇਰੀ ਸਰਣਾ', translation: 'Fear does not overtake one who seeks Your Sanctuary.' }
       ]
     },
 
@@ -1574,7 +1574,7 @@
 
       dots.forEach((dot, i) => {
         dot.addEventListener('click', () => {
-          track.scrollTo({ left: i * track.offsetWidth, behavior: 'smooth' });
+          track.scrollLeft = i * track.offsetWidth;
         });
       });
 
@@ -1582,7 +1582,7 @@
       this._autoTimer = setInterval(() => {
         if (this._paused) return;
         current = (current + 1) % totalSlides;
-        track.scrollTo({ left: current * track.offsetWidth, behavior: 'smooth' });
+        track.scrollLeft = current * track.offsetWidth;
         dots.forEach((d, i) => d.classList.toggle('hero-carousel__dot--active', i === current));
       }, 7000);
 
@@ -1905,7 +1905,7 @@
             'Download the Android APK now?'
           );
           if (confirmed) {
-            window.open(apkUrl, '_blank');
+            window.open(apkUrl, '_blank', 'noopener');
           }
         } else if (isIOS) {
           // iOS-specific instructions
@@ -2245,3 +2245,4 @@
   });
 
 })();
+

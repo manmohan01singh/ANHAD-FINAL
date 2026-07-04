@@ -956,7 +956,7 @@
     }
   });
 
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('pagehide', () => {
     if (audio && isPlaying) {
       persistState();
     }

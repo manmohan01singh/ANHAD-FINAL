@@ -23,6 +23,7 @@
   function bypass() {
     // Always stamp sessionStorage + localStorage so all paths stay unlocked
     try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
+    try { localStorage.setItem(SEEN_KEY, 'true'); } catch(e) {}
     try { localStorage.setItem(ACTIVE_KEY, Date.now().toString()); } catch(e) {}
   }
 

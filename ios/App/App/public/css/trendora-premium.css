@@ -20,28 +20,28 @@
   src: url('../assets/fonts/TrajanPro-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 @font-face {
   font-family: 'Trajan Pro';
   src: url('../assets/fonts/TrajanPro-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 @font-face {
   font-family: 'Optimus Princeps';
   src: url('../assets/fonts/OptimusPrinceps.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 @font-face {
   font-family: 'Optimus Princeps';
   src: url('../assets/fonts/OptimusPrincepsSemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -256,7 +256,7 @@ body {
   overflow-x: hidden;
   line-height: 1.47059;
   letter-spacing: -0.022em;
-  -webkit-overflow-scrolling: touch;
+
   position: relative;
 }
 
@@ -3090,13 +3090,6 @@ a:active {
   display: block;
   height: 0;
   transition: height var(--duration-normal) ease;
-}
-
-/* Smooth overscroll effect */
-@supports (-webkit-overflow-scrolling: touch) {
-  .app {
-    -webkit-overflow-scrolling: touch;
-  }
 }
 
 /* Print styles */

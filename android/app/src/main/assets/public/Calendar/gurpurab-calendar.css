@@ -95,7 +95,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+
 }
 
 /* ═══ BODY SCROLL LOCK — prevents page overscroll when modals are open ═══ */
@@ -104,7 +104,7 @@ body.modal-open {
   width: 100% !important;
   overflow: hidden !important;
   touch-action: none;
-  -webkit-overflow-scrolling: auto;
+
 }
 
 /* iOS Safari — freeze the page behind modals */
@@ -123,7 +123,7 @@ body.modal-open .page {
   padding-bottom: calc(var(--space-xxl) + var(--safe-area-bottom));
   max-width: 680px;
   margin: 0 auto;
-  -webkit-overflow-scrolling: touch;
+
   /* FIX: Removed transform that caused text disappearing during scroll */
 }
 
@@ -366,7 +366,7 @@ body.modal-open .page {
   font-weight: 500;
   font-size: 15px;
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-ios);
+  transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios), transform var(--duration-fast) var(--ease-ios);
   color: var(--text-secondary);
   -webkit-tap-highlight-color: transparent;
 }
@@ -399,7 +399,7 @@ body.modal-open .page {
   font-size: 13px;
   cursor: pointer;
   color: var(--text-primary);
-  transition: all var(--duration-fast) var(--ease-ios);
+  transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios), transform var(--duration-fast) var(--ease-ios);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -572,7 +572,7 @@ body.modal-open .page {
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  transition: all var(--duration-fast);
+  transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.04),
     -2px -2px 8px rgba(255, 255, 255, 0.9),
@@ -757,7 +757,7 @@ body.modal-open .page {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: all var(--duration-normal) var(--ease-ios);
+  transition: background-color var(--duration-normal) var(--ease-ios), color var(--duration-normal) var(--ease-ios), transform var(--duration-normal) var(--ease-ios);
 
   /* Desktop default: centered card */
   left: 50%;
@@ -870,7 +870,7 @@ body.modal-open .page {
   padding: var(--space-xl);
   overflow-y: auto;
   flex: 1;
-  -webkit-overflow-scrolling: touch;
+
   overscroll-behavior: contain;
 }
 
@@ -949,7 +949,7 @@ body.modal-open .page {
   transform: translateY(100%);
   opacity: 0;
   visibility: hidden;
-  transition: all var(--duration-normal) var(--ease-ios);
+  transition: background-color var(--duration-normal) var(--ease-ios), color var(--duration-normal) var(--ease-ios), transform var(--duration-normal) var(--ease-ios);
   z-index: var(--z-modal-3);
   max-height: 80vh;
   display: flex;
@@ -1017,7 +1017,7 @@ body.modal-open .page {
   padding: var(--space-lg);
   overflow-y: auto;
   flex: 1;
-  -webkit-overflow-scrolling: touch;
+
   overscroll-behavior: contain;
 }
 
@@ -1128,7 +1128,7 @@ body.modal-open .page {
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-ios);
+  transition: background-color var(--duration-fast) var(--ease-ios), color var(--duration-fast) var(--ease-ios), transform var(--duration-fast) var(--ease-ios);
   color: var(--text-primary);
   -webkit-tap-highlight-color: transparent;
 }
@@ -1176,7 +1176,7 @@ body.modal-open .page {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all var(--duration-fast);
+  transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
   -webkit-tap-highlight-color: transparent;
   box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
 }
@@ -1200,7 +1200,7 @@ body.modal-open .page {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all var(--duration-fast);
+  transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1305,7 +1305,7 @@ body.modal-open .page {
   border: 2.5px solid transparent;
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.2s var(--ease-ios);
+  transition: background-color 0.2s var(--ease-ios), color 0.2s var(--ease-ios), transform 0.2s var(--ease-ios);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1342,7 +1342,7 @@ body.modal-open .page {
   font-size: 15px;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all 0.2s var(--ease-ios);
+  transition: background-color 0.2s var(--ease-ios), color 0.2s var(--ease-ios), transform 0.2s var(--ease-ios);
   -webkit-tap-highlight-color: transparent;
   text-align: left;
 }
@@ -1747,6 +1747,6 @@ body.modal-open .page {
 .modal-body,
 .sheet-content {
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+
   overscroll-behavior: contain;
 }

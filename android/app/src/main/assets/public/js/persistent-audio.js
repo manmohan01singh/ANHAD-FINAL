@@ -354,7 +354,6 @@ class PersistentAudioManager {
         }, 5000);
 
         // Save on page unload
-        window.addEventListener('beforeunload', () => this.saveState());
         window.addEventListener('pagehide', () => this.saveState());
     }
 

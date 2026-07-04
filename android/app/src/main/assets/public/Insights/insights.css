@@ -198,7 +198,7 @@ html:not(.dark-mode) .insights-header.scrolled {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     /* Extreme Claymorphism */
     box-shadow: var(--clay-outer-sm);
     border: 1px solid rgba(255, 255, 255, 0.04);
@@ -412,7 +412,7 @@ html:not(.dark-mode) .glass-card {
     border-radius: var(--radius-full);
     color: #0369A1;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     box-shadow: 
         0 4px 8px rgba(0, 0, 0, 0.1),
         inset 0 1px 2px rgba(255, 255, 255, 1);
@@ -495,7 +495,7 @@ html:not(.dark-mode) .glass-card {
     font-weight: 700;
     border-radius: 100px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     box-shadow: 
         0 4px 12px rgba(0, 0, 0, 0.1),
         inset 0 1px 2px rgba(255, 255, 255, 1);
@@ -546,7 +546,7 @@ html:not(.dark-mode) .glass-card {
     box-shadow: var(--clay-outer);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .wisdom-card:active {
@@ -591,7 +591,7 @@ html:not(.dark-mode) .wisdom-card:active {
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 2;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .wisdom-icon::before {
@@ -912,7 +912,7 @@ html:not(.dark-mode) .wisdom-pankti {
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.05),
         inset 0 -2px 4px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
 }
 
@@ -1010,7 +1010,7 @@ html:not(.dark-mode) .wisdom-pankti {
     justify-content: center;
     font-size: 26px;
     margin-bottom: 16px;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: background-color 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .category-card:active .category-icon {
@@ -1297,7 +1297,7 @@ html:not(.dark-mode) .quick-stat__divider {
     /* Claymorphism */
     box-shadow: var(--clay-outer-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .shabad-card:active {
@@ -1336,7 +1336,7 @@ html:not(.dark-mode) .quick-stat__divider {
     /* Claymorphic orb */
     box-shadow: var(--clay-outer-sm);
     border: 1px solid rgba(255, 255, 255, 0.04);
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .shabad-play-btn:active {
@@ -1416,7 +1416,7 @@ html:not(.dark-mode) .quick-stat__divider {
   background: transparent !important;
   transform: scale(1.35) translateY(-3px); 
   filter: none;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: background-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 [data-theme="dark"] .nav-tab--active .ios-emoji--nav {
   filter: none !important;
@@ -1496,7 +1496,7 @@ html:not(.dark-mode) .insight-modal__header {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     /* Claymorphic orb */
     box-shadow: var(--clay-outer-sm);
     border: 1px solid rgba(255, 255, 255, 0.04);
@@ -1532,7 +1532,7 @@ html:not(.dark-mode) .insight-modal__lang-switch {
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .lang-btn--active {
@@ -1826,7 +1826,7 @@ a.topic-card svg {
     text-decoration: none;
     color: rgba(0, 0, 0, 0.32);
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: background-color 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
     min-width: 56px;
     position: relative;
@@ -1852,7 +1852,7 @@ a.topic-card svg {
   background: transparent !important;
   transform: scale(1.35) translateY(-3px); 
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: background-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: none;
   border: none;
 }
@@ -1872,5 +1872,5 @@ body.modal-open .bottom-nav {
     pointer-events: none !important;
     transform: translate(-50%, 50px) !important;
     visibility: hidden !important;
-    transition: all 0.3s ease !important;
+    transition: background-color 0.3s ease !important, color 0.3s ease !important;
 }

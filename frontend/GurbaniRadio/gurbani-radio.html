@@ -1,506 +1,348 @@
 <!DOCTYPE html>
-<html lang="pa" data-theme="light">
+<html lang="pa">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#0D0D0F">
+  <meta name="theme-color" content="#FFF8E6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Gurbani Radio — Anhad</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="gurbani-radio-ios.css">
-  <script>
-    (function(){
-      var t = localStorage.getItem('gurbaniTheme') || 'light';
-      document.documentElement.setAttribute('data-theme', t);
-    })();
-  </script>
+
+  <!-- Fade in on load -->
   <style>
-    html,body{opacity:0;}
-    html{opacity:1;}
-    body{opacity:1;}
+    body { animation: pageIn 0.25s ease both; }
+    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
   </style>
 </head>
 <body>
 
-<div class="bg-container">
-  <img id="bgDay" class="bg-image" src="../assets/darbar-sahib-day.webp" alt="">
-  <img id="bgDarbar" class="bg-image fade" src="../assets/darbar-sahib-day.webp" alt="">
-  <img id="bgAmritvela" class="bg-image fade" src="../assets/darbar-sahib-amritvela.webp" alt="">
-  <div class="bg-overlay"></div>
-  <canvas id="colorCanvas" style="display:none"></canvas>
-  <div id="bloomO1" class="bloom-orb"></div>
-  <div id="bloomO2" class="bloom-orb"></div>
-  <div id="bloomO3" class="bloom-orb"></div>
+<!-- ══════════════════════════════════════════════════════
+     DYNAMIC BACKGROUND STACK
+     ══════════════════════════════════════════════════════ -->
+<div class="bg-stack">
+  <img id="bgMorning" class="bg-layer hidden"
+       src="../assets/darbar-sahib-morning-bg.webp" alt="" loading="eager" fetchpriority="low">
+  <img id="bgDay"     class="bg-layer"
+       src="../assets/darbar-sahib-day-bg.webp"     alt="" loading="eager" fetchpriority="high">
+  <img id="bgEvening" class="bg-layer hidden"
+       src="../assets/darbar-sahib-evening-bg.webp" alt="" loading="lazy">
+  <img id="bgNight"   class="bg-layer hidden"
+       src="../assets/darbar-sahib-night-bg.webp"   alt="" loading="lazy">
+
+  <div class="bg-vignette"></div>
+  <div class="bg-gradient"></div>
+
+  <!-- Ambient bloom orbs -->
+  <div class="bloom bloom-1"></div>
+  <div class="bloom bloom-2"></div>
+  <div class="bloom bloom-3"></div>
 </div>
+<div class="bg-blur-wash"></div>
+<div class="bg-noise"></div>
 
-<main id="player" class="player-container">
+<!-- ══════════════════════════════════════════════════════
+     MAIN PLAYER
+     ══════════════════════════════════════════════════════ -->
+<main id="player" class="player-container" data-stream="darbar">
 
+  <!-- HEADER -->
   <div class="header">
     <button id="backBtn" class="header-btn" aria-label="Back">
-      <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
     </button>
-    <span class="header-title">Radio</span>
-    <button id="themeBtn" class="header-btn" aria-label="Toggle theme">
-      <svg id="themeIcon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="4.5"/>
-        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    <span class="header-title">Gurbani Radio</span>
+    <button id="sleepBtn" class="header-btn" aria-label="Sleep timer" title="Sleep timer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
       </svg>
     </button>
   </div>
 
+  <!-- Sleep bubble (inline label) -->
+  <div id="sleepBubble" class="sleep-bubble"></div>
+
+  <!-- STREAM SWITCHER -->
   <div class="stream-switcher">
     <div id="streamPill" class="stream-pill darbar"></div>
-    <button id="btnDarbar" class="stream-btn active" data-stream="darbar">
-      <svg viewBox="0 0 24 24"><path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+    <button id="btnDarbar" class="stream-btn active" data-stream="darbar" aria-label="Darbar Sahib Live">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4"/>
+      </svg>
       Darbar
     </button>
-    <button id="btnAmritvela" class="stream-btn" data-stream="amritvela">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
+
+    <button id="btnAmritvela" class="stream-btn" data-stream="amritvela" aria-label="Amritvela Kirtan">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4.5"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2"/>
+      </svg>
       Amritvela
     </button>
-    <button id="btnSimran" class="stream-btn" data-stream="simran">
-      <svg viewBox="0 0 24 24"><path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+    <button id="btnSimran" class="stream-btn" data-stream="simran" aria-label="Waheguru Simran">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z"/>
+      </svg>
       Simran
     </button>
   </div>
 
-  <div id="simranSwitch" class="simran-switch">
-    <div class="simran-switch-copy">
-      <span class="simran-switch-label">Simran Style</span>
-      <span id="simranSwitchState" class="simran-switch-state">Bhog</span>
+  <!-- SIMRAN SUB-SWITCH (shown only on Simran tab) -->
+  <div id="simranSwitch" class="simran-switch" role="switch" aria-checked="false">
+    <div class="simran-copy">
+      <span class="simran-label">Simran Style</span>
+      <span id="simranState" class="simran-state">Asa Di Vaar</span>
     </div>
-    <div class="simran-switch-track">
-      <div class="simran-switch-thumb">
-        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="simran-track">
+      <div class="simran-thumb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
       </div>
     </div>
   </div>
 
+  <!-- ARTWORK -->
   <div class="artwork-section">
     <div id="artworkGlow" class="artwork-glow"></div>
-    <div id="artworkContainer" class="artwork-clay">
-      <div class="artwork-inner">
-        <img id="artworkImg" class="artwork-img" src="../assets/kirtan-default.webp" alt="Now playing">
-        <div id="liveBadge" class="live-badge">LIVE</div>
-      </div>
+    <div id="artworkCard" class="artwork-card" role="img" aria-label="Now playing artwork">
+      <img id="artworkImg" class="artwork-img" src="../assets/darbar-sahib-day.webp" alt="Now playing">
+      <div class="live-badge">Live</div>
     </div>
   </div>
 
+  <!-- TRACK INFO -->
   <section id="trackInfo" class="track-info">
     <div class="track-row">
-      <h1 id="trackTitle" class="track-title">Hukamnama</h1>
-      <div id="miniEq" class="mini-eq"><span></span><span></span><span></span><span></span></div>
+      <h1 id="trackTitle" class="track-title">Kirtan • Live</h1>
+      <div id="miniEq" class="mini-eq" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
     </div>
-    <p id="trackArtist" class="track-artist">Sri Darbar Sahib</p>
-    <p id="trackSubtitle" class="track-subtitle">Dhan Guru Nanak</p>
+    <p id="trackArtist" class="track-artist">Darbar Sahib Live</p>
+    <p id="trackSubtitle" class="track-subtitle">Sri Harmandir Sahib Ji</p>
   </section>
 
-  <div id="liveAction" class="live-action">
-    <button id="liveJumpBtn" class="live-jump-btn is-synced">
-      <span class="live-jump-dot" id="liveLabelDot"></span>
-      <span id="liveLabel">Live</span>
-      <span id="liveBehindText" class="live-behind-text"></span>
+  <!-- LIVE BUTTON -->
+  <div class="live-action">
+    <button id="liveBtn" class="live-btn synced" aria-label="Jump to live">
+      <span id="liveDot" class="live-dot"></span>
+      <span>Live</span>
+      <span id="liveBehind" class="live-behind-txt"></span>
     </button>
   </div>
 
+  <!-- PROGRESS BAR -->
   <div class="progress-section">
-    <div id="progressTrack" class="progress-track">
+    <div id="progressTrack" class="progress-track" role="slider" aria-label="Playback progress">
       <div id="progressFill" class="progress-fill" style="width:0%"></div>
       <div id="progressKnob" class="progress-knob" style="left:0%"></div>
     </div>
     <div class="progress-labels">
-      <span id="elapsedTime">0:00</span>
+      <span id="elapsedTime">∞</span>
       <span class="live-indicator">LIVE</span>
       <span>∞</span>
     </div>
   </div>
 
+  <!-- CONTROLS -->
   <div class="controls">
-    <button id="prevBtn" class="control-btn secondary" aria-label="Previous track">
-      <svg viewBox="0 0 24 24"><path d="M19 20L9 12l10-8v16zM5 4v16" stroke="currentColor" fill="currentColor" stroke-width="0"/></svg>
-    </button>
-    <button id="playBtn" class="control-btn primary paused" aria-label="Play">
-      <svg id="playIcon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="6,4 20,12 6,20" stroke="currentColor" fill="currentColor"/>
+    <button id="prevBtn" class="ctrl-btn secondary" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 20L9 12l10-8v16zM5 4v16"/>
       </svg>
     </button>
-    <button id="nextBtn" class="control-btn secondary" aria-label="Next track">
-      <svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zM19 4v16" stroke="currentColor" fill="currentColor" stroke-width="0"/></svg>
+
+    <button id="playBtn" class="ctrl-btn primary paused" aria-label="Play / Pause">
+      <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polygon points="6,4 20,12 6,20" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <button id="nextBtn" class="ctrl-btn secondary" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M5 4l10 8-10 8V4zM19 4v16"/>
+      </svg>
     </button>
   </div>
 
+  <!-- VOLUME -->
   <div class="volume-section">
-    <svg class="volume-icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <div class="volume-slider">
-      <div id="volumeFill" class="volume-fill" style="width:70%"></div>
-      <input id="volumeInput" class="volume-input" type="range" min="0" max="1" step="0.01" value="0.7">
+    <svg class="vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+    </svg>
+    <div class="vol-slider">
+      <div id="volumeFill" class="vol-fill" style="width:70%"></div>
+      <input id="volumeInput" class="vol-input" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Volume">
     </div>
-    <svg class="volume-icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
+    </svg>
   </div>
 
+  <!-- FOOTER ACTIONS -->
   <div class="footer-actions">
-    <button id="playlistBtn" class="footer-btn" aria-label="Playlist">
-      <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12M18 14l4-3v8l-4-5z" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <i style="display:none"></i>
+    <button id="playlistBtn" class="foot-btn" aria-label="Streams">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h18M3 12h18M3 18h12M18 14l4-3v8l-4-5z"/>
+      </svg>
     </button>
-    <button id="favBtn" class="footer-btn" aria-label="Favorite">
-      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <i style="display:none"></i>
+    <button id="favBtn" class="foot-btn" aria-label="Favourite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
     </button>
-    <button id="shareBtn" class="footer-btn" aria-label="Share">
-      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><circle cx="6" cy="12" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><circle cx="18" cy="19" r="3" stroke="currentColor" fill="none" stroke-width="1.8"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round"/></svg>
-      <i style="display:none"></i>
+    <button id="shareBtn" class="foot-btn" aria-label="Share">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/>
+      </svg>
     </button>
   </div>
 
 </main>
 
-<div id="statusPill" class="status-pill">
+<!-- ══════════════════════════════════════════════════════
+     STATUS PILL
+     ══════════════════════════════════════════════════════ -->
+<div id="statusPill" class="status-pill" aria-live="polite">
   <span id="statusDot" class="status-dot"></span>
   <span id="statusText">Connected</span>
 </div>
 
-<div id="errorToast" class="error-toast">
-  <div class="error-icon">
-    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+<!-- ══════════════════════════════════════════════════════
+     ERROR TOAST
+     ══════════════════════════════════════════════════════ -->
+<div id="errToast" class="err-toast" role="alert">
+  <div class="err-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 8v4m0 4h.01"/>
+    </svg>
   </div>
-  <div class="error-content">
-    <div id="errorTitle" class="error-title">Connection Lost</div>
-    <div id="errorMessage" class="error-message">Reconnecting...</div>
+  <div class="err-body">
+    <div id="errTitle" class="err-title">Connection Error</div>
+    <div id="errMsg"   class="err-msg">Reconnecting…</div>
   </div>
-  <button id="errorRetryBtn" class="error-retry">Retry</button>
+  <button id="errRetry" class="err-retry">Retry</button>
 </div>
 
-<div id="connectionOverlay" class="connection-overlay">
-  <div class="connection-spinner"></div>
-  <div class="connection-text" id="connectingStream">
-    Connecting to <span>Darbar Sahib</span>
+<!-- ══════════════════════════════════════════════════════
+     CONNECTING OVERLAY
+     ══════════════════════════════════════════════════════ -->
+<div id="connOverlay" class="conn-overlay" aria-live="polite">
+  <div class="conn-spinner"></div>
+  <div id="connStream" class="conn-text">Connecting to <span>Darbar Sahib</span></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     PLAYLIST BOTTOM SHEET
+     ══════════════════════════════════════════════════════ -->
+<div id="plSheet" class="pl-sheet" role="dialog" aria-label="Choose stream">
+  <div id="plOverlay" class="sh-overlay"></div>
+  <div class="pl-panel">
+    <div class="pl-header">
+      <span class="pl-title">🎵 Streams</span>
+      <button id="plClose" class="pl-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Darbar -->
+    <div id="plItemDarbar" class="pl-item active-item">
+      <div class="pl-icon active-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4"/>
+        </svg>
+      </div>
+      <div class="pl-text">
+        <div class="pl-name">Darbar Sahib Live</div>
+        <div class="pl-sub">Sri Harmandir Sahib Ji • 24/7</div>
+      </div>
+      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- Amritvela -->
+    <div id="plItemAmrit" class="pl-item">
+      <div class="pl-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.5"/>
+          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2"/>
+        </svg>
+      </div>
+      <div class="pl-text">
+        <div class="pl-name">Amritvela Kirtan</div>
+        <div class="pl-sub">ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ • Virtual Live</div>
+      </div>
+      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- Simran -->
+    <div id="plItemSimran" class="pl-item">
+      <div class="pl-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z"/>
+        </svg>
+      </div>
+      <div class="pl-text">
+        <div class="pl-name">Waheguru Simran</div>
+        <div class="pl-sub">Naam Simran • Virtual Live</div>
+      </div>
+      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>
   </div>
 </div>
 
-<div id="gmp"></div>
+<!-- ══════════════════════════════════════════════════════
+     SLEEP TIMER SHEET
+     ══════════════════════════════════════════════════════ -->
+<div id="sleepSheet" class="sleep-sheet" role="dialog" aria-label="Sleep timer">
+  <div id="sleepOverlay" class="sh-overlay"></div>
+  <div class="sleep-panel">
+    <div class="pl-header">
+      <span class="pl-title">⏱ Sleep Timer</span>
+      <button id="sleepClose" class="pl-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="sleep-grid">
+      <div class="sleep-opt" data-mins="5">5 min</div>
+      <div class="sleep-opt" data-mins="10">10 min</div>
+      <div class="sleep-opt" data-mins="15">15 min</div>
+      <div class="sleep-opt" data-mins="20">20 min</div>
+      <div class="sleep-opt" data-mins="30">30 min</div>
+      <div class="sleep-opt" data-mins="45">45 min</div>
+      <div class="sleep-opt" data-mins="60">1 hr</div>
+      <div class="sleep-opt" data-mins="90">1.5 hr</div>
+      <div class="sleep-opt" data-mins="120">2 hr</div>
+    </div>
+    <button id="sleepCancel" class="sleep-cancel">Cancel Timer</button>
+  </div>
+</div>
 
+<!-- ══════════════════════════════════════════════════════
+     SCRIPTS
+     ══════════════════════════════════════════════════════ -->
+<!-- Global audio coordinator (silences other players) -->
 <script src="../lib/global-theme.js"></script>
-<script>
-(function(){
-  'use strict';
-
-  /* ── Elements ── */
-  var btnDarbar     = document.getElementById('btnDarbar');
-  var btnAmritvela  = document.getElementById('btnAmritvela');
-  var btnSimran     = document.getElementById('btnSimran');
-  var streamPill    = document.getElementById('streamPill');
-  var artworkCtn    = document.getElementById('artworkContainer');
-  var artworkImg    = document.getElementById('artworkImg');
-  var artworkGlow   = document.getElementById('artworkGlow');
-  var trackTitle    = document.getElementById('trackTitle');
-  var trackArtist   = document.getElementById('trackArtist');
-  var trackSubtitle = document.getElementById('trackSubtitle');
-  var liveBadge     = document.getElementById('liveBadge');
-  var progressTrack = document.querySelector('#progressTrack');
-  var progressFill  = document.querySelector('#progressFill');
-  var progressKnob  = document.querySelector('#progressKnob');
-  var elapsedTime   = document.getElementById('elapsedTime');
-  var playBtn       = document.getElementById('playBtn');
-  var playIcon      = document.getElementById('playIcon');
-  var prevBtn       = document.getElementById('prevBtn');
-  var nextBtn       = document.getElementById('nextBtn');
-  var volumeInput   = document.getElementById('volumeInput');
-  var volumeFill    = document.getElementById('volumeFill');
-  var statusPill    = document.getElementById('statusPill');
-  var statusDot     = document.getElementById('statusDot');
-  var statusText    = document.getElementById('statusText');
-  var connOverlay   = document.getElementById('connectionOverlay');
-  var connStream    = document.getElementById('connectingStream');
-  var errorToast    = document.getElementById('errorToast');
-  var errorTitle    = document.getElementById('errorTitle');
-  var errorMessage  = document.getElementById('errorMessage');
-  var errorRetryBtn = document.getElementById('errorRetryBtn');
-  var liveJumpBtn   = document.getElementById('liveJumpBtn');
-  var liveBehindText= document.getElementById('liveBehindText');
-  var liveLabelDot  = document.getElementById('liveLabelDot');
-  var liveLabel     = document.getElementById('liveLabel');
-  var themeBtn      = document.getElementById('themeBtn');
-  var themeIcon     = document.getElementById('themeIcon');
-  var simranSwitch  = document.getElementById('simranSwitch');
-  var simranState   = document.getElementById('simranSwitchState');
-  var miniEq        = document.getElementById('miniEq');
-  var trackInfo     = document.getElementById('trackInfo');
-  var bgDay         = document.getElementById('bgDay');
-  var bgDarbar      = document.getElementById('bgDarbar');
-  var bgAmritvela   = document.getElementById('bgAmritvela');
-  var colorCanvas   = document.getElementById('colorCanvas');
-  var bloomO1       = document.getElementById('bloomO1');
-  var bloomO2       = document.getElementById('bloomO2');
-  var bloomO3       = document.getElementById('bloomO3');
-  var player        = document.getElementById('player');
-
-  /* ── State ── */
-  var currentStream = 'darbar';
-  var isPlaying     = true;
-  var isLive        = true;
-  var isBehind      = false;
-  var isSimran     = false;
-  var trackQueue    = [];
-  var activeSource  = null;
-
-  /* ── Stream URLs ── */
-  var STREAMS = {
-    darbar:    'https://kirtan.anhad.app/stream/darbar',
-    amritvela: 'https://kirtan.anhad.app/stream/amritvela',
-    simran:    'https://kirtan.anhad.app/stream/simran'
-  };
-
-  var STREAM_NAMES = {
-    darbar:    'Darbar Sahib',
-    amritvela: 'Amritvela',
-    simran:    'Simran'
-  };
-
-  /* ── Station metadata ── */
-  var STATION_META = {
-    darbar: {
-      title: 'Hukamnama',
-      artist: 'Sri Darbar Sahib',
-      subtitle: 'Dhan Guru Nanak',
-      bg: 'bgDarbar',
-      color: '#D4943A',
-      bgImg: '../assets/darbar-sahib-day.webp'
-    },
-    amritvela: {
-      title: 'Asa Di Vaar',
-      artist: 'Sri Darbar Sahib',
-      subtitle: 'Amritvela',
-      bg: 'bgAmritvela',
-      color: '#FF8C00',
-      bgImg: '../assets/darbar-sahib-amritvela.webp'
-    },
-    simran: {
-      title: 'Simran',
-      artist: 'Waheguru',
-      subtitle: 'Naam Simran',
-      bg: 'bgDarbar',
-      color: '#FFA500',
-      bgImg: '../assets/darbar-sahib-day.webp'
-    }
-  };
-
-  /* ── Theme ── */
-  function setTheme(t) {
-    var r = document.documentElement;
-    r.setAttribute('data-theme', t);
-    localStorage.setItem('gurbaniTheme', t);
-    var sun = '<circle cx="12" cy="12" r="4.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>';
-    var moon = '<circle cx="12" cy="12" r="5"/><path d="M12 3a9 9 0 000 18 7 7 0 010-14"/>';
-    themeIcon.innerHTML = t === 'dark' ? moon : sun;
-  }
-  setTheme(localStorage.getItem('gurbaniTheme') || 'light');
-  themeBtn.addEventListener('click', function(){
-    var cur = document.documentElement.getAttribute('data-theme');
-    setTheme(cur === 'dark' ? 'light' : 'dark');
-  });
-
-  /* ── Stream switching ── */
-  function setActiveStream(stream) {
-    if (!stream || stream === currentStream) return;
-    currentStream = stream;
-
-    var root = document.documentElement;
-    var meta = STATION_META[stream];
-    root.style.setProperty('--stream-accent', meta.color);
-    root.style.setProperty('--stream-accent-light', meta.color + '33');
-    root.style.setProperty('--stream-accent-glow', meta.color + '55');
-
-    [btnDarbar, btnAmritvela, btnSimran].forEach(function(b){
-      b.classList.toggle('active', b.dataset.stream === stream);
-    });
-    streamPill.className = 'stream-pill ' + stream;
-    artworkCtn.classList.remove('playing');
-
-    bgDay.classList.toggle('fade', stream !== 'darbar');
-    bgDarbar.classList.toggle('fade', stream !== 'darbar');
-    bgAmritvela.classList.toggle('fade', stream !== 'amritvela');
-
-    if (stream === 'simran') {
-      simranSwitch.classList.add('visible');
-    } else {
-      simranSwitch.classList.remove('visible');
-    }
-
-    trackTitle.textContent = meta.title;
-    trackArtist.textContent = meta.artist;
-    trackSubtitle.textContent = meta.subtitle;
-
-    artworkImg.classList.add('xfade');
-    setTimeout(function(){
-      artworkImg.src = meta.bgImg + '?v=' + Date.now();
-    }, 180);
-    setTimeout(function(){ artworkImg.classList.remove('xfade'); }, 400);
-
-    artworkGlow.style.background = meta.color + '55';
-
-    if (connOverlay.classList.contains('visible')) {
-      connStream.innerHTML = 'Connecting to <span>' + STREAM_NAMES[stream] + '</span>';
-    }
-
-    updatePlayState();
-  }
-
-  btnDarbar.addEventListener('click', function(){ setActiveStream('darbar'); });
-  btnAmritvela.addEventListener('click', function(){ setActiveStream('amritvela'); });
-  btnSimran.addEventListener('click', function(){ setActiveStream('simran'); });
-
-  /* ── Simran switch ── */
-  simranSwitch.addEventListener('click', function(){
-    isSimran = !isSimran;
-    simranSwitch.classList.toggle('active', isSimran);
-    simranState.textContent = isSimran ? 'Sodar' : 'Bhog';
-  });
-
-  /* ── Play state ── */
-  function updatePlayState() {
-    if (isPlaying && currentStream) {
-      artworkCtn.classList.add('playing');
-      miniEq.classList.add('playing');
-    } else {
-      artworkCtn.classList.remove('playing');
-      miniEq.classList.remove('playing');
-    }
-  }
-
-  playBtn.addEventListener('click', function togglePlay() {
-    if (isPlaying) {
-      playBtn.classList.add('paused');
-      playIcon.innerHTML = '<polygon points="6,4 20,12 6,20" stroke="currentColor" fill="currentColor"/>';
-      isPlaying = false;
-    } else {
-      playBtn.classList.remove('paused');
-      playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-      isPlaying = true;
-    }
-    updatePlayState();
-  });
-
-  /* ── Progress ── */
-  var progressInterval = null;
-  var fakeProgress = 0;
-
-  function startProgress() {
-    if (progressInterval) return;
-    fakeProgress = 0;
-    progressInterval = setInterval(function(){
-      fakeProgress += 0.5;
-      if (fakeProgress > 58) fakeProgress = 0;
-      var pct = (fakeProgress / 60) * 100;
-      if (progressFill) progressFill.style.width = pct + '%';
-      if (progressKnob) progressKnob.style.left = pct + '%';
-
-      var mins = Math.floor(fakeProgress / 60);
-      var secs = Math.floor(fakeProgress % 60);
-      elapsedTime.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-    }, 1000);
-  }
-
-  function stopProgress() {
-    if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
-  }
-
-  /* ── Volume ── */
-  volumeInput.addEventListener('input', function(){
-    var v = this.value;
-    volumeFill.style.width = (v * 100) + '%';
-  });
-
-  /* ── Live status ── */
-  function setLiveStatus(behind, secs) {
-    isBehind = behind;
-    liveJumpBtn.classList.toggle('is-behind', behind);
-    liveJumpBtn.classList.toggle('is-synced', !behind);
-    liveLabelDot.classList.toggle('pulsing', behind);
-    if (behind && secs > 0) {
-      liveBehindText.textContent = secs + 's behind';
-    } else {
-      liveBehindText.textContent = '';
-    }
-  }
-
-  liveJumpBtn.addEventListener('click', function(){
-    setLiveStatus(false, 0);
-    /* re-sync logic would go here */
-  });
-
-  /* ── Status pill ── */
-  function showStatus(msg, isError) {
-    statusText.textContent = msg;
-    statusDot.classList.toggle('error', !!isError);
-    statusPill.classList.add('visible');
-    clearTimeout(statusPill._timeout);
-    statusPill._timeout = setTimeout(function(){
-      statusPill.classList.remove('visible');
-    }, 2500);
-  }
-
-  /* ── Error toast ── */
-  function showError(title, msg) {
-    errorTitle.textContent = title;
-    errorMessage.textContent = msg;
-    errorToast.classList.add('visible');
-    clearTimeout(errorToast._timeout);
-    errorToast._timeout = setTimeout(function(){
-      errorToast.classList.remove('visible');
-    }, 5000);
-  }
-
-  function hideError() {
-    errorToast.classList.remove('visible');
-    clearTimeout(errorToast._timeout);
-  }
-
-  errorRetryBtn.addEventListener('click', function(){
-    hideError();
-    showStatus('Reconnecting...', true);
-    setTimeout(function(){ showStatus('Connected'); }, 2000);
-  });
-
-  /* ── Connection overlay ── */
-  function showConnecting(stream) {
-    connOverlay.classList.add('visible');
-    connStream.innerHTML = 'Connecting to <span>' + STREAM_NAMES[stream] + '</span>';
-  }
-
-  function hideConnecting() {
-    connOverlay.classList.remove('visible');
-  }
-
-  /* ── Prev / Next ── */
-  prevBtn.addEventListener('click', function(){
-    showStatus('Previous track');
-  });
-  nextBtn.addEventListener('click', function(){
-    showStatus('Next track');
-  });
-
-  /* ── Back button ── */
-  document.getElementById('backBtn').addEventListener('click', function(){
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      window.location.href = '../index.html';
-    }
-  });
-
-  /* ── Init ── */
-  function init() {
-    setActiveStream('darbar');
-    updatePlayState();
-    playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-    startProgress();
-    showStatus('Connected');
-  }
-  init();
-})();
-</script>
+<!-- Main player engine -->
+<script src="gurbani-radio.js"></script>
 
 </body>
 </html>

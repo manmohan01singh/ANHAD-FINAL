@@ -186,7 +186,7 @@ button {
     height: 40px;
     color: var(--text-secondary);
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header-back:hover {
@@ -213,7 +213,7 @@ button {
     height: 40px;
     color: var(--text-secondary);
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header-btn:hover {
@@ -265,7 +265,7 @@ button {
     border-radius: var(--radius-full);
     color: var(--text-muted);
     font-size: 0.9375rem;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .search-trigger:hover {
@@ -302,7 +302,7 @@ button {
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     margin-bottom: var(--space-md);
-    transition: all 0.25s var(--ease);
+    transition: background-color 0.25s var(--ease), color 0.25s var(--ease);
 }
 
 .category-card:hover {
@@ -417,7 +417,7 @@ button {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .recent-item:hover {
@@ -493,7 +493,7 @@ button {
     padding-top: 10vh;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s var(--ease);
+    transition: background-color 0.3s var(--ease), color 0.3s var(--ease), transform 0.3s var(--ease);
 }
 
 .modal[aria-hidden="false"] {
@@ -659,7 +659,7 @@ button {
     height: 36px;
     color: var(--text-secondary);
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .settings-close:hover {
@@ -717,7 +717,7 @@ button {
     font-size: 0.8125rem;
     font-weight: 500;
     color: var(--text-secondary);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .theme-btn:hover {
@@ -741,7 +741,7 @@ button {
     color: var(--text-primary);
     text-align: left;
     margin-bottom: var(--space-sm);
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .setting-btn:hover {

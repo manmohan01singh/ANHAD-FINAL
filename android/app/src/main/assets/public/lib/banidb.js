@@ -296,7 +296,7 @@
         'english': 5
       };
 
-      const typeNum = searchTypes[type] ?? 0;
+      const typeNum = searchTypes[type] !== undefined ? searchTypes[type] : 0;
 
       try {
         const response = await fetch(

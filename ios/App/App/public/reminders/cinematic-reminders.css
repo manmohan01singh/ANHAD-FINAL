@@ -3,9 +3,9 @@
    Canvas sky + Aurora + Shooting Stars + Fireflies + Snow + Dynamic Bonfire
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=optional');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&display=optional');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional');
 
 *,
 *::before,
@@ -1499,7 +1499,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .hb:active {
@@ -1585,7 +1585,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .cb:active {
@@ -1615,7 +1615,7 @@ body {
     font-weight: 600;
     letter-spacing: 0.4px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, color 0.2s;
     white-space: nowrap;
 }
 
@@ -1718,7 +1718,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background-color 0.15s, color 0.15s;
     flex-shrink: 0;
 }
 
@@ -1747,7 +1747,7 @@ body {
     -webkit-backdrop-filter: blur(5px);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.35s ease;
+    transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 .as-bd.on {
@@ -1770,7 +1770,7 @@ body {
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 .as-sh.on {

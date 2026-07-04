@@ -262,7 +262,7 @@ body {
   right: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+
   background: var(--bg-paper);
   scroll-behavior: smooth;
 }
@@ -896,7 +896,7 @@ body {
   font-weight: 500;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s var(--ease-out);
+  transition: opacity 0.3s var(--ease-out), visibility 0.3s var(--ease-out);
   z-index: 300;
   white-space: nowrap;
 }

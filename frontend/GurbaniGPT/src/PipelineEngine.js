@@ -39,6 +39,14 @@ function createEngine() {
   let streaming = false;
   let abortCtrl = null;
 
+  /* ── Cross-turn context: carry forward last turn's analysis ── */
+  let lastTurnContext = {
+    detection: null,
+    wisdom: null,
+    primaryShabad: null,
+    humanNeed: null,
+  };
+
   /* ── Build Gurbani card HTML from pipeline result ── */
   function buildGurbaniBlock(primary, related, fullShabad) {
     if (!primary) return null;
@@ -73,88 +81,115 @@ function createEngine() {
     if (memorySummary) parts.push('Note about this user: ' + memorySummary);
     if (lastSession) parts.push('They were last here discussing: ' + lastSession);
 
+    /* ── Cross-turn context from previous turn ── */
+    if (lastTurnContext.detection) {
+      parts.push('Previous turn context: user\'s last detected need was "' + (lastTurnContext.humanNeed ? lastTurnContext.humanNeed.primaryNeed : 'unknown') + '", emotion was "' + (lastTurnContext.detection.emotion || 'unknown') + '", and the Shabad shared was: ' + (lastTurnContext.primaryShabad ? (lastTurnContext.primaryShabad.unicode || lastTurnContext.primaryShabad.english || '').slice(0, 80) : 'none') + '. Build on this continuity.');
+    }
+
     if (!pipelineResult.needsGurbani) {
-      parts.push('\n--- CONVERSATION MODE: ' + (pipelineResult.mode || 'non-spiritual') + ' ---');
-      parts.push('This query is classified as: ' + (pipelineResult.mode || 'non-spiritual') + '.');
-      parts.push('No Gurbani retrieval was attempted. Do NOT search your training data for a Shabad.');
-      parts.push('Answer naturally in the user\'s language.');
+      parts.push('Conversation mode: ' + (pipelineResult.mode || 'non-spiritual') + '. No Gurbani retrieval. Answer naturally in the user\'s language. Do NOT invent a Shabad.');
       addModeSpecificInstruction(pipelineResult.mode, parts);
+      if (pipelineResult.mode === 'quick_reply') {
+        parts.push('Remember: you are in ANHAD Quick mode. Keep it very brief — 1 to 3 short sentences. No scripture references. No depth. Just a warm quick response.');
+      }
       return parts.join('\n\n');
     }
 
     if (!pipelineResult.primary) {
-      parts.push('\n\nNo Gurbani verse strongly matched this query. Do NOT give generic spiritual advice. Say honestly: "I searched but couldn\'t find a direct Shabad for this. However, this related teaching..." and share general wisdom.');
+      parts.push('No Gurbani verse strongly matched. Do NOT give generic spiritual advice. Say honestly: "I searched but could not find a direct Shabad for this." Then share general Gurmat wisdom if relevant.');
       return parts.join('\n\n');
     }
 
-    // Inject Gurbani candidate
+    /* ── Primary Gurbani verse (condensed) ── */
     const primary = pipelineResult.primary;
-    parts.push('\n\n--- GURBANI CANDIDATE ---');
-    parts.push('Primary Shabad:');
+    parts.push('PRIMARY SHABAD:');
     if (primary.unicode) parts.push('Gurmukhi: ' + primary.unicode);
     if (primary.english) parts.push('Translation: ' + primary.english);
-    if (primary.pageNo) parts.push('Ang: ' + primary.pageNo);
-    if (primary.raag) parts.push('Raag: ' + primary.raag);
-    if (primary.writer) parts.push('Author: ' + primary.writer);
-    parts.push('Relevance: ' + (pipelineResult.detection ? pipelineResult.detection.subtext : 'matches situation'));
-    parts.push('Score: ' + (primary.scores ? (primary.scores.total * 100).toFixed(0) + '%' : 'high'));
+    parts.push('Source: Ang ' + (primary.pageNo || '?') + (primary.raag ? ', Raag ' + primary.raag : '') + (primary.writer ? ', ' + primary.writer : ''));
+    parts.push('Relevance: ' + (pipelineResult.detection ? pipelineResult.detection.subtext : 'matches situation') + ' | Score: ' + (primary.scores ? (primary.scores.total * 100).toFixed(0) + '%' : 'high'));
 
-    // Wisdom reasoning
+    /* ── Gurmat Principle (broader teaching category) ── */
+    const principle = extractGurmatPrinciple(primary, pipelineResult.wisdom);
+    if (principle) parts.push('Gurmat principle this Shabad belongs to: ' + principle);
+
+    /* ── Wisdom reasoning ── */
     if (pipelineResult.wisdom) {
-      parts.push('\n--- WISDOM REASONING ---');
-      parts.push('Illusion: ' + pipelineResult.wisdom.primaryIllusion.illusion);
-      parts.push('Gurmat Truth: ' + pipelineResult.wisdom.truth.statement);
-      parts.push('Transformation: ' + pipelineResult.wisdom.transformation);
+      parts.push('Illusion this person faces: ' + pipelineResult.wisdom.primaryIllusion.illusion);
+      parts.push('Gurmat truth for them: ' + pipelineResult.wisdom.truth.statement);
+      parts.push('Transformation invited: ' + pipelineResult.wisdom.transformation);
     }
 
-    // Human need
+    /* ── Human need ── */
     if (pipelineResult.humanNeed) {
-      parts.push('\n--- HUMAN NEED ---');
-      parts.push('Primary need: ' + pipelineResult.humanNeed.primaryNeed);
-      parts.push('Need statement: ' + pipelineResult.humanNeed.needStatement);
+      parts.push('This person needs: ' + pipelineResult.humanNeed.primaryNeed + ' — ' + pipelineResult.humanNeed.needStatement);
     }
 
-    // Related references
+    /* ── Related Shabads (for deeper Gurbani knowledge) ── */
     if (pipelineResult.related && pipelineResult.related.length > 0) {
-      parts.push('\nRelated references:');
+      parts.push('Related Shabads (you may reference for depth if needed):');
       for (const r of pipelineResult.related) {
-        parts.push('- ' + (r.unicode || '').slice(0, 60) + ' (Ang ' + (r.pageNo || '?') + ')');
+        const excerpt = (r.unicode || r.english || '').slice(0, 80);
+        if (excerpt) parts.push('- "' + excerpt + '" — Ang ' + (r.pageNo || '?'));
       }
     }
 
-    // Planner directives
-    parts.push('\n--- RESPONSE ARCHITECTURE ---');
-    parts.push('Mode: ' + plan.label);
-    parts.push('Conversational rhythm: ' + plan.rhythm);
-    parts.push('\n--- STRUCTURE ---');
-    parts.push('Opening: ' + plan.opening);
-    parts.push('\nThen transition naturally to the Shabad with something in the spirit of: "' + plan.transition + '"');
-    parts.push('Place <!--GB--> on its own line right after introducing the Shabad.\n');
-    parts.push('After the card: focus on the single core teaching of this specific Shabad.');
-    if (plan.teachingFocus) parts.push('This Shabad teaches about: ' + plan.teachingFocus + '. Stay inside that teaching.');
-    parts.push('End in the spirit of: "' + plan.closing + '"');
+    /* ── Planner directives (condensed) ── */
+    parts.push('Response mode: ' + plan.label);
+    parts.push('Tone rhythm: ' + plan.rhythm);
+    parts.push('Begin in spirit of: "' + plan.opening + '"');
+    parts.push('Transition into Shabad with: "' + plan.transition + '"');
+    parts.push('Place <!--GB--> right after introducing the Shabad.');
+    if (plan.teachingFocus) parts.push('Teaching focus: ' + plan.teachingFocus + '. Stay inside this — do not broaden.');
+    parts.push('Close in spirit of: "' + plan.closing + '"');
 
-    // Focus instruction
+    /* ── Focus instruction (1 line summary) ── */
     if (plan.focusInstruction && plan.focusInstruction.coreTeachingPath) {
-      parts.push('\n--- FOCUS INSTRUCTION ---');
-      for (const f of plan.focusInstruction.coreTeachingPath) parts.push('- ' + f);
+      parts.push('Core path: ' + plan.focusInstruction.coreTeachingPath.join('; '));
     }
 
-    // Blocked phrases
+    /* ── Blocked (1 line) ── */
     if (plan.focusInstruction && plan.focusInstruction.blocked) {
-      parts.push('\n--- BLOCKED PHRASES FOR THIS RESPONSE ---');
-      for (const b of plan.focusInstruction.blocked) parts.push('- ' + b);
+      parts.push('Avoid: ' + plan.focusInstruction.blocked.join('; '));
     }
 
-    // Voice directives
+    /* ── Voice + final instructions ── */
     const recentModes = getRecentModes();
-    parts.push('\n--- VOICE DIRECTIVES ---');
     parts.push(voice.buildDirectives(plan.mode, recentModes, plan.blockedPhrases));
-
-    parts.push('\nDo NOT repeat the Gurmukhi or translation in your explanation — the card already shows it.');
-    parts.push('Do NOT write "The verses above" or "The retrieved Shabad". Let the Shabad feel natural in the flow.');
+    parts.push('Do NOT repeat the Gurmukhi or translation in your explanation — the Gurbani card already shows it. Do NOT say "the retrieved Shabad" or "the verse above". Let the Shabad feel natural in the flow.');
 
     return parts.join('\n\n');
+  }
+
+  /* ── Extract broader Gurmat principle from the Shabad ── */
+  function extractGurmatPrinciple(primary, wisdom) {
+    const principleMap = {
+      hukam: 'Hukam — Divine Order',
+      simran: 'Naam Simran — Remembrance of the Divine',
+      naam: 'Naam Simran — Remembrance of the Divine',
+      bharosa: 'Bharosa — Trust in the Divine',
+      sabar: 'Sabar — Patient Endurance',
+      haumai: 'Haumai — Ego and Its Removal',
+      maya: 'Maya — Attachment to the World',
+      moh: 'Maya — Attachment to the World',
+      nimrata: 'Nimrata — Humility',
+      santokh: 'Santokh — Contentment',
+      seva: 'Seva — Selfless Service',
+      nadar: 'Nadar — Divine Grace',
+      kirpa: 'Nadar — Divine Grace',
+      chardi_kala: 'Chardi Kala — Ever-Rising Spirit',
+      sangat: 'Sangat — Holy Congregation',
+      ik_onkar: 'Ik Onkar — One Universal Creator',
+    };
+    if (wisdom && wisdom.wisdomConcepts) {
+      for (const wc of wisdom.wisdomConcepts) {
+        if (principleMap[wc]) return principleMap[wc];
+      }
+    }
+    const combined = ((primary.unicode || '') + ' ' + (primary.english || '')).toLowerCase();
+    for (const [key, val] of Object.entries(principleMap)) {
+      if (combined.includes(key)) return val;
+    }
+    return '';
   }
 
   function getCorePrompt() {
@@ -178,13 +213,27 @@ Your voice must sound like a thoughtful, humble Gursikh sitting beside the perso
 4. Truth over impressiveness.
 
 ━ LANGUAGE ──
-Match the user's language exactly. Stay in one language.
+- Respond in the language of the query.
+- If the query is in English, respond in English.
+- If the query is in Gurmukhi Punjabi, respond in Gurmukhi Punjabi.
+- If the query is in Romanized/Transliterated Punjabi (e.g., "menu", "bare", "dasso", "gurbani", "seva", "sukh", "dukh"), respond in beautiful, conversational English or Gurmukhi Punjabi, NEVER in Hinglish (Hindi words/phrases written in Roman characters, such as "main aapki madad karunga" or "lagta hai...").
 
 ━ CRISIS ──
 If the user expresses suicidal thoughts, respond first as a compassionate human. Share helplines (AASRA: +91-9820466726, iCall: +91-9152987821). Never make them feel guilty. Never imply suffering is punishment. Gurbani comes after safety.
 
 ━ NEVER MAKE GURBANI SAY WHAT IT DOES NOT ──
-Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teaching. If the Shabad speaks of Hukam, do not make it speak of Love. If it speaks of Detachment, do not make it speak of Devotion. Stay faithful to the verse. If you are unsure of its meaning, say so.`;
+Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teaching. If the Shabad speaks of Hukam, do not make it speak of Love. If it speaks of Detachment, do not make it speak of Devotion. Stay faithful to the verse. If you are unsure of its meaning, say so.
+
+━ GURBANI GPT MODE (Deep Vichar) ──
+When PRIMARY SHABAD is provided, your response MUST be grounded in that Shabad's actual translation from authoritative tikas. Follow this structure:
+1. First, present the Gurbani verse in its original Gurmukhi.
+2. Then, provide the CORRECT English translation as given in the tikas (Sahib Singh, Manmohan Singh, or Faridkot Teeka).
+3. Then, do an extreme deep Vichar — go to the depths of each word/phrase, explain its spiritual essence, and connect it to the seeker's life.
+4. Be thorough and unhurried. This is deep contemplation, not a quick answer.
+5. Let the Shabad's own translation guide the entire explanation — do not bring external meanings.
+
+━ ANHAD QUICK MODE ──
+When mode is casual_chat or greeting, respond briefly (1-3 sentences). No scripture. No depth. Just warm, quick conversation.`;
   }
 
   function addModeSpecificInstruction(mode, parts) {
@@ -194,20 +243,27 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
       parts.push('This is a factual/definitional query. Answer directly from your knowledge. Only use Gurbani if it genuinely helps explain the answer.');
     } else if (mode === 'greeting') {
       parts.push('This is a greeting. Return the greeting warmly and briefly. Offer help.');
+    } else if (mode === 'quick_reply') {
+      parts.push('ANHAD QUICK MODE: Respond in 1-3 brief sentences. No scripture retrieval, no Gurbani, no depth. Just warm, quick conversational reply. Be very concise.');
     }
   }
 
   function getRecentModes() {
     const patterns = responsePlanner.getPreviousPatterns ? responsePlanner.getPreviousPatterns() : [];
-    return patterns.slice(0, 5).map(function(p) { return p.mode; });
+    return patterns.slice(0, 5).map(function (p) { return p.mode; });
   }
 
   /* ── Main run function: full pipeline → plan → prompt ── */
   async function run(text, history) {
     const trace = { input: text, stages: [], timestamp: Date.now() };
 
+    const selectedModel = localStorage.getItem('gurbanigpt_selected_model') || 'gurbanigpt-deep';
+    const isAnhadQuick = (selectedModel === 'anhad-quick');
+
     // 1. Conversation mode (fast gate)
-    const mode = stageConversationMode(text);
+    const mode = isAnhadQuick
+      ? { type: 'quick_reply', needsGurbani: false, label: 'Quick reply' }
+      : stageConversationMode(text);
     trace.stages.push({ name: 'conversation_mode', output: mode });
 
     if (!mode.needsGurbani) {
@@ -240,7 +296,7 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
 
     // 3. Run retrieval pipeline
     const pipelineResult = await wisdomRetrieval.retrieve(text, history);
-    pipelineResult.trace.stages.forEach(function(s) { trace.stages.push(s); });
+    pipelineResult.trace.stages.forEach(function (s) { trace.stages.push(s); });
 
     // 4. Response planning
     const plan = responsePlanner.selectPlan(pipelineResult);
@@ -272,10 +328,18 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
 
     // 7. Record in memory
     if (pipelineResult.primary) {
-      const concepts = wisdom && wisdom.wisdomConcepts ? wisdom.wisdomConcepts.map(function(c) { return { concept: c }; }) : [];
+      const concepts = wisdom && wisdom.wisdomConcepts ? wisdom.wisdomConcepts.map(function (c) { return { concept: c }; }) : [];
       // Shabad history is recorded by the retrieval pipeline internally
     }
     memory.journey.incrementMessages();
+
+    /* Store cross-turn context for next message */
+    lastTurnContext = {
+      detection: detection,
+      wisdom: wisdom,
+      primaryShabad: pipelineResult.primary,
+      humanNeed: pipelineResult.humanNeed,
+    };
 
     trace.stages.push({ name: 'prompt_built', promptLength: prompt.length });
 
@@ -296,12 +360,16 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
 
   function buildNonGurbaniResult(mode, detection, trace) {
     const promptParts = [getCorePrompt()];
-    promptParts.push('\n\n--- CONVERSATION MODE: ' + (mode.type || 'non-spiritual') + ' ---');
-    promptParts.push('This query is classified as: ' + (mode.type || 'non-spiritual') + '. No Gurbani retrieval was attempted.');
+    if (lastTurnContext.detection) {
+      promptParts.push('Previous turn: user\'s detected emotion was "' + (lastTurnContext.detection.emotion || 'unknown') + '", need was "' + (lastTurnContext.humanNeed ? lastTurnContext.humanNeed.primaryNeed : 'unknown') + '".');
+    }
+    promptParts.push('Conversation mode: ' + (mode.type || 'non-spiritual') + '. No Gurbani retrieval. Answer naturally.');
     addModeSpecificInstruction(mode.type, promptParts);
+    if (mode.type === 'quick_reply') {
+      promptParts.push('CRITICAL: You are in ANHAD Quick mode. Keep response to 1-3 short sentences. Be warm, be brief. No scripture, no depth.');
+    }
     if (detection) {
-      promptParts.push('Detected intent: ' + (detection.intent || 'unknown') + '.');
-      promptParts.push('Detected emotion: ' + (detection.emotion || 'none') + '.');
+      promptParts.push('Detected intent: ' + (detection.intent || 'unknown') + ', emotion: ' + (detection.emotion || 'none') + '.');
     }
     return {
       needsGurbani: false,
@@ -352,7 +420,7 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
     }
 
     const GURMAT_KW = ['hukam', 'simran', 'naam', 'gurbani', 'guru', 'shabad', 'bani', 'ik onkar', 'waheguru', 'gurmat', 'seva', 'sangat', 'ardas', 'hukamnama', 'sikh', 'sikhi', 'kirtan', 'gurmukhi', 'anhad', 'chardi kala', 'sabar', 'sahaj', 'bharosa', 'nadar', 'kirpa', 'nitnem', 'paath', 'rehat', 'dukh', 'sukh', 'haumai', 'maya', 'moh', 'lobh', 'krodh', 'kaam', 'ahankar', 'nimrata', 'santokh', 'vand chhakna', 'kirt karo', 'jap', 'jaap', 'sggs', 'ang'];
-    const gurmatMatchCount = GURMAT_KW.filter(function(k) { return lower.includes(k); }).length;
+    const gurmatMatchCount = GURMAT_KW.filter(function (k) { return lower.includes(k); }).length;
 
     if (gurmatMatchCount > 0 && wordCount <= 20) return { type: 'spiritual_seeking', needsGurbani: true, label: 'Gurbani concept query' };
     if (factualScore > 0 && wordCount <= 20 && gurmatMatchCount === 0) return { type: 'factual_inquiry', needsGurbani: false, label: 'Factual inquiry' };
@@ -372,16 +440,23 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
     const groqKey = memory.preferences.getGroqKey();
     const url = groqKey
       ? 'https://api.groq.com/openai/v1/chat/completions'
-      : 'https://anhad-final.onrender.com/api/chat/completions';
+      : '/api/chat/completions';
 
     const headers = { 'Content-Type': 'application/json' };
     if (groqKey) headers['Authorization'] = 'Bearer ' + groqKey;
 
+    let activeModel = localStorage.getItem('gurbanigpt_selected_model') || 'gurbanigpt-deep';
+    if (activeModel === 'gurbanigpt-deep') {
+      activeModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+    } else if (activeModel === 'anhad-quick') {
+      activeModel = 'meta-llama/llama-3.3-70b-specdec';
+    }
+
     const body = JSON.stringify({
-      model: groqKey ? 'llama-4-scout-17b-16e-instruct' : 'llama-4-scout-17b-16e-instruct',
+      model: activeModel,
       messages: messages,
       temperature: 0.7,
-      max_tokens: 1024,
+      max_tokens: 2048,
       stream: true,
     });
 

@@ -3,122 +3,381 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-  <title>ANHAD — Gurbani Companion</title>
-  <meta name="description" content="ANHAD Gurbani Companion — a spiritual AI companion for Naam Simran and Gurmat practice.">
-  <meta name="theme-color" content="#0c0a09">
+  <title>Gurbani GPT — ANHAD</title>
+  <meta name="description" content="AI-powered Gurbani companion. Ask anything about Naam Simran, Gurbani, or the spiritual path.">
+  <meta name="theme-color" content="#C8E6F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="icon" href="../favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<!-- DYNAMIC GRADIENT BACKGROUND -->
+<div class="app-bg" id="appBg"></div>
+
+<div class="wrapper">
+  <div class="net-badge" id="netBadge">No internet</div>
+  <div class="toast" id="toast"></div>
+  <div class="sidebar-ov" id="sidebarOv"></div>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-hdr">
+      <div class="sidebar-brand">
+        <!-- Gemini-style 4-pointed star as brand mark -->
+        <svg class="sidebar-logo" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M14 2 C14 2 14.8 8.5 17 11 C19.2 13.5 26 14 26 14 C26 14 19.2 14.5 17 17 C14.8 19.5 14 26 14 26 C14 26 13.2 19.5 11 17 C8.8 14.5 2 14 2 14 C2 14 8.8 13.5 11 11 C13.2 8.5 14 2 14 2Z"
+            fill="url(#sb-grad)"/>
+          <defs>
+            <linearGradient id="sb-grad" x1="2" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#4285F4"/>
+              <stop offset="0.33" stop-color="#EA4335"/>
+              <stop offset="0.67" stop-color="#FBBC05"/>
+              <stop offset="1" stop-color="#34A853"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="sidebar-title">Gurbani GPT</span>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="sidebar-body" id="sidebarBody">
+      <!-- Home -->
+      <div class="sidebar-item" id="sidebarHomeBtn" role="button" tabindex="0">
+        <span class="sidebar-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-5h-6v5H4a1 1 0 01-1-1v-9.5z"/>
+          </svg>
+        </span>
+        <span>Home</span>
+      </div>
+
+      <div class="sidebar-hr"></div>
+      <div class="sidebar-section-label">Journey</div>
+      <div class="sidebar-memory-stats" id="memoryStats"></div>
+      <div class="sidebar-timeline" id="journeyTimeline"></div>
+      <button class="sidebar-reset" id="memoryResetBtn">Reset Memory</button>
+
+      <div class="sidebar-hr"></div>
+      <div class="sidebar-section-label">Conversations</div>
+      <div class="convos-search-wrap">
+        <svg class="convos-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="convos-search" id="convosSearch" type="search" placeholder="Search conversations…" spellcheck="false">
+      </div>
+      <div class="prev-convos" id="prevConvosList"></div>
+
+      <div class="sidebar-hr"></div>
+      <div class="sidebar-section-label">Readings</div>
+      <div class="reading-history" id="readingHistoryList"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-footer-btn" id="bmarksSidebarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        <span>Saved</span>
+      </button>
+      <button class="sidebar-footer-btn" id="themeSidebarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2"/></svg>
+        <span>Theme</span>
+      </button>
+      <button class="sidebar-footer-btn" id="aboutSidebarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>About</span>
+      </button>
+      <button class="sidebar-footer-btn" id="debugSidebarBtn" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>Debug</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN APP ═══ -->
+  <div class="app">
+
+    <!-- HEADER — Gemini style: hamburger | model name ↓ | edit · dots -->
+    <header class="hdr">
+      <button class="hdr-menu" id="menuBtn" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line class="ham-top" x1="4" y1="6"  x2="20" y2="6"/>
+          <line class="ham-mid" x1="4" y1="12" x2="20" y2="12"/>
+          <line class="ham-bot" x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+      </button>
+
+      <div class="hdr-brand" id="modelSelector" role="button" aria-label="Select model">
+        <span class="hdr-model-name"><strong>Gurbani</strong> GPT</span>
+        <svg class="hdr-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="hdr-actions">
+        <button class="hdr-action" id="newConvoBtn" aria-label="New conversation" title="New chat">
+          <!-- Edit/compose pencil in circle — Gemini style -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.5 3.5L20.5 7.5l-9 9L7 17l.5-4.5 9-9z"/>
+          </svg>
+        </button>
+        <button class="hdr-action" id="moreBtn" aria-label="More options" title="More">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Model Dropdown Menu -->
+      <div class="hdr-dropdown" id="modelDropdown">
+        <div class="hdr-dropdown-item active" data-model="meta-llama/llama-4-scout-17b-16e-instruct">
+          <div class="dd-item-title"><strong>Gurbani</strong> GPT</div>
+          <div class="dd-item-desc">Optimized Gurbani companion</div>
+        </div>
+        <div class="hdr-dropdown-item" data-model="meta-llama/llama-3.1-70b-instruct">
+          <div class="dd-item-title"><strong>ANHAD</strong>-v4-Pro</div>
+          <div class="dd-item-desc">Deeper reasoning and analysis</div>
+        </div>
+        <div class="hdr-dropdown-item" data-model="meta-llama/llama-3.3-70b-specdec">
+          <div class="dd-item-title"><strong>Llama</strong> 3.3 70B</div>
+          <div class="dd-item-desc">Fast translation & syntax</div>
+        </div>
+      </div>
+
+      <!-- Options Dropdown Menu -->
+      <div class="hdr-dropdown" id="moreDropdown">
+        <div class="hdr-dropdown-item" id="optClear">
+          <span>🧹 Clear conversation</span>
+        </div>
+        <div class="hdr-dropdown-item" id="optTimer">
+          <span>🧘 Simran Timer</span>
+        </div>
+        <div class="hdr-dropdown-item" id="optDebug">
+          <span>🛠️ BaniDB RAG Debug</span>
+        </div>
+        <div class="hdr-dropdown-item" id="optTheme">
+          <span>🌓 Toggle Theme</span>
+        </div>
+        <div class="hdr-dropdown-item" id="optMood">
+          <span>🧠 Set Emotional Context</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- WELCOME / HOME — Gemini idle state -->
+    <div class="welcome" id="welcome">
+      <div class="welcome-inner">
+        <!-- Gemini 4-pointed star with multicolor gradient -->
+        <div class="welcome-logo-wrap">
+          <svg class="gpt-star" viewBox="0 0 52 52" fill="none" aria-label="Gurbani GPT">
+            <path d="M26 2 C26 2 27.5 16 31 20 C34.5 24 50 26 50 26 C50 26 34.5 28 31 32 C27.5 36 26 50 26 50 C26 50 24.5 36 21 32 C17.5 28 2 26 2 26 C2 26 17.5 24 21 20 C24.5 16 26 2 26 2Z"
+              fill="url(#star-multicolor)"/>
+            <defs>
+              <linearGradient id="star-multicolor" x1="2" y1="2" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#4285F4"/>
+                <stop offset="33%"  stop-color="#EA4335"/>
+                <stop offset="67%"  stop-color="#FBBC05"/>
+                <stop offset="100%" stop-color="#34A853"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <h1 class="welcome-greeting" id="welcomeBack">Your move!</h1>
+        <p class="welcome-subtitle" id="welcomeSub">Ask anything about Naam Simran, Gurbani, or the spiritual path.</p>
+
+        <!-- Daily verse card -->
+        <div class="verse-card loading" id="welcomeVerse">
+          <div class="verse-card-inner">
+            <div class="verse-gurmukhi" id="wvGurmukhi">Loading Gurbani…</div>
+            <div class="verse-translation" id="wvTranslation"></div>
+            <div class="verse-source" id="wvSource"></div>
+          </div>
+        </div>
+
+        <!-- Suggestion chips -->
+        <div class="suggestions">
+          <button class="suggestion-card" data-prompt="What is Naam Simran and how do I practice it?" style="--i:0">
+            <span class="suggestion-icon">🙏</span>
+            <span class="suggestion-label">Naam Simran</span>
+          </button>
+          <button class="suggestion-card" data-prompt="Explain the meaning of Mul Mantar" style="--i:1">
+            <span class="suggestion-icon">ੴ</span>
+            <span class="suggestion-label">Mul Mantar</span>
+          </button>
+          <button class="suggestion-card" data-prompt="How do I find peace in difficult times through Gurbani?" style="--i:2">
+            <span class="suggestion-icon">🕊️</span>
+            <span class="suggestion-label">Finding Peace</span>
+          </button>
+          <button class="suggestion-card" data-prompt="What is Hukam and how does it relate to our life?" style="--i:3">
+            <span class="suggestion-icon">🌊</span>
+            <span class="suggestion-label">Understanding Hukam</span>
+          </button>
+          <button class="suggestion-card" data-prompt="Tell me about Seva and its importance in Sikhi" style="--i:4">
+            <span class="suggestion-icon">❤️</span>
+            <span class="suggestion-label">Seva in Sikhi</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="msgs" id="msgs" style="display:none">
+      <div class="msg-list" id="msgList"></div>
+      <button class="scroll-nudge" id="scrollNudge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+    <!-- INPUT BAR — Gemini pill style -->
+    <div class="input-area">
+      <div class="composer" id="composer">
+        <!-- Plus / attachment -->
+        <button class="composer-plus" id="attachBtn" aria-label="Attach" title="Attach">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+
+        <!-- Text input -->
+        <textarea class="composer-inp" id="inp"
+          placeholder="Ask Gurbani GPT…" rows="1" maxlength="2000"></textarea>
+
+        <div class="composer-actions">
+          <span class="composer-count" id="charCount"></span>
+
+          <!-- Stop (shown during generation) -->
+          <button class="composer-stop" id="stopBtn" aria-label="Stop generation">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+            </svg>
+          </button>
+
+          <!-- Mic -->
+          <button class="composer-voice" id="micBtn" aria-label="Voice input">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+
+          <!-- Send / waveform -->
+          <button class="composer-send" id="sendBtn" disabled aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" stroke="none"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.app -->
+
+  <!-- TIMER MODAL -->
+  <div class="modal-ov" id="timerOv">
+    <div class="timer-panel">
+      <div class="breath-ring" id="breathRing">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="16" cy="16" r="12"/><path d="M8 18 Q16 8 24 18" stroke="currentColor" stroke-linecap="round"/></svg>
+      </div>
+      <div class="timer-title">Simran Timer</div>
+      <div class="timer-sub">Naam Jaap with guided breathing</div>
+      <div class="timer-display" id="timerDisplay">05:00</div>
+      <div class="timer-breath" id="timerBreath">Ready to begin</div>
+      <div class="timer-counter" id="timerCounter">♡ 0 Waheguru</div>
+      <div class="timer-durs">
+        <button class="timer-dur sel" data-mins="5">5 min</button>
+        <button class="timer-dur" data-mins="11">11 min</button>
+        <button class="timer-dur" data-mins="31">31 min</button>
+      </div>
+      <div class="timer-btns">
+        <button class="timer-start" id="timerStart">Begin Simran</button>
+        <button class="timer-close" id="timerClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKMARKS MODAL -->
+  <div class="modal-ov" id="bmarksOv">
+    <div class="bmarks-panel">
+      <div class="bmarks-hdr">
+        <span>Saved Shabads</span>
+        <button class="bmarks-close" id="bmarksClose">Done</button>
+      </div>
+      <div id="bmarksList"></div>
+    </div>
+  </div>
+
+  <!-- MOOD MODAL -->
+  <div class="modal-ov" id="moodOv">
+    <div class="mood-panel">
+      <div class="mood-title">How are you feeling?</div>
+      <div class="mood-sub">This helps me respond with the right context.</div>
+      <div class="mood-opts">
+        <button class="mood-opt" data-mood="seeking"><span>Seeking guidance</span><span class="mood-check"></span></button>
+        <button class="mood-opt" data-mood="hurting"><span>Feeling low / hurt</span><span class="mood-check"></span></button>
+        <button class="mood-opt" data-mood="grateful"><span>Grateful / blessed</span><span class="mood-check"></span></button>
+        <button class="mood-opt" data-mood="curious"><span>Curious / learning</span><span class="mood-check"></span></button>
+        <button class="mood-opt" data-mood="distressed"><span>In distress / need help</span><span class="mood-check"></span></button>
+      </div>
+      <button class="mood-close" id="moodCloseBtn">Done</button>
+    </div>
+  </div>
+
+</div><!-- /.wrapper -->
+
+<!-- Gradient state machine — must come first -->
 <script>
-(function(){
-  var t = localStorage.getItem('gpt_theme');
-  if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  document.body.classList.add(t === 'dark' ? 'dark' : 'light');
+(function () {
+  'use strict';
+
+  /* ── Gradient state machine (exact Gemini spec from architecture doc) ── */
+  const STATES = {
+    idle:       { gt: '#FAFBFD', gm: '#FFFFFF' },
+    processing: { gt: '#FFD580', gm: '#FFF0C0' },
+    thinking:   { gt: '#7ECFBE', gm: '#B5E8E0' },
+    generating: { gt: '#C4A3E0', gm: '#E2D0F5' },
+    complete:   { gt: '#5B91EF', gm: '#A8C8F8' },
+  };
+
+  const root = document.documentElement;
+  let _state = 'idle';
+  let _returnTimer = null;
+
+  function setGradient(stateName) {
+    const s = STATES[stateName] || STATES.idle;
+    _state = stateName;
+    root.style.setProperty('--gt', s.gt);
+    root.style.setProperty('--gm', s.gm);
+  }
+
+  function scheduleReturn(ms) {
+    clearTimeout(_returnTimer);
+    _returnTimer = setTimeout(() => setGradient('idle'), ms);
+  }
+
+  // Public API
+  window.GradientState = {
+    set: setGradient,
+    scheduleIdle: scheduleReturn,
+    get current() { return _state; }
+  };
+
+  // Hook into pipeline events
+  window.addEventListener('gptProcessing', () => { clearTimeout(_returnTimer); setGradient('processing'); });
+  window.addEventListener('gptThinking',   () => { clearTimeout(_returnTimer); setGradient('thinking'); });
+  window.addEventListener('gptGenerating', () => { clearTimeout(_returnTimer); setGradient('generating'); });
+  window.addEventListener('gptDone',       () => { setGradient('complete'); scheduleReturn(3200); });
+  window.addEventListener('gptError',      () => { setGradient('idle'); });
 })();
 </script>
 
-<div class="wrapper">
+<script type="module" src="app.js?v=7"></script>
 
-  <div class="bg-texture"></div>
-  <div class="net-badge" id="netBadge">No internet</div>
-  <div class="toast" id="toast"></div>
-  <div class="drawer-ov" id="drawOv"></div>
-
-  <!-- ── WELCOME ── -->
-  <div class="welcome" id="welcome">
-    <div class="welcome-icon">&#x0F4A;</div>
-    <h1 class="welcome-brand" id="welcomeBack"></h1>
-    <p class="welcome-subtitle" id="welcomeSub">Ask anything about Naam Simran, Gurbani, or the spiritual path.</p>
-    <div class="chips-grid">
-      <button class="chip" data-prompt="What is Naam Simran?">What is Naam Simran?</button>
-      <button class="chip" data-prompt="How do I control my mind?">How do I control my mind?</button>
-      <button class="chip" data-prompt="Tell me about Hukam">Tell me about Hukam</button>
-    </div>
-  </div>
-
-  <!-- ── MESSAGES ── -->
-  <div class="msgs" id="msgs">
-    <div class="msg-list" id="msgList"></div>
-    <button class="scroll-nudge" id="scrollNudge">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-  </div>
-
-  <!-- ── DIVIDER ── -->
-  <div class="new-convo-row" id="newConvoRow">
-    <div class="new-convo-inner">
-      <span class="new-convo-line"></span>
-      <span class="new-convo-label">Today</span>
-      <span class="new-convo-line"></span>
-    </div>
-  </div>
-
-  <!-- ── COMPOSER ── -->
-  <div class="composer" id="composer">
-    <div class="composer-inner">
-      <div class="inp-wrap">
-        <textarea class="composer-inp" id="inp" placeholder="Ask about Simran, Gurbani, the path..." rows="1" maxlength="2000" autofocus></textarea>
-        <span class="char-count" id="charCount"></span>
-      </div>
-      <button class="composer-send" id="sendBtn" disabled>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-      <button class="composer-stop" id="stopBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- ── DRAWER ── -->
-  <div class="drawer" id="drawer">
-    <div class="drawer-inner">
-      <div class="drawer-hdr">
-        <span class="drawer-symbol">&#x0F4A;</span>
-        <span class="drawer-title">MENU</span>
-        <button class="drawer-close" id="drawerClose">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div style="flex:1;overflow-y:auto;padding:4px 0">
-        <!-- GROQ API key (advanced) -->
-        <div class="drawer-section">
-          <div class="drawer-label">API Key <span style="opacity:.4;font-size:11px">(optional — advanced)</span></div>
-          <div class="api-key-row">
-            <input class="drawer-api-input" id="apiKeyInput" type="password" placeholder="gsk_..." spellcheck="false" autocomplete="off">
-            <button class="drawer-api-save" id="apiKeySaveBtn">Save</button>
-          </div>
-          <div class="drawer-api-status" id="apiKeyStatus"></div>
-        </div>
-        <!-- Memory stats -->
-        <div class="drawer-section">
-          <div class="drawer-label">Journey</div>
-          <div class="drawer-memory-stats" id="memoryStats"></div>
-          <div class="drawer-timeline" id="journeyTimeline"></div>
-          <button class="drawer-memory-reset" id="memoryResetBtn" style="margin-top:8px;width:100%">Reset Memory</button>
-        </div>
-        <!-- New conversation -->
-        <button class="drawer-new" id="drawerNew">New Conversation</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── MISC ── -->
-  <button class="hdr-btn" id="menuBtn" aria-label="Menu">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-  </button>
-  <div class="hdr">
-    <span class="hdr-symbol">&#x0F4A;</span>
-    <span class="hdr-title">ANHAD</span>
-  </div>
-
-</div>
-
-<script type="module" src="app.js?v=3"></script>
 </body>
 </html>

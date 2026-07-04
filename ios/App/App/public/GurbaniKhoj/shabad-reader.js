@@ -60,6 +60,7 @@ const DOM = {
     navBack: $('#navBack'),
     navTitle: $('#navTitle'),
     navSubtitle: $('#navSubtitle'),
+    navMeta: $('#navMeta'),
     bookmarkBtn: $('#bookmarkBtn'),
     settingsBtn: $('#settingsBtn'),
     favBtn: $('#favBtn'),
@@ -151,9 +152,9 @@ const State = {
 // Font display names mapping
 const FONT_NAMES = {
     'pothi': 'Sacred Pothi',
-    'court': 'Classic Court',
-    'modern': 'Minimal Modern',
-    'royal': 'Royal Calligraphy'
+    'court': 'Court Script',
+    'modern': 'Modern Serif',
+    'royal': 'Royal Text'
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -174,14 +175,15 @@ function getParams() {
 
 const ReaderTheme = {
     init() {
-        let saved = localStorage.getItem('gurbani_reader_theme');
         const globalTheme = localStorage.getItem('anhad_theme') || 'auto';
+        let saved = localStorage.getItem('gurbani_reader_theme');
         
         if (globalTheme === 'auto') {
             const hour = new Date().getHours();
             const effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
             saved = (effectiveTheme === 'dark') ? 'charcoal' : 'paper';
-        } else if (!saved) {
+        } else {
+            // Always sync reader theme with global theme on page load
             saved = (globalTheme === 'dark') ? 'charcoal' : 'paper';
         }
         this.set(saved, false);
@@ -343,15 +345,22 @@ function renderShabad(data) {
     };
 
     // Header metadata update
-    let sourceName = firstVerse.writer?.english || 'Sri Guru Granth Sahib Ji';
-    DOM.navTitle.textContent = firstVerse.raag?.english ? `${firstVerse.raag.english} ਮਹਲਾ ੫` : 'ਗੁਰਬਾਣੀ';
+    let sourceName = 'Sri Guru Granth Sahib Ji';
+    let writerName = firstVerse.writer?.gurmukhi || firstVerse.writer?.english || '';
     
-    // Check if source details are available
-    if (firstVerse.pageNo) {
-        DOM.navSubtitle.textContent = `Ang ${firstVerse.pageNo} • ${sourceName}`;
-    } else {
-        DOM.navSubtitle.textContent = sourceName;
-    }
+    // Build title: raag + mahala
+    let raagName = firstVerse.raag?.gurmukhi || firstVerse.raag?.english || '';
+    let mahala = firstVerse.writer?.mahala || '';
+    DOM.navTitle.textContent = raagName ? `${raagName} ${mahala}`.trim() : 'ਗੁਰਬਾਣੀ';
+    
+    // Subtitle: source
+    DOM.navSubtitle.textContent = sourceName;
+    
+    // Meta: writer + ang
+    let metaParts = [];
+    if (writerName) metaParts.push(writerName);
+    if (firstVerse.pageNo) metaParts.push(`Ang ${firstVerse.pageNo}`);
+    DOM.navMeta.textContent = metaParts.join(' • ');
 
     State.isFavorite = Favorites.isFavorite(State.shabadId);
     updateFavButton();
@@ -433,25 +442,13 @@ function renderShabad(data) {
 
         return `
             <div class="shabad-line ${isHighlighted ? 'highlighted' : ''}" data-verse="${verse.verseId}">
+                <span class="verse-number">${index + 1}</span>
                 <p class="gurmukhi">${gurmukhiSpans}</p>
                 ${hindiGurbaniHtml}
                 ${translitHtml}
                 ${translationsHtml}
             </div>
-            ${showDivider ? `
-                <div class="verse-divider">
-                    <svg viewBox="0 0 120 18" width="120" height="18">
-                        <line x1="10" y1="9" x2="42" y2="9" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
-                        <circle cx="52" cy="9" r="1.5" fill="#d4af37" opacity="0.4"/>
-                        <circle cx="56" cy="9" r="2.5" fill="none" stroke="#d4af37" stroke-width="1.5"/>
-                        <circle cx="60" cy="9" r="3.5" class="divider-center" fill="none" stroke="#d4af37" stroke-width="1.8"/>
-                        <circle cx="60" cy="9" r="1.2" fill="#d4af37"/>
-                        <circle cx="64" cy="9" r="2.5" fill="none" stroke="#d4af37" stroke-width="1.5"/>
-                        <circle cx="68" cy="9" r="1.5" fill="#d4af37" opacity="0.4"/>
-                        <line x1="78" y1="9" x2="110" y2="9" stroke="#d4af37" stroke-width="1.2" opacity="0.6"/>
-                    </svg>
-                </div>
-            ` : ''}
+            ${showDivider ? `<div class="verse-divider"></div>` : ''}
         `;
     }).join('');
 
@@ -976,6 +973,78 @@ function initEvents() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PROGRESS BAR — GOLD READING TRACKER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const progressFill = document.getElementById('progressFill');
+
+function updateProgress() {
+    if (!progressFill) return;
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if (docHeight <= 0) { progressFill.style.width = '0%'; return; }
+    const pct = Math.min(100, (scrollTop / docHeight) * 100);
+    progressFill.style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS — SACRED COMMAND PALETTE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const kbdHint = document.getElementById('kbdHint');
+let kbdHintTimer = null;
+
+function showKbdHint() {
+    if (!kbdHint) return;
+    kbdHint.classList.add('show');
+    clearTimeout(kbdHintTimer);
+    kbdHintTimer = setTimeout(() => kbdHint.classList.remove('show'), 4000);
+}
+
+function initKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Skip if typing in an input
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        switch (e.key.toLowerCase()) {
+            case 'f':
+                e.preventDefault();
+                Settings.toggleFocusMode();
+                haptic();
+                showToast(State.focusMode ? 'Focus Mode On' : 'Focus Mode Off');
+                break;
+            case ' ':
+                e.preventDefault();
+                if (State.autoscrollVisible) {
+                    DOM.scrollPlayBtn.click();
+                }
+                break;
+            case 'p':
+                e.preventDefault();
+                loadAdjacentShabad(-1);
+                break;
+            case 'n':
+                e.preventDefault();
+                loadAdjacentShabad(1);
+                break;
+            case 'escape':
+                if (DOM.settingsOverlay.classList.contains('active')) {
+                    Settings.close();
+                }
+                if (DOM.wordSheetOverlay.classList.contains('active')) {
+                    WordVichar.close();
+                }
+                break;
+        }
+    });
+
+    // Show hint on first interaction
+    document.addEventListener('click', () => showKbdHint(), { once: true });
+    // Also show hint after content loads
+    setTimeout(showKbdHint, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -994,6 +1063,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     Autoscroll.init();
     WordVichar.init();
     initEvents();
+    initKeyboardShortcuts();
 
     const data = await loadShabad(State.shabadId);
     if (data) {
@@ -1002,6 +1072,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         Settings.setLineSpacing(State.lineSpacing);
         Settings.setTextAlign(State.textAlign);
     }
+
+    // Progress bar scroll listener
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    window.addEventListener('resize', updateProgress, { passive: true });
+    setTimeout(updateProgress, 500);
+
+    // Sync reader theme when global theme changes
+    document.addEventListener('themechange', (e) => {
+        const globalTheme = e.detail?.theme;
+        if (!globalTheme) return;
+        const isDark = globalTheme === 'dark' || (globalTheme === 'auto' && new Date().getHours() >= 20);
+        const preferredReaderTheme = isDark ? 'charcoal' : 'paper';
+        const currentReaderTheme = document.documentElement.getAttribute('data-reader-theme');
+        if (currentReaderTheme !== preferredReaderTheme) {
+            ReaderTheme.set(preferredReaderTheme, false);
+        }
+    });
 
     console.log('Pothi App Reader Overhauled.');
 });

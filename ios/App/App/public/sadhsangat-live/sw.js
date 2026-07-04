@@ -1,56 +1,75 @@
-// Service Worker for Sadhsangat Live - Background Audio Support
-const CACHE_NAME = 'sadhsangat-live-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/favicon.ico'
-];
+const CACHE = 'sadhsangat-v3';
+const PRECACHE = ['/', '/index.html', '/favicon.ico'];
 
-// Install event - cache assets
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+self.addEventListener('install', e => {
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)));
 });
 
-// Fetch event - serve from cache when offline
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(k => Promise.all(k.filter(n => n !== CACHE).map(n => caches.delete(n))))
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.url.includes('ytimg.com') || e.request.url.includes('youtube.com/vi/')) {
+    e.respondWith(
+      caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
         }
-        return fetch(event.request);
-      })
+        return res;
+      }).catch(() => caches.match('/favicon.ico')))
+    );
+    return;
+  }
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
 
-// Message event - handle keep-alive pings from main thread
-self.addEventListener('message', (event) => {
-  if (event.data.type === 'keepalive') {
-    console.log('Service Worker: Keep-alive ping received');
-    // Send response to confirm worker is alive
-    event.ports[0]?.postMessage({ type: 'keepalive-response' });
-    event.source?.postMessage({ type: 'keepalive-response' });
+self.addEventListener('message', e => {
+  const data = e.data || {};
+  switch (data.type) {
+    case 'keepalive':
+      e.source?.postMessage({ type: 'keepalive-response' });
+      break;
+    case 'play':
+    case 'pause':
+    case 'stop':
+      self.clients.matchAll().then(clients => {
+        clients.forEach(c => c.postMessage(data));
+      });
+      break;
   }
 });
 
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+self.addEventListener('push', e => {
+  if (!e.data) return;
+  const d = e.data.json();
+  self.registration.showNotification(d.title || 'Sadhsangat Live', {
+    body: d.body || 'Gurbani Kirtan is live',
+    icon: '../assets/icon-192x192.png',
+    badge: '../assets/icon-192x192.png',
+    tag: 'sadhsangat-live',
+    requireInteraction: true,
+    vibrate: [200, 100, 200]
+  });
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      if (clients.length > 0) {
+        clients[0].focus();
+        clients[0].postMessage({ type: 'notification-click' });
+      } else {
+        self.clients.openWindow('/');
+      }
     })
   );
 });

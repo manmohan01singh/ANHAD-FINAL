@@ -301,7 +301,7 @@
     }
 
     // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
+    window.addEventListener('pagehide', () => {
         stopAutoSync();
     });
 

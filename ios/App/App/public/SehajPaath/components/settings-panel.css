@@ -4,7 +4,7 @@
     padding: var(--space-4);
     max-height: 70vh;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 .settings-section {
@@ -74,7 +74,7 @@
     border: 2px solid transparent;
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background-color 0.2s, border-color 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -145,7 +145,7 @@
     inset: 0;
     background: var(--glass-border);
     border-radius: 31px;
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
 .toggle-track::before {
@@ -157,7 +157,7 @@
     top: 2px;
     background: white;
     border-radius: 50%;
-    transition: all 0.2s;
+    transition: transform 0.2s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -207,7 +207,7 @@
     font-size: var(--text-md);
     cursor: pointer;
     margin-bottom: var(--space-3);
-    transition: all 0.2s;
+    transition: background-color 0.2s;
 }
 
 .settings-btn:hover {

@@ -216,7 +216,7 @@
   border: none;
   box-shadow: 0 3px 12px rgba(212, 134, 10, 0.3);
   letter-spacing: 0.01em;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .header-install-btn.visible { display: inline-flex; }
@@ -496,7 +496,7 @@
   gap: 12px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
+
   scrollbar-width: none;
   padding: 4px 0;
 }
@@ -769,7 +769,7 @@
   border: none;
   background: rgba(44, 26, 8, 0.15);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   padding: 0;
 }
 
@@ -982,7 +982,7 @@
   background: rgba(0, 0, 0, 0.03);
   color: rgba(44, 26, 8, 0.35);
   font-size: 12px;
-  transition: all 0.25s ease;
+  transition: color 0.25s ease;
 }
 
 .task-card:hover .task-card__arrow {
@@ -1258,7 +1258,7 @@
   display: flex; align-items: center; gap: 12px;
   padding: 14px 16px; border-radius: 14px;
   background: rgba(255, 255, 255, 0.5); border: 1px solid transparent;
-  cursor: pointer; transition: all 0.2s ease;
+  cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .filter-panel__option.selected {
@@ -1302,7 +1302,7 @@
   max-width: 420px;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.4s var(--spring-default);
+  transition: opacity 0.4s var(--spring-default), transform 0.4s var(--spring-default);
 }
 
 .ios-install-banner.visible {

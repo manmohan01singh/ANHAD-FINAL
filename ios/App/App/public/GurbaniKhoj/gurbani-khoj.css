@@ -6,7 +6,7 @@
 /* ═══════════════════════════════════════════════════════════
    GOOGLE FONTS
    ═══════════════════════════════════════════════════════════ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=optional');
 
 /* ═══════════════════════════════════════════════════════════
    CSS VARIABLES
@@ -245,7 +245,7 @@ body.has-results .filter-btn {
     padding: 12px 0 0;
     overflow-x: auto;
     scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
+
 }
 .source-filters::-webkit-scrollbar { display: none; }
 
@@ -260,8 +260,9 @@ body.has-results .filter-btn {
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-soft);
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: box-shadow 0.2s ease, color 0.2s ease;
 }
+
 
 .source-chip.active {
     background: var(--ios-blue);
@@ -278,7 +279,7 @@ body.has-results .filter-btn {
     padding-top: 12px;
     padding-bottom: calc(var(--tab-h) + var(--safe-bottom) + 20px);
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -687,8 +688,9 @@ body.has-results .main-content {
     color: var(--text-secondary);
     text-align: center;
     border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
+
 
 .sub-tab.active {
     color: var(--ios-blue);
@@ -1390,7 +1392,7 @@ body.has-results .main-content {
     z-index: 999;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: opacity 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), visibility 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     white-space: nowrap;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -1730,7 +1732,7 @@ body.has-results .main-content {
 .raag-fs-content {
     flex: 1;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+
     padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
@@ -2207,7 +2209,7 @@ body.has-results .main-content {
     stroke: url(#offlineRingGrad);
     stroke-width: 7;
     stroke-linecap: round;
-    stroke-dasharray: 326.7; /* 2p � 52 */
+    stroke-dasharray: 326.7; /* 2p � 52 */
     stroke-dashoffset: 326.7; /* fully hidden = 0% */
     transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease;
 }
@@ -2299,7 +2301,7 @@ body.has-results .main-content {
     stroke: url(#crestGrad);
     stroke-width: 4;
     stroke-linecap: round;
-    stroke-dasharray: 163.4;    /* 2p � 26 */
+    stroke-dasharray: 163.4;    /* 2p � 26 */
     stroke-dashoffset: 163.4;   /* 0% filled */
     transition: stroke-dashoffset 0.5s ease;
 }
@@ -2431,7 +2433,7 @@ body.has-results .main-content {
     stroke: url(#osrGrad);
     stroke-width: 10;
     stroke-linecap: round;
-    stroke-dasharray: 364.4;    /* 2p � 58 */
+    stroke-dasharray: 364.4;    /* 2p � 58 */
     stroke-dashoffset: 364.4;
     transition: stroke-dashoffset 0.6s ease;
 }
@@ -2556,7 +2558,7 @@ body.has-results .main-content {
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 .raag-load-more-btn:active {
     background: var(--border-light);

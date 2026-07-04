@@ -412,7 +412,7 @@
         console.log('[StatsIntegration] ✓ All integrations active');
 
         // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('pagehide', () => {
             if (window.AudioTracker) {
                 window.AudioTracker.stopAll();
             }

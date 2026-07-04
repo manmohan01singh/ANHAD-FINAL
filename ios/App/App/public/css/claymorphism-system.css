@@ -451,7 +451,7 @@ html.dark-mode .clay-section {
   border: 2px solid rgba(255, 255, 255, 0.6);
   padding: 14px 18px;
   font-size: 16px;
-  transition: all 0.3s var(--clay-spring);
+  transition: box-shadow 0.3s var(--clay-spring), border-color 0.3s var(--clay-spring);
 }
 
 .clay-input:focus {
@@ -617,7 +617,7 @@ html.dark-mode .clay-divider {
     0 2px 4px rgba(255, 255, 255, 0.9);
   position: relative;
   cursor: pointer;
-  transition: all 0.3s var(--clay-spring);
+  transition: transform 0.3s var(--clay-spring), background-color 0.3s var(--clay-spring);
 }
 
 .clay-toggle::after {

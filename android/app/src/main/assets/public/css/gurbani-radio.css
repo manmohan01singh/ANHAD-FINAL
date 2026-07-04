@@ -208,7 +208,7 @@
     color: #000;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
 .mini-player__btn:hover {

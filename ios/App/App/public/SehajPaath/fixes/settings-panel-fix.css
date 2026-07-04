@@ -9,7 +9,7 @@
     flex: 1;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
+
     overscroll-behavior: contain !important;
     overscroll-behavior-y: contain !important;
     touch-action: pan-y !important;
@@ -30,7 +30,7 @@
     min-height: 0 !important;
     /* Critical for flex child scroll */
     overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+
     touch-action: pan-y !important;
 }
 
@@ -86,7 +86,7 @@
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .theme-option:hover,
@@ -171,7 +171,7 @@
     cursor: pointer;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 31px;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
 .toggle-track::before {
@@ -183,7 +183,7 @@
     top: 2px;
     background: white;
     border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -211,7 +211,7 @@
     border: 1px solid transparent;
     border-radius: var(--radius-full, 9999px);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .radio-option:has(input:checked) {
@@ -240,7 +240,7 @@
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
     margin-bottom: var(--space-3);
 }
 
@@ -325,7 +325,7 @@ body.modal-open {
 /* But ensure modal can still scroll */
 body.modal-open .modal-body {
     overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+
 }
 
 /* ═══════ SAFE AREA HANDLING ═══════ */

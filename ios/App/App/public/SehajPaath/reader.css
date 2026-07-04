@@ -12,7 +12,7 @@
     src: url('../nitnem/g-fonts/pg_serif_r.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -20,7 +20,7 @@
     src: url('../nitnem/g-fonts/pg_serif_s.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -28,7 +28,7 @@
     src: url('../nitnem/g-fonts/mffjashan.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -36,7 +36,7 @@
     src: url('../nitnem/g-fonts/pg_khanna_c_6.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -44,7 +44,7 @@
     src: url('../nitnem/g-fonts/pixel_r_21.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -53,7 +53,7 @@
          url('../nitnem/g-fonts/riyasti-naveen.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -328,7 +328,7 @@ body {
     overflow-x: hidden;
     padding: 20px 16px;
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
+
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     will-change: scroll-position;
@@ -745,7 +745,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .quick-actions-overlay.active {
@@ -771,7 +771,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     width: 90%;
     transform: scale(0.9);
     opacity: 0;
-    transition: all 0.3s var(--ease-spring);
+    transition: background-color 0.3s var(--ease-spring), color 0.3s var(--ease-spring), transform 0.3s var(--ease-spring);
 }
 
 .quick-actions-overlay.active .quick-actions-panel {
@@ -834,7 +834,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     z-index: 300;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .settings-panel.active {
@@ -1018,7 +1018,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .theme-pill.active {
@@ -1057,7 +1057,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .mode-pill.active {
@@ -1260,7 +1260,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     border-radius: 100px;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .floating-actions-bar.visible {
@@ -1299,7 +1299,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .search-modal.active {
@@ -1409,7 +1409,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .download-modal.active {
@@ -1435,7 +1435,7 @@ body.larivaar-assist .gurmukhi-text .word-alt {
     width: 90%;
     transform: scale(0.9);
     opacity: 0;
-    transition: all 0.3s var(--ease-spring);
+    transition: background-color 0.3s var(--ease-spring), color 0.3s var(--ease-spring), transform 0.3s var(--ease-spring);
 }
 
 .download-modal.active .download-modal-content {

@@ -8,7 +8,7 @@
     src: url('../g-fonts/pg_serif_r.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* PG Serif Semi-bold */
@@ -17,7 +17,7 @@
     src: url('../g-fonts/pg_serif_s.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* MFJashan */
@@ -26,7 +26,7 @@
     src: url('../g-fonts/mffjashan.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* PG Khanna */
@@ -35,7 +35,7 @@
     src: url('../g-fonts/pg_khanna_c_6.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* Pixel R */
@@ -44,7 +44,7 @@
     src: url('../g-fonts/pixel_r_21.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 /* Font Classes */

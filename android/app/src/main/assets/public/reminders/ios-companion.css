@@ -396,7 +396,7 @@ body.sheet-open {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+
     scrollbar-width: none;
     width: 100%;
 }
@@ -526,7 +526,7 @@ body.sheet-open {
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-full);
     background: var(--accent-subtle);
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .focus-status[data-enabled="true"] .status-indicator {
@@ -546,7 +546,7 @@ body.sheet-open {
     width: 8px;
     height: 8px;
     border-radius: var(--radius-full);
-    transition: all var(--duration-normal) var(--ease-out);
+    transition: background-color var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out);
 }
 
 .status-text {
@@ -567,7 +567,7 @@ body.sheet-open {
     height: 8px;
     border-radius: var(--radius-full);
     background: var(--text-quaternary);
-    transition: all var(--duration-normal) var(--ease-out);
+    transition: background-color var(--duration-normal) var(--ease-out), color var(--duration-normal) var(--ease-out);
 }
 
 .dot.active {
@@ -854,7 +854,7 @@ body.sheet-open {
     border: 1.5px solid var(--border-medium);
     border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .day-pill:hover {

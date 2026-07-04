@@ -17,8 +17,7 @@
 
             // Cleanup locks on pagehide
             window.addEventListener('pagehide', () => this._releaseAllLocks());
-            window.addEventListener('beforeunload', () => this._releaseAllLocks());
-        }
+                    }
 
         _generateTabId() {
             return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

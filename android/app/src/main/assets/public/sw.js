@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.6.0'; // Perf: + virtual-live engine + StaleWhileRevalidate radio API
+const CACHE_VERSION = 'anhad-v7.0.0'; // Radio v3 rebuild — fresh UI engine
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -73,7 +73,7 @@ const STATIC_FILES = [
   'lib/gurbani-db.js',
   'lib/global-mini-player.js',
   'css/global-mini-player.css',
-  
+
   // Offline-First Gurbani Cache Modules
   'lib/gurbani-local-db.js',
   'lib/gurbani-download-manager.js',
@@ -328,16 +328,18 @@ self.addEventListener('install', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// ACTIVATE EVENT - Clean ALL caches and claim clients for automatic updates
+// ACTIVATE EVENT - Clean old caches, claim clients, enable Navigation Preload
+// Navigation Preload: browser fetches the navigation resource in parallel with
+// SW boot, eliminating the ~100-400ms latency on Android Chrome.
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating - clearing all caches for fresh update...');
+  console.log('[SW] Activating - clearing old caches for fresh update...');
 
   event.waitUntil(
     caches.keys()
       .then(keys => {
         const expectedCaches = [STATIC_CACHE, DYNAMIC_CACHE, DATA_CACHE];
-        
+
         return Promise.all(
           keys.map(key => {
             if (!expectedCaches.includes(key)) {
@@ -348,8 +350,17 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('[SW] All caches cleared, claiming clients');
+        console.log('[SW] Old caches cleared, claiming clients');
         return self.clients.claim();
+      })
+      .then(async () => {
+        // PERF: Enable Navigation Preload so the browser starts fetching the
+        // navigation resource immediately, in parallel with SW startup.
+        // This removes SW boot latency from navigation request timing.
+        if (self.registration.navigationPreload) {
+          await self.registration.navigationPreload.enable();
+          console.log('[SW] Navigation Preload enabled');
+        }
       })
       .then(() => {
         console.log('[SW] Notifying all clients about update completion');
@@ -371,8 +382,10 @@ self.addEventListener('activate', (event) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FETCH EVENT - Stale-While-Revalidate for app shell, Network-first for API
-// This ensures updates propagate to all devices within SECONDS
+// FETCH EVENT - Stale-While-Revalidate for navigations & radio API,
+// Network-First for Bani/Hukamnama APIs, Cache-First for static assets.
+// Navigation Preload: consume the preload response if available so we don't
+// re-fetch the document the browser already started fetching in parallel.
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
@@ -440,12 +453,45 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3. ALL OTHER PAGES, IMAGES, CSS, JS -> CACHE FIRST (Offline-first)
+  // 3. HTML NAVIGATION REQUESTS -> STALE-WHILE-REVALIDATE
+  // Serve cached HTML immediately (feels instant), then fetch fresh version in
+  // background so the next navigation gets updated content.
+  // Navigation Preload: if the browser already started fetching, use that response.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(navigateWithPreload(event));
+    return;
+  }
+
+  // 4. ALL OTHER STATIC ASSETS (IMAGES, CSS, JS, AUDIO) -> CACHE FIRST (Offline-first)
   // Serve from cache immediately; if not found in cache, fetch from network and cache it.
   event.respondWith(cacheFirst(event.request));
 });
 
-const DYNAMIC_CACHE_MAX = 200;
+/**
+ * NAVIGATE WITH PRELOAD
+ * Uses the Navigation Preload response if available (parallel fetch the browser
+ * already started), otherwise falls back to staleWhileRevalidate.
+ * This is the fastest possible navigation strategy — zero SW-boot overhead.
+ */
+async function navigateWithPreload(event) {
+  try {
+    // Try to use the Navigation Preload response (browser fetched this in parallel)
+    const preloadResponse = await event.preloadResponse;
+    if (preloadResponse && preloadResponse.ok) {
+      // Cache the preload response for next time
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(event.request, preloadResponse.clone()).catch(() => null);
+      return preloadResponse;
+    }
+  } catch (e) {
+    // preloadResponse not available or failed — fall through to SWR
+  }
+  return staleWhileRevalidate(event.request);
+}
+
+// Keep dynamic cache bounded. 150 entries is more than enough for all app pages
+// and recently visited assets, while preventing unbounded storage growth.
+const DYNAMIC_CACHE_MAX = 150;
 
 async function evictDynamicCache(cache) {
   const keys = await cache.keys();
@@ -523,11 +569,11 @@ async function staleWhileRevalidate(request) {
     return response;
   }).catch(() => null);
 
-  // If we have a cached version, return it immediately
-  // The background fetch will update the cache for next time
+  // If we have a cached version, return it immediately.
+  // FIX: `networkPromise` alone is a no-op statement — must call .catch() to
+  // attach a handler and actually keep the Promise alive for background execution.
   if (cached) {
-    // Don't await — let it update in background
-    networkPromise;
+    networkPromise.catch(() => null); // fire-and-forget; updates cache in background
     return cached;
   }
 
@@ -562,7 +608,7 @@ self.addEventListener('message', (event) => {
       timestamp: Date.now()
     });
   }
-  
+
   if (event.data?.type === 'FORCE_CACHE_CLEAR') {
     console.log('[SW] FORCE_CACHE_CLEAR received - clearing all caches');
     event.waitUntil(
@@ -706,7 +752,7 @@ async function checkAndFireScheduledNotifications() {
   // PERF FIX: Replaced per-notification MessageChannel round-trips (was blocking
   // the SW thread for up to 7 * N_clients * 100ms per periodic sync) with a
   // fast in-memory Set check that is O(1) and purely synchronous.
-  
+
   // Quick Capacitor check — if any client URL contains 'capacitor://' skip SW notifs
   const clients = await self.clients.matchAll({ type: 'window' });
   const isCapacitor = clients.some(c => c.url && c.url.startsWith('capacitor://'));
@@ -789,9 +835,9 @@ async function checkAndFireScheduledNotifications() {
           vibrate: [200, 100, 200, 100, 400],
           data: {
             url: notif.id === 'hukamnama' ? 'Hukamnama/daily-hukamnama.html'
-               : notif.id === 'kirtan' ? 'index.html'
-               : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? 'NitnemTracker/nitnem-tracker.html'
-               : 'reminders/smart-reminders-v7.html',
+              : notif.id === 'kirtan' ? 'index.html'
+                : (notif.id === 'nitnem_morning' || notif.id === 'nitnem_pending') ? 'NitnemTracker/nitnem-tracker.html'
+                  : 'reminders/smart-reminders-v7.html',
             id: notif.id,
             timestamp: now
           },
@@ -1222,7 +1268,7 @@ async function triggerAlarm(alarm) {
       vibrate: [500, 200, 500, 200, 500, 200, 500],
       actions: [
         { action: 'dismiss', title: "✓ I'm Up!" },
-        { action: 'snooze',  title: '😴 Snooze 5min' }
+        { action: 'snooze', title: '😴 Snooze 5min' }
       ],
       data: { alarm, alarmId: alarm.id, url: `/reminders/alarm.html?id=${alarm.id}`, timestamp: Date.now() }
     });

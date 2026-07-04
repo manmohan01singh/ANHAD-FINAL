@@ -29,7 +29,7 @@ body {
 /* iOS momentum scrolling */
 main.app,
 #app {
-  -webkit-overflow-scrolling: touch;
+
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior-y: contain;

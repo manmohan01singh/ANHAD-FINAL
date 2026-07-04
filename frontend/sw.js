@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v6.9.0'; // GurbaniGPT: hard RAG - Gurbani from DB, LLM only explains
+const CACHE_VERSION = 'anhad-v7.0.0'; // Radio v3 rebuild — fresh UI engine
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

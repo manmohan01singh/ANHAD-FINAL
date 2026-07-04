@@ -9,9 +9,10 @@ export function initTheme() {
 
   function applyTheme(theme) {
     const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
     document.body.classList.toggle('dark', isDark);
     document.body.classList.toggle('light', !isDark);
-    document.body.style.background = isDark ? '#0c0a09' : '#f6f4f0';
+    document.body.style.background = isDark ? '#0F0F12' : '#FFFDF9';
     localStorage.setItem(STORAGE_KEY, theme);
     updateIcon(isDark);
   }
