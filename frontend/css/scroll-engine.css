@@ -1,0 +1,125 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ANHAD — DYNAMIC SCROLL PERFORMANCE STYLESHEET
+   Optimizes GPU composition, pauses non-visible animation loops, and removes
+   complex CPU-bound visual properties (such as backdrop-filter) during active scroll.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. FIXED & ANIMATING REGIONS LAYER PROMOTION ─── */
+.tab-bar,
+.mini-player,
+.gmp,
+.nav-glass,
+header,
+.app-header {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Promote background orbs to prevent paint intersection */
+.bg-orb {
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+}
+
+/* ─── 2. ACTIVE SCROLL OPTIMIZATIONS ─── */
+/* Pause background infinite animations while scrolling to save massive CPU/GPU cycles */
+.is-scrolling .aurora-bg,
+.scrolling .aurora-bg,
+.is-scrolling .bg-orb,
+.scrolling .bg-orb,
+.is-scrolling .particle-burst,
+.scrolling .particle-burst,
+.is-scrolling .spark-burst,
+.scrolling .spark-burst,
+.is-scrolling .gurpurab-ambient-glow,
+.scrolling .gurpurab-ambient-glow,
+.is-scrolling .gurpurab-ring-halo,
+.scrolling .gurpurab-ring-halo,
+.is-scrolling .gurpurab-petals-container,
+.scrolling .gurpurab-petals-container,
+.is-scrolling .gurpurab-sparkles-container,
+.scrolling .gurpurab-sparkles-container {
+    animation-play-state: paused !important;
+}
+
+/* Simplify layout: disable transitions, costly shadows, filters during scrolling on cards */
+.is-scrolling .hero-card,
+.scrolling .hero-card,
+.is-scrolling .practice-card,
+.scrolling .practice-card,
+.is-scrolling .quick-card,
+.scrolling .quick-card,
+.is-scrolling .event-card,
+.scrolling .event-card,
+.is-scrolling .glass-card,
+.scrolling .glass-card,
+.is-scrolling .mala-card,
+.scrolling .mala-card,
+.is-scrolling .alarm-card,
+.scrolling .alarm-card,
+.is-scrolling .streak-card,
+.scrolling .streak-card {
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transition: none !important;
+}
+
+/* Remove backdrop blur filtering on header overlays and tab-bars during scroll.
+   Reflow & readback of background pixels on every scroll tick is the #1 reason files feel laggy on Android/Safari. */
+.is-scrolling header,
+.scrolling header,
+.is-scrolling .app-header,
+.scrolling .app-header,
+.is-scrolling .nav-glass,
+.scrolling .nav-glass,
+.is-scrolling .tab-bar,
+.scrolling .tab-bar,
+.is-scrolling .mini-player,
+.scrolling .mini-player,
+.is-scrolling .gmp,
+.scrolling .gmp {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: var(--glass-bg-strong, rgba(20, 20, 22, 0.95)) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+    transition: transform 0s, opacity 0s, background-color 0s !important;
+}
+
+/* ─── 3. REDUCED MOTION ACCESSIBILITY ─── */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        transition-duration: 0s !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ─── 4. CSS CONTAINMENT — Isolate card layout ─── */
+.quick-card,
+.event-card,
+.practice-card,
+.hero-card,
+.glass-card,
+.clay-card,
+.mala-card,
+.alarm-card,
+.streak-card,
+.card {
+    contain: layout style paint;
+}
+
+/* ─── 5. VISIBILITY-DRIVEN ANIMATION PAUSING ─── */
+/* Pause all infinite animations when page is hidden to save CPU and battery power */
+.page-hidden *,
+.page-hidden *::before,
+.page-hidden *::after {
+    animation-play-state: paused !important;
+}

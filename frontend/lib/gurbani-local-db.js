@@ -9,7 +9,7 @@
     'use strict';
 
     const DB_NAME = 'AnhadGurbaniDB';
-    const DB_VERSION = 1;
+    const DB_VERSION = 4; // Bumped to 4 - force migration for all clients with corrupt v3
     const STORE_NAME = 'banis';
 
     // The 7 Nitnem Banis to cache
@@ -35,7 +35,44 @@
         }
 
         /**
-         * Initialize the IndexedDB database
+         * Nuclear reset: delete the entire DB and resolve with false so the
+         * caller can re-open from scratch. Called when we detect a corrupt DB
+         * (opened successfully but banis store is missing).
+         */
+        _nukeAndReset(resolve, reject) {
+            console.warn('[GurbaniLocalDB] ☢️ Corrupt DB detected — nuking and re-opening...');
+            try {
+                localStorage.removeItem(LS_KEY_DOWNLOADED);
+                localStorage.removeItem(LS_KEY_DOWNLOAD_PROGRESS);
+            } catch (e) { }
+
+            const deleteReq = indexedDB.deleteDatabase(DB_NAME);
+            deleteReq.onsuccess = () => {
+                console.log('[GurbaniLocalDB] ☢️ DB deleted. Re-opening fresh...');
+                this.db = null;
+                this.isReady = false;
+                this.readyPromise = null;
+                // Re-open fresh — this time onupgradeneeded WILL fire
+                this.init().then(resolve).catch(reject);
+            };
+            deleteReq.onerror = () => {
+                console.error('[GurbaniLocalDB] ☢️ Could not delete DB:', deleteReq.error);
+                reject(deleteReq.error);
+            };
+            deleteReq.onblocked = () => {
+                console.warn('[GurbaniLocalDB] ☢️ DB delete blocked (another tab open). Please close other tabs and retry.');
+                reject(new Error('DB delete blocked — close other tabs and try again'));
+            };
+        }
+
+        /**
+         * Initialize the IndexedDB database.
+         *
+         * Strategy (3 layers):
+         *   1. DB_VERSION bump (4) → triggers onupgradeneeded for every existing client
+         *   2. onupgradeneeded always deletes + recreates `banis` store cleanly
+         *   3. onsuccess guard → if store is somehow still missing (corrupt leftover),
+         *      nuke the whole DB and re-open so we get a guaranteed clean slate
          */
         async init() {
             if (this.isReady) return true;
@@ -45,24 +82,52 @@
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
                 request.onerror = () => {
-                    console.error('[GurbaniLocalDB] Failed to open database');
+                    console.error('[GurbaniLocalDB] Failed to open database:', request.error);
                     reject(request.error);
                 };
 
                 request.onsuccess = (event) => {
-                    this.db = event.target.result;
+                    const db = event.target.result;
+
+                    // ── Runtime guard: if store is missing even after a successful open ──
+                    // This happens when the DB was previously opened at v4 but the
+                    // onupgradeneeded was interrupted/crashed and the store was never created.
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.close();
+                        this._nukeAndReset(resolve, reject);
+                        return;
+                    }
+
+                    this.db = db;
                     this.isReady = true;
-                    console.log('[GurbaniLocalDB] Database initialized');
+                    console.log('[GurbaniLocalDB] Database initialized (v4)');
                     resolve(true);
                 };
 
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-                        store.createIndex('fetched_at', 'fetched_at', { unique: false });
-                        console.log('[GurbaniLocalDB] Created banis store');
+                    const oldVersion = event.oldVersion;
+                    console.log(`[GurbaniLocalDB] Upgrading DB from v${oldVersion} → v${DB_VERSION}`);
+
+                    // Delete old store if it exists (handles v1/v2/v3 migrations)
+                    if (db.objectStoreNames.contains(STORE_NAME)) {
+                        try {
+                            db.deleteObjectStore(STORE_NAME);
+                            console.log('[GurbaniLocalDB] Deleted old banis store for migration');
+                        } catch (e) {
+                            console.warn('[GurbaniLocalDB] Could not delete old store:', e);
+                        }
                     }
+
+                    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                    store.createIndex('fetched_at', 'fetched_at', { unique: false });
+                    console.log('[GurbaniLocalDB] ✅ Created banis store (v4)');
+
+                    // Clear download flags so we re-download fresh data
+                    try {
+                        localStorage.removeItem(LS_KEY_DOWNLOADED);
+                        localStorage.removeItem(LS_KEY_DOWNLOAD_PROGRESS);
+                    } catch (e) { }
                 };
             });
 
@@ -133,7 +198,7 @@
                 console.log(`[GurbaniLocalDB] Using BaniDB chunked loading: ${baniId}`);
                 return await window.BaniDB.getBani(baniId);
             }
-            
+
             // Fallback to nitnem bundle for nitnem banis
             const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
             if (nitnemBanis.includes(baniId)) {
@@ -141,7 +206,7 @@
                     const response = await fetch('../data/banis-chunks/nitnem-banis.json');
                     if (!response.ok) throw new Error('Failed to load nitnem bundle');
                     const jsonData = await response.json();
-                    
+
                     if (jsonData.banis && jsonData.banis[baniId]) {
                         console.log(`[GurbaniLocalDB] ✅ Loaded from nitnem bundle: ${baniId}`);
                         return jsonData.banis[baniId];
@@ -150,7 +215,7 @@
                     console.error(`[GurbaniLocalDB] ❌ Failed to load from nitnem bundle for bani ${baniId}:`, error);
                 }
             }
-            
+
             throw new Error(`Bani ${baniId} not available offline`);
         }
 

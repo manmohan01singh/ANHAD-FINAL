@@ -99,8 +99,9 @@ class NaamAbhyasThemeEngine {
         });
 
         // Auto-refresh for 'auto' time-based mode (check every minute)
+        // Gated behind document visibility to save background CPU cycles
         setInterval(() => {
-            if (this.currentTheme === 'auto') {
+            if (this.currentTheme === 'auto' && !document.hidden) {
                 this.applyTheme('auto');
             }
         }, 60000);
@@ -557,7 +558,9 @@ class NaamAbhyas {
     initializeHeaderClock() {
         this.updateHeaderClock();
         this.headerClockInterval = setInterval(() => {
-            this.updateHeaderClock();
+            if (!document.hidden) {
+                this.updateHeaderClock();
+            }
         }, 1000);
     }
 
@@ -3287,8 +3290,12 @@ class NaamAbhyas {
         const card = document.getElementById('wisdomCard');
         if (card) {
             card.style.animation = 'none';
-            card.offsetHeight; // Trigger reflow
-            card.style.animation = 'wisdomAppear 0.6s ease-out';
+            // Avoid forced synchronous layout (forced reflow) via rAF nesting
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    card.style.animation = 'wisdomAppear 0.6s ease-out';
+                });
+            });
         }
 
         this.displayWisdom();

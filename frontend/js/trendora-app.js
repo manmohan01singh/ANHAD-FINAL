@@ -2050,21 +2050,10 @@
   // ═ SCROLL REVEAL ═
   const ScrollReveal = {
     init() {
-      const targets = document.querySelectorAll('.practice-grid, .quick-card, .event-card');
-      if (!targets.length || !('IntersectionObserver' in window)) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('scroll-revealed');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-      );
-      targets.forEach(t => observer.observe(t));
+      // Delegated to window.AnhadScrollEngine for centralized, zero-cost viewport reveals
+      if (window.AnhadScrollEngine && window.AnhadScrollEngine.scan) {
+        window.AnhadScrollEngine.scan();
+      }
     }
   };
 
