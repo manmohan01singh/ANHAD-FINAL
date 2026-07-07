@@ -375,17 +375,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
       }
     } catch (e) {}
-    const streakEl = document.getElementById('streakDays'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
+    const streakEl = document.getElementById('nitnemStreak'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
     const circumference = 163.36, progress = completedToday / totalBanis, offset = circumference * (1 - progress);
     if (ringFill) setTimeout(() => { ringFill.style.strokeDashoffset = offset; }, 150);
     if (ringText) ringText.textContent = `${completedToday}/${totalBanis}`;
     if (completedToday > 0) {
       if (textEl) textEl.textContent = completedToday >= totalBanis ? '🎉 All banis completed! Waheguru ji!' : `${completedToday}/${totalBanis} banis completed today`;
-      if (streakEl) streakEl.textContent = streak > 0 ? `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak` : `✓ ${completedToday}/${totalBanis}`;
+      if (streakEl) streakEl.innerHTML = streak > 0 ? `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>` : `<span class="quick-card__progress">${completedToday}/${totalBanis}</span>`;
     } else if (streak > 0) {
       if (textEl) textEl.textContent = `${streak}-day streak! Start today's Nitnem`;
-      if (streakEl) streakEl.textContent = `🔥 ${streak} Day${streak > 1 ? 's' : ''} Streak`;
-    } else { if (textEl) textEl.textContent = 'Track your daily Nitnem practice'; if (streakEl) streakEl.textContent = '📿 Start Today'; }
+      if (streakEl) streakEl.innerHTML = `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>`;
+    } else { if (textEl) textEl.textContent = 'Track your daily Nitnem practice'; if (streakEl) streakEl.innerHTML = '<span class="quick-card__progress">Start today</span>'; }
   }
 
   // Bind to UnifiedStats events for real-time updates

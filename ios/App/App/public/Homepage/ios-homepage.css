@@ -13,8 +13,6 @@
    L7: UI layer (header, wave, footer) — NOW WITH EXTREME CLAYMORPHISM
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional');
-
 /* ─────────────────────────────────────────────────────────────────────────────
    DESIGN TOKENS — Enhanced with Claymorphism Palette
    ───────────────────────────────────────────────────────────────────────────── */
@@ -111,7 +109,10 @@ body {
     background-size: cover;
     background-position: center 40%;
     background-repeat: no-repeat;
-    background-image: url('../assets/darbar-sahib-day.webp');
+    background-image: image-set(
+        url('../assets/darbar-sahib-day.avif') type('image/avif'),
+        url('../assets/darbar-sahib-day.webp') type('image/webp')
+    );
     opacity: 0;
     transform: scale(1.05);
     /* PERF: Pre-promote to compositor layer before animation */

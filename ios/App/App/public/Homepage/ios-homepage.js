@@ -57,11 +57,11 @@
         const sceneBg = document.getElementById('scene-bg');
         if (sceneBg) {
             const imageMap = {
-                amritvela: '../assets/Darbar-sahib-AMRITVELA.webp',
-                morning: '../assets/darbar-sahib-day.webp',
-                afternoon: '../assets/darbar-sahib-day.webp',
-                evening: '../assets/darbar-sahib-evening.webp',
-                night: '../assets/darbar-sahib-evening.webp'
+                amritvela: '../assets/Darbar-sahib-AMRITVELA.avif',
+                morning: '../assets/darbar-sahib-day.avif',
+                afternoon: '../assets/darbar-sahib-day.avif',
+                evening: '../assets/darbar-sahib-evening.avif',
+                night: '../assets/darbar-sahib-evening.avif'
             };
             const img = imageMap[tod] || imageMap.morning;
             sceneBg.style.backgroundImage = `url('${img}')`;
@@ -74,7 +74,7 @@
 
         // Show stars at night
         if (tod === 'night' || tod === 'amritvela') {
-            initStars();
+            scheduleAfterFirstPaint(initStars);
         }
 
         // Adjust light source for night
@@ -156,7 +156,7 @@
                 return p.alpha > 0;
             });
 
-            requestAnimationFrame(animate);
+            if (!document.hidden) requestAnimationFrame(animate);
         }
 
         // Handle click/touch anywhere on page
@@ -216,7 +216,7 @@
                 ctx.fill();
             });
             frame++;
-            requestAnimationFrame(drawStars);
+            if (!document.hidden) requestAnimationFrame(drawStars);
         }
         drawStars();
 
@@ -277,18 +277,68 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     // LIVE KIRTAN AUDIO - Uses AnhadAudio Singleton
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    function loadScriptOnce(src) {
+        return new Promise((resolve, reject) => {
+            const existing = document.querySelector(`script[src="${src}"]`);
+            if (existing) {
+                if (existing.dataset.loaded === 'true') resolve();
+                else existing.addEventListener('load', resolve, { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = src;
+            script.defer = true;
+            script.onload = () => {
+                script.dataset.loaded = 'true';
+                resolve();
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
     function initAudio() {
         const tapHint = document.getElementById('tap-hint');
+        let audioReadyPromise = null;
+        let audioEventsBound = false;
 
-        if (!window.AnhadAudio) {
-            console.warn('[Homepage] AnhadAudio not available, retrying...');
-            setTimeout(initAudio, 100);
-            return;
+        function ensureAudioReady() {
+            if (window.AnhadAudio) return Promise.resolve();
+            if (!audioReadyPromise) {
+                audioReadyPromise = Promise.all([
+                    loadScriptOnce('../lib/unified-stats.js'),
+                    loadScriptOnce('../lib/anhad-audio-singleton.js?v=2.1.5')
+                ]).catch(error => {
+                    audioReadyPromise = null;
+                    console.warn('[Homepage] Audio dependencies failed to load:', error);
+                });
+            }
+            return audioReadyPromise;
+        }
+
+        function bindAudioEvents() {
+            if (audioEventsBound || !window.AnhadAudio) return;
+            audioEventsBound = true;
+            window.AnhadAudio.on('statechange', (audioState) => {
+                if (audioState.isPlaying) {
+                    document.body.classList.add('audio-playing');
+                    tracker.start();
+                    if (tapHint) tapHint.textContent = 'Tap to pause kirtan';
+                } else {
+                    document.body.classList.remove('audio-playing');
+                    tracker.stop();
+                    if (tapHint) tapHint.textContent = 'Tap to play kirtan';
+                }
+            });
         }
 
         const tracker = new KirtanTracker();
 
-        function toggleAudio() {
+        async function toggleAudio() {
+            await ensureAudioReady();
+            if (!window.AnhadAudio) return;
+            bindAudioEvents();
             const state = window.AnhadAudio.getState();
             if (state.isPlaying) {
                 window.AnhadAudio.pause();
@@ -304,31 +354,9 @@
             toggleAudio();
         });
 
-        // Subscribe to singleton events for UI updates
-        window.AnhadAudio.on('statechange', (audioState) => {
-            if (audioState.isPlaying) {
-                document.body.classList.add('audio-playing');
-                tracker.start();
-                if (tapHint) tapHint.textContent = 'Tap to pause kirtan';
-            } else {
-                document.body.classList.remove('audio-playing');
-                tracker.stop();
-                if (tapHint) tapHint.textContent = 'Tap to play kirtan';
-            }
-        });
-
-        // Auto-start kirtan on page load
-        setTimeout(() => {
-            if (navigator.onLine) {
-                window.AnhadAudio.play('darbar').catch(e => console.warn('[Homepage] Autoplay failed:', e));
-            } else {
-                console.warn('[Homepage] Offline, skipping auto-play to prevent crash');
-                if (tapHint) tapHint.textContent = 'App is offline. Tap when connected.';
-            }
-        }, 500);
-
         // Handle visibility change - pause tracking when tab hidden
         document.addEventListener('visibilitychange', () => {
+            if (!window.AnhadAudio) return;
             const state = window.AnhadAudio.getState();
             if (document.hidden && state.isPlaying) {
                 tracker.stop();
@@ -418,12 +446,24 @@
     // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
     function init() {
         applyTimeOfDay();
-        initAudio();
+        scheduleAfterFirstPaint(initAudio);
         initShabadRotation();
         initEnterButton();
-        initFireworks();
+        scheduleAfterFirstPaint(initFireworks);
 
         console.log('%câ˜¬ ANHAD Cinematic Homepage Ready', 'color: #C9A227; font-size: 14px; font-weight: bold;');
+    }
+
+    function scheduleAfterFirstPaint(callback) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(callback, { timeout: 1500 });
+                } else {
+                    setTimeout(callback, 250);
+                }
+            });
+        });
     }
 
     // Boot

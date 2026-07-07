@@ -3,7 +3,8 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ─── SECTION 0: CRITICAL SCROLL FIX ─── */
-html, body {
+html,
+body {
     height: auto !important;
     min-height: 100vh !important;
     min-height: 100dvh !important;
@@ -127,11 +128,11 @@ body {
 .status-pill {
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.06),
-        -4px -4px 10px rgba(255,255,255,0.8),
-        inset 2px 2px 5px rgba(255,255,255,0.8),
-        inset -2px -2px 5px rgba(0,0,0,0.03) !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.06),
+        -4px -4px 10px rgba(255, 255, 255, 0.8),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.8),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     border-radius: 9999px !important;
 }
 
@@ -140,21 +141,21 @@ body {
 [data-theme="saffron"] .status-pill,
 [data-theme="gold"] .status-pill {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.10) !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.25),
-        -4px -4px 10px rgba(255,255,255,0.05),
-        inset 2px 2px 5px rgba(255,255,255,0.05),
-        inset -2px -2px 5px rgba(0,0,0,0.15) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.25),
+        -4px -4px 10px rgba(255, 255, 255, 0.05),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.05),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.15) !important;
 }
 
 .header-btn {
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.06),
-        -4px -4px 10px rgba(255,255,255,0.8),
-        inset 2px 2px 5px rgba(255,255,255,0.8) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.06),
+        -4px -4px 10px rgba(255, 255, 255, 0.8),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
@@ -164,19 +165,19 @@ body {
 [data-theme="saffron"] .header-btn,
 [data-theme="gold"] .header-btn {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.10) !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.25),
-        -4px -4px 10px rgba(255,255,255,0.05),
-        inset 2px 2px 5px rgba(255,255,255,0.05) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.25),
+        -4px -4px 10px rgba(255, 255, 255, 0.05),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.05) !important;
 }
 
 .header-btn:active {
     transform: scale(0.92) !important;
     box-shadow:
-        inset 4px 4px 10px rgba(0,0,0,0.15),
-        inset -4px -4px 10px rgba(255,255,255,0.5),
-        0 0 0 1px rgba(255,255,255,0.3) !important;
+        inset 4px 4px 10px rgba(0, 0, 0, 0.15),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ─── SECTION 4: CARDS — EXTREME CLAY 3D ─── */
@@ -184,14 +185,14 @@ body {
     position: relative !important;
     background: linear-gradient(145deg, #FFFFFF 0%, #F0F0F5 100%) !important;
     border-radius: var(--clay-radius-card) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow:
-        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255,255,255,1),
-        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255, 255, 255, 1),
+        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
     transition: background-color 0.4s var(--clay-spring) !important, color 0.4s var(--clay-spring) !important, transform 0.4s var(--clay-spring) !important;
     overflow: visible !important;
     padding: 24px !important;
@@ -203,12 +204,12 @@ body {
 [data-theme="gradient"] .card,
 [data-theme="gold"] .card {
     background: linear-gradient(145deg, #2C2C2E 0%, #1C1C1E 100%) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        16px 16px 32px rgba(0,0,0, var(--clay-shadow-deep)),
-        -16px -16px 32px rgba(255,255,255, var(--clay-highlight)),
-        inset 8px 8px 16px rgba(255,255,255,0.08),
-        inset -8px -8px 16px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+        16px 16px 32px rgba(0, 0, 0, var(--clay-shadow-deep)),
+        -16px -16px 32px rgba(255, 255, 255, var(--clay-highlight)),
+        inset 8px 8px 16px rgba(255, 255, 255, 0.08),
+        inset -8px -8px 16px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
 }
 
 .card::before {
@@ -218,10 +219,10 @@ body {
 .card:hover {
     transform: translateY(-4px) scale(1.01) !important;
     box-shadow:
-        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255,255,255,1),
-        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255, 255, 255, 1),
+        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
 }
 
 [data-theme="dark"] .card:hover,
@@ -230,17 +231,17 @@ body {
 [data-theme="gradient"] .card:hover,
 [data-theme="gold"] .card:hover {
     box-shadow:
-        20px 20px 40px rgba(0,0,0, var(--clay-shadow-deep)),
-        -20px -20px 40px rgba(255,255,255, var(--clay-highlight)),
-        inset 10px 10px 20px rgba(255,255,255,0.08),
-        inset -10px -10px 20px rgba(0,0,0, var(--clay-inset-shadow)) !important;
+        20px 20px 40px rgba(0, 0, 0, var(--clay-shadow-deep)),
+        -20px -20px 40px rgba(255, 255, 255, var(--clay-highlight)),
+        inset 10px 10px 20px rgba(255, 255, 255, 0.08),
+        inset -10px -10px 20px rgba(0, 0, 0, var(--clay-inset-shadow)) !important;
 }
 
 .card:active {
     transform: scale(0.97) translateY(4px) !important;
     box-shadow:
-        inset 8px 8px 16px rgba(0,0,0, var(--clay-shadow-mid)),
-        inset -8px -8px 16px rgba(255,255,255, var(--clay-highlight)) !important;
+        inset 8px 8px 16px rgba(0, 0, 0, var(--clay-shadow-mid)),
+        inset -8px -8px 16px rgba(255, 255, 255, var(--clay-highlight)) !important;
 }
 
 [data-theme="dark"] .card:active,
@@ -249,70 +250,72 @@ body {
 [data-theme="gradient"] .card:active,
 [data-theme="gold"] .card:active {
     box-shadow:
-        inset 8px 8px 16px rgba(0,0,0, var(--clay-shadow-deep)),
-        inset -8px -8px 16px rgba(255,255,255,0.02) !important;
+        inset 8px 8px 16px rgba(0, 0, 0, var(--clay-shadow-deep)),
+        inset -8px -8px 16px rgba(255, 255, 255, 0.02) !important;
 }
 
 /* Hide old card glow effects */
-.card-glow { display: none !important; }
+.card-glow {
+    display: none !important;
+}
 
 /* ─── SECTION 5: CARD ICONS — CLAY PILLOWS ─── */
 .card-icon {
     border-radius: var(--clay-radius-icon) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow:
-        6px 6px 12px rgba(0,0,0,0.05),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(0, 0, 0, 0.05),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
 .sunrise-icon {
     background: linear-gradient(145deg, #FFF0D8, #FFE0B0) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-orange-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-orange-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 .book-icon {
     background: linear-gradient(145deg, #E0F0FF, #C8E4FF) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-blue-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-blue-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 .mala-icon {
     background: linear-gradient(145deg, #F0E0FF, #E0C8FF) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-purple-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-purple-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 .alarm-icon {
     background: linear-gradient(145deg, #E0F8FF, #C0ECFF) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-teal-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-teal-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 .streak-icon {
     background: linear-gradient(145deg, #FFE8E0, #FFD0C0) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-red-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-red-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 .reports-icon {
     background: linear-gradient(145deg, #E0FFE8, #C0F5D0) !important;
     box-shadow:
-        6px 6px 12px rgba(var(--clay-green-rgb),0.15),
-        -6px -6px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 6px rgba(255,255,255,1) !important;
+        6px 6px 12px rgba(var(--clay-green-rgb), 0.15),
+        -6px -6px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 6px rgba(255, 255, 255, 1) !important;
 }
 
 /* Dark mode card icons */
@@ -320,38 +323,55 @@ body {
 [data-theme="dark"] .card-icon,
 [data-theme="saffron"] .card-icon,
 [data-theme="gold"] .card-icon {
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        6px 6px 12px rgba(0,0,0,0.35),
-        -6px -6px 12px rgba(255,255,255,0.04),
-        inset 2px 2px 6px rgba(255,255,255,0.06) !important;
+        6px 6px 12px rgba(0, 0, 0, 0.35),
+        -6px -6px 12px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.06) !important;
 }
 
 [data-theme="dark"] .sunrise-icon,
 [data-theme="dark"] .sunrise-icon,
-[data-theme="saffron"] .sunrise-icon { background: linear-gradient(145deg, #3A2E18, #2A2010) !important; }
+[data-theme="saffron"] .sunrise-icon {
+    background: linear-gradient(145deg, #3A2E18, #2A2010) !important;
+}
+
 [data-theme="dark"] .book-icon,
-[data-theme="dark"] .book-icon { background: linear-gradient(145deg, #1A2840, #102030) !important; }
+[data-theme="dark"] .book-icon {
+    background: linear-gradient(145deg, #1A2840, #102030) !important;
+}
+
 [data-theme="dark"] .mala-icon,
-[data-theme="dark"] .mala-icon { background: linear-gradient(145deg, #2A1838, #1A1028) !important; }
+[data-theme="dark"] .mala-icon {
+    background: linear-gradient(145deg, #2A1838, #1A1028) !important;
+}
+
 [data-theme="dark"] .alarm-icon,
-[data-theme="dark"] .alarm-icon { background: linear-gradient(145deg, #183038, #102028) !important; }
+[data-theme="dark"] .alarm-icon {
+    background: linear-gradient(145deg, #183038, #102028) !important;
+}
+
 [data-theme="dark"] .streak-icon,
-[data-theme="dark"] .streak-icon { background: linear-gradient(145deg, #381818, #281010) !important; }
+[data-theme="dark"] .streak-icon {
+    background: linear-gradient(145deg, #381818, #281010) !important;
+}
+
 [data-theme="dark"] .reports-icon,
-[data-theme="dark"] .reports-icon { background: linear-gradient(145deg, #183820, #102818) !important; }
+[data-theme="dark"] .reports-icon {
+    background: linear-gradient(145deg, #183820, #102818) !important;
+}
 
 /* ─── SECTION 6: BUTTONS — CLAY CAPSULES ─── */
 .present-btn {
     background: linear-gradient(145deg, #FFD080, #FFAB40) !important;
-    border: 1px solid rgba(255,255,255,0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
     border-radius: var(--clay-radius-btn) !important;
     color: #3A2000 !important;
     box-shadow:
-        8px 8px 16px rgba(var(--clay-orange-rgb),0.20),
-        -8px -8px 16px rgba(255,255,255,0.80),
-        inset 4px 4px 8px rgba(255,255,255,0.8),
-        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
+        8px 8px 16px rgba(var(--clay-orange-rgb), 0.20),
+        -8px -8px 16px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.8),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.04) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
@@ -362,42 +382,42 @@ body {
 .present-btn:active {
     transform: scale(0.94) translateY(3px) !important;
     box-shadow:
-        inset 8px 8px 16px rgba(0,0,0,0.15),
-        inset -8px -8px 16px rgba(255,255,255,0.5) !important;
+        inset 8px 8px 16px rgba(0, 0, 0, 0.15),
+        inset -8px -8px 16px rgba(255, 255, 255, 0.5) !important;
 }
 
 .present-btn.marked {
     background: linear-gradient(145deg, #60D880, #34C759) !important;
     box-shadow:
-        8px 8px 16px rgba(var(--clay-green-rgb),0.20),
-        -8px -8px 16px rgba(255,255,255,0.80),
-        inset 4px 4px 8px rgba(255,255,255,0.8),
-        inset -4px -4px 8px rgba(0,0,0,0.04) !important;
+        8px 8px 16px rgba(var(--clay-green-rgb), 0.20),
+        -8px -8px 16px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.8),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 [data-theme="dark"] .present-btn,
 [data-theme="dark"] .present-btn {
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.40),
-        -8px -8px 16px rgba(255,255,255,0.05),
-        inset 4px 4px 8px rgba(255,255,255,0.08),
-        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.40),
+        -8px -8px 16px rgba(255, 255, 255, 0.05),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.08),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 [data-theme="dark"] .present-btn:active,
 [data-theme="dark"] .present-btn:active {
     box-shadow:
-        inset 8px 8px 16px rgba(0,0,0,0.30),
-        inset -8px -8px 16px rgba(255,255,255,0.05) !important;
+        inset 8px 8px 16px rgba(0, 0, 0, 0.30),
+        inset -8px -8px 16px rgba(255, 255, 255, 0.05) !important;
 }
 
 [data-theme="dark"] .present-btn.marked,
 [data-theme="dark"] .present-btn.marked {
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.40),
-        -8px -8px 16px rgba(255,255,255,0.05),
-        inset 4px 4px 8px rgba(255,255,255,0.08),
-        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.40),
+        -8px -8px 16px rgba(255, 255, 255, 0.05),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.08),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Complete All, Add Bani, Actions */
@@ -405,13 +425,13 @@ body {
 .add-bani-btn,
 .mala-action-btn {
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-radius: var(--clay-radius-btn) !important;
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.06),
-        -8px -8px 16px rgba(255,255,255,0.80),
-        inset 4px 4px 8px rgba(255,255,255,1),
-        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.06),
+        -8px -8px 16px rgba(255, 255, 255, 0.80),
+        inset 4px 4px 8px rgba(255, 255, 255, 1),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.03) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
@@ -425,8 +445,8 @@ body {
 .mala-action-btn:active {
     transform: scale(0.94) !important;
     box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,0.12),
-        inset -6px -6px 12px rgba(255,255,255,0.5) !important;
+        inset 6px 6px 12px rgba(0, 0, 0, 0.12),
+        inset -6px -6px 12px rgba(255, 255, 255, 0.5) !important;
 }
 
 [data-theme="dark"] .complete-all-btn:active,
@@ -436,17 +456,17 @@ body {
 [data-theme="dark"] .add-bani-btn:active,
 [data-theme="dark"] .mala-action-btn:active {
     box-shadow:
-        inset 6px 6px 12px rgba(0,0,0,0.40),
-        inset -6px -6px 12px rgba(255,255,255,0.05) !important;
+        inset 6px 6px 12px rgba(0, 0, 0, 0.40),
+        inset -6px -6px 12px rgba(255, 255, 255, 0.05) !important;
 }
 
 [data-theme="dark"] .mala-action-btn.primary,
 [data-theme="dark"] .mala-action-btn.primary {
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.40),
-        -8px -8px 16px rgba(255,255,255,0.05),
-        inset 4px 4px 8px rgba(255,255,255,0.05),
-        inset -4px -4px 8px rgba(0,0,0,0.2) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.40),
+        -8px -8px 16px rgba(255, 255, 255, 0.05),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.05),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
 [data-theme="dark"] .complete-all-btn,
@@ -456,24 +476,24 @@ body {
 [data-theme="dark"] .add-bani-btn,
 [data-theme="dark"] .mala-action-btn:not(.primary) {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.30),
-        -8px -8px 16px rgba(255,255,255,0.04),
-        inset 4px 4px 8px rgba(255,255,255,0.06),
-        inset -4px -4px 8px rgba(0,0,0,0.15) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.30),
+        -8px -8px 16px rgba(255, 255, 255, 0.04),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.06),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ─── SECTION 7: BANI ITEMS — CLAY ROWS ─── */
 .bani-item {
-    background: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(240,240,245,0.7)) !important;
-    border: 1px solid rgba(255,255,255,0.6) !important;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.7), rgba(240, 240, 245, 0.7)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
     border-radius: var(--clay-radius-inner) !important;
     box-shadow:
-        6px 6px 12px rgba(0,0,0,0.05),
-        -6px -6px 12px rgba(255,255,255,0.80),
-        inset 2px 2px 4px rgba(255,255,255,0.9),
-        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+        6px 6px 12px rgba(0, 0, 0, 0.05),
+        -6px -6px 12px rgba(255, 255, 255, 0.80),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
@@ -483,64 +503,64 @@ body {
 
 .bani-item.completed {
     background: linear-gradient(145deg, #E8FFE8, #D0F5D0) !important;
-    border-color: rgba(var(--clay-green-rgb),0.25) !important;
+    border-color: rgba(var(--clay-green-rgb), 0.25) !important;
 }
 
 [data-theme="dark"] .bani-item,
 [data-theme="dark"] .bani-item {
-    background: linear-gradient(145deg, rgba(50,50,52,0.8), rgba(38,38,40,0.8)) !important;
-    border-color: rgba(255,255,255,0.06) !important;
+    background: linear-gradient(145deg, rgba(50, 50, 52, 0.8), rgba(38, 38, 40, 0.8)) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
     box-shadow:
-        6px 6px 12px rgba(0,0,0,0.25),
-        -6px -6px 12px rgba(255,255,255,0.03),
-        inset 2px 2px 4px rgba(255,255,255,0.05),
-        inset -2px -2px 4px rgba(0,0,0,0.10) !important;
+        6px 6px 12px rgba(0, 0, 0, 0.25),
+        -6px -6px 12px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.10) !important;
 }
 
 /* ─── SECTION 8: MALA COUNTER — CLAY RING ─── */
 .mala-center-btn {
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow:
-        12px 12px 24px rgba(0,0,0,0.08),
-        -12px -12px 24px rgba(255,255,255,0.90),
-        inset 6px 6px 12px rgba(255,255,255,1),
-        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+        12px 12px 24px rgba(0, 0, 0, 0.08),
+        -12px -12px 24px rgba(255, 255, 255, 0.90),
+        inset 6px 6px 12px rgba(255, 255, 255, 1),
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
     transition: background-color 0.15s var(--clay-spring) !important, color 0.15s var(--clay-spring) !important;
 }
 
 [data-theme="dark"] .mala-center-btn,
 [data-theme="dark"] .mala-center-btn {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.10) !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
     box-shadow:
-        12px 12px 24px rgba(0,0,0,0.30),
-        -12px -12px 24px rgba(255,255,255,0.05),
-        inset 6px 6px 12px rgba(255,255,255,0.08),
-        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
+        12px 12px 24px rgba(0, 0, 0, 0.30),
+        -12px -12px 24px rgba(255, 255, 255, 0.05),
+        inset 6px 6px 12px rgba(255, 255, 255, 0.08),
+        inset -6px -6px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .mala-center-btn:active {
-    transform: translate(-50%,-50%) scale(0.92) !important;
+    transform: translate(-50%, -50%) scale(0.92) !important;
     box-shadow:
-        inset 8px 8px 16px rgba(0,0,0,0.15),
-        inset -8px -8px 16px rgba(255,255,255,0.5) !important;
+        inset 8px 8px 16px rgba(0, 0, 0, 0.15),
+        inset -8px -8px 16px rgba(255, 255, 255, 0.5) !important;
 }
 
 .mala-progress-bar {
     background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
-    border: 1px solid rgba(255,255,255,0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
     border-radius: 9999px !important;
     box-shadow:
-        inset 3px 3px 8px rgba(0,0,0,0.10),
-        inset -2px -2px 6px rgba(255,255,255,0.8),
-        0 2px 4px rgba(255,255,255,0.7) !important;
+        inset 3px 3px 8px rgba(0, 0, 0, 0.10),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.8),
+        0 2px 4px rgba(255, 255, 255, 0.7) !important;
 }
 
 .mala-progress-fill {
     box-shadow:
-        inset 2px 2px 6px rgba(0,0,0,0.15),
-        inset -1px -1px 4px rgba(255,255,255,0.4) !important;
+        inset 2px 2px 6px rgba(0, 0, 0, 0.15),
+        inset -1px -1px 4px rgba(255, 255, 255, 0.4) !important;
 }
 
 /* ─── SECTION 9: TAB BAR — CLAY DOCK ─── */
@@ -549,17 +569,17 @@ body {
 }
 
 .tab-bar-blur {
-    background: linear-gradient(145deg, rgba(255,255,255,0.92), rgba(240,240,245,0.92)) !important;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(240, 240, 245, 0.92)) !important;
     backdrop-filter: blur(30px) !important;
     -webkit-backdrop-filter: blur(30px) !important;
     border-top: none !important;
     border-radius: 28px 28px 0 0 !important;
     box-shadow:
-        0 -12px 24px rgba(0,0,0,0.05),
-        0 12px 24px rgba(255,255,255,1),
-        inset 4px 4px 12px rgba(255,255,255,1),
-        inset -4px -4px 12px rgba(0,0,0,0.03) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+        0 -12px 24px rgba(0, 0, 0, 0.05),
+        0 12px 24px rgba(255, 255, 255, 1),
+        inset 4px 4px 12px rgba(255, 255, 255, 1),
+        inset -4px -4px 12px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-bottom: none !important;
 }
 
@@ -567,33 +587,33 @@ body {
 [data-theme="dark"] .tab-bar-blur,
 [data-theme="saffron"] .tab-bar-blur,
 [data-theme="gold"] .tab-bar-blur {
-    background: linear-gradient(145deg, rgba(44,44,46,0.92), rgba(28,28,30,0.92)) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    background: linear-gradient(145deg, rgba(44, 44, 46, 0.92), rgba(28, 28, 30, 0.92)) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        0 -12px 24px rgba(0,0,0,0.25),
-        0 12px 24px rgba(255,255,255,0.03),
-        inset 4px 4px 12px rgba(255,255,255,0.08),
-        inset -4px -4px 12px rgba(0,0,0,0.10) !important;
+        0 -12px 24px rgba(0, 0, 0, 0.25),
+        0 12px 24px rgba(255, 255, 255, 0.03),
+        inset 4px 4px 12px rgba(255, 255, 255, 0.08),
+        inset -4px -4px 12px rgba(0, 0, 0, 0.10) !important;
 }
 
 .tab-item.active {
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
     border-radius: 16px !important;
     box-shadow:
-        4px 4px 12px rgba(0,0,0,0.08),
-        -4px -4px 12px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1),
-        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+        4px 4px 12px rgba(0, 0, 0, 0.08),
+        -4px -4px 12px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
 }
 
 [data-theme="dark"] .tab-item.active,
 [data-theme="dark"] .tab-item.active {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
     box-shadow:
-        4px 4px 12px rgba(0,0,0,0.30),
-        -4px -4px 12px rgba(255,255,255,0.04),
-        inset 2px 2px 4px rgba(255,255,255,0.06),
-        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
+        4px 4px 12px rgba(0, 0, 0, 0.30),
+        -4px -4px 12px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.06),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ─── SECTION 10: PERIOD TABS — CLAY SEGMENTED CONTROL ─── */
@@ -601,42 +621,42 @@ body {
     background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
     border-radius: 20px !important;
     padding: 4px !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow:
-        inset 4px 4px 12px rgba(0,0,0,0.08),
-        inset -3px -3px 8px rgba(255,255,255,0.8),
-        0 3px 8px rgba(255,255,255,0.8) !important;
+        inset 4px 4px 12px rgba(0, 0, 0, 0.08),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.8),
+        0 3px 8px rgba(255, 255, 255, 0.8) !important;
 }
 
 .period-tab.active {
     background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
     border-radius: 16px !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.08),
-        -4px -4px 10px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1),
-        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.08),
+        -4px -4px 10px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
 }
 
 [data-theme="dark"] .time-period-tabs,
 [data-theme="dark"] .time-period-tabs {
     background: linear-gradient(145deg, #1A1A1C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
     box-shadow:
-        inset 4px 4px 12px rgba(0,0,0,0.25),
-        inset -3px -3px 8px rgba(255,255,255,0.03) !important;
+        inset 4px 4px 12px rgba(0, 0, 0, 0.25),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.03) !important;
 }
 
 [data-theme="dark"] .period-tab.active,
 [data-theme="dark"] .period-tab.active {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.30),
-        -4px -4px 10px rgba(255,255,255,0.04),
-        inset 2px 2px 4px rgba(255,255,255,0.06),
-        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.30),
+        -4px -4px 10px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.06),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ─── SECTION 11: STAT ITEMS — CLAY INSET WELLS ─── */
@@ -645,58 +665,58 @@ body {
     border-radius: var(--clay-radius-inner) !important;
     margin: 16px -8px -8px !important;
     padding: 16px !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow:
-        inset 4px 4px 12px rgba(0,0,0,0.06),
-        inset -3px -3px 8px rgba(255,255,255,0.8),
-        0 2px 4px rgba(255,255,255,0.7) !important;
+        inset 4px 4px 12px rgba(0, 0, 0, 0.06),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.8),
+        0 2px 4px rgba(255, 255, 255, 0.7) !important;
 }
 
 [data-theme="dark"] .card-footer,
 [data-theme="dark"] .card-footer {
     background: linear-gradient(145deg, #1A1A1C, #222224) !important;
-    border-color: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
     box-shadow:
-        inset 4px 4px 12px rgba(0,0,0,0.20),
-        inset -3px -3px 8px rgba(255,255,255,0.02) !important;
+        inset 4px 4px 12px rgba(0, 0, 0, 0.20),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.02) !important;
 }
 
 /* ─── SECTION 12: MODALS — CLAY SHEETS ─── */
 .modal-container {
     background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F7 100%) !important;
     border-radius: 32px 32px 0 0 !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-bottom: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow:
-        0 -16px 32px rgba(0,0,0,0.06),
-        0 8px 24px rgba(255,255,255,1),
-        inset 4px 4px 16px rgba(255,255,255,1),
-        inset -4px -4px 16px rgba(0,0,0,0.03) !important;
+        0 -16px 32px rgba(0, 0, 0, 0.06),
+        0 8px 24px rgba(255, 255, 255, 1),
+        inset 4px 4px 16px rgba(255, 255, 255, 1),
+        inset -4px -4px 16px rgba(0, 0, 0, 0.03) !important;
 }
 
 [data-theme="dark"] .modal-container,
 [data-theme="dark"] .modal-container {
     background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        0 -16px 32px rgba(0,0,0,0.35),
-        0 8px 24px rgba(255,255,255,0.03),
-        inset 4px 4px 16px rgba(255,255,255,0.08),
-        inset -4px -4px 16px rgba(0,0,0,0.15) !important;
+        0 -16px 32px rgba(0, 0, 0, 0.35),
+        0 8px 24px rgba(255, 255, 255, 0.03),
+        inset 4px 4px 16px rgba(255, 255, 255, 0.08),
+        inset -4px -4px 16px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ─── SECTION 13: ACHIEVEMENT CARDS — MINI CLAY ─── */
 .achievement-card {
     background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-radius: var(--clay-radius-inner) !important;
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.06),
-        -8px -8px 16px rgba(255,255,255,0.85),
-        inset 4px 4px 8px rgba(255,255,255,1),
-        inset -4px -4px 8px rgba(0,0,0,0.03) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.06),
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(255, 255, 255, 1),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.03) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
@@ -707,49 +727,49 @@ body {
 
 .achievement-card:not(.locked) {
     box-shadow:
-        8px 8px 16px rgba(var(--clay-gold-rgb),0.20),
-        -8px -8px 16px rgba(255,255,255,0.85),
-        inset 4px 4px 8px rgba(255,255,255,1) !important;
+        8px 8px 16px rgba(var(--clay-gold-rgb), 0.20),
+        -8px -8px 16px rgba(255, 255, 255, 0.85),
+        inset 4px 4px 8px rgba(255, 255, 255, 1) !important;
 }
 
 [data-theme="dark"] .achievement-card,
 [data-theme="dark"] .achievement-card {
     background: linear-gradient(145deg, #3A3A3C, #2A2A2C) !important;
-    border-color: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
     box-shadow:
-        8px 8px 16px rgba(0,0,0,0.30),
-        -8px -8px 16px rgba(255,255,255,0.04),
-        inset 4px 4px 8px rgba(255,255,255,0.05) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.30),
+        -8px -8px 16px rgba(255, 255, 255, 0.04),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.05) !important;
 }
 
 /* ─── SECTION 14: STREAK DISPLAY ─── */
 .streak-number {
-    text-shadow: 0 4px 12px rgba(var(--clay-orange-rgb),0.30) !important;
+    text-shadow: 0 4px 12px rgba(var(--clay-orange-rgb), 0.30) !important;
 }
 
 /* ─── SECTION 15: TOAST — CLAY PILL ─── */
 .toast {
     background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     border-radius: 20px !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow:
-        12px 12px 24px rgba(0,0,0,0.08),
-        -12px -12px 24px rgba(255,255,255,0.9),
-        inset 6px 6px 12px rgba(255,255,255,1),
-        inset -6px -6px 12px rgba(0,0,0,0.04) !important;
+        12px 12px 24px rgba(0, 0, 0, 0.08),
+        -12px -12px 24px rgba(255, 255, 255, 0.9),
+        inset 6px 6px 12px rgba(255, 255, 255, 1),
+        inset -6px -6px 12px rgba(0, 0, 0, 0.04) !important;
 }
 
 [data-theme="dark"] .toast,
 [data-theme="dark"] .toast {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        12px 12px 24px rgba(0,0,0,0.40),
-        -12px -12px 24px rgba(255,255,255,0.03),
-        inset 6px 6px 12px rgba(255,255,255,0.06),
-        inset -6px -6px 12px rgba(0,0,0,0.15) !important;
+        12px 12px 24px rgba(0, 0, 0, 0.40),
+        -12px -12px 24px rgba(255, 255, 255, 0.03),
+        inset 6px 6px 12px rgba(255, 255, 255, 0.06),
+        inset -6px -6px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ─── SECTION 16: REPORT/ALARM INNER ELEMENTS ─── */
@@ -760,13 +780,13 @@ body {
 .goal-preset,
 .setting-item,
 .settings-section {
-    background: linear-gradient(145deg, rgba(255,255,255,0.6), rgba(240,240,245,0.6)) !important;
-    border: 1px solid rgba(255,255,255,0.50) !important;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.6), rgba(240, 240, 245, 0.6)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.50) !important;
     border-radius: 16px !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.05),
-        -4px -4px 10px rgba(255,255,255,0.8),
-        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.05),
+        -4px -4px 10px rgba(255, 255, 255, 0.8),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
     margin-bottom: 10px !important;
     padding: 14px !important;
 }
@@ -785,40 +805,40 @@ body {
 [data-theme="dark"] .goal-preset,
 [data-theme="dark"] .setting-item,
 [data-theme="dark"] .settings-section {
-    background: linear-gradient(145deg, rgba(50,50,52,0.6), rgba(38,38,40,0.6)) !important;
-    border-color: rgba(255,255,255,0.05) !important;
+    background: linear-gradient(145deg, rgba(50, 50, 52, 0.6), rgba(38, 38, 40, 0.6)) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.25),
-        -4px -4px 10px rgba(255,255,255,0.03),
-        inset 2px 2px 4px rgba(255,255,255,0.04) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.25),
+        -4px -4px 10px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.04) !important;
 }
 
 .mala-option.active {
     background: linear-gradient(145deg, #FFE8C8, #FFD898) !important;
-    border-color: rgba(var(--clay-gold-rgb),0.30) !important;
+    border-color: rgba(var(--clay-gold-rgb), 0.30) !important;
     box-shadow:
-        4px 4px 10px rgba(var(--clay-gold-rgb),0.20),
-        -4px -4px 10px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1) !important;
+        4px 4px 10px rgba(var(--clay-gold-rgb), 0.20),
+        -4px -4px 10px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
 }
 
 [data-theme="dark"] .mala-option.active,
 [data-theme="dark"] .mala-option.active {
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.30),
-        -4px -4px 10px rgba(255,255,255,0.05),
-        inset 2px 2px 4px rgba(255,255,255,0.08) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.30),
+        -4px -4px 10px rgba(255, 255, 255, 0.05),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ─── SECTION 17: WEEK VIEW DAYS ─── */
 .week-days .day-item {
-    background: linear-gradient(145deg, rgba(255,255,255,0.5), rgba(240,240,245,0.5)) !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(240, 240, 245, 0.5)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     border-radius: 14px !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.05),
-        -4px -4px 10px rgba(255,255,255,0.8),
-        inset 2px 2px 4px rgba(255,255,255,0.9) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.05),
+        -4px -4px 10px rgba(255, 255, 255, 0.8),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.9) !important;
 }
 
 /* ─── SECTION 18: INPUTS — CLAY INSET ─── */
@@ -828,12 +848,12 @@ select,
 .search-input,
 .setting-select {
     background: linear-gradient(145deg, #E5E5EA, #F0F0F5) !important;
-    border: 1px solid rgba(255,255,255,0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
     border-radius: 16px !important;
     box-shadow:
-        inset 4px 4px 10px rgba(0,0,0,0.06),
-        inset -4px -4px 10px rgba(255,255,255,0.8),
-        0 2px 4px rgba(255,255,255,0.7) !important;
+        inset 4px 4px 10px rgba(0, 0, 0, 0.06),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.8),
+        0 2px 4px rgba(255, 255, 255, 0.7) !important;
     transition: background-color 0.3s var(--clay-spring) !important, color 0.3s var(--clay-spring) !important, transform 0.3s var(--clay-spring) !important;
 }
 
@@ -842,10 +862,10 @@ input[type="number"]:focus,
 select:focus,
 .search-input:focus {
     box-shadow:
-        inset 4px 4px 10px rgba(0,0,0,0.08),
-        inset -4px -4px 10px rgba(255,255,255,0.8),
-        0 0 0 2px rgba(var(--clay-gold-rgb),0.35) !important;
-    border-color: rgba(var(--clay-gold-rgb),0.5) !important;
+        inset 4px 4px 10px rgba(0, 0, 0, 0.08),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.8),
+        0 0 0 2px rgba(var(--clay-gold-rgb), 0.35) !important;
+    border-color: rgba(var(--clay-gold-rgb), 0.5) !important;
 }
 
 [data-theme="dark"] input[type="text"],
@@ -857,14 +877,18 @@ select:focus,
 [data-theme="dark"] select,
 [data-theme="dark"] .setting-select {
     background: linear-gradient(145deg, #1A1A1C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.06) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
     box-shadow:
-        inset 4px 4px 10px rgba(0,0,0,0.20),
-        inset -4px -4px 10px rgba(255,255,255,0.03) !important;
+        inset 4px 4px 10px rgba(0, 0, 0, 0.20),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.03) !important;
 }
 
 /* ─── SECTION 19: ANIMATIONS ─── */
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 /* ─── SECTION 20: VISIBILITY FIXES ─── */
 /* Fix for light mode time display text visibility */
@@ -898,12 +922,12 @@ body:not([data-theme="dark"]) .add-bani-btn {
     align-items: center;
     justify-content: center;
     background: linear-gradient(145deg, #FFFFFF, #E8E8EC) !important;
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.06),
-        -4px -4px 10px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1),
-        inset -2px -2px 4px rgba(0,0,0,0.02) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.06),
+        -4px -4px 10px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.02) !important;
     color: var(--text-secondary);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
@@ -911,12 +935,12 @@ body:not([data-theme="dark"]) .add-bani-btn {
 [data-theme="dark"] .streak-action-btn,
 [data-theme="dark"] .streak-action-btn {
     background: linear-gradient(145deg, #3A3A3C, #2C2C2E) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.30),
-        -4px -4px 10px rgba(255,255,255,0.04),
-        inset 2px 2px 4px rgba(255,255,255,0.06),
-        inset -2px -2px 4px rgba(0,0,0,0.12) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.30),
+        -4px -4px 10px rgba(255, 255, 255, 0.04),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.06),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.12) !important;
 }
 
 .streak-action-btn svg {
@@ -944,22 +968,44 @@ body:not([data-theme="dark"]) .add-bani-btn {
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-@keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
 
 /* ─── SECTION 22: ACCESSIBILITY ─── */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
+
+    *,
+    *::before,
+    *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
 }
 
-button:focus-visible, input:focus-visible {
-    outline: 2px solid rgba(var(--clay-gold-rgb),0.6);
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid rgba(var(--clay-gold-rgb), 0.6);
     outline-offset: 2px;
 }
 
@@ -968,19 +1014,19 @@ button:focus-visible, input:focus-visible {
     background: linear-gradient(145deg, #E0E0E4, #F0F0F5) !important;
     border-radius: 14px !important;
     padding: 3px !important;
-    border: 1px solid rgba(255,255,255,0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
     box-shadow:
-        inset 4px 4px 10px rgba(0,0,0,0.06),
-        inset -4px -4px 10px rgba(255,255,255,0.8) !important;
+        inset 4px 4px 10px rgba(0, 0, 0, 0.06),
+        inset -4px -4px 10px rgba(255, 255, 255, 0.8) !important;
 }
 
 .report-tab.active {
     background: linear-gradient(145deg, #FFFFFF, #F0F0F5) !important;
     border-radius: 12px !important;
     box-shadow:
-        4px 4px 10px rgba(0,0,0,0.08),
-        -4px -4px 10px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1) !important;
+        4px 4px 10px rgba(0, 0, 0, 0.08),
+        -4px -4px 10px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
 }
 
 /* ─── SECTION 24: CHART BARS — CLAY ─── */
@@ -988,30 +1034,30 @@ button:focus-visible, input:focus-visible {
     background: linear-gradient(180deg, #FFD080, #FFAB40) !important;
     border-radius: 8px 8px 0 0 !important;
     box-shadow:
-        inset 2px 2px 6px rgba(0,0,0,0.15),
-        inset -2px -2px 6px rgba(255,255,255,0.5) !important;
+        inset 2px 2px 6px rgba(0, 0, 0, 0.15),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.5) !important;
 }
 
 /* ─── SECTION 25: REPORT INSIGHT — CLAY ─── */
 .report-insight {
-    background: linear-gradient(145deg, rgba(255,248,240,0.8), rgba(255,240,230,0.8)) !important;
-    border: 1px solid rgba(var(--clay-gold-rgb),0.3) !important;
-    border-left: 4px solid rgba(var(--clay-gold-rgb),0.6) !important;
+    background: linear-gradient(145deg, rgba(255, 248, 240, 0.8), rgba(255, 240, 230, 0.8)) !important;
+    border: 1px solid rgba(var(--clay-gold-rgb), 0.3) !important;
+    border-left: 4px solid rgba(var(--clay-gold-rgb), 0.6) !important;
     border-radius: 16px !important;
     box-shadow:
-        6px 6px 16px rgba(var(--clay-gold-rgb),0.15),
-        -6px -6px 16px rgba(255,255,255,0.85),
-        inset 2px 2px 4px rgba(255,255,255,1) !important;
+        6px 6px 16px rgba(var(--clay-gold-rgb), 0.15),
+        -6px -6px 16px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 4px rgba(255, 255, 255, 1) !important;
 }
 
 [data-theme="dark"] .report-insight,
 [data-theme="dark"] .report-insight {
-    background: linear-gradient(145deg, rgba(60,48,30,0.5), rgba(40,32,20,0.5)) !important;
-    border-color: rgba(var(--clay-gold-rgb),0.20) !important;
+    background: linear-gradient(145deg, rgba(60, 48, 30, 0.5), rgba(40, 32, 20, 0.5)) !important;
+    border-color: rgba(var(--clay-gold-rgb), 0.20) !important;
     box-shadow:
-        6px 6px 16px rgba(0,0,0,0.25),
-        -6px -6px 16px rgba(255,255,255,0.03),
-        inset 2px 2px 4px rgba(255,255,255,0.05) !important;
+        6px 6px 16px rgba(0, 0, 0, 0.25),
+        -6px -6px 16px rgba(255, 255, 255, 0.03),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.05) !important;
 }
 
 /* ─── SECTION 26: ALARM COLLAPSIBLE ─── */
@@ -1027,12 +1073,12 @@ button:focus-visible, input:focus-visible {
     height: 32px;
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), background 0.2s;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
     padding: 0;
     flex-shrink: 0;
 }
@@ -1041,7 +1087,7 @@ button:focus-visible, input:focus-visible {
     width: 18px;
     height: 18px;
     stroke: var(--text-secondary, #666);
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .alarm-toggle-btn.rotated svg {
@@ -1050,7 +1096,7 @@ button:focus-visible, input:focus-visible {
 
 [data-theme="dark"] .alarm-toggle-btn,
 [data-theme="dark"] .alarm-toggle-btn {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .alarm-collapsed-summary {
@@ -1080,9 +1126,9 @@ button:focus-visible, input:focus-visible {
 }
 
 .alarm-body {
-    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1),
-                opacity 0.25s cubic-bezier(0.4,0,0.2,1),
-                padding 0.3s cubic-bezier(0.4,0,0.2,1);
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 }
 
@@ -1110,7 +1156,7 @@ button:focus-visible, input:focus-visible {
 .mala-menu-overlay {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    background: rgba(0,0,0,0.4) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
 }
 
 .mala-menu-overlay.pre-rendered {
@@ -1131,7 +1177,7 @@ button:focus-visible, input:focus-visible {
 
 .mala-menu-overlay.pre-rendered .mala-menu {
     transform: translateY(100%);
-    transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mala-menu-overlay.pre-rendered.visible .mala-menu {
@@ -1157,15 +1203,15 @@ button:focus-visible, input:focus-visible {
 .week-summary {
     position: sticky !important;
     bottom: 0;
-    background: var(--glass-bg, rgba(255,255,255,0.9));
+    background: var(--glass-bg, rgba(255, 255, 255, 0.9));
     padding-top: 12px;
-    border-top: 1px solid var(--glass-border, rgba(0,0,0,0.08));
+    border-top: 1px solid var(--glass-border, rgba(0, 0, 0, 0.08));
     z-index: 2;
 }
 
 [data-theme="dark"] .week-summary,
 [data-theme="dark"] .week-summary {
-    background: var(--glass-bg, rgba(44,44,46,0.95));
+    background: var(--glass-bg, rgba(44, 44, 46, 0.95));
 }
 
 /* ─── SECTION 29: YESTERDAY BUTTON ─── */
@@ -1175,8 +1221,8 @@ button:focus-visible, input:focus-visible {
     gap: 4px;
     padding: 4px 10px;
     border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.03);
     color: var(--system-blue, #007AFF);
     font-size: 12px;
     font-weight: 600;
@@ -1187,13 +1233,13 @@ button:focus-visible, input:focus-visible {
 
 .yesterday-btn:active {
     transform: scale(0.95);
-    background: rgba(0,122,255,0.08);
+    background: rgba(0, 122, 255, 0.08);
 }
 
 [data-theme="dark"] .yesterday-btn,
 [data-theme="dark"] .yesterday-btn {
-    border-color: rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* Date strip popup */
@@ -1201,7 +1247,7 @@ button:focus-visible, input:focus-visible {
     position: fixed;
     inset: 0;
     z-index: 10000;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -1215,7 +1261,7 @@ button:focus-visible, input:focus-visible {
     background: var(--glass-bg, #fff);
     border-radius: 20px 20px 0 0;
     overflow: hidden;
-    animation: slideUp 0.25s cubic-bezier(0.4,0,0.2,1);
+    animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] .date-strip-container,
@@ -1228,12 +1274,12 @@ button:focus-visible, input:focus-visible {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px 12px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .date-strip-header,
 [data-theme="dark"] .date-strip-header {
-    border-color: rgba(255,255,255,0.08);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .date-strip-header h3 {
@@ -1247,7 +1293,7 @@ button:focus-visible, input:focus-visible {
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
     font-size: 16px;
     cursor: pointer;
     display: flex;
@@ -1273,8 +1319,8 @@ button:focus-visible, input:focus-visible {
     gap: 4px;
     padding: 10px 12px;
     border-radius: 14px;
-    border: 1px solid rgba(0,0,0,0.06);
-    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(0, 0, 0, 0.02);
     cursor: pointer;
     scroll-snap-align: center;
     min-width: 56px;
@@ -1283,7 +1329,7 @@ button:focus-visible, input:focus-visible {
 
 .date-chip:active,
 .date-chip.selected {
-    background: rgba(0,122,255,0.1);
+    background: rgba(0, 122, 255, 0.1);
     border-color: var(--system-blue, #007AFF);
 }
 
@@ -1317,8 +1363,8 @@ button:focus-visible, input:focus-visible {
 
 [data-theme="dark"] .date-chip,
 [data-theme="dark"] .date-chip {
-    border-color: rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 /* Day detail modal */
@@ -1334,14 +1380,14 @@ button:focus-visible, input:focus-visible {
 .day-detail-card {
     padding: 12px 14px;
     border-radius: 14px;
-    background: rgba(0,0,0,0.03);
-    border: 1px solid rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="dark"] .day-detail-card,
 [data-theme="dark"] .day-detail-card {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.08);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
 }
 
 .day-detail-card h4 {
@@ -1387,7 +1433,7 @@ button:focus-visible, input:focus-visible {
     gap: 3px;
     padding: 2px 6px;
     border-radius: 6px;
-    background: rgba(255,149,0,0.12);
+    background: rgba(255, 149, 0, 0.12);
     color: #FF9500;
     font-size: 10px;
     font-weight: 700;
@@ -1400,9 +1446,9 @@ button:focus-visible, input:focus-visible {
     align-items: center;
     gap: 4px;
     padding: 4px 10px;
-    border: 1px solid var(--glass-border, rgba(0,0,0,0.08));
+    border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.08));
     border-radius: 16px;
-    background: var(--glass-bg, rgba(255,255,255,0.6));
+    background: var(--glass-bg, rgba(255, 255, 255, 0.6));
     color: var(--text-secondary, #666);
     font-size: 11px;
     font-weight: 600;
@@ -1412,6 +1458,7 @@ button:focus-visible, input:focus-visible {
     margin-left: auto;
     margin-right: 8px;
 }
+
 .yesterday-btn:active {
     background: var(--accent, #007AFF);
     color: #fff;
@@ -1422,12 +1469,13 @@ button:focus-visible, input:focus-visible {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: flex-end;
     justify-content: center;
     animation: fadeIn 0.15s ease;
 }
+
 .date-strip-container {
     width: 100%;
     max-width: 480px;
@@ -1436,17 +1484,27 @@ button:focus-visible, input:focus-visible {
     padding: 16px 12px 24px;
     animation: slideUp 0.2s ease;
 }
+
 .date-strip-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 4px 12px;
 }
-.date-strip-header h3 { margin: 0; font-size: 16px; }
-.date-strip-close {
-    background: none; border: none; font-size: 22px;
-    color: var(--text-tertiary); cursor: pointer;
+
+.date-strip-header h3 {
+    margin: 0;
+    font-size: 16px;
 }
+
+.date-strip-close {
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+}
+
 .date-strip-scroll {
     display: flex;
     gap: 8px;
@@ -1455,7 +1513,10 @@ button:focus-visible, input:focus-visible {
     scroll-snap-type: x mandatory;
 
 }
-.date-strip-scroll::-webkit-scrollbar { display: none; }
+
+.date-strip-scroll::-webkit-scrollbar {
+    display: none;
+}
 
 /* ═══ Date Chips ═══ */
 .date-chip {
@@ -1467,28 +1528,53 @@ button:focus-visible, input:focus-visible {
     gap: 2px;
     padding: 8px 6px 10px;
     border-radius: 14px;
-    background: var(--card-bg, rgba(255,255,255,0.7));
-    border: 1px solid var(--glass-border, rgba(0,0,0,0.06));
+    background: var(--card-bg, rgba(255, 255, 255, 0.7));
+    border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.06));
     cursor: pointer;
     scroll-snap-align: start;
     transition: background 0.15s, transform 0.1s;
 }
-.date-chip:active { transform: scale(0.95); background: var(--accent-bg, rgba(0,122,255,0.1)); }
-.chip-day { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; }
-.chip-num { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+
+.date-chip:active {
+    transform: scale(0.95);
+    background: var(--accent-bg, rgba(0, 122, 255, 0.1));
+}
+
+.chip-day {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+}
+
+.chip-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
 .chip-dot {
-    width: 6px; height: 6px; border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
     background: #34C759;
 }
-.chip-dot.incomplete { background: #FF9500; }
-.chip-dot.none { background: var(--text-tertiary, #ccc); opacity: 0.3; }
+
+.chip-dot.incomplete {
+    background: #FF9500;
+}
+
+.chip-dot.none {
+    background: var(--text-tertiary, #ccc);
+    opacity: 0.3;
+}
 
 /* ═══ Stacked Day Detail Overlay (above date strip) ═══ */
 .day-detail-overlay {
     position: fixed;
     inset: 0;
     z-index: 10001;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1504,8 +1590,8 @@ button:focus-visible, input:focus-visible {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .day-detail-modal .modal-header {
@@ -1513,7 +1599,7 @@ button:focus-visible, input:focus-visible {
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     flex-shrink: 0;
 }
 
@@ -1528,7 +1614,7 @@ button:focus-visible, input:focus-visible {
     height: 28px;
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.06);
+    background: rgba(0, 0, 0, 0.06);
     font-size: 20px;
     cursor: pointer;
     display: flex;
@@ -1548,8 +1634,8 @@ button:focus-visible, input:focus-visible {
 
 /* ═══ Day Detail Card ═══ */
 .day-detail-card {
-    background: var(--card-bg, rgba(255,255,255,0.7));
-    border: 1px solid var(--glass-border, rgba(0,0,0,0.06));
+    background: var(--card-bg, rgba(255, 255, 255, 0.7));
+    border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.06));
     border-radius: 14px;
     padding: 12px 14px;
 }
@@ -1559,7 +1645,11 @@ button:focus-visible, input:focus-visible {
     background: #1c1c1e;
 }
 
-.day-detail-card h4 { margin: 0 0 8px; font-size: 14px; }
+.day-detail-card h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
 .detail-row {
     display: flex;
     justify-content: space-between;
@@ -1568,9 +1658,18 @@ button:focus-visible, input:focus-visible {
     font-size: 13px;
     color: var(--text-secondary);
 }
-.detail-value { font-weight: 600; }
-.detail-value.complete { color: #34C759; }
-.detail-value.incomplete { color: #FF3B30; }
+
+.detail-value {
+    font-weight: 600;
+}
+
+.detail-value.complete {
+    color: #34C759;
+}
+
+.detail-value.incomplete {
+    color: #FF3B30;
+}
 
 /* ═══ Pre-rendered Mala Menu ═══ */
 .mala-menu-overlay.pre-rendered {
@@ -1578,12 +1677,13 @@ button:focus-visible, input:focus-visible {
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     align-items: flex-end;
     justify-content: center;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
+
 .mala-menu-overlay.pre-rendered.visible {
     opacity: 1;
 }
@@ -1616,6 +1716,7 @@ button:focus-visible, input:focus-visible {
 
 /* Content visibility for off-screen sections */
 @media (prefers-reduced-motion: no-preference) {
+
     .report-content:not(.active),
     .collapsible-content.collapsed {
         content-visibility: auto;
@@ -1644,23 +1745,34 @@ button:focus-visible, input:focus-visible {
 .wake-bar-fill,
 .progress-ring-circle {
     transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                stroke-dashoffset 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        stroke-dashoffset 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -1669,7 +1781,7 @@ button:focus-visible, input:focus-visible {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-    
+
     .progress-ring-circle,
     .bead,
     .modal-container {
@@ -1678,17 +1790,23 @@ button:focus-visible, input:focus-visible {
 }
 
 /* ─── REMOVE PUSH ANIMATION DELAY AND SCALE ─── */
-button, .card, .mala-center-btn, .present-btn, .header-btn, .time-period-tabs, .period-tab {
+button,
+.card,
+.mala-center-btn,
+.present-btn,
+.header-btn,
+.time-period-tabs,
+.period-tab {
     transition: transform 0s, background 0.1s, box-shadow 0.1s !important;
 }
 
-button:active, 
-.card:active, 
-.header-btn:active, 
-.present-btn:active, 
-.complete-all-btn:active, 
-.add-bani-btn:active, 
-.mala-action-btn:active, 
+button:active,
+.card:active,
+.header-btn:active,
+.present-btn:active,
+.complete-all-btn:active,
+.add-bani-btn:active,
+.mala-action-btn:active,
 .mala-center-btn:active,
 .tab-item:active {
     transform: none !important;
@@ -1713,4 +1831,36 @@ button:active,
     box-shadow: none !important;
     border: none !important;
     color: var(--text-primary) !important;
+}
+
+/* ─── GURBANI GPT LINK BUTTON ─── */
+.bani-vichar-btn {
+    background: none !important;
+    border: none !important;
+    color: var(--text-tertiary, #86868b) !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px !important;
+    border-radius: 50% !important;
+    margin-right: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.15s, background-color 0.15s, transform 0.1s !important;
+    flex-shrink: 0;
+}
+
+.bani-vichar-btn:hover {
+    opacity: 1;
+    color: var(--system-blue, #007AFF) !important;
+    background: rgba(0, 122, 255, 0.08) !important;
+}
+
+.bani-vichar-btn:active {
+    transform: scale(0.9) !important;
+}
+
+[data-theme="dark"] .bani-vichar-btn:hover {
+    background: rgba(10, 132, 255, 0.15) !important;
+    color: #0A84FF !important;
 }

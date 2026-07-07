@@ -4,10 +4,24 @@
    iOS 26 Spatial Computing • Every pixel sacred
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ── GLOBAL OVERSCROLL ── */
-body, html {
+/* ── SCROLL ROOT — html is the ONE true scroll container ── */
+html {
+  overflow-y: auto;
+  /* Page scrolls here — ONE root */
+  overflow-x: hidden;
   overscroll-behavior-y: none;
+  height: auto;
+  /* Do NOT lock height — content must expand */
+}
 
+body {
+  overflow: visible;
+  /* Must NOT be a scroll container — that's html's job */
+  overflow-x: hidden;
+  /* Block horizontal bleed only */
+  overscroll-behavior-y: none;
+  min-height: 100dvh;
+  /* Content can grow beyond viewport */
 }
 
 /* ── MAIN APP CONTAINER ── */
@@ -17,11 +31,10 @@ body, html {
   max-width: 480px;
   margin: 0 auto;
   padding-bottom: 0;
-  overflow-y: auto;
-  overscroll-behavior-y: auto;
-
-  will-change: scroll-position;
-  contain: layout;
+  /* SCROLL FIX: overflow-y REMOVED — .app must NOT be a scroll container.
+     The html element is the single scroll root. contain:layout also removed
+     as it cut off the layout height. */
+  overflow-x: hidden;
 }
 
 /* Tablet+ wider layout */
@@ -94,7 +107,7 @@ body, html {
   .modal-sheet {
     padding-bottom: calc(var(--space-24) + var(--safe-bottom));
   }
-  
+
   .radio-menu__sheet,
   .filter-panel__sheet {
     padding-bottom: calc(24px + var(--safe-bottom));
@@ -116,14 +129,12 @@ body, html {
 .theme-divider {
   height: 1px;
   margin: var(--space-8) var(--space-20);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(212, 134, 10, 0.15) 30%,
-    rgba(212, 134, 10, 0.25) 50%,
-    rgba(212, 134, 10, 0.15) 70%,
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(212, 134, 10, 0.15) 30%,
+      rgba(212, 134, 10, 0.25) 50%,
+      rgba(212, 134, 10, 0.15) 70%,
+      transparent);
   pointer-events: none;
 }
 
@@ -149,10 +160,21 @@ img[width][height] {
 }
 
 /* ── ASPECT RATIOS ── */
-.aspect-16-9 { aspect-ratio: 16 / 9; }
-.aspect-4-3  { aspect-ratio: 4 / 3; }
-.aspect-1-1  { aspect-ratio: 1 / 1; }
-.aspect-3-4  { aspect-ratio: 3 / 4; }
+.aspect-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-4-3 {
+  aspect-ratio: 4 / 3;
+}
+
+.aspect-1-1 {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-3-4 {
+  aspect-ratio: 3 / 4;
+}
 
 /* ── CURSOR GLOW (Desktop only) ── */
 .cursor-glow {
@@ -160,12 +182,10 @@ img[width][height] {
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(212, 134, 10, 0.08) 0%,
-    rgba(212, 134, 10, 0.03) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      rgba(212, 134, 10, 0.08) 0%,
+      rgba(212, 134, 10, 0.03) 40%,
+      transparent 70%);
   pointer-events: none;
   z-index: -1;
   transform: translate(-50%, -50%) translateZ(0);
@@ -217,29 +237,64 @@ html.dark-mode .hero-card__image--light {
 
 /* ── RESPONSIVE — Small phones ── */
 @media (max-width: 380px) {
-  .hide-xs { display: none !important; }
-  
-  .hero-card { min-height: 220px; }
-  .feature-card { height: 160px; }
-  .features-grid { gap: 10px; }
-  .nav-item { padding: 8px 14px; }
-  
-  .app-header { padding: 10px 16px; }
-  .content-section { padding: 0 var(--space-16); }
-  .quick-access { padding: 0 var(--space-16); }
-  .features-grid { padding: 0 var(--space-16); }
+  .hide-xs {
+    display: none !important;
+  }
+
+  .hero-card {
+    min-height: 220px;
+  }
+
+  .feature-card {
+    height: 160px;
+  }
+
+  .features-grid {
+    gap: 10px;
+  }
+
+  .nav-item {
+    padding: 8px 14px;
+  }
+
+  .app-header {
+    padding: 10px 16px;
+  }
+
+  .content-section {
+    padding: 0 var(--space-16);
+  }
+
+  .quick-access {
+    padding: 0 var(--space-16);
+  }
+
+  .features-grid {
+    padding: 0 var(--space-16);
+  }
 }
 
 /* ── RESPONSIVE — Large phones ── */
 @media (min-width: 414px) {
-  .features-grid { gap: 16px; }
+  .features-grid {
+    gap: 16px;
+  }
 }
 
 /* ── LANDSCAPE SAFETY ── */
 @media (orientation: landscape) and (max-height: 500px) {
-  .app { padding-bottom: 0; }
-  .nav-pill { bottom: 10px; padding: 6px 12px; }
-  .hero-card { min-height: 260px; }
+  .app {
+    padding-bottom: 0;
+  }
+
+  .nav-pill {
+    bottom: 10px;
+    padding: 6px 12px;
+  }
+
+  .hero-card {
+    min-height: 260px;
+  }
 }
 
 /* ── GRID SYSTEM ── */
@@ -247,16 +302,38 @@ html.dark-mode .hero-card__image--light {
   display: grid;
 }
 
-.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
-.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-cols-1 {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
 
 /* ── SPACING SCALE ── */
-.space-y-8 > * + * { margin-top: var(--space-8); }
-.space-y-12 > * + * { margin-top: var(--space-12); }
-.space-y-16 > * + * { margin-top: var(--space-16); }
-.space-y-24 > * + * { margin-top: var(--space-24); }
+.space-y-8>*+* {
+  margin-top: var(--space-8);
+}
+
+.space-y-12>*+* {
+  margin-top: var(--space-12);
+}
+
+.space-y-16>*+* {
+  margin-top: var(--space-16);
+}
+
+.space-y-24>*+* {
+  margin-top: var(--space-24);
+}
 
 /* ── CONTAINER QUERIES (Future-proof) ── */
 @container (min-width: 400px) {
@@ -267,6 +344,7 @@ html.dark-mode .hero-card__image--light {
 
 /* ── PRINT STYLES ── */
 @media print {
+
   .nav-pill,
   .aurora-bg,
   .mandana-watermark,
@@ -276,7 +354,7 @@ html.dark-mode .hero-card__image--light {
   .hero-card__controls {
     display: none !important;
   }
-  
+
   .app {
     max-width: 100%;
     padding-bottom: 0;
@@ -285,11 +363,9 @@ html.dark-mode .hero-card__image--light {
 
 /* ── DARK MODE LAYOUT ADJUSTMENTS ── */
 html.dark-mode .cursor-glow {
-  background: radial-gradient(
-    circle,
-    rgba(212, 134, 10, 0.12) 0%,
-    rgba(212, 134, 10, 0.05) 40%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      rgba(212, 134, 10, 0.12) 0%,
+      rgba(212, 134, 10, 0.05) 40%,
+      transparent 70%);
   mix-blend-mode: screen;
 }

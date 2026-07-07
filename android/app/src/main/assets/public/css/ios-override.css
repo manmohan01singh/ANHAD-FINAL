@@ -82,7 +82,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .greeting__salutation,
 .hero-card__title,
 .section-header__title {
@@ -92,17 +97,18 @@ h1, h2, h3, h4, h5, h6,
 html {
   /* PERF: scroll-behavior: smooth REMOVED — let native scrolling handle it */
   overflow-y: auto;
+  /* html is the single scroll root */
   overflow-x: hidden;
   height: auto;
+  /* Must NOT be 100vh/dvh — content must grow freely */
 }
 
 body {
   background-color: var(--ios-bg-secondary);
-  overscroll-behavior-y: auto;
-  overscroll-behavior-x: none;
-  /* FIX: Ensure body can scroll and content isn't clipped */
-  overflow-y: auto;
+  /* body must be overflow:visible so html remains THE scroll container */
+  overflow: visible;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 /* Mini player padding handled by nav-glass.css .app padding-bottom */
@@ -168,15 +174,20 @@ body {
 }
 
 @keyframes orbFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   25% {
     transform: translate(30px, -40px) scale(1.05);
   }
+
   50% {
     transform: translate(-20px, 20px) scale(0.95);
   }
+
   75% {
     transform: translate(40px, 30px) scale(1.02);
   }
@@ -201,8 +212,10 @@ body {
 @media (min-width: 769px) {
   .ios-orb {
     opacity: 0.25;
-    filter: blur(80px); /* Spread blur wider to reduce sharpness = less GPU work */
-    animation-duration: 40s; /* Slower = less frequent GPU updates */
+    filter: blur(80px);
+    /* Spread blur wider to reduce sharpness = less GPU work */
+    animation-duration: 40s;
+    /* Slower = less frequent GPU updates */
   }
 }
 
@@ -211,15 +224,19 @@ body {
   opacity: 0.3;
   filter: blur(50px);
 }
+
 .dark-mode .orb-1 {
   background: radial-gradient(circle, rgba(0, 122, 255, 0.5), transparent 70%);
 }
+
 .dark-mode .orb-2 {
   background: radial-gradient(circle, rgba(175, 82, 222, 0.45), transparent 70%);
 }
+
 .dark-mode .orb-3 {
   background: radial-gradient(circle, rgba(90, 200, 250, 0.35), transparent 70%);
 }
+
 .dark-mode .orb-4 {
   background: radial-gradient(circle, rgba(255, 149, 0, 0.35), transparent 70%);
 }
@@ -279,7 +296,7 @@ body {
 .nav-tab[aria-current="page"] .ios-emoji--nav {
   opacity: 1 !important;
   transform: scale(1.35) translateY(-3px) !important;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -360,7 +377,7 @@ body {
 /* Restore warm tints with EXTREME 3D Claymorphism */
 .practice-card--nitnem {
   background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
-  box-shadow: 
+  box-shadow:
     12px 12px 28px rgba(212, 148, 58, 0.22),
     6px 6px 14px rgba(212, 148, 58, 0.12),
     -10px -10px 25px rgba(255, 255, 255, 0.95),
@@ -369,9 +386,10 @@ body {
     0 0 0 3px rgba(212, 148, 58, 0.15) !important;
   border: 3px solid rgba(255, 255, 255, 0.8) !important;
 }
+
 .practice-card--sehaj {
   background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
-  box-shadow: 
+  box-shadow:
     12px 12px 28px rgba(88, 86, 214, 0.18),
     6px 6px 14px rgba(88, 86, 214, 0.10),
     -10px -10px 25px rgba(255, 255, 255, 0.95),
@@ -380,9 +398,10 @@ body {
     0 0 0 3px rgba(88, 86, 214, 0.15) !important;
   border: 3px solid rgba(255, 255, 255, 0.8) !important;
 }
+
 .practice-card--hukam {
   background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
-  box-shadow: 
+  box-shadow:
     12px 12px 28px rgba(255, 149, 0, 0.18),
     6px 6px 14px rgba(255, 149, 0, 0.10),
     -10px -10px 25px rgba(255, 255, 255, 0.95),
@@ -395,7 +414,7 @@ body {
 /* Practice Cards — Pressed State with Inset Shadows */
 .practice-card--nitnem:active {
   transform: scale(0.94) translateY(2px) !important;
-  box-shadow: 
+  box-shadow:
     inset 12px 12px 25px rgba(180, 130, 50, 0.3),
     inset 6px 6px 15px rgba(180, 130, 50, 0.2),
     inset -8px -8px 20px rgba(255, 255, 255, 0.7),
@@ -405,7 +424,7 @@ body {
 
 .practice-card--sehaj:active {
   transform: scale(0.94) translateY(2px) !important;
-  box-shadow: 
+  box-shadow:
     inset 12px 12px 25px rgba(70, 60, 180, 0.25),
     inset 6px 6px 15px rgba(70, 60, 180, 0.15),
     inset -8px -8px 20px rgba(255, 255, 255, 0.7),
@@ -415,7 +434,7 @@ body {
 
 .practice-card--hukam:active {
   transform: scale(0.94) translateY(2px) !important;
-  box-shadow: 
+  box-shadow:
     inset 12px 12px 25px rgba(200, 130, 40, 0.25),
     inset 6px 6px 15px rgba(200, 130, 40, 0.15),
     inset -8px -8px 20px rgba(255, 255, 255, 0.7),
@@ -437,7 +456,7 @@ body {
   padding: 14px 20px;
   margin-bottom: 10px;
   transition: transform 0.3s var(--ios-ease);
-  box-shadow: 
+  box-shadow:
     10px 10px 24px rgba(0, 0, 0, 0.06),
     -8px -8px 20px rgba(255, 255, 255, 0.9),
     inset 4px 4px 12px rgba(255, 255, 255, 0.8),
@@ -447,7 +466,7 @@ body {
 
 .quick-card:active {
   transform: scale(0.96);
-  box-shadow: 
+  box-shadow:
     inset 8px 8px 16px rgba(0, 0, 0, 0.08),
     inset -8px -8px 16px rgba(255, 255, 255, 0.9) !important;
 }
@@ -548,7 +567,7 @@ body {
   padding: 14px 20px !important;
   margin-bottom: 16px !important;
   background: linear-gradient(165deg, #f5f5f7 0%, #ebebf0 100%) !important;
-  box-shadow: 
+  box-shadow:
     12px 12px 24px rgba(0, 0, 0, 0.08),
     -10px -10px 20px rgba(255, 255, 255, 0.95),
     inset 6px 6px 16px rgba(255, 255, 255, 0.95),
@@ -570,14 +589,15 @@ body {
   background: rgba(0, 0, 0, 0.4) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.4),
     inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Header Buttons Completely Flat (No Shadow) */
-.header__btn, .header-btn--glass {
+.header__btn,
+.header-btn--glass {
   border-radius: 50% !important;
   background: #f0f0f3 !important;
   backdrop-filter: none !important;
@@ -624,7 +644,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: transform 0.45s cubic-bezier(0.28, 0.84, 0.42, 1),
-              opacity 0.3s ease;
+    opacity 0.3s ease;
 }
 
 /* Only show when --visible class is added (when kirtan is playing) */
@@ -708,6 +728,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -719,14 +740,37 @@ body {
 }
 
 /* Staggered list animation */
-.ios-stagger > *:nth-child(1) { animation-delay: 0.05s; }
-.ios-stagger > *:nth-child(2) { animation-delay: 0.1s; }
-.ios-stagger > *:nth-child(3) { animation-delay: 0.15s; }
-.ios-stagger > *:nth-child(4) { animation-delay: 0.2s; }
-.ios-stagger > *:nth-child(5) { animation-delay: 0.25s; }
-.ios-stagger > *:nth-child(6) { animation-delay: 0.3s; }
-.ios-stagger > *:nth-child(7) { animation-delay: 0.35s; }
-.ios-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+.ios-stagger>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.ios-stagger>*:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.ios-stagger>*:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.ios-stagger>*:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.ios-stagger>*:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.ios-stagger>*:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.ios-stagger>*:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.ios-stagger>*:nth-child(8) {
+  animation-delay: 0.4s;
+}
 
 .ios-haptic:active {
   transform: scale(0.96);
@@ -734,17 +778,20 @@ body {
 }
 
 @keyframes iosShimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .ios-skeleton {
-  background: linear-gradient(
-    90deg,
-    #F2F2F7 25%,
-    #E5E5EA 50%,
-    #F2F2F7 75%
-  );
+  background: linear-gradient(90deg,
+      #F2F2F7 25%,
+      #E5E5EA 50%,
+      #F2F2F7 75%);
   background-size: 200% 100%;
   animation: iosShimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
@@ -840,56 +887,64 @@ body {
 
 [data-theme="dark"] .practice-card--nitnem {
   background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
-  box-shadow: 
+  box-shadow:
     15px 15px 35px rgba(0, 0, 0, 0.5),
     inset 6px 6px 15px rgba(255, 255, 255, 0.06),
     inset -6px -6px 15px rgba(0, 0, 0, 0.5),
     0 0 0 2px rgba(212, 148, 58, 0.2) !important;
-  border: 2px solid rgba(255,255,255,0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.05) !important;
 }
+
 [data-theme="dark"] .practice-card--sehaj {
   background: linear-gradient(165deg, #1E1B2E 0%, #2A2545 100%) !important;
-  box-shadow: 
+  box-shadow:
     15px 15px 35px rgba(0, 0, 0, 0.5),
     inset 6px 6px 15px rgba(255, 255, 255, 0.06),
     inset -6px -6px 15px rgba(0, 0, 0, 0.5),
     0 0 0 2px rgba(88, 86, 214, 0.2) !important;
-  border: 2px solid rgba(255,255,255,0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.05) !important;
 }
+
 [data-theme="dark"] .practice-card--hukam {
   background: linear-gradient(165deg, #2C2112 0%, #3A2B16 100%) !important;
-  box-shadow: 
+  box-shadow:
     15px 15px 35px rgba(0, 0, 0, 0.5),
     inset 6px 6px 15px rgba(255, 255, 255, 0.06),
     inset -6px -6px 15px rgba(0, 0, 0, 0.5),
     0 0 0 2px rgba(255, 149, 0, 0.2) !important;
-  border: 2px solid rgba(255,255,255,0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Dark mode Progress Card — Deep Claymorphism without white outer glow */
 [data-theme="dark"] .progress-inline {
   background: linear-gradient(165deg, #202022 0%, #151515 100%) !important;
-  box-shadow: 
+  box-shadow:
     15px 15px 35px rgba(0, 0, 0, 0.6),
     inset 4px 4px 12px rgba(255, 255, 255, 0.05),
     inset -4px -4px 12px rgba(0, 0, 0, 0.8) !important;
   border: 2px solid rgba(255, 255, 255, 0.03) !important;
 }
+
 [data-theme="dark"] .quick-card--green {
   background: linear-gradient(140deg, #1B3F27 0%, #234E32 100%) !important;
 }
+
 [data-theme="dark"] .quick-card--gold {
   background: linear-gradient(140deg, #4A3A22 0%, #5C4A2E 100%) !important;
 }
+
 [data-theme="dark"] .quick-card--purple {
   background: linear-gradient(140deg, #2E2A4A 0%, #3B365E 100%) !important;
 }
+
 [data-theme="dark"] .quick-card--blue {
   background: linear-gradient(140deg, #1C304A 0%, #263E5E 100%) !important;
 }
+
 [data-theme="dark"] .quick-card--teal {
   background: linear-gradient(140deg, #18423B 0%, #22564D 100%) !important;
 }
+
 [data-theme="dark"] .quick-card--rose {
   background: linear-gradient(140deg, #4A2222 0%, #5E2E2E 100%) !important;
 }
@@ -897,7 +952,7 @@ body {
 /* Ultimate Dark Mode Claymorphism for Quick Cards - 3D Pumping Out Effect */
 [data-theme="dark"] .quick-card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -914,7 +969,7 @@ body {
 }
 
 [data-theme="dark"] .quick-card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -926,7 +981,7 @@ body {
 [data-theme="dark"] .quick-card__icon {
   background: rgba(20, 20, 22, 0.95) !important;
   border: none !important;
-  box-shadow: 
+  box-shadow:
     /* Strong 3D shadow for icon - popping out */
     0 8px 20px rgba(0, 0, 0, 0.5),
     0 4px 10px rgba(0, 0, 0, 0.3),
@@ -946,22 +1001,27 @@ body {
   background: #0D0D0F !important;
   border: none !important;
 }
+
 [data-theme="dark"] .quick-card--gold {
   background: #0D0D0F !important;
   border: none !important;
 }
+
 [data-theme="dark"] .quick-card--purple {
   background: #0D0D0F !important;
   border: none !important;
 }
+
 [data-theme="dark"] .quick-card--blue {
   background: #0D0D0F !important;
   border: none !important;
 }
+
 [data-theme="dark"] .quick-card--rose {
   background: #0D0D0F !important;
   border: none !important;
 }
+
 [data-theme="dark"] .quick-card--teal {
   background: #0D0D0F !important;
   border: none !important;
@@ -969,7 +1029,7 @@ body {
 
 [data-theme="dark"] .event-card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -986,7 +1046,7 @@ body {
 }
 
 [data-theme="dark"] .event-card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1023,14 +1083,14 @@ body {
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5),
-              inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+    inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Practice Cards - Dark Claymorphism 3D Effect */
 [data-theme="dark"] .practice-card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1047,7 +1107,7 @@ body {
 }
 
 [data-theme="dark"] .practice-card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1059,7 +1119,7 @@ body {
 /* Glass Cards - Dark Claymorphism 3D Effect */
 [data-theme="dark"] .glass-card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1076,7 +1136,7 @@ body {
 }
 
 [data-theme="dark"] .glass-card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1088,7 +1148,7 @@ body {
 /* Stat Cards - Dark Claymorphism 3D Effect */
 [data-theme="dark"] .stat-card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1105,7 +1165,7 @@ body {
 }
 
 [data-theme="dark"] .stat-card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1117,7 +1177,7 @@ body {
 /* Generic Cards - Dark Claymorphism 3D Effect */
 [data-theme="dark"] .card {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1134,7 +1194,7 @@ body {
 }
 
 [data-theme="dark"] .card:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1146,7 +1206,7 @@ body {
 /* Nitnem Page Bani Cards - Dark Claymorphism 3D Effect */
 [data-theme="dark"] .bani-card__link {
   background: #0D0D0F !important;
-  box-shadow: 
+  box-shadow:
     /* Strong outer shadow for 3D lift - pumping out effect */
     25px 25px 50px rgba(0, 0, 0, 0.7),
     15px 15px 30px rgba(0, 0, 0, 0.5),
@@ -1163,7 +1223,7 @@ body {
 }
 
 [data-theme="dark"] .bani-card__link:active {
-  box-shadow: 
+  box-shadow:
     /* Pressed state - deep inset shadows */
     inset 15px 15px 35px rgba(0, 0, 0, 0.7),
     inset -8px -8px 20px rgba(255, 255, 255, 0.06),
@@ -1177,7 +1237,8 @@ body {
 }
 
 /* Flat styling for Header Buttons */
-[data-theme="dark"] .header__btn, [data-theme="dark"] .header-btn--glass {
+[data-theme="dark"] .header__btn,
+[data-theme="dark"] .header-btn--glass {
   background: #2a2a2d !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -1238,7 +1299,7 @@ a,
   width: fit-content;
   text-align: center;
   border: 1px solid rgba(212, 148, 58, 0.25);
-  box-shadow: 
+  box-shadow:
     12px 12px 30px rgba(0, 0, 0, 0.08),
     -6px -6px 20px rgba(255, 255, 255, 0.95),
     inset 2px 2px 8px rgba(255, 255, 255, 0.9),
@@ -1249,7 +1310,7 @@ a,
 
 .greeting__nanakshahi:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     16px 16px 40px rgba(0, 0, 0, 0.1),
     -8px -8px 30px rgba(255, 255, 255, 0.98),
     inset 2px 2px 8px rgba(255, 255, 255, 0.95),
@@ -1263,7 +1324,7 @@ a,
   background: linear-gradient(145deg, #3A3028 0%, #2A2218 100%);
   color: #E8B84A;
   border: 1px solid rgba(212, 148, 58, 0.35);
-  box-shadow: 
+  box-shadow:
     12px 12px 30px rgba(0, 0, 0, 0.4),
     -6px -6px 20px rgba(60, 60, 67, 0.15),
     inset 2px 2px 8px rgba(212, 148, 58, 0.08),
@@ -1278,12 +1339,14 @@ a,
   .ios-orb {
     animation: none !important;
   }
+
   .ios-animate-in {
     animation: none !important;
     opacity: 1;
     transform: none;
   }
-  .ios-stagger > * {
+
+  .ios-stagger>* {
     animation-delay: 0s !important;
   }
 }
@@ -1298,7 +1361,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   color: var(--sky-card-text) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -1339,7 +1402,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   color: var(--sky-card-text) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -1391,7 +1454,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   color: var(--sky-card-text) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -1423,7 +1486,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 }
@@ -1498,7 +1561,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   color: var(--sky-card-text) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -1582,7 +1645,7 @@ a,
   background: var(--sky-card-bg-glass) !important;
   border: 1.5px solid var(--sky-card-border) !important;
   box-shadow: 0 8px 32px var(--sky-card-shadow),
-              inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+    inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
   color: var(--sky-card-text) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
@@ -1835,7 +1898,7 @@ body,
 .dark-mode .quick-card,
 .dark-mode .event-card {
   transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-              box-shadow 0.15s ease !important;
+    box-shadow 0.15s ease !important;
 }
 
 /* =========================================================================
@@ -1862,7 +1925,7 @@ body,
   backdrop-filter: blur(20px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-              box-shadow 0.15s ease !important;
+    box-shadow 0.15s ease !important;
 }
 
 /* Dark hero-card: keep image visible but add blur to the card surface */
@@ -1885,5 +1948,5 @@ body,
   backdrop-filter: blur(16px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
   transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-              box-shadow 0.15s ease !important;
+    box-shadow 0.15s ease !important;
 }

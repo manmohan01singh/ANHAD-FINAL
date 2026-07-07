@@ -114,7 +114,7 @@
       </button>
 
       <div class="hdr-brand" id="modelSelector" role="button" aria-label="Select model">
-        <span class="hdr-model-name"><strong>Gurbani</strong> GPT</span>
+        <span class="hdr-model-name"><strong>Gurbani</strong> GPT (Deep Vichar)</span>
         <svg class="hdr-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
 
@@ -134,17 +134,13 @@
 
       <!-- Model Dropdown Menu -->
       <div class="hdr-dropdown" id="modelDropdown">
-        <div class="hdr-dropdown-item active" data-model="meta-llama/llama-4-scout-17b-16e-instruct">
+        <div class="hdr-dropdown-item active" data-model="gurbanigpt-deep">
           <div class="dd-item-title"><strong>Gurbani</strong> GPT</div>
-          <div class="dd-item-desc">Optimized Gurbani companion</div>
+          <div class="dd-item-desc">Deep Vichar — Gurbani-rooted, scripture-based, extreme depth</div>
         </div>
-        <div class="hdr-dropdown-item" data-model="meta-llama/llama-3.1-70b-instruct">
-          <div class="dd-item-title"><strong>ANHAD</strong>-v4-Pro</div>
-          <div class="dd-item-desc">Deeper reasoning and analysis</div>
-        </div>
-        <div class="hdr-dropdown-item" data-model="meta-llama/llama-3.3-70b-specdec">
-          <div class="dd-item-title"><strong>Llama</strong> 3.3 70B</div>
-          <div class="dd-item-desc">Fast translation & syntax</div>
+        <div class="hdr-dropdown-item" data-model="anhad-quick">
+          <div class="dd-item-title"><strong>ANHAD</strong></div>
+          <div class="dd-item-desc">Quick — brief conversational responses, no scripture retrieval</div>
         </div>
       </div>
 
@@ -171,24 +167,13 @@
     <!-- WELCOME / HOME — Gemini idle state -->
     <div class="welcome" id="welcome">
       <div class="welcome-inner">
-        <!-- Gemini 4-pointed star with multicolor gradient -->
+        <!-- Glowing Ik Onkar Symbol -->
         <div class="welcome-logo-wrap">
-          <svg class="gpt-star" viewBox="0 0 52 52" fill="none" aria-label="Gurbani GPT">
-            <path d="M26 2 C26 2 27.5 16 31 20 C34.5 24 50 26 50 26 C50 26 34.5 28 31 32 C27.5 36 26 50 26 50 C26 50 24.5 36 21 32 C17.5 28 2 26 2 26 C2 26 17.5 24 21 20 C24.5 16 26 2 26 2Z"
-              fill="url(#star-multicolor)"/>
-            <defs>
-              <linearGradient id="star-multicolor" x1="2" y1="2" x2="50" y2="50" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#4285F4"/>
-                <stop offset="33%"  stop-color="#EA4335"/>
-                <stop offset="67%"  stop-color="#FBBC05"/>
-                <stop offset="100%" stop-color="#34A853"/>
-              </linearGradient>
-            </defs>
-          </svg>
+          <div class="ik-onkar-logo" id="ikOnkarLogo">ੴ</div>
         </div>
 
-        <h1 class="welcome-greeting" id="welcomeBack">Your move!</h1>
-        <p class="welcome-subtitle" id="welcomeSub">Ask anything about Naam Simran, Gurbani, or the spiritual path.</p>
+        <h1 class="welcome-greeting" id="welcomeBack">Ik Onkar</h1>
+        <p class="welcome-subtitle" id="welcomeSub">Gurbani GPT for deep Vichar · ANHAD for quick responses</p>
 
         <!-- Daily verse card -->
         <div class="verse-card loading" id="welcomeVerse">
@@ -199,27 +184,84 @@
           </div>
         </div>
 
-        <!-- Suggestion chips -->
-        <div class="suggestions">
+        <!-- Spiritual Practice Overviews -->
+        <div class="practice-card" id="practiceCard" style="display: none; width: 100%; margin-bottom: 24px;">
+          <div class="practice-inner">
+            <div class="practice-header">
+              <span class="practice-title">Spiritual Practice Sync</span>
+              <span class="practice-sync-badge">Live Synced</span>
+            </div>
+            <div class="practice-stats-grid">
+              <div class="practice-stat-box" id="statNitnemBox" role="button" tabindex="0">
+                <span class="stat-box-label">Nitnem Tracker</span>
+                <span class="stat-box-value" id="gptStatNitnem">Loading...</span>
+              </div>
+              <div class="practice-stat-box" id="statMeditationBox" role="button" tabindex="0">
+                <span class="stat-box-label">Simran Timer</span>
+                <span class="stat-box-value" id="gptStatMeditation">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hukam-vichar-wrap" style="margin-bottom: 24px; display: none;" id="hukamVicharWrap">
+          <button class="hukam-vichar-btn" id="btnHukamVichar">
+            <span>Today's Hukamnama Sahib Vichar</span>
+          </button>
+        </div>
+
+        <!-- Explore topics — tap any to start -->
+        <div class="suggestions" id="exploreTopics">
+          <div class="suggestions-label">Explore topics</div>
           <button class="suggestion-card" data-prompt="What is Naam Simran and how do I practice it?" style="--i:0">
             <span class="suggestion-icon">🙏</span>
             <span class="suggestion-label">Naam Simran</span>
+            <span class="suggestion-desc">Practice of remembering the Divine Name</span>
           </button>
           <button class="suggestion-card" data-prompt="Explain the meaning of Mul Mantar" style="--i:1">
             <span class="suggestion-icon">ੴ</span>
             <span class="suggestion-label">Mul Mantar</span>
+            <span class="suggestion-desc">The root verse of Sri Guru Granth Sahib</span>
           </button>
           <button class="suggestion-card" data-prompt="How do I find peace in difficult times through Gurbani?" style="--i:2">
             <span class="suggestion-icon">🕊️</span>
             <span class="suggestion-label">Finding Peace</span>
+            <span class="suggestion-desc">Gurbani's guidance for inner calm</span>
           </button>
           <button class="suggestion-card" data-prompt="What is Hukam and how does it relate to our life?" style="--i:3">
             <span class="suggestion-icon">🌊</span>
             <span class="suggestion-label">Understanding Hukam</span>
+            <span class="suggestion-desc">The Divine Order that governs all</span>
           </button>
           <button class="suggestion-card" data-prompt="Tell me about Seva and its importance in Sikhi" style="--i:4">
             <span class="suggestion-icon">❤️</span>
             <span class="suggestion-label">Seva in Sikhi</span>
+            <span class="suggestion-desc">Selfless service as a path to the Divine</span>
+          </button>
+          <button class="suggestion-card" data-prompt="What is the Sikh perspective on ego (Haumai) and how to overcome it?" style="--i:5">
+            <span class="suggestion-icon">🔥</span>
+            <span class="suggestion-label">Ego &amp; Haumai</span>
+            <span class="suggestion-desc">Understanding and dissolving the false self</span>
+          </button>
+          <button class="suggestion-card" data-prompt="Explain the concept of Chardi Kala and how to maintain it" style="--i:6">
+            <span class="suggestion-icon">☀️</span>
+            <span class="suggestion-label">Chardi Kala</span>
+            <span class="suggestion-desc">Ever-rising spirit and positive resilience</span>
+          </button>
+          <button class="suggestion-card" data-prompt="What is the importance of Sangat (holy congregation) in Sikhi?" style="--i:7">
+            <span class="suggestion-icon">🤝</span>
+            <span class="suggestion-label">Sangat</span>
+            <span class="suggestion-desc">The power of collective spirituality</span>
+          </button>
+          <button class="suggestion-card" data-prompt="Tell me about the Five Evils (Panj Chor) in Sikh philosophy" style="--i:8">
+            <span class="suggestion-icon">⚔️</span>
+            <span class="suggestion-label">Five Evils</span>
+            <span class="suggestion-desc">The inner enemies on the spiritual path</span>
+          </button>
+          <button class="suggestion-card" data-prompt="What is Sahaj and how do I attain it through Gurbani?" style="--i:9">
+            <span class="suggestion-icon">🌙</span>
+            <span class="suggestion-label">Sahaj</span>
+            <span class="suggestion-desc">The state of divine equipoise</span>
           </button>
         </div>
       </div>
@@ -233,8 +275,8 @@
       </button>
     </div>
 
-    <!-- INPUT BAR — Gemini pill style -->
-    <div class="input-area">
+    <!-- INPUT BAR — white pill, always visible (Gemini-style) -->
+    <div class="input-area" id="inputArea">
       <div class="composer" id="composer">
         <!-- Plus / attachment -->
         <button class="composer-plus" id="attachBtn" aria-label="Attach" title="Attach">
@@ -331,52 +373,78 @@
 
 </div><!-- /.wrapper -->
 
-<!-- Gradient state machine — must come first -->
+  <!-- Living gradient state manager — Gemini-style color transitions -->
 <script>
 (function () {
   'use strict';
-
-  /* ── Gradient state machine (exact Gemini spec from architecture doc) ── */
-  const STATES = {
-    idle:       { gt: '#FAFBFD', gm: '#FFFFFF' },
-    processing: { gt: '#FFD580', gm: '#FFF0C0' },
-    thinking:   { gt: '#7ECFBE', gm: '#B5E8E0' },
-    generating: { gt: '#C4A3E0', gm: '#E2D0F5' },
-    complete:   { gt: '#5B91EF', gm: '#A8C8F8' },
-  };
-
+  const bg = document.getElementById('appBg');
   const root = document.documentElement;
-  let _state = 'idle';
-  let _returnTimer = null;
 
-  function setGradient(stateName) {
-    const s = STATES[stateName] || STATES.idle;
-    _state = stateName;
-    root.style.setProperty('--gt', s.gt);
-    root.style.setProperty('--gm', s.gm);
-  }
-
-  function scheduleReturn(ms) {
-    clearTimeout(_returnTimer);
-    _returnTimer = setTimeout(() => setGradient('idle'), ms);
-  }
-
-  // Public API
-  window.GradientState = {
-    set: setGradient,
-    scheduleIdle: scheduleReturn,
-    get current() { return _state; }
+  const STATES = {
+    idle:       { top: '#C8E6F5', mid: '#E8F4FD', darkTop: '#1a2634', darkMid: '#11181f' },
+    processing: { top: '#FFD580', mid: '#FFF0C0', darkTop: '#2e2410', darkMid: '#1a150a' },
+    thinking:   { top: '#7ECFBE', mid: '#B5E8E0', darkTop: '#0f2622', darkMid: '#0a1a17' },
+    generating: { top: '#C4A3E0', mid: '#E2D0F5', darkTop: '#231a30', darkMid: '#150f1e' },
+    complete:   { top: '#5B91EF', mid: '#A8C8F8', darkTop: '#101d3e', darkMid: '#0a1329' },
   };
 
-  // Hook into pipeline events
-  window.addEventListener('gptProcessing', () => { clearTimeout(_returnTimer); setGradient('processing'); });
-  window.addEventListener('gptThinking',   () => { clearTimeout(_returnTimer); setGradient('thinking'); });
-  window.addEventListener('gptGenerating', () => { clearTimeout(_returnTimer); setGradient('generating'); });
-  window.addEventListener('gptDone',       () => { setGradient('complete'); scheduleReturn(3200); });
-  window.addEventListener('gptError',      () => { setGradient('idle'); });
+  let currentState = 'idle';
+  let idleTimer = null;
+  let breathePhase = false;
+
+  function setState(name) {
+    const s = STATES[name] || STATES.idle;
+    currentState = name;
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const top = isDark ? s.darkTop : s.top;
+    const mid = isDark ? s.darkMid : s.mid;
+    bg.style.background = 'linear-gradient(180deg, ' + top + ' 0%, ' + mid + ' 28%, #ffffff 58%, #ffffff 100%)';
+    root.style.setProperty('--g-top', top);
+    root.style.setProperty('--g-mid', mid);
+  }
+
+  /* Listen for theme changes to re-apply gradient */
+  const themeObserver = new MutationObserver(function () {
+    setState(currentState);
+  });
+  themeObserver.observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+  /* Auto-idle after 4 seconds of no activity */
+  function scheduleIdle() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () { setState('idle'); }, 4000);
+  }
+
+  window.GradientState = {
+    set: function (name) {
+      if (idleTimer) clearTimeout(idleTimer);
+      setState(name);
+      if (name === 'idle' || name === 'complete') scheduleIdle();
+    },
+    scheduleIdle: scheduleIdle,
+    get current() { return currentState; }
+  };
+
+  /* Wire to custom events from ChatController */
+  document.addEventListener('gptProcessing', function () {
+    window.GradientState.set('processing');
+  });
+  document.addEventListener('gptThinking', function () {
+    window.GradientState.set('thinking');
+  });
+  document.addEventListener('gptGenerating', function () {
+    window.GradientState.set('generating');
+  });
+  document.addEventListener('gptResponseComplete', function () {
+    window.GradientState.set('complete');
+  });
+  document.addEventListener('gptError', function () {
+    window.GradientState.set('complete');
+  });
 })();
 </script>
 
+<script src="../lib/unified-stats.js"></script>
 <script type="module" src="app.js?v=7"></script>
 
 </body>

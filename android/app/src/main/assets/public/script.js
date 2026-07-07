@@ -451,7 +451,7 @@ class VirtualLiveManager extends EventEmitter {
         if (this.heartbeatInterval) return;
         this.sendHeartbeat();
         this.heartbeatInterval = setInterval(() => this.sendHeartbeat(), 30000);
-        
+
         // Cleanup on pagehide
         window.addEventListener('pagehide', () => {
             this.stopHeartbeat();
@@ -693,7 +693,7 @@ class AudioEngine extends EventEmitter {
         // Defer initialization to first user interaction (required for WebView)
         if (this._userGestureInitialized) return;
         this._userGestureInitialized = true;
-        
+
         await this.initialize();
         await this.ensureAudioContext();
     }
@@ -2626,7 +2626,7 @@ class UIController extends EventEmitter {
         Object.entries(shareLinks).forEach(([id, url]) => {
             this.addClickHandler(id, () => {
                 if (window.Capacitor?.isNativePlatform?.()) {
-                    navigator.clipboard?.writeText(url).catch(() => {});
+                    navigator.clipboard?.writeText(url).catch(() => { });
                 } else {
                     window.open(url, '_blank', 'noopener,width=600,height=400');
                 }
@@ -2691,13 +2691,6 @@ class UIController extends EventEmitter {
             return percent;
         };
 
-        const handleStart = (e) => {
-            isDragging = true;
-            this.isDraggingProgress = true;
-            Utils.haptic('light');
-            updateProgressFromEvent(e);
-        };
-
         const handleMove = (e) => {
             if (!isDragging) return;
             e.preventDefault();
@@ -2710,13 +2703,24 @@ class UIController extends EventEmitter {
             this.isDraggingProgress = false;
             const percent = updateProgressFromEvent(e.changedTouches ? e.changedTouches[0] : e);
             this.audio.seek(percent);
+            // SCROLL FIX: Remove non-passive listener once drag ends so page can scroll freely
+            document.removeEventListener('touchmove', handleMove);
+        };
+
+        const handleStart = (e) => {
+            isDragging = true;
+            this.isDraggingProgress = true;
+            Utils.haptic('light');
+            updateProgressFromEvent(e);
+            // SCROLL FIX: Add non-passive touchmove only while drag is active
+            document.addEventListener('touchmove', handleMove, { passive: false });
         };
 
         progressContainer.addEventListener('mousedown', handleStart);
         document.addEventListener('mousemove', handleMove);
         document.addEventListener('mouseup', handleEnd);
-        progressContainer.addEventListener('touchstart', handleStart, { passive: false });
-        document.addEventListener('touchmove', handleMove, { passive: false });
+        // SCROLL FIX: touchstart is passive — non-passive touchmove is added dynamically only during active drag
+        progressContainer.addEventListener('touchstart', handleStart, { passive: true });
         document.addEventListener('touchend', handleEnd);
 
         progressContainer.addEventListener('click', (e) => {
@@ -3151,7 +3155,7 @@ function showInstallButton() {
     if (!installBtn || deferredPrompt === null) return;
 
     installBtn.style.display = 'flex';
-    
+
     // Add entrance animation
     requestAnimationFrame(() => {
         installBtn.classList.add('visible');
@@ -3554,23 +3558,23 @@ document.addEventListener('visibilitychange', () => {
 
 // Handle Android hardware back button
 async function initAndroidBackButton() {
-  try {
-    const { App } = await import('https://unpkg.com/@capacitor/app@6/dist/esm/index.js')
-      .catch(() => ({ App: null }));
-    
-    if (!App) return; // not in Capacitor
-    
-    App.addListener('backButton', ({ canGoBack }) => {
-      if (canGoBack) {
-        window.history.back();
-      } else {
-        // Show exit confirmation or minimize app
-        App.minimizeApp?.();
-      }
-    });
-  } catch (e) {
-    // Not in Capacitor WebView — ignore
-  }
+    try {
+        const { App } = await import('https://unpkg.com/@capacitor/app@6/dist/esm/index.js')
+            .catch(() => ({ App: null }));
+
+        if (!App) return; // not in Capacitor
+
+        App.addListener('backButton', ({ canGoBack }) => {
+            if (canGoBack) {
+                window.history.back();
+            } else {
+                // Show exit confirmation or minimize app
+                App.minimizeApp?.();
+            }
+        });
+    } catch (e) {
+        // Not in Capacitor WebView — ignore
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initAndroidBackButton);
@@ -3579,7 +3583,7 @@ document.addEventListener('DOMContentLoaded', initAndroidBackButton);
 document.addEventListener('visibilitychange', () => {
     const radio = window.gurbaniRadio;
     if (!radio) return;
-    
+
     const virtualLive = radio.audioEngine?.virtualLive;
     const visualizer = radio.visualizer || radio.ui?.visualizer;
 
@@ -3616,4 +3620,4 @@ try {
             }
         });
     }
-} catch (e) {}
+} catch (e) { }

@@ -178,10 +178,16 @@
 
     let _syncCache = null;
     let _syncCacheAt = 0;
+    let _syncStream = null; // which stream the cache is for
     const SYNC_TTL = 4000;
     const EPOCH = 1704067200000; // Jan 1 2024
 
     async function getServerPos(force = false) {
+        // Invalidate cache if stream switched
+        if (_syncStream !== curStream) {
+            _syncCache = null;
+            _syncStream = curStream;
+        }
         if (!force && _syncCache && (Date.now() - _syncCacheAt) < SYNC_TTL) {
             const drift = (Date.now() - _syncCacheAt) / 1000;
             return { trackIndex: _syncCache.trackIndex, position: _syncCache.position + drift, trackFilename: _syncCache.trackFilename };
@@ -197,6 +203,7 @@
             const latency = (t1 - t0) / 2000;
             _syncCache = { trackIndex: data.trackIndex, position: data.trackPosition + latency, trackFilename: data.trackFilename };
             _syncCacheAt = Date.now();
+            _syncStream = curStream;
             return { ..._syncCache };
         } catch (e) {
             return localPos();
@@ -242,7 +249,9 @@
     const elPlayBtn = $('playBtn');
     const elPlayIcon = $('playIcon');
     const elPrevBtn = $('prevBtn');
+    const elRewindBtn = $('rewindBtn');
     const elNextBtn = $('nextBtn');
+    const elForwardBtn = $('forwardBtn');
     const elVolInput = $('volumeInput');
     const elVolFill = $('volumeFill');
     const elProgFill = $('progressFill');
@@ -312,8 +321,10 @@
         audio.addEventListener('canplay', () => setConn(false));
 
         audio.addEventListener('ended', () => {
-            if (STREAMS[curStream].type === 'playlist' || STREAMS[curStream].type === 'simran') {
-                advanceTrack();
+            const st = STREAMS[curStream];
+            if (st && (st.type === 'playlist' || st.type === 'simran')) {
+                // Use advanceTrack but keep audio element alive to avoid breaking listener chain
+                advanceTrack('keepElement');
             }
         });
 
@@ -325,6 +336,24 @@
             const s = Math.floor(audio.currentTime % 60);
             const m = Math.floor(audio.currentTime / 60);
             if (elElapsed) elElapsed.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+            // Live status and drift detection
+            const st = STREAMS[curStream];
+            if (st && st.type !== 'live') {
+                const livePos = localPos();
+                if (curTrack !== livePos.trackIndex) {
+                    setLiveSynced(false);
+                } else {
+                    const diff = livePos.position - audio.currentTime;
+                    if (diff > 5) {
+                        setLiveSynced(false);
+                    } else {
+                        setLiveSynced(true);
+                    }
+                }
+            } else if (st && st.type === 'live') {
+                setLiveSynced(true);
+            }
         });
 
         audio.addEventListener('error', () => {
@@ -390,20 +419,25 @@
         bridgeState();
     }
 
-    async function advanceTrack() {
+    async function advanceTrack(keepElement) {
         const st = STREAMS[curStream];
         if (!st || (st.type !== 'playlist' && st.type !== 'simran')) return;
-        makeAudio();
+        // When called from 'ended', reuse same audio element (keepElement) — do NOT call makeAudio()
+        // Otherwise (e.g. Next button) recreate fresh
+        if (!keepElement) makeAudio();
         const pos = await getServerPos(true);
         curTrack = pos.trackIndex;
+        let newSrc;
         if (st.type === 'simran' && pos.trackFilename) {
-            audio.src = `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(pos.trackFilename)}`;
+            newSrc = `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(pos.trackFilename)}`;
         } else {
-            audio.src = st.getTrackUrl(curTrack);
+            newSrc = st.getTrackUrl(curTrack);
         }
+        audio.src = newSrc;
         audio.load();
         audio.addEventListener('canplay', () => {
-            audio.currentTime = Math.min(pos.position, (audio.duration || (st.type === 'simran' ? 600 : 3600)) - 5);
+            const dur = audio.duration || (st.type === 'simran' ? 600 : 3600);
+            audio.currentTime = Math.min(pos.position, dur - 5);
             audio.play().catch(() => { });
         }, { once: true });
     }
@@ -420,8 +454,9 @@
                 audio.load();
                 try { await audio.play(); } catch (e) { }
             } else {
-                // Re-sync virtual live
-                await startStream(curStream);
+                // For virtual live, just resume playing from the paused position!
+                // Do NOT jump to live on every play/pause!
+                try { await audio.play(); } catch (e) { }
             }
         } else {
             audio.pause();
@@ -504,15 +539,15 @@
         // Background — use current time of day
         updateBg(slot);
 
-        // Simran sub-switch
-        if (elSimSwitch) elSimSwitch.classList.toggle('visible', name === 'simran');
-
         // Progress reset for live
         if (st.type === 'live') {
             if (elProgFill) elProgFill.style.width = '0%';
             if (elProgKnob) elProgKnob.style.left = '0%';
             if (elElapsed) elElapsed.textContent = '∞';
         }
+        // Reset live badge state
+        setLiveSynced(true);
+        updateSeekButtons();
     }
 
     // ─── PLAY STATE UI ─────────────────────────────────────────────────────────
@@ -538,10 +573,65 @@
     // ─── CONNECT OVERLAY ───────────────────────────────────────────────────────
 
     function setConn(show, name) {
-        if (!elConn) return;
-        elConn.classList.toggle('show', show);
-        if (show && name && elConnStream) {
-            elConnStream.innerHTML = 'Connecting to <span>' + name + '</span>';
+        if (elPlayBtn) {
+            elPlayBtn.classList.toggle('loading', show);
+        }
+        if (elConn) {
+            elConn.classList.toggle('show', false);
+        }
+    }
+
+    function setLiveSynced(isSynced) {
+        if (!elLiveBtn || !elLiveDot) return;
+        if (isSynced) {
+            elLiveBtn.classList.remove('behind');
+            elLiveBtn.classList.add('synced');
+            elLiveDot.classList.remove('pulsing');
+            if (elLiveBehind) elLiveBehind.textContent = '';
+        } else {
+            elLiveBtn.classList.add('behind');
+            elLiveBtn.classList.remove('synced');
+            elLiveDot.classList.add('pulsing');
+            if (elLiveBehind && audio) {
+                // Compute total drift from live edge
+                const liveNow = localPos();
+                let diff = 0;
+                if (curTrack === liveNow.trackIndex) {
+                    diff = Math.round(liveNow.position - audio.currentTime);
+                } else {
+                    const dur = curStream === 'simran' ? 600 : 3600;
+                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audio.currentTime);
+                }
+                // Show as -Xs or -Xm — YouTube-style
+                if (diff > 0) {
+                    if (diff < 60) elLiveBehind.textContent = `-${diff}s`;
+                    else elLiveBehind.textContent = `-${Math.floor(diff / 60)}m${diff % 60 > 0 ? (diff % 60) + 's' : ''}`;
+                } else {
+                    elLiveBehind.textContent = '';
+                    // We're actually ahead — that means synced
+                    setLiveSynced(true);
+                }
+            }
+        }
+    }
+
+    function updateSeekButtons() {
+        const st = STREAMS[curStream];
+        const isLiveStream = st && st.type === 'live';
+        if (elRewindBtn) {
+            elRewindBtn.disabled = isLiveStream;
+            elRewindBtn.style.opacity = isLiveStream ? '0.35' : '1';
+            elRewindBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
+        }
+        if (elForwardBtn) {
+            elForwardBtn.disabled = isLiveStream;
+            elForwardBtn.style.opacity = isLiveStream ? '0.35' : '1';
+            elForwardBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
+        }
+        if (elPrevBtn) {
+            elPrevBtn.disabled = isLiveStream;
+            elPrevBtn.style.opacity = isLiveStream ? '0.35' : '1';
+            elPrevBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
         }
     }
 
@@ -615,10 +705,34 @@
 
     if (elPlayBtn) elPlayBtn.addEventListener('click', () => togglePlay());
 
-    if (elPrevBtn) elPrevBtn.addEventListener('click', () => showStatus('Live stream — no previous'));
+    if (elPrevBtn) elPrevBtn.addEventListener('click', () => showStatus('Seeking to previous track'));
+
+    if (elRewindBtn) {
+        elRewindBtn.addEventListener('click', () => {
+            if (audio && audio.src && audio.src !== window.location.href) {
+                audio.currentTime = Math.max(0, audio.currentTime - 10);
+                showStatus('Rewinded 10s');
+            }
+        });
+    }
+
+    if (elForwardBtn) {
+        elForwardBtn.addEventListener('click', () => {
+            if (audio && audio.src && audio.src !== window.location.href) {
+                const dur = audio.duration || 3600;
+                audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
+                showStatus('Forwarded 10s');
+            }
+        });
+    }
+
     if (elNextBtn) elNextBtn.addEventListener('click', async () => {
-        if (STREAMS[curStream].type !== 'live') await advanceTrack();
-        else showStatus('Live — cannot skip');
+        if (STREAMS[curStream].type !== 'live') {
+            await advanceTrack();
+            showStatus('Skipped to next track');
+        } else {
+            showStatus('Live — cannot skip');
+        }
     });
 
     // Stream switcher
@@ -626,28 +740,35 @@
     if (elBtnAmrit) elBtnAmrit.addEventListener('click', () => startStream('amritvela'));
     if (elBtnSimran) elBtnSimran.addEventListener('click', () => startStream('simran'));
 
-    // Simran sub-switch
-    let isSimranToggle = false;
-    if (elSimSwitch) {
-        elSimSwitch.addEventListener('click', () => {
-            isSimranToggle = !isSimranToggle;
-            elSimSwitch.classList.toggle('active', isSimranToggle);
-            if (elSimState) elSimState.textContent = isSimranToggle ? 'Naam Simran' : 'Asa Di Vaar';
-        });
-    }
+    // (Simran sub-switch removed — no functionality)
 
-    // Live button
+    // Live button — seek to current live edge (YouTube-style drift seek, not restart)
     if (elLiveBtn) {
-        elLiveBtn.addEventListener('click', () => {
-            elLiveBtn.classList.remove('behind');
-            elLiveBtn.classList.add('synced');
-            elLiveDot.classList.remove('pulsing');
-            if (elLiveBehind) elLiveBehind.textContent = '';
-            if (STREAMS[curStream].type === 'live') {
-                audio.src = STREAMS[curStream].url + '?t=' + Date.now();
+        elLiveBtn.addEventListener('click', async () => {
+            if (!audio) return;
+            const st = STREAMS[curStream];
+            if (st.type === 'live') {
+                // Hard reconnect for real live streams
+                audio.src = st.url + '?t=' + Date.now();
                 audio.load();
                 audio.play().catch(() => { });
+            } else {
+                // For virtual live: seek within current track if same track, else restart stream
+                try {
+                    const pos = await getServerPos(true);
+                    if (pos.trackIndex === curTrack && audio.duration && pos.position < audio.duration - 1) {
+                        // Same track — just seek forward
+                        audio.currentTime = Math.min(pos.position, audio.duration - 2);
+                        if (audio.paused) audio.play().catch(() => { });
+                    } else {
+                        // Different track — restart stream at live position
+                        await startStream(curStream);
+                    }
+                } catch (e) {
+                    await startStream(curStream);
+                }
             }
+            setLiveSynced(true);
         });
     }
 

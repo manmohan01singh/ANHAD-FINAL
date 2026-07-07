@@ -89,6 +89,9 @@ function createEngine() {
     if (!pipelineResult.needsGurbani) {
       parts.push('Conversation mode: ' + (pipelineResult.mode || 'non-spiritual') + '. No Gurbani retrieval. Answer naturally in the user\'s language. Do NOT invent a Shabad.');
       addModeSpecificInstruction(pipelineResult.mode, parts);
+      if (pipelineResult.mode === 'quick_reply') {
+        parts.push('Remember: you are in ANHAD Quick mode. Keep it very brief — 1 to 3 short sentences. No scripture references. No depth. Just a warm quick response.');
+      }
       return parts.join('\n\n');
     }
 
@@ -219,7 +222,18 @@ Your voice must sound like a thoughtful, humble Gursikh sitting beside the perso
 If the user expresses suicidal thoughts, respond first as a compassionate human. Share helplines (AASRA: +91-9820466726, iCall: +91-9152987821). Never make them feel guilty. Never imply suffering is punishment. Gurbani comes after safety.
 
 ━ NEVER MAKE GURBANI SAY WHAT IT DOES NOT ──
-Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teaching. If the Shabad speaks of Hukam, do not make it speak of Love. If it speaks of Detachment, do not make it speak of Devotion. Stay faithful to the verse. If you are unsure of its meaning, say so.`;
+Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teaching. If the Shabad speaks of Hukam, do not make it speak of Love. If it speaks of Detachment, do not make it speak of Devotion. Stay faithful to the verse. If you are unsure of its meaning, say so.
+
+━ GURBANI GPT MODE (Deep Vichar) ──
+When PRIMARY SHABAD is provided, your response MUST be grounded in that Shabad's actual translation from authoritative tikas. Follow this structure:
+1. First, present the Gurbani verse in its original Gurmukhi.
+2. Then, provide the CORRECT English translation as given in the tikas (Sahib Singh, Manmohan Singh, or Faridkot Teeka).
+3. Then, do an extreme deep Vichar — go to the depths of each word/phrase, explain its spiritual essence, and connect it to the seeker's life.
+4. Be thorough and unhurried. This is deep contemplation, not a quick answer.
+5. Let the Shabad's own translation guide the entire explanation — do not bring external meanings.
+
+━ ANHAD QUICK MODE ──
+When mode is casual_chat or greeting, respond briefly (1-3 sentences). No scripture. No depth. Just warm, quick conversation.`;
   }
 
   function addModeSpecificInstruction(mode, parts) {
@@ -229,6 +243,8 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
       parts.push('This is a factual/definitional query. Answer directly from your knowledge. Only use Gurbani if it genuinely helps explain the answer.');
     } else if (mode === 'greeting') {
       parts.push('This is a greeting. Return the greeting warmly and briefly. Offer help.');
+    } else if (mode === 'quick_reply') {
+      parts.push('ANHAD QUICK MODE: Respond in 1-3 brief sentences. No scripture retrieval, no Gurbani, no depth. Just warm, quick conversational reply. Be very concise.');
     }
   }
 
@@ -241,8 +257,13 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
   async function run(text, history) {
     const trace = { input: text, stages: [], timestamp: Date.now() };
 
+    const selectedModel = localStorage.getItem('gurbanigpt_selected_model') || 'gurbanigpt-deep';
+    const isAnhadQuick = (selectedModel === 'anhad-quick');
+
     // 1. Conversation mode (fast gate)
-    const mode = stageConversationMode(text);
+    const mode = isAnhadQuick
+      ? { type: 'quick_reply', needsGurbani: false, label: 'Quick reply' }
+      : stageConversationMode(text);
     trace.stages.push({ name: 'conversation_mode', output: mode });
 
     if (!mode.needsGurbani) {
@@ -344,6 +365,9 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
     }
     promptParts.push('Conversation mode: ' + (mode.type || 'non-spiritual') + '. No Gurbani retrieval. Answer naturally.');
     addModeSpecificInstruction(mode.type, promptParts);
+    if (mode.type === 'quick_reply') {
+      promptParts.push('CRITICAL: You are in ANHAD Quick mode. Keep response to 1-3 short sentences. Be warm, be brief. No scripture, no depth.');
+    }
     if (detection) {
       promptParts.push('Detected intent: ' + (detection.intent || 'unknown') + ', emotion: ' + (detection.emotion || 'none') + '.');
     }
@@ -421,7 +445,13 @@ Do not extrapolate, spiritualize, or generalize a Shabad beyond its actual teach
     const headers = { 'Content-Type': 'application/json' };
     if (groqKey) headers['Authorization'] = 'Bearer ' + groqKey;
 
-    const activeModel = localStorage.getItem('gurbanigpt_selected_model') || 'meta-llama/llama-4-scout-17b-16e-instruct';
+    let activeModel = localStorage.getItem('gurbanigpt_selected_model') || 'gurbanigpt-deep';
+    if (activeModel === 'gurbanigpt-deep') {
+      activeModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+    } else if (activeModel === 'anhad-quick') {
+      activeModel = 'meta-llama/llama-3.3-70b-specdec';
+    }
+
     const body = JSON.stringify({
       model: activeModel,
       messages: messages,

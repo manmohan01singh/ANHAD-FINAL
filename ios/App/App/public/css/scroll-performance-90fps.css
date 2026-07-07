@@ -26,13 +26,14 @@ body {
   text-rendering: optimizeSpeed;
 }
 
-/* iOS momentum scrolling */
+/* iOS momentum scrolling — scroll must happen on html/body, NOT .app */
 main.app,
 #app {
-
-  overflow-y: auto;
+  /* SCROLL FIX: Do NOT set overflow here — it creates a nested scroll container 
+     that traps touch events and causes the page to get stuck midway.
+     Let the page (html/body) be the single scroll root. */
   overflow-x: hidden;
-  overscroll-behavior-y: contain;
+  /* overflow-y intentionally removed — page scrolls, not the app div */
 }
 
 /* â”€â”€â”€ TOUCH OPTIMIZATION â”€â”€â”€ */
@@ -53,31 +54,59 @@ header {
 }
 
 /* â”€â”€â”€ CSS CONTAINMENT â€” Only for independent blocks â”€â”€â”€ */
+/* ─── CSS CONTAINMENT — Only for independent blocks ─── */
 .event-card,
 .quick-card,
 .practice-card {
   contain: layout style;
 }
 
-/* â”€â”€â”€ DURING SCROLL: Simplify rendering â”€â”€â”€ */
-/* The .scrolling class is added/removed by scroll-performance-90fps.js */
+/* ─── DURING SCROLL: Simplify rendering ─── */
+/* Both .scrolling and .is-scrolling are set on body by scroll-optimizer.js */
 .scrolling .aurora-bg,
+.is-scrolling .aurora-bg,
 .scrolling .particle-burst,
+.is-scrolling .particle-burst,
 .scrolling .spark-burst,
+.is-scrolling .spark-burst,
 .scrolling .gurpurab-ambient-glow,
+.is-scrolling .gurpurab-ambient-glow,
 .scrolling .gurpurab-ring-halo,
+.is-scrolling .gurpurab-ring-halo,
 .scrolling .gurpurab-petals-container,
-.scrolling .gurpurab-sparkles-container {
+.is-scrolling .gurpurab-petals-container,
+.scrolling .gurpurab-sparkles-container,
+.is-scrolling .gurpurab-sparkles-container {
   animation-play-state: paused !important;
 }
 
-/* Simplify shadows during fast scroll â€” barely visible anyway */
+/* Simplify shadows and disable backdrop-filter during fast scroll — barely visible anyway, boosts FPS on Android */
 .is-scrolling .event-card,
+.scrolling .event-card,
 .is-scrolling .quick-card,
+.scrolling .quick-card,
 .is-scrolling .practice-card,
-.is-scrolling .hero-card {
+.scrolling .practice-card,
+.is-scrolling .hero-card,
+.scrolling .hero-card {
   box-shadow: none !important;
-  transition: none !important;
+  transition: transform 0s, opacity 0s, filter 0s, box-shadow 0s, backdrop-filter 0s, -webkit-backdrop-filter 0s !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Hide backdrop-filter on header, nav bars, and other layers during scroll to unlock buttery smooth 90fps/120fps on Android */
+.is-scrolling header,
+.scrolling header,
+.is-scrolling .nav-glass,
+.scrolling .nav-glass,
+.is-scrolling .tab-bar,
+.scrolling .tab-bar,
+.is-scrolling .mini-player,
+.scrolling .mini-player {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: transform 0s, opacity 0s, backdrop-filter 0s, -webkit-backdrop-filter 0s !important;
 }
 
 .hero-card__badge,
@@ -88,12 +117,14 @@ header {
 }
 
 /* Disable non-essential transitions during scroll */
-.is-scrolling .progress-inline__fill::after {
+.is-scrolling .progress-inline__fill::after,
+.scrolling .progress-inline__fill::after {
   animation: none !important;
 }
 
-/* â”€â”€â”€ REDUCED MOTION SUPPORT â”€â”€â”€ */
+/* ─── REDUCED MOTION SUPPORT ─── */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -102,7 +133,7 @@ header {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .aurora-bg,
   .aurora-bg-extra,
   .mandana-watermark {
@@ -111,7 +142,8 @@ header {
 }
 
 /* â”€â”€â”€ THEME TRANSITION OPTIMIZATION â”€â”€â”€ */
-html, body {
+html,
+body {
   transition: background-color 0s, color 0s !important;
 }
 
@@ -160,7 +192,9 @@ html, body {
 }
 
 @keyframes nav-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* â”€â”€â”€ VIEW TRANSITIONS API â”€â”€â”€ */
@@ -180,6 +214,7 @@ html, body {
     opacity: 0.8;
     transform: translateX(20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);

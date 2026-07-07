@@ -232,7 +232,7 @@ const Utils = {
 
         if (!dayNumbers.length) return 0;
 
-                // Check if streak is active (today or yesterday)
+        // Check if streak is active (today or yesterday)
         const mostRecent = dayNumbers[0];
         const isStreakActive = mostRecent === todayDay || mostRecent === yesterdayDay;
 
@@ -2726,7 +2726,7 @@ const HeaderManager = {
             if (isSaved) {
                 this.elements.streakFire.classList.remove('streak-broken', 'streak-healthy');
                 this.elements.streakFire.classList.add('streak-saved');
-                
+
                 // Add SAVED tag if it doesn't exist
                 if (!this.elements.streakFire.querySelector('.streak-saved-tag')) {
                     const tag = document.createElement('span');
@@ -3001,7 +3001,7 @@ const HeaderManager = {
                 el.addEventListener('click', () => {
                     ModalManager.close('streakRiskModal');
                     HapticManager.selection();
-                    
+
                     // Scroll to Nitnem section so user can mark it
                     const section = document.getElementById('nitnemProgressSection');
                     if (section) {
@@ -3954,6 +3954,13 @@ const NitnemManager = {
                     <span class="bani-name-english">${group.nameEnglish}</span>
                 </div>
                 <span class="bani-duration">${group.duration}</span>
+                <button class="bani-vichar-btn" data-bani-name="${group.nameEnglish}" aria-label="Deep Vichar in Gurbani GPT" title="Deep Vichar in Gurbani GPT">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </button>
                 ${!isPunishment ? `<button class="bani-remove-btn" data-bani-id="${group.id}" aria-label="Remove">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
@@ -3967,8 +3974,18 @@ const NitnemManager = {
         // Attach event listeners
         listElement.querySelectorAll('.bani-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                if (e.target.closest('.bani-remove-btn')) return;
+                if (e.target.closest('.bani-remove-btn') || e.target.closest('.bani-vichar-btn')) return;
                 this.toggleGroupCompletion(item.dataset.baniId, item.dataset.period);
+            });
+        });
+
+        listElement.querySelectorAll('.bani-vichar-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const name = btn.dataset.baniName;
+                const url = `../GurbaniGPT/index.html?prompt=${encodeURIComponent(name)}&deepVichar=true`;
+                if (window.navigateTo) window.navigateTo(url);
+                else window.location.href = url;
             });
         });
 

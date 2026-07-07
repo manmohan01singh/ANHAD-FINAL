@@ -13,8 +13,8 @@
       return forced;
     }
     const h = new Date().getHours();
-    if (h >= 5  && h < 9)  return 'morning';
-    if (h >= 9  && h < 16) return 'day';
+    if (h >= 5 && h < 9) return 'morning';
+    if (h >= 9 && h < 16) return 'day';
     if (h >= 16 && h < 20) return 'evening';
     return 'night';
   }
@@ -22,9 +22,9 @@
   // ── Background image map (WebP — optimized) ──────────────────────────────
   const BG_IMAGES = {
     morning: 'assets/darbar-sahib-morning-bg.webp',
-    day:     'assets/darbar-sahib-day-bg.webp',
+    day: 'assets/darbar-sahib-day-bg.webp',
     evening: 'assets/darbar-sahib-evening-bg.webp',
-    night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+    night: 'assets/HERO CARD IMAGES/new-night-bg.webp',
   };
 
   // ── Pre-load all bg images for instant swap ──────────────────────────────
@@ -46,7 +46,7 @@
         transition-property: color !important;
         background-attachment: fixed;
         background-size: cover;
-        background-position: center center;
+        background-position: center top;
         background-repeat: no-repeat;
       }
     `;
@@ -82,7 +82,7 @@
     document.body.style.transitionProperty = 'none';
     document.body.style.backgroundImage = `url('${bgUrl}')`;
     document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center center';
+    document.body.style.backgroundPosition = 'center top';
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundAttachment = 'fixed';
   }
@@ -127,16 +127,16 @@
       if (mode === 'dark') newSrc = img.getAttribute('data-img-night') || images[idx] || '';
       else if (mode === 'light') newSrc = img.getAttribute('data-img-day') || images[idx] || '';
       else {
-        if (slot === 'morning')      newSrc = img.getAttribute('data-img-morning') || images[idx] || '';
-        else if (slot === 'day')     newSrc = img.getAttribute('data-img-day')     || images[idx] || '';
+        if (slot === 'morning') newSrc = img.getAttribute('data-img-morning') || images[idx] || '';
+        else if (slot === 'day') newSrc = img.getAttribute('data-img-day') || images[idx] || '';
         else if (slot === 'evening') newSrc = img.getAttribute('data-img-evening') || images[idx] || '';
-        else                         newSrc = img.getAttribute('data-img-night')   || images[idx] || '';
+        else newSrc = img.getAttribute('data-img-night') || images[idx] || '';
       }
       if (!newSrc) return;
       try {
         const newAbsolute = new URL(newSrc, document.baseURI).href;
         if (img.src !== newAbsolute) img.src = newSrc;
-      } catch(e) { img.src = newSrc; }
+      } catch (e) { img.src = newSrc; }
     });
 
     const idMap = [
@@ -150,17 +150,17 @@
         try {
           const newAbsolute = new URL(src, document.baseURI).href;
           if (el.src !== newAbsolute) el.src = src;
-        } catch(e) { el.src = src; }
+        } catch (e) { el.src = src; }
       }
     });
   }
 
   // ── TIME-ADAPTIVE CARD COLORS ─────────────────────────────────────────────
   const CARD_PALETTES = {
-    morning: { bg:'rgba(255,235,208,0.84)', bgGlass:'rgba(255,248,238,0.72)', text:'#1A0402', text2:'#4A1508', shadow:'rgba(200,100,20,0.32)', border:'rgba(230,140,60,0.30)', iconBg:'rgba(255,215,160,0.70)', accent:'#B84800' },
-    day:     { bg:'rgba(210,238,255,0.84)', bgGlass:'rgba(240,250,255,0.72)', text:'#000814', text2:'#02162E', shadow:'rgba(0,80,180,0.30)',   border:'rgba(60,140,220,0.28)',  iconBg:'rgba(180,220,255,0.70)', accent:'#0A4078' },
-    evening: { bg:'rgba(255,210,175,0.84)', bgGlass:'rgba(255,235,210,0.72)', text:'#140205', text2:'#38050C', shadow:'rgba(180,35,10,0.36)',  border:'rgba(200,80,20,0.30)',   iconBg:'rgba(255,185,130,0.70)', accent:'#7A1410' },
-    night:   { bg:'rgba(28,28,30,0.90)',    bgGlass:'rgba(28,28,30,0.80)',    text:'#F5F5F7', text2:'#8E8E93', shadow:'rgba(0,0,0,0.45)',  border:'rgba(255,255,255,0.12)', iconBg:'rgba(58,58,60,0.70)',   accent:'#FFD60A' },
+    morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(200,100,20,0.32)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#B84800' },
+    day: { bg: 'rgba(210,238,255,0.84)', bgGlass: 'rgba(240,250,255,0.72)', text: '#000814', text2: '#02162E', shadow: 'rgba(0,80,180,0.30)', border: 'rgba(60,140,220,0.28)', iconBg: 'rgba(180,220,255,0.70)', accent: '#0A4078' },
+    evening: { bg: 'rgba(255,210,175,0.84)', bgGlass: 'rgba(255,235,210,0.72)', text: '#140205', text2: '#38050C', shadow: 'rgba(180,35,10,0.36)', border: 'rgba(200,80,20,0.30)', iconBg: 'rgba(255,185,130,0.70)', accent: '#7A1410' },
+    night: { bg: 'rgba(28,28,30,0.90)', bgGlass: 'rgba(28,28,30,0.80)', text: '#F5F5F7', text2: '#8E8E93', shadow: 'rgba(0,0,0,0.45)', border: 'rgba(255,255,255,0.12)', iconBg: 'rgba(58,58,60,0.70)', accent: '#FFD60A' },
   };
 
   function applyTimeAdaptiveCardColors(slot) {
@@ -168,19 +168,19 @@
     if (mode !== 'auto') return;
     const p = CARD_PALETTES[slot] || CARD_PALETTES.day;
     const root = document.documentElement;
-    root.style.setProperty('--sky-card-bg',      p.bg);
+    root.style.setProperty('--sky-card-bg', p.bg);
     root.style.setProperty('--sky-card-bg-glass', p.bgGlass);
-    root.style.setProperty('--sky-card-text',     p.text);
-    root.style.setProperty('--sky-card-text2',    p.text2);
-    root.style.setProperty('--sky-card-shadow',   p.shadow);
-    root.style.setProperty('--sky-card-border',   p.border);
-    root.style.setProperty('--sky-card-icon-bg',  p.iconBg);
-    root.style.setProperty('--sky-card-accent',   p.accent);
+    root.style.setProperty('--sky-card-text', p.text);
+    root.style.setProperty('--sky-card-text2', p.text2);
+    root.style.setProperty('--sky-card-shadow', p.shadow);
+    root.style.setProperty('--sky-card-border', p.border);
+    root.style.setProperty('--sky-card-icon-bg', p.iconBg);
+    root.style.setProperty('--sky-card-accent', p.accent);
   }
 
   function clearTimeAdaptiveCardColors() {
-    ['--sky-card-bg','--sky-card-bg-glass','--sky-card-text','--sky-card-text2',
-     '--sky-card-shadow','--sky-card-border','--sky-card-icon-bg','--sky-card-accent'
+    ['--sky-card-bg', '--sky-card-bg-glass', '--sky-card-text', '--sky-card-text2',
+      '--sky-card-shadow', '--sky-card-border', '--sky-card-icon-bg', '--sky-card-accent'
     ].forEach(p => document.documentElement.style.removeProperty(p));
   }
 
@@ -267,7 +267,7 @@
   }
 
   window.AnhadSky = {
-    refresh: function() {},
+    refresh: function () { },
     init,
     updateHeroCardImages,
     applyTimeOfDay,
