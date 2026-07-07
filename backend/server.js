@@ -3969,63 +3969,205 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
     }
 });
 
+// In-memory cache for video validation results
+const videoValidationCache = new Map();
+
+async function searchVideosViaScrap(query) {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
+    try {
+        const resp = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Accept': 'text/html'
+            },
+            timeout: 15000
+        });
+        const html = resp.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+        if (!jsonMatch) return [];
+
+        const data = JSON.parse(jsonMatch[1]);
+        const items = data.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents || [];
+
+        const results = [];
+        for (const item of items) {
+            const video = item.videoRenderer;
+            if (video && video.videoId) {
+                const videoId = video.videoId;
+                const title = video.title?.runs?.[0]?.text || video.title?.simpleText || 'Video';
+                const channelName = video.ownerText?.runs?.[0]?.text || video.shortBylineText?.runs?.[0]?.text || '';
+                const duration = video.lengthText?.simpleText || '';
+                const views = video.viewCountText?.simpleText || '';
+                const publishedTime = video.publishedTimeText?.simpleText || '';
+                const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                results.push({ videoId, title, channelName, duration, views, publishedTime, thumbnail });
+            }
+        }
+        return results;
+    } catch (e) {
+        console.warn('[Sadhsangat Video Search Scraper] Failed to search videos:', e.message);
+        return [];
+    }
+}
+
+async function validateVideosViaAI(videos) {
+    if (!videos || videos.length === 0) return [];
+
+    const uncachedVideos = [];
+    const validatedResults = [];
+
+    for (const v of videos) {
+        const cached = videoValidationCache.get(v.videoId);
+        if (cached) {
+            validatedResults.push({ ...v, isValid: cached.isValid, reason: cached.reason });
+        } else {
+            uncachedVideos.push(v);
+        }
+    }
+
+    if (uncachedVideos.length === 0) {
+        return validatedResults.filter(v => v.isValid);
+    }
+
+    // Limit to evaluating top 10 uncached videos in one batch to control prompt size and latency
+    const batchToEvaluate = uncachedVideos.slice(0, 10);
+
+    const videoLines = batchToEvaluate.map((v, i) => {
+        return `${i + 1}. Video ID: ${v.videoId} | Title: "${v.title}" | Channel: "${v.channelName}"`;
+    }).join('\n');
+
+    const prompt = `You are an expert content classifier for a Sikh & Spiritual devotional platform "Sadhsangat Live".
+Your task: evaluate the following YouTube videos. Determine if EACH video is appropriate for this spiritual platform.
+
+APPROVE (isValid: true) ONLY if the video is related to:
+- Gurbani, Kirtan, Shabad, Nitnem, Simran, Waheguru, Sukhmani Sahib, Japji Sahib, Rehraas Sahib, Ardas
+- Sikh Gurdwara, Harmandir Sahib, Darbar Sahib, Gurmat Sikh history/teaching
+- Sikh historical lectures/Kathas by recognized scholars/Kathavachaks
+- Hindu devotional (Bhajans, Aarti, Satsang, devotional discourses, Mahabharata/Ramayana spiritual snippets)
+- Islamic devotional (Naats, Quran recitation, Sufi qawwali with spiritual focus, Islamic spiritual lectures)
+- Christian devotional (Gospel, church hymns, praise and worship, spiritual bible teaching)
+- Other religious/spiritual devotional practices or interfaith peace discourses
+
+REJECT (isValid: false) if the video is:
+- Punjabi pop/secular/hip-hop music or songs by singers like Karan Aujla, Diljit Dosanjh, Sidhu Moose Wala, AP Dhillon, etc.
+- Commercial music labels release (T-Series, Speed Records, Zee Music, etc.)
+- Mainstream movies, movie trailers, film scenes, actor interviews
+- News, politics, daily debates, current affairs
+- Comedy, prank videos, roasts, memes
+- Vlogs (lifestyle, travel, food review), cooking shows, gaming streams
+- Tech reviews, unboxing, science tutorials, coding tutorials, other secular educational content
+- Sports, cricket, WWE, fitness, bodybuilding promos
+
+For each video, analyze its title and channel name carefully.
+If the title is in Gurmukhi, Hindi/Devanagari, or Shahmukhi script, it is highly likely devotional—please inspect the translation or terms.
+If you are uncertain but it leans spiritual, approve it. If it is secular/pop/entertainment, you MUST reject it.
+
+Videos to evaluate:
+${videoLines}
+
+Respond ONLY with valid JSON (no markdown explanation or formatting blocks):
+{
+  "evaluations": [
+    {
+      "videoId": "[VIDEO_ID]",
+      "isValid": true/false,
+      "reason": "Brief one sentence explanation"
+    },
+    ...
+  ]
+}`;
+
+    try {
+        console.log(`[Video Validation] Calling AI to evaluate ${batchToEvaluate.length} videos...`);
+        const response = await axios.post(CONFIG.GROQ_API_URL, {
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                { role: 'system', content: 'You are a JSON API. Always respond with valid JSON only. Never add markdown fences or text outside the JSON object.' },
+                { role: 'user', content: prompt }
+            ],
+            temperature: 0.1,
+            max_tokens: 1000
+        }, {
+            headers: {
+                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 20000
+        });
+
+        const rawContent = response.data.choices[0]?.message?.content || '';
+        const jsonMatch = rawContent.match(/{[\s\S]*}/);
+        const jsonStr = jsonMatch ? jsonMatch[0] : rawContent;
+        const result = JSON.parse(jsonStr);
+
+        const evaluations = result.evaluations || [];
+        const evalMap = new Map(evaluations.map(e => [e.videoId, e]));
+
+        for (const v of batchToEvaluate) {
+            const evaluation = evalMap.get(v.videoId);
+            const isValid = evaluation ? !!evaluation.isValid : false;
+            const reason = evaluation ? evaluation.reason : 'AI did not evaluate';
+
+            videoValidationCache.set(v.videoId, { isValid, reason, timestamp: Date.now() });
+            validatedResults.push({ ...v, isValid, reason });
+        }
+
+        // For any videos in the original list that were not in the batch, or missed by AI, mark as invalid and cache
+        for (const v of videos) {
+            if (!videoValidationCache.has(v.videoId)) {
+                videoValidationCache.set(v.videoId, { isValid: false, reason: 'Skipped validation', timestamp: Date.now() });
+            }
+        }
+
+    } catch (err) {
+        console.error('[Video Validation] AI batch check failed:', err.message);
+        // Robust fallback: If AI fails, use a local keyword fallback to avoid breaking search completely!
+        const spiritualRescueKw = [
+            'gurbani', 'kirtan', 'shabad', 'nitnem', 'japji', 'simran',
+            'waheguru', 'sahib', 'gurdwara', 'harmandir', 'amrit', 'satsang', 'katha',
+            'bhajan', 'aarti', 'sewa', 'paath', 'hukamnama', 'dharmik', 'devotional'
+        ];
+
+        for (const v of batchToEvaluate) {
+            const titleLower = (v.title || '').toLowerCase();
+            const channelLower = (v.channelName || '').toLowerCase();
+            const matchesLocal = spiritualRescueKw.some(kw => titleLower.includes(kw) || channelLower.includes(kw));
+
+            videoValidationCache.set(v.videoId, {
+                isValid: matchesLocal,
+                reason: matchesLocal ? 'Local keyword fallback match' : 'Local keyword fallback mismatch/AI Offline',
+                timestamp: Date.now()
+            });
+            validatedResults.push({ ...v, isValid: matchesLocal, reason: 'AI offline fallback' });
+        }
+    }
+
+    return validatedResults.filter(v => v.isValid);
+}
+
 // Enhanced Content Search API (search videos by title, description, channel name)
 app.get('/api/sadhsangat/content-search', async (req, res) => {
     const { q } = req.query;
-    const userId = getUserId(req, res);
 
     if (!q || q.trim().length < 2) {
         return res.status(400).json({ error: 'Query too short' });
     }
 
     try {
-        const myChs = await SadhsangatDb.getUserChannels(userId);
+        console.log(`[Content Search API] Global video search running for query: "${q}"`);
 
-        const fetchPromises = myChs.map(async (ch) => {
-            try {
-                const videos = await getCachedChannelVideos(ch.channelId, ch.channelHandle);
-                return videos.map(v => ({
-                    ...v,
-                    channelId: ch.channelId,
-                    channelName: ch.channelName,
-                    channelThumbnail: ch.thumbnail
-                }));
-            } catch (err) {
-                console.warn(`[Content Search] Failed for ${ch.channelName}:`, err.message);
-                return [];
-            }
-        });
+        // 1. Scrape YouTube search results for videos
+        const rawVideos = await searchVideosViaScrap(q.trim());
 
-        const results = await Promise.allSettled(fetchPromises);
-        let allVideos = [];
-        for (const res of results) {
-            if (res.status === 'fulfilled') {
-                allVideos = allVideos.concat(res.value);
-            }
-        }
+        // 2. Validate those videos using our AI classifier (with caching and fallbacks)
+        const validatedVideos = await validateVideosViaAI(rawVideos);
 
-        const queryLower = q.toLowerCase().trim();
-        const searchResults = allVideos.filter(v => {
-            const titleMatch = (v.title || '').toLowerCase().includes(queryLower);
-            const channelMatch = (v.channelName || '').toLowerCase().includes(queryLower);
-            return titleMatch || channelMatch;
-        });
-
-        searchResults.sort((a, b) => {
-            const aExactTitle = (a.title || '').toLowerCase() === queryLower ? 1 : 0;
-            const bExactTitle = (b.title || '').toLowerCase() === queryLower ? 1 : 0;
-
-            if (bExactTitle !== 0) return 1;
-            if (aExactTitle !== 0) return -1;
-
-            const aChannelMatch = (a.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
-            const bChannelMatch = (b.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
-            return bChannelMatch - aChannelMatch;
-        });
+        console.log(`[Content Search API] Found ${rawVideos.length} raw videos, approved ${validatedVideos.length} videos`);
 
         res.json({
-            videos: searchResults.slice(0, 50),
-            total: searchResults.length,
+            videos: validatedVideos.slice(0, 30),
+            total: validatedVideos.length,
             query: q
         });
 
@@ -4159,6 +4301,344 @@ app.get('/api/sadhsangat/streams', async (req, res) => {
     } catch (e) {
         console.error('[Sadhsangat Unified Streams API] Error:', e.message);
         res.status(500).json({ error: e.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// 📹 VIDEO SEARCH & VALIDATION — AI-Powered Video Discovery
+// Extends channel search with individual video search and validation
+// Uses same 3-layer validation: instant reject/approve + Groq AI
+// ═══════════════════════════════════════════════════════════════════
+
+// Video validation cache (5 minute TTL, separate from channel cache)
+const videoValidationCache = new Map();
+const VIDEO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Cleanup expired video validation cache entries every 5 minutes
+setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [key, value] of videoValidationCache.entries()) {
+        if (now - value.timestamp > VIDEO_CACHE_TTL) {
+            videoValidationCache.delete(key);
+            cleaned++;
+        }
+    }
+    if (cleaned > 0) {
+        console.log(`[Video Cache] Cleaned ${cleaned} expired entries`);
+    }
+}, VIDEO_CACHE_TTL);
+
+/**
+ * Search YouTube videos via web scraping
+ * @param {string} query - Search query
+ * @param {number} maxResults - Maximum results to return (default 50)
+ * @returns {Promise<Array>} Array of video objects
+ */
+async function searchVideosViaYouTubeScraper(query, maxResults = 50) {
+    const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept-Language': 'en-US,en;q=0.9'
+            },
+            timeout: 15000
+        });
+
+        const html = response.data;
+        const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
+
+        if (!jsonMatch) {
+            console.warn('[Video Search] Failed to extract ytInitialData');
+            return [];
+        }
+
+        const data = JSON.parse(jsonMatch[1]);
+        const items = data.contents?.twoColumnSearchResultsRenderer
+            ?.primaryContents?.sectionListRenderer?.contents?.[0]
+            ?.itemSectionRenderer?.contents || [];
+
+        const videos = [];
+        for (const item of items) {
+            const video = item.videoRenderer;
+            if (!video) continue; // Skip channels, playlists
+
+            const videoId = video.videoId;
+            const title = video.title?.runs?.[0]?.text || '';
+            const thumbnails = video.thumbnail?.thumbnails || [];
+            const thumbnail = thumbnails[thumbnails.length - 1]?.url || '';
+
+            const channelId = video.ownerText?.runs?.[0]?.navigationEndpoint?.browseEndpoint?.browseId || '';
+            const channelName = video.ownerText?.runs?.[0]?.text || '';
+            const channelThumbnail = video.channelThumbnailSupportedRenderers?.channelThumbnailWithLinkRenderer
+                ?.thumbnail?.thumbnails?.[0]?.url || '';
+
+            const publishedAt = video.publishedTimeText?.simpleText || '';
+            const duration = video.lengthText?.simpleText || '';
+            const viewCount = video.viewCountText?.simpleText || '';
+            const description = video.descriptionSnippet?.runs?.map(r => r.text).join('') || '';
+
+            videos.push({
+                videoId,
+                title,
+                thumbnail,
+                channelId,
+                channelName,
+                channelThumbnail,
+                publishedAt,
+                duration,
+                viewCount,
+                description
+            });
+
+            if (videos.length >= maxResults) break;
+        }
+
+        return videos;
+    } catch (error) {
+        console.error('[Video Search] Scraper error:', error.message);
+        throw error;
+    }
+}
+
+/**
+ * Validate a video using 3-layer approach (instant reject/approve + AI)
+ * @param {string} videoId - YouTube video ID
+ * @param {string} title - Video title
+ * @param {string} channelName - Channel name
+ * @param {string} description - Video description (optional)
+ * @returns {Promise<Object>} Validation result {isValid, reason, category, confidence, fromCache}
+ */
+async function validateVideo(videoId, title, channelName, description = '') {
+    const cacheKey = `video_${videoId}`;
+
+    // Check cache first
+    const cached = videoValidationCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < VIDEO_CACHE_TTL) {
+        return { ...cached, fromCache: true };
+    }
+
+    const titleLower = title.toLowerCase();
+    const channelLower = channelName.toLowerCase();
+    const descLower = description.toLowerCase();
+    const combined = `${titleLower} ${channelLower} ${descLower}`;
+
+    // Layer 1: Instant Rejection (reuse channel keywords)
+    const matchedRejectKw = INSTANT_REJECT_KEYWORDS.find(kw => combined.includes(kw));
+    const matchedRejectArtist = INSTANT_REJECT_ARTISTS.find(artist => combined.includes(artist));
+
+    if (matchedRejectKw || matchedRejectArtist) {
+        const result = {
+            isValid: false,
+            reason: `Entertainment content detected (${matchedRejectKw || matchedRejectArtist})`,
+            category: 'entertainment',
+            confidence: 'high',
+            timestamp: Date.now()
+        };
+        videoValidationCache.set(cacheKey, result);
+        console.log(`[Video Validation] ❌ REJECT (instant) - "${title}": ${result.reason}`);
+        return { ...result, fromCache: false };
+    }
+
+    // Layer 2: Instant Approval (reuse channel keywords)
+    const matchedApproveKw = INSTANT_APPROVE_KEYWORDS.find(kw => combined.includes(kw));
+
+    if (matchedApproveKw) {
+        const result = {
+            isValid: true,
+            reason: `Spiritual content keyword detected (${matchedApproveKw})`,
+            category: 'devotional',
+            confidence: 'high',
+            timestamp: Date.now()
+        };
+        videoValidationCache.set(cacheKey, result);
+        console.log(`[Video Validation] ✅ APPROVE (instant) - "${title}": ${result.reason}`);
+        return { ...result, fromCache: false };
+    }
+
+    // Layer 3: Groq AI Analysis
+    console.log(`[Video Validation] 🤖 Calling AI for "${title}"`);
+
+    const validationPrompt = `Analyze this YouTube video and determine if it contains spiritual/devotional content:
+
+Title: ${title}
+Channel: ${channelName}
+Description: ${description.substring(0, 300)}
+
+Is this video spiritual/devotional content (Gurbani, Kirtan, Shabad, Nitnem, Hindu devotional, Islamic spiritual, Christian worship, or general spiritual/meditation content)?
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "isValid": true/false,
+  "reason": "Brief explanation",
+  "category": "gurbani/sikh/hindu/islamic/christian/devotional/singer/entertainment/other",
+  "confidence": "high/medium/low"
+}
+
+Reject if: music videos, vlogs, entertainment, gaming, news, politics, sports, tech, comedy, general music artists.
+Approve if: devotional content, spiritual discourse, religious ceremonies, kirtan, bhajan, qawwali, gospel, meditation.`;
+
+    try {
+        const response = await axios.post(CONFIG.GROQ_API_URL, {
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+                { role: 'system', content: 'You are a JSON API that validates spiritual content. Always respond with valid JSON only.' },
+                { role: 'user', content: validationPrompt }
+            ],
+            temperature: 0.2,
+            max_tokens: 250
+        }, {
+            headers: {
+                'Authorization': `Bearer ${CONFIG.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 15000
+        });
+
+        const content = response.data.choices[0].message.content.trim();
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            throw new Error('No JSON in response');
+        }
+
+        const aiResult = JSON.parse(jsonMatch[0]);
+        const result = {
+            isValid: Boolean(aiResult.isValid),
+            reason: aiResult.reason || 'AI validation completed',
+            category: aiResult.category || 'other',
+            confidence: aiResult.confidence || 'medium',
+            timestamp: Date.now()
+        };
+
+        videoValidationCache.set(cacheKey, result);
+        console.log(`[Video Validation] ${result.isValid ? '✅ APPROVE' : '❌ REJECT'} (AI) - "${title}": ${result.reason}`);
+        return { ...result, fromCache: false };
+
+    } catch (error) {
+        console.error('[Video Validation] AI error:', error.message);
+
+        // Default to rejection on error (secure default)
+        const result = {
+            isValid: false,
+            reason: 'Validation timeout or error - rejected for safety',
+            category: 'other',
+            confidence: 'low',
+            timestamp: Date.now()
+        };
+        videoValidationCache.set(cacheKey, result);
+        return { ...result, fromCache: false };
+    }
+}
+
+/**
+ * Video Search API Endpoint
+ * GET /api/sadhsangat/video-search?q=query
+ */
+app.get('/api/sadhsangat/video-search', async (req, res) => {
+    const { q } = req.query;
+
+    // Validation
+    if (!q || q.trim().length < 2) {
+        return res.status(400).json({
+            error: 'Query too short',
+            details: 'Search query must be at least 2 characters',
+            errorCode: 'QUERY_TOO_SHORT'
+        });
+    }
+
+    try {
+        console.log(`[Video Search] Query: "${q}"`);
+
+        // Fetch videos from YouTube
+        const videos = await searchVideosViaYouTubeScraper(q, 50);
+        console.log(`[Video Search] Found ${videos.length} videos`);
+
+        if (videos.length === 0) {
+            return res.json({ videos: [], validationStats: { total: 0, approved: 0, rejected: 0, cached: 0 } });
+        }
+
+        // Validate videos in parallel (batches of 10)
+        const validatedVideos = [];
+        let stats = { total: 0, approved: 0, rejected: 0, cached: 0 };
+
+        for (let i = 0; i < videos.length; i += 10) {
+            const batch = videos.slice(i, i + 10);
+            const batchResults = await Promise.allSettled(
+                batch.map(video =>
+                    validateVideo(video.videoId, video.title, video.channelName, video.description)
+                )
+            );
+
+            batchResults.forEach((result, index) => {
+                stats.total++;
+                if (result.status === 'fulfilled' && result.value.isValid) {
+                    validatedVideos.push({
+                        ...batch[index],
+                        validationReason: result.value.reason
+                    });
+                    stats.approved++;
+                    if (result.value.fromCache) stats.cached++;
+                } else {
+                    stats.rejected++;
+                }
+            });
+        }
+
+        console.log(`[Video Search] Validation complete: ${stats.approved} approved, ${stats.rejected} rejected (${stats.cached} from cache)`);
+
+        res.json({
+            videos: validatedVideos,
+            validationStats: stats,
+            timestamp: Date.now()
+        });
+
+    } catch (error) {
+        console.error('[Video Search] Error:', error);
+
+        if (error.code === 'ECONNREFUSED' || error.code === 'ETIMEDOUT') {
+            return res.status(503).json({
+                error: 'Search service unavailable',
+                details: 'YouTube search is temporarily unavailable',
+                errorCode: 'SERVICE_UNAVAILABLE'
+            });
+        }
+
+        res.status(500).json({
+            error: 'Search failed',
+            details: 'An unexpected error occurred. Please try again.',
+            errorCode: 'INTERNAL_ERROR'
+        });
+    }
+});
+
+/**
+ * Video Validation API Endpoint
+ * POST /api/sadhsangat/validate-video
+ * Body: { videoId, title, channelName, description }
+ */
+app.post('/api/sadhsangat/validate-video', async (req, res) => {
+    const { videoId, title, channelName, description } = req.body;
+
+    if (!videoId || !title) {
+        return res.status(400).json({
+            error: 'Missing required fields',
+            details: 'videoId and title are required',
+            errorCode: 'MISSING_FIELDS'
+        });
+    }
+
+    try {
+        const result = await validateVideo(videoId, title, channelName || '', description || '');
+        res.json(result);
+    } catch (error) {
+        console.error('[Video Validation] Error:', error);
+        res.status(500).json({
+            error: 'Validation failed',
+            details: error.message,
+            errorCode: 'VALIDATION_ERROR'
+        });
     }
 });
 
