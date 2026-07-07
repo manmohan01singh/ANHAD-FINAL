@@ -38,7 +38,7 @@
 })();
   </script>
   <meta name="color-scheme" content="light dark">
-    <link rel="stylesheet" href="../css/mobile-lock.css">
+    <link rel="preload" as="image" href="../assets/darbar-sahib-day.avif" type="image/avif" fetchpriority="high">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -47,20 +47,17 @@
     <title>ANHAD — Sri Harmandir Sahib</title>
 
     <!-- Global Theme System -->
-    <link rel="stylesheet" href="../css/theme-variables.css">
-    <script src="../lib/global-theme.js"></script>
-    
-    <!-- Navigation Libraries -->
-    <script src="../lib/smart-back.js"></script>
-    <script src="../lib/page-lifecycle.js"></script>
-    <script src="../lib/smooth-navigation.js?v=2"></script>
-    <script src="../lib/state-preservation.js"></script>
+    <link rel="stylesheet" href="../css/mobile-lock.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="../css/theme-variables.css" media="print" onload="this.media='all'">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Sacramento&family=Great+Vibes&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=optional"
-        rel="stylesheet">
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
+        rel="stylesheet"></noscript>
     <link rel="stylesheet" href="ios-homepage.css">
 </head>
 
@@ -121,15 +118,8 @@
 
     </div>
 
-    <!-- Unified Stats for Kirtan Tracking -->
-    <script src="../lib/unified-stats.js"></script>
-    <!-- UNIFIED AUDIO SINGLETON -->
-    <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
-    <!-- REMOVED: mini-player-extreme.js - replaced by singleton -->
-    <script src="ios-homepage.js"></script>
-    <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->
-    <script src="../lib/capacitor-notifications-global.js"></script>
-    <script src="../lib/anhad-widget-bridge.js"></script>
+    <!-- Audio/stat engines are loaded by ios-homepage.js after first paint. -->
+    <script src="ios-homepage.js" defer></script>
 </body>
 
 </html>

@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v7.0.0'; // Radio v3 rebuild — fresh UI engine
+const CACHE_VERSION = 'anhad-v7.2.4'; // ROOT CAUSE FIX: passive window.touchend in PortraitSlider
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -252,6 +252,26 @@ const DATA_URLS = [
   'NitnemTracker/data/achievements.json'
 ];
 
+const INSTALL_PRECACHE_FILES = [
+  './',
+  'index.html',
+  'manifest.json',
+  'offline.html',
+  'pwa-register.js',
+  'css/theme-variables.css',
+  'css/nav-glass.css',
+  'css/anhad-core.css',
+  'js/anhad-core.js',
+  'assets/icon-192x192.png',
+  'assets/icon-512x512.png',
+  'assets/apple-touch-icon.png',
+  'assets/app-logo.webp',
+  'assets/HERO CARD IMAGES/morning-darbar-sahib.avif',
+  'assets/HERO CARD IMAGES/day-darbar-sahib.avif',
+  'assets/HERO CARD IMAGES/evening-darbar-sahib.avif',
+  'assets/HERO CARD IMAGES/night-darbar-sahib.avif'
+];
+
 // IndexedDB for notification scheduling (Service Worker scope)
 const DB_NAME = 'GurbaniRadioSW';
 const DB_VERSION = 2;
@@ -295,7 +315,7 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Caching static files');
         // Cache files individually to handle failures gracefully
         return Promise.allSettled(
-          STATIC_FILES.map(file => {
+          INSTALL_PRECACHE_FILES.map(file => {
             // Force fetch from network, bypassing HTTP cache
             const request = new Request(file, { cache: 'no-cache' });
             return cache.add(request).catch(() => {
@@ -403,28 +423,38 @@ self.addEventListener('fetch', (event) => {
 
   // NEVER cache version.json — always go to network for instant update detection
   if (url.pathname.endsWith('/version.json')) {
-    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    event.respondWith(
+      fetch(event.request).catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        return new Response(JSON.stringify({ version: '0.0.0' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      })
+    );
     return;
   }
 
   // PERF FIX: Radio/Simran live-position API: StaleWhileRevalidate so the radio page
-  // loads the cached position instantly while fresh position arrives in background.
-  // All other /api/ calls remain network-only so state changes propagate immediately.
-  const isRadioApi = url.hostname.includes('onrender.com') &&
+  // PERF FIX: Radio/Simran live-position API — also handle localhost API (dev mode)
+  const isRadioApi = (url.hostname.includes('onrender.com') || url.hostname === '127.0.0.1' || url.hostname === 'localhost') &&
     (url.pathname.includes('/api/radio') || url.pathname.includes('/api/simran'));
   if (isRadioApi) {
     event.respondWith(staleWhileRevalidate(event.request));
     return;
   }
 
-  // NEVER cache other /api/ calls — always network-only so channel additions/deletions reflect immediately
+  // NEVER cache other /api/ calls — always network-only so state changes propagate immediately
   if (url.pathname.includes('/api/') || url.hostname.includes('onrender.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
 
   // 1. ONLINE KIRTAN (LIVE STREAMS) -> NETWORK ONLY
-  // Detect live audio stream requests (Amritvela r2.dev webm files, icecast, shoutcast, live streams)
+  // Detect live audio stream requests (r2.dev webm files, icecast, shoutcast, etc.)
+  // IMPORTANT: use .includes('/Audio/') not .startsWith('/Audio/') because SW scope prefix
+  // makes paths like /ANHAD-FINAL/frontend/Audio/audio1.mp3 (not /Audio/audio1.mp3)
   const isLiveStream = (
     url.hostname.includes('r2.dev') ||
     url.hostname.includes('listen.samayam') ||
@@ -432,7 +462,7 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('shoutcast') ||
     url.hostname.includes('streaming') ||
     url.pathname.match(/\.m3u8$|\.ts$/) ||
-    (url.pathname.match(/\.(mp3|aac|ogg|webm)$/) && !url.pathname.startsWith('/Audio/'))
+    (url.pathname.match(/\.(mp3|aac|ogg|webm)$/) && !url.pathname.includes('/Audio/'))
   );
 
   if (isLiveStream) {
@@ -503,7 +533,8 @@ async function evictDynamicCache(cache) {
 
 async function cacheFirst(request) {
   const cached = await caches.match(request);
-  if (cached) {
+  // Only return cache if it's a valid response (not a stale 503/error response)
+  if (cached && cached.ok) {
     return cached;
   }
 
@@ -513,9 +544,14 @@ async function cacheFirst(request) {
       const cache = await caches.open(DYNAMIC_CACHE);
       await cache.put(request, response.clone());
       evictDynamicCache(cache); // fire-and-forget eviction
+    } else if (cached) {
+      // Server returned error but we have a (possibly stale) cached copy — use it
+      return cached;
     }
     return response;
   } catch (error) {
+    // Network failed — try cached even if it was an error response
+    if (cached) return cached;
     // For navigation requests serve the offline page; for assets return 503
     if (request.mode === 'navigate') {
       const offlinePage = await caches.match('/offline.html');
@@ -556,6 +592,11 @@ async function networkFirst(request) {
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(DYNAMIC_CACHE);
   const cached = await cache.match(request);
+
+  // If cached entry is a bad response (503/error), delete it and go network-first
+  if (cached && !cached.ok) {
+    cache.delete(request).catch(() => null);
+  }
 
   // Always fetch fresh in background
   const networkPromise = fetch(request).then(response => {

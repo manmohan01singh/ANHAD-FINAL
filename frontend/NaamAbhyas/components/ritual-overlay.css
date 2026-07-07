@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    RITUAL OVERLAY — Sacred Micro-Commitment UI
-   Unified Design System · Warm Minimalism · Gold Accents
+   Glassmorphism × Claymorphism Fusion · Ethereal Premium
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ─── MAIN OVERLAY ─── */
@@ -8,14 +8,15 @@
   position: fixed; inset: 0; z-index: 950;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  background: radial-gradient(ellipse 80% 50% at 50% 30%, rgba(212,148,58,0.04) 0%, transparent 60%);
 }
 .ritual-overlay.active { opacity: 1; visibility: visible; }
 
 .ritual-backdrop {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
 }
 
 .ritual-container {
@@ -30,24 +31,27 @@
 
 .ritual-status-badge {
   display: inline-flex; align-items: center; gap: var(--space-xs);
-  padding: 6px var(--space-md);
+  padding: 8px var(--space-md);
   background: var(--clay-gold-light);
-  border: 1px solid rgba(212,148,58,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(212,148,58,0.2);
   border-radius: var(--radius-full);
   margin-bottom: var(--space-sm);
+  box-shadow: 0 2px 12px rgba(212,148,58,0.1);
 }
 
 .status-dot {
   width: 8px; height: 8px;
   background: var(--clay-sacred);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--clay-sacred-glow);
+  box-shadow: 0 0 12px var(--clay-sacred-glow);
 }
 .status-dot.pulsing { animation: statusPulse 2s ease-in-out infinite; }
 
 @keyframes statusPulse {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
+  0%,100% { transform: scale(1); opacity: 1; box-shadow: 0 0 12px var(--clay-sacred-glow); }
+  50% { transform: scale(1.4); opacity: 0.7; box-shadow: 0 0 24px var(--clay-sacred-glow); }
 }
 
 .status-text {
@@ -67,21 +71,30 @@
 }
 
 .circular-progress-container {
-  position: relative; width: 200px; height: 200px;
+  position: relative; width: 220px; height: 220px;
   margin-bottom: var(--space-lg);
+}
+.circular-progress-container::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 80%; height: 80%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(212,148,58,0.04) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
 
 .progress-ring-bg {
-  fill: none; stroke: var(--clay-border); stroke-width: 8;
+  fill: none; stroke: rgba(255,255,255,0.04); stroke-width: 6;
 }
 
 .progress-ring-fill {
-  fill: none; stroke: var(--clay-sacred); stroke-width: 8;
+  fill: none; stroke: var(--clay-sacred); stroke-width: 6;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.1s linear;
-  filter: drop-shadow(0 0 8px var(--clay-sacred-glow));
+  filter: drop-shadow(0 0 16px var(--clay-sacred-glow));
 }
 
 .timer-center {
@@ -91,27 +104,37 @@
 }
 
 .timer-value {
-  font-size: 3.5rem; font-weight: 200;
-  color: var(--clay-text);
+  font-size: 4rem; font-weight: 100;
+  background: linear-gradient(135deg, var(--clay-text), rgba(255,255,255,0.5));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .timer-label {
   font-size: 0.75rem; font-weight: 600;
   color: var(--clay-text-tertiary);
   margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.ritual-progress-dots { display: flex; gap: var(--space-xs); justify-content: center; }
+.ritual-progress-dots { display: flex; gap: var(--space-xs); justify-content: center; margin-top: var(--space-md); }
 
 .ritual-dot {
   width: 10px; height: 10px; border-radius: 50%;
-  background: var(--clay-border);
-  transition: background 0.2s ease;
+  background: var(--glass-border);
+  transition: background 0.2s ease, box-shadow 0.2s;
 }
-.ritual-dot.filled { background: var(--clay-green); box-shadow: 0 0 6px rgba(52,199,89,0.4); }
-.ritual-dot.current { background: var(--clay-sacred); animation: ritualDotPulse 1.5s ease-in-out infinite; box-shadow: 0 0 8px var(--clay-sacred-glow); }
+.ritual-dot.filled {
+  background: linear-gradient(135deg, var(--clay-green), #2DB84E);
+  box-shadow: 0 0 8px rgba(52,199,89,0.4);
+}
+.ritual-dot.current {
+  background: var(--clay-sacred);
+  animation: ritualDotPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 12px var(--clay-sacred-glow);
+}
 
 @keyframes ritualDotPulse {
   0%,100% { transform: scale(1); }
@@ -122,21 +145,23 @@
 .ritual-symbol-section { text-align: center; margin-bottom: var(--space-2xl); }
 
 .sacred-symbol {
-  font-size: 3.5rem;
-  color: var(--clay-sacred);
-  text-shadow: 0 0 40px var(--clay-sacred-glow);
+  font-size: 4rem;
+  background: linear-gradient(135deg, var(--clay-sacred-light), var(--clay-sacred));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 40px var(--clay-sacred-glow));
   margin-bottom: var(--space-xs);
 }
 .sacred-symbol.breathing { animation: sacredBreath 6s ease-in-out infinite; }
 
 @keyframes sacredBreath {
-  0%,100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.05); opacity: 1; }
+  0%,100% { transform: scale(1); opacity: 0.9; filter: drop-shadow(0 0 40px var(--clay-sacred-glow)); }
+  50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 60px rgba(212,148,58,0.5)); }
 }
 
 .waheguru-text {
   font-size: 2rem; font-weight: 700;
-  color: var(--clay-text);
+  background: linear-gradient(135deg, var(--clay-text), rgba(255,255,255,0.6));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   margin-bottom: var(--space-md);
 }
 
@@ -163,31 +188,41 @@
 .ritual-btn:active { transform: scale(0.97); }
 
 .presence-btn {
-  background: linear-gradient(145deg, var(--clay-sacred), var(--clay-sacred-light));
+  background: linear-gradient(145deg, var(--clay-sacred), var(--clay-sacred-dark));
   color: white;
-  box-shadow: 0 4px 20px var(--clay-sacred-glow);
+  box-shadow: 0 4px 24px var(--clay-sacred-glow), inset 0 1px 0 rgba(255,255,255,0.15);
 }
-.presence-btn:hover { box-shadow: 0 6px 28px var(--clay-sacred-glow); }
+.presence-btn:hover { box-shadow: 0 6px 32px var(--clay-sacred-glow), inset 0 1px 0 rgba(255,255,255,0.15); }
+.presence-btn:active { box-shadow: inset 0 3px 8px rgba(0,0,0,0.2); }
 .presence-btn.confirmed {
-  background: linear-gradient(145deg, #34C759, #28a745);
-  box-shadow: 0 4px 20px rgba(52,199,89,0.3);
+  background: linear-gradient(145deg, #34C759, #2DB84E);
+  box-shadow: 0 4px 24px rgba(52,199,89,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
 }
-.presence-btn.confirmed:active { transform: scale(0.97); }
+.presence-btn.confirmed:active { box-shadow: inset 0 3px 8px rgba(0,0,0,0.2); }
 .presence-check { display: none; font-size: 1.25rem; margin-left: 4px; }
 .presence-btn.confirmed .presence-check { display: inline; }
 
 .secondary-actions { display: flex; gap: var(--space-sm); }
 .secondary-actions .ritual-btn {
   flex: 1; padding: 14px var(--space-lg);
-  background: var(--clay-elevated);
-  border: 1px solid var(--clay-border);
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
   color: var(--clay-text-secondary);
+  box-shadow: var(--clay-extrude-sm);
 }
-.secondary-actions .ritual-btn:hover { background: var(--clay-modal); }
+.secondary-actions .ritual-btn:hover { background: var(--glass-bg); }
+.secondary-actions .ritual-btn:active { box-shadow: var(--clay-pressed-sm); }
 
-.silence-btn.active { background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.3); color: #FF453A; }
+.silence-btn.active {
+  background: rgba(255,69,58,0.08);
+  border-color: rgba(255,69,58,0.2);
+  color: #FF453A;
+  box-shadow: 0 0 12px rgba(255,69,58,0.1);
+}
 .skip-btn { color: var(--clay-text-tertiary); }
-.skip-btn:hover { color: var(--clay-text-secondary); background: var(--clay-modal); }
+.skip-btn:hover { color: var(--clay-text-secondary); background: var(--glass-bg); }
 
 .btn-icon { font-size: 1.25rem; }
 
@@ -196,7 +231,15 @@
 .ritual-completion-state.hidden { display: none; }
 
 .completion-celebration { margin-bottom: var(--space-xl); }
-.completion-checkmark { width: 80px; height: 80px; margin: 0 auto; }
+.completion-checkmark { width: 80px; height: 80px; margin: 0 auto; position: relative; }
+.completion-checkmark::before {
+  content: '';
+  position: absolute; top: 50%; left: 50%;
+  width: 100px; height: 100px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(52,199,89,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
 .completion-checkmark svg { width: 100%; height: 100%; }
 .checkmark-circle { stroke: #34C759; stroke-width: 2; stroke-dasharray: 157; stroke-dashoffset: 157; animation: circleGrow 0.5s ease-out 0.2s forwards; }
 .checkmark-check { stroke: #34C759; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 50; stroke-dashoffset: 50; animation: checkDraw 0.3s ease-out 0.5s forwards; }
@@ -206,7 +249,8 @@
 
 .completion-title {
   font-size: 1.5rem; font-weight: 700;
-  color: var(--clay-text);
+  background: linear-gradient(135deg, var(--clay-sacred-light), var(--clay-sacred));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   margin-bottom: 4px;
 }
 .completion-subtitle {
@@ -218,8 +262,10 @@
 .completion-credit {
   display: inline-flex; align-items: center; gap: var(--space-xs);
   padding: var(--space-sm) var(--space-xl);
-  background: rgba(52,199,89,0.1);
-  border: 1px solid rgba(52,199,89,0.25);
+  background: rgba(52,199,89,0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(52,199,89,0.2);
   border-radius: var(--radius-full);
   margin-bottom: var(--space-2xl);
 }
@@ -229,13 +275,17 @@
 .completion-affirmation {
   margin-bottom: var(--space-2xl);
   padding: var(--space-lg);
-  background: var(--clay-elevated);
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--clay-border);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--clay-inset);
 }
 .affirmation-gurmukhi {
   font-size: 1.3rem; font-weight: 600;
-  color: var(--clay-sacred);
+  background: linear-gradient(135deg, var(--clay-sacred-light), var(--clay-sacred));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   margin-bottom: var(--space-xs);
 }
 .affirmation-english {
@@ -255,34 +305,38 @@
 .continue-day-btn {
   display: flex; align-items: center; justify-content: center; gap: var(--space-xs);
   width: 100%; padding: 18px var(--space-2xl);
-  background: linear-gradient(145deg, var(--clay-sacred), var(--clay-sacred-light));
+  background: linear-gradient(145deg, var(--clay-sacred), var(--clay-sacred-dark), var(--clay-sacred));
   color: white;
   border: none; border-radius: var(--radius-lg);
   font-size: 1.0625rem; font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 20px var(--clay-sacred-glow);
+  box-shadow: 0 4px 24px var(--clay-sacred-glow), inset 0 1px 0 rgba(255,255,255,0.15);
   transition: transform 0.2s var(--ease-press), box-shadow 0.2s;
 }
-.continue-day-btn:active { transform: scale(0.97); }
+.continue-day-btn:active { transform: scale(0.97); box-shadow: inset 0 3px 8px rgba(0,0,0,0.2); }
 .continue-day-btn svg { width: 20px; height: 20px; }
 
 /* ─── SKIP CONFIRMATION MODAL ─── */
 .skip-confirm-modal {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 10;
 }
 .skip-confirm-modal.hidden { display: none; }
 
 .skip-confirm-content {
-  background: var(--clay-surface);
-  border: 1px solid var(--clay-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border-strong);
   border-radius: var(--radius-2xl);
   padding: var(--space-2xl);
   max-width: 320px; width: 90%;
   text-align: center;
-  box-shadow: var(--elevation-3);
+  box-shadow: var(--glass-shadow), 0 0 60px rgba(0,0,0,0.2);
 }
 
 .skip-icon { font-size: 2.5rem; margin-bottom: var(--space-md); }
@@ -294,40 +348,47 @@
 .skip-buttons { display: flex; flex-direction: column; gap: var(--space-sm); }
 .cancel-skip-btn {
   padding: var(--space-md) var(--space-xl);
-  background: linear-gradient(145deg, #34C759, #28a745);
+  background: linear-gradient(145deg, #34C759, #2DB84E);
   color: white;
   border: none; border-radius: var(--radius-md);
   font-size: 1rem; font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s var(--ease-press);
+  box-shadow: 0 2px 12px rgba(52,199,89,0.2);
+  transition: transform 0.2s var(--ease-press), box-shadow 0.2s;
 }
-.cancel-skip-btn:active { transform: scale(0.97); }
+.cancel-skip-btn:active { transform: scale(0.97); box-shadow: inset 0 2px 6px rgba(0,0,0,0.15); }
 
 .confirm-skip-btn {
   padding: var(--space-md) var(--space-xl);
   background: transparent;
   color: var(--clay-text-tertiary);
-  border: 1px solid var(--clay-border);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   font-size: 0.9375rem; font-weight: 500;
   cursor: pointer;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
-.confirm-skip-btn:hover { color: #FF453A; border-color: rgba(255,69,58,0.3); background: rgba(255,69,58,0.1); }
+.confirm-skip-btn:hover {
+  color: #FF453A;
+  border-color: rgba(255,69,58,0.3);
+  background: rgba(255,69,58,0.06);
+}
 
 /* ─── LIGHT THEME ─── */
 [data-theme="light"] .ritual-backdrop {
-  background: rgba(0,0,0,0.5);
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
 }
-[data-theme="light"] .ritual-backdrop { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 [data-theme="light"] .timer-value { color: var(--clay-text); }
 [data-theme="light"] .waheguru-text { color: var(--clay-text); }
 [data-theme="light"] .breathing-guide { color: var(--clay-text-secondary); }
-[data-theme="light"] .secondary-actions .ritual-btn { background: var(--clay-elevated); border-color: var(--clay-border); color: var(--clay-text-secondary); }
+[data-theme="light"] .secondary-actions .ritual-btn { background: var(--glass-bg-light); border-color: var(--glass-border); color: var(--clay-text-secondary); }
 [data-theme="light"] .completion-title { color: var(--clay-text); }
 [data-theme="light"] .completion-subtitle { color: var(--clay-text-secondary); }
 [data-theme="light"] .comp-stat .stat-value { color: var(--clay-text); }
-[data-theme="light"] .completion-affirmation { background: var(--clay-elevated); border-color: var(--clay-border); }
+[data-theme="light"] .completion-affirmation { background: var(--glass-bg-light); border-color: var(--glass-border); }
 [data-theme="light"] .affirmation-english { color: var(--clay-text-secondary); }
 
 /* ─── REDUCED MOTION ─── */
@@ -344,8 +405,8 @@
 /* ─── RESPONSIVE ─── */
 @media (max-width: 380px) {
   .ritual-container { padding: var(--space-md); }
-  .circular-progress-container { width: 160px; height: 160px; }
-  .timer-value { font-size: 2.75rem; }
+  .circular-progress-container { width: 180px; height: 180px; }
+  .timer-value { font-size: 3rem; }
   .sacred-symbol { font-size: 3rem; }
   .waheguru-text { font-size: 1.5rem; }
   .completion-stats { gap: var(--space-md); }

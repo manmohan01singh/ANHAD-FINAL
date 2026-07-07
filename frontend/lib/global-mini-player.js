@@ -34,7 +34,7 @@
           return s.replace(/lib\/global-mini-player\.js[^/]*$/, '');
         }
       }
-    } catch (e) {}
+    } catch (e) { }
     return '';
   })();
 
@@ -42,26 +42,81 @@
     return GMP_BASE ? GMP_BASE + 'assets/' + filename : 'assets/' + filename;
   }
 
+  const SIMRAN_R2_BASE = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev';
+  const SIMRAN_R2_PREFIX = 'waheguru';
+  const SIMRAN_FILENAMES = [
+    '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3',
+    '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3',
+    '03 - SUNN YAAR HAMARE SAJAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '04 - SUKH NAAHI RE HAR BHAGAT BINA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '05 - TU PRABH DATA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '06 - SATNAM WAHEGURU - SIMRAN - AMRITVELA TRUST..mp3',
+    '07 - MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '08 - RAKHWALA SIMRAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '09 - AAS PYAASI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '10 - PRABH PAAS JAN KI ARDAS - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '11 - TU HI TU HI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '12 - NAAM NAAM NAAM APNA NAAM DEHO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '13 - DHAN GURU RAMDAS JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '14 - AAO SAJANA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '15 - TUJ BIN KAVAN HAMARA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '16 - MERA BAID GURU GOVINDA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '17 - JAGAN TE SUPNA BHALA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '18 - EH NEECH KARAM HAR MERE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '19 - APNA NAAM JAPAO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '20 - MERE PYAARE SATUGURU JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '21 - RAKH LEHO BHAGWAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '22 - KAB GAL LAVENGE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '23 - MERE RAM MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '24 - RAKHEYA KARO SIMRAN DAY 25.mp3',
+    '25 - WAHEGURU SIMRAN UTH NAAM JAP AMRITVELA TRUST BEST SIMRAN.mp3',
+    '26 - BEST WAHEGURU SIMRAN DAY 27 CHALIYA 2020.mp3',
+    '27 - KAD NANAK AAVE VARI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '28 - BIN GUR NA PAVAIGO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '29 - KIYO SHINGAR MILAN KE TAAYEE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '30 - NAAM BINA NAHI JEEVIA JAYE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '31 - AATH PEHAR SIMRO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '32 - MIL MERE PREETMA JEEO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '33 - SATNAM SHRI WAHEGURU SIMRAN DAY 35 CHALIYA 2020.mp3',
+    '34 - RAKH RAKH MERE BEETHLA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '35 - PRAAN ADHAARA RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '36 - DHAN BABA NANAK - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
+    '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3'
+  ];
+
   const STREAMS = {
     darbar: {
       name: 'Darbar Sahib Live',
       subtitle: 'Sri Harmandir Sahib Ji',
       url: 'https://live.sgpc.net:8443/;nocache=1',
-      artwork: resolveAsset('darbar-sahib-evening.webp'),
+      artwork: resolveAsset('HERO CARD IMAGES/day-darbar-sahib.webp'),
       type: 'live',
       playerPage: 'GurbaniRadio/gurbani-radio.html'
     },
     amritvela: {
       name: 'Amritvela Kirtan',
       subtitle: 'ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ',
-      artwork: resolveAsset('Darbar-sahib-AMRITVELA.webp'),
+      artwork: resolveAsset('HERO CARD IMAGES/day-amritvela-kirtan.webp'),
       type: 'playlist',
       totalTracks: 40,
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
       getTrackUrl(index) {
         const base = getAudioBase();
-        // CRITICAL FIX: Add cache buster to prevent browser audio caching
         return `${base}/day-${((index % this.totalTracks) + this.totalTracks) % this.totalTracks + 1}.webm?t=${Date.now()}`;
+      }
+    },
+    simran: {
+      name: 'Waheguru Simran',
+      subtitle: 'Naam Simran • Virtual Live',
+      artwork: resolveAsset('HERO CARD IMAGES/day-waheguru-simran.webp'),
+      type: 'simran',
+      totalTracks: 38,
+      playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
+      getTrackUrl(idx) {
+        const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks;
+        const filename = SIMRAN_FILENAMES[i];
+        return `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(filename)}`;
       }
     }
   };
@@ -76,15 +131,15 @@
   // Smart API URL resolution for CORS and mobile apps
   const API_BASE = (() => {
     try {
-        // For Capacitor apps, always use production URL
-        if (window.Capacitor) return 'https://anhad-final.onrender.com';
-        
-        const host = window.location.hostname;
-        const port = window.location.port;
-        if (port === '3000' || port === '3001') return '';
-        if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
-        return 'https://anhad-final.onrender.com';
-    } catch(e){}
+      // For Capacitor apps, always use production URL
+      if (window.Capacitor) return 'https://anhad-final.onrender.com';
+
+      const host = window.location.hostname;
+      const port = window.location.port;
+      if (port === '3000' || port === '3001') return '';
+      if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+      return 'https://anhad-final.onrender.com';
+    } catch (e) { }
     return 'https://anhad-final.onrender.com';
   })();
 
@@ -129,7 +184,8 @@
     try {
       const t0 = Date.now();
       // CRITICAL FIX: Add cache buster to URL to bypass server-side caching
-      const freshUrl = `${API_BASE}/api/radio/live?t=${Date.now()}&r=${Math.random()}`;
+      const apiPath = currentStream === 'simran' ? '/api/simran/live' : '/api/radio/live';
+      const freshUrl = `${API_BASE}${apiPath}?t=${Date.now()}&r=${Math.random()}`;
       const resp = await fetch(freshUrl, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
@@ -138,16 +194,16 @@
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
       const latency = (t1 - t0) / 2000;
-      
+
       // Update cache
       cachedPosition = {
         trackIndex: data.trackIndex,
         position: data.trackPosition + latency
       };
       lastSyncTime = Date.now();
-      
+
       console.log(`[GMP] Server sync: Track ${data.trackIndex + 1} at ${Math.floor(cachedPosition.position)}s`);
-      
+
       return {
         trackIndex: cachedPosition.trackIndex,
         position: cachedPosition.position
@@ -162,9 +218,12 @@
   function getLocalLivePosition() {
     const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
     const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
-    const totalDur = 40 * 3600;
+    const isSimran = currentStream === 'simran';
+    const totalTracks = isSimran ? 38 : 40;
+    const trackDuration = isSimran ? 600 : 3600;
+    const totalDur = totalTracks * trackDuration;
     const pos = ((elapsed % totalDur) + totalDur) % totalDur;
-    return { trackIndex: Math.floor(pos / 3600), position: pos % 3600 };
+    return { trackIndex: Math.floor(pos / trackDuration), position: pos % trackDuration };
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -194,9 +253,9 @@
       const wasPlaying = !audio.paused;
       const savedPosition = audio.currentTime;
       const savedSrc = audio.src;
-      
+
       console.log(`[GMP] 🔄 Recreating audio - was at ${Math.floor(savedPosition)}s, playing: ${wasPlaying}`);
-      
+
       // Kill old audio completely - remove ALL event listeners
       const oldAudio = audio;
       oldAudio.pause();
@@ -209,7 +268,7 @@
       // Store saved state temporarily to return later
       audio._savedState = { wasPlaying, savedPosition, savedSrc };
     }
-    
+
     // CRITICAL FIX: Create new audio element IMMEDIATELY (never leave audio as null)
     audio = new Audio();
     audio.preload = 'none'; // CRITICAL: Don't preload to avoid caching
@@ -224,7 +283,7 @@
       persistState();
       updateMiniPlayerUI();
       updateMediaSession();
-      
+
       // Notify KirtanListeningTracker
       window.dispatchEvent(new CustomEvent('anhadaudiostatechange', { detail: { isPlaying: true } }));
     });
@@ -330,22 +389,23 @@
         isPlaying = false;
         updateMiniPlayerUI();
       }
-    } else if (stream.type === 'playlist') {
+    } else if (stream.type === 'playlist' || stream.type === 'simran') {
       // CRITICAL FIX: ALWAYS fetch fresh server position
       try {
         const pos = await getServerLivePosition(true); // Force fresh sync
         currentTrackIndex = pos.trackIndex;
-        const freshUrl = stream.getTrackUrl(currentTrackIndex) + '&r=' + Math.random();
+        const baseSrc = stream.getTrackUrl(currentTrackIndex);
+        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
         audio.src = freshUrl;
         audio.load(); // Force reload to avoid cache
         console.log(`[GMP] 🔴 LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
 
         // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
-          const dur = audio.duration || 3600;
+          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
           const serverPos = Math.min(pos.position, dur - 5);
           const currentPos = audio.currentTime;
-          
+
           // BRUTAL: Only jump FORWARD to catch up, never pull BACK
           if (serverPos > currentPos + 2) {
             console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
@@ -355,14 +415,14 @@
           } else {
             console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
           }
-          
+
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => {});
+            audio.play().catch(() => { });
           }, 100);
         };
-        
+
         if (audio.readyState >= 2) {
           // HAVE_ENOUGH_DATA - seek immediately
           seekAndPlay();
@@ -375,16 +435,17 @@
         // Fallback to local calculation
         const localPos = getLocalLivePosition();
         currentTrackIndex = localPos.trackIndex;
-        const freshUrl = stream.getTrackUrl(currentTrackIndex) + '&r=' + Math.random();
+        const baseSrc = stream.getTrackUrl(currentTrackIndex);
+        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
         // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
-          const dur = audio.duration || 3600;
+          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
           const serverPos = Math.min(localPos.position, dur - 5);
           const currentPos = audio.currentTime;
-          
+
           // BRUTAL: Only jump FORWARD to catch up, never pull BACK
           if (serverPos > currentPos + 2) {
             console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
@@ -394,14 +455,14 @@
           } else {
             console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
           }
-          
+
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Fallback playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => {});
+            audio.play().catch(() => { });
           }, 100);
         };
-        
+
         if (audio.readyState >= 2) {
           // HAVE_ENOUGH_DATA - seek immediately
           seekAndPlay();
@@ -418,26 +479,27 @@
 
   async function playNextTrack() {
     const stream = STREAMS[currentStream];
-    if (stream.type !== 'playlist') return;
-    
+    if (stream.type !== 'playlist' && stream.type !== 'simran') return;
+
     // CRITICAL: Create fresh audio element to avoid cache
     createAudio();
-    
+
     // For Virtual Live, don't just increment. Always resync with the server
     // so drift is corrected perfectly on every track boundary.
     const pos = await getServerLivePosition(true); // Force fresh sync
     currentTrackIndex = pos.trackIndex;
-    const freshUrl = stream.getTrackUrl(currentTrackIndex) + '&r=' + Math.random();
+    const baseSrc = stream.getTrackUrl(currentTrackIndex);
+    const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
     audio.src = freshUrl;
     audio.load(); // Force reload
     console.log(`[GMP] 🔴 NEXT TRACK (LIVE): Track ${pos.trackIndex + 1}`);
-    
+
     audio.addEventListener('loadedmetadata', function seek() {
       audio.removeEventListener('loadedmetadata', seek);
-      const dur = audio.duration || 3600;
+      const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
       const serverPos = Math.min(pos.position, dur - 5);
       const currentPos = audio.currentTime;
-      
+
       // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
       if (serverPos > currentPos + 2) {
         console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
@@ -450,10 +512,10 @@
     }, { once: true });
     // FIX: If already loaded, seek immediately
     if (audio.readyState >= 1) {
-      const dur = audio.duration || 3600;
+      const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
       const serverPos = Math.min(pos.position, dur - 5);
       const currentPos = audio.currentTime;
-      
+
       // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
       if (serverPos > currentPos + 2) {
         console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
@@ -464,7 +526,7 @@
         console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
       }
     }
-    
+
     try { await audio.play(); } catch (e) { }
     persistState();
   }
@@ -476,28 +538,12 @@
       return;
     }
     if (audio.paused) {
-      // CRITICAL FIX: ALWAYS jump to live position on resume
-      if (STREAMS[currentStream].type === 'playlist') {
-        console.log('[GMP] 🔴 RECREATING AUDIO FOR LIVE PLAYBACK');
-        playStream(currentStream); // This will fetch fresh position and create new audio
-      } else {
-        // Live stream - Force reconnect to current live position
-        console.log('[GMP] 🔴 LIVE STREAM: Forcing reconnect to current live position');
-        // Add cache buster to force fresh connection
-        const stream = STREAMS[currentStream];
-        const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&r=' + Math.random();
-        audio.src = freshUrl;
-        audio.load();
-        // CRITICAL: Set currentTime to a very high value to force seek to live edge
-        // This makes the browser drop the old buffer and reconnect at current live position
-        audio.currentTime = 999999;
-        console.log('[GMP] 🔴 LIVE STREAM: Set currentTime to 999999 to force live edge seek');
-        // Now play
-        try {
-          await audio.play();
-        } catch (e) {
-          console.warn('[GMP] Autoplay blocked');
-        }
+      // Just resume playing from where it was paused!
+      // Do NOT jump to live on every play/pause!
+      try {
+        await audio.play();
+      } catch (e) {
+        console.warn('[GMP] Autoplay blocked');
       }
     } else {
       audio.pause();
@@ -533,11 +579,11 @@
     if (isPlayerPage) return;
 
     currentStream = state.stream;
-    
+
     // BRUTAL VIRTUAL LIVE: Calculate where audio SHOULD be now based on saved position
     const timeSinceLastUpdate = (Date.now() - (state.lastUpdateTime || state.timestamp)) / 1000;
     const estimatedCurrentPosition = (state.currentTime || 0) + timeSinceLastUpdate;
-    
+
     console.log(`[GMP] 📍 Last saved position: ${Math.floor(state.currentTime || 0)}s (${Math.floor(timeSinceLastUpdate)}s ago)`);
     console.log(`[GMP] 📍 Estimated current position: ${Math.floor(estimatedCurrentPosition)}s`);
 
@@ -557,27 +603,28 @@
       audio.src = freshUrl;
       audio.load(); // Force reload
       console.log(`[GMP] 🔴 RESUMING LIVE with fresh connection`);
-    } else if (stream.type === 'playlist') {
+    } else if (stream.type === 'playlist' || stream.type === 'simran') {
       // CRITICAL FIX: ALWAYS fetch fresh server position on resume (ignore saved state)
       try {
         const pos = await getServerLivePosition(true); // Force fresh sync
         currentTrackIndex = pos.trackIndex;
-        const freshUrl = stream.getTrackUrl(currentTrackIndex) + '&r=' + Math.random();
+        const baseSrc = stream.getTrackUrl(currentTrackIndex);
+        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] 🔴 RESUMING AT LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
         // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
-          const dur = audio.duration || 3600;
+          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
           const serverPos = Math.min(pos.position, dur - 5);
           const currentPos = audio.currentTime; // This will be 0 for new audio element
-          
+
           // SMART: Use estimated position from saved state, not currentPos (which is 0)
           const actualPosition = estimatedCurrentPosition;
-          
+
           console.log(`[GMP] 🎯 Server position: ${serverPos.toFixed(1)}s`);
           console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
-          
+
           // BRUTAL: Only jump FORWARD to catch up, never pull BACK
           if (serverPos > actualPosition + 2) {
             console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
@@ -591,14 +638,14 @@
             // Use server position since we're in sync
             audio.currentTime = serverPos;
           }
-          
+
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Resume playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => {});
+            audio.play().catch(() => { });
           }, 100);
         };
-        
+
         if (audio.readyState >= 2) {
           // HAVE_ENOUGH_DATA - seek immediately
           seekAndPlay();
@@ -611,19 +658,20 @@
         // Fallback to local calculation
         const localPos = getLocalLivePosition();
         currentTrackIndex = localPos.trackIndex;
-        const freshUrl = stream.getTrackUrl(currentTrackIndex) + '&r=' + Math.random();
+        const baseSrc = stream.getTrackUrl(currentTrackIndex);
+        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
         audio.src = freshUrl;
         audio.load(); // Force reload
         console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
         // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
         const seekAndPlay = () => {
-          const dur = audio.duration || 3600;
+          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
           const serverPos = Math.min(localPos.position, dur - 5);
           const actualPosition = estimatedCurrentPosition;
-          
+
           console.log(`[GMP] 🎯 Fallback server position: ${serverPos.toFixed(1)}s`);
           console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
-          
+
           // BRUTAL: Only jump FORWARD to catch up, never pull BACK
           if (serverPos > actualPosition + 2) {
             console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
@@ -635,14 +683,14 @@
             console.log(`[GMP] ✓ IN SYNC: ${actualPosition.toFixed(1)}s ≈ ${serverPos.toFixed(1)}s`);
             audio.currentTime = serverPos;
           }
-          
+
           // Small delay to ensure seek takes effect
           setTimeout(() => {
             console.log(`[GMP] ✅ Resume fallback playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => {});
+            audio.play().catch(() => { });
           }, 100);
         };
-        
+
         if (audio.readyState >= 2) {
           // HAVE_ENOUGH_DATA - seek immediately
           seekAndPlay();
@@ -833,7 +881,7 @@
 
   function updateBackground(artworkUrl) {
     if (!backgroundEl) createBackgroundElement();
-    
+
     if (artworkUrl && isPlaying) {
       backgroundEl.style.backgroundImage = `url('${artworkUrl}')`;
       backgroundEl.classList.add('gmp-background--visible');
@@ -879,8 +927,6 @@
       playIcon.style.opacity = '0';
       setTimeout(() => {
         playIcon.innerHTML = isPlaying
-      // Hide background
-      updateBackground(null);
           ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
           : '<path d="M8 5v14l11-7z"/>';
         playIcon.style.opacity = '1';
@@ -891,10 +937,7 @@
   function updateMiniPlayerUI(forceVisible) {
     if (!miniPlayerEl) {
       // Queue the update for when mini player is ready
-      pendingUSpotify-style background
-    if (stream?.artwork) updateBackground(stream.artwork);
-
-    // Update IUpdate = forceVisible;
+      pendingUIUpdate = forceVisible;
       console.log('[GMP] updateMiniPlayerUI: miniPlayerEl is null, queuing update. forceVisible:', forceVisible);
       return;
     }
@@ -1095,7 +1138,7 @@
   // Every 10s while audio is playing, credit 1 minute to AnhadStats AND Dashboard.
   const PENDING_KIRTAN_TIME_KEY = 'anhad_pending_kirtan_minutes';
   let accumulatedSeconds = 0;
-  
+
   // Load any pending time from previous sessions
   function getPendingKirtanMinutes() {
     try {
@@ -1103,20 +1146,20 @@
       return stored ? parseInt(stored, 10) : 0;
     } catch (e) { return 0; }
   }
-  
+
   function addPendingKirtanMinutes(minutes) {
     try {
       const current = getPendingKirtanMinutes();
       localStorage.setItem(PENDING_KIRTAN_TIME_KEY, (current + minutes).toString());
-    } catch (e) {}
+    } catch (e) { }
   }
-  
+
   function clearPendingKirtanMinutes() {
     try {
       localStorage.removeItem(PENDING_KIRTAN_TIME_KEY);
-    } catch (e) {}
+    } catch (e) { }
   }
-  
+
   // Sync pending time to Dashboard when available
   function syncPendingKirtanTime() {
     const pending = getPendingKirtanMinutes();
@@ -1128,43 +1171,43 @@
     }
     return false;
   }
-  
+
   // Try to sync any pending time when page loads
   setTimeout(syncPendingKirtanTime, 2000); // Delay to let Dashboard init
-  
+
   // Also try to sync periodically in case Dashboard loads later
   setInterval(syncPendingKirtanTime, 5000);
-  
+
   setInterval(function () {
     // PRIMARY: Check isPlaying flag
     // BACKUP: Also check audio.paused directly in case event listeners missed
     const actuallyPlaying = isPlaying || (audio && !audio.paused && audio.currentTime > 0);
-    
+
     console.log('[GMP] ⏱️ Timer tick - isPlaying:', isPlaying, 'audio?.paused:', audio?.paused, 'actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
-    
+
     if (actuallyPlaying) {
       // BRUTAL VIRTUAL LIVE: Save position every 10s for accurate resume
       persistState();
-      
+
       accumulatedSeconds += 10; // Add 10 seconds
-      
+
       // Sync every 60 seconds accumulated
       if (accumulatedSeconds >= 60) {
         const minutes = Math.floor(accumulatedSeconds / 60);
         accumulatedSeconds = accumulatedSeconds % 60; // Keep remainder
-        
+
         // Sync to AnhadStats
         if (window.AnhadStats && typeof window.AnhadStats.addListeningTime === 'function') {
           window.AnhadStats.addListeningTime(minutes);
           console.log('[GMP] ✅ Synced', minutes, 'min to AnhadStats');
         }
-        
+
         // Sync to UnifiedStats (single source of truth)
         if (window.UnifiedStats) {
           window.UnifiedStats.recordKirtanListening(minutes);
           console.log('[GMP] ✅ Synced', minutes, 'min to UnifiedStats');
         }
-        
+
         // DIRECT: Sync to DashboardAnalytics for immediate chart update
         if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
           // First sync any pending time from other pages
@@ -1194,7 +1237,7 @@
   }
 
   // Expose test function for manual verification
-  window.testKirtanTracking = function() {
+  window.testKirtanTracking = function () {
     console.log('[GMP] 🧪 MANUAL TEST: Adding 1 minute...');
     if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
       window.DashboardAnalytics.updateDailyData('listen', 1);

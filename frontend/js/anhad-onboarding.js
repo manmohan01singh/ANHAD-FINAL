@@ -12,7 +12,7 @@
     const TOUR_KEY = 'anhad_onboarding_v9_completed';
     const LANG_KEY = 'anhad_tour_lang';
 
-    // Multilingual Step Content for all 13 core index.html widgets
+    // Multilingual Step Content for all 15 core index.html widgets
     const tourContent = {
         en: [
             { selector: '#homeBackBtn', title: '📻 Enter Gurdwara Sahib', text: 'Tapping this elegant radio button enters the main Gurdwara Sahib interface where you can listen to live Gurbani broadcasts perfectly synchronized across all devices in real-time.', position: 'bottom-left' },
@@ -27,6 +27,8 @@
             { selector: '#shabadVicharCard', title: '🪔 Daily Shabad Vichar', text: 'Contemplate and reflect on deep theological and spiritual meanings of selected Gurbani Shabads updated every single day to guide your spiritual learning.', position: 'top-center' },
             { selector: '#searchCard', title: '🔍 Advanced Gurbani Khoj', text: 'An incredibly powerful search tool that allows you to instantly search for any Shabad inside Sri Guru Granth Sahib Ji by first-letter initials or keywords.', position: 'top-center' },
             { selector: '#notesCard', title: '📝 Spiritual Notes', text: 'Jot down, edit, and safely store your personal spiritual inspirations, reflections, and notes as you read Gurbani or contemplate your devotions.', position: 'top-center' },
+            { selector: '#sadhsangatLiveCard', title: '📡 Sadhsangat Live', text: 'Discover and listen to live Gurdwara broadcasts, Katha, and Kirtan programs from communities worldwide.', position: 'top-center' },
+            { selector: '#gurbaniGptCard', title: '📿 Gurbani GPT', text: 'Our advanced AI spiritual guide trained on sacred scripture to assist you with deep wisdom, contemplation, and understanding of Gurbani.', position: 'top-center' },
             { selector: '#mainNav', title: '📈 Navigation & Dashboard', text: 'Easily transition between the home dashboard, your personal favorites list, the learning library (Insights), or open your complete stats dashboard.', position: 'top-center' }
         ],
         pa: [
@@ -42,6 +44,8 @@
             { selector: '#shabadVicharCard', title: '🪔 ਰੋਜ਼ਾਨਾ ਸ਼ਬਦ ਵਿਚਾਰ', text: 'ਹਰ ਰੋਜ਼ ਚੁਣੇ ਗਏ ਗੁਰਬਾਣੀ ਸ਼ਬਦਾਂ ਦੇ ਡੂੰਘੇ ਰੂਹਾਨੀ ਅਤੇ ਅਧਿਆਤਮਿਕ ਅਰਥਾਂ ਨੂੰ ਪੜ੍ਹ ਕੇ ਆਪਣੇ ਰੂਹਾਨੀ ਗਿਆਨ ਵਿੱਚ ਵਾਧਾ ਕਰੋ।', position: 'top-center' },
             { selector: '#searchCard', title: '🔍 ਗੁਰਬਾਣੀ ਖੋਜ', text: 'ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਵਿੱਚੋਂ ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਨੂੰ ਪਹਿਲੇ ਅੱਖਰ (initials) ਜਾਂ ਕੀਵਰਡ ਨਾਲ ਸਕਿੰਟਾਂ ਵਿੱਚ ਲੱਭਣ ਲਈ ਇੱਕ ਸ਼ਕਤੀਸ਼ਾਲੀ ਖੋਜ ਇੰਜਣ।', position: 'top-center' },
             { selector: '#notesCard', title: '📝 ਗੁਰਬਾਣੀ ਨੋਟਸ', text: 'ਪਾਠ ਕਰਦੇ ਸਮੇਂ ਜਾਂ ਵਿਚਾਰ ਸੁਣਦੇ ਸਮੇਂ ਆਪਣੇ ਮਨ ਵਿੱਚ ਆਏ ਰੂਹਾਨੀ ਵਿਚਾਰਾਂ, ਪ੍ਰੇਰਨਾਵਾਂ ਅਤੇ ਨਿੱਜੀ ਨੋਟਸ ਨੂੰ ਲਿਖ ਕੇ ਸੁਰੱਖਿਅਤ ਰੱਖੋ।', position: 'top-center' },
+            { selector: '#sadhsangatLiveCard', title: '📡 ਸਾਧਸੰਗਤ ਲਾਈਵ', text: 'ਦੁਨੀਆ ਭਰ ਦੀਆਂ ਸੰਗਤਾਂ ਅਤੇ ਗੁਰਦੁਆਰਾ ਸਾਹਿਬਾਨ ਤੋਂ ਲਾਈਵ ਕੀਰਤਨ, ਕਥਾ ਅਤੇ ਧਾਰਮਿਕ ਪ੍ਰੋਗਰਾਮਾਂ ਦੀ ਖੋਜ ਕਰੋ ਅਤੇ ਸਰਵਣ ਕਰੋ।', position: 'top-center' },
+            { selector: '#gurbaniGptCard', title: '📿 ਗੁਰਬਾਣੀ ਜੀ.ਪੀ.ਟੀ (AI)', text: 'ਗੁਰਬਾਣੀ ਦੇ ਡੂੰਘੇ ਅਧਿਆਤਮਿਕ ਅਰਥਾਂ, ਗਿਆਨ ਅਤੇ ਵਿਚਾਰਾਂ ਨੂੰ ਸਮਝਣ ਲਈ ਪਵਿੱਤਰ ਲਿਖਤਾਂ ’ਤੇ ਅਧਾਰਿਤ ਸਾਡਾ ਉੱਨਤ AI ਮਾਰਗਦਰਸ਼ਕ।', position: 'top-center' },
             { selector: '#mainNav', title: '📈 ਨੇਵੀਗੇਸ਼ਨ ਅਤੇ ਡੈਸ਼ਬੋਰਡ', text: 'ਹੋਮ ਪੇਜ, ਪਸੰਦੀਦਾ (favorites) ਸ਼ਬਦਾਂ ਦੀ ਸੂਚੀ, ਲਾਇਬ੍ਰੇਰੀ (Insights), ਜਾਂ ਆਪਣੀ ਭਗਤੀ ਦੇ ਵਿਸ਼ਲੇਸ਼ਣ ਡੈਸ਼ਬੋਰਡ ਦੇ ਵਿਚਕਾਰ ਆਸਾਨੀ ਨਾਲ ਬਦਲੋ।', position: 'top-center' }
         ],
         hi: [
@@ -57,6 +61,8 @@
             { selector: '#shabadVicharCard', title: '🪔 दैनिक शबद विचार', text: 'प्रतिदिन चुने गए गुरबाणी शबद के गहरे आध्यात्मिक और व्यावहारिक अर्थों को पढ़कर अपने आध्यात्मिक ज्ञान में वृद्धि करें।', position: 'top-center' },
             { selector: '#searchCard', title: '🔍 उन्नत गुरबाणी खोज', text: 'श्री गुरु ग्रंथ साहिब जी में से किसी भी शबद को पहले अक्षर या कीवर्ड के माध्यम से तुरंत खोजने के लिए एक अत्यंत शक्तिशाली खोज उपकरण।', position: 'top-center' },
             { selector: '#notesCard', title: '📝 आध्यात्मिक नोट्स', text: 'पाठ करते समय या ध्यान लगाते समय अपने मन में उठने वाले आध्यात्मिक विचारों, प्रेरणाओं और व्यक्तिगत नोट्स को लिखकर सुरक्षित रखें।', position: 'top-center' },
+            { selector: '#sadhsangatLiveCard', title: '📡 साधसंगत लाइव', text: 'दुनिया भर के गुरुद्वारों और संगत से लाइव कीर्तन, कथा और धार्मिक कार्यक्रमों को खोजें और सुनें।', position: 'top-center' },
+            { selector: '#gurbaniGptCard', title: '📿 गुरबाणी जीपीटी (AI)', text: 'गुरबाणी के गहरे आध्यात्मिक अर्थों, चिंतन और समझ के लिए पवित्र ग्रंथों पर आधारित हमारा उन्नत एआई मार्गदर्शक।', position: 'top-center' },
             { selector: '#mainNav', title: '📈 नेविगेशन और डैशबोर्ड', text: 'होम पेज, पसंदीदा (favorites) शबद सूची, लाइब्रेरी (Insights), या अपनी प्रगति के पूर्ण डैशबोर्ड के बीच आसानी से नेविगेट करें।', position: 'top-center' }
         ]
     };
@@ -77,25 +83,29 @@
         const style = document.createElement('style');
         style.id = 'anhad-tour-styles-v9';
         style.textContent = `
-            /* 4-Div Sliding Spotlight Overlay System */
-            .anhad-tour-overlay-edge {
+            /* High-Performance SVG Spotlight Overlay */
+            #anhad-tour-svg-overlay {
                 position: fixed;
-                background: rgba(10, 10, 12, 0.55);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
                 z-index: 999999;
                 opacity: 0;
-                transition: 
-                    top 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
-                    left 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
-                    width 0.45s cubic-bezier(0.25, 1, 0.3, 1), 
-                    height 0.45s cubic-bezier(0.25, 1, 0.3, 1),
-                    opacity 0.3s ease;
+                transition: opacity 0.3s ease;
                 pointer-events: auto;
-                will-change: top, left, width, height, opacity;
             }
-            .anhad-tour-overlay-edge.active {
+            #anhad-tour-svg-overlay.active {
                 opacity: 1;
+            }
+            #anhad-tour-mask-hole {
+                transition: 
+                    x 0.4s cubic-bezier(0.25, 1, 0.3, 1), 
+                    y 0.4s cubic-bezier(0.25, 1, 0.3, 1), 
+                    width 0.4s cubic-bezier(0.25, 1, 0.3, 1), 
+                    height 0.4s cubic-bezier(0.25, 1, 0.3, 1),
+                    rx 0.4s ease,
+                    ry 0.4s ease;
             }
             
             /* Premium Apple-style Glassmorphic Popover - Enlarged Edition */
@@ -666,7 +676,7 @@
         if (selector === '#sehajPractice') {
             return `
                 <div class="anhad-tour-badges">
-                    <span class="anhad-badge badge-gold">📖 Sri Guru Granth Sahib</span>
+                    <span class="anhad-badge badge-gold">📖 Sri Guru Granth</span>
                     <span class="anhad-badge badge-purple">📊 Ang Progress %</span>
                 </div>
             `;
@@ -716,6 +726,22 @@
                 <div class="anhad-tour-badges">
                     <span class="anhad-badge badge-gold">📝 Devotional Notes</span>
                     <span class="anhad-badge badge-purple">💾 Safe Storage</span>
+                </div>
+            `;
+        }
+        if (selector === '#sadhsangatLiveCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-gold">📡 Community Streams</span>
+                    <span class="anhad-badge badge-green">🔊 Live Katha & Kirtan</span>
+                </div>
+            `;
+        }
+        if (selector === '#gurbaniGptCard') {
+            return `
+                <div class="anhad-tour-badges">
+                    <span class="anhad-badge badge-purple">🤖 AI Spiritual Guide</span>
+                    <span class="anhad-badge badge-gold">📖 Deep Vichar</span>
                 </div>
             `;
         }
@@ -781,25 +807,33 @@
         setTimeout(() => langModal.classList.add('active'), 50);
     }
 
-    // Initialize layout overlay elements
+    // Initialize layout overlay elements using high performance SVG Masking
     function initOverlay() {
         overlayContainer = document.createElement('div');
         overlayContainer.id = 'anhad-tour-overlay-container';
+        overlayContainer.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; pointer-events:none;';
 
-        // Create 4 edge overlays
-        const edges = ['top', 'bottom', 'left', 'right'];
-        edges.forEach(edge => {
-            const el = document.createElement('div');
-            el.className = 'anhad-tour-overlay-edge';
-            el.id = `anhad-tour-overlay-${edge}`;
-            overlayContainer.appendChild(el);
+        // Full-screen SVG overlay to build a clean shape-matching spotlight cutout
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.id = 'anhad-tour-svg-overlay';
+        svg.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:auto;';
 
-            // Advance on overlay click anywhere
-            el.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                advanceTour();
-            });
+        svg.innerHTML = `
+            <defs>
+                <mask id="anhad-tour-mask">
+                    <rect width="100%" height="100%" fill="white"/>
+                    <rect id="anhad-tour-mask-hole" x="0" y="0" width="0" height="0" rx="16" ry="16" fill="black"/>
+                </mask>
+            </defs>
+            <rect width="100%" height="100%" fill="rgba(10, 10, 12, 0.65)" mask="url(#anhad-tour-mask)"/>
+        `;
+        overlayContainer.appendChild(svg);
+
+        // Click SVG overlay to advance tour
+        svg.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            advanceTour();
         });
 
         popover = document.createElement('div');
@@ -807,7 +841,7 @@
 
         tapPrompt = document.createElement('div');
         tapPrompt.className = 'anhad-tour-tap-anywhere';
-        
+
         // Custom prompts based on chosen language
         if (selectedLang === 'pa') {
             tapPrompt.innerHTML = '👆 ਅਗਲਾ ਦੇਖਣ ਲਈ ਕਿਤੇ ਵੀ ਕਲਿੱਕ ਕਰੋ';
@@ -843,7 +877,7 @@
         }
     }
 
-    // Recalculates spotlight size and applies positions to the 4 overlay divs (Zero-Blur Spotlight)
+    // Recalculates spotlight size and morphs the SVG Mask Hole
     function updateSpotlight(element) {
         const padding = 10;
         const w = window.innerWidth;
@@ -856,53 +890,45 @@
             rect = { left: w / 2 - 50, top: h / 2 - 50, width: 100, height: 100 };
         }
 
-        // Target boundaries with padding included
         const l = Math.max(0, rect.left - padding);
         const t = Math.max(0, rect.top - padding);
-        const r = Math.min(w, rect.left + rect.width + padding);
-        const b = Math.min(h, rect.top + rect.height + padding);
+        const width = Math.min(w - l, rect.width + padding * 2);
+        const height = Math.min(h - t, rect.height + padding * 2);
 
-        // Apply coordinates dynamically to create the perfect physical spotlight hole
-        const topEl = document.getElementById('anhad-tour-overlay-top');
-        const bottomEl = document.getElementById('anhad-tour-overlay-bottom');
-        const leftEl = document.getElementById('anhad-tour-overlay-left');
-        const rightEl = document.getElementById('anhad-tour-overlay-right');
+        // Update SVG Mask Hole attributes
+        const hole = document.getElementById('anhad-tour-mask-hole');
+        if (hole) {
+            hole.setAttribute('x', l);
+            hole.setAttribute('y', t);
+            hole.setAttribute('width', width);
+            hole.setAttribute('height', height);
 
-        if (topEl) {
-            topEl.style.top = '0px';
-            topEl.style.left = '0px';
-            topEl.style.width = '100vw';
-            topEl.style.height = `${t}px`;
-        }
-        if (bottomEl) {
-            bottomEl.style.top = `${b}px`;
-            bottomEl.style.left = '0px';
-            bottomEl.style.width = '100vw';
-            bottomEl.style.height = `${h - b}px`;
-        }
-        if (leftEl) {
-            leftEl.style.top = `${t}px`;
-            leftEl.style.left = '0px';
-            leftEl.style.width = `${l}px`;
-            leftEl.style.height = `${b - t}px`;
-        }
-        if (rightEl) {
-            rightEl.style.top = `${t}px`;
-            rightEl.style.left = `${r}px`;
-            rightEl.style.width = `${w - r}px`;
-            rightEl.style.height = `${b - t}px`;
+            // Match border-radius of the selected element
+            let borderRadius = '16';
+            if (element) {
+                const style = window.getComputedStyle(element);
+                borderRadius = style.borderRadius || '16px';
+            }
+            const cleanStr = borderRadius.replace(/[^0-9]/g, '');
+            const cleanRadius = parseInt(cleanStr) || 16;
+            hole.setAttribute('rx', cleanRadius + 4);
+            hole.setAttribute('ry', cleanRadius + 4);
         }
 
         // Dynamic Spotlight Ring
         const ring = document.getElementById('anhad-tour-spotlight-ring');
         if (ring) {
             if (element) {
-                ring.style.top = `${rect.top - padding}px`;
-                ring.style.left = `${rect.left - padding}px`;
-                ring.style.width = `${rect.width + padding * 2}px`;
-                ring.style.height = `${rect.height + padding * 2}px`;
+                ring.style.top = `${t}px`;
+                ring.style.left = `${l}px`;
+                ring.style.width = `${width}px`;
+                ring.style.height = `${height}px`;
+                let borderRadius = '16';
                 const style = window.getComputedStyle(element);
-                ring.style.borderRadius = style.borderRadius || '12px';
+                borderRadius = style.borderRadius || '16px';
+                const cleanStr = borderRadius.replace(/[^0-9]/g, '');
+                const cleanRadius = parseInt(cleanStr) || 16;
+                ring.style.borderRadius = `${cleanRadius + 4}px`;
                 ring.classList.add('active');
             } else {
                 ring.classList.remove('active');
@@ -997,7 +1023,7 @@
                 element.classList.add('anhad-tour-target');
             }
 
-            // Apply physical overlays
+            // Apply physical overlay cutout
             updateSpotlight(element);
 
             // Glimpse Badges
@@ -1060,9 +1086,8 @@
 
         setTimeout(() => {
             // Activate overlays smoothly
-            document.querySelectorAll('.anhad-tour-overlay-edge').forEach(el => {
-                el.classList.add('active');
-            });
+            const svgOverlay = document.getElementById('anhad-tour-svg-overlay');
+            if (svgOverlay) svgOverlay.classList.add('active');
             renderStep();
         }, 100);
     }
@@ -1082,9 +1107,8 @@
         window.removeEventListener('scroll', handleResizeAndScroll);
 
         // Animate off
-        document.querySelectorAll('.anhad-tour-overlay-edge').forEach(el => {
-            el.classList.remove('active');
-        });
+        const svgOverlay = document.getElementById('anhad-tour-svg-overlay');
+        if (svgOverlay) svgOverlay.classList.remove('active');
         const spotlightRing = document.getElementById('anhad-tour-spotlight-ring');
         if (spotlightRing) spotlightRing.classList.remove('active');
         if (popover) popover.classList.remove('active');
@@ -1098,11 +1122,11 @@
         // Show celebration bottom card modal
         const celebrationCard = document.createElement('div');
         celebrationCard.className = 'anhad-celebration-card';
-        
+
         let titleHtml = '✨ Dynamic Theme Active!';
         let textHtml = 'ANHAD is configured with our premium <b>Auto-Dynamic Theme</b> by default. Your background artwork and card colors will adapt beautifully with the local hour (Amritvela, Day, Evening, and Night).';
         let btnHtml = 'Begin Journey';
-        
+
         if (selectedLang === 'pa') {
             titleHtml = '✨ ਡਾਇਨਾਮਿਕ ਥੀਮ ਸਰਗਰਮ!';
             textHtml = 'ANHAD ਨੂੰ ਡਿਫੌਲਟ ਰੂਪ ਵਿੱਚ ਸਾਡੇ ਪ੍ਰੀਮੀਅਮ <b>ਆਟੋ-ਡਾਇਨਾਮਿਕ ਥੀਮ</b> ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡਾ ਬੈਕਗ੍ਰਾਊਂਡ ਅਤੇ ਰੰਗ ਦਿਨ ਦੇ ਸਮੇਂ (ਅੰਮ੍ਰਿਤ ਵੇਲਾ, ਦਿਨ, ਸ਼ਾਮ ਅਤੇ ਰਾਤ) ਅਨੁਸਾਰ ਆਪਣੇ ਆਪ ਬਦਲਣਗੇ।';
@@ -1120,11 +1144,11 @@
             <button class="anhad-celebration-btn" id="celebrationCloseBtn">${btnHtml}</button>
         `;
         document.body.appendChild(celebrationCard);
-        
+
         // Trigger active class
         setTimeout(() => celebrationCard.classList.add('active'), 100);
 
-        document.getElementById('celebrationCloseBtn').addEventListener('click', function(e) {
+        document.getElementById('celebrationCloseBtn').addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             celebrationCard.classList.remove('active');
@@ -1158,8 +1182,8 @@
     window.addEventListener('load', () => {
         // Only run on the main home screen (index.html), not sub-pages
         const isMainPage = window.location.pathname.endsWith('index.html') ||
-                           window.location.pathname.endsWith('/') ||
-                           document.getElementById('guruSlider') !== null;
+            window.location.pathname.endsWith('/') ||
+            document.getElementById('guruSlider') !== null;
 
         if (isMainPage) {
             // Bind manual trigger to guide button in header

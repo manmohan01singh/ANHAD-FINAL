@@ -1,6 +1,64 @@
 <!DOCTYPE html>
 <html lang="en" data-anhad-home>
 <head>
+  <script>
+    (function() {
+      'use strict';
+      var ACTIVE_KEY = 'anhad_session_active_ts';
+      var SEEN_KEY = 'anhad_welcome_seen';
+      var SESSION_KEY = 'anhad_welcomed';
+      var ACTIVE_WINDOW_MS = 86400000;
+
+      function rememberActiveSession() {
+        try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
+        try { localStorage.setItem(SEEN_KEY, 'true'); } catch(e) {}
+        try { localStorage.setItem(ACTIVE_KEY, Date.now().toString()); } catch(e) {}
+      }
+
+      function shouldBypassWelcome() {
+        try { if (typeof window.navigateTo === 'function') return true; } catch(e) {}
+        try { if (sessionStorage.getItem(SESSION_KEY) === '1') return true; } catch(e) {}
+        try {
+          var seen = localStorage.getItem(SEEN_KEY);
+          if (seen === 'true' || seen === '1') return true;
+        } catch(e) {}
+        try {
+          var lastActive = parseInt(localStorage.getItem(ACTIVE_KEY) || '0', 10);
+          if ((Date.now() - lastActive) < ACTIVE_WINDOW_MS) return true;
+        } catch(e) {}
+        try {
+          if (window.location.protocol === 'capacitor:' ||
+              window.Capacitor ||
+              (window.location.hostname === 'localhost' && navigator.userAgent.indexOf('wv') !== -1)) {
+            return true;
+          }
+        } catch(e) {}
+        try {
+          var ref = document.referrer;
+          if (ref && (
+            ref.indexOf(window.location.hostname) !== -1 ||
+            ref.indexOf('file://') !== -1 ||
+            ref.indexOf('capacitor://') !== -1 ||
+            ref.indexOf('localhost') !== -1
+          )) return true;
+        } catch(e) {}
+        try {
+          if (window.location.search.indexOf('spa=') !== -1 ||
+              window.location.hash.indexOf('#app') !== -1) {
+            return true;
+          }
+        } catch(e) {}
+        return false;
+      }
+
+      if (shouldBypassWelcome()) {
+        rememberActiveSession();
+      } else {
+        try { localStorage.setItem(SEEN_KEY, 'true'); } catch(e) {}
+        window.location.replace('./Homepage/ios-homepage.html');
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   
   <script>
@@ -65,9 +123,10 @@
     html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
     html:not(.dark-mode) { background-color: var(--bg-primary, #FAF8F5) !important; }
     body { background-color: transparent !important; }
-    /* PERF FIX: Contain scroll chaining and remove tap-delay style work on controls. */
-    html, body, .app {
-      overscroll-behavior: contain;
+    /* Simple scroll — let browser handle it natively */
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
     }
     button, a, [role="button"], [data-href], .ios-haptic {
       touch-action: manipulation;
@@ -111,60 +170,11 @@
       filter: invert(72%) sepia(60%) saturate(1000%) hue-rotate(350deg) brightness(105%) contrast(100%) drop-shadow(0 0 6px rgba(212, 148, 58, 0.45));
     }
 
-    /* Mobile app-shell stability: fixes Android Recents/status-bar clipping
-       and keeps the home surface smooth while returning from sub-pages. */
     @media (max-width: 768px) {
-      html, body {
-        min-height: 100dvh;
-        overscroll-behavior-y: none;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .app {
-        min-height: 100dvh;
-        padding-top: env(safe-area-inset-top, 0px);
-        contain: layout paint;
-      }
-
       .header[role="banner"] {
         position: sticky;
         top: 0;
         z-index: 1000;
-        min-height: calc(60px + env(safe-area-inset-top, 0px));
-        padding-top: max(10px, env(safe-area-inset-top, 0px));
-        margin-top: 0;
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        will-change: transform;
-      }
-
-      .hero-carousel,
-      .hero-card,
-      .practice-card,
-      .quick-card {
-        transform: translateZ(0);
-        backface-visibility: hidden;
-        contain: layout paint;
-      }
-
-      .hero-carousel__glow,
-      .gmp-background,
-      .bg-orbs,
-      .cloud-layer,
-      .weather-cloud {
-        animation-play-state: paused !important;
-        filter: none !important;
-      }
-
-      body.is-scrolling .hero-carousel__glow,
-      body.is-scrolling .hero-card__image {
-        transition: none !important;
-      }
-
-      .ios-animate-in,
-      .quick-card,
-      .practice-card {
-        animation-duration: 0.001s !important;
       }
     }
 
@@ -206,7 +216,7 @@
     }
   </style>
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <meta name="theme-color" content="#F2F2F7">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -215,9 +225,8 @@
   
   <!-- Global Theme System -->
   <link rel="stylesheet" href="css/theme-variables.css">
-  <link rel="stylesheet" href="css/anhad-sky-bg.css">
-  <script src="lib/global-theme.js?v=4.0.2"></script>
-  <script src="js/scroll-optimizer.js"></script>
+  <script src="lib/global-theme.js?v=4.0.2" defer></script>
+
   <link rel="apple-touch-icon" href="assets/icon-180x180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16x16.png">
@@ -237,46 +246,21 @@
         slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
       }
       var base = 'assets/HERO CARD IMAGES/';
-      var slotMap = {
-        morning: ['morning-darbar-sahib.webp','morning-amritvela-kirtan.webp','morning-waheguru-simran.webp'],
-        day:     ['day-darbar-sahib.webp','day-amritvela-kirtan.webp','day-waheguru-simran.webp'],
-        evening: ['evening-darbar-sahib.webp','evening-amritvela-kirtan.webp','evening-waheguru-simran.webp'],
-        night:   ['night-darbar-sahib.webp','night-amritvela-kirtan.webp','night-waheguru-simran.webp'],
+      var heroMap = {
+        morning: 'morning-darbar-sahib.avif',
+        day:     'day-darbar-sahib.avif',
+        evening: 'evening-darbar-sahib.avif',
+        night:   'night-darbar-sahib.avif',
       };
-      var bgMap = {
-        morning: 'assets/darbar-sahib-morning-bg.webp',
-        day:     'assets/darbar-sahib-day-bg.webp',
-        evening: 'assets/darbar-sahib-evening-bg.webp',
-        night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
-      };
-      
-      // 1. Preload current slot images for instant auto theme paint
-      var imgs = slotMap[slot] || slotMap.day;
-      imgs.forEach(function(f) {
-        var l = document.createElement('link');
-        l.rel = 'preload'; l.as = 'image'; l.type = 'image/webp';
-        l.href = base + f;
-        document.head.appendChild(l);
-      });
-      var bl = document.createElement('link');
-      bl.rel = 'preload'; bl.as = 'image'; bl.type = 'image/webp';
-      bl.href = bgMap[slot] || bgMap.day;
-      document.head.appendChild(bl);
-
-      // 2. Preload night slot images (crucial for instant dark-mode swap!)
-      if (slot !== 'night') {
-        var nightImgs = slotMap.night;
-        nightImgs.forEach(function(f) {
-          var l = document.createElement('link');
-          l.rel = 'preload'; l.as = 'image'; l.type = 'image/webp';
-          l.href = base + f;
-          document.head.appendChild(l);
-        });
-        var nbl = document.createElement('link');
-        nbl.rel = 'preload'; nbl.as = 'image'; nbl.type = 'image/webp';
-        nbl.href = bgMap.night;
-        document.head.appendChild(nbl);
-      }
+      var theme = localStorage.getItem('anhad_theme') || 'auto';
+      var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
+      var l = document.createElement('link');
+      l.rel = 'preload';
+      l.as = 'image';
+      l.type = 'image/avif';
+      l.href = base + (heroMap[target] || heroMap.day);
+      l.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(l);
     })();
   </script>
   
@@ -292,9 +276,6 @@
 
   <script src="./js/anhad-core.js" defer></script>
 
-  <!-- Welcome/Splash Check - Handled by external script to allow SPA skipping -->
-  <script src="lib/welcome-check.js"></script>
-
   <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
   <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
 
@@ -303,7 +284,6 @@
   <!-- Preloads — Critical Resources -->
   <!-- PERF: Only preload fonts used above-the-fold -->
   <link rel="preload" href="nitnem/g-fonts/pg_serif_s.ttf" as="font" type="font/ttf" crossorigin>
-  <link rel="preload" as="image" href="assets/darbar-sahib-day-bg.webp" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
@@ -326,7 +306,94 @@
   <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
   <!-- ANHAD: Animated Sky Background (Auto Mode) — async load -->
   <link rel="stylesheet" href="css/anhad-sky-bg.css?v=1" media="print" onload="this.media='all'">
-  <!-- PERF: Removed scroll-fix-simple.css — redundant with scroll-performance-90fps.css -->
+
+
+  <!-- FIX: Hero carousel must NOT capture vertical swipes — allow page to scroll freely -->
+  <style>
+    .hero-carousel__track {
+      touch-action: pan-x !important; /* Only capture horizontal swipes; free vertical to the page */
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Coming Soon popup styles */
+    #anhadComingSoonOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #anhadComingSoonOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #anhadComingSoonCard {
+      background: linear-gradient(145deg, rgba(255,250,240,0.98) 0%, rgba(255,240,210,0.98) 100%);
+      border: 1.5px solid rgba(212,148,58,0.3);
+      border-radius: 28px;
+      padding: 36px 32px 28px;
+      max-width: 320px;
+      width: calc(100% - 48px);
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      transform: scale(0.88) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #anhadComingSoonOverlay.active #anhadComingSoonCard {
+      transform: scale(1) translateY(0);
+    }
+    .dark-mode #anhadComingSoonCard {
+      background: linear-gradient(145deg, rgba(28,24,18,0.98) 0%, rgba(40,30,15,0.98) 100%);
+      border-color: rgba(212,148,58,0.4);
+      color: #F5DFA0;
+    }
+    #anhadComingSoonCard .cs-icon { font-size: 52px; margin-bottom: 12px; display: block; }
+    #anhadComingSoonCard .cs-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #72500A;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .dark-mode #anhadComingSoonCard .cs-title { color: #FFD566; }
+    #anhadComingSoonCard .cs-feature {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #D4943A;
+      margin-bottom: 8px;
+    }
+    #anhadComingSoonCard .cs-desc {
+      font-size: 0.85rem;
+      color: #8B6914;
+      opacity: 0.8;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .dark-mode #anhadComingSoonCard .cs-desc { color: #C9A84C; }
+    #anhadComingSoonCard .cs-close {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(212,148,58,0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    #anhadComingSoonCard .cs-close:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(212,148,58,0.5); }
+    #anhadComingSoonCard .cs-close:active { transform: scale(0.95); }
+  </style>
 
 
   <!-- Inline critical above-fold styles for instant paint -->
@@ -1899,7 +1966,7 @@
         const bgUrl = bgMap[slot] || bgMap.day;
         document.body.style.backgroundImage = "url('" + bgUrl + "')";
         document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center center';
+        document.body.style.backgroundPosition = 'center top';
         document.body.style.backgroundRepeat = 'no-repeat';
         document.body.style.backgroundAttachment = 'fixed';
       }
@@ -1914,7 +1981,7 @@
   <aside class="desktop-sidebar" aria-label="Desktop Navigation" id="desktopSidebar"
          style="display:none">
     <div class="desktop-sidebar__brand">
-      <img decoding="async" src="assets/app-logo.png" alt="ANHAD" class="desktop-sidebar__logo">
+      <img decoding="async" src="assets/app-logo.webp" alt="" aria-hidden="true" class="desktop-sidebar__logo">
       <div>
         <div class="desktop-sidebar__title">ANHAD</div>
         <span class="desktop-sidebar__gurmukhi">ਅਨਹਦ</span>
@@ -1935,7 +2002,7 @@
         Favorites
       </a>
       <a href="sadhsangat-live/index.html" class="desktop-sidebar__link">
-        <img src="assets/app-logo.png" alt="Sadhsangat" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
         Sadhsangat
       </a>
       <a href="nitnem/index.html" class="desktop-sidebar__link">
@@ -1958,7 +2025,7 @@
         Calendar
       </a>
       <a href="sadhsangat-live/index.html" class="desktop-sidebar__link">
-        <img src="assets/app-logo.png" alt="Sadhsangat Live" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="22" height="22" loading="lazy" decoding="async" style="width:22px;height:22px;border-radius:6px;object-fit:cover;flex-shrink:0;">
         Sadhsangat Live
       </a>
     </div>
@@ -2093,7 +2160,8 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
+                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.avif" type="image/avif">' +
+                    '<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
@@ -2133,13 +2201,14 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
+                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.avif" type="image/avif">' +
+                    '<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
                     'data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp" ' +
                     'data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp" ' +
-                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="eager" decoding="async" ' +
+                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low" decoding="async" ' +
                     'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
                 })();
               </script>
@@ -2173,13 +2242,14 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
+                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.avif" type="image/avif">' +
+                    '<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
                     'data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp" ' +
                     'data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp" ' +
-                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="eager" decoding="async" ' +
+                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low" decoding="async" ' +
                     'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
                 })();
               </script>
@@ -2204,6 +2274,7 @@
         <article class="hero-card hero-card--hukam" id="heroCard4" data-color="#5B6AAE" data-color-rgb="91,106,174" aria-label="Today's Hukamnama" role="group" aria-roledescription="slide" data-href="Hukamnama/daily-hukamnama.html">
           <div class="hero-card__image-wrapper">
             <picture>
+              <source srcset="assets/HUKAMNAMA-SAHIB.avif" type="image/avif">
               <source srcset="assets/HUKAMNAMA-SAHIB.webp" type="image/webp">
               <img class="hero-card__image" src="assets/HUKAMNAMA-SAHIB.png" alt="Sri Guru Granth Sahib Ji — Divine Hukamnama" width="430" height="242" loading="lazy" decoding="async"
               onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#92400E,#B8651A)'">
@@ -2305,7 +2376,7 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="eager" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
+          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="lazy" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
         </div>
       </div>
       <div class="event-card__days-badge">
@@ -2320,8 +2391,8 @@
       <h2 class="section-header__title">Your Practice</h2>
     </div>
 
-    <div class="practice-grid ios-stagger" role="list">
-      <button class="practice-card practice-card--nitnem ios-haptic" id="nitnemPractice" aria-label="Nitnem Paath" role="listitem" data-href="nitnem/index.html">
+    <div class="practice-grid ios-stagger">
+      <button class="practice-card practice-card--nitnem ios-haptic" id="nitnemPractice" aria-label="Nitnem Paath" data-href="nitnem/index.html">
         <div class="practice-card__check" id="nitnemCheck" aria-hidden="true">
           <svg><use href="#icon-check"/></svg>
         </div>
@@ -2336,7 +2407,7 @@
         <div class="practice-card__status" id="nitnemStatus">Daily Prayers</div>
       </button>
 
-      <button class="practice-card practice-card--sehaj ios-haptic" id="sehajPractice" aria-label="Sehaj Paath" role="listitem" data-href="SehajPaath/sehaj-paath.html">
+      <button class="practice-card practice-card--sehaj ios-haptic" id="sehajPractice" aria-label="Sehaj Paath" data-href="SehajPaath/sehaj-paath.html">
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
@@ -2348,7 +2419,7 @@
         <div class="practice-card__status" id="sehajStatus">Begin journey</div>
       </button>
 
-      <button class="practice-card practice-card--hukam ios-haptic" id="hukamPractice" aria-label="Daily Hukamnama" role="listitem" data-href="Hukamnama/daily-hukamnama.html">
+      <button class="practice-card practice-card--hukam ios-haptic" id="hukamPractice" aria-label="Daily Hukamnama" data-href="Hukamnama/daily-hukamnama.html">
         <div class="practice-card__ring">
           <svg viewBox="0 0 60 60">
             <circle class="practice-card__ring-bg" cx="30" cy="30" r="26"/>
@@ -2438,15 +2509,15 @@
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
 
-    <!-- 🙏 Gurbani GPT -->
-    <article class="quick-card quick-card--purple ios-haptic" id="gurbaniGptCard" aria-label="Gurbani GPT" data-href="GurbaniGPT/index.html">
+    <!-- 🙏 Gurbani GPT — Coming Soon -->
+    <article class="quick-card quick-card--purple ios-haptic" id="gurbaniGptCard" aria-label="Gurbani GPT" role="button" tabindex="0">
       <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="prayer beads">📿</span></div>
       <div class="quick-card__content">
         <div class="quick-card__title">Gurbani GPT</div>
         <div class="quick-card__subtitle">Naam, Simran &amp; spiritual guidance</div>
       </div>
       <div class="quick-card__meta">
-        <span class="quick-card__meta-value" style="color: #9b59b6; font-weight: 700; font-size: 11px;">AI Guide</span>
+        <span class="quick-card__meta-value" style="color: #9b59b6; font-weight: 700; font-size: 11px;">Coming Soon</span>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>
@@ -2496,7 +2567,7 @@
   <div class="install-banner" id="installBanner" role="alert" style="display: none; transform:translateY(100%); opacity: 0;">
     <div class="install-banner__inner">
       <div class="install-banner__icon">
-        <img decoding="async" src="assets/app-logo.png" alt="ANHAD Logo">
+        <img decoding="async" src="assets/app-logo.webp" alt="" aria-hidden="true">
       </div>
       <div class="install-banner__text">
         <div class="install-banner__title">Install ANHAD</div>
@@ -2513,9 +2584,9 @@
        SCRIPTS — PERFORMANCE OPTIMIZED: Only 3 sync, rest deferred/lazy
   ════════════════════════════════════════════════════════════════════════ -->
   <!-- SYNC: Only scripts needed BEFORE first interaction -->
-  <script src="lib/fetch-utils.js"></script>
-  <script src="lib/page-lifecycle.js"></script>
-  <script src="lib/smooth-navigation.js"></script>
+  <script src="lib/fetch-utils.js" defer></script>
+  <script src="lib/page-lifecycle.js" defer></script>
+  <script src="lib/smooth-navigation.js" defer></script>
   
   <!-- DEFERRED: Load after DOM parse, before DOMContentLoaded -->
   <script src="lib/unified-stats.js" defer></script>
@@ -2528,11 +2599,10 @@
   <script src="lib/overlay-player.js" defer></script>
   
   <!-- Core UI logic -->
-  <script src="js/trendora-app.js?v=4.0.1" defer></script>
+  <script src="js/trendora-app.js?v=4.0.4" defer></script>
   <script src="js/homepage-data.js" defer></script>
-  <script src="pwa-register.js?v=2" defer></script>
+  <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
-  <script src="js/anhad-onboarding.js" defer></script>
 
   <!-- LAZY: Non-critical scripts loaded during idle time -->
   <script>
@@ -2544,6 +2614,7 @@
         'lib/optimized-image-loader.js',
         'lib/audio-preload.js',
         'lib/user-stats.js',
+        'js/anhad-onboarding.js',
         'lib/alarm-coordinator.js',
         'lib/guaranteed-alarm-system.js',
         'lib/global-alarm-system.js',
@@ -2685,6 +2756,64 @@
     })();
   </script>
 
+  <!-- ═══════════════════════════════════════
+       COMING SOON OVERLAY — Gurbani GPT
+  ═══════════════════════════════════════ -->
+  <div id="anhadComingSoonOverlay" role="dialog" aria-modal="true" aria-label="Coming Soon" aria-hidden="true">
+    <div id="anhadComingSoonCard">
+      <span class="cs-icon">🌟</span>
+      <div class="cs-feature">Gurbani GPT</div>
+      <div class="cs-title">Coming Soon</div>
+      <div class="cs-desc">We're crafting a deeply spiritual AI experience rooted in Gurbani wisdom.<br>Stay tuned — something beautiful is on the way. 🙏</div>
+      <button class="cs-close" id="anhadComingSoonClose">Got it &nbsp;✓</button>
+    </div>
+  </div>
+
+  <script>
+    // ── GURBANI GPT: Coming Soon popup ──
+    (function() {
+      var card = document.getElementById('gurbaniGptCard');
+      var overlay = document.getElementById('anhadComingSoonOverlay');
+      var closeBtn = document.getElementById('anhadComingSoonClose');
+
+      function showComingSoon(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        overlay.classList.add('active');
+        overlay.setAttribute('aria-hidden', 'false');
+        // Vibrate for haptic feedback
+        if (navigator.vibrate) navigator.vibrate([10, 30, 10]);
+        closeBtn && closeBtn.focus();
+      }
+
+      function hideComingSoon() {
+        overlay.classList.remove('active');
+        overlay.setAttribute('aria-hidden', 'true');
+      }
+
+      if (card) {
+        card.addEventListener('click', showComingSoon);
+        card.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') showComingSoon(e);
+        });
+      }
+      if (closeBtn) closeBtn.addEventListener('click', hideComingSoon);
+
+      // Close on backdrop click
+      if (overlay) {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) hideComingSoon();
+        });
+      }
+
+      // Close on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) hideComingSoon();
+      });
+    })();
+
+
+  </script>
+
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
     <a href="index.html" class="tab-item active">
@@ -2701,7 +2830,7 @@
     </a>
     <a href="sadhsangat-live/index.html" class="tab-item">
       <span class="tab-icon" style="font-size:0;line-height:0;">
-        <img src="assets/app-logo.png" alt="Sadhsangat" width="26" height="26" loading="lazy" decoding="async" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
+        <img src="assets/app-logo.webp" alt="" aria-hidden="true" width="26" height="26" loading="lazy" decoding="async" style="width:26px;height:26px;border-radius:8px;object-fit:cover;display:block;">
       </span>
       <span class="tab-label">Sadhsangat</span>
     </a>
@@ -2828,7 +2957,7 @@
   <!-- ANHAD: Time-Based Hero Card Image Swap handled authoritative by anhad-sky-bg.js to prevent race conditions and override lag -->
 
   <!-- ANHAD: Animated Sky Background Engine -->
-  <script src="js/anhad-sky-bg.js?v=4.0.2" defer></script>
+  <script src="js/anhad-sky-bg.js?v=4.0.4" defer></script>
 
 </body>
 </html>

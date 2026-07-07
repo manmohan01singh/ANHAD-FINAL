@@ -10,7 +10,7 @@
    - Applies scroll containment to prevent scroll chaining to parent views
    ═══════════════════════════════════════════════════════════════════════════ */
 
-(function() {
+(function () {
   'use strict';
 
   let _rafId = null;
@@ -25,6 +25,7 @@
       if (!_isScrolling) {
         _isScrolling = true;
         document.body.classList.add('is-scrolling');
+        document.body.classList.add('scrolling');
       }
       _lastScrollY = currentY;
       _rafId = requestAnimationFrame(onScrollTick);
@@ -32,6 +33,7 @@
       // Scroll stopped — clean up
       _isScrolling = false;
       document.body.classList.remove('is-scrolling');
+      document.body.classList.remove('scrolling');
       _rafId = null;
     }
   }
@@ -48,26 +50,28 @@
   window.addEventListener('scroll', onScroll, { passive: true });
 
   // Touch listeners: passive for maximum native scroll throughput
-  window.addEventListener('touchstart', function() {
+  window.addEventListener('touchstart', function () {
     if (!_isScrolling) {
       _isScrolling = true;
       document.body.classList.add('is-scrolling');
+      document.body.classList.add('scrolling');
     }
   }, { passive: true });
 
-  window.addEventListener('touchend', function() {
+  window.addEventListener('touchend', function () {
     // Use rAF to check if scroll actually stopped
-    requestAnimationFrame(function() {
+    requestAnimationFrame(function () {
       _isScrolling = false;
       document.body.classList.remove('is-scrolling');
+      document.body.classList.remove('scrolling');
     });
   }, { passive: true });
 
   // PERF FIX: Intersection Observer-based lazy animation trigger.
   // Replaces scroll-event-based show/hide logic in individual components.
   // Export a shared observer so components can use it without creating their own.
-  window.AnhadScrollObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
+  window.AnhadScrollObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-viewport');
         // Once visible, no need to observe again (saves CPU on long pages)

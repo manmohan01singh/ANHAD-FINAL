@@ -7,6 +7,7 @@
         "start": "node backend/server.js",
         "dev": "node backend/server.js",
         "build": "node scripts/generate-version.js",
+        "optimize:images": "node scripts/optimize-images.js",
         "electron": "electron .",
         "electron:dev": "electron . --dev",
         "electron:build": "npm run build && electron-builder --win",
@@ -38,6 +39,7 @@
         "@capacitor/splash-screen": "^6.0.4",
         "@capacitor/status-bar": "^6.0.3",
         "@ybouane/liquidglass": "^1.0.3",
+        "compression": "^1.8.1",
         "dotenv": "^16.0.0",
         "express": "^4.18.2",
         "express-rate-limit": "^7.0.0",
@@ -49,6 +51,7 @@
         "@capacitor/assets": "^3.0.5",
         "electron": "^28.3.3",
         "electron-builder": "^24.13.3",
+        "lighthouse": "^13.4.0",
         "typescript": "^5.0.0"
     },
     "build": {

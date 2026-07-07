@@ -99,27 +99,13 @@
     </button>
   </div>
 
-  <!-- SIMRAN SUB-SWITCH (shown only on Simran tab) -->
-  <div id="simranSwitch" class="simran-switch" role="switch" aria-checked="false">
-    <div class="simran-copy">
-      <span class="simran-label">Simran Style</span>
-      <span id="simranState" class="simran-state">Asa Di Vaar</span>
-    </div>
-    <div class="simran-track">
-      <div class="simran-thumb">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"/>
-        </svg>
-      </div>
-    </div>
-  </div>
+
 
   <!-- ARTWORK -->
   <div class="artwork-section">
     <div id="artworkGlow" class="artwork-glow"></div>
     <div id="artworkCard" class="artwork-card" role="img" aria-label="Now playing artwork">
       <img id="artworkImg" class="artwork-img" src="../assets/darbar-sahib-day.webp" alt="Now playing">
-      <div class="live-badge">Live</div>
     </div>
   </div>
 
@@ -159,9 +145,17 @@
 
   <!-- CONTROLS -->
   <div class="controls">
-    <button id="prevBtn" class="ctrl-btn secondary" aria-label="Previous">
+    <button id="prevBtn" class="ctrl-btn secondary" aria-label="Previous Track">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M19 20L9 12l10-8v16zM5 4v16"/>
+      </svg>
+    </button>
+
+    <button id="rewindBtn" class="ctrl-btn secondary" aria-label="Rewind 10 seconds">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+        <text x="12" y="15" font-size="7" font-weight="bold" text-anchor="middle" fill="currentColor" stroke="none">10</text>
       </svg>
     </button>
 
@@ -169,9 +163,18 @@
       <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <polygon points="6,4 20,12 6,20" fill="currentColor"/>
       </svg>
+      <div id="playSpinner" class="play-spinner"></div>
     </button>
 
-    <button id="nextBtn" class="ctrl-btn secondary" aria-label="Next">
+    <button id="forwardBtn" class="ctrl-btn secondary" aria-label="Forward 10 seconds">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+        <path d="M21 3v5h-5"/>
+        <text x="12" y="15" font-size="7" font-weight="bold" text-anchor="middle" fill="currentColor" stroke="none">10</text>
+      </svg>
+    </button>
+
+    <button id="nextBtn" class="ctrl-btn secondary" aria-label="Next Track">
       <svg viewBox="0 0 24 24" fill="currentColor">
         <path d="M5 4l10 8-10 8V4zM19 4v16"/>
       </svg>
@@ -239,13 +242,7 @@
   <button id="errRetry" class="err-retry">Retry</button>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     CONNECTING OVERLAY
-     ══════════════════════════════════════════════════════ -->
-<div id="connOverlay" class="conn-overlay" aria-live="polite">
-  <div class="conn-spinner"></div>
-  <div id="connStream" class="conn-text">Connecting to <span>Darbar Sahib</span></div>
-</div>
+<!-- conn-overlay removed — no loading page shown -->
 
 <!-- ══════════════════════════════════════════════════════
      PLAYLIST BOTTOM SHEET

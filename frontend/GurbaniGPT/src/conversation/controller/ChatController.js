@@ -28,6 +28,7 @@ export function createChatController() {
   const welcomeEl = document.getElementById('welcome');
   const msgs = document.getElementById('msgs');
   const inp = document.getElementById('inp');
+  const inputArea = document.getElementById('inputArea');
   const sendBtn = document.getElementById('sendBtn');
   const stopBtn = document.getElementById('stopBtn');
 
@@ -69,7 +70,7 @@ export function createChatController() {
     }
   }
 
-  /* ── Show/hide welcome ── */
+  /* ── Show/hide welcome & messages ── */
   function showConvo() {
     if (msgs) msgs.style.display = 'block';
     if (welcomeEl) welcomeEl.style.display = 'none';
@@ -296,7 +297,7 @@ export function createChatController() {
           generateSummary(pipeline, summary, store.getHistory());
         }
       }
-      window.dispatchEvent(new CustomEvent('gptDone'));
+      window.dispatchEvent(new CustomEvent('gptResponseComplete'));
     } catch (err) {
       streamer.abort();
       if (err.name === 'AbortError') {

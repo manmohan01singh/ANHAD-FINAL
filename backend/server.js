@@ -10,6 +10,7 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const express = require('express');
+const compression = require('compression');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { Readable } = require('stream');
@@ -28,6 +29,7 @@ const cron = require('node-cron');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.disable('x-powered-by');
 
 // ═══════════════════════════════════════════════════════════════════
 // CONFIGURATION
@@ -380,12 +382,12 @@ app.use((req, res, next) => {
     const origin = req.headers.origin;
     const requestedHeaders = req.headers['access-control-request-headers'];
     const requestedMethod = req.headers['access-control-request-method'];
-    
+
     // Check if it is a local request origin (development / custom builds)
     const isLocalOrigin = origin && (
-        origin.startsWith('http://localhost') || 
-        origin.startsWith('https://localhost') || 
-        origin.startsWith('http://127.0.0.1') || 
+        origin.startsWith('http://localhost') ||
+        origin.startsWith('https://localhost') ||
+        origin.startsWith('http://127.0.0.1') ||
         origin.startsWith('https://127.0.0.1')
     );
 
@@ -396,14 +398,33 @@ app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
     }
-    
+
     res.setHeader('Access-Control-Allow-Methods', requestedMethod || 'GET, POST, PUT, DELETE, OPTIONS');
     // IMPORTANT: echo requested headers so preflight always passes (Capacitor/WebView can send extra headers)
     res.setHeader('Access-Control-Allow-Headers', requestedHeaders || 'Content-Type, Range, Authorization, X-User-ID');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    
+
     if (req.method === 'OPTIONS') {
         return res.status(204).end();
+    }
+    next();
+});
+
+app.use(compression({
+    threshold: 1024,
+    filter: (req, res) => {
+        if (req.headers.range) return false;
+        return compression.filter(req, res);
+    }
+}));
+
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     }
     next();
 });
@@ -423,8 +444,8 @@ const apiLimiter = rateLimit({
     // Use Cloudflare's client IP if available, fall back to default
     keyGenerator: (req) => {
         const clientIp = req.headers['cf-connecting-ip'] ||
-               req.headers['x-forwarded-for']?.split(',')[0].trim() ||
-               req.ip;
+            req.headers['x-forwarded-for']?.split(',')[0].trim() ||
+            req.ip;
         return ipKeyGenerator(clientIp);
     }
 });
@@ -988,9 +1009,9 @@ app.get('/api/hukamnama/audio', async (req, res) => {
                 console.log('[🎙️ Hukamnama] Scraped fresh URL:', mp3Match[1]);
             } else {
                 const d = new Date();
-                hukamAudioCache = { 
-                    url: `https://www.sgpc.net/hukamnama/${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/hukamnama.mp3`,
-                    ts: now 
+                hukamAudioCache = {
+                    url: `https://www.sgpc.net/hukamnama/${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/hukamnama.mp3`,
+                    ts: now
                 };
                 console.log('[🎙️ Hukamnama] No URL in page, using fallback:', hukamAudioCache.url);
             }
@@ -1561,7 +1582,7 @@ app.get('/api/stream-mp3', async (req, res) => {
 
     // Validate file is from our known playlists
     const isValid = PLAYLIST.some(t => t.filename === file) ||
-                    SIMRAN_PLAYLIST.some(t => t.filename === file);
+        SIMRAN_PLAYLIST.some(t => t.filename === file);
     if (!isValid) {
         return res.status(400).json({ error: 'Invalid audio filename' });
     }
@@ -1592,7 +1613,7 @@ app.get('/api/stream-mp3', async (req, res) => {
     command.pipe(res, { end: true });
 
     req.on('close', () => {
-        try { command.kill('SIGKILL'); } catch (e) {}
+        try { command.kill('SIGKILL'); } catch (e) { }
     });
 });
 
@@ -1654,12 +1675,12 @@ async function initSadhsangatDb() {
     const dataDir = path.join(__dirname, 'data');
     try {
         await fs.mkdir(dataDir, { recursive: true });
-    } catch (e) {}
+    } catch (e) { }
 
     try {
         const sqlite3Module = require('sqlite3').verbose();
         const dbPath = path.join(dataDir, 'sadhsangat.db');
-        
+
         await new Promise((resolve) => {
             dbClient = new sqlite3Module.Database(dbPath, (err) => {
                 if (err) {
@@ -1740,7 +1761,7 @@ function createTables(doneCallback) {
         `, (err) => {
             if (err) console.error('[Sadhsangat DB] Error creating channels table:', err.message);
             // Migration: add channelHandle if it doesn't exist in older DBs
-            dbClient.run(`ALTER TABLE channels ADD COLUMN channelHandle TEXT`, () => {});
+            dbClient.run(`ALTER TABLE channels ADD COLUMN channelHandle TEXT`, () => { });
         });
 
         dbClient.run(`
@@ -1828,7 +1849,7 @@ const SadhsangatDb = {
             await saveJsonDb();
             return;
         }
-        
+
         const existing = await this.getChannelById(ch.channelId);
         if (existing) {
             const query = `
@@ -1852,14 +1873,14 @@ const SadhsangatDb = {
                 WHERE channelId = ?
             `;
             const params = [
-                ch.channelName, ch.channelHandle || null, ch.subscriberCount, ch.thumbnail, ch.isLive, 
+                ch.channelName, ch.channelHandle || null, ch.subscriberCount, ch.thumbnail, ch.isLive,
                 ch.liveTitle, ch.videoId, ch.watchUrl, ch.lastChecked,
                 ch.isFeatured, ch.displayOrder, ch.isEnabled, ch.notifyOnLive,
                 ch.scheduledStartTime, ch.scheduledTitle, ch.scheduledVideoId,
                 ch.channelId
             ];
             return new Promise((resolve, reject) => {
-                dbClient.run(query, params, function(err) {
+                dbClient.run(query, params, function (err) {
                     if (err) reject(err);
                     else resolve(this.changes);
                 });
@@ -1880,7 +1901,7 @@ const SadhsangatDb = {
                 ch.scheduledStartTime || null, ch.scheduledTitle || null, ch.scheduledVideoId || null
             ];
             return new Promise((resolve, reject) => {
-                dbClient.run(query, params, function(err) {
+                dbClient.run(query, params, function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -1900,7 +1921,7 @@ const SadhsangatDb = {
                 dbClient.run("DELETE FROM channels WHERE channelId = ?", [channelId], (err) => {
                     if (err) console.error('[Sadhsangat DB] Delete channel reference error:', err.message);
                 });
-                dbClient.run("DELETE FROM user_channels WHERE channelId = ?", [channelId], function(err) {
+                dbClient.run("DELETE FROM user_channels WHERE channelId = ?", [channelId], function (err) {
                     if (err) reject(err);
                     else resolve(this.changes);
                 });
@@ -1984,7 +2005,7 @@ const SadhsangatDb = {
                 dbClient.run("DELETE FROM user_channels WHERE userId = ? AND channelId = ?", [userId, channelId], (err) => {
                     if (err) console.error('[Sadhsangat DB] Map reset error:', err.message);
                 });
-                dbClient.run("INSERT INTO user_channels (userId, channelId, displayOrder) VALUES (?, ?, ?)", [userId, channelId, displayOrder], function(err) {
+                dbClient.run("INSERT INTO user_channels (userId, channelId, displayOrder) VALUES (?, ?, ?)", [userId, channelId, displayOrder], function (err) {
                     if (err) reject(err);
                     else resolve(this.lastID);
                 });
@@ -1999,7 +2020,7 @@ const SadhsangatDb = {
             return;
         }
         return new Promise((resolve, reject) => {
-            dbClient.run("DELETE FROM user_channels WHERE userId = ? AND channelId = ?", [userId, channelId], function(err) {
+            dbClient.run("DELETE FROM user_channels WHERE userId = ? AND channelId = ?", [userId, channelId], function (err) {
                 if (err) reject(err);
                 else resolve(this.changes);
             });
@@ -2108,7 +2129,7 @@ async function checkSingleChannel(ch, apiKey) {
     let liveThumbnail = null;
     let subscriberCount = ch.subscriberCount;
     let thumbnail = ch.thumbnail;
-    
+
     let scheduledStartTime = null;
     let scheduledTitle = null;
     let scheduledVideoId = null;
@@ -2122,7 +2143,7 @@ async function checkSingleChannel(ch, apiKey) {
                 key: apiKey
             }
         });
-        
+
         if (chanRes.data && chanRes.data.items && chanRes.data.items.length > 0) {
             const chanInfo = chanRes.data.items[0];
             const subs = parseInt(chanInfo.statistics.subscriberCount) || 0;
@@ -2180,7 +2201,7 @@ async function checkSingleChannel(ch, apiKey) {
                 const item = upcomingRes.data.items[0];
                 scheduledTitle = item.snippet.title;
                 scheduledVideoId = item.id.videoId;
-                
+
                 try {
                     const vidDetailsRes = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
                         params: {
@@ -2273,7 +2294,7 @@ async function checkYouTubeChannels() {
 
     for (const ch of channels) {
         if (ch.isEnabled === 0) continue;
-        
+
         try {
             await checkSingleChannel(ch, apiKey);
         } catch (err) {
@@ -2303,7 +2324,7 @@ async function checkLiveViaScrap(ch) {
         const streamsUrl = handle
             ? `https://www.youtube.com/${handle}/streams`
             : `https://www.youtube.com/channel/${ch.channelId}/streams`;
-        
+
         const streamsResp = await axios.get(streamsUrl, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -2314,7 +2335,7 @@ async function checkLiveViaScrap(ch) {
             timeout: 15000
         });
         const streamsHtml = streamsResp.data;
-        
+
         // Extract ytInitialData using brace-matching parser (no /s flag needed)
         let initialData = null;
         const dataIdx = streamsHtml.indexOf('var ytInitialData = {');
@@ -2332,30 +2353,30 @@ async function checkLiveViaScrap(ch) {
                 }
             }
             if (jsonEnd !== -1) {
-                try { initialData = JSON.parse(streamsHtml.substring(jsonStart, jsonEnd)); } catch(e) {}
+                try { initialData = JSON.parse(streamsHtml.substring(jsonStart, jsonEnd)); } catch (e) { }
             }
         }
-        
+
         if (initialData) {
             const tabs = initialData.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
             const streamsTab = tabs.find(t => {
                 const title = (t.tabRenderer?.title || '').toLowerCase();
                 return title === 'live' || title === 'streams' || title === 'ਲਾਈਵ' || title === 'लाइव';
             }) || tabs.find(t => t.tabRenderer?.selected === true);
-            
+
             const content = streamsTab?.tabRenderer?.content;
             let items = [];
             if (content?.richGridRenderer) items = content.richGridRenderer.contents || [];
             else if (content?.sectionListRenderer) {
                 items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.gridRenderer?.items || [];
             }
-            
+
             for (const item of items) {
                 const lockup = item.richItemRenderer?.content?.lockupViewModel;
                 const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
-                
+
                 let videoId = null, title = null, viewsText = '';
-                
+
                 if (lockup && lockup.contentId) {
                     videoId = lockup.contentId;
                     const meta = lockup.metadata?.lockupMetadataViewModel;
@@ -2370,13 +2391,13 @@ async function checkLiveViaScrap(ch) {
                     title = video.title?.runs?.[0]?.text || video.title?.simpleText || 'Live Stream';
                     viewsText = video.viewCountText?.runs?.[0]?.text || video.viewCountText?.simpleText || '';
                 }
-                
+
                 // "X watching" / "X,XXX watching" / "watching now" signals active live stream
                 const isCurrentlyWatching = viewsText && (
                     viewsText.toLowerCase().includes('watching') ||
                     viewsText.toLowerCase().includes(' now')
                 );
-                
+
                 if (isCurrentlyWatching && videoId) {
                     console.log(`[Sadhsangat Scrap] Method1 (streams page) detected LIVE: ${ch.channelName} → vid:${videoId} viewers:"${viewsText}"`);
                     return { isLive: true, videoId, title };
@@ -2427,7 +2448,7 @@ async function checkLiveViaScrap(ch) {
                 }
             }
             if (jsonEnd !== -1) {
-                try { playerResponse = JSON.parse(html.substring(jsonStart, jsonEnd)); } catch(e) {}
+                try { playerResponse = JSON.parse(html.substring(jsonStart, jsonEnd)); } catch (e) { }
             }
         }
     }
@@ -2435,16 +2456,16 @@ async function checkLiveViaScrap(ch) {
     if (playerResponse && playerResponse.videoDetails) {
         const details = playerResponse.videoDetails;
         const videoId = details.videoId;
-        
+
         // isLive must be true OR (isLiveContent AND lengthSeconds is "0") AND not upcoming
         const isActuallyLive = !!(details.isLive === true) ||
             (!!(details.isLiveContent === true) && details.lengthSeconds === '0');
-        
+
         const isUpcoming = html.includes('"isUpcoming":true') || html.includes('"isUpcoming": true');
         const isLive = isActuallyLive && !isUpcoming;
-        
+
         const title = details.title || null;
-        
+
         if (videoId) {
             console.log(`[Sadhsangat Scrap] Method2 (playerResponse): ${ch.channelName} isLive=${isLive} vid=${videoId}`);
             return { isLive, videoId: isLive ? videoId : null, title };
@@ -2453,7 +2474,7 @@ async function checkLiveViaScrap(ch) {
 
     // ── METHOD 3: String-pattern fallback ──
     const isUpcoming = html.includes('"isUpcoming":true') || html.includes('"isUpcoming": true');
-    
+
     // Look for video ID near the /live redirect
     const vidPatterns = [
         /"videoId":"([a-zA-Z0-9_-]{11})"/,
@@ -2474,9 +2495,9 @@ async function checkLiveViaScrap(ch) {
     const isLive = isLiveStr && !isUpcoming && !!videoId;
 
     const titleM = html.match(/<title>([^<]+)<\/title>/) ||
-                   html.match(/"og:title" content="([^"]+)"/) ||
-                   html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/);
-    const title = titleM ? titleM[1].replace(' - YouTube','').replace(/&amp;/g,'&').trim() : null;
+        html.match(/"og:title" content="([^"]+)"/) ||
+        html.match(/"title":\{"runs":\[\{"text":"([^"]+)"/);
+    const title = titleM ? titleM[1].replace(' - YouTube', '').replace(/&amp;/g, '&').trim() : null;
 
     console.log(`[Sadhsangat Scrap] Method3 (string fallback): ${ch.channelName} isLive=${isLive} vid=${videoId}`);
     return { isLive: !!isLive, videoId: isLive ? videoId : null, title };
@@ -2496,10 +2517,10 @@ async function searchChannelsViaScrap(query) {
         const html = resp.data;
         const jsonMatch = html.match(/var ytInitialData = ({.*?});/);
         if (!jsonMatch) return [];
-        
+
         const data = JSON.parse(jsonMatch[1]);
         const items = data.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents || [];
-        
+
         const results = [];
         for (const item of items) {
             const channel = item.channelRenderer;
@@ -2508,13 +2529,13 @@ async function searchChannelsViaScrap(query) {
                 const channelName = channel.title?.simpleText || channel.title?.runs?.[0]?.text || '';
                 const thumbnail = channel.thumbnail?.thumbnails?.[0]?.url;
                 const subsText = channel.subscriberCountText?.simpleText || channel.subscriberCountText?.runs?.[0]?.text || '';
-                
+
                 const baseUrl = channel.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl || '';
                 let channelHandle = null;
                 if (baseUrl.includes('/@')) {
                     channelHandle = '@' + baseUrl.split('/@')[1];
                 }
-                
+
                 results.push({
                     channelId,
                     channelName,
@@ -2579,12 +2600,12 @@ async function scrapeYouTubeChannelInfo(input) {
     if (jsonMatch) {
         try {
             const data = JSON.parse(jsonMatch[1]);
-            
+
             // Try PageHeaderRenderer (modern layout)
             if (data.header && data.header.pageHeaderRenderer) {
                 const phr = data.header.pageHeaderRenderer;
                 channelName = phr.pageTitle;
-                
+
                 const vm = phr.content && phr.content.pageHeaderViewModel;
                 if (vm) {
                     // Avatar
@@ -2594,7 +2615,7 @@ async function scrapeYouTubeChannelInfo(input) {
                             thumbnail = srcList[srcList.length - 1].url;
                         }
                     }
-                    
+
                     // Metadata: handle and subscribers
                     const metadataRows = vm.metadata && vm.metadata.contentMetadataViewModel && vm.metadata.contentMetadataViewModel.metadataRows;
                     if (metadataRows && metadataRows.length > 0) {
@@ -2614,7 +2635,7 @@ async function scrapeYouTubeChannelInfo(input) {
                     }
                 }
             }
-            
+
             // Try C4TabbedHeaderRenderer (legacy/channelId layout)
             if (!channelName && data.header && data.header.c4TabbedHeaderRenderer) {
                 const c4 = data.header.c4TabbedHeaderRenderer;
@@ -2654,7 +2675,7 @@ async function scrapeYouTubeChannelInfo(input) {
     // Fallbacks via og: tags if JSON parsing did not find everything
     if (!channelName) {
         const nameM = html.match(/<meta property="og:title" content="([^"]+)"/);
-        if (nameM) channelName = nameM[1].replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"');
+        if (nameM) channelName = nameM[1].replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
     }
     if (!thumbnail) {
         const imgM = html.match(/<meta property="og:image" content="(https:\/\/yt3\.[^"]+)"/);
@@ -2666,7 +2687,7 @@ async function scrapeYouTubeChannelInfo(input) {
     }
     if (!channelHandle) {
         const hM = html.match(/"vanityUrl":"(@[a-zA-Z0-9._-]+)"/) ||
-                   html.match(/"canonicalChannelUrl":"https:\/\/www\.youtube\.com\/(@[^"]+)"/);
+            html.match(/"canonicalChannelUrl":"https:\/\/www\.youtube\.com\/(@[^"]+)"/);
         if (hM) channelHandle = hM[1];
     }
 
@@ -2849,7 +2870,7 @@ app.get('/api/sadhsangat/live', async (req, res) => {
         const channels = await SadhsangatDb.getAllChannels();
         const liveChannels = channels.filter(c => c.isLive === 1 && c.isEnabled === 1);
         const upcomingStreams = channels.filter(c => c.isLive === 0 && c.scheduledStartTime && c.isEnabled === 1);
-        
+
         const userId = getUserId(req, res);
         const myChs = await SadhsangatDb.getUserChannels(userId);
         const myChIds = new Set(myChs.map(c => c.channelId));
@@ -2922,9 +2943,9 @@ app.post('/api/sadhsangat/my-channels', async (req, res) => {
         }
 
         // Capacity check: exclude SGPC (UCYn6UEtQ771a_OWSiNBoG8w)
-        const addingSgpc = (existingChannel && existingChannel.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') || 
-                           (rawId === 'UCYn6UEtQ771a_OWSiNBoG8w') ||
-                           (rawHandle && rawHandle.toLowerCase() === '@sgpcsriamritsar');
+        const addingSgpc = (existingChannel && existingChannel.channelId === 'UCYn6UEtQ771a_OWSiNBoG8w') ||
+            (rawId === 'UCYn6UEtQ771a_OWSiNBoG8w') ||
+            (rawHandle && rawHandle.toLowerCase() === '@sgpcsriamritsar');
         if (!addingSgpc) {
             const customChannels = myChs.filter(c => c.channelId !== 'UCYn6UEtQ771a_OWSiNBoG8w');
             if (customChannels.length >= 4) {
@@ -3023,7 +3044,7 @@ app.post('/api/sadhsangat/my-channels', async (req, res) => {
                         thumbnail: resolved.thumbnail
                     }, apiKey);
                 }
-                
+
                 // Fetch videos, playlists, posts
                 await scrapeChannelVideos(storeId, resolved.channelHandle);
                 await scrapeChannelPlaylists(storeId, resolved.channelHandle);
@@ -3070,7 +3091,7 @@ app.get('/api/sadhsangat/resolve', async (req, res) => {
         const apiKey = process.env.YOUTUBE_API_KEY;
         let info;
         if (apiKey) {
-            try { info = await resolveChannelHandle(q, apiKey); } catch (e) {}
+            try { info = await resolveChannelHandle(q, apiKey); } catch (e) { }
         }
         if (!info || (!info.channelId && !info.channelHandle)) {
             info = await scrapeYouTubeChannelInfo(q);
@@ -3122,7 +3143,7 @@ app.post('/api/sadhsangat/admin/channels', async (req, res) => {
     try {
         const apiKey = process.env.YOUTUBE_API_KEY;
         const resolved = await resolveChannelHandle(handle, apiKey);
-        
+
         await SadhsangatDb.upsertChannel({
             channelId: resolved.channelId,
             channelName: resolved.channelName,
@@ -3135,7 +3156,7 @@ app.post('/api/sadhsangat/admin/channels', async (req, res) => {
         });
 
         if (apiKey) {
-            checkSingleChannel(resolved, apiKey).catch(e => 
+            checkSingleChannel(resolved, apiKey).catch(e =>
                 console.error(`[Sadhsangat API] Async update failed for ${resolved.channelId}:`, e.message)
             );
         }
@@ -3227,8 +3248,8 @@ async function scrapeChannelVideos(channelId, channelHandle) {
             console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelVideos for ${channelId}:`, e.message);
         }
     }
-    const url = channelHandle 
-        ? `https://www.youtube.com/${channelHandle}/videos` 
+    const url = channelHandle
+        ? `https://www.youtube.com/${channelHandle}/videos`
         : `https://www.youtube.com/channel/${channelId}/videos`;
     try {
         const resp = await axios.get(url, {
@@ -3251,7 +3272,7 @@ async function scrapeChannelVideos(channelId, channelHandle) {
             return title === 'videos' || title === 'वीडियो' || title === 'ਵੀਡੀਓ';
         }) || tabs.find(t => t.tabRenderer?.selected === true) || tabs[1] || tabs[0];
         const content = videosTab?.tabRenderer?.content;
-        
+
         let items = [];
         if (content?.richGridRenderer) {
             items = content.richGridRenderer.contents || [];
@@ -3263,12 +3284,12 @@ async function scrapeChannelVideos(channelId, channelHandle) {
         for (const item of items) {
             const lockup = item.richItemRenderer?.content?.lockupViewModel;
             const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
-            
+
             if (lockup && lockup.contentId) {
                 const videoId = lockup.contentId;
                 const meta = lockup.metadata?.lockupMetadataViewModel;
                 const title = meta?.title?.content || lockup.rendererContext?.accessibilityContext?.label?.split(' | ')[0] || 'Video';
-                
+
                 let duration = '';
                 const overlays = lockup.contentImage?.thumbnailViewModel?.overlays || [];
                 for (const ov of overlays) {
@@ -3277,7 +3298,7 @@ async function scrapeChannelVideos(channelId, channelHandle) {
                         duration = status.text?.runs?.[0]?.text || status.text?.simpleText || '';
                     }
                 }
-                
+
                 let views = '';
                 let publishedTime = '';
                 const rows = meta?.metadata?.contentMetadataViewModel?.metadataRows || [];
@@ -3286,7 +3307,7 @@ async function scrapeChannelVideos(channelId, channelHandle) {
                     if (parts.length > 0) views = parts[0].text?.content || '';
                     if (parts.length > 1) publishedTime = parts[1].text?.content || '';
                 }
-                
+
                 const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
                 videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
             } else if (video && video.videoId) {
@@ -3300,7 +3321,7 @@ async function scrapeChannelVideos(channelId, channelHandle) {
             }
         }
         return videos;
-    } catch(e) {
+    } catch (e) {
         console.warn(`[Sadhsangat Video Scraper] Failed for ${channelId}:`, e.message);
         return [];
     }
@@ -3321,8 +3342,8 @@ async function scrapeChannelStreams(channelId, channelHandle) {
             console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelStreams for ${channelId}:`, e.message);
         }
     }
-    const url = channelHandle 
-        ? `https://www.youtube.com/${channelHandle}/streams` 
+    const url = channelHandle
+        ? `https://www.youtube.com/${channelHandle}/streams`
         : `https://www.youtube.com/channel/${channelId}/streams`;
     try {
         const resp = await axios.get(url, {
@@ -3345,7 +3366,7 @@ async function scrapeChannelStreams(channelId, channelHandle) {
             return title === 'live' || title === 'streams' || title === 'ਲਾਈਵ' || title === 'लाइव';
         }) || tabs.find(t => t.tabRenderer?.selected === true) || tabs[3] || tabs[0];
         const content = streamsTab?.tabRenderer?.content;
-        
+
         let items = [];
         if (content?.richGridRenderer) {
             items = content.richGridRenderer.contents || [];
@@ -3357,12 +3378,12 @@ async function scrapeChannelStreams(channelId, channelHandle) {
         for (const item of items) {
             const lockup = item.richItemRenderer?.content?.lockupViewModel;
             const video = item.richItemRenderer?.content?.videoRenderer || item.videoRenderer;
-            
+
             if (lockup && lockup.contentId) {
                 const videoId = lockup.contentId;
                 const meta = lockup.metadata?.lockupMetadataViewModel;
                 const title = meta?.title?.content || lockup.rendererContext?.accessibilityContext?.label?.split(' | ')[0] || 'Video';
-                
+
                 let duration = '';
                 const overlays = lockup.contentImage?.thumbnailViewModel?.overlays || [];
                 for (const ov of overlays) {
@@ -3371,7 +3392,7 @@ async function scrapeChannelStreams(channelId, channelHandle) {
                         duration = status.text?.runs?.[0]?.text || status.text?.simpleText || '';
                     }
                 }
-                
+
                 let views = '';
                 let publishedTime = '';
                 const rows = meta?.metadata?.contentMetadataViewModel?.metadataRows || [];
@@ -3380,7 +3401,7 @@ async function scrapeChannelStreams(channelId, channelHandle) {
                     if (parts.length > 0) views = parts[0].text?.content || '';
                     if (parts.length > 1) publishedTime = parts[1].text?.content || '';
                 }
-                
+
                 const thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
                 videos.push({ videoId, title, thumbnail, duration, views, publishedTime });
             } else if (video && video.videoId) {
@@ -3394,7 +3415,7 @@ async function scrapeChannelStreams(channelId, channelHandle) {
             }
         }
         return videos;
-    } catch(e) {
+    } catch (e) {
         console.warn(`[Sadhsangat Streams Scraper] Failed for ${channelId}:`, e.message);
         return [];
     }
@@ -3415,8 +3436,8 @@ async function scrapeChannelPlaylists(channelId, channelHandle) {
             console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelPlaylists for ${channelId}:`, e.message);
         }
     }
-    const url = channelHandle 
-        ? `https://www.youtube.com/${channelHandle}/playlists` 
+    const url = channelHandle
+        ? `https://www.youtube.com/${channelHandle}/playlists`
         : `https://www.youtube.com/channel/${channelId}/playlists`;
     try {
         const resp = await axios.get(url, {
@@ -3435,7 +3456,7 @@ async function scrapeChannelPlaylists(channelId, channelHandle) {
         const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
         const plTab = tabs.find(t => t.tabRenderer?.title === 'Playlists');
         const content = plTab?.tabRenderer?.content;
-        
+
         let items = [];
         if (content?.richGridRenderer) {
             items = content.richGridRenderer.contents || [];
@@ -3455,7 +3476,7 @@ async function scrapeChannelPlaylists(channelId, channelHandle) {
             }
         }
         return playlists;
-    } catch(e) {
+    } catch (e) {
         console.warn(`[Sadhsangat Playlist Scraper] Failed for ${channelId}:`, e.message);
         return [];
     }
@@ -3476,8 +3497,8 @@ async function scrapeChannelPosts(channelId, channelHandle) {
             console.warn(`[Sadhsangat] Scraper failed to resolve handle in scrapeChannelPosts for ${channelId}:`, e.message);
         }
     }
-    const url = channelHandle 
-        ? `https://www.youtube.com/${channelHandle}/community` 
+    const url = channelHandle
+        ? `https://www.youtube.com/${channelHandle}/community`
         : `https://www.youtube.com/channel/${channelId}/community`;
     try {
         const resp = await axios.get(url, {
@@ -3496,7 +3517,7 @@ async function scrapeChannelPosts(channelId, channelHandle) {
         const tabs = data.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
         const commTab = tabs.find(t => t.tabRenderer?.title === 'Community' || t.tabRenderer?.title === 'Posts');
         const content = commTab?.tabRenderer?.content;
-        
+
         let items = [];
         if (content?.sectionListRenderer) {
             items = content.sectionListRenderer.contents?.[0]?.itemSectionRenderer?.contents || [];
@@ -3513,7 +3534,7 @@ async function scrapeChannelPosts(channelId, channelHandle) {
             }
         }
         return posts;
-    } catch(e) {
+    } catch (e) {
         console.warn(`[Sadhsangat Posts Scraper] Failed for ${channelId}:`, e.message);
         return [];
     }
@@ -3627,19 +3648,19 @@ app.get('/api/sadhsangat/search', async (req, res) => {
     }
     try {
         const results = await searchChannelsViaScrap(q.trim());
-        
+
         // Check if each found channel is already monitored by this user
         const userId = getUserId(req, res);
         const myChs = await SadhsangatDb.getUserChannels(userId);
         const monitoredIds = new Set(myChs.map(c => c.channelId));
         const monitoredHandles = new Set(myChs.map(c => (c.channelHandle || '').toLowerCase()));
-        
+
         const mappedResults = results.map(r => {
-            const alreadyMonitored = monitoredIds.has(r.channelId) || 
-                                     (r.channelHandle && monitoredHandles.has(r.channelHandle.toLowerCase()));
+            const alreadyMonitored = monitoredIds.has(r.channelId) ||
+                (r.channelHandle && monitoredHandles.has(r.channelHandle.toLowerCase()));
             return { ...r, alreadyMonitored };
         });
-        
+
         res.json({ channels: mappedResults });
     } catch (e) {
         console.error('[Sadhsangat Search API] Error:', e.message);
@@ -3714,26 +3735,26 @@ const INSTANT_APPROVE_KEYWORDS = [
 // AI Channel Validation Endpoint
 app.post('/api/sadhsangat/validate-channel', async (req, res) => {
     const { channelName, channelId, channelHandle } = req.body;
-    
+
     if (!channelName || channelName.trim().length < 2) {
         return res.status(400).json({ error: 'Channel name too short' });
     }
-    
+
     try {
         const cacheKey = `${channelName.trim().toLowerCase()}_${channelId || 'unknown'}`;
         const now = Date.now();
         const cached = channelValidationCache.get(cacheKey);
-        
+
         if (cached && (now - cached.timestamp) < CONFIG.CHANNEL_VALIDATION_CACHE_TTL) {
             console.log('[Channel Validation] Cache hit for', channelName);
-            return res.json({ 
-                isValid: cached.isValid, 
+            return res.json({
+                isValid: cached.isValid,
                 reason: cached.reason,
                 category: cached.category || 'other',
-                fromCache: true 
+                fromCache: true
             });
         }
-        
+
         const channelNameLower = channelName.trim().toLowerCase();
 
         // ─────────────────────────────────────────────────────────────────
@@ -3803,7 +3824,7 @@ app.post('/api/sadhsangat/validate-channel', async (req, res) => {
         contextLines.push(`Channel Name: ${channelName}`);
         if (channelHandle_resolved) contextLines.push(`Handle: @${channelHandle_resolved.replace(/^@/, '')}`);
         if (sampleVideos.length > 0) {
-            contextLines.push(`Recent Videos (${sampleVideos.length}):\n${sampleVideos.map((t, i) => `  ${i+1}. ${t}`).join('\n')}`);
+            contextLines.push(`Recent Videos (${sampleVideos.length}):\n${sampleVideos.map((t, i) => `  ${i + 1}. ${t}`).join('\n')}`);
         } else {
             contextLines.push('Recent Videos: Not available — judge by channel name alone');
         }
@@ -3873,10 +3894,10 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
             },
             timeout: 15000
         });
-        
+
         const rawContent = response.data.choices[0]?.message?.content || '';
         console.log(`[Channel Validation] AI raw response for "${channelName}":`, rawContent.substring(0, 300));
-        
+
         let validationResult;
         try {
             const jsonMatch = rawContent.match(/{[\s\S]*}/);
@@ -3918,7 +3939,7 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
                 confidence: 'low'
             };
         }
-        
+
         const cacheEntry = {
             isValid: validationResult.isValid,
             reason: validationResult.reason,
@@ -3926,20 +3947,20 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
             timestamp: now
         };
         channelValidationCache.set(cacheKey, cacheEntry);
-        
-        return res.json({ 
-            isValid: validationResult.isValid, 
+
+        return res.json({
+            isValid: validationResult.isValid,
             reason: validationResult.reason,
             category: validationResult.category || 'other',
             confidence: validationResult.confidence || 'medium',
             fromCache: false
         });
-        
+
     } catch (err) {
         console.error('[Channel Validation] ❌ Unexpected error:', err.message);
         // On unexpected error: REJECT (secure default — don't accidentally let junk through)
-        return res.json({ 
-            isValid: false, 
+        return res.json({
+            isValid: false,
             reason: 'Validation service temporarily unavailable. Please try adding the channel again in a moment.',
             category: 'other',
             confidence: 'low',
@@ -3952,14 +3973,14 @@ Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
 app.get('/api/sadhsangat/content-search', async (req, res) => {
     const { q } = req.query;
     const userId = getUserId(req, res);
-    
+
     if (!q || q.trim().length < 2) {
         return res.status(400).json({ error: 'Query too short' });
     }
-    
+
     try {
         const myChs = await SadhsangatDb.getUserChannels(userId);
-        
+
         const fetchPromises = myChs.map(async (ch) => {
             try {
                 const videos = await getCachedChannelVideos(ch.channelId, ch.channelHandle);
@@ -3974,7 +3995,7 @@ app.get('/api/sadhsangat/content-search', async (req, res) => {
                 return [];
             }
         });
-        
+
         const results = await Promise.allSettled(fetchPromises);
         let allVideos = [];
         for (const res of results) {
@@ -3982,32 +4003,32 @@ app.get('/api/sadhsangat/content-search', async (req, res) => {
                 allVideos = allVideos.concat(res.value);
             }
         }
-        
+
         const queryLower = q.toLowerCase().trim();
         const searchResults = allVideos.filter(v => {
             const titleMatch = (v.title || '').toLowerCase().includes(queryLower);
             const channelMatch = (v.channelName || '').toLowerCase().includes(queryLower);
             return titleMatch || channelMatch;
         });
-        
+
         searchResults.sort((a, b) => {
             const aExactTitle = (a.title || '').toLowerCase() === queryLower ? 1 : 0;
             const bExactTitle = (b.title || '').toLowerCase() === queryLower ? 1 : 0;
-            
+
             if (bExactTitle !== 0) return 1;
             if (aExactTitle !== 0) return -1;
-            
+
             const aChannelMatch = (a.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
             const bChannelMatch = (b.channelName || '').toLowerCase().includes(queryLower) ? 1 : 0;
             return bChannelMatch - aChannelMatch;
         });
-        
-        res.json({ 
+
+        res.json({
             videos: searchResults.slice(0, 50),
             total: searchResults.length,
-            query: q 
+            query: q
         });
-        
+
     } catch (e) {
         console.error('[Content Search API] Error:', e.message);
         res.status(500).json({ error: 'Search failed: ' + e.message });
@@ -4018,7 +4039,7 @@ app.get('/api/sadhsangat/content-search', async (req, res) => {
 const parsePublishedTime = (timeStr) => {
     if (!timeStr) return 999999999;
     let clean = timeStr.toLowerCase().trim();
-    
+
     // Remove formatting keywords
     clean = clean.replace('streamed', '').replace('premiered', '').trim();
 
@@ -4026,11 +4047,11 @@ const parsePublishedTime = (timeStr) => {
     if (clean.includes('watching') || clean.includes('watching now')) {
         return 0;
     }
-    
+
     if (clean.includes('scheduled') || clean.includes('starts')) {
         return 999999998; // Sort upcoming/scheduled streams towards the end
     }
-    
+
     if (clean.includes('ago')) {
         let multiplier = 1;
         if (clean.includes('second')) multiplier = 1;
@@ -4040,18 +4061,18 @@ const parsePublishedTime = (timeStr) => {
         else if (clean.includes('week')) multiplier = 86400 * 7;
         else if (clean.includes('month')) multiplier = 86400 * 30;
         else if (clean.includes('year')) multiplier = 86400 * 365;
-        
+
         const match = clean.match(/([0-9.]+)/);
         const value = match ? parseFloat(match[1]) : 1;
         return value * multiplier;
     }
-    
+
     // Parse absolute dates (e.g. "1 jun 2026", "19 apr 2026")
     const parsed = Date.parse(clean);
     if (!isNaN(parsed)) {
         return Math.max(0, Math.floor((Date.now() - parsed) / 1000));
     }
-    
+
     return 999999999;
 };
 
@@ -4063,7 +4084,7 @@ app.get('/api/sadhsangat/videos', async (req, res) => {
         if (myChs.length === 0) {
             return res.json({ videos: [] });
         }
-        
+
         // Fetch videos for user's monitored channels in parallel
         const fetchPromises = myChs.map(async (ch) => {
             try {
@@ -4079,7 +4100,7 @@ app.get('/api/sadhsangat/videos', async (req, res) => {
                 return [];
             }
         });
-        
+
         const results = await Promise.allSettled(fetchPromises);
         let allVideos = [];
         for (const res of results) {
@@ -4087,10 +4108,10 @@ app.get('/api/sadhsangat/videos', async (req, res) => {
                 allVideos = allVideos.concat(res.value);
             }
         }
-        
+
         // Sort most recent first (ascending elapsed time)
         allVideos.sort((a, b) => parsePublishedTime(a.publishedTime) - parsePublishedTime(b.publishedTime));
-        
+
         res.json({ videos: allVideos });
     } catch (e) {
         console.error('[Sadhsangat Unified Videos API] Error:', e.message);
@@ -4106,7 +4127,7 @@ app.get('/api/sadhsangat/streams', async (req, res) => {
         if (myChs.length === 0) {
             return res.json({ videos: [] });
         }
-        
+
         // Fetch streams for user's monitored channels in parallel
         const fetchPromises = myChs.map(async (ch) => {
             try {
@@ -4122,7 +4143,7 @@ app.get('/api/sadhsangat/streams', async (req, res) => {
                 return [];
             }
         });
-        
+
         const results = await Promise.allSettled(fetchPromises);
         let allStreams = [];
         for (const res of results) {
@@ -4130,10 +4151,10 @@ app.get('/api/sadhsangat/streams', async (req, res) => {
                 allStreams = allStreams.concat(res.value);
             }
         }
-        
+
         // Sort most recent first (ascending elapsed time)
         allStreams.sort((a, b) => parsePublishedTime(a.publishedTime) - parsePublishedTime(b.publishedTime));
-        
+
         res.json({ videos: allStreams });
     } catch (e) {
         console.error('[Sadhsangat Unified Streams API] Error:', e.message);
@@ -4176,6 +4197,8 @@ app.get('/test-r2', async (req, res) => {
 
 // Root
 app.get('/', (req, res) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
     res.sendFile(path.join(CONFIG.MAIN_UI, 'index.html'));
 });
 
@@ -4184,7 +4207,7 @@ app.get('/sw.js', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'sw.js'));
 });
 
@@ -4193,7 +4216,7 @@ app.get('/service-worker.js', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-    res.setHeader('Content-Type', 'application/javascript');
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'service-worker.js'));
 });
 
@@ -4202,12 +4225,14 @@ app.get('/version.json', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'version.json'));
 });
 
 // Manifest
 app.get('/manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.sendFile(path.join(CONFIG.FRONTEND_ROOT, 'manifest.json'));
 });
 
@@ -4334,7 +4359,7 @@ app.post('/api/gurbani-gpt/chat', GURBANI_GPT_RATE_LIMIT, async (req, res) => {
                             fullContent += token;
                             res.write(`data: ${JSON.stringify(parsed)}\n\n`);
                         }
-                    } catch(e) {
+                    } catch (e) {
                         // Skip non-JSON lines (keep-alive pings etc)
                     }
                 }
@@ -4375,7 +4400,7 @@ app.use('/api/banidb', async (req, res) => {
     const banidbPath = req.path;
     const queryString = new URLSearchParams(req.query).toString();
     const targetUrl = `https://api.banidb.com/v2${banidbPath}${queryString ? '?' + queryString : ''}`;
-    
+
     try {
         console.log(`[BaniDB Proxy] Fetching: ${targetUrl}`);
         const response = await fetch(targetUrl, {
@@ -4384,11 +4409,11 @@ app.use('/api/banidb', async (req, res) => {
                 'User-Agent': 'ANHAD-Gurbani-App/1.0'
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`BaniDB API error: ${response.status}`);
         }
-        
+
         const data = await response.json();
         res.json(data);
     } catch (error) {
@@ -4470,13 +4495,40 @@ app.post('/api/chat/completions', async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════
 
 // Serve OPPO weather assets (shaders, textures, etc.)
-app.use('/weather-assets', express.static(path.join(__dirname, '..', 'assets')));
+const staticOptions = {
+    etag: true,
+    maxAge: '1y',
+    immutable: true,
+    setHeaders: (res, filePath) => {
+        const ext = path.extname(filePath).toLowerCase();
+        if (ext === '.html') {
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache');
+        } else if (ext === '.js') {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        } else if (ext === '.css') {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        } else if (ext === '.json') {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            if (filePath.endsWith('version.json')) {
+                res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            }
+        } else if (ext === '.avif') {
+            res.setHeader('Content-Type', 'image/avif');
+        }
+    }
+};
+
+app.use('/weather-assets', express.static(path.join(__dirname, '..', 'assets'), staticOptions));
 
 // Serve entire frontend folder
-app.use(express.static(CONFIG.FRONTEND_ROOT));
+app.use(express.static(CONFIG.FRONTEND_ROOT, staticOptions));
+
+// Serve under ANHAD-FINAL sub-path (for VS Code Live Preview & local subdirectory support)
+app.use('/ANHAD-FINAL/frontend', express.static(CONFIG.FRONTEND_ROOT, staticOptions));
 
 // Serve MainWebPage at root
-app.use('/', express.static(CONFIG.MAIN_UI));
+app.use('/', express.static(CONFIG.MAIN_UI, staticOptions));
 
 // ═══════════════════════════════════════════════════════════════════
 // 404 HANDLER

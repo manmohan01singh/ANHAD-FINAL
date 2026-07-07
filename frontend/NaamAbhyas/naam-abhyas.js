@@ -73,7 +73,7 @@ class NaamAbhyasThemeEngine {
         // ALWAYS follow the global theme from anhad_theme key
         const globalTheme = localStorage.getItem('anhad_theme');
         this.currentTheme = globalTheme || 'light';
-        
+
         this.init();
     }
 
@@ -81,7 +81,7 @@ class NaamAbhyasThemeEngine {
         this.applyTheme(this.currentTheme);
         this.setupSystemThemeListener();
         this.bindThemeButtons();
-        
+
         // Listen for global theme changes (same-page dispatches)
         window.addEventListener('themechange', (e) => {
             if (e.detail && e.detail.theme) {
@@ -110,35 +110,35 @@ class NaamAbhyasThemeEngine {
         const htmlEl = document.documentElement;
         document.body.classList.remove('theme-light', 'theme-dark');
 
-    // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
-    let actualTheme = theme;
-    if (theme === 'auto') {
-        // 'auto' = time-based: light 6AM-6PM, dark otherwise
-        const hour = new Date().getHours();
-        actualTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
-    } else if (theme === 'system') {
-        const stored = localStorage.getItem('anhad_theme');
-        if (stored && stored !== 'system') {
-            actualTheme = stored;
-        } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            actualTheme = prefersDark ? 'dark' : 'light';
+        // Resolve actual theme: 'system' uses global anhad_theme first, then prefers-color-scheme
+        let actualTheme = theme;
+        if (theme === 'auto') {
+            // 'auto' = time-based: light 6AM-6PM, dark otherwise
+            const hour = new Date().getHours();
+            actualTheme = (hour >= 6 && hour < 18) ? 'light' : 'dark';
+        } else if (theme === 'system') {
+            const stored = localStorage.getItem('anhad_theme');
+            if (stored && stored !== 'system') {
+                actualTheme = stored;
+            } else {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                actualTheme = prefersDark ? 'dark' : 'light';
+            }
         }
-    }
 
-    // Apply classes and attributes
-    document.body.classList.add(`theme-${actualTheme}`);
-    htmlEl.setAttribute('data-theme', actualTheme);
-    
-    // Also apply the dark/light classes that the global theme system uses
-    if (actualTheme === 'dark') {
-        htmlEl.classList.add('dark', 'dark-mode');
-        htmlEl.style.colorScheme = 'dark';
-    } else if (theme !== 'system' || actualTheme !== 'dark') {
-        // Only remove if we are explicitly setting light or if system is light
-        htmlEl.classList.remove('dark', 'dark-mode');
-        htmlEl.style.colorScheme = 'light';
-    }
+        // Apply classes and attributes
+        document.body.classList.add(`theme-${actualTheme}`);
+        htmlEl.setAttribute('data-theme', actualTheme);
+
+        // Also apply the dark/light classes that the global theme system uses
+        if (actualTheme === 'dark') {
+            htmlEl.classList.add('dark', 'dark-mode');
+            htmlEl.style.colorScheme = 'dark';
+        } else if (theme !== 'system' || actualTheme !== 'dark') {
+            // Only remove if we are explicitly setting light or if system is light
+            htmlEl.classList.remove('dark', 'dark-mode');
+            htmlEl.style.colorScheme = 'light';
+        }
 
         this.updateActiveButton(theme);
         // Save to global key so other pages stay in sync
@@ -724,10 +724,10 @@ class NaamAbhyas {
                 const isMuted = medSilentBtn.dataset.muted === 'true';
                 const nextMuted = !isMuted;
                 medSilentBtn.dataset.muted = nextMuted;
-                
+
                 const icon = document.getElementById('silentBtnIcon');
                 const label = document.getElementById('silentBtnLabel');
-                
+
                 if (nextMuted) {
                     if (icon) icon.textContent = '🔇';
                     if (label) label.textContent = 'Muted';
@@ -788,6 +788,30 @@ class NaamAbhyas {
 
         // Initialize wisdom on load
         this.initWisdom();
+
+        // Bind Spiritual Sync Hub events
+        const syncNitnem = document.getElementById('syncNitnemItem');
+        const syncGpt = document.getElementById('syncGptItem');
+        const syncSangat = document.getElementById('syncSangatItem');
+
+        if (syncNitnem) {
+            syncNitnem.addEventListener('click', () => {
+                if (window.navigateTo) window.navigateTo('../NitnemTracker/nitnem-tracker.html');
+                else window.location.href = '../NitnemTracker/nitnem-tracker.html';
+            });
+        }
+        if (syncGpt) {
+            syncGpt.addEventListener('click', () => {
+                if (window.navigateTo) window.navigateTo('../GurbaniGPT/index.html');
+                else window.location.href = '../GurbaniGPT/index.html';
+            });
+        }
+        if (syncSangat) {
+            syncSangat.addEventListener('click', () => {
+                if (window.navigateTo) window.navigateTo('../sadhsangat-live/index.html');
+                else window.location.href = '../sadhsangat-live/index.html';
+            });
+        }
     }
 
     bindToggle(elementId, configPath) {
@@ -968,7 +992,7 @@ class NaamAbhyas {
         if ('Notification' in window && Notification.permission === 'default') {
             console.log('[NaamAbhyas] 🔔 Requesting notification permission...');
             const permission = await Notification.requestPermission();
-            
+
             if (permission !== 'granted') {
                 this.showToast('⚠️ Notifications blocked. Alarms may not work when app is closed.', 'warning');
                 console.warn('[NaamAbhyas] ⚠️ Notification permission denied');
@@ -1090,10 +1114,10 @@ class NaamAbhyas {
             const DB_NAME = 'GurbaniRadioSW';
             const DB_VERSION = 2;
             const STORE_NAME = 'notification_schedule';
-            
+
             // Open database
             const request = indexedDB.open(DB_NAME, DB_VERSION);
-            
+
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
                 if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -1183,7 +1207,7 @@ class NaamAbhyas {
 
             // Check if session has ended and is still pending
             const isPastSession = hourNum < currentHour || (hourNum === currentHour && currentMinute >= sessionEndMinute);
-            
+
             if (isPastSession && session.status === 'pending') {
                 missedCount++;
                 missedSessions.push({
@@ -1195,14 +1219,14 @@ class NaamAbhyas {
 
         if (missedCount > 0) {
             console.log(`[NaamAbhyas] Detected ${missedCount} missed sessions while app was closed`);
-            
+
             // Show notification about missed sessions
-            const message = missedCount === 1 
+            const message = missedCount === 1
                 ? `You missed 1 Naam Abhyas session at ${missedSessions[0].startTime}`
                 : `You missed ${missedCount} Naam Abhyas sessions today`;
-            
+
             this.showToast(message, 'warning');
-            
+
             // Update streak (mark as missed)
             if (this.history && this.history.statistics) {
                 this.history.currentStreak = 0;
@@ -1376,40 +1400,40 @@ class NaamAbhyas {
                 });
                 console.log(`[NaamAbhyas] ✅ ELECTRON notification scheduled for ${session.startTime} (works in tray!)`);
             }
-        // ═══ PRE-NOTIFICATION: Schedule 30 seconds BEFORE the session ═══
-        // This gives user a humble Nimrata warning so they can finish work
-        const preNotifTime = new Date(scheduledTime.getTime() - 30000);
-        if (preNotifTime > new Date()) {
-            const preNimrataMessages = [
-                'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
-                'Waheguru Ji is calling in 30 seconds. Please wrap up, dear Gurmukh. \uD83C\uDF38',
-                'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u262C',
-                '30 seconds remain. Please leave all work and prepare for Naam Simran. \uD83D\uDE4F',
-                'ਬੱਸ 30 ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u262C'
-            ];
-            const preBody = preNimrataMessages[Math.floor(Math.random() * preNimrataMessages.length)];
-            const preNotifId = 'naam_pre30_' + hour + '_' + session.startMinute;
-            const preTitle = '\uD83C\uDF38 ਨਾਮ ਅਭਿਆਸ ਆ ਰਿਹਾ ਹੈ | Naam Abhyas Coming';
+            // ═══ PRE-NOTIFICATION: Schedule 30 seconds BEFORE the session ═══
+            // This gives user a humble Nimrata warning so they can finish work
+            const preNotifTime = new Date(scheduledTime.getTime() - 30000);
+            if (preNotifTime > new Date()) {
+                const preNimrataMessages = [
+                    'ਨਾਮ ਅਭਿਆਸ ਦਾ ਸਮਾਂ ਆ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਕੰਮ ਛੱਡ ਦਿਓ \uD83D\uDE4F',
+                    'Waheguru Ji is calling in 30 seconds. Please wrap up, dear Gurmukh. \uD83C\uDF38',
+                    'ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਥੋੜੀ ਦੇਰ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗਾ। ਤਿਆਰ ਹੋ ਜਾਓ \u262C',
+                    '30 seconds remain. Please leave all work and prepare for Naam Simran. \uD83D\uDE4F',
+                    'ਬੱਸ 30 ਸਕਿੰਟ ਬਚੇ ਹਨ। ਮਨ ਨੂੰ ਸ਼ਾਂਤ ਕਰੋ। ਵਾਹਿਗੁਰੂ \u262C'
+                ];
+                const preBody = preNimrataMessages[Math.floor(Math.random() * preNimrataMessages.length)];
+                const preNotifId = 'naam_pre30_' + hour + '_' + session.startMinute;
+                const preTitle = '\uD83C\uDF38 ਨਾਮ ਅਭਿਆਸ ਆ ਰਿਹਾ ਹੈ | Naam Abhyas Coming';
 
-            // Schedule via Capacitor or Fallback Alarm
-            if (window.CapacitorNotifications && window.CapacitorNotifications.isCapacitorAvailable && window.CapacitorNotifications.isCapacitorAvailable()) {
-                window.CapacitorNotifications.scheduleNotification({
-                    id: preNotifId, title: preTitle, body: preBody,
-                    scheduledTime: preNotifTime, icon: '/assets/icon-192x192.png',
-                    tag: 'naam-abhyas-pre-' + today + '-' + hour,
-                    data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre', hour: hour }
-                }).catch(function(e) { console.warn('[NaamAbhyas] Pre-notification Capacitor failed:', e); });
+                // Schedule via Capacitor or Fallback Alarm
+                if (window.CapacitorNotifications && window.CapacitorNotifications.isCapacitorAvailable && window.CapacitorNotifications.isCapacitorAvailable()) {
+                    window.CapacitorNotifications.scheduleNotification({
+                        id: preNotifId, title: preTitle, body: preBody,
+                        scheduledTime: preNotifTime, icon: '/assets/icon-192x192.png',
+                        tag: 'naam-abhyas-pre-' + today + '-' + hour,
+                        data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre', hour: hour }
+                    }).catch(function (e) { console.warn('[NaamAbhyas] Pre-notification Capacitor failed:', e); });
+                }
+                if (window.fallbackAlarmSystem) {
+                    window.fallbackAlarmSystem.scheduleAlarm({
+                        id: preNotifId, title: preTitle, body: preBody,
+                        scheduledTime: preNotifTime.getTime(),
+                        tag: 'naam-abhyas-pre-' + today + '-' + hour,
+                        data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre' }
+                    });
+                }
+                console.log('[NaamAbhyas] ✅ PRE-notification scheduled 30s before ' + session.startTime);
             }
-            if (window.fallbackAlarmSystem) {
-                window.fallbackAlarmSystem.scheduleAlarm({
-                    id: preNotifId, title: preTitle, body: preBody,
-                    scheduledTime: preNotifTime.getTime(),
-                    tag: 'naam-abhyas-pre-' + today + '-' + hour,
-                    data: { url: '/NaamAbhyas/naam-abhyas.html', type: 'naamAbhyasPre' }
-                });
-            }
-            console.log('[NaamAbhyas] ✅ PRE-notification scheduled 30s before ' + session.startTime);
-        }
 
         } catch (error) {
             console.warn('[NaamAbhyas] Failed to schedule notification:', error);
@@ -1576,7 +1600,7 @@ class NaamAbhyas {
     applyTheme(themeName) {
         const theme = themeName || this.config.theme || 'system';
         document.documentElement.setAttribute('data-theme', theme);
-        
+
         if (this.themeEngine) {
             this.themeEngine.applyTheme(theme);
         }
@@ -2468,6 +2492,29 @@ class NaamAbhyas {
         this.updateAchievements();
         this.updateProgressDots();
         this.updateRefreshButtonState();
+        this.updateSyncHub();
+    }
+
+    updateSyncHub() {
+        const nitnemProgressEl = document.getElementById('syncNitnemProgress');
+        if (nitnemProgressEl && window.UnifiedStats) {
+            try {
+                const todayStats = window.UnifiedStats.getTodayStats();
+                const totalBanis = 7;
+                const completedCount = todayStats.nitnemBanis ? todayStats.nitnemBanis.length : 0;
+
+                if (todayStats.nitnemComplete || completedCount >= totalBanis) {
+                    nitnemProgressEl.textContent = 'All daily prayers completed! 🌅';
+                } else if (completedCount > 0) {
+                    nitnemProgressEl.textContent = `${completedCount} of ${totalBanis} prayers done today`;
+                } else {
+                    nitnemProgressEl.textContent = 'No prayers completed yet today';
+                }
+            } catch (e) {
+                console.warn('[SyncHub] Failed to fetch Nitnem progress from UnifiedStats:', e);
+                nitnemProgressEl.textContent = 'Tap to open tracker & view progress';
+            }
+        }
     }
 
     updateNextSession() {
@@ -2766,7 +2813,7 @@ class NaamAbhyas {
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
+
             // Performance: Instead of hiding canvas (which causes reflow), 
             // we just pause the starfield animation if it exists
             const starsField = document.getElementById('starsField');
@@ -3348,16 +3395,16 @@ if (typeof module !== 'undefined' && module.exports) {
  * ═══ HELPER METHODS FOR PREMIUM OVERHAUL ═══
  */
 
-NaamAbhyas.prototype._updateActivePreset = function(mins) {
+NaamAbhyas.prototype._updateActivePreset = function (mins) {
     document.querySelectorAll('.preset-btn').forEach(btn => {
         btn.classList.toggle('active', parseInt(btn.dataset.min) === mins);
     });
 };
 
-NaamAbhyas.prototype.showCompletionModal = function(stats) {
+NaamAbhyas.prototype.showCompletionModal = function (stats) {
     const modal = document.getElementById('completionModal');
     if (!modal) return;
-    
+
     // Rotating high-spirit blessings
     const blessings = [
         "Millions of sins erased. You are purified.",
@@ -3368,32 +3415,32 @@ NaamAbhyas.prototype.showCompletionModal = function(stats) {
         "ਧੰਨੁ ਧੰਨੁ ਤੂ ਮੇਰੇ ਸਤਿਗੁਰਾ... Blessed are you, O True Guru."
     ];
     const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
-    
+
     const blessingEl = document.getElementById('completionBlessing');
     if (blessingEl) blessingEl.textContent = randomBlessing;
-    
+
     // Update stats
     if (stats) {
         if (document.getElementById('compDuration')) document.getElementById('compDuration').textContent = `${stats.duration}m`;
         if (document.getElementById('compStreak')) document.getElementById('compStreak').textContent = stats.streak;
         if (document.getElementById('compToday')) document.getElementById('compToday').textContent = `${stats.today}/${stats.goal}`;
     }
-    
+
     modal.classList.add('active');
     this.playIosChime('completion');
 };
 
-NaamAbhyas.prototype.playIosChime = function(type) {
+NaamAbhyas.prototype.playIosChime = function (type) {
     if (!this.config.notifications.soundEnabled) return;
-    
+
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
+
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         if (type === 'completion') {
             // Harmonic high-pitch bell
             osc.type = 'sine';
@@ -3412,10 +3459,10 @@ NaamAbhyas.prototype.playIosChime = function(type) {
             osc.start();
             osc.stop(audioCtx.currentTime + 0.4);
         }
-    } catch(e) { console.warn('Audio API chime failed', e); }
+    } catch (e) { console.warn('Audio API chime failed', e); }
 };
 
-NaamAbhyas.prototype._syncToNitemTracker = function(sessionData) {
+NaamAbhyas.prototype._syncToNitemTracker = function (sessionData) {
     try {
         const today = this.getTodayString();
 
@@ -3456,6 +3503,6 @@ NaamAbhyas.prototype._syncToNitemTracker = function(sessionData) {
         console.log('[NaamAbhyas] ✅ Session saved and synced:', {
             date: today, duration: sessionData.duration
         });
-    } catch(e) { console.error('[NaamAbhyas] Nitnem sync failed', e); }
+    } catch (e) { console.error('[NaamAbhyas] Nitnem sync failed', e); }
 };
 

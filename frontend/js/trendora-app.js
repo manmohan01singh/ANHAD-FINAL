@@ -1,5 +1,5 @@
 ﻿/* ANHAD — TRENDORA-INSPIRED PREMIUM APPLICATION LOGIC V2 */
-(function() {
+(function () {
   'use strict';
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -104,7 +104,7 @@
         window.location.href = path;
       }
     },
-    
+
     _clearTimers() {
       if (this._exitTimer) {
         clearTimeout(this._exitTimer);
@@ -224,36 +224,36 @@
     const searchStrings = [evName, evId];
 
     const mapping = {
-      'guru-nanak':      'guru-nanak',
-      'nanak':           'guru-nanak',
-      'guru-angad':      'guru-angad',
-      'angad':           'guru-angad',
-      'guru-amar-das':   'guru-amar-das',
-      'amar-das':        'guru-amar-das',
-      'guru-ram-das':    'guru-ram-das',
-      'ram-das':         'guru-ram-das',
-      'guru-arjan':      'guru-arjan',
-      'arjan':           'guru-arjan',
-      'guru-hargobind':  'guru-hargobind',
-      'hargobind':       'guru-hargobind',
-      'bandi-chhor':     'guru-hargobind',
-      'miri-piri':       'guru-hargobind',
-      'guru-har-rai':    'guru-har-rai',
-      'har-rai':         'guru-har-rai',
-      'guru-harkrishan':  'guru-harkrishan',
+      'guru-nanak': 'guru-nanak',
+      'nanak': 'guru-nanak',
+      'guru-angad': 'guru-angad',
+      'angad': 'guru-angad',
+      'guru-amar-das': 'guru-amar-das',
+      'amar-das': 'guru-amar-das',
+      'guru-ram-das': 'guru-ram-das',
+      'ram-das': 'guru-ram-das',
+      'guru-arjan': 'guru-arjan',
+      'arjan': 'guru-arjan',
+      'guru-hargobind': 'guru-hargobind',
+      'hargobind': 'guru-hargobind',
+      'bandi-chhor': 'guru-hargobind',
+      'miri-piri': 'guru-hargobind',
+      'guru-har-rai': 'guru-har-rai',
+      'har-rai': 'guru-har-rai',
+      'guru-harkrishan': 'guru-harkrishan',
       'guru-har-krishan': 'guru-harkrishan',
-      'harkrishan':      'guru-harkrishan',
-      'har-krishan':     'guru-harkrishan',
+      'harkrishan': 'guru-harkrishan',
+      'har-krishan': 'guru-harkrishan',
       'guru-teg-bahadur': 'guru-teg-bahadur',
-      'teg-bahadur':     'guru-teg-bahadur',
-      'guru-gobind':     'guru-gobind',
-      'gobind':          'guru-gobind',
-      'gobind-singh':    'guru-gobind',
-      'sahibzad':        'guru-gobind',
-      'vaisakhi':        'guru-gobind',
-      'khalsa':          'guru-gobind',
-      'sggs':            'sggs',
-      'guru-granth':     'sggs'
+      'teg-bahadur': 'guru-teg-bahadur',
+      'guru-gobind': 'guru-gobind',
+      'gobind': 'guru-gobind',
+      'gobind-singh': 'guru-gobind',
+      'sahibzad': 'guru-gobind',
+      'vaisakhi': 'guru-gobind',
+      'khalsa': 'guru-gobind',
+      'sggs': 'sggs',
+      'guru-granth': 'sggs'
     };
 
     for (const [key, guruId] of Object.entries(mapping)) {
@@ -331,11 +331,18 @@
 
       slider.addEventListener('touchstart', (e) => this._onDragStart(e.touches[0].clientX), { passive: true });
       slider.addEventListener('mousedown', (e) => this._onDragStart(e.clientX));
-      
-      window.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: false });
+
+      // SCROLL FIX: passive:true on touchmove prevents the browser from waiting to
+      // see if we'll call preventDefault() — which would block page scroll on mobile.
+      slider.addEventListener('touchmove', (e) => this._onDragMove(e.touches[0].clientX), { passive: true });
       window.addEventListener('mousemove', (e) => this._onDragMove(e.clientX));
-      
-      window.addEventListener('touchend', () => this._onDragEnd());
+
+      // SCROLL FIX: passive:true on window touchend is CRITICAL.
+      // A non-passive window touchend listener blocks scroll dispatch for the
+      // entire page on Android Chrome because the browser must wait to check if
+      // preventDefault() will be called — even if we never call it.
+      window.addEventListener('touchend', () => this._onDragEnd(), { passive: true });
+      window.addEventListener('touchcancel', () => this._onDragEnd(), { passive: true });
       window.addEventListener('mouseup', () => this._onDragEnd());
     },
 
@@ -393,7 +400,7 @@
 
       slides.forEach((slide, i) => {
         slide.classList.remove('greeting__slide--active', 'greeting__slide--prev', 'greeting__slide--next', 'greeting__slide--far-prev', 'greeting__slide--far-next');
-        
+
         let diff = i - this._currentIndex;
         // Handle wrap around
         if (diff < -total / 2) diff += total;
@@ -437,8 +444,8 @@
       const selected = Store.get(KEYS.NITNEM_SELECTED);
       if (!selected) return 11;
       const total = (selected.amritvela?.length || 0) +
-                    (selected.rehras?.length || 0) +
-                    (selected.sohila?.length || 0);
+        (selected.rehras?.length || 0) +
+        (selected.sohila?.length || 0);
       return total || 11;
     },
 
@@ -450,8 +457,8 @@
       if (Array.isArray(todayData)) return todayData.length;
       if (typeof todayData === 'object') {
         return (todayData.amritvela?.length || 0) +
-               (todayData.rehras?.length || 0) +
-               (todayData.sohila?.length || 0);
+          (todayData.rehras?.length || 0) +
+          (todayData.sohila?.length || 0);
       }
       return 0;
     },
@@ -575,7 +582,7 @@
       try {
         const reminders = Store.get(KEYS.REMINDERS);
         if (reminders) count += reminders.custom?.filter(r => !r.completed)?.length || 0;
-      } catch (e) {}
+      } catch (e) { }
       return count;
     },
 
@@ -616,7 +623,7 @@
           }
           if (!firstLine && verses.length > 0) firstLine = (verses[0].verse || '').trim();
           if (verses[0]?.writerId) {
-            const writerMap = {1:'Guru Nanak Dev Sahib Ji',2:'Guru Angad Dev Sahib Ji',3:'Guru Amar Das Sahib Ji',4:'Guru Ram Das Sahib Ji',5:'Guru Arjan Dev Sahib Ji',6:'Guru Teg Bahadur Ji'};
+            const writerMap = { 1: 'Guru Nanak Dev Sahib Ji', 2: 'Guru Angad Dev Sahib Ji', 3: 'Guru Amar Das Sahib Ji', 4: 'Guru Ram Das Sahib Ji', 5: 'Guru Arjan Dev Sahib Ji', 6: 'Guru Teg Bahadur Ji' };
             writer = writerMap[verses[0].writerId] || '';
           }
         } else if (data.shabads && data.shabads.length > 0) {
@@ -668,7 +675,7 @@
 
     getNanakshahiDate() {
       const date = new Date(), year = date.getFullYear(), nanakshahiEpoch = new Date(year, 2, 14), diffTime = date - nanakshahiEpoch, diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const monthNames = ['ਚੇਤ','ਵੈਸਾਖ','ਜੇਠ','ਹਾੜ','ਸਾਵਣ','ਭਾਦੋਂ','ਅੱਸੂ','ਕੱਤਕ','ਮੱਘਰ','ਪੋਹ','ਮਾਘ','ਫੱਗਣ'], monthLengths = [31,31,31,31,31,30,30,30,30,30,30,30];
+      const monthNames = ['ਚੇਤ', 'ਵੈਸਾਖ', 'ਜੇਠ', 'ਹਾੜ', 'ਸਾਵਣ', 'ਭਾਦੋਂ', 'ਅੱਸੂ', 'ਕੱਤਕ', 'ਮੱਘਰ', 'ਪੋਹ', 'ਮਾਘ', 'ਫੱਗਣ'], monthLengths = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30];
       let nanakshahiYear = year - 1468, nMonth = 0, nDay = 1;
       if (diffDays < 0) {
         nanakshahiYear--;
@@ -821,7 +828,7 @@
 
         // Apply event category styling
         card.classList.remove('event-remembrance', 'event-celebration', 'event-neutral', 'event-today');
-        
+
         if (event.eventCategory === 'remembrance') {
           card.classList.add('event-remembrance');
         } else if (event.eventCategory === 'celebration') {
@@ -829,7 +836,7 @@
         } else {
           card.classList.add('event-neutral');
         }
-        
+
         if (event.isToday) {
           card.classList.add('event-today');
         }
@@ -869,7 +876,7 @@
 
         // Update Guru image
         this._updateGuruImage(event);
-        
+
         // Update greeting section with Guru Sahib info if filter is active
         this._updateGreetingForGuruSahib(event);
       };
@@ -877,7 +884,7 @@
       // Display first event
       updateEventDisplay(events[0]);
       card.style.opacity = '1';
-      
+
       // Apply progressive decoration based on days until event (5-day buildup)
       this._applyProgressiveDecoration(events[0]);
 
@@ -886,9 +893,9 @@
       // ═══════════════════════════════════════════════════════════════════
       if (data.isToday && events.length > 0) {
         const firstEvent = events[0];
-        const isCelebration = firstEvent.eventCategory === 'celebration' || 
-                              ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
-        
+        const isCelebration = firstEvent.eventCategory === 'celebration' ||
+          ['gurgaddi', 'prakash', 'vaisakhi', 'khalsa-sajna'].includes(firstEvent.type);
+
         // Add appropriate mode class to body
         document.body.classList.add(
           isCelebration ? 'gurpurab-mode--celebration' : 'gurpurab-mode--remembrance'
@@ -904,20 +911,20 @@
         if (titleEl) {
           titleEl.style.transition = 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
         }
-        
+
         card._rotationInterval = setInterval(() => {
           currentIndex = (currentIndex + 1) % events.length;
-          
+
           if (titleEl) {
             titleEl.style.opacity = '0';
             titleEl.style.transform = 'translateY(-10px)';
           }
           card.style.transform = 'scale(0.96) translateY(-4px)';
           card.style.boxShadow = '0 20px 40px rgba(212, 148, 58, 0.2)';
-          
+
           setTimeout(() => {
             updateEventDisplay(events[currentIndex]);
-            
+
             if (titleEl) {
               titleEl.style.opacity = '1';
               titleEl.style.transform = 'translateY(0)';
@@ -963,13 +970,13 @@
       const card = document.getElementById('eventCard');
       const container = document.getElementById('gurpurabContainer');
       if (!card || !event) return;
-      
+
       const daysLeft = event.daysLeft || 0;
       const isToday = event.isToday || daysLeft === 0;
-      
+
       // Remove existing decoration classes
       card.classList.remove('gurpurab-decor-day-5', 'gurpurab-decor-day-4', 'gurpurab-decor-day-3', 'gurpurab-decor-day-2', 'gurpurab-decor-day-1', 'gurpurab-decor-today');
-      
+
       // Apply progressive decoration based on days remaining
       if (isToday) {
         card.classList.add('gurpurab-decor-today');
@@ -984,42 +991,42 @@
     },
 
     _updateGuruImage(event) {
-      
+
       // ── Guru Image Mapping ──
       // Using guruimages/ folder with .jpeg files as requested
       const guruImageMap = {
         // Primary patterns
-        'guru-nanak':      'guruimages/gurunanakdevsahebji.jpeg',
-        'guru-angad':      'guruimages/guruangaddevsahebji.jpeg',
-        'guru-amar-das':   'guruimages/guruamardasji.jpeg',
-        'guru-ram-das':    'guruimages/gururamdassahebji.jpeg',
-        'guru-arjan':      'guruimages/guruarjanddevsahebji.jpeg',
-        'guru-hargobind':  'guruimages/guruhargobindsahebji.jpeg',
-        'guru-har-rai':    'guruimages/guruharraisahebji.jpeg',
-        'guru-harkrishan':  'guruimages/guruharkrishansahebji.jpeg',
+        'guru-nanak': 'guruimages/gurunanakdevsahebji.jpeg',
+        'guru-angad': 'guruimages/guruangaddevsahebji.jpeg',
+        'guru-amar-das': 'guruimages/guruamardasji.jpeg',
+        'guru-ram-das': 'guruimages/gururamdassahebji.jpeg',
+        'guru-arjan': 'guruimages/guruarjanddevsahebji.jpeg',
+        'guru-hargobind': 'guruimages/guruhargobindsahebji.jpeg',
+        'guru-har-rai': 'guruimages/guruharraisahebji.jpeg',
+        'guru-harkrishan': 'guruimages/guruharkrishansahebji.jpeg',
         'guru-har-krishan': 'guruimages/guruharkrishansahebji.jpeg',
         'guru-teg-bahadur': 'guruimages/gurutegbahadursahebji.jpeg',
-        'guru-gobind':     'guruimages/gurugobindsinghsahebji.jpeg',
-        'sggs':            'guruimages/gurugranthsahebji.jpeg',
-        'guru-granth':     'guruimages/gurugranthsahebji.jpeg',
-        'sahibzad':        'guruimages/gurugobindsinghsahebji.jpeg',
-        'vaisakhi':        'guruimages/gurugobindsinghsahebji.jpeg',
-        'khalsa':          'guruimages/gurugobindsinghsahebji.jpeg',
-        'bandi-chhor':     'guruimages/guruhargobindsahebji.jpeg',
-        'miri-piri':       'guruimages/guruhargobindsahebji.jpeg',
+        'guru-gobind': 'guruimages/gurugobindsinghsahebji.jpeg',
+        'sggs': 'guruimages/gurugranthsahebji.jpeg',
+        'guru-granth': 'guruimages/gurugranthsahebji.jpeg',
+        'sahibzad': 'guruimages/gurugobindsinghsahebji.jpeg',
+        'vaisakhi': 'guruimages/gurugobindsinghsahebji.jpeg',
+        'khalsa': 'guruimages/gurugobindsinghsahebji.jpeg',
+        'bandi-chhor': 'guruimages/guruhargobindsahebji.jpeg',
+        'miri-piri': 'guruimages/guruhargobindsahebji.jpeg',
         // Additional patterns for better matching
-        'nanak':           'guruimages/gurunanakdevsahebji.jpeg',
-        'angad':           'guruimages/guruangaddevsahebji.jpeg',
-        'amar-das':        'guruimages/guruamardasji.jpeg',
-        'ram-das':         'guruimages/gururamdassahebji.jpeg',
-        'arjan':           'guruimages/guruarjanddevsahebji.jpeg',
-        'hargobind':       'guruimages/guruhargobindsahebji.jpeg',
-        'har-rai':         'guruimages/guruharraisahebji.jpeg',
-        'harkrishan':      'guruimages/guruharkrishansahebji.jpeg',
-        'har-krishan':     'guruimages/guruharkrishansahebji.jpeg',
-        'teg-bahadur':     'guruimages/gurutegbahadursahebji.jpeg',
-        'gobind':          'guruimages/gurugobindsinghsahebji.jpeg',
-        'gobind-singh':    'guruimages/gurugobindsinghsahebji.jpeg',
+        'nanak': 'guruimages/gurunanakdevsahebji.jpeg',
+        'angad': 'guruimages/guruangaddevsahebji.jpeg',
+        'amar-das': 'guruimages/guruamardasji.jpeg',
+        'ram-das': 'guruimages/gururamdassahebji.jpeg',
+        'arjan': 'guruimages/guruarjanddevsahebji.jpeg',
+        'hargobind': 'guruimages/guruhargobindsahebji.jpeg',
+        'har-rai': 'guruimages/guruharraisahebji.jpeg',
+        'harkrishan': 'guruimages/guruharkrishansahebji.jpeg',
+        'har-krishan': 'guruimages/guruharkrishansahebji.jpeg',
+        'teg-bahadur': 'guruimages/gurutegbahadursahebji.jpeg',
+        'gobind': 'guruimages/gurugobindsinghsahebji.jpeg',
+        'gobind-singh': 'guruimages/gurugobindsinghsahebji.jpeg',
       };
 
       // Match event name to Guru image (use name instead of ID for better matching)
@@ -1027,12 +1034,12 @@
       let guruName = null;
       const evName = (event.name || '').toLowerCase();
       const evId = (event.id || '').toLowerCase();
-      
+
       // Check both name and ID for patterns
       const searchStrings = [evName, evId];
-      
+
       console.log('[GuruImage] Search strings:', searchStrings);
-      
+
       for (const [key, filename] of Object.entries(guruImageMap)) {
         if (searchStrings.some(s => s.includes(key))) {
           guruImg = filename; // Full path from map
@@ -1094,7 +1101,7 @@
         const currentSrcRaw = el.getAttribute('src') || '';
         const srcTail = src.split('/').pop().split('?')[0];
         const alreadyLoaded = currentSrcRaw.split('/').pop().split('?')[0] === srcTail
-                              && el.complete && el.naturalWidth > 0;
+          && el.complete && el.naturalWidth > 0;
         if (alreadyLoaded) {
           el.style.opacity = '1';
           el.classList.add(classToApply);
@@ -1103,7 +1110,7 @@
         }
 
         console.log('[GuruImage] Updating image to:', src, 'alt:', alt, 'retries left:', retries);
-        
+
         // Reset visibility for fresh loading (with smooth transition)
         el.style.opacity = '0';
         el.style.transition = 'opacity 0.35s ease';
@@ -1116,7 +1123,7 @@
           cleanup();
           console.log('[GuruImage] Image loaded successfully:', src);
         };
-        
+
         // Define error handler for retry and fallback
         const onError = () => {
           console.warn('[GuruImage] Image failed to load:', src);
@@ -1144,7 +1151,7 @@
 
         el.addEventListener('load', onLoad);
         el.addEventListener('error', onError);
-        
+
         // Execute update
         el.src = src;
         el.alt = alt;
@@ -1169,29 +1176,29 @@
 
     _getGuruInfoFromEvent(event) {
       const guruImageMap = {
-        'guru-nanak':      { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
-        'guru-angad':      { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
-        'guru-amar-das':   { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
-        'guru-ram-das':    { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
-        'guru-arjan':      { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
-        'guru-hargobind':  { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
-        'guru-har-rai':    { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
-        'guru-harkrishan':  { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'guru-nanak': { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'guru-angad': { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'guru-amar-das': { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'guru-ram-das': { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'guru-arjan': { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'guru-hargobind': { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'guru-har-rai': { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'guru-harkrishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
         'guru-har-krishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
         'guru-teg-bahadur': { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
-        'guru-gobind':     { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
-        'nanak':           { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
-        'angad':           { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
-        'amar-das':        { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
-        'ram-das':         { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
-        'arjan':           { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
-        'hargobind':       { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
-        'har-rai':         { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
-        'harkrishan':      { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
-        'har-krishan':     { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
-        'teg-bahadur':     { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
-        'gobind':          { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
-        'gobind-singh':    { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'guru-gobind': { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'nanak': { image: 'guruimages/gurunanakdevsahebji.jpeg', name: 'Sri Guru Nanak Dev Sahib Ji' },
+        'angad': { image: 'guruimages/guruangaddevsahebji.jpeg', name: 'Sri Guru Angad Dev Sahib Ji' },
+        'amar-das': { image: 'guruimages/guruamardasji.jpeg', name: 'Sri Guru Amar Das Sahib Ji' },
+        'ram-das': { image: 'guruimages/gururamdassahebji.jpeg', name: 'Sri Guru Ram Das Sahib Ji' },
+        'arjan': { image: 'guruimages/guruarjanddevsahebji.jpeg', name: 'Sri Guru Arjan Dev Sahib Ji' },
+        'hargobind': { image: 'guruimages/guruhargobindsahebji.jpeg', name: 'Sri Guru Hargobind Sahib Ji' },
+        'har-rai': { image: 'guruimages/guruharraisahebji.jpeg', name: 'Sri Guru Har Rai Sahib Ji' },
+        'harkrishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'har-krishan': { image: 'guruimages/guruharkrishansahebji.jpeg', name: 'Sri Guru Har Krishan Sahib Ji' },
+        'teg-bahadur': { image: 'guruimages/gurutegbahadursahebji.jpeg', name: 'Sri Guru Tegh Bahadur Sahib Ji' },
+        'gobind': { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
+        'gobind-singh': { image: 'guruimages/gurugobindsinghsahebji.jpeg', name: 'Sri Guru Gobind Singh Sahib Ji' },
       };
 
       const evName = (event.name || '').toLowerCase();
@@ -1280,7 +1287,7 @@
       this.updateNitnemQuickAccess();
       this.autoRemindUpcomingGurpurab();
       this.updateHeroCardImages();
-      
+
       // RE-INIT HOMEPAGE COMPONENTS
       // These elements only exist on index.html, but refreshAll is called 
       // on every SPA swap. The internal guards in these init methods 
@@ -1314,7 +1321,7 @@
               Navigation.navigateTo(NAV_PATHS.calendar + '?highlight=' + event.id);
             };
             localStorage.setItem(cacheKey, 'true');
-          } catch(e){}
+          } catch (e) { }
         }
       }
     },
@@ -1329,12 +1336,12 @@
     updateGreetingName() {
       const salEl = document.getElementById('greetingSalutation');
       if (!salEl) return;
-      
+
       // Don't overwrite if there's a guru name displayed (from gurpurab event)
       const currentText = salEl.textContent || '';
       const hasGuruName = currentText.includes('Guru') || currentText.includes('SAHIB');
       if (hasGuruName) return;
-      
+
       const name = DataManager.getUserName();
       const sal = Greeting.getSalutation();
       salEl.textContent = name ? `${sal}, ${name}` : sal;
@@ -1448,7 +1455,7 @@
     init() {
       // Read the unified theme key
       const savedTheme = localStorage.getItem('anhad_theme') || 'light';
-      
+
       const getIsDark = (theme) => {
         if (theme === 'dark') return true;
         if (theme === 'light') return false;
@@ -1478,7 +1485,7 @@
 
         // Store the theme
         localStorage.setItem('anhad_theme', newTheme);
-        try { localStorage.setItem('anhad_dark_mode', String(newTheme === 'dark')); } catch(e) {}
+        try { localStorage.setItem('anhad_dark_mode', String(newTheme === 'dark')); } catch (e) { }
 
         // Apply to DOM
         this._apply(newTheme === 'dark');
@@ -1773,7 +1780,7 @@
       const banner = document.getElementById('installBanner');
       const installCta = document.getElementById('installCta');
       const dismissBtn = document.getElementById('installDismiss');
-      
+
       if (!banner) return;
 
       console.log('[PWA] Initializing InstallController...');
@@ -1838,20 +1845,20 @@
     _isStandalone() {
       try {
         return window.matchMedia('(display-mode: standalone)').matches ||
-               navigator.standalone ||
-               Store.get(KEYS.PWA_INSTALLED) === true;
+          navigator.standalone ||
+          Store.get(KEYS.PWA_INSTALLED) === true;
       } catch (e) { return false; }
     },
 
     _showBanner() {
       const banner = document.getElementById('installBanner');
       if (!banner) return;
-      
+
       console.log('[PWA] Displaying install banner');
       banner.style.display = 'block';
       // Force reflow
       banner.offsetHeight;
-      
+
       requestAnimationFrame(() => {
         banner.classList.add('install-banner--visible');
         banner.style.opacity = '1';
@@ -1862,7 +1869,7 @@
     _hideBanner() {
       const banner = document.getElementById('installBanner');
       if (!banner) return;
-      
+
       console.log('[PWA] Hiding install banner');
       banner.classList.remove('install-banner--visible');
       banner.style.transform = 'translateY(100%)';
@@ -2074,6 +2081,13 @@
         return;
       }
       this._isInitialized = true;
+
+      // CRITICAL: Reset body overflow in case it was stuck from previous session
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+
+      // Close any stuck sheets from previous session
+      SheetController.closeAll();
 
       ThemeController.init();
       CarouselController.init();

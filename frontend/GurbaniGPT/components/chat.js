@@ -105,7 +105,7 @@ const READING_KEY = 'gurbanigpt_reading_history';
 export function initChat(deps) {
   const $ = function (id) { return document.getElementById(id); };
   const msgs = $('msgs'), msgList = $('msgList'), welcome = $('welcome');
-  const inp = $('inp'), sendBtn = $('sendBtn'), stopBtn = $('stopBtn');
+  const inp = $('inp'), sendBtn = $('sendBtn'), stopBtn = $('stopBtn'), inputArea = $('inputArea');
   const sidebar = $('sidebar'), sidebarOv = $('sidebarOv'), prevConvosList = $('prevConvosList');
 
   const chatCtrl = createChatController();
@@ -291,6 +291,88 @@ export function initChat(deps) {
   renderPrevConvos();
   renderMemory();
   if (inp) inp.focus();
+
+  // Show practice card and populate stats if UnifiedStats is available
+  function updatePracticeSyncUI() {
+    const card = $('practiceCard');
+    const nitnemVal = $('gptStatNitnem');
+    const medVal = $('gptStatMeditation');
+
+    if (card && window.UnifiedStats) {
+      card.style.display = 'block';
+      try {
+        const stats = window.UnifiedStats.getTodayStats();
+
+        // Nitnem
+        const nitnemCompleted = stats.nitnemBanis ? stats.nitnemBanis.length : 0;
+        if (nitnemVal) {
+          nitnemVal.textContent = stats.nitnemComplete ? '7 / 7 Done 🌅' : `${nitnemCompleted} / 7 Completed`;
+        }
+
+        // Meditation (from stats or streakData)
+        const streakRaw = localStorage.getItem('anhad_streak_data');
+        let todaySessionsCount = 0;
+        if (streakRaw) {
+          try {
+            const streak = JSON.parse(streakRaw);
+            const today = new Date().toLocaleDateString('en-CA');
+            if (streak.naamAbhyas && streak.naamAbhyas.sessionsByDate && streak.naamAbhyas.sessionsByDate[today]) {
+              todaySessionsCount = streak.naamAbhyas.sessionsByDate[today].length;
+            } else if (streak.naamAbhyas && streak.naamAbhyas.todayCount !== undefined) {
+              todaySessionsCount = streak.naamAbhyas.todayCount;
+            }
+          } catch (e) { }
+        }
+        if (medVal) {
+          medVal.textContent = todaySessionsCount > 0 ? `${todaySessionsCount} Sessions Live` : 'No sessions today';
+        }
+      } catch (e) {
+        console.warn('Failed to update practice sync stats:', e);
+        if (nitnemVal) nitnemVal.textContent = 'Tap to view';
+        if (medVal) medVal.textContent = 'Tap to view';
+      }
+    }
+  }
+
+  // Bind clicks for the practice stat boxes to open their respective pages
+  $('statNitnemBox')?.addEventListener('click', function () {
+    if (window.navigateTo) window.navigateTo('../NitnemTracker/nitnem-tracker.html');
+    else window.location.href = '../NitnemTracker/nitnem-tracker.html';
+  });
+  $('statMeditationBox')?.addEventListener('click', function () {
+    if (window.navigateTo) window.navigateTo('../NaamAbhyas/naam-abhyas.html');
+    else window.location.href = '../NaamAbhyas/naam-abhyas.html';
+  });
+
+  // Call it initially
+  updatePracticeSyncUI();
+
+  // Listen for changes
+  window.addEventListener('statsChanged', updatePracticeSyncUI);
+  window.addEventListener('streakUpdated', updatePracticeSyncUI);
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'anhad_streak_data' || e.key === 'anhad_unified_stats') {
+      updatePracticeSyncUI();
+    }
+  });
+
+  /* ── Parse query parameters for deep-linking ── */
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramPrompt = urlParams.get('prompt') || urlParams.get('shabad');
+  const deepVichar = urlParams.get('deepVichar') || urlParams.get('vichar');
+
+  if (paramPrompt) {
+    let fullPrompt = paramPrompt;
+    if (deepVichar === 'true' || deepVichar === '1') {
+      fullPrompt = `Explain this Shabad in deep detail. Retrieve its layout, Gurmukhi writing details, English tikas, and write a profound word-by-word structural Vichar: "${paramPrompt}"`;
+    }
+    setTimeout(() => {
+      if (inp) {
+        inp.value = fullPrompt;
+        chatCtrl.send(fullPrompt);
+      }
+    }, 500);
+  }
 
   /* ── Sidebar Home button ── */
   $('sidebarHomeBtn')?.addEventListener('click', function () {
