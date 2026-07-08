@@ -30,31 +30,31 @@ const EVENT_TO_GURU_MAP = {
   // Vaisakhi / Khalsa Sajna → Guru Gobind Singh Ji
   'vaisakhi': 10,
   'khalsa': 10,
-  
+
   // Sangrand → Guru Granth Sahib Ji
   'sangrand': 'guru-granth-sahib',
-  
+
   // Bandi Chhor Divas → Guru Hargobind Sahib Ji
   'bandi-chor': 6,
   'bandi-chhor': 6,
-  
+
   // Hola Mohalla → Guru Gobind Singh Ji
   'hola-mohalla': 10,
-  
+
   // Miri Piri Diwas → Guru Hargobind Sahib Ji
   'miri-piri': 6,
-  
+
   // Guru Granth Sahib events
   'guru-granth': 'guru-granth-sahib',
   'sampuranta': 'guru-granth-sahib',
   'first-parkash': 'guru-granth-sahib',
   'gurgaddi-sggs': 'guru-granth-sahib',
-  
+
   // Sahibzade events
   'sahibzada': 'sahibzade',
   'vade-sahibzade': 'sahibzade',
   'chhote-sahibzade': 'sahibzade',
-  
+
   // Historical events without specific guru → Guru Granth Sahib Ji
   'sikh-dastar': 'guru-granth-sahib',
   'darbar-khalsa': 'guru-granth-sahib',
@@ -64,19 +64,19 @@ const EVENT_TO_GURU_MAP = {
 // Helper function to get guru image for an event
 function getGuruImageForEvent(eventName, guruNumber) {
   const nameLower = String(eventName || '').toLowerCase();
-  
+
   // First check if event name matches a pattern in EVENT_TO_GURU_MAP
   for (const [pattern, guruId] of Object.entries(EVENT_TO_GURU_MAP)) {
     if (nameLower.includes(pattern)) {
       return GURU_IMAGE_MAP[guruId] || GURU_IMAGE_MAP['guru-granth-sahib'];
     }
   }
-  
+
   // If guru_number is provided, use that
   if (guruNumber && GURU_IMAGE_MAP[guruNumber]) {
     return GURU_IMAGE_MAP[guruNumber];
   }
-  
+
   // Default to Guru Granth Sahib Ji
   return GURU_IMAGE_MAP['guru-granth-sahib'];
 }
@@ -84,7 +84,7 @@ function getGuruImageForEvent(eventName, guruNumber) {
 // Helper function to get guru name for display
 function getGuruNameForEvent(eventName, guruNumber) {
   const nameLower = String(eventName || '').toLowerCase();
-  
+
   // Special cases
   if (nameLower.includes('vaisakhi') || nameLower.includes('khalsa')) {
     return 'Sri Guru Gobind Singh Sahib Ji';
@@ -101,21 +101,21 @@ function getGuruNameForEvent(eventName, guruNumber) {
   if (nameLower.includes('miri-piri')) {
     return 'Sri Guru Hargobind Sahib Ji';
   }
-  if (nameLower.includes('guru-granth') || nameLower.includes('sampuranta') || 
-      nameLower.includes('first-parkash') || nameLower.includes('gurgaddi-sggs')) {
+  if (nameLower.includes('guru-granth') || nameLower.includes('sampuranta') ||
+    nameLower.includes('first-parkash') || nameLower.includes('gurgaddi-sggs')) {
     return 'Sri Guru Granth Sahib Ji';
   }
   if (nameLower.includes('sahibzada')) {
     return 'Sahibzade';
   }
-  
+
   // Extract guru name from event name if it contains "Guru"
   const guruMatch = nameLower.match(/guru\s+(\w+)/);
   if (guruMatch) {
     const guruName = guruMatch[1].charAt(0).toUpperCase() + guruMatch[1].slice(1);
     return `Sri Guru ${guruName} Sahib Ji`;
   }
-  
+
   // Default
   return 'Sri Guru Granth Sahib Ji';
 }
@@ -179,11 +179,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ━━━ REAL-TIME CLOCK ━━━
+  let lastTimeStr = '';
   function updateClock() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    const el = document.getElementById('currentTime');
-    if (el) el.textContent = timeStr;
+    if (timeStr !== lastTimeStr) {
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = timeStr;
+      lastTimeStr = timeStr;
+    }
   }
 
   // ━━━ LISTENER COUNT ━━━
@@ -210,10 +214,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const subtitleEl = document.getElementById('nextGurpurab');
     const dateEl = document.getElementById('gurpurabDate');
     const calendarCard = document.getElementById('calendarCard');
-    
+
     // Guru image updates are now handled by trendora-app.js to avoid conflicts
     // This function only updates the text and calendar card styling
-    
+
     if (!subtitleEl || !dateEl) return;
     try {
       const dataUrl = (window.ANHAD_ROOT || '') + 'data/gurpurab-events-2026.json';
@@ -222,22 +226,22 @@ document.addEventListener('DOMContentLoaded', function () {
       const events2026 = data.years['2026'] || [];
       const gurpurabs = events2026.map(e => {
         const [y, m, d] = e.gregorian_date.split('-');
-        return { 
-          name: e.name_en, 
+        return {
+          name: e.name_en,
           id: e.id,
           date: new Date(y, m - 1, d), // Local midnight 
-          type: e.type 
+          type: e.type
         };
       }).sort((a, b) => a.date - b.date);
-      
+
       const now = new Date();
       const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      
+
       const todayEvent = gurpurabs.find(g => g.date.getTime() === todayMidnight.getTime());
-      
+
       // Determine which event to display (today's event or next upcoming)
       const displayEvent = todayEvent || gurpurabs.find(g => g.date > todayMidnight);
-      
+
       if (displayEvent) {
         // FIX: Add event type classes to calendar card for ring lights
         if (calendarCard) {
@@ -250,8 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
             calendarCard.classList.add('celebration');
           }
         }
-        
-        if (todayEvent) { 
+
+        if (todayEvent) {
           // FIX: Different text for memorial vs celebration
           const memorialTypes = ['shaheedi', 'historical'];
           if (memorialTypes.includes(todayEvent.type)) {
@@ -261,13 +265,13 @@ document.addEventListener('DOMContentLoaded', function () {
             subtitleEl.textContent = `🙏 Today: ${todayEvent.name}`;
             dateEl.textContent = '🎉 Celebrate!';
           }
-          return; 
+          return;
         }
-        
+
         // It's an upcoming event
         const daysLeft = Math.round((displayEvent.date - todayMidnight) / 86400000);
         const dateStr = displayEvent.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
+
         // FIX: Add celebration class for upcoming celebration events
         if (calendarCard) {
           const celebrationTypes = ['prakash', 'gurgaddi'];
@@ -275,16 +279,16 @@ document.addEventListener('DOMContentLoaded', function () {
             calendarCard.classList.add('celebration');
           }
         }
-        
+
         subtitleEl.textContent = `Up Next: ${displayEvent.name}`;
         dateEl.textContent = daysLeft === 0 ? '🎊 Today!' : daysLeft === 1 ? '🎊 Tomorrow!' : `${daysLeft} days • ${dateStr}`;
-      } else { 
-        subtitleEl.textContent = 'View all events for 2026'; 
-        dateEl.textContent = '📅 Calendar'; 
+      } else {
+        subtitleEl.textContent = 'View all events for 2026';
+        dateEl.textContent = '📅 Calendar';
       }
-    } catch (e) { 
-      subtitleEl.textContent = 'View Gurpurab Calendar'; 
-      dateEl.textContent = '📅 Open'; 
+    } catch (e) {
+      subtitleEl.textContent = 'View Gurpurab Calendar';
+      dateEl.textContent = '📅 Open';
     }
   }
 
@@ -313,11 +317,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const configData = localStorage.getItem('naam_abhyas_config');
         if (configData) { const config = JSON.parse(configData); if (config.enabled && config.activeHours) { const now = new Date(), eh = now.getMinutes() >= 30 ? now.getHours() + 1 : now.getHours(); if (eh >= config.activeHours.start && eh < config.activeHours.end) nextScheduledHour = eh; else if (eh < config.activeHours.start) nextScheduledHour = config.activeHours.start; } }
       }
-    } catch (e) {}
+    } catch (e) { }
     const subtitleEl = document.getElementById('naamSubtitle') || document.getElementById('nextSession'), timeEl = document.getElementById('naamMeta') || document.getElementById('sessionTime');
     if (!subtitleEl || !timeEl) return;
     if (nextScheduledHour !== null) {
-      let timeStr; try { const sd = localStorage.getItem('naam_abhyas_schedule'); if (sd) { const s = JSON.parse(sd); if (s[nextScheduledHour]?.startTime) timeStr = s[nextScheduledHour].startTime; } } catch (e) {}
+      let timeStr; try { const sd = localStorage.getItem('naam_abhyas_schedule'); if (sd) { const s = JSON.parse(sd); if (s[nextScheduledHour]?.startTime) timeStr = s[nextScheduledHour].startTime; } } catch (e) { }
       if (!timeStr) { const ampm = nextScheduledHour >= 12 ? 'PM' : 'AM'; timeStr = `${nextScheduledHour % 12 || 12}:00 ${ampm}`; }
       subtitleEl.textContent = completedToday > 0 ? `${completedToday} sessions today • Next at` : 'Next session at';
       timeEl.textContent = timeStr;
@@ -334,13 +338,13 @@ document.addEventListener('DOMContentLoaded', function () {
     let streak = 0, completedToday = 0, totalBanis = 0;
     try {
       const sb = localStorage.getItem('nitnemTracker_selectedBanis');
-      if (sb) { 
-        const p = JSON.parse(sb); 
+      if (sb) {
+        const p = JSON.parse(sb);
         totalBanis = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0);
       } else {
         totalBanis = 11; // Default only if no selection exists
       }
-    } catch (e) {}
+    } catch (e) { }
     try {
       const today = new Date().toLocaleDateString('en-CA');
       const nl = localStorage.getItem('nitnemTracker_nitnemLog');
@@ -364,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
       }
-      
+
       // SYNC: Use UnifiedStats for streak data
       if (window.UnifiedStats) {
         const streaks = window.UnifiedStats.getStreaks();
@@ -374,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
         if (streak === 0) { const ud = localStorage.getItem('nitnemTracker_userData'); if (ud) { const p = JSON.parse(ud); streak = p.streaks?.current || p.streak?.current || 0; } }
       }
-    } catch (e) {}
+    } catch (e) { }
     const streakEl = document.getElementById('nitnemStreak'), textEl = document.getElementById('streakText'), ringFill = document.getElementById('nitnemRingFill'), ringText = document.getElementById('nitnemRingText');
     const circumference = 163.36, progress = completedToday / totalBanis, offset = circumference * (1 - progress);
     if (ringFill) setTimeout(() => { ringFill.style.strokeDashoffset = offset; }, 150);
@@ -392,12 +396,12 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('statsInitialized', updateNitnemTracker);
   window.addEventListener('statsChanged', updateNitnemTracker);
   window.addEventListener('nitnemDayCompleted', updateNitnemTracker);
-  
+
   // Cross-page SPA synchronization
   window.addEventListener('streakUpdated', updateNitnemTracker);
   window.addEventListener('storage', (e) => {
     if (e.key === 'anhad_streak_data' || e.key === 'nitnemTracker_nitnemLog') {
-        updateNitnemTracker();
+      updateNitnemTracker();
     }
   });
 
@@ -408,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const sd = localStorage.getItem('sehajPaathState');
       if (sd) { const p = JSON.parse(sd); currentAng = p.currentPaath?.currentAng || p.currentAng || 1; hasData = currentAng > 1; }
       if (!hasData) { const bd = localStorage.getItem('gurbani_sehajPaath_progress'); if (bd) { const p = JSON.parse(bd); currentAng = p.data?.currentAng || p.currentAng || 1; hasData = currentAng > 1; } }
-    } catch (e) {}
+    } catch (e) { }
     const totalAngs = 1430, progress = ((currentAng / totalAngs) * 100).toFixed(1);
     const subtitleEl = document.getElementById('sehajSubtitle'), angEl = document.getElementById('sehajAng');
     if (!subtitleEl || !angEl) return;
@@ -421,8 +425,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateProgressCard() {
     const now = new Date(), hour = now.getHours();
     let completed = 0, total = 11;
-    try { const sb = localStorage.getItem('nitnemTracker_selectedBanis'); if (sb) { const p = JSON.parse(sb); total = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0); if (total === 0) total = 11; } } catch (e) {}
-    try { const today = now.toLocaleDateString('en-CA'); const nl = localStorage.getItem('nitnemTracker_nitnemLog'); if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completed = p[today].length; else { const td = p[today]; completed = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } } } catch (e) {}
+    try { const sb = localStorage.getItem('nitnemTracker_selectedBanis'); if (sb) { const p = JSON.parse(sb); total = (p.amritvela?.length || 0) + (p.rehras?.length || 0) + (p.sohila?.length || 0); if (total === 0) total = 11; } } catch (e) { }
+    try { const today = now.toLocaleDateString('en-CA'); const nl = localStorage.getItem('nitnemTracker_nitnemLog'); if (nl) { const p = JSON.parse(nl); if (p[today]) { if (Array.isArray(p[today])) completed = p[today].length; else { const td = p[today]; completed = (td.amritvela?.length || 0) + (td.rehras?.length || 0) + (td.sohila?.length || 0); } } } } catch (e) { }
     let suggestion = ''; if (hour >= 4 && hour < 9) suggestion = 'Start Japji Sahib Ji 🌅'; else if (hour >= 9 && hour < 12) suggestion = 'Continue morning Nitnem ☀️'; else if (hour >= 12 && hour < 17) suggestion = 'Rehras Sahib Ji in evening 🙏'; else if (hour >= 17 && hour < 20) suggestion = 'Time for Rehras Sahib Ji 🌆'; else suggestion = 'Sohila Sahib Ji before bed 🌙';
     const percent = Math.round((completed / total) * 100);
     const lbl = document.getElementById('progressLabel'), pct = document.getElementById('progressPercent'), txt = document.getElementById('progressText'), fill = document.getElementById('progressFill');
@@ -445,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // ━━━ NOTIFICATION BADGE ━━━
   function updateNotificationBadge() {
     let count = 0;
-    try { const r = localStorage.getItem('cine_alarms_v4'); if (r) { const p = JSON.parse(r); if (Array.isArray(p)) count += p.filter(a => a.on).length; } const hour = new Date().getHours(); if (hour >= 6 && hour < 10) count++; if (hour >= 17 && hour < 20) count++; } catch (e) {}
+    try { const r = localStorage.getItem('cine_alarms_v4'); if (r) { const p = JSON.parse(r); if (Array.isArray(p)) count += p.filter(a => a.on).length; } const hour = new Date().getHours(); if (hour >= 6 && hour < 10) count++; if (hour >= 17 && hour < 20) count++; } catch (e) { }
     const badge = document.getElementById('notifBadge');
     if (badge) { if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.style.display = 'flex'; } else { badge.style.display = 'none'; } }
   }
@@ -478,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return;
       }
-      
+
       const destination = 'Homepage/ios-homepage.html';
       if (window.navigateTo) window.navigateTo(destination);
       else window.location.href = destination;
@@ -561,11 +565,11 @@ document.addEventListener('DOMContentLoaded', function () {
   updateNextSession(); updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNitnemSubtitle(); updateNotificationBadge();
   // FIX: Store interval IDs so they can be cleaned up on page unload
   _hpIntervals.push(
-    setInterval(updateClock, 1000),
-    setInterval(updateListenerCount, 5000),
-    setInterval(updateGreeting, 60000),
-    setInterval(updateNitnemSubtitle, 60000),
-    setInterval(updateNotificationBadge, 60000)
+    setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
+    setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
+    setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000),
+    setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 300000),
+    setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 300000)
   );
 
   // FIX: Clean up intervals on page unload to prevent memory leaks
@@ -578,26 +582,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ━━━ REFRESH ON RETURN ━━━
   // OPTIMIZED: Only update time-sensitive data to prevent splash effect
-  document.addEventListener('visibilitychange', () => { 
-    if (document.visibilityState === 'visible') { 
-      updateClock(); 
-      updateGreeting(); 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      updateClock();
+      updateGreeting();
       // Only update data that actually changes, not full re-render
-      updateNitnemSubtitle(); 
-    } 
+      updateNitnemSubtitle();
+    }
   });
-  window.addEventListener('pageshow', e => { 
-    if (e.persisted) { 
-      updateClock(); 
-      updateGreeting(); 
-      updateNitnemSubtitle(); 
-    } 
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) {
+      updateClock();
+      updateGreeting();
+      updateNitnemSubtitle();
+    }
   });
 
   // ━━━ REFRESH ON SPA NAVIGATION BACK ━━━
   // CRITICAL FIX: When user navigates back to homepage via SPA, force refresh
   // all dynamic data (especially Gurpurab) to prevent stale information.
-  window.addEventListener('anhad_page_changed', function() {
+  window.addEventListener('anhad_page_changed', function () {
     // Only run if we're on the homepage
     if (window.location.pathname.endsWith('/index.html') || window.location.pathname.endsWith('/frontend/')) {
       console.log('[HomepageData] SPA page changed back to homepage, refreshing data');
@@ -620,29 +624,29 @@ document.addEventListener('DOMContentLoaded', function () {
 // ━━━ DYNAMIC ISLAND & AUDIO ENGINE ━━━
 (function () {
   'use strict';
-  
+
   const island = document.getElementById('dynamicIsland');
   const islandDefault = document.getElementById('islandDefault');
   const islandPlaying = document.getElementById('islandPlaying');
   const islandStreamName = document.getElementById('islandStreamName');
   const islandWaveform = document.getElementById('islandWaveform');
   const islandActionBtn = document.getElementById('islandActionBtn');
-  
+
   function setIslandState(isPlaying, streamName) {
     if (!island) return;
-    
+
     if (isPlaying) {
       island.classList.add('playing');
       islandDefault.style.opacity = '0';
       islandDefault.style.pointerEvents = 'none';
-      
+
       islandPlaying.style.opacity = '1';
       islandPlaying.style.pointerEvents = 'auto';
       islandWaveform.classList.remove('paused');
-      
+
       islandStreamName.textContent = streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan';
       islandActionBtn.innerHTML = '<i class="fas fa-pause"></i>';
-      
+
       if (!window.Capacitor && navigator.mediaSession) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: streamName === 'amritvela' ? 'Amritvela Radio' : 'Live Kirtan',
@@ -658,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       islandWaveform.classList.add('paused');
       islandActionBtn.innerHTML = '<i class="fas fa-play"></i>';
-      
+
       // If completely stopped or no engine
       if (!window.AnhadAudio || !window.AnhadAudio.getCurrentStream()) {
         island.classList.remove('playing');
@@ -677,7 +681,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('anhadAudioStateChange', function (e) {
       const isPlaying = e.detail.isPlaying;
       const stream = e.detail.stream || 'darbar';
-      
+
       // Update Hero Cards visually
       if (stream === 'darbar') {
         if (playIcon1) playIcon1.setAttribute('class', isPlaying ? 'fas fa-pause' : 'fas fa-play');
@@ -698,29 +702,29 @@ document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
       if (window.AnhadAudio && window.AnhadAudio.isPlaying()) {
         const stream = window.AnhadAudio.getCurrentStream() || 'darbar';
-        if (stream === 'darbar') { 
-          if (playIcon1) playIcon1.className = 'fas fa-pause'; 
-          if (card1) card1.classList.add('playing'); 
-        } else if (stream === 'amritvela') { 
-          if (playIcon2) playIcon2.className = 'fas fa-pause'; 
-          if (card2) card2.classList.add('playing'); 
+        if (stream === 'darbar') {
+          if (playIcon1) playIcon1.className = 'fas fa-pause';
+          if (card1) card1.classList.add('playing');
+        } else if (stream === 'amritvela') {
+          if (playIcon2) playIcon2.className = 'fas fa-pause';
+          if (card2) card2.classList.add('playing');
         }
         setIslandState(true, stream);
       }
     }, 600);
-    
+
     // Dynamic Island Interactions
     islandActionBtn?.addEventListener('click', (e) => {
       e.stopPropagation(); // Don't trigger island click
       if (window.AnhadAudio) window.AnhadAudio.toggle();
     });
-    
+
     // Clicking island while playing routes to full player
     island?.addEventListener('click', () => {
-       if (island.classList.contains('playing')) {
-         const stream = window.AnhadAudio?.getCurrentStream() || 'darbar';
-         window.location.href = stream === 'amritvela' ? 'GurbaniRadio/gurbani-radio.html?stream=amritvela' : 'GurbaniRadio/gurbani-radio.html';
-       }
+      if (island.classList.contains('playing')) {
+        const stream = window.AnhadAudio?.getCurrentStream() || 'darbar';
+        window.location.href = stream === 'amritvela' ? 'GurbaniRadio/gurbani-radio.html?stream=amritvela' : 'GurbaniRadio/gurbani-radio.html';
+      }
     });
 
     // MediaSession OS Controls (Lockscreen/Control Center)

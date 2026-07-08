@@ -179,6 +179,13 @@ a {
   animation: orbFloat 20s ease-in-out infinite;
 }
 
+@media (max-width: 768px) and (pointer: coarse) {
+  .bg-orb {
+    filter: blur(40px);
+    /* Halves GPU rasterization/fill cost on mobile screen sizes */
+  }
+}
+
 .bg-orb-1 {
   width: 400px;
   height: 400px;

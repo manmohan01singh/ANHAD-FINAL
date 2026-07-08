@@ -33,17 +33,26 @@
             }
         })();
 
-        // Theme Initialization (Instant & Isolated)
+        // Theme Initialization (Instant & Synced with Global)
         (function() {
             try {
                 var override = localStorage.getItem('nitnem_theme_override');
+                var globalTheme = localStorage.getItem('anhad_theme'); // global key from index.html
                 var effectiveTheme;
                 if (override === 'light' || override === 'dark') {
+                    // Nitnem reader's own override takes top priority
                     effectiveTheme = override;
-                } else {
-                    // Auto time-based: 6am - 7pm (19:00) is light, otherwise dark
+                } else if (globalTheme === 'light' || globalTheme === 'dark') {
+                    // Use the global homepage theme preference
+                    effectiveTheme = globalTheme;
+                } else if (globalTheme === 'auto' || !globalTheme) {
+                    // Auto time-based: 5am - 8pm is light, otherwise dark (matches global-theme.js logic)
                     var hour = new Date().getHours();
-                    effectiveTheme = (hour >= 6 && hour < 19) ? 'light' : 'dark';
+                    effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+                } else {
+                    // Fallback: time-based
+                    var hour = new Date().getHours();
+                    effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
                 }
                 var html = document.documentElement;
                 html.setAttribute('data-theme', effectiveTheme);
@@ -191,19 +200,92 @@
         /* Dark Mode Overrides */
         [data-theme="dark"] {
             --bg-primary: #000000;
-            --text-primary: #FFFFFF;
+            --bg-secondary: #1C1C1E;
+            --bg-card: #2C2C2E;
+            --text-primary: #F5F5F7;
             --text-secondary: #8E8E93;
+            --text-tertiary: #636366;
             --ios-blue: #0A84FF;
             --ios-orange: #FF9F0A;
             --sacred-gold: #D4AF37;
             --glass-bg: rgba(28, 28, 30, 0.85);
-            --separator: rgba(255, 255, 255, 0.15);
+            --separator: rgba(255, 255, 255, 0.12);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] body {
+            background: #000000;
+            color: #F5F5F7;
+        }
+
+        /* Dark mode: Cards */
+        [data-theme="dark"] .quick-card,
+        [data-theme="dark"] .category-card,
+        [data-theme="dark"] .search-trigger,
+        [data-theme="dark"] .hero-greeting,
+        [data-theme="dark"] .theme-toggle {
+            background: linear-gradient(160deg, #2C2C2E 0%, #252529 40%, #1C1C1E 100%);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow:
+                0 4px 16px rgba(0, 0, 0, 0.4),
+                0 2px 6px rgba(0, 0, 0, 0.3),
+                inset 0 1px 2px rgba(255, 255, 255, 0.08);
         }
         
-        [data-theme="dark"] body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
+        [data-theme="dark"] .quick-card:active,
+        [data-theme="dark"] .category-card:active {
+            box-shadow:
+                inset 6px 6px 16px rgba(0, 0, 0, 0.5),
+                inset 3px 3px 8px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
         }
+
+        /* Dark mode: Header glass */
+        [data-theme="dark"] .header {
+            background: rgba(28, 28, 30, 0.92);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Dark mode: Search icon & placeholder */
+        [data-theme="dark"] .search-trigger {
+            color: #636366;
+        }
+
+        /* Dark mode: Skeleton */
+        [data-theme="dark"] .skeleton-container {
+            background: #000000;
+        }
+        [data-theme="dark"] .skeleton {
+            background: #1C1C1E;
+        }
+        [data-theme="dark"] .skeleton::after {
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255, 255, 255, 0.04) 50%,
+                transparent 100%
+            );
+        }
+
+        /* Dark mode: Section titles */
+        [data-theme="dark"] .section-title h2 {
+            color: #F5F5F7;
+        }
+
+        /* Dark mode: Tab bar */
+        [data-theme="dark"] .tab-bar {
+            background: rgba(18, 18, 20, 0.95);
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dark mode: Badge (non-gold) */
+        [data-theme="dark"] .badge:not(.gold) {
+            background: rgba(255, 255, 255, 0.08);
+            color: #8E8E93;
+        }
+
         
         /* ═══════════════════════════════════════════════════════════════
            SKELETON LOADING

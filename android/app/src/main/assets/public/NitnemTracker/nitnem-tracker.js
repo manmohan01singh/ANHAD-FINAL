@@ -2525,8 +2525,9 @@ const HeaderManager = {
             this.updateSubtitle(hours);
         };
 
-        updateClock();
-        this.clockInterval = setInterval(updateClock, 1000);
+        this.clockInterval = setInterval(() => {
+            if (!document.hidden) updateClock();
+        }, 1000);
     },
 
     /**

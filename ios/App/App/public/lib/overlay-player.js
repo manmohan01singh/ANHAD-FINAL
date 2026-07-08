@@ -7,7 +7,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-(function() {
+(function () {
   'use strict';
 
   // Prevent double-init
@@ -24,20 +24,19 @@
    * Initialize the UI wrapper
    */
   function init() {
-    console.log('[OverlayPlayerUI] Initializing thin UI wrapper...');
+    console.log('[OverlayPlayerUI] Checking audio singleton availability...');
 
-    // Wait for singleton to be available
+    // Wait for singleton to be available (dynamic demand load)
     if (!window.AnhadAudio) {
-      retryCount++;
-      if (retryCount >= MAX_RETRIES) {
-        console.error('[OverlayPlayerUI] AnhadAudio not available after retries, giving up');
-        return;
-      }
-      console.warn('[OverlayPlayerUI] AnhadAudio not ready, retrying...');
-      setTimeout(init, 100);
+      console.log('[OverlayPlayerUI] AnhadAudio not ready yet, registering ready listener');
+      window.addEventListener('anhad_audio_ready', () => {
+        console.log('[OverlayPlayerUI] Waking up UI initialization...');
+        init();
+      }, { once: true });
       return;
     }
 
+    console.log('[OverlayPlayerUI] AnhadAudio active, initializing thin UI wrapper...');
     // Inject UI
     injectUI();
 
@@ -133,7 +132,7 @@
     const currentPath = window.location.pathname.toLowerCase();
     const isPlayerPage = currentPath.includes('gurbani-radio');
     const isDashboardPage = currentPath.includes('dashboard');
-    
+
     if (isPlayerPage || isDashboardPage) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');

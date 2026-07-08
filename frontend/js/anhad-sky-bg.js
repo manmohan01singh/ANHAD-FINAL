@@ -59,21 +59,6 @@
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     document.documentElement.setAttribute('data-time-of-day', slot);
 
-    if (mode === 'light' || mode === 'dark') {
-      const currentVal = document.documentElement.style.getPropertyValue('--dynamic-bg-url');
-      if (currentVal && currentVal !== 'none') {
-        document.documentElement.style.removeProperty('--dynamic-bg-url');
-      }
-      if (document.body.style.backgroundImage && document.body.style.backgroundImage !== 'none') {
-        document.body.style.backgroundImage = 'none';
-        document.body.style.backgroundSize = '';
-        document.body.style.backgroundPosition = '';
-        document.body.style.backgroundRepeat = '';
-        document.body.style.backgroundAttachment = '';
-      }
-      return;
-    }
-
     applyTimeAdaptiveCardColors(slot);
 
     const bgUrl = BG_IMAGES[slot];
@@ -196,15 +181,10 @@
   function smartRefresh() {
     const slot = getSlot();
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
-    let bgIsStale = false;
-    if (mode === 'auto') {
-      const expectedBgUrl = BG_IMAGES[slot];
-      const currentBg = document.documentElement.style.getPropertyValue('--dynamic-bg-url') || '';
-      bgIsStale = expectedBgUrl && !currentBg.includes(expectedBgUrl);
-    } else {
-      const currentBg = document.documentElement.style.getPropertyValue('--dynamic-bg-url') || '';
-      bgIsStale = currentBg && currentBg !== 'none';
-    }
+    const expectedBgUrl = BG_IMAGES[slot];
+    const currentBg = document.documentElement.style.getPropertyValue('--dynamic-bg-url') || '';
+    const bgIsStale = expectedBgUrl && !currentBg.includes(expectedBgUrl);
+
     if (slot === _lastSlot && mode === _lastMode && !bgIsStale) return;
     _lastSlot = slot;
     _lastMode = mode;

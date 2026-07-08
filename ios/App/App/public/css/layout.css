@@ -9,7 +9,6 @@ html {
   overflow-y: auto;
   /* Page scrolls here — ONE root */
   overflow-x: hidden;
-  overscroll-behavior-y: none;
   height: auto;
   /* Do NOT lock height — content must expand */
 }
@@ -19,9 +18,32 @@ body {
   /* Must NOT be a scroll container — that's html's job */
   overflow-x: hidden;
   /* Block horizontal bleed only */
-  overscroll-behavior-y: none;
   min-height: 100dvh;
   /* Content can grow beyond viewport */
+  position: relative;
+  background-color: transparent !important;
+}
+
+/* Universal dynamic background with premium blur */
+body::before {
+  content: "" !important;
+  display: block;
+  position: fixed;
+  inset: -20px;
+  background-image: var(--dynamic-bg-url, none);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  filter: blur(20px) brightness(0.92);
+  transform: scale(1.1);
+  z-index: -9999;
+  pointer-events: none;
+}
+
+/* In dark mode, make it slightly darker and warmer */
+html.dark-mode body::before,
+[data-theme="dark"] body::before {
+  filter: blur(20px) brightness(0.6) saturate(0.8);
 }
 
 /* ── MAIN APP CONTAINER ── */

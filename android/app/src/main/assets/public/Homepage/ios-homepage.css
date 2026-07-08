@@ -29,24 +29,24 @@
     --ease-ios: cubic-bezier(0.28, 0.11, 0.32, 1);
     --ease-spring: cubic-bezier(0.37, 0.01, 0.28, 1);
     --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    
+
     /* Claymorphism tokens — blur reduced for Android WebView GPU performance */
     --clay-bg: rgba(255, 255, 255, 0.08);
     --clay-bg-strong: rgba(255, 255, 255, 0.12);
     --clay-border: rgba(255, 255, 255, 0.18);
     --clay-border-strong: rgba(255, 255, 255, 0.25);
-    
+
     --clay-shadow-light: 8px 8px 16px rgba(0, 0, 0, 0.4);
     --clay-shadow-dark: -4px -4px 12px rgba(255, 255, 255, 0.05);
-    --clay-shadow-outer: 12px 12px 24px rgba(0, 0, 0, 0.5), 
-                          -6px -6px 16px rgba(255, 255, 255, 0.08);
+    --clay-shadow-outer: 12px 12px 24px rgba(0, 0, 0, 0.5),
+        -6px -6px 16px rgba(255, 255, 255, 0.08);
     --clay-shadow-pressed: inset 6px 6px 12px rgba(0, 0, 0, 0.4),
-                           inset -3px -3px 8px rgba(255, 255, 255, 0.05);
+        inset -3px -3px 8px rgba(255, 255, 255, 0.05);
     --clay-shadow-gold: 0 8px 32px rgba(201, 162, 39, 0.4),
-                        0 4px 16px rgba(201, 162, 39, 0.2);
+        0 4px 16px rgba(201, 162, 39, 0.2);
     --clay-shadow-gold-strong: 0 12px 48px rgba(201, 162, 39, 0.5),
-                              0 6px 24px rgba(201, 162, 39, 0.3);
-    
+        0 6px 24px rgba(201, 162, 39, 0.3);
+
     /* PERF: Reduced blur values — blur(30px) crushes GPU on Android WebView */
     --clay-blur: blur(12px);
     --clay-blur-strong: blur(16px);
@@ -74,7 +74,8 @@
     -webkit-font-smoothing: antialiased;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -96,10 +97,6 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   L0: ENTRY OVERLAY (Removed)
-   ───────────────────────────────────────────────────────────────────────────── */
-
-/* ─────────────────────────────────────────────────────────────────────────────
    L1: SCENE BACKGROUND — Darbar Sahib
    ───────────────────────────────────────────────────────────────────────────── */
 #scene-bg {
@@ -109,10 +106,9 @@ body {
     background-size: cover;
     background-position: center 40%;
     background-repeat: no-repeat;
-    background-image: image-set(
-        url('../assets/darbar-sahib-day.avif') type('image/avif'),
-        url('../assets/darbar-sahib-day.webp') type('image/webp')
-    );
+    /* Default fallback image: day */
+    background-image: image-set(url('../assets/darbar-sahib-day.avif') type('image/avif'),
+            url('../assets/darbar-sahib-day.webp') type('image/webp'));
     opacity: 0;
     transform: scale(1.05);
     /* PERF: Pre-promote to compositor layer before animation */
@@ -129,7 +125,26 @@ body {
 
 #scene-bg.loaded {
     transform: scale(1.0);
-    will-change: auto; /* Release after animation */
+    will-change: auto;
+    /* Release after animation */
+}
+
+/* Time of Day Declarative image loading matching the data-tod attribute */
+html[data-tod="amritvela"] #scene-bg {
+    background-image: image-set(url('../assets/Darbar-sahib-AMRITVELA.avif') type('image/avif'),
+            url('../assets/Darbar-sahib-AMRITVELA.webp') type('image/webp'));
+}
+
+html[data-tod="morning"] #scene-bg,
+html[data-tod="afternoon"] #scene-bg {
+    background-image: image-set(url('../assets/darbar-sahib-day.avif') type('image/avif'),
+            url('../assets/darbar-sahib-day.webp') type('image/webp'));
+}
+
+html[data-tod="evening"] #scene-bg,
+html[data-tod="night"] #scene-bg {
+    background-image: image-set(url('../assets/darbar-sahib-evening.avif') type('image/avif'),
+            url('../assets/darbar-sahib-evening.webp') type('image/webp'));
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -139,12 +154,10 @@ body {
     position: fixed;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(
-        180deg,
-        rgba(10, 14, 26, 0.3) 0%,
-        rgba(10, 14, 26, 0.1) 40%,
-        rgba(10, 14, 26, 0.4) 100%
-    );
+    background: linear-gradient(180deg,
+            rgba(10, 14, 26, 0.3) 0%,
+            rgba(10, 14, 26, 0.1) 40%,
+            rgba(10, 14, 26, 0.4) 100%);
     transition: background 3s ease;
     pointer-events: none;
 }
@@ -156,11 +169,9 @@ body {
     position: fixed;
     inset: 0;
     z-index: 2;
-    background: radial-gradient(
-        ellipse 65% 55% at 50% 45%,
-        transparent 0%,
-        rgba(0, 0, 0, 0.55) 100%
-    );
+    background: radial-gradient(ellipse 65% 55% at 50% 45%,
+            transparent 0%,
+            rgba(0, 0, 0, 0.55) 100%);
     pointer-events: none;
 }
 
@@ -176,12 +187,10 @@ body {
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
-    background: radial-gradient(
-        circle,
-        rgba(255, 220, 120, 0.5) 0%,
-        rgba(255, 200, 80, 0.2) 40%,
-        transparent 70%
-    );
+    background: radial-gradient(circle,
+            rgba(255, 220, 120, 0.5) 0%,
+            rgba(255, 200, 80, 0.2) 40%,
+            transparent 70%);
     /* PERF: Static blur on a fixed element is fine; but don't animate it */
     filter: blur(20px);
     pointer-events: none;
@@ -218,12 +227,10 @@ body {
     width: 150vw;
     height: 100vh;
     transform: translate(-50%, 0);
-    background: radial-gradient(
-        ellipse at 50% 65%,
-        #FFE885 0%,
-        rgba(201, 162, 39, 0.6) 30%,
-        transparent 65%
-    );
+    background: radial-gradient(ellipse at 50% 65%,
+            #FFE885 0%,
+            rgba(201, 162, 39, 0.6) 30%,
+            transparent 65%);
     mix-blend-mode: overlay;
     /* PERF: Reduced from 40px — large blur on large element is extremely expensive */
     filter: blur(20px);
@@ -276,12 +283,12 @@ body {
     gap: 12px;
     padding: 14px 24px;
     background: linear-gradient(145deg,
-        rgba(201, 162, 39, 0.3) 0%,
-        rgba(201, 162, 39, 0.2) 50%,
-        rgba(201, 162, 39, 0.1) 100%);
+            rgba(201, 162, 39, 0.3) 0%,
+            rgba(201, 162, 39, 0.2) 50%,
+            rgba(201, 162, 39, 0.1) 100%);
     border: 1.5px solid rgba(201, 162, 39, 0.4);
     border-radius: var(--clay-radius-full);
-    box-shadow: 
+    box-shadow:
         8px 8px 24px rgba(0, 0, 0, 0.5),
         -4px -4px 16px rgba(255, 255, 255, 0.1),
         0 0 30px rgba(201, 162, 39, 0.35),
@@ -299,7 +306,7 @@ body {
 
 #live-badge:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 
+    box-shadow:
         12px 12px 32px rgba(0, 0, 0, 0.55),
         -6px -6px 20px rgba(255, 255, 255, 0.12),
         0 0 45px rgba(201, 162, 39, 0.5),
@@ -321,7 +328,7 @@ body {
     background: #C9A227;
     border-radius: 50%;
     animation: livePulse 1.8s ease-in-out infinite;
-    box-shadow: 
+    box-shadow:
         0 0 15px rgba(201, 162, 39, 0.9),
         0 0 30px rgba(201, 162, 39, 0.5),
         inset -1px -1px 3px rgba(0, 0, 0, 0.3),
@@ -329,8 +336,17 @@ body {
 }
 
 @keyframes livePulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(0.9); }
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(0.9);
+    }
 }
 
 #live-badge .label {
@@ -373,18 +389,18 @@ body {
     font-size: 17px;
     font-weight: 500;
     color: var(--gold-light);
-    text-shadow: 
+    text-shadow:
         0 0 30px var(--gold-glow),
         2px 2px 4px rgba(0, 0, 0, 0.4);
     line-height: 1.5;
     max-width: 320px;
     padding: 16px 24px;
     background: linear-gradient(145deg,
-        rgba(201, 162, 39, 0.15) 0%,
-        rgba(201, 162, 39, 0.08) 100%);
+            rgba(201, 162, 39, 0.15) 0%,
+            rgba(201, 162, 39, 0.08) 100%);
     border-radius: var(--clay-radius-lg);
     border: 1px solid rgba(201, 162, 39, 0.25);
-    box-shadow: 
+    box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.4),
         inset 0 1px 1px rgba(255, 255, 255, 0.1);
     /* PERF: Reduced from blur(20px) */
@@ -396,7 +412,7 @@ body {
 
 #shabad:hover {
     transform: translateY(-3px);
-    box-shadow: 
+    box-shadow:
         12px 12px 28px rgba(0, 0, 0, 0.45),
         -6px -6px 16px rgba(255, 255, 255, 0.08),
         0 0 30px rgba(201, 162, 39, 0.2),
@@ -427,12 +443,29 @@ body {
 }
 
 /* PERF: Compressed stagger — all cards visible within 0.4s instead of 1.0s */
-.delay-0 { animation-delay: 0s; }
-.delay-1 { animation-delay: 0.08s; }
-.delay-2 { animation-delay: 0.16s; }
-.delay-3 { animation-delay: 0.24s; }
-.delay-4 { animation-delay: 0.32s; }
-.delay-5 { animation-delay: 0.40s; }
+.delay-0 {
+    animation-delay: 0s;
+}
+
+.delay-1 {
+    animation-delay: 0.08s;
+}
+
+.delay-2 {
+    animation-delay: 0.16s;
+}
+
+.delay-3 {
+    animation-delay: 0.24s;
+}
+
+.delay-4 {
+    animation-delay: 0.32s;
+}
+
+.delay-5 {
+    animation-delay: 0.40s;
+}
 
 /* Fireworks Particle Canvas */
 #fireworks-canvas {
@@ -453,7 +486,7 @@ body {
     background: rgba(255, 255, 255, 0.06);
     border-radius: var(--clay-radius-md);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 
+    box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.3);
     /* PERF: Reduced from blur(16px) */
     backdrop-filter: blur(8px);
@@ -462,7 +495,9 @@ body {
 }
 
 @keyframes fadeIn {
-    to { opacity: 1; }
+    to {
+        opacity: 1;
+    }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -475,12 +510,12 @@ body {
     gap: 14px;
     padding: 22px 56px;
     /* Multi-layer gradient for clay depth */
-    background: linear-gradient(165deg, 
-        #E8C547 0%,
-        #D4B03A 25%,
-        #C9A227 50%,
-        #B89120 75%,
-        #A6821B 100%);
+    background: linear-gradient(165deg,
+            #E8C547 0%,
+            #D4B03A 25%,
+            #C9A227 50%,
+            #B89120 75%,
+            #A6821B 100%);
     border-radius: var(--clay-radius-full);
     text-decoration: none;
     /* EXTREME Claymorphism Shadow Stack */
@@ -513,9 +548,9 @@ body {
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.3) 50%,
-        transparent 100%);
+            transparent 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 100%);
     transition: left 0.6s ease;
 }
 
@@ -545,12 +580,12 @@ body {
         /* Inner highlights */
         inset 0 2px 4px rgba(255, 255, 255, 0.5),
         inset 0 -2px 4px rgba(0, 0, 0, 0.12);
-    background: linear-gradient(165deg, 
-        #F0D050 0%,
-        #E0B840 25%,
-        #D4AC30 50%,
-        #C49C28 75%,
-        #B08A20 100%);
+    background: linear-gradient(165deg,
+            #F0D050 0%,
+            #E0B840 25%,
+            #D4AC30 50%,
+            #C49C28 75%,
+            #B08A20 100%);
 }
 
 /* Active/Pressed State — Pressed Clay */
@@ -565,10 +600,10 @@ body {
         0 0 30px rgba(201, 162, 39, 0.3),
         /* Inner gradient shift */
         inset 0 3px 6px rgba(0, 0, 0, 0.2);
-    background: linear-gradient(165deg, 
-        #B89120 0%,
-        #C9A227 50%,
-        #D4B03A 100%);
+    background: linear-gradient(165deg,
+            #B89120 0%,
+            #C9A227 50%,
+            #D4B03A 100%);
 }
 
 /* Focus state for accessibility */
@@ -606,15 +641,22 @@ body.audio-playing #temple-glow {
 }
 
 @keyframes templeAuraPulse {
-    0%   { opacity: 0.6; transform: translate(-50%, 0) scale(1); }
-    100% { opacity: 0.95; transform: translate(-50%, 0) scale(1.06); }
+    0% {
+        opacity: 0.6;
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    100% {
+        opacity: 0.95;
+        transform: translate(-50%, 0) scale(1.06);
+    }
 }
 
 body.audio-playing #live-badge {
     background: linear-gradient(145deg,
-        rgba(201, 162, 39, 0.4) 0%,
-        rgba(201, 162, 39, 0.25) 50%,
-        rgba(201, 162, 39, 0.12) 100%);
+            rgba(201, 162, 39, 0.4) 0%,
+            rgba(201, 162, 39, 0.25) 50%,
+            rgba(201, 162, 39, 0.12) 100%);
     box-shadow:
         10px 10px 28px rgba(0, 0, 0, 0.5),
         -5px -5px 16px rgba(255, 255, 255, 0.12),
@@ -644,14 +686,17 @@ body.audio-playing #enter-btn {
 }
 
 @keyframes btnGoldPulse {
-    0%, 100% { 
-        box-shadow: 
+
+    0%,
+    100% {
+        box-shadow:
             12px 16px 40px rgba(0, 0, 0, 0.5),
             0 0 70px rgba(201, 162, 39, 0.6),
             0 0 120px rgba(201, 162, 39, 0.35);
     }
-    50% { 
-        box-shadow: 
+
+    50% {
+        box-shadow:
             12px 16px 40px rgba(0, 0, 0, 0.5),
             0 0 90px rgba(201, 162, 39, 0.8),
             0 0 160px rgba(201, 162, 39, 0.45);
@@ -662,49 +707,39 @@ body.audio-playing #enter-btn {
    TIME-OF-DAY VARIANTS
    ───────────────────────────────────────────────────────────────────────────── */
 body.time-night #color-grade {
-    background: linear-gradient(
-        180deg,
-        rgba(5, 5, 20, 0.6) 0%,
-        rgba(5, 5, 20, 0.3) 40%,
-        rgba(5, 5, 20, 0.7) 100%
-    );
+    background: linear-gradient(180deg,
+            rgba(5, 5, 20, 0.6) 0%,
+            rgba(5, 5, 20, 0.3) 40%,
+            rgba(5, 5, 20, 0.7) 100%);
 }
 
 body.time-night #light-source {
-    background: radial-gradient(
-        circle,
-        rgba(200, 210, 255, 0.3) 0%,
-        rgba(180, 200, 255, 0.1) 40%,
-        transparent 70%
-    );
+    background: radial-gradient(circle,
+            rgba(200, 210, 255, 0.3) 0%,
+            rgba(180, 200, 255, 0.1) 40%,
+            transparent 70%);
     top: 12%;
 }
 
 body.time-amritvela #color-grade {
-    background: linear-gradient(
-        180deg,
-        rgba(10, 5, 30, 0.5) 0%,
-        rgba(20, 10, 40, 0.2) 40%,
-        rgba(10, 5, 20, 0.6) 100%
-    );
+    background: linear-gradient(180deg,
+            rgba(10, 5, 30, 0.5) 0%,
+            rgba(20, 10, 40, 0.2) 40%,
+            rgba(10, 5, 20, 0.6) 100%);
 }
 
 body.time-evening #color-grade {
-    background: linear-gradient(
-        180deg,
-        rgba(40, 15, 10, 0.4) 0%,
-        rgba(30, 10, 5, 0.15) 40%,
-        rgba(20, 8, 15, 0.5) 100%
-    );
+    background: linear-gradient(180deg,
+            rgba(40, 15, 10, 0.4) 0%,
+            rgba(30, 10, 5, 0.15) 40%,
+            rgba(20, 8, 15, 0.5) 100%);
 }
 
 body.time-evening #light-source {
-    background: radial-gradient(
-        circle,
-        rgba(255, 160, 60, 0.45) 0%,
-        rgba(255, 120, 40, 0.15) 40%,
-        transparent 70%
-    );
+    background: radial-gradient(circle,
+            rgba(255, 160, 60, 0.45) 0%,
+            rgba(255, 120, 40, 0.15) 40%,
+            transparent 70%);
     top: 15%;
 }
 
@@ -712,25 +747,63 @@ body.time-evening #light-source {
    RESPONSIVE
    ───────────────────────────────────────────────────────────────────────────── */
 @media (max-width: 380px) {
-    #ik-onkar .gurmukhi { font-size: 38px; }
-    #shabad { font-size: 15px; max-width: 280px; padding: 14px 20px; }
-    #translation { font-size: 12px; max-width: 260px; padding: 10px 16px; }
-    #enter-btn { padding: 18px 40px; }
-    .enter-btn-main { font-size: 15px; }
-    #bottom-ui { padding-top: 8vh; gap: 10px; }
+    #ik-onkar .gurmukhi {
+        font-size: 38px;
+    }
+
+    #shabad {
+        font-size: 15px;
+        max-width: 280px;
+        padding: 14px 20px;
+    }
+
+    #translation {
+        font-size: 12px;
+        max-width: 260px;
+        padding: 10px 16px;
+    }
+
+    #enter-btn {
+        padding: 18px 40px;
+    }
+
+    .enter-btn-main {
+        font-size: 15px;
+    }
+
+    #bottom-ui {
+        padding-top: 8vh;
+        gap: 10px;
+    }
 }
 
 @media (min-width: 500px) {
-    #ik-onkar .gurmukhi { font-size: 56px; }
-    #shabad { font-size: 19px; max-width: 380px; padding: 18px 28px; }
-    #translation { font-size: 14px; max-width: 340px; padding: 14px 24px; }
-    #bottom-ui { gap: 14px; }
+    #ik-onkar .gurmukhi {
+        font-size: 56px;
+    }
+
+    #shabad {
+        font-size: 19px;
+        max-width: 380px;
+        padding: 18px 28px;
+    }
+
+    #translation {
+        font-size: 14px;
+        max-width: 340px;
+        padding: 14px 24px;
+    }
+
+    #bottom-ui {
+        gap: 14px;
+    }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    REDUCED MOTION
    ───────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
@@ -739,6 +812,11 @@ body.time-evening #light-source {
         transition-duration: 0.01ms !important;
     }
 
-    #gurbani-wave span { animation: none !important; }
-    #temple-glow { animation: none !important; }
+    #gurbani-wave span {
+        animation: none !important;
+    }
+
+    #temple-glow {
+        animation: none !important;
+    }
 }

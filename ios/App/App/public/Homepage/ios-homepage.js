@@ -1,7 +1,7 @@
 /**
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
- * ANHAD â€” CINEMATIC DARBAR SAHIB HOMEPAGE
- * Version: 11.0.0 â€” Matches new ios-homepage.html cinematic layout
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * ANHAD — CINEMATIC DARBAR SAHIB HOMEPAGE
+ * Version: 11.0.0 — Matches new ios-homepage.html cinematic layout
  *
  * Features:
  * - Cinematic entry fade-in with staggered reveal
@@ -10,32 +10,32 @@
  * - Gurbani shabad rotation
  * - Stars canvas rendering (night mode)
  * - Smart welcome/session management
- * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ * ═══════════════════════════════════════════════════════════════════════════════
  */
 
 (() => {
     'use strict';
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    // SMART NAVIGATION â€” PWA & Website Session Management
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // SMART NAVIGATION — PWA & Website Session Management
+    // ═══════════════════════════════════════════════════════════════════════════════
     const WELCOME_SEEN_KEY = 'anhad_welcome_seen';
     const SESSION_KEY = 'anhad_session_active';
 
     const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                  window.navigator.standalone === true ||
-                  document.referrer.includes('android-app://');
+        window.navigator.standalone === true ||
+        document.referrer.includes('android-app://');
 
     // Check if running as Capacitor native app
     const isCapacitor = typeof window.Capacitor !== 'undefined' ||
-                        navigator.userAgent.includes('Capacitor');
+        navigator.userAgent.includes('Capacitor');
 
-    // NOTE: DO NOT skip welcome screen for Capacitor â€” user must see it on cold start
+    // NOTE: DO NOT skip welcome screen for Capacitor — user must see it on cold start
     // The sessionStorage flag 'anhad_welcomed' in index.html prevents redirect loops
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // TIME-OF-DAY SYSTEM
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     function getTimeOfDay() {
         const h = new Date().getHours();
         if (h >= 2 && h < 6) return 'amritvela';
@@ -53,19 +53,9 @@
         body.classList.remove('time-amritvela', 'time-morning', 'time-afternoon', 'time-evening', 'time-night');
         body.classList.add(`time-${tod}`);
 
-        // Update scene background image based on time
+        // Update scene background image based on time - handled declaratively via data-tod
         const sceneBg = document.getElementById('scene-bg');
         if (sceneBg) {
-            const imageMap = {
-                amritvela: '../assets/Darbar-sahib-AMRITVELA.avif',
-                morning: '../assets/darbar-sahib-day.avif',
-                afternoon: '../assets/darbar-sahib-day.avif',
-                evening: '../assets/darbar-sahib-evening.avif',
-                night: '../assets/darbar-sahib-evening.avif'
-            };
-            const img = imageMap[tod] || imageMap.morning;
-            sceneBg.style.backgroundImage = `url('${img}')`;
-
             // Trigger loaded animation
             requestAnimationFrame(() => {
                 setTimeout(() => sceneBg.classList.add('loaded'), 100);
@@ -84,10 +74,10 @@
         }
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // FIREWORKS PARTICLE SYSTEM
     // Golden particles explode on click/touch anywhere
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     function initFireworks() {
         const canvas = document.getElementById('fireworks-canvas');
         if (!canvas) return;
@@ -140,12 +130,25 @@
             }
         }
 
-        function createExplosion(x, y) {
+        // Handle click/touch anywhere on page
+        document.addEventListener('click', (e) => {
+            // Don't trigger on links/buttons to avoid interfering with navigation
+            if (e.target.closest('a, button, #enter-btn')) return;
             const particleCount = 25;
             for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle(x, y));
+                particles.push(new Particle(e.clientX, e.clientY));
             }
-        }
+        });
+
+        // Touch support for mobile
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('a, button, #enter-btn')) return;
+            const touch = e.touches[0];
+            const particleCount = 25;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle(touch.clientX, touch.clientY));
+            }
+        }, { passive: true });
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -159,20 +162,6 @@
             if (!document.hidden) requestAnimationFrame(animate);
         }
 
-        // Handle click/touch anywhere on page
-        document.addEventListener('click', (e) => {
-            // Don't trigger on links/buttons to avoid interfering with navigation
-            if (e.target.closest('a, button, #enter-btn')) return;
-            createExplosion(e.clientX, e.clientY);
-        });
-
-        // Touch support for mobile
-        document.addEventListener('touchstart', (e) => {
-            if (e.target.closest('a, button, #enter-btn')) return;
-            const touch = e.touches[0];
-            createExplosion(touch.clientX, touch.clientY);
-        }, { passive: true });
-
         // Handle resize
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
@@ -182,9 +171,9 @@
         animate();
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // STARS CANVAS (Night/Amritvela only)
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     function initStars() {
         const canvas = document.getElementById('stars-canvas');
         if (!canvas) return;
@@ -274,9 +263,9 @@
         }
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // LIVE KIRTAN AUDIO - Uses AnhadAudio Singleton
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     function loadScriptOnce(src) {
         return new Promise((resolve, reject) => {
             const existing = document.querySelector(`script[src="${src}"]`);
@@ -373,16 +362,16 @@
         console.log('[Homepage] Audio initialized with AnhadAudio singleton');
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // GURBANI SHABAD ROTATION
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     const SHABADS = [
-        { gurmukhi: 'à¨§à©°à¨¨à© à¨¸à© à¨µà©‡à¨²à¨¾ à¨œà¨¿à¨¤à© à¨®à©ˆ à¨¸à¨¤à¨¿à¨—à©à¨°à© à¨®à¨¿à¨²à¨¿à¨†', english: 'Blessed is the time when I meet the True Guru' },
-        { gurmukhi: 'à¨¸à¨¾à¨šà© à¨•à¨¹à©‹à¨‚ à¨¸à©à¨¨ à¨²à©‡à¨¹à© à¨¸à¨­à©ˆ à¨œà¨¿à¨¨ à¨ªà©à¨°à©‡à¨® à¨•à©€à¨“ à¨¤à¨¿à¨¨ à¨¹à©€ à¨ªà©à¨°à¨­à© à¨ªà¨¾à¨‡à¨“', english: 'I speak the truth â€“ only through love is God attained' },
-        { gurmukhi: 'à¨¨à¨¾à¨¨à¨• à¨¨à¨¾à¨® à¨šà©œà©à¨¹à¨¦à©€ à¨•à¨²à¨¾ à¨¤à©‡à¨°à©‡ à¨­à¨¾à¨£à©‡ à¨¸à¨°à¨¬à©±à¨¤ à¨¦à¨¾ à¨­à¨²à¨¾', english: 'Nanak, in Thy Name, may all prosper by Thy grace' },
-        { gurmukhi: 'à¨à¨• à¨“à¨…à©°à¨•à¨¾à¨° à¨¸à¨¤à¨¿ à¨¨à¨¾à¨®à©', english: 'There is One God, Truth is His Name' },
-        { gurmukhi: 'à¨®à¨¨ à¨¤à©‚à©° à¨œà©‹à¨¤à¨¿ à¨¸à¨°à©‚à¨ªà© à¨¹à©ˆ à¨†à¨ªà¨£à¨¾ à¨®à©‚à¨²à© à¨ªà¨›à¨¾à¨£à©', english: 'O my mind, you are the embodiment of the Divine Light â€“ know your origin' },
-        { gurmukhi: 'à¨¦à©‡à¨¹ à¨¸à¨¼à¨¿à¨µà¨¾ à¨¬à¨° à¨®à©‹à¨¹à¨¿ à¨‡à¨¹à©ˆ à¨¸à¨¼à©à¨­ à¨•à¨°à¨®à¨¨ à¨¤à©‡ à¨•à¨¬à¨¹à©‚à©° à¨¨ à¨Ÿà¨°à©‹à¨‚', english: 'Grant me this boon, O God â€“ may I never refrain from righteous acts' }
+        { gurmukhi: 'ਧੰਨੁ ਸੁ ਵੇਲਾ ਜਿਤੁ ਮੈ ਸਤਿਗੁਰੁ ਮਿਲਿਆ', english: 'Blessed is the time when I meet the True Guru' },
+        { gurmukhi: 'ਸਾਚੁ ਕਹੋਂ ਸੁਨ ਲੇਹ ਸਭੈ ਜਿਨ ਪ੍ਰੇਮ ਕੀਓ ਤਿਨ ਹੀ ਪ੍ਰਭੁ ਪਾਇਓ', english: 'I speak the truth – only through love is God attained' },
+        { gurmukhi: 'ਨਾਨਕ ਨਾਮ ਚੜ੍ਹਦੀ ਕਲਾ ਤੇਰੇ ਭਾਣੇ ਸਰਬੱਤ ਦਾ ਭਲਾ', english: 'Nanak, in Thy Name, may all prosper by Thy grace' },
+        { gurmukhi: 'ੴ ਸਤਿ ਨਾਮੁ', english: 'There is One God, Truth is His Name' },
+        { gurmukhi: 'ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ', english: 'O my mind, you are the embodiment of the Divine Light – know your origin' },
+        { gurmukhi: 'ਦੇਹ ਸਿਵਾ ਬਰੁ ਮੋਹਿ ਇਹੈ ਸੁਭ ਕਰਮਨ ਤੇ ਕਬਹੂੰ ਨ ਟਰੋਂ', english: 'Grant me this boon, O God – may I never refrain from righteous acts' }
     ];
 
     function initShabadRotation() {
@@ -414,9 +403,9 @@
         setInterval(rotateShabad, 12000);
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-    // ENTER BUTTON â€” Navigation Handler
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // ENTER BUTTON — Navigation Handler
+    // ═══════════════════════════════════════════════════════════════════════════════
     function initEnterButton() {
         const enterBtn = document.getElementById('enter-btn');
         if (!enterBtn) return;
@@ -441,9 +430,9 @@
         });
     }
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     // INITIALIZATION
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ═══════════════════════════════════════════════════════════════════════════════
     function init() {
         applyTimeOfDay();
         scheduleAfterFirstPaint(initAudio);
@@ -451,7 +440,7 @@
         initEnterButton();
         scheduleAfterFirstPaint(initFireworks);
 
-        console.log('%câ˜¬ ANHAD Cinematic Homepage Ready', 'color: #C9A227; font-size: 14px; font-weight: bold;');
+        console.log('%c☬ ANHAD Cinematic Homepage Ready', 'color: #C9A227; font-size: 14px; font-weight: bold;');
     }
 
     function scheduleAfterFirstPaint(callback) {

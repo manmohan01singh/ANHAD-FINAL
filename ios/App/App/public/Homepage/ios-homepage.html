@@ -34,11 +34,44 @@
       }
     });
     observer.observe(html, { childList: true, subtree: true });
+
+    // TIME-OF-DAY LCP BACKGROUND DECLARATIVE PRELOAD
+    try {
+      const h = new Date().getHours();
+      let tod = 'morning';
+      if (h >= 2 && h < 6) tod = 'amritvela';
+      else if (h >= 6 && h < 12) tod = 'morning';
+      else if (h >= 12 && h < 17) tod = 'afternoon';
+      else if (h >= 17 && h < 21) tod = 'evening';
+      else tod = 'night';
+
+      html.setAttribute('data-tod', tod);
+
+      const imageMap = {
+        amritvela: '../assets/Darbar-sahib-AMRITVELA.avif',
+        morning: '../assets/darbar-sahib-day.avif',
+        afternoon: '../assets/darbar-sahib-day.avif',
+        evening: '../assets/darbar-sahib-evening.avif',
+        night: '../assets/darbar-sahib-evening.avif'
+      };
+      const imgUrl = imageMap[tod] || imageMap.morning;
+
+      const l = document.createElement('link');
+      l.rel = 'preload';
+      l.as = 'image';
+      l.href = imgUrl;
+      l.type = 'image/avif';
+      l.setAttribute('fetchpriority', 'high');
+      if (document.head) {
+        document.head.appendChild(l);
+      } else {
+        document.documentElement.appendChild(l);
+      }
+    } catch (err) {}
   } catch (e) {}
 })();
   </script>
   <meta name="color-scheme" content="light dark">
-    <link rel="preload" as="image" href="../assets/darbar-sahib-day.avif" type="image/avif" fetchpriority="high">
     <meta charset="UTF-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, viewport-fit=cover">

@@ -1,0 +1,2914 @@
+{
+  "lighthouseVersion": "13.4.0",
+  "requestedUrl": "http://localhost:3000/Homepage/ios-homepage.html",
+  "mainDocumentUrl": "http://localhost:3000/Homepage/ios-homepage.html",
+  "finalDisplayedUrl": "http://localhost:3000/Homepage/ios-homepage.html",
+  "finalUrl": "http://localhost:3000/Homepage/ios-homepage.html",
+  "fetchTime": "2026-07-08T08:33:40.718Z",
+  "gatherMode": "navigation",
+  "runtimeError": {
+    "code": "NO_NAVSTART",
+    "message": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+    "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+    "artifactKey": "TraceElements"
+  },
+  "runWarnings": [],
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+  "environment": {
+    "networkUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Mobile Safari/537.36",
+    "hostUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+    "benchmarkIndex": 2598.5,
+    "credits": {}
+  },
+  "audits": {
+    "first-contentful-paint": {
+      "id": "first-contentful-paint",
+      "title": "First Contentful Paint",
+      "description": "First Contentful Paint marks the time at which the first text or image is painted. [Learn more about the First Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "largest-contentful-paint": {
+      "id": "largest-contentful-paint",
+      "title": "Largest Contentful Paint",
+      "description": "Largest Contentful Paint marks the time at which the largest text or image is painted. [Learn more about the Largest Contentful Paint metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-largest-contentful-paint/)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "speed-index": {
+      "id": "speed-index",
+      "title": "Speed Index",
+      "description": "Speed Index shows how quickly the contents of a page are visibly populated. [Learn more about the Speed Index metric](https://developer.chrome.com/docs/lighthouse/performance/speed-index/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "screenshot-thumbnails": {
+      "id": "screenshot-thumbnails",
+      "title": "Screenshot Thumbnails",
+      "description": "This is what the load of your site looked like.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "final-screenshot": {
+      "id": "final-screenshot",
+      "title": "Final Screenshot",
+      "description": "The last screenshot captured of the pageload.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "total-blocking-time": {
+      "id": "total-blocking-time",
+      "title": "Total Blocking Time",
+      "description": "Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms, expressed in milliseconds. [Learn more about the Total Blocking Time metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-total-blocking-time/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "max-potential-fid": {
+      "id": "max-potential-fid",
+      "title": "Max Potential First Input Delay",
+      "description": "The maximum potential First Input Delay that your users could experience is the duration of the longest task. [Learn more about the Maximum Potential First Input Delay metric](https://developer.chrome.com/docs/lighthouse/performance/lighthouse-max-potential-fid/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "cumulative-layout-shift": {
+      "id": "cumulative-layout-shift",
+      "title": "Cumulative Layout Shift",
+      "description": "Cumulative Layout Shift measures the movement of visible elements within the viewport. [Learn more about the Cumulative Layout Shift metric](https://web.dev/articles/cls).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "server-response-time": {
+      "id": "server-response-time",
+      "title": "Initial server response time was short",
+      "description": "Keep the server response time for the main document short because all other requests depend on it. [Learn more about the Time to First Byte metric](https://developer.chrome.com/docs/lighthouse/performance/time-to-first-byte/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "interactive": {
+      "id": "interactive",
+      "title": "Time to Interactive",
+      "description": "Time to Interactive is the amount of time it takes for the page to become fully interactive. [Learn more about the Time to Interactive metric](https://developer.chrome.com/docs/lighthouse/performance/interactive/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "user-timings": {
+      "id": "user-timings",
+      "title": "User Timing marks and measures",
+      "description": "Consider instrumenting your app with the User Timing API to measure your app's real-world performance during key user experiences. [Learn more about User Timing marks](https://developer.chrome.com/docs/lighthouse/performance/user-timings/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "redirects": {
+      "id": "redirects",
+      "title": "Avoid multiple page redirects",
+      "description": "Redirects introduce additional delays before the page can be loaded. [Learn how to avoid page redirects](https://developer.chrome.com/docs/lighthouse/performance/redirects/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "mainthread-work-breakdown": {
+      "id": "mainthread-work-breakdown",
+      "title": "Minimizes main-thread work",
+      "description": "Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to minimize main-thread work](https://developer.chrome.com/docs/lighthouse/performance/mainthread-work-breakdown/)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "bootup-time": {
+      "id": "bootup-time",
+      "title": "JavaScript execution time",
+      "description": "Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. [Learn how to reduce Javascript execution time](https://developer.chrome.com/docs/lighthouse/performance/bootup-time/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "diagnostics": {
+      "id": "diagnostics",
+      "title": "Diagnostics",
+      "description": "Collection of useful page vitals.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "network-requests": {
+      "id": "network-requests",
+      "title": "Network Requests",
+      "description": "Lists the network requests that were made during page load.",
+      "score": 1,
+      "scoreDisplayMode": "informative",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "protocol",
+            "valueType": "text",
+            "label": "Protocol"
+          },
+          {
+            "key": "networkRequestTime",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Network Request Time"
+          },
+          {
+            "key": "networkEndTime",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Network End Time"
+          },
+          {
+            "key": "transferSize",
+            "valueType": "bytes",
+            "displayUnit": "kb",
+            "granularity": 1,
+            "label": "Transfer Size"
+          },
+          {
+            "key": "resourceSize",
+            "valueType": "bytes",
+            "displayUnit": "kb",
+            "granularity": 1,
+            "label": "Resource Size"
+          },
+          {
+            "key": "statusCode",
+            "valueType": "text",
+            "label": "Status Code"
+          },
+          {
+            "key": "mimeType",
+            "valueType": "text",
+            "label": "MIME Type"
+          },
+          {
+            "key": "resourceType",
+            "valueType": "text",
+            "label": "Resource Type"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.html",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 0,
+            "networkRequestTime": 4.161000000312924,
+            "networkEndTime": 7.683000000193715,
+            "finished": true,
+            "transferSize": 2444,
+            "resourceSize": 4682,
+            "statusCode": 200,
+            "mimeType": "text/html",
+            "resourceType": "Document",
+            "priority": "VeryHigh",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "http://localhost:3000/assets/darbar-sahib-day.avif",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 44.83200000226498,
+            "networkRequestTime": 47.100000001490116,
+            "networkEndTime": 55.15700000151992,
+            "finished": true,
+            "transferSize": 85342,
+            "resourceSize": 84714,
+            "statusCode": 200,
+            "mimeType": "image/avif",
+            "resourceType": "Image",
+            "priority": "High",
+            "isLinkPreload": true,
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional",
+            "sessionTargetType": "page",
+            "protocol": "h2",
+            "cache": "none",
+            "rendererStartTime": 46.42500000074506,
+            "networkRequestTime": 47.74800000153482,
+            "networkEndTime": 194.5650000013411,
+            "finished": true,
+            "transferSize": 1190,
+            "resourceSize": 11610,
+            "statusCode": 200,
+            "mimeType": "text/css",
+            "resourceType": "Stylesheet",
+            "priority": "VeryHigh",
+            "isLinkPreload": true,
+            "experimentalFromMainFrame": true,
+            "entity": "Google Fonts"
+          },
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.css",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 46.63700000196695,
+            "networkRequestTime": 48.199000000953674,
+            "networkEndTime": 53.89000000059605,
+            "finished": true,
+            "transferSize": 6495,
+            "resourceSize": 29728,
+            "statusCode": 200,
+            "mimeType": "text/css",
+            "resourceType": "Stylesheet",
+            "priority": "VeryHigh",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.js",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 46.793000001460314,
+            "networkRequestTime": 66.16800000146031,
+            "networkEndTime": 70.57500000111759,
+            "finished": true,
+            "transferSize": 6161,
+            "resourceSize": 26688,
+            "statusCode": 200,
+            "mimeType": "application/javascript",
+            "resourceType": "Script",
+            "priority": "Low",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "http://localhost:3000/css/mobile-lock.css",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 71.52500000037253,
+            "networkRequestTime": 73.08999999985099,
+            "networkEndTime": 77.82400000095367,
+            "finished": true,
+            "transferSize": 1626,
+            "resourceSize": 2804,
+            "statusCode": 200,
+            "mimeType": "text/css",
+            "resourceType": "Stylesheet",
+            "priority": "VeryLow",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "http://localhost:3000/css/theme-variables.css",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 71.68000000156462,
+            "networkRequestTime": 73.22000000067055,
+            "networkEndTime": 78.30299999937415,
+            "finished": true,
+            "transferSize": 3520,
+            "resourceSize": 15188,
+            "statusCode": 200,
+            "mimeType": "text/css",
+            "resourceType": "Stylesheet",
+            "priority": "VeryLow",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "http://localhost:3000/favicon.ico",
+            "sessionTargetType": "page",
+            "protocol": "http/1.1",
+            "cache": "none",
+            "rendererStartTime": 152.33600000105798,
+            "networkRequestTime": 152.87400000169873,
+            "networkEndTime": 158.96700000204146,
+            "finished": true,
+            "transferSize": 121705,
+            "resourceSize": 120951,
+            "statusCode": 200,
+            "mimeType": "image/x-icon",
+            "resourceType": "Other",
+            "priority": "High",
+            "experimentalFromMainFrame": true,
+            "entity": "localhost"
+          },
+          {
+            "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtqUYLknw.woff2",
+            "sessionTargetType": "page",
+            "protocol": "h3",
+            "cache": "none",
+            "rendererStartTime": 259.9089999999851,
+            "networkRequestTime": 266.18999999947846,
+            "networkEndTime": 286.0260000023991,
+            "finished": true,
+            "transferSize": 32257,
+            "resourceSize": 32228,
+            "statusCode": 200,
+            "mimeType": "font/woff2",
+            "resourceType": "Font",
+            "priority": "VeryHigh",
+            "experimentalFromMainFrame": true,
+            "entity": "Google Fonts"
+          },
+          {
+            "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtqUYLknw.woff2",
+            "sessionTargetType": "page",
+            "protocol": "h3",
+            "cache": "none",
+            "rendererStartTime": 264.1090000011027,
+            "networkRequestTime": 266.32100000046194,
+            "networkEndTime": 286.1540000010282,
+            "finished": true,
+            "transferSize": 0,
+            "resourceSize": 32228,
+            "statusCode": 200,
+            "mimeType": "font/woff2",
+            "resourceType": "Font",
+            "priority": "VeryHigh",
+            "experimentalFromMainFrame": true,
+            "entity": "Google Fonts"
+          }
+        ],
+        "debugData": {
+          "type": "debugdata",
+          "networkStartTimeTs": 16084897393,
+          "initiators": [
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 40,
+              "columnNumber": 113
+            },
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 56,
+              "columnNumber": 56
+            },
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 60,
+              "columnNumber": 51
+            },
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 121,
+              "columnNumber": 40
+            },
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 49,
+              "columnNumber": 97
+            },
+            {
+              "type": "parser",
+              "url": "http://localhost:3000/Homepage/ios-homepage.html",
+              "lineNumber": 50,
+              "columnNumber": 101
+            },
+            {
+              "type": "parser",
+              "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
+            },
+            {
+              "type": "parser",
+              "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional"
+            }
+          ]
+        }
+      }
+    },
+    "network-rtt": {
+      "id": "network-rtt",
+      "title": "Network Round Trip Times",
+      "description": "Network round trip times (RTT) have a large impact on performance. If the RTT to an origin is high, it's an indication that servers closer to the user could improve performance. [Learn more about the Round Trip Time](https://hpbn.co/primer-on-latency-and-bandwidth/).",
+      "score": 1,
+      "scoreDisplayMode": "informative",
+      "numericValue": 18.649,
+      "numericUnit": "millisecond",
+      "displayValue": "20 ms",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "origin",
+            "valueType": "text",
+            "label": "URL"
+          },
+          {
+            "key": "rtt",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Time Spent"
+          }
+        ],
+        "items": [
+          {
+            "origin": "https://fonts.googleapis.com",
+            "rtt": 18.649
+          },
+          {
+            "origin": "http://localhost:3000",
+            "rtt": 0.08220000000000001
+          },
+          {
+            "origin": "https://fonts.gstatic.com",
+            "rtt": 0
+          }
+        ],
+        "sortedBy": [
+          "rtt"
+        ]
+      }
+    },
+    "network-server-latency": {
+      "id": "network-server-latency",
+      "title": "Server Backend Latencies",
+      "description": "Server latencies can impact web performance. If the server latency of an origin is high, it's an indication the server is overloaded or has poor backend performance. [Learn more about server response time](https://hpbn.co/primer-on-web-performance/#analyzing-the-resource-waterfall).",
+      "score": 1,
+      "scoreDisplayMode": "informative",
+      "numericValue": 80.39599999999999,
+      "numericUnit": "millisecond",
+      "displayValue": "80 ms",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "origin",
+            "valueType": "text",
+            "label": "URL"
+          },
+          {
+            "key": "serverResponseTime",
+            "valueType": "ms",
+            "granularity": 1,
+            "label": "Time Spent"
+          }
+        ],
+        "items": [
+          {
+            "origin": "https://fonts.googleapis.com",
+            "serverResponseTime": 80.39599999999999
+          },
+          {
+            "origin": "https://fonts.gstatic.com",
+            "serverResponseTime": 10.9115
+          },
+          {
+            "origin": "http://localhost:3000",
+            "serverResponseTime": 3.6998
+          }
+        ],
+        "sortedBy": [
+          "serverResponseTime"
+        ]
+      }
+    },
+    "main-thread-tasks": {
+      "id": "main-thread-tasks",
+      "title": "Tasks",
+      "description": "Lists the toplevel main thread tasks that executed during page load.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "metrics": {
+      "id": "metrics",
+      "title": "Metrics",
+      "description": "Collects all available metrics.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)"
+    },
+    "resource-summary": {
+      "id": "resource-summary",
+      "title": "Resources Summary",
+      "description": "Aggregates all network requests and groups them by type",
+      "score": 1,
+      "scoreDisplayMode": "informative",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "label",
+            "valueType": "text",
+            "label": "Resource Type"
+          },
+          {
+            "key": "requestCount",
+            "valueType": "numeric",
+            "label": "Requests"
+          },
+          {
+            "key": "transferSize",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          }
+        ],
+        "items": [
+          {
+            "resourceType": "total",
+            "label": "Total",
+            "requestCount": 9,
+            "transferSize": 139035
+          },
+          {
+            "resourceType": "image",
+            "label": "Image",
+            "requestCount": 1,
+            "transferSize": 85342
+          },
+          {
+            "resourceType": "font",
+            "label": "Font",
+            "requestCount": 2,
+            "transferSize": 32257
+          },
+          {
+            "resourceType": "stylesheet",
+            "label": "Stylesheet",
+            "requestCount": 4,
+            "transferSize": 12831
+          },
+          {
+            "resourceType": "script",
+            "label": "Script",
+            "requestCount": 1,
+            "transferSize": 6161
+          },
+          {
+            "resourceType": "document",
+            "label": "Document",
+            "requestCount": 1,
+            "transferSize": 2444
+          },
+          {
+            "resourceType": "media",
+            "label": "Media",
+            "requestCount": 0,
+            "transferSize": 0
+          },
+          {
+            "resourceType": "other",
+            "label": "Other",
+            "requestCount": 0,
+            "transferSize": 0
+          },
+          {
+            "resourceType": "third-party",
+            "label": "Third-party",
+            "requestCount": 3,
+            "transferSize": 33447
+          }
+        ]
+      }
+    },
+    "layout-shifts": {
+      "id": "layout-shifts",
+      "title": "Avoid large layout shifts",
+      "description": "These are the largest layout shifts observed on the page. Each table item represents a single layout shift, and shows the element that shifted the most. Below each item are possible root causes that led to the layout shift. Some of these layout shifts may not be included in the CLS metric value due to [windowing](https://web.dev/articles/cls#what_is_cls). [Learn how to improve CLS](https://web.dev/articles/optimize-cls)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "long-tasks": {
+      "id": "long-tasks",
+      "title": "Avoid long main-thread tasks",
+      "description": "Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. [Learn how to avoid long main-thread tasks](https://web.dev/articles/optimize-long-tasks)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "non-composited-animations": {
+      "id": "non-composited-animations",
+      "title": "Avoid non-composited animations",
+      "description": "Animations which are not composited can be janky and increase CLS. [Learn how to avoid non-composited animations](https://developer.chrome.com/docs/lighthouse/performance/non-composited-animations/)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "unsized-images": {
+      "id": "unsized-images",
+      "title": "Image elements have explicit `width` and `height`",
+      "description": "Set an explicit width and height on image elements to reduce layout shifts and improve CLS. [Learn how to set image dimensions](https://web.dev/articles/optimize-cls#images_without_dimensions)",
+      "score": 1,
+      "scoreDisplayMode": "metricSavings",
+      "metricSavings": {
+        "CLS": 0
+      },
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "node",
+            "valueType": "node",
+            "label": ""
+          },
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          }
+        ],
+        "items": []
+      },
+      "guidanceLevel": 4
+    },
+    "script-treemap-data": {
+      "id": "script-treemap-data",
+      "title": "Script Treemap Data",
+      "description": "Used for treemap app",
+      "score": 1,
+      "scoreDisplayMode": "informative",
+      "details": {
+        "type": "treemap-data",
+        "nodes": [
+          {
+            "name": "http://localhost:3000/Homepage/ios-homepage.html",
+            "resourceBytes": 1142,
+            "encodedBytes": 434,
+            "children": [
+              {
+                "name": "(inline) (function() {\n …",
+                "resourceBytes": 1072,
+                "unusedBytes": 0
+              },
+              {
+                "name": "(inline) this.media='all…",
+                "resourceBytes": 16,
+                "unusedBytes": 0
+              },
+              {
+                "name": "(inline) this.media='all…",
+                "resourceBytes": 16,
+                "unusedBytes": 0
+              },
+              {
+                "name": "(inline) this.onload=nul…",
+                "resourceBytes": 38,
+                "unusedBytes": 0
+              }
+            ]
+          },
+          {
+            "name": "http://localhost:3000/Homepage/ios-homepage.js",
+            "resourceBytes": 21128,
+            "encodedBytes": 5457,
+            "unusedBytes": 9161
+          }
+        ]
+      }
+    },
+    "total-byte-weight": {
+      "id": "total-byte-weight",
+      "title": "Avoids enormous network payloads",
+      "description": "Large network payloads cost users real money and are highly correlated with long load times. [Learn how to reduce payload sizes](https://developer.chrome.com/docs/lighthouse/performance/total-byte-weight/).",
+      "score": 1,
+      "scoreDisplayMode": "metricSavings",
+      "numericValue": 260740,
+      "numericUnit": "byte",
+      "displayValue": "Total size was 255 KiB",
+      "details": {
+        "type": "table",
+        "headings": [
+          {
+            "key": "url",
+            "valueType": "url",
+            "label": "URL"
+          },
+          {
+            "key": "totalBytes",
+            "valueType": "bytes",
+            "label": "Transfer Size"
+          }
+        ],
+        "items": [
+          {
+            "url": "http://localhost:3000/favicon.ico",
+            "totalBytes": 121705
+          },
+          {
+            "url": "http://localhost:3000/assets/darbar-sahib-day.avif",
+            "totalBytes": 85342
+          },
+          {
+            "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtqUYLknw.woff2",
+            "totalBytes": 32257
+          },
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.css",
+            "totalBytes": 6495
+          },
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.js",
+            "totalBytes": 6161
+          },
+          {
+            "url": "http://localhost:3000/css/theme-variables.css",
+            "totalBytes": 3520
+          },
+          {
+            "url": "http://localhost:3000/Homepage/ios-homepage.html",
+            "totalBytes": 2444
+          },
+          {
+            "url": "http://localhost:3000/css/mobile-lock.css",
+            "totalBytes": 1626
+          },
+          {
+            "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional",
+            "totalBytes": 1190
+          }
+        ],
+        "sortedBy": [
+          "totalBytes"
+        ]
+      },
+      "guidanceLevel": 1
+    },
+    "unminified-css": {
+      "id": "unminified-css",
+      "title": "Minify CSS",
+      "description": "Minifying CSS files can reduce network payload sizes. [Learn how to minify CSS](https://developer.chrome.com/docs/lighthouse/performance/unminified-css/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "unminified-javascript": {
+      "id": "unminified-javascript",
+      "title": "Minify JavaScript",
+      "description": "Minifying JavaScript files can reduce payload sizes and script parse time. [Learn how to minify JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unminified-javascript/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "unused-css-rules": {
+      "id": "unused-css-rules",
+      "title": "Reduce unused CSS",
+      "description": "Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity. [Learn how to reduce unused CSS](https://developer.chrome.com/docs/lighthouse/performance/unused-css-rules/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "unused-javascript": {
+      "id": "unused-javascript",
+      "title": "Reduce unused JavaScript",
+      "description": "Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. [Learn how to reduce unused JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unused-javascript/).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "bf-cache": {
+      "id": "bf-cache",
+      "title": "Page didn't prevent back/forward cache restoration",
+      "description": "Many navigations are performed by going back to a previous page, or forwards again. The back/forward cache (bfcache) can speed up these return navigations. [Learn more about the bfcache](https://developer.chrome.com/docs/lighthouse/performance/bf-cache/)",
+      "score": 1,
+      "scoreDisplayMode": "binary",
+      "guidanceLevel": 4
+    },
+    "cache-insight": {
+      "id": "cache-insight",
+      "title": "Use efficient cache lifetimes",
+      "description": "A long cache lifetime can speed up repeat visits to your page. [Learn more about caching](https://developer.chrome.com/docs/performance/insights/cache).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "cls-culprits-insight": {
+      "id": "cls-culprits-insight",
+      "title": "Layout shift culprits",
+      "description": "Layout shifts occur when elements move absent any user interaction. [Investigate the causes of layout shifts](https://developer.chrome.com/docs/performance/insights/cls-culprit), such as elements being added, removed, or their fonts changing as the page loads.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "document-latency-insight": {
+      "id": "document-latency-insight",
+      "title": "Document request latency",
+      "description": "Your first network request is the most important. [Reduce its latency](https://developer.chrome.com/docs/performance/insights/document-latency) by avoiding redirects, ensuring a fast server response, and enabling text compression.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "dom-size-insight": {
+      "id": "dom-size-insight",
+      "title": "Optimize DOM size",
+      "description": "A large DOM can increase the duration of style calculations and layout reflows, impacting page responsiveness. A large DOM will also increase memory usage. [Learn how to avoid an excessive DOM size](https://developer.chrome.com/docs/performance/insights/dom-size).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "duplicated-javascript-insight": {
+      "id": "duplicated-javascript-insight",
+      "title": "Duplicated JavaScript",
+      "description": "Remove large, [duplicate JavaScript modules](https://developer.chrome.com/docs/performance/insights/duplicated-javascript) from bundles to reduce unnecessary bytes consumed by network activity.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "font-display-insight": {
+      "id": "font-display-insight",
+      "title": "Font display",
+      "description": "Consider setting [font-display](https://developer.chrome.com/docs/performance/insights/font-display) to swap or optional to ensure text is consistently visible. swap can be further optimized to mitigate layout shifts with [font metric overrides](https://developer.chrome.com/blog/font-fallbacks).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "forced-reflow-insight": {
+      "id": "forced-reflow-insight",
+      "title": "Forced reflow",
+      "description": "A forced reflow occurs when JavaScript queries geometric properties (such as offsetWidth) after styles have been invalidated by a change to the DOM state. This can result in poor performance. Learn more about [forced reflows](https://developer.chrome.com/docs/performance/insights/forced-reflow) and possible mitigations.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "image-delivery-insight": {
+      "id": "image-delivery-insight",
+      "title": "Improve image delivery",
+      "description": "Reducing the download time of images can improve the perceived load time of the page and LCP. [Learn more about optimizing image size](https://developer.chrome.com/docs/performance/insights/image-delivery)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "inp-breakdown-insight": {
+      "id": "inp-breakdown-insight",
+      "title": "INP breakdown",
+      "description": "Start investigating [how to improve INP](https://developer.chrome.com/docs/performance/insights/inp-breakdown) by looking at the longest subpart.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "lcp-breakdown-insight": {
+      "id": "lcp-breakdown-insight",
+      "title": "LCP breakdown",
+      "description": "Each [subpart has specific improvement strategies](https://developer.chrome.com/docs/performance/insights/lcp-breakdown). Ideally, most of the LCP time should be spent on loading the resources, not within delays.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "lcp-discovery-insight": {
+      "id": "lcp-discovery-insight",
+      "title": "LCP request discovery",
+      "description": "[Optimize LCP](https://developer.chrome.com/docs/performance/insights/lcp-discovery) by making the LCP image discoverable from the HTML immediately, and avoiding lazy-loading",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "legacy-javascript-insight": {
+      "id": "legacy-javascript-insight",
+      "title": "Legacy JavaScript",
+      "description": "Polyfills and transforms enable older browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile [Baseline](https://web.dev/articles/baseline-and-polyfills) features, unless you know you must support older browsers. [Learn why most sites can deploy ES6+ code without transpiling](https://developer.chrome.com/docs/performance/insights/legacy-javascript)",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 2
+    },
+    "modern-http-insight": {
+      "id": "modern-http-insight",
+      "title": "Modern HTTP",
+      "description": "HTTP/2 and HTTP/3 offer many benefits over HTTP/1.1, such as multiplexing. [Learn more about using modern HTTP](https://developer.chrome.com/docs/performance/insights/modern-http).",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_NAVSTART)",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "network-dependency-tree-insight": {
+      "id": "network-dependency-tree-insight",
+      "title": "Network dependency tree",
+      "description": "[Avoid chaining critical requests](https://developer.chrome.com/docs/performance/insights/network-dependency-tree) by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 1
+    },
+    "render-blocking-insight": {
+      "id": "render-blocking-insight",
+      "title": "Render-blocking requests",
+      "description": "Requests are blocking the page's initial render, which may delay LCP. [Deferring or inlining](https://developer.chrome.com/docs/performance/insights/render-blocking) can move these network requests out of the critical path.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "third-parties-insight": {
+      "id": "third-parties-insight",
+      "title": "3rd parties",
+      "description": "3rd party code can significantly impact load performance. [Reduce and defer loading of 3rd party code](https://developer.chrome.com/docs/performance/insights/third-parties) to prioritize your page's content.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    },
+    "viewport-insight": {
+      "id": "viewport-insight",
+      "title": "Optimize viewport for mobile",
+      "description": "Tap interactions may be [delayed by up to 300 ms](https://developer.chrome.com/docs/performance/insights/viewport) if the viewport is not optimized for mobile.",
+      "score": null,
+      "scoreDisplayMode": "error",
+      "errorMessage": "Required TraceElements gatherer encountered an error: NO_NAVSTART",
+      "errorStack": "LighthouseError: NO_NAVSTART\n    at LHTraceProcessor.createNoNavstartError (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/lh-trace-processor.js:17:12)\n    at LHTraceProcessor.computeTimeOrigin (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:1007:33)\n    at LHTraceProcessor.processTrace (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/lib/tracehouse/trace-processor.js:824:32)\n    at ProcessedTrace.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/processed-trace.js:16:29)\n    at ProcessedTrace.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceEngineResult.compute_ (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/trace-engine-result.js:235:49)\n    at TraceEngineResult.request (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/computed/computed-artifact.js:72:29)\n    at TraceElements.getArtifact (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/gatherers/trace-elements.js:332:31)\n    at file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:106:45\n    at async collectPhaseArtifacts (file:///C:/Users/Manmohan%20Singh/OneDrive/Desktop/letsdoit/ANHAD-FINAL/node_modules/lighthouse/core/gather/runner-helpers.js:123:5)",
+      "guidanceLevel": 3
+    }
+  },
+  "configSettings": {
+    "output": [
+      "json"
+    ],
+    "maxWaitForFcp": 30000,
+    "maxWaitForLoad": 45000,
+    "pauseAfterFcpMs": 1000,
+    "pauseAfterLoadMs": 1000,
+    "networkQuietThresholdMs": 1000,
+    "cpuQuietThresholdMs": 1000,
+    "formFactor": "mobile",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "throttlingMethod": "simulate",
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "emulatedUserAgent": "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36",
+    "auditMode": false,
+    "gatherMode": false,
+    "clearStorageTypes": [
+      "file_systems",
+      "shader_cache",
+      "service_workers",
+      "cache_storage"
+    ],
+    "disableStorageReset": false,
+    "debugNavigation": false,
+    "channel": "cli",
+    "usePassiveGathering": false,
+    "disableFullPageScreenshot": false,
+    "skipAboutBlank": false,
+    "blankPage": "about:blank",
+    "ignoreStatusCode": false,
+    "locale": "en-US",
+    "blockedUrlPatterns": null,
+    "additionalTraceCategories": null,
+    "extraHeaders": null,
+    "precomputedLanternData": null,
+    "onlyAudits": null,
+    "onlyCategories": [
+      "performance"
+    ],
+    "skipAudits": null
+  },
+  "categories": {
+    "performance": {
+      "title": "Performance",
+      "supportedModes": [
+        "navigation",
+        "timespan",
+        "snapshot"
+      ],
+      "auditRefs": [
+        {
+          "id": "first-contentful-paint",
+          "weight": 10,
+          "group": "metrics",
+          "acronym": "FCP"
+        },
+        {
+          "id": "largest-contentful-paint",
+          "weight": 25,
+          "group": "metrics",
+          "acronym": "LCP"
+        },
+        {
+          "id": "total-blocking-time",
+          "weight": 30,
+          "group": "metrics",
+          "acronym": "TBT"
+        },
+        {
+          "id": "cumulative-layout-shift",
+          "weight": 25,
+          "group": "metrics",
+          "acronym": "CLS"
+        },
+        {
+          "id": "speed-index",
+          "weight": 10,
+          "group": "metrics",
+          "acronym": "SI"
+        },
+        {
+          "id": "cache-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "cls-culprits-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "document-latency-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "dom-size-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "duplicated-javascript-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "font-display-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "forced-reflow-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "image-delivery-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "inp-breakdown-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "lcp-breakdown-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "lcp-discovery-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "legacy-javascript-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "modern-http-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "network-dependency-tree-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "render-blocking-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "third-parties-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "viewport-insight",
+          "weight": 0,
+          "group": "insights"
+        },
+        {
+          "id": "interactive",
+          "weight": 0,
+          "group": "hidden",
+          "acronym": "TTI"
+        },
+        {
+          "id": "max-potential-fid",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "unminified-css",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "unminified-javascript",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "unused-css-rules",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "unused-javascript",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "total-byte-weight",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "user-timings",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "bootup-time",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "mainthread-work-breakdown",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "long-tasks",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "non-composited-animations",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "unsized-images",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "bf-cache",
+          "weight": 0,
+          "group": "diagnostics"
+        },
+        {
+          "id": "network-requests",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "network-rtt",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "network-server-latency",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "main-thread-tasks",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "diagnostics",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "metrics",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "screenshot-thumbnails",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "final-screenshot",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "script-treemap-data",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "resource-summary",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "redirects",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "server-response-time",
+          "weight": 0,
+          "group": "hidden"
+        },
+        {
+          "id": "layout-shifts",
+          "weight": 0,
+          "group": "hidden"
+        }
+      ],
+      "id": "performance",
+      "score": null
+    }
+  },
+  "categoryGroups": {
+    "metrics": {
+      "title": "Metrics"
+    },
+    "insights": {
+      "title": "Insights",
+      "description": "These insights are also available in the Chrome DevTools Performance Panel - [record a trace](https://developer.chrome.com/docs/devtools/performance/reference) to view more detailed information."
+    },
+    "diagnostics": {
+      "title": "Diagnostics",
+      "description": "More information about the performance of your application. These numbers don't [directly affect](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring/) the Performance score."
+    },
+    "a11y-best-practices": {
+      "title": "Best practices",
+      "description": "These items highlight common accessibility best practices."
+    },
+    "a11y-color-contrast": {
+      "title": "Contrast",
+      "description": "These are opportunities to improve the legibility of your content."
+    },
+    "a11y-names-labels": {
+      "title": "Names and labels",
+      "description": "These are opportunities to improve the semantics of the controls in your application. This may enhance the experience for users of assistive technology, like a screen reader."
+    },
+    "a11y-navigation": {
+      "title": "Navigation",
+      "description": "These are opportunities to improve keyboard navigation in your application."
+    },
+    "a11y-aria": {
+      "title": "ARIA",
+      "description": "These are opportunities to improve the usage of ARIA in your application which may enhance the experience for users of assistive technology, like a screen reader."
+    },
+    "a11y-language": {
+      "title": "Internationalization and localization",
+      "description": "These are opportunities to improve the interpretation of your content by users in different locales."
+    },
+    "a11y-audio-video": {
+      "title": "Audio and video",
+      "description": "These are opportunities to provide alternative content for audio and video. This may improve the experience for users with hearing or vision impairments."
+    },
+    "a11y-tables-lists": {
+      "title": "Tables and lists",
+      "description": "These are opportunities to improve the experience of reading tabular or list data using assistive technology, like a screen reader."
+    },
+    "seo-mobile": {
+      "title": "Mobile Friendly",
+      "description": "Make sure your pages are mobile friendly so users don’t have to pinch or zoom in order to read the content pages. [Learn how to make pages mobile-friendly](https://developers.google.com/search/mobile-sites/)."
+    },
+    "seo-content": {
+      "title": "Content Best Practices",
+      "description": "Format your HTML in a way that enables crawlers to better understand your app’s content."
+    },
+    "seo-crawl": {
+      "title": "Crawling and Indexing",
+      "description": "To appear in search results, crawlers need access to your app."
+    },
+    "best-practices-trust-safety": {
+      "title": "Trust and Safety"
+    },
+    "best-practices-ux": {
+      "title": "User Experience"
+    },
+    "best-practices-browser-compat": {
+      "title": "Browser Compatibility"
+    },
+    "best-practices-general": {
+      "title": "General"
+    },
+    "webmcp": {
+      "title": "WebMCP",
+      "description": "Audits validating WebMCP integration."
+    },
+    "agent-accessibility": {
+      "title": "Agent Accessibility",
+      "description": "These audits highlight best practices for improving the accessibility of the website for AI agents."
+    },
+    "hidden": {
+      "title": ""
+    }
+  },
+  "stackPacks": [],
+  "entities": [
+    {
+      "name": "localhost",
+      "origins": [
+        "http://localhost:3000"
+      ],
+      "isFirstParty": true,
+      "isUnrecognized": true
+    },
+    {
+      "name": "Google Fonts",
+      "homepage": "https://fonts.google.com/",
+      "origins": [
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ],
+      "category": "cdn"
+    }
+  ],
+  "fullPageScreenshot": {
+    "screenshot": {
+      "data": "data:image/webp;base64,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",
+      "width": 412,
+      "height": 823
+    },
+    "nodes": {
+      "1-0-DIV": {
+        "id": "scene-bg",
+        "top": 0,
+        "bottom": 823,
+        "left": 0,
+        "right": 412,
+        "width": 412,
+        "height": 823
+      }
+    }
+  },
+  "timing": {
+    "entries": [
+      {
+        "startTime": 2411.1,
+        "name": "lh:config",
+        "duration": 900.44,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 2413.39,
+        "name": "lh:config:resolveArtifactsToDefns",
+        "duration": 121.48,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 3311.71,
+        "name": "lh:runner:gather",
+        "duration": 6137.7,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 3402.92,
+        "name": "lh:driver:connect",
+        "duration": 34.78,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 3437.96,
+        "name": "lh:driver:navigate",
+        "duration": 11.18,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 3449.54,
+        "name": "lh:gather:getBenchmarkIndex",
+        "duration": 1005.96,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4455.65,
+        "name": "lh:gather:getVersion",
+        "duration": 0.69,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4456.42,
+        "name": "lh:gather:getDevicePixelRatio",
+        "duration": 1.43,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4459.17,
+        "name": "lh:prepare:navigationMode",
+        "duration": 70,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4460.39,
+        "name": "lh:gather:getVersion",
+        "duration": 0.53,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4483.11,
+        "name": "lh:storage:clearDataForOrigin",
+        "duration": 18.94,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4502.21,
+        "name": "lh:storage:clearBrowserCaches",
+        "duration": 21.1,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4526.07,
+        "name": "lh:gather:prepareThrottlingAndNetwork",
+        "duration": 3.06,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 4573.54,
+        "name": "lh:driver:navigate",
+        "duration": 2895.1,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7873.31,
+        "name": "lh:computed:NetworkRecords",
+        "duration": 0.79,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7874.56,
+        "name": "lh:gather:getArtifact:DevtoolsLog",
+        "duration": 0.18,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7874.76,
+        "name": "lh:gather:getArtifact:Trace",
+        "duration": 0.13,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7874.91,
+        "name": "lh:gather:getArtifact:CSSUsage",
+        "duration": 24.32,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7899.27,
+        "name": "lh:gather:getArtifact:ImageElements",
+        "duration": 17.7,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7917.05,
+        "name": "lh:gather:getArtifact:JsUsage",
+        "duration": 0.34,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7917.5,
+        "name": "lh:gather:getArtifact:NetworkUserAgent",
+        "duration": 0.16,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7917.68,
+        "name": "lh:gather:getArtifact:Scripts",
+        "duration": 0.17,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7917.89,
+        "name": "lh:gather:getArtifact:SourceMaps",
+        "duration": 0.12,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7918.02,
+        "name": "lh:gather:getArtifact:Stacks",
+        "duration": 17.16,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7918.18,
+        "name": "lh:gather:collectStacks",
+        "duration": 16.97,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7935.2,
+        "name": "lh:gather:getArtifact:Stylesheets",
+        "duration": 6.63,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7942.22,
+        "name": "lh:computed:TraceEngineResult",
+        "duration": 30.79,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7942.32,
+        "name": "lh:computed:ProcessedTrace",
+        "duration": 30.66,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 7973.33,
+        "name": "lh:gather:getArtifact:FullPageScreenshot",
+        "duration": 1186.02,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9157.05,
+        "name": "lh:gather:getVersion",
+        "duration": 0.75,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9159.39,
+        "name": "lh:gather:getArtifact:BFCacheFailures",
+        "duration": 262.94,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9450,
+        "name": "lh:runner:audit",
+        "duration": 116.59,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9450.18,
+        "name": "lh:runner:auditing",
+        "duration": 115.49,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9452.76,
+        "name": "lh:audit:first-contentful-paint",
+        "duration": 3.45,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9453.95,
+        "name": "lh:computed:FirstContentfulPaint",
+        "duration": 0.34,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9456.6,
+        "name": "lh:audit:largest-contentful-paint",
+        "duration": 2.42,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9457.61,
+        "name": "lh:computed:LargestContentfulPaint",
+        "duration": 0.09,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9459.31,
+        "name": "lh:audit:speed-index",
+        "duration": 1.97,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9460.04,
+        "name": "lh:computed:SpeedIndex",
+        "duration": 0.08,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9461.36,
+        "name": "lh:audit:screenshot-thumbnails",
+        "duration": 1.46,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9462.12,
+        "name": "lh:computed:Speedline",
+        "duration": 0.24,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9462.86,
+        "name": "lh:audit:final-screenshot",
+        "duration": 0.74,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9464.28,
+        "name": "lh:audit:total-blocking-time",
+        "duration": 2.47,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9465.21,
+        "name": "lh:computed:TotalBlockingTime",
+        "duration": 0.09,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9467.13,
+        "name": "lh:audit:max-potential-fid",
+        "duration": 2.74,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9468.02,
+        "name": "lh:computed:MaxPotentialFID",
+        "duration": 0.08,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9470.15,
+        "name": "lh:audit:cumulative-layout-shift",
+        "duration": 1.83,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9470.89,
+        "name": "lh:computed:CumulativeLayoutShift",
+        "duration": 0.19,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9472.32,
+        "name": "lh:audit:server-response-time",
+        "duration": 1.82,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9473.09,
+        "name": "lh:computed:NavigationInsights",
+        "duration": 0.1,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9474.45,
+        "name": "lh:audit:interactive",
+        "duration": 1.15,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9474.9,
+        "name": "lh:computed:Interactive",
+        "duration": 0.05,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9475.76,
+        "name": "lh:audit:user-timings",
+        "duration": 1.32,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9476.12,
+        "name": "lh:computed:UserTimings",
+        "duration": 0.08,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9477.38,
+        "name": "lh:audit:redirects",
+        "duration": 2.09,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9479.91,
+        "name": "lh:audit:mainthread-work-breakdown",
+        "duration": 2.61,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9481.52,
+        "name": "lh:computed:MainThreadTasks",
+        "duration": 0.11,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9482.76,
+        "name": "lh:audit:bootup-time",
+        "duration": 1.52,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9484.32,
+        "name": "lh:audit:diagnostics",
+        "duration": 0.56,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9484.91,
+        "name": "lh:audit:network-requests",
+        "duration": 2.99,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9485.28,
+        "name": "lh:computed:EntityClassification",
+        "duration": 1.9,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9487.26,
+        "name": "lh:computed:MainResource",
+        "duration": 0.13,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9488.13,
+        "name": "lh:audit:network-rtt",
+        "duration": 8.07,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9488.58,
+        "name": "lh:computed:NetworkAnalysis",
+        "duration": 1.22,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9496.58,
+        "name": "lh:audit:network-server-latency",
+        "duration": 2.28,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9498.89,
+        "name": "lh:audit:main-thread-tasks",
+        "duration": 0.44,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9499.36,
+        "name": "lh:audit:metrics",
+        "duration": 0.63,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9499.59,
+        "name": "lh:computed:TimingSummary",
+        "duration": 0.25,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9500.02,
+        "name": "lh:audit:resource-summary",
+        "duration": 1.12,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9500.22,
+        "name": "lh:computed:ResourceSummary",
+        "duration": 0.37,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9501.3,
+        "name": "lh:audit:layout-shifts",
+        "duration": 0.89,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9502.36,
+        "name": "lh:audit:long-tasks",
+        "duration": 0.97,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9503.47,
+        "name": "lh:audit:non-composited-animations",
+        "duration": 0.67,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9504.35,
+        "name": "lh:audit:unsized-images",
+        "duration": 0.94,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9505.31,
+        "name": "lh:audit:script-treemap-data",
+        "duration": 2.06,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9505.69,
+        "name": "lh:computed:JSBundles",
+        "duration": 0.07,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9505.78,
+        "name": "lh:computed:ModuleDuplication",
+        "duration": 0.19,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9506,
+        "name": "lh:computed:UnusedJavascriptSummary",
+        "duration": 0.2,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9506.3,
+        "name": "lh:computed:UnusedJavascriptSummary",
+        "duration": 0.64,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9507.05,
+        "name": "lh:computed:UnusedJavascriptSummary",
+        "duration": 0.08,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9507.19,
+        "name": "lh:computed:UnusedJavascriptSummary",
+        "duration": 0.04,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9507.27,
+        "name": "lh:computed:UnusedJavascriptSummary",
+        "duration": 0.04,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9507.59,
+        "name": "lh:audit:total-byte-weight",
+        "duration": 1.73,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9509.47,
+        "name": "lh:audit:unminified-css",
+        "duration": 6.62,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9514.19,
+        "name": "lh:computed:LoadSimulator",
+        "duration": 0.48,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9514.86,
+        "name": "lh:computed:LanternFirstContentfulPaint",
+        "duration": 0.45,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9515,
+        "name": "lh:computed:PageDependencyGraph",
+        "duration": 0.28,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9516.23,
+        "name": "lh:audit:unminified-javascript",
+        "duration": 8.98,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9525.41,
+        "name": "lh:audit:unused-css-rules",
+        "duration": 1.56,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9525.84,
+        "name": "lh:computed:UnusedCSS",
+        "duration": 0.42,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9527.11,
+        "name": "lh:audit:unused-javascript",
+        "duration": 1.94,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9529.43,
+        "name": "lh:audit:bf-cache",
+        "duration": 1.43,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9531.21,
+        "name": "lh:audit:cache-insight",
+        "duration": 1.46,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9532.87,
+        "name": "lh:audit:cls-culprits-insight",
+        "duration": 0.91,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9533.98,
+        "name": "lh:audit:document-latency-insight",
+        "duration": 1.17,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9535.34,
+        "name": "lh:audit:dom-size-insight",
+        "duration": 0.78,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9536.29,
+        "name": "lh:audit:duplicated-javascript-insight",
+        "duration": 0.98,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9537.45,
+        "name": "lh:audit:font-display-insight",
+        "duration": 0.87,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9538.56,
+        "name": "lh:audit:forced-reflow-insight",
+        "duration": 0.88,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9539.65,
+        "name": "lh:audit:image-delivery-insight",
+        "duration": 14.84,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9554.71,
+        "name": "lh:audit:inp-breakdown-insight",
+        "duration": 0.94,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9555.84,
+        "name": "lh:audit:lcp-breakdown-insight",
+        "duration": 0.87,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9556.89,
+        "name": "lh:audit:lcp-discovery-insight",
+        "duration": 0.73,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9557.81,
+        "name": "lh:audit:legacy-javascript-insight",
+        "duration": 1.31,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9559.33,
+        "name": "lh:audit:modern-http-insight",
+        "duration": 1.01,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9560.56,
+        "name": "lh:audit:network-dependency-tree-insight",
+        "duration": 0.73,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9561.47,
+        "name": "lh:audit:render-blocking-insight",
+        "duration": 1.28,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9563.1,
+        "name": "lh:audit:third-parties-insight",
+        "duration": 1.5,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9564.82,
+        "name": "lh:audit:viewport-insight",
+        "duration": 0.84,
+        "entryType": "measure"
+      },
+      {
+        "startTime": 9565.69,
+        "name": "lh:runner:generate",
+        "duration": 0.87,
+        "entryType": "measure"
+      }
+    ],
+    "total": 6254.29
+  },
+  "i18n": {
+    "rendererFormattedStrings": {
+      "calculatorLink": "See calculator.",
+      "collapseView": "Collapse view",
+      "crcInitialNavigation": "Initial Navigation",
+      "crcLongestDurationLabel": "Maximum critical path latency:",
+      "dropdownCopyJSON": "Copy JSON",
+      "dropdownDarkTheme": "Toggle Dark Theme",
+      "dropdownPrintExpanded": "Print Expanded",
+      "dropdownPrintSummary": "Print Summary",
+      "dropdownSaveGist": "Save as Gist",
+      "dropdownSaveHTML": "Save as HTML",
+      "dropdownSaveJSON": "Save as JSON",
+      "dropdownViewUnthrottledTrace": "View Unthrottled Trace",
+      "dropdownViewer": "Open in Viewer",
+      "errorLabel": "Error!",
+      "errorMissingAuditInfo": "Report error: no audit information",
+      "expandView": "Expand view",
+      "firstPartyChipLabel": "1st party",
+      "footerIssue": "File an issue",
+      "hide": "Hide",
+      "labDataTitle": "Lab Data",
+      "lsPerformanceCategoryDescription": "[Lighthouse](https://developers.google.com/web/tools/lighthouse/) analysis of the current page on an emulated mobile network. Values are estimated and may vary.",
+      "manualAuditsGroupTitle": "Additional items to manually check",
+      "notApplicableAuditsGroupTitle": "Not applicable",
+      "openInANewTabTooltip": "Open in a new tab",
+      "opportunityResourceColumnLabel": "Opportunity",
+      "opportunitySavingsColumnLabel": "Estimated Savings",
+      "passedAuditsGroupTitle": "Passed audits",
+      "runtimeAnalysisWindow": "Initial page load",
+      "runtimeAnalysisWindowSnapshot": "Point-in-time snapshot",
+      "runtimeAnalysisWindowTimespan": "User interactions timespan",
+      "runtimeCustom": "Custom throttling",
+      "runtimeDesktopEmulation": "Emulated Desktop",
+      "runtimeMobileEmulation": "Emulated Moto G Power",
+      "runtimeNoEmulation": "No emulation",
+      "runtimeSettingsAxeVersion": "Axe version",
+      "runtimeSettingsBenchmark": "Unthrottled CPU/Memory Power",
+      "runtimeSettingsCPUThrottling": "CPU throttling",
+      "runtimeSettingsDevice": "Device",
+      "runtimeSettingsNetworkThrottling": "Network throttling",
+      "runtimeSettingsScreenEmulation": "Screen emulation",
+      "runtimeSettingsUANetwork": "User agent (network)",
+      "runtimeSingleLoad": "Single page session",
+      "runtimeSingleLoadTooltip": "This data is taken from a single page session, as opposed to field data summarizing many sessions.",
+      "runtimeSlow4g": "Slow 4G throttling",
+      "runtimeUnknown": "Unknown",
+      "show": "Show",
+      "showRelevantAudits": "Show audits relevant to:",
+      "snippetCollapseButtonLabel": "Collapse snippet",
+      "snippetExpandButtonLabel": "Expand snippet",
+      "thirdPartyResourcesLabel": "Show 3rd-party resources",
+      "throttlingProvided": "Provided by environment",
+      "toplevelWarningsMessage": "There were issues affecting this run of Lighthouse:",
+      "unattributable": "Unattributable",
+      "unscoredLabel": "Unscored",
+      "unscoredTitle": "This audit does not contribute to the overall category score.",
+      "varianceDisclaimer": "Values are estimated and may vary. The [performance score is calculated](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring/) directly from these metrics.",
+      "viewTraceLabel": "View Trace",
+      "viewTreemapLabel": "View Treemap",
+      "warningAuditsGroupTitle": "Passed audits but with warnings",
+      "warningHeader": "Warnings: "
+    },
+    "icuMessagePaths": {
+      "core/lib/lh-error.js | badTraceRecording": [
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "runtimeError.message"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[first-contentful-paint].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[largest-contentful-paint].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[speed-index].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[screenshot-thumbnails].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[final-screenshot].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[total-blocking-time].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[max-potential-fid].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[cumulative-layout-shift].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[server-response-time].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits.interactive.errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[user-timings].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits.redirects.errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[mainthread-work-breakdown].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[bootup-time].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits.diagnostics.errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[main-thread-tasks].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits.metrics.errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[long-tasks].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[unminified-css].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[unminified-javascript].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[unused-css-rules].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[unused-javascript].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[cache-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[duplicated-javascript-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[legacy-javascript-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "NO_NAVSTART"
+          },
+          "path": "audits[modern-http-insight].errorMessage"
+        }
+      ],
+      "core/lib/i18n/i18n.js | firstContentfulPaintMetric": [
+        "audits[first-contentful-paint].title"
+      ],
+      "core/audits/metrics/first-contentful-paint.js | description": [
+        "audits[first-contentful-paint].description"
+      ],
+      "core/lib/i18n/i18n.js | largestContentfulPaintMetric": [
+        "audits[largest-contentful-paint].title"
+      ],
+      "core/audits/metrics/largest-contentful-paint.js | description": [
+        "audits[largest-contentful-paint].description"
+      ],
+      "core/lib/i18n/i18n.js | speedIndexMetric": [
+        "audits[speed-index].title"
+      ],
+      "core/audits/metrics/speed-index.js | description": [
+        "audits[speed-index].description"
+      ],
+      "core/lib/i18n/i18n.js | totalBlockingTimeMetric": [
+        "audits[total-blocking-time].title"
+      ],
+      "core/audits/metrics/total-blocking-time.js | description": [
+        "audits[total-blocking-time].description"
+      ],
+      "core/lib/i18n/i18n.js | maxPotentialFIDMetric": [
+        "audits[max-potential-fid].title"
+      ],
+      "core/audits/metrics/max-potential-fid.js | description": [
+        "audits[max-potential-fid].description"
+      ],
+      "core/lib/i18n/i18n.js | cumulativeLayoutShiftMetric": [
+        "audits[cumulative-layout-shift].title"
+      ],
+      "core/audits/metrics/cumulative-layout-shift.js | description": [
+        "audits[cumulative-layout-shift].description"
+      ],
+      "core/audits/server-response-time.js | title": [
+        "audits[server-response-time].title"
+      ],
+      "core/audits/server-response-time.js | description": [
+        "audits[server-response-time].description"
+      ],
+      "core/lib/i18n/i18n.js | interactiveMetric": [
+        "audits.interactive.title"
+      ],
+      "core/audits/metrics/interactive.js | description": [
+        "audits.interactive.description"
+      ],
+      "core/audits/user-timings.js | title": [
+        "audits[user-timings].title"
+      ],
+      "core/audits/user-timings.js | description": [
+        "audits[user-timings].description"
+      ],
+      "core/audits/redirects.js | title": [
+        "audits.redirects.title"
+      ],
+      "core/audits/redirects.js | description": [
+        "audits.redirects.description"
+      ],
+      "core/audits/mainthread-work-breakdown.js | title": [
+        "audits[mainthread-work-breakdown].title"
+      ],
+      "core/audits/mainthread-work-breakdown.js | description": [
+        "audits[mainthread-work-breakdown].description"
+      ],
+      "core/audits/bootup-time.js | title": [
+        "audits[bootup-time].title"
+      ],
+      "core/audits/bootup-time.js | description": [
+        "audits[bootup-time].description"
+      ],
+      "core/audits/network-rtt.js | title": [
+        "audits[network-rtt].title"
+      ],
+      "core/audits/network-rtt.js | description": [
+        "audits[network-rtt].description"
+      ],
+      "core/lib/i18n/i18n.js | ms": [
+        {
+          "values": {
+            "timeInMs": 18.649
+          },
+          "path": "audits[network-rtt].displayValue"
+        },
+        {
+          "values": {
+            "timeInMs": 80.39599999999999
+          },
+          "path": "audits[network-server-latency].displayValue"
+        }
+      ],
+      "core/lib/i18n/i18n.js | columnURL": [
+        "audits[network-rtt].details.headings[0].label",
+        "audits[network-server-latency].details.headings[0].label",
+        "audits[unsized-images].details.headings[1].label",
+        "audits[total-byte-weight].details.headings[0].label"
+      ],
+      "core/lib/i18n/i18n.js | columnTimeSpent": [
+        "audits[network-rtt].details.headings[1].label",
+        "audits[network-server-latency].details.headings[1].label"
+      ],
+      "core/audits/network-server-latency.js | title": [
+        "audits[network-server-latency].title"
+      ],
+      "core/audits/network-server-latency.js | description": [
+        "audits[network-server-latency].description"
+      ],
+      "core/lib/i18n/i18n.js | columnResourceType": [
+        "audits[resource-summary].details.headings[0].label"
+      ],
+      "core/lib/i18n/i18n.js | columnRequests": [
+        "audits[resource-summary].details.headings[1].label"
+      ],
+      "core/lib/i18n/i18n.js | columnTransferSize": [
+        "audits[resource-summary].details.headings[2].label",
+        "audits[total-byte-weight].details.headings[1].label"
+      ],
+      "core/lib/i18n/i18n.js | total": [
+        "audits[resource-summary].details.items[0].label"
+      ],
+      "core/lib/i18n/i18n.js | imageResourceType": [
+        "audits[resource-summary].details.items[1].label"
+      ],
+      "core/lib/i18n/i18n.js | fontResourceType": [
+        "audits[resource-summary].details.items[2].label"
+      ],
+      "core/lib/i18n/i18n.js | stylesheetResourceType": [
+        "audits[resource-summary].details.items[3].label"
+      ],
+      "core/lib/i18n/i18n.js | scriptResourceType": [
+        "audits[resource-summary].details.items[4].label"
+      ],
+      "core/lib/i18n/i18n.js | documentResourceType": [
+        "audits[resource-summary].details.items[5].label"
+      ],
+      "core/lib/i18n/i18n.js | mediaResourceType": [
+        "audits[resource-summary].details.items[6].label"
+      ],
+      "core/lib/i18n/i18n.js | otherResourceType": [
+        "audits[resource-summary].details.items[7].label"
+      ],
+      "core/lib/i18n/i18n.js | thirdPartyResourceType": [
+        "audits[resource-summary].details.items[8].label"
+      ],
+      "core/audits/layout-shifts.js | title": [
+        "audits[layout-shifts].title"
+      ],
+      "core/audits/layout-shifts.js | description": [
+        "audits[layout-shifts].description"
+      ],
+      "core/lib/lh-error.js | erroredRequiredArtifact": [
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[layout-shifts].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[non-composited-animations].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[cls-culprits-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[document-latency-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[dom-size-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[font-display-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[forced-reflow-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[image-delivery-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[inp-breakdown-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[lcp-breakdown-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[lcp-discovery-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[network-dependency-tree-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[render-blocking-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[third-parties-insight].errorMessage"
+        },
+        {
+          "values": {
+            "errorCode": "ERRORED_REQUIRED_ARTIFACT",
+            "artifactName": "TraceElements",
+            "errorMessage": "NO_NAVSTART"
+          },
+          "path": "audits[viewport-insight].errorMessage"
+        }
+      ],
+      "core/audits/long-tasks.js | title": [
+        "audits[long-tasks].title"
+      ],
+      "core/audits/long-tasks.js | description": [
+        "audits[long-tasks].description"
+      ],
+      "core/audits/non-composited-animations.js | title": [
+        "audits[non-composited-animations].title"
+      ],
+      "core/audits/non-composited-animations.js | description": [
+        "audits[non-composited-animations].description"
+      ],
+      "core/audits/unsized-images.js | title": [
+        "audits[unsized-images].title"
+      ],
+      "core/audits/unsized-images.js | description": [
+        "audits[unsized-images].description"
+      ],
+      "core/audits/byte-efficiency/total-byte-weight.js | title": [
+        "audits[total-byte-weight].title"
+      ],
+      "core/audits/byte-efficiency/total-byte-weight.js | description": [
+        "audits[total-byte-weight].description"
+      ],
+      "core/audits/byte-efficiency/total-byte-weight.js | displayValue": [
+        {
+          "values": {
+            "totalBytes": 260740
+          },
+          "path": "audits[total-byte-weight].displayValue"
+        }
+      ],
+      "core/audits/byte-efficiency/unminified-css.js | title": [
+        "audits[unminified-css].title"
+      ],
+      "core/audits/byte-efficiency/unminified-css.js | description": [
+        "audits[unminified-css].description"
+      ],
+      "core/audits/byte-efficiency/unminified-javascript.js | title": [
+        "audits[unminified-javascript].title"
+      ],
+      "core/audits/byte-efficiency/unminified-javascript.js | description": [
+        "audits[unminified-javascript].description"
+      ],
+      "core/audits/byte-efficiency/unused-css-rules.js | title": [
+        "audits[unused-css-rules].title"
+      ],
+      "core/audits/byte-efficiency/unused-css-rules.js | description": [
+        "audits[unused-css-rules].description"
+      ],
+      "core/audits/byte-efficiency/unused-javascript.js | title": [
+        "audits[unused-javascript].title"
+      ],
+      "core/audits/byte-efficiency/unused-javascript.js | description": [
+        "audits[unused-javascript].description"
+      ],
+      "core/audits/bf-cache.js | title": [
+        "audits[bf-cache].title"
+      ],
+      "core/audits/bf-cache.js | description": [
+        "audits[bf-cache].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/Cache.js | title": [
+        "audits[cache-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/Cache.js | description": [
+        "audits[cache-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/CLSCulprits.js | title": [
+        "audits[cls-culprits-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/CLSCulprits.js | description": [
+        "audits[cls-culprits-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DocumentLatency.js | title": [
+        "audits[document-latency-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DocumentLatency.js | description": [
+        "audits[document-latency-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DOMSize.js | title": [
+        "audits[dom-size-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DOMSize.js | description": [
+        "audits[dom-size-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DuplicatedJavaScript.js | title": [
+        "audits[duplicated-javascript-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/DuplicatedJavaScript.js | description": [
+        "audits[duplicated-javascript-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/FontDisplay.js | title": [
+        "audits[font-display-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/FontDisplay.js | description": [
+        "audits[font-display-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ForcedReflow.js | title": [
+        "audits[forced-reflow-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ForcedReflow.js | description": [
+        "audits[forced-reflow-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ImageDelivery.js | title": [
+        "audits[image-delivery-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ImageDelivery.js | description": [
+        "audits[image-delivery-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/INPBreakdown.js | title": [
+        "audits[inp-breakdown-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/INPBreakdown.js | description": [
+        "audits[inp-breakdown-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LCPBreakdown.js | title": [
+        "audits[lcp-breakdown-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LCPBreakdown.js | description": [
+        "audits[lcp-breakdown-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LCPDiscovery.js | title": [
+        "audits[lcp-discovery-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LCPDiscovery.js | description": [
+        "audits[lcp-discovery-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LegacyJavaScript.js | title": [
+        "audits[legacy-javascript-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/LegacyJavaScript.js | description": [
+        "audits[legacy-javascript-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ModernHTTP.js | title": [
+        "audits[modern-http-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ModernHTTP.js | description": [
+        "audits[modern-http-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/NetworkDependencyTree.js | title": [
+        "audits[network-dependency-tree-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/NetworkDependencyTree.js | description": [
+        "audits[network-dependency-tree-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/RenderBlocking.js | title": [
+        "audits[render-blocking-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/RenderBlocking.js | description": [
+        "audits[render-blocking-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ThirdParties.js | title": [
+        "audits[third-parties-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/ThirdParties.js | description": [
+        "audits[third-parties-insight].description"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/Viewport.js | title": [
+        "audits[viewport-insight].title"
+      ],
+      "node_modules/@paulirish/trace_engine/models/trace/insights/Viewport.js | description": [
+        "audits[viewport-insight].description"
+      ],
+      "core/config/default-config.js | performanceCategoryTitle": [
+        "categories.performance.title"
+      ],
+      "core/config/default-config.js | metricGroupTitle": [
+        "categoryGroups.metrics.title"
+      ],
+      "core/config/default-config.js | insightsGroupTitle": [
+        "categoryGroups.insights.title"
+      ],
+      "core/config/default-config.js | insightsGroupDescription": [
+        "categoryGroups.insights.description"
+      ],
+      "core/config/default-config.js | diagnosticsGroupTitle": [
+        "categoryGroups.diagnostics.title"
+      ],
+      "core/config/default-config.js | diagnosticsGroupDescription": [
+        "categoryGroups.diagnostics.description"
+      ],
+      "core/config/default-config.js | a11yBestPracticesGroupTitle": [
+        "categoryGroups[a11y-best-practices].title"
+      ],
+      "core/config/default-config.js | a11yBestPracticesGroupDescription": [
+        "categoryGroups[a11y-best-practices].description"
+      ],
+      "core/config/default-config.js | a11yColorContrastGroupTitle": [
+        "categoryGroups[a11y-color-contrast].title"
+      ],
+      "core/config/default-config.js | a11yColorContrastGroupDescription": [
+        "categoryGroups[a11y-color-contrast].description"
+      ],
+      "core/config/default-config.js | a11yNamesLabelsGroupTitle": [
+        "categoryGroups[a11y-names-labels].title"
+      ],
+      "core/config/default-config.js | a11yNamesLabelsGroupDescription": [
+        "categoryGroups[a11y-names-labels].description"
+      ],
+      "core/config/default-config.js | a11yNavigationGroupTitle": [
+        "categoryGroups[a11y-navigation].title"
+      ],
+      "core/config/default-config.js | a11yNavigationGroupDescription": [
+        "categoryGroups[a11y-navigation].description"
+      ],
+      "core/config/default-config.js | a11yAriaGroupTitle": [
+        "categoryGroups[a11y-aria].title"
+      ],
+      "core/config/default-config.js | a11yAriaGroupDescription": [
+        "categoryGroups[a11y-aria].description"
+      ],
+      "core/config/default-config.js | a11yLanguageGroupTitle": [
+        "categoryGroups[a11y-language].title"
+      ],
+      "core/config/default-config.js | a11yLanguageGroupDescription": [
+        "categoryGroups[a11y-language].description"
+      ],
+      "core/config/default-config.js | a11yAudioVideoGroupTitle": [
+        "categoryGroups[a11y-audio-video].title"
+      ],
+      "core/config/default-config.js | a11yAudioVideoGroupDescription": [
+        "categoryGroups[a11y-audio-video].description"
+      ],
+      "core/config/default-config.js | a11yTablesListsVideoGroupTitle": [
+        "categoryGroups[a11y-tables-lists].title"
+      ],
+      "core/config/default-config.js | a11yTablesListsVideoGroupDescription": [
+        "categoryGroups[a11y-tables-lists].description"
+      ],
+      "core/config/default-config.js | seoMobileGroupTitle": [
+        "categoryGroups[seo-mobile].title"
+      ],
+      "core/config/default-config.js | seoMobileGroupDescription": [
+        "categoryGroups[seo-mobile].description"
+      ],
+      "core/config/default-config.js | seoContentGroupTitle": [
+        "categoryGroups[seo-content].title"
+      ],
+      "core/config/default-config.js | seoContentGroupDescription": [
+        "categoryGroups[seo-content].description"
+      ],
+      "core/config/default-config.js | seoCrawlingGroupTitle": [
+        "categoryGroups[seo-crawl].title"
+      ],
+      "core/config/default-config.js | seoCrawlingGroupDescription": [
+        "categoryGroups[seo-crawl].description"
+      ],
+      "core/config/default-config.js | bestPracticesTrustSafetyGroupTitle": [
+        "categoryGroups[best-practices-trust-safety].title"
+      ],
+      "core/config/default-config.js | bestPracticesUXGroupTitle": [
+        "categoryGroups[best-practices-ux].title"
+      ],
+      "core/config/default-config.js | bestPracticesBrowserCompatGroupTitle": [
+        "categoryGroups[best-practices-browser-compat].title"
+      ],
+      "core/config/default-config.js | bestPracticesGeneralGroupTitle": [
+        "categoryGroups[best-practices-general].title"
+      ],
+      "core/config/default-config.js | webmcpGroupTitle": [
+        "categoryGroups.webmcp.title"
+      ],
+      "core/config/default-config.js | webmcpGroupDescription": [
+        "categoryGroups.webmcp.description"
+      ],
+      "core/config/default-config.js | agentAccessibilityGroupTitle": [
+        "categoryGroups[agent-accessibility].title"
+      ],
+      "core/config/default-config.js | agentAccessibilityGroupDescription": [
+        "categoryGroups[agent-accessibility].description"
+      ]
+    }
+  }
+}

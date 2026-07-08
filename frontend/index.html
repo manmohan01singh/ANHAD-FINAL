@@ -288,7 +288,7 @@
   <!-- FIX: Hero carousel must NOT capture vertical swipes — allow page to scroll freely -->
   <style>
     .hero-carousel__track {
-      touch-action: pan-x !important; /* Only capture horizontal swipes; free vertical to the page */
+      touch-action: pan-x pan-y !important; /* Allow both horizontal tracking and vertical page scrolling */
       -webkit-overflow-scrolling: touch;
     }
     /* Coming Soon popup styles */

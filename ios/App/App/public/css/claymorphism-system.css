@@ -13,7 +13,7 @@
   --clay-bg-secondary: #E8E8EC;
   --clay-white: #FFFFFF;
   --clay-cream: #FAF8F5;
-  
+
   /* Shadow Opacity Scales */
   --clay-shadow-deep: 0.45;
   --clay-shadow-mid: 0.35;
@@ -21,7 +21,7 @@
   --clay-highlight: 0.0;
   --clay-border-glow: 0.0;
   --clay-inset-shadow: 0.08;
-  
+
   /* Color Palette for Themed Shadows */
   --clay-gold: 212, 148, 58;
   --clay-orange: 255, 149, 0;
@@ -31,14 +31,14 @@
   --clay-rose: 255, 107, 107;
   --clay-red: 255, 45, 85;
   --clay-teal: 48, 176, 199;
-  
+
   /* Border Radius Scale */
   --clay-radius-sm: 20px;
   --clay-radius-md: 28px;
   --clay-radius-lg: 32px;
   --clay-radius-xl: 36px;
   --clay-radius-full: 9999px;
-  
+
   /* Transitions */
   --clay-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --clay-smooth: cubic-bezier(0.4, 0, 0.2, 1);
@@ -332,7 +332,7 @@ html.dark-mode .clay-red {
 /* ─── Clay Progress Bar ─── */
 .clay-progress {
   border-radius: var(--clay-radius-full);
-  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(245,245,247,0.9));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(245, 245, 247, 0.9));
   box-shadow:
     10px 10px 30px rgba(0, 0, 0, 0.15),
     5px 5px 15px rgba(0, 0, 0, 0.08),
@@ -345,14 +345,14 @@ html.dark-mode .clay-red {
 .clay-progress__fill {
   height: 100%;
   border-radius: var(--clay-radius-full);
-  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.15), inset 0 1px 2px rgba(255,255,255,0.5);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.5);
   transition: width 0.8s var(--clay-spring);
 }
 
 /* ─── Clay Bottom Navigation ─── */
 .clay-nav {
   border-radius: var(--clay-radius-xl);
-  background: linear-gradient(170deg, rgba(255,255,255,0.96) 0%, rgba(248,248,250,0.96) 100%);
+  background: linear-gradient(170deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 248, 250, 0.96) 100%);
   box-shadow:
     0 -2px 4px rgba(0, 0, 0, 0.08),
     0 -8px 24px rgba(0, 0, 0, 0.14),
@@ -364,7 +364,7 @@ html.dark-mode .clay-red {
 }
 
 html.dark-mode .clay-nav {
-  background: linear-gradient(170deg, rgba(40,40,42,0.96) 0%, rgba(28,28,30,0.96) 100%);
+  background: linear-gradient(170deg, rgba(40, 40, 42, 0.96) 0%, rgba(28, 28, 30, 0.96) 100%);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow:
     0 -2px 4px rgba(0, 0, 0, 0.28),
@@ -376,7 +376,7 @@ html.dark-mode .clay-nav {
 
 /* ─── Clay Section Header ─── */
 .clay-section {
-  background: linear-gradient(145deg, rgba(255,255,255,0.80), rgba(248,248,250,0.80));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.80), rgba(248, 248, 250, 0.80));
   border-radius: var(--clay-radius-md);
   padding: 12px 20px;
   margin: 20px 0 16px;
@@ -389,7 +389,7 @@ html.dark-mode .clay-nav {
 }
 
 html.dark-mode .clay-section {
-  background: linear-gradient(145deg, rgba(50,50,52,0.80), rgba(40,40,42,0.80));
+  background: linear-gradient(145deg, rgba(50, 50, 52, 0.80), rgba(40, 40, 42, 0.80));
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.28),
@@ -410,7 +410,7 @@ html.dark-mode .clay-section {
 
 .clay-sheet__option {
   border-radius: var(--clay-radius-md);
-  background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(248,248,250,0.95) 100%);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 248, 250, 0.95) 100%);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.08),
     0 3px 10px rgba(0, 0, 0, 0.10),
@@ -466,7 +466,7 @@ html.dark-mode .clay-section {
 /* ─── Clay Badge/Pill ─── */
 .clay-badge {
   border-radius: var(--clay-radius-full);
-  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,240,245,0.9));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(240, 240, 245, 0.9));
   box-shadow:
     4px 4px 15px rgba(0, 0, 0, 0.15),
     inset 0 1px 2px rgba(255, 255, 255, 0.9);
@@ -500,7 +500,7 @@ html.dark-mode .clay-section {
 /* ─── Clay Icon Wrapper ─── */
 .clay-icon {
   border-radius: var(--clay-radius-sm);
-  background: linear-gradient(145deg, rgba(255,255,255,0.88) 0%, rgba(242,242,246,0.88) 100%);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88) 0%, rgba(242, 242, 246, 0.88) 100%);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.10),
     0 3px 8px rgba(0, 0, 0, 0.12),
@@ -515,13 +515,15 @@ html.dark-mode .clay-section {
 @keyframes clay-pop-in {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(20px);
-    filter: blur(4px);
+    /* PERF FIX: Removed filter:blur(4px) — forced 6 simultaneous GPU blur layers
+       during page load, competing with LCP. Extra translateY provides
+       equivalent "coming from a distance" feel using only compositor-safe props. */
+    transform: scale(0.9) translateY(28px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -529,12 +531,29 @@ html.dark-mode .clay-section {
   animation: clay-pop-in 0.6s var(--clay-spring) backwards;
 }
 
-.clay-animate-in:nth-child(1) { animation-delay: 0.05s; }
-.clay-animate-in:nth-child(2) { animation-delay: 0.1s; }
-.clay-animate-in:nth-child(3) { animation-delay: 0.15s; }
-.clay-animate-in:nth-child(4) { animation-delay: 0.2s; }
-.clay-animate-in:nth-child(5) { animation-delay: 0.25s; }
-.clay-animate-in:nth-child(6) { animation-delay: 0.3s; }
+.clay-animate-in:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.clay-animate-in:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.clay-animate-in:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.clay-animate-in:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.clay-animate-in:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.clay-animate-in:nth-child(6) {
+  animation-delay: 0.3s;
+}
 
 /* ─── Glow Effect for Active States ─── */
 .clay-glow {
@@ -561,27 +580,25 @@ html.dark-mode .clay-section {
 /* ─── Clay Divider ─── */
 .clay-divider {
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(0,0,0,0.05) 20%, 
-    rgba(0,0,0,0.08) 50%, 
-    rgba(0,0,0,0.05) 80%, 
-    transparent 100%
-  );
-  box-shadow: 0 1px 2px rgba(255,255,255,0.8);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.05) 20%,
+      rgba(0, 0, 0, 0.08) 50%,
+      rgba(0, 0, 0, 0.05) 80%,
+      transparent 100%);
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
   margin: 16px 0;
   border: none;
 }
 
 html.dark-mode .clay-divider {
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255,255,255,0.05) 20%, 
-    rgba(255,255,255,0.08) 50%, 
-    rgba(255,255,255,0.05) 80%, 
-    transparent 100%
-  );
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.05) 80%,
+      transparent 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* ─── Size Variants ─── */
@@ -646,7 +663,11 @@ html.dark-mode .clay-divider {
 
 /* ─── Print Styles ─── */
 @media print {
-  .clay-card, .clay-btn, .clay-nav, .clay-hero {
+
+  .clay-card,
+  .clay-btn,
+  .clay-nav,
+  .clay-hero {
     box-shadow: none !important;
     border: 1px solid #ddd !important;
   }

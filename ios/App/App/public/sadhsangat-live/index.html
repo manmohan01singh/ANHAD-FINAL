@@ -937,11 +937,12 @@
       grid-template-rows: repeat(2, 1fr);
       width: 100%;
       height: 100%;
-      gap: 2px;
+      gap: 3px;
       border-radius: 50%;
       overflow: hidden;
-      background: var(--gold-gradient);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      background: transparent;
+      padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
     .channel-logo-circle .collage-item {
@@ -949,7 +950,9 @@
       height: 100%;
       overflow: hidden;
       position: relative;
-      border-radius: 4px;
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .channel-logo-circle .collage-item img {
@@ -960,25 +963,25 @@
     }
 
     .channel-logo-circle:hover .collage-item img {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
 
     .channel-logo-circle .collage-placeholder {
-      background: linear-gradient(135deg, rgba(255,179,0,0.8) 0%, rgba(255,149,0,0.9) 100%);
+      background: var(--bg-tertiary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      color: white;
-      font-weight: 800;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-      border-radius: 4px;
+      font-size: 14px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+      border-radius: 8px;
+      border: 1px dashed var(--border-color);
     }
 
     /* Add subtle border to collage items for better separation */
     .channel-logo-circle .collage-item:not(:last-child) {
-      border-right: 1px solid rgba(255,255,255,0.2);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
     }
 
     /* Active styling */
@@ -1048,15 +1051,15 @@
     .circle-fallback {
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, var(--gold-accent) 0%, var(--gold-warm) 100%);
+      background: var(--bg-tertiary);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 600;
       font-size: 14px;
-      color: #FFFFFF;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      color: var(--text-secondary);
       border-radius: 50%;
+      border: 2px solid var(--border-color);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -6755,7 +6758,7 @@
         return getChannelAvatarHTML(channels[0]);
       }
       
-      // For 2-4 channels, create a beautiful grid collage
+      // For 2-4 channels, create a clean grid collage
       let collageHTML = '<div class="collage-grid">';
       
       // Add channel logos to the collage
@@ -6765,10 +6768,10 @@
         collageHTML += `<div class="collage-item">${avatarHTML}</div>`;
       }
       
-      // Fill remaining grid cells with beautiful placeholders only if we have space
+      // Fill remaining grid cells with subtle placeholders only if we have space
       const remainingCells = 4 - channelCount;
       for (let i = 0; i < remainingCells; i++) {
-        collageHTML += `<div class="collage-placeholder">+</div>`;
+        collageHTML += `<div class="collage-placeholder">•</div>`;
       }
       
       collageHTML += '</div>';

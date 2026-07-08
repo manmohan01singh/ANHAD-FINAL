@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v7.2.4'; // ROOT CAUSE FIX: passive window.touchend in PortraitSlider
+const CACHE_VERSION = 'anhad-v7.2.8'; // BUMP: Force client PWA cache refresh
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -19,6 +19,9 @@ const DATA_CACHE = `${CACHE_VERSION}-data`;
 // Files to cache immediately
 const STATIC_FILES = [
   './',
+  'Homepage/ios-homepage.html',
+  'Homepage/ios-homepage.css',
+  'Homepage/ios-homepage.js',
   'index.html',
   'style.css',
   'script.js',
@@ -254,6 +257,9 @@ const DATA_URLS = [
 
 const INSTALL_PRECACHE_FILES = [
   './',
+  'Homepage/ios-homepage.html',
+  'Homepage/ios-homepage.css',
+  'Homepage/ios-homepage.js',
   'index.html',
   'manifest.json',
   'offline.html',

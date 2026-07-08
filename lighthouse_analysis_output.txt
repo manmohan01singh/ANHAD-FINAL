@@ -1,0 +1,81 @@
+
+========================================
+FILE: lighthouse-ios-homepage-after.json
+========================================
+performance: not found
+first-contentful-paint: displayValue="1.6 s", score=0.94, numericValue=1586.95615
+largest-contentful-paint: displayValue="2.9 s", score=0.8, numericValue=2934.671149999999
+speed-index: displayValue="2.6 s", score=0.97, numericValue=2576.282366362151
+total-blocking-time: displayValue="13,840 ms", score=0, numericValue=13843.764
+cumulative-layout-shift: displayValue="0", score=1, numericValue=0
+
+--- Top 10 Long Tasks ---
+#1: duration=4305.000000000002ms, startTime=2046.2201499999996ms, url=Unattributable
+#2: duration=1841ms, startTime=7735.220150000001ms, url=http://localhost:3001/lib/anhad-audio-singleton.js?v=2.1.5
+#3: duration=1296ms, startTime=13225.220150000001ms, url=_lighthouse-eval.js
+#4: duration=978ms, startTime=14562.220150000001ms, url=http://localhost:3001/lib/anhad-audio-singleton.js?v=2.1.5
+#5: duration=972ms, startTime=9576.220150000001ms, url=Unattributable
+#6: duration=860ms, startTime=6832.220150000001ms, url=http://localhost:3001/lib/unified-stats.js
+#7: duration=855ms, startTime=1168.2201499999996ms, url=Unattributable
+#8: duration=803ms, startTime=15540.220150000001ms, url=Unattributable
+#9: duration=797ms, startTime=11120.220150000001ms, url=Unattributable
+#10: duration=793ms, startTime=11917.220150000001ms, url=Unattributable
+
+--- Bootup Time (Script Execution) ---
+- url: Unattributable, total: 10126.3ms, scriptEval: 15.0ms
+- url: http://localhost:3001/lib/anhad-audio-singleton.js?v=2.1.5, total: 2873.2ms, scriptEval: 2850.3ms
+- url: http://localhost:3001/Homepage/ios-homepage.js, total: 1870.5ms, scriptEval: 273.8ms
+- url: http://localhost:3001/Homepage/ios-homepage.html, total: 1138.0ms, scriptEval: 623.3ms
+- url: http://localhost:3001/lib/unified-stats.js, total: 859.8ms, scriptEval: 854.1ms
+
+========================================
+FILE: lighthouse-local-3001-after.json
+========================================
+performance: not found
+first-contentful-paint: displayValue="1.9 s", score=0.87, numericValue=1897.6729100000007
+largest-contentful-paint: displayValue="4.8 s", score=0.31, numericValue=4755.0315
+speed-index: displayValue="1.9 s", score=1, numericValue=1897.6729100000007
+total-blocking-time: displayValue="20 ms", score=1, numericValue=20
+cumulative-layout-shift: displayValue="0.001", score=1, numericValue=0.001040294095223002
+
+--- Top 10 Long Tasks ---
+#1: duration=153.00000000000023ms, startTime=1043.5355000000002ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#2: duration=126ms, startTime=783.5355000000002ms, url=Unattributable
+#3: duration=66ms, startTime=977.5355000000002ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#4: duration=65ms, startTime=3750.4920000000006ms, url=http://localhost:3001/Homepage/ios-homepage.js
+#5: duration=55ms, startTime=4417.120500000001ms, url=http://localhost:3001/lib/unified-stats.js
+
+--- Bootup Time (Script Execution) ---
+- url: http://localhost:3001/Homepage/ios-homepage.js, total: 1227.7ms, scriptEval: 185.5ms
+- url: Unattributable, total: 504.3ms, scriptEval: 21.0ms
+- url: http://localhost:3001/Homepage/ios-homepage.html, total: 467.5ms, scriptEval: 27.0ms
+- url: http://localhost:3001/lib/unified-stats.js, total: 108.6ms, scriptEval: 99.2ms
+- url: http://localhost:3001/lib/anhad-audio-singleton.js?v=2.1.5, total: 60.2ms, scriptEval: 40.2ms
+
+========================================
+FILE: lighthouse-local-3001.json
+========================================
+performance: not found
+first-contentful-paint: displayValue="3.3 s", score=0.4, numericValue=3303.4951000000005
+largest-contentful-paint: displayValue="8.2 s", score=0.02, numericValue=8198.678399999999
+speed-index: displayValue="3.3 s", score=0.91, numericValue=3303.4951000000005
+total-blocking-time: displayValue="240 ms", score=0.86, numericValue=235
+cumulative-layout-shift: displayValue="0.06", score=0.98, numericValue=0.06040909949442045
+
+--- Top 10 Long Tasks ---
+#1: duration=405.0000000000002ms, startTime=905.4464ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#2: duration=354ms, startTime=1871.4464000000003ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#3: duration=333ms, startTime=1310.4464000000003ms, url=http://localhost:3001/
+#4: duration=285ms, startTime=6832.232ms, url=http://localhost:3001/lib/smart-back.js
+#5: duration=236.99999999999955ms, startTime=2373.4464000000003ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#6: duration=228ms, startTime=1643.4464000000003ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#7: duration=148ms, startTime=2225.4464000000003ms, url=http://localhost:3001/Homepage/ios-homepage.html
+#8: duration=75ms, startTime=766.4464ms, url=Unattributable
+#9: duration=66ms, startTime=2610.4464ms, url=Unattributable
+
+--- Bootup Time (Script Execution) ---
+- url: http://localhost:3001/Homepage/ios-homepage.html, total: 2939.1ms, scriptEval: 12.7ms
+- url: http://localhost:3001/Homepage/ios-homepage.js, total: 882.9ms, scriptEval: 139.7ms
+- url: http://localhost:3001/, total: 797.3ms, scriptEval: 59.7ms
+- url: Unattributable, total: 484.3ms, scriptEval: 9.3ms
+- url: http://localhost:3001/lib/unified-stats.js, total: 74.5ms, scriptEval: 67.9ms

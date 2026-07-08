@@ -890,21 +890,29 @@
         setStream('darbar');
         updateUI();
 
-        // If GMP was playing the same stream, pick it up seamlessly
+        // ─── QUERY PARAM SEAMLESS REDIRECT ───────────────────────────────────────
+        let initialStream = 'darbar';
+        let forcePlay = false;
+
         try {
-            const saved = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
-            if (saved && saved.isPlaying && saved.stream &&
-                (Date.now() - (saved.timestamp || 0)) < 30 * 60000) {
-                const mapName = saved.stream;
-                curStream = mapName;
-                setStream(mapName);
-                startStream(mapName);
-                return;
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryStream = urlParams.get('stream');
+            if (queryStream && ['darbar', 'amritvela', 'simran'].includes(queryStream)) {
+                initialStream = queryStream;
+                forcePlay = true;
+            } else {
+                // Pick up from localStorage if GMP was playing
+                const saved = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
+                if (saved && saved.isPlaying && saved.stream &&
+                    (Date.now() - (saved.timestamp || 0)) < 30 * 60000) {
+                    initialStream = saved.stream;
+                    forcePlay = true;
+                }
             }
         } catch (e) { }
 
-        // Auto-start darbar
-        startStream('darbar');
+        setStream(initialStream);
+        startStream(initialStream);
     }
 
     if (document.readyState === 'loading') {

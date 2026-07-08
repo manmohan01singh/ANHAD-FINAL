@@ -152,7 +152,7 @@
         }
     }
 
-    
+
     // ═══════════════════════════════════════════════════════════════
     // LOAD BANIS FROM API
     // ═══════════════════════════════════════════════════════════════
@@ -286,7 +286,7 @@
     function renderRecentlyRead() {
         const recentSection = document.getElementById('recentSection');
         const recentList = document.getElementById('recentList');
-        
+
         if (!recentSection || !recentList) return;
 
         if (state.recentlyRead.length === 0) {
@@ -354,7 +354,7 @@
         state.isSearchOpen = true;
         const searchModal = document.getElementById('searchModal');
         const searchInput = document.getElementById('searchInput');
-        
+
         if (searchModal) {
             searchModal.setAttribute('aria-hidden', 'false');
             searchModal.classList.add('visible');
@@ -372,7 +372,7 @@
         const searchModal = document.getElementById('searchModal');
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
-        
+
         if (searchModal) {
             searchModal.setAttribute('aria-hidden', 'true');
             searchModal.classList.remove('visible');
@@ -388,7 +388,7 @@
 
     function handleSearch(query) {
         const searchResults = document.getElementById('searchResults');
-        
+
         if (!query || query.length < 2) {
             if (searchResults) searchResults.innerHTML = '<p class="search-hint">Type at least 2 characters...</p>';
             return;
@@ -540,7 +540,7 @@
     function applyTheme(theme) {
         // Use data-theme attribute only (light is default in CSS)
         document.documentElement.setAttribute('data-theme', theme);
-        
+
         // Update meta theme-color
         const metaTheme = document.querySelector('meta[name="theme-color"]');
         if (metaTheme) {
@@ -574,24 +574,32 @@
 
     function loadState() {
         try {
-            // ONLY use nitnem-specific theme key - NO fallback to global
-            // This ensures nitnem page always has its own theme independent of main app
+            // Priority: nitnem-specific override → global theme → default 'light'
             const nitnemTheme = localStorage.getItem('anhad_nitnem_theme');
-            
-            if (nitnemTheme) {
+            const globalTheme = localStorage.getItem('anhad_theme'); // from global-theme.js on homepage
+
+            if (nitnemTheme && (nitnemTheme === 'light' || nitnemTheme === 'dark' ||
+                nitnemTheme === 'sepia' || nitnemTheme === 'amoled')) {
                 state.settings.theme = nitnemTheme;
+            } else if (globalTheme === 'light' || globalTheme === 'dark') {
+                // Sync with global homepage theme (respects explicit user choice)
+                state.settings.theme = globalTheme;
+            } else if (globalTheme === 'auto') {
+                // Auto: match the same auto-detection as global-theme.js
+                const hour = new Date().getHours();
+                state.settings.theme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
             }
-            // If no nitnem theme set, default to 'light' (already set in state default)
-            
-            // Then load from hub-specific state
+            // else: default 'light' already set in state
+
+            // Then load from hub-specific state (for recentlyRead, favorites)
             const saved = localStorage.getItem('nitnemHub_state');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.recentlyRead = data.recentlyRead || [];
                 state.favorites = data.favorites || [];
-                // Only use saved settings if no nitnem theme was explicitly set
-                if (!nitnemTheme && data.settings) {
-                    state.settings = { ...state.settings, ...data.settings };
+                // Only use saved settings.theme if nitnem-specific theme was explicitly set
+                if (!nitnemTheme && data.settings && data.settings.theme) {
+                    // Don't override — we already resolved theme from global above
                 }
             }
         } catch (e) {
@@ -624,7 +632,7 @@
     function setupEventListeners() {
         // Get fresh element references
         const els = getElements();
-        
+
         // Search trigger opens modal
         els.searchTrigger?.addEventListener('click', openSearch);
         els.searchCancel?.addEventListener('click', closeSearch);
@@ -682,7 +690,7 @@
     }
 
     // SPA integration
-    window.addEventListener('anhad_page_changed', function() {
+    window.addEventListener('anhad_page_changed', function () {
         if (window.location.pathname.includes('/nitnem/')) {
             console.log('[HubApp] Re-initializing for SPA navigation...');
             init();

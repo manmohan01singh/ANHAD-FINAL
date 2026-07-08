@@ -2050,21 +2050,10 @@
   // ═ SCROLL REVEAL ═
   const ScrollReveal = {
     init() {
-      const targets = document.querySelectorAll('.practice-grid, .quick-card, .event-card');
-      if (!targets.length || !('IntersectionObserver' in window)) return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('scroll-revealed');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-      );
-      targets.forEach(t => observer.observe(t));
+      // Delegated to window.AnhadScrollEngine for centralized, zero-cost viewport reveals
+      if (window.AnhadScrollEngine && window.AnhadScrollEngine.scan) {
+        window.AnhadScrollEngine.scan();
+      }
     }
   };
 
@@ -2094,20 +2083,59 @@
       PortraitSlider.init();
       this._bindNavigation();
 
-      // PERF: Batch all DOM updates into a single rAF
-      requestAnimationFrame(() => {
-        UIController.updateNitnemCard();
-        UIController.updateSehajCard();
-        UIController.updateHukamCard();
-        UIController.updateNaamCard();
-        UIController.updateProgressBar();
-        UIController.updateNotificationBadge();
-        UIController.updateEventCard();
-        UIController.updateNanakshahiDate();
-        UIController.updateNotesCard();
-        UIController.updateNitnemQuickAccess();
-        UIController.updateHeroCardImages();
-      });
+      // PERF: Split UI updates and run them sequentially to yield the main thread.
+      const criticalUpdates = [
+        () => UIController.updateProgressBar(),
+        () => UIController.updateHeroCardImages(),
+        () => UIController.updateNitnemCard(),
+        () => UIController.updateSehajCard(),
+        () => UIController.updateHukamCard()
+      ];
+
+      const deferredUpdates = [
+        () => UIController.updateNaamCard(),
+        () => UIController.updateNotificationBadge(),
+        () => UIController.updateEventCard(),
+        () => UIController.updateNanakshahiDate(),
+        () => UIController.updateNotesCard(),
+        () => UIController.updateNitnemQuickAccess()
+      ];
+
+      // Schedule critical updates sequentially over separate frames
+      let criticalIndex = 0;
+      const runNextCritical = () => {
+        if (criticalIndex < criticalUpdates.length) {
+          criticalUpdates[criticalIndex]();
+          criticalIndex++;
+          requestAnimationFrame(runNextCritical);
+        } else {
+          // Once critical is done, schedule deferred updates
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(runNextDeferred, { timeout: 1000 });
+          } else {
+            setTimeout(runNextDeferred, 150);
+          }
+        }
+      };
+
+      // Schedule deferred updates sequentially over idle callback or short timeout
+      let deferredIndex = 0;
+      const runNextDeferred = () => {
+        if (deferredIndex < deferredUpdates.length) {
+          deferredUpdates[deferredIndex]();
+          deferredIndex++;
+          if (deferredIndex < deferredUpdates.length) {
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(runNextDeferred, { timeout: 500 });
+            } else {
+              setTimeout(runNextDeferred, 50);
+            }
+          }
+        }
+      };
+
+      // Start the update chain
+      requestAnimationFrame(runNextCritical);
 
       // PERF: Defer API fetch with requestIdleCallback
       if ('requestIdleCallback' in window) {

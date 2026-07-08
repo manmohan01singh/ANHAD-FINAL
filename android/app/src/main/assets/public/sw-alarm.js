@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const SW_VERSION = '2.0.0';
+const SW_VERSION = '2.0.1';
 const CACHE_NAME = `gurbani-alarm-v${SW_VERSION}`;
 
 // Audio files to cache for offline use

@@ -16,9 +16,9 @@ const UltraWelcomeLoader = {
     // The loader should only show on the very first page load of the session.
     // FIX: Skip the loader entirely on back-navigation or SPA re-mount.
     // The loader should only show on the very first page load of the session.
-    if (sessionStorage.getItem('anhad_loader_shown') === '1' || 
-        sessionStorage.getItem('anhad_welcomed') === '1' || 
-        localStorage.getItem('anhad_welcome_seen') === 'true') {
+    if (sessionStorage.getItem('anhad_loader_shown') === '1' ||
+      sessionStorage.getItem('anhad_welcomed') === '1' ||
+      localStorage.getItem('anhad_welcome_seen') === 'true') {
       console.log('[UltraLoader] Already welcomed, skipping splash');
       // Immediately reveal the app without the loader
       requestAnimationFrame(() => {
@@ -69,20 +69,20 @@ const UltraWelcomeLoader = {
   createFloatingParticles() {
     const container = document.createElement('div');
     container.className = 'floating-particles';
-    
+
     // Create 20 floating particles
     for (let i = 0; i < 20; i++) {
       const particle = document.createElement('div');
       particle.className = 'floating-particle';
-      
+
       // Random positioning
       particle.style.left = Math.random() * 100 + '%';
       particle.style.animationDelay = Math.random() * 15 + 's';
       particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-      
+
       container.appendChild(particle);
     }
-    
+
     document.body.appendChild(container);
   },
 
@@ -150,14 +150,14 @@ const UltraWelcomeLoader = {
     // Initialize app components
     this.initScrollReveal();
     this.initCascadeAnimations();
-    
+
     return Promise.resolve();
   },
 
   async ensureMinLoadTime() {
     const elapsed = Date.now() - this.startTime;
     const remaining = this.minLoadTime - elapsed;
-    
+
     if (remaining > 0) {
       await new Promise(resolve => setTimeout(resolve, remaining));
     }
@@ -184,25 +184,10 @@ const UltraWelcomeLoader = {
   },
 
   initScrollReveal() {
-    // Intersection Observer for scroll reveal animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe all scroll-reveal elements
-    document.querySelectorAll('.scroll-reveal').forEach(el => {
-      observer.observe(el);
-    });
+    // Delegated to window.AnhadScrollEngine for centralized, zero-cost viewport reveals
+    if (window.AnhadScrollEngine && window.AnhadScrollEngine.scan) {
+      window.AnhadScrollEngine.scan();
+    }
   },
 
   initCascadeAnimations() {
