@@ -220,18 +220,20 @@
       }
       var base = 'assets/HERO CARD IMAGES/';
       var heroMap = {
-        morning: 'morning-darbar-sahib.avif',
-        day:     'day-darbar-sahib.avif',
-        evening: 'evening-darbar-sahib.avif',
-        night:   'night-darbar-sahib.avif',
+        morning: 'morning-darbar-sahib.webp',
+        day:     'day-darbar-sahib.webp',
+        evening: 'evening-darbar-sahib.webp',
+        night:   'night-darbar-sahib.webp',
       };
       var theme = localStorage.getItem('anhad_theme') || 'auto';
       var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
       var l = document.createElement('link');
       l.rel = 'preload';
       l.as = 'image';
-      l.type = 'image/avif';
-      l.href = base + (heroMap[target] || heroMap.day);
+      l.type = 'image/webp';
+      var imgPath = base + (heroMap[target] || heroMap.day);
+      l.href = imgPath;
+      l.setAttribute('imagesrcset', imgPath);
       l.setAttribute('fetchpriority', 'high');
       document.head.appendChild(l);
     })();
@@ -2155,14 +2157,13 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.avif" type="image/avif">' +
-                    '<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
                     'data-img-evening="assets/HERO CARD IMAGES/evening-darbar-sahib.webp" ' +
                     'data-img-night="assets/HERO CARD IMAGES/night-darbar-sahib.webp" ' +
-                    'alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" decoding="async" ' +
+                    'alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" ' +
                     'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#D4943A,#C4842A)\'">');
                 })();
               </script>
@@ -2196,14 +2197,13 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.avif" type="image/avif">' +
-                    '<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
                     'data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp" ' +
                     'data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp" ' +
-                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low" decoding="async" ' +
+                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low" ' +
                     'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
                 })();
               </script>
@@ -2237,14 +2237,13 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<source srcset="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.avif" type="image/avif">' +
-                    '<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
+                  document.write('<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
                     'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
                     'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
                     'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
                     'data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp" ' +
                     'data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp" ' +
-                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low" decoding="async" ' +
+                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low" ' +
                     'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
                 })();
               </script>
@@ -2576,21 +2575,26 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════
-       SCRIPTS — PERFORMANCE OPTIMIZED: Only 3 sync, rest deferred/lazy
+       SCRIPTS — PERFORMANCE OPTIMIZED
+       
+       PERF STRATEGY:
+       • fetch-utils, page-lifecycle, unified-stats, capacitor, storage: small
+         utility scripts that are kept deferred (fast parse)
+       • audio-coordinator + overlay-player: deferred (small, sets up API stubs)
+       • anhad-audio-singleton.js (97KB): DEMAND-LOADED on first play interaction
+         — parsed only when the user actually taps a play button
+       • smooth-navigation.js (45KB): IDLE waterfall — not needed until first nav
+       • audio-coordinator stays deferred so it can expose the AnhadAudio stub
   ════════════════════════════════════════════════════════════════════════ -->
-  <!-- SYNC: Only scripts needed BEFORE first interaction -->
+  <!-- DEFERRED: Small utilities only, fast parse -->
   <script src="lib/fetch-utils.js" defer></script>
   <script src="lib/page-lifecycle.js" defer></script>
-  <script src="lib/smooth-navigation.js" defer></script>
-  
-  <!-- DEFERRED: Load after DOM parse, before DOMContentLoaded -->
   <script src="lib/unified-stats.js" defer></script>
   <script src="js/capacitor-bridge.js" defer></script>
   <script src="js/capacitor-init.js" defer></script>
   <script src="lib/storage-manager.js" defer></script>
   <script src="lib/capacitor-notifications.js" defer></script>
   <script src="lib/audio-coordinator.js" defer></script>
-  <script src="lib/anhad-audio-singleton.js?v=2.1.5" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   
   <!-- Core UI logic -->
@@ -2599,13 +2603,89 @@
   <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
 
+  <!-- DEMAND LOAD: Audio engine (97KB) — loads ONLY on first play interaction.
+       This removes the single largest parse task from the startup critical path. -->
+  <script>
+    (function() {
+      var _audioLoaded = false;
+      var _audioLoading = false;
+      // Capture queued play requests before the engine loads
+      window._anhadAudioQueue = [];
+
+      // Intercept play stream events before dynamic script load completes
+      window.addEventListener('anhadPlayStream', function(e) {
+        if (!_audioLoaded && e.detail && e.detail.stream) {
+          window._anhadAudioQueue.push({ type: 'play', stream: e.detail.stream });
+          loadAudioEngine();
+        }
+      });
+
+      function loadAudioEngine() {
+        if (_audioLoaded || _audioLoading) return;
+        _audioLoading = true;
+        console.log('[AnhadAudio] Demand-loading audio singleton...');
+        var s = document.createElement('script');
+        s.src = 'lib/anhad-audio-singleton.js?v=2.1.5';
+        s.onload = function() {
+          _audioLoaded = true;
+          _audioLoading = false;
+          console.log('[AnhadAudio] Audio singleton loaded, draining queue');
+          // Expose loaded status and fire ready event
+          window.dispatchEvent(new Event('anhad_audio_ready'));
+          
+          // Drain any queued actions
+          var q = window._anhadAudioQueue || [];
+          window._anhadAudioQueue = [];
+          q.forEach(function(action) {
+            if (action.type === 'play' && window.AnhadAudio) {
+              window.AnhadAudio.play(action.stream);
+            } else if (action.type === 'toggle' && window.AnhadAudio) {
+              window.AnhadAudio.toggle();
+            }
+          });
+        };
+        document.head.appendChild(s);
+      }
+
+      // Expose globally for sub-pages or external scripts
+      window.AnhadAudioLoadEngine = loadAudioEngine;
+
+      // Trigger demand-load on first interaction with any audio control or page play action
+      function bindAudioTriggers() {
+        // Bind to hero play buttons by ID
+        ['heroPlayBtn1', 'heroPlayBtn2', 'heroPlayBtn3', 'heroPlayBtn4'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
+        });
+        
+        // Bind to all elements with data-action="play"
+        document.querySelectorAll('[data-action="play"]').forEach(function(el) {
+          el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
+        });
+
+        // Also trigger on any live-badge click
+        document.querySelectorAll('.hero-card__badge--live, .hero-card__badge--dlive').forEach(function(el) {
+          el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
+        });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindAudioTriggers, { once: true });
+      } else {
+        bindAudioTriggers();
+      }
+    })();
+  </script>
+
   <!-- LAZY: Non-critical scripts loaded during idle time -->
+  <!-- NOTE: gurbani-db.js and bani-cache-optimizer.js REMOVED from this list.
+       They are Gurbani scripture search databases (70KB) only needed in
+       GurbaniKhoj/gurbani-khoj.html — not on the homepage. Loading them
+       here was wasting 70KB of idle bandwidth and parse time. -->
   <script>
     var loadLazyScripts = function() {
       var lazyScripts = [
+        'lib/smooth-navigation.js',      // 45KB SPA router — only needed on first nav
         'widgets/widget-bridge.js',
-        'lib/gurbani-db.js',
-        'lib/bani-cache-optimizer.js',
         'lib/optimized-image-loader.js',
         'lib/audio-preload.js',
         'lib/user-stats.js',

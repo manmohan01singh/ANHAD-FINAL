@@ -892,7 +892,7 @@
       width: 58px;
       height: 58px;
       border-radius: 50%;
-      background: var(--bg-tertiary);
+      background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -901,24 +901,110 @@
       color: var(--text-secondary);
       border: 2px solid transparent;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
     }
 
     .channel-logo-circle img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .channel-logo-circle:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Add subtle shine effect to channel logos */
+    .channel-logo-circle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+      border-radius: 50% 50% 0 0;
+      pointer-events: none;
+    }
+
+    /* Channel collage styling for 'All' button */
+    .channel-logo-circle .collage-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      width: 100%;
+      height: 100%;
+      gap: 3px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: transparent;
+      padding: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .channel-logo-circle .collage-item {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .channel-logo-circle .collage-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .channel-logo-circle:hover .collage-item img {
+      transform: scale(1.08);
+    }
+
+    .channel-logo-circle .collage-placeholder {
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--text-tertiary);
+      font-weight: 400;
+      border-radius: 8px;
+      border: 1px dashed var(--border-color);
+    }
+
+    /* Add subtle border to collage items for better separation */
+    .channel-logo-circle .collage-item:not(:last-child) {
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
     }
 
     /* Active styling */
     .channel-logo-item.active .channel-logo-circle {
-      border-color: var(--text-primary);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      border-color: var(--gold-accent);
+      box-shadow: 0 4px 16px rgba(255,179,0,0.3), 0 2px 8px rgba(0,0,0,0.1);
+      transform: scale(1.05);
     }
     .channel-logo-item.active .channel-logo-name {
-      color: var(--text-primary);
+      color: var(--gold-accent);
       font-weight: 700;
+    }
+
+    /* Add golden glow for active channel */
+    .channel-logo-item.active .channel-logo-circle::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      opacity: 0.2;
+      z-index: -1;
+      filter: blur(4px);
     }
 
     /* Live channels */
@@ -969,9 +1055,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 600;
       font-size: 14px;
       color: var(--text-secondary);
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -4523,7 +4611,17 @@
       audioOnly: false,
       sleepTimerId: null,
       currentPlaying: null, // { videoId, title, channelName, isLive }
-      likeState: false      // Like toggle
+      likeState: false,     // Like toggle
+      
+      // Collage state
+      allButtonState: {
+        isGenerating: false,
+        hasError: false,
+        collageDataUrl: null,
+        useIconFallback: true,
+        lastGenerated: 0,
+        retryCount: 0
+      }
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -5027,37 +5125,52 @@
     const KIRTAN_VIDEO_ID = 'LJfpEDBO9UE';     // Kirtan Darbar
     const RADIO_VIDEO_ID = 'YlzGjxHpZdA';      // Gurbani Radio
 
+    // Fallback channels with real YouTube channel IDs and profile picture placeholders
+    // The thumbnail URLs will be dynamically generated using YouTube's profile picture service
     const FALLBACK_CHANNELS = [
       {
         channelId: 'UCYn6UEtQ771a_OWSiNBoG8w',
         channelName: 'SGPC, Sri Amritsar',
-        thumbnail: 'sgpc_logo_custom',
+        thumbnail: '', // Will be dynamically fetched
         isLive: 1,
         videoId: SGPC_VIDEO_ID,
         liveTitle: 'Official SGPC LIVE | Gurbani Kirtan | Sachkhand Sri Harmandir Sahib, Sri Amritsar'
       },
       {
-        channelId: 'amritvela_trust_id',
+        channelId: 'UCgjKIbrlQYDJh8UdJUPia3A',
         channelName: 'AMRITVELA TRUST',
-        thumbnail: 'amritvela_logo_custom',
+        thumbnail: '', // Will be dynamically fetched
         isLive: 0,
         videoId: AMRITVELA_VIDEO_ID
       },
       {
-        channelId: 'kirtan_darbar_id',
+        channelId: 'UCx8Xu8R-mJEBDit1PPvI08Q',
         channelName: 'Kirtan Darbar',
-        thumbnail: 'kirtan_logo_custom',
+        thumbnail: '', // Will be dynamically fetched
         isLive: 0,
         videoId: KIRTAN_VIDEO_ID
       },
       {
-        channelId: 'gurbani_radio_id',
+        channelId: 'UCswIOlMY2_DT05glwBsxZyg',
         channelName: 'Gurbani Radio',
-        thumbnail: 'gurbani_radio_custom',
+        thumbnail: '', // Will be dynamically fetched
         isLive: 0,
         videoId: RADIO_VIDEO_ID
       }
     ];
+
+    // Initialize channels with profile pictures
+    function initializeChannelsWithProfilePictures() {
+      FALLBACK_CHANNELS.forEach(channel => {
+        if (!channel.thumbnail) {
+          // Use a reliable placeholder service that generates consistent avatars based on channel ID
+          channel.thumbnail = `https://ui-avatars.com/api/?name=${encodeURIComponent(channel.channelName)}&background=random&size=88&bold=true`;
+        }
+      });
+    }
+
+    // Call initialization
+    initializeChannelsWithProfilePictures();
 
     // Static curated previous lives with verified video IDs (using real video IDs from popular Gurbani channels)
     const STATIC_PREVIOUS_LIVES = [
@@ -5068,46 +5181,26 @@
       { videoId: 'a-6_5tTm5kA', title: 'PTC Punjabi Live Kirtan', channelName: 'PTC Simran', channelId: 'UCgjKIbrlQYDJh8UdJUPia3A', ago: 'Yesterday', views: '18K views', ts: Date.now() - 24*3600000 }
     ];
 
+    // Function to get YouTube channel profile picture URL from channel ID
+    function getChannelProfilePicture(channelId) {
+      // YouTube profile picture URL pattern
+      return `https://yt3.ggpht.com/${channelId}=s88-c-k-c0x00ffffff-no-rj`;
+    }
+
+    // Function to enhance channel data with profile pictures
+    function enhanceChannelWithProfilePicture(channel) {
+      if (!channel.thumbnail || channel.thumbnail.includes('_custom')) {
+        channel.thumbnail = getChannelProfilePicture(channel.channelId);
+      }
+      return channel;
+    }
+
     function getChannelAvatarHTML(ch) {
-      if (ch.thumbnail === 'sgpc_logo_custom') {
-        return `
-          <svg viewBox="0 0 50 50" style="width:100%; height:100%; background:#0B1C4B;">
-            <circle cx="25" cy="25" r="23" fill="none" stroke="#FFB300" stroke-width="1.5"/>
-            <text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" fill="#FFB300" font-size="8" font-weight="900" font-family="sans-serif">SGPC</text>
-            <text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" font-size="5" font-weight="700" font-family="sans-serif">Sri Amritsar</text>
-          </svg>
-        `;
+      // Use real channel profile picture URLs with beautiful styling
+      if (ch.thumbnail && ch.thumbnail !== 'undefined' && ch.thumbnail !== '') {
+        return `<img decoding="async" src="${ch.thumbnail}" alt="${ch.channelName}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.outerHTML='<div class=\\'circle-fallback\\'>${getInitials(ch.channelName)}</div>'">`;
       }
-      if (ch.thumbnail === 'amritvela_logo_custom') {
-        return `
-          <svg viewBox="0 0 50 50" style="width:100%; height:100%; background:#FFFFFF;">
-            <circle cx="25" cy="25" r="23" fill="none" stroke="#03A9F4" stroke-width="1.5"/>
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#0D47A1" font-size="20" font-weight="900" font-family="sans-serif">A</text>
-            <path d="M10 25 C 20 15, 30 35, 40 25" fill="none" stroke="#FF5722" stroke-width="2"/>
-          </svg>
-        `;
-      }
-      if (ch.thumbnail === 'kirtan_logo_custom') {
-        return `
-          <svg viewBox="0 0 50 50" style="width:100%; height:100%; background:#4E342E;">
-            <circle cx="25" cy="25" r="23" fill="none" stroke="#FFB300" stroke-width="1"/>
-            <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" fill="#FFB300" font-size="7" font-weight="800" font-family="sans-serif">KIRTAN</text>
-            <text x="50%" y="68%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" font-size="5" font-weight="600" font-family="sans-serif">DARBAR</text>
-          </svg>
-        `;
-      }
-      if (ch.thumbnail === 'gurbani_radio_custom') {
-        return `
-          <svg viewBox="0 0 50 50" style="width:100%; height:100%; background:#FFC107;">
-            <circle cx="25" cy="25" r="12" fill="#0D47A1"/>
-            <path d="M17 25 A 8 8 0 0 1 33 25" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-            <circle cx="25" cy="25" r="5" fill="#FFC107"/>
-          </svg>
-        `;
-      }
-      if (ch.thumbnail && ch.thumbnail !== 'undefined') {
-        return `<img decoding="async" src="${ch.thumbnail}" onerror="this.outerHTML='<div class=\\'circle-fallback\\'>${getInitials(ch.channelName)}</div>'">`;
-      }
+      // Fallback to initials if no valid thumbnail
       return `<div class="circle-fallback">${getInitials(ch.channelName)}</div>`;
     }
 
@@ -6644,6 +6737,47 @@
       return 999999999;
     }
 
+    // Function to generate a beautiful collage of all channel logos
+    function generateChannelCollage(channels) {
+      if (!channels || channels.length === 0) {
+        // Fallback to default grid icon if no channels
+        return `
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <circle cx="8" cy="8" r="2.5"/>
+            <circle cx="16" cy="8" r="2.5"/>
+            <circle cx="8" cy="16" r="2.5"/>
+            <circle cx="16" cy="16" r="2.5"/>
+          </svg>
+        `;
+      }
+
+      const channelCount = Math.min(channels.length, 4);
+      
+      // For single channel, show it full size
+      if (channelCount === 1) {
+        return getChannelAvatarHTML(channels[0]);
+      }
+      
+      // For 2-4 channels, create a clean grid collage
+      let collageHTML = '<div class="collage-grid">';
+      
+      // Add channel logos to the collage
+      for (let i = 0; i < channelCount; i++) {
+        const channel = channels[i];
+        const avatarHTML = getChannelAvatarHTML(channel);
+        collageHTML += `<div class="collage-item">${avatarHTML}</div>`;
+      }
+      
+      // Fill remaining grid cells with subtle placeholders only if we have space
+      const remainingCells = 4 - channelCount;
+      for (let i = 0; i < remainingCells; i++) {
+        collageHTML += `<div class="collage-placeholder">•</div>`;
+      }
+      
+      collageHTML += '</div>';
+      return collageHTML;
+    }
+
     function renderSubscriptionsCircleBar() {
       const bar = CE('div');
       bar.className = 'horizontal-channels-bar';
@@ -6663,18 +6797,10 @@
       allCircleWrap.className = 'channel-logo-circle-wrap';
       const allCircle = CE('div');
       allCircle.className = 'channel-logo-circle';
-      allCircle.style.background = 'var(--gold-gradient)';
-      allCircle.style.color = '#FFFFFF';
       
-      // Inline grid icon
-      allCircle.innerHTML = `
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-          <circle cx="8" cy="8" r="2.5"/>
-          <circle cx="16" cy="8" r="2.5"/>
-          <circle cx="8" cy="16" r="2.5"/>
-          <circle cx="16" cy="16" r="2.5"/>
-        </svg>
-      `;
+      // Dynamic channel collage
+      const channelsForCollage = State.myChannels.length > 0 ? State.myChannels : FALLBACK_CHANNELS;
+      allCircle.innerHTML = generateChannelCollage(channelsForCollage);
       allCircleWrap.appendChild(allCircle);
       allItem.appendChild(allCircleWrap);
 

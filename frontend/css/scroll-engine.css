@@ -48,7 +48,8 @@ header,
     animation-play-state: paused !important;
 }
 
-/* Simplify layout: disable transitions, costly shadows, filters during scrolling on cards */
+/* Simplify layout during scrolling: we disable transitions to ensure immediate response,
+   but we KEEP card style visual consistency (blur, shadow) to prevent flat transparency and style invalidation overhead. */
 .is-scrolling .hero-card,
 .scrolling .hero-card,
 .is-scrolling .practice-card,
@@ -65,9 +66,6 @@ header,
 .scrolling .alarm-card,
 .is-scrolling .streak-card,
 .scrolling .streak-card {
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
     transition: none !important;
 }
 

@@ -41,15 +41,7 @@
     // Listen to scroll events with { passive: true } to prevent blocking main thread
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Touch listeners: mark scrolling start/end for backdrop-filter optimization
-    window.addEventListener('touchstart', () => {
-        setScrollingState(true);
-    }, { passive: true });
 
-    window.addEventListener('touchend', () => {
-        if (scrollStopTimeout) clearTimeout(scrollStopTimeout);
-        scrollStopTimeout = setTimeout(() => setScrollingState(false), 200);
-    }, { passive: true });
 
     // Pause all infinite animations when page is hidden (saves battery/CPU)
     document.addEventListener('visibilitychange', () => {

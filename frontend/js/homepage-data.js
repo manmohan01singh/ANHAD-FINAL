@@ -179,11 +179,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ━━━ REAL-TIME CLOCK ━━━
+  let lastTimeStr = '';
   function updateClock() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    const el = document.getElementById('currentTime');
-    if (el) el.textContent = timeStr;
+    if (timeStr !== lastTimeStr) {
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = timeStr;
+      lastTimeStr = timeStr;
+    }
   }
 
   // ━━━ LISTENER COUNT ━━━
@@ -561,11 +565,11 @@ document.addEventListener('DOMContentLoaded', function () {
   updateNextSession(); updateNitnemTracker(); updateSehajPaath(); updateProgressCard(); updateNitnemSubtitle(); updateNotificationBadge();
   // FIX: Store interval IDs so they can be cleaned up on page unload
   _hpIntervals.push(
-    setInterval(() => { if (!document.hidden) updateClock(); }, 1000),
-    setInterval(() => { if (!document.hidden) updateListenerCount(); }, 5000),
-    setInterval(() => { if (!document.hidden) updateGreeting(); }, 60000),
-    setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 60000),
-    setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 60000)
+    setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
+    setInterval(() => { if (!document.hidden) updateListenerCount(); }, 60000),
+    setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000),
+    setInterval(() => { if (!document.hidden) updateNitnemSubtitle(); }, 300000),
+    setInterval(() => { if (!document.hidden) updateNotificationBadge(); }, 300000)
   );
 
   // FIX: Clean up intervals on page unload to prevent memory leaks
