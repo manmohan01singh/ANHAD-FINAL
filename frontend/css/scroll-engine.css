@@ -70,7 +70,8 @@ header,
 }
 
 /* Remove backdrop blur filtering on header overlays and tab-bars during scroll.
-   Reflow & readback of background pixels on every scroll tick is the #1 reason files feel laggy on Android/Safari. */
+   Reflow & readback of background pixels on every scroll tick is the #1 reason files feel laggy on Android/Safari.
+   DISABLED: Keep the premium glassmorphism tab-bar and header blur intact on scroll per client requirements.
 .is-scrolling header,
 .scrolling header,
 .is-scrolling .app-header,
@@ -89,6 +90,7 @@ header,
     border-bottom-color: rgba(255, 255, 255, 0.12) !important;
     transition: transform 0s, opacity 0s, background-color 0s !important;
 }
+*/
 
 /* ─── 3. REDUCED MOTION ACCESSIBILITY ─── */
 @media (prefers-reduced-motion: reduce) {

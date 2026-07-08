@@ -1960,11 +1960,7 @@
             night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
           };
           const bgUrl = bgMap[slot] || bgMap.day;
-          document.body.style.backgroundImage = "url('" + bgUrl + "')";
-          document.body.style.backgroundSize = 'cover';
-          document.body.style.backgroundPosition = 'center top';
-          document.body.style.backgroundRepeat = 'no-repeat';
-          document.body.style.backgroundAttachment = 'fixed';
+          document.documentElement.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
         }
       })();
     });

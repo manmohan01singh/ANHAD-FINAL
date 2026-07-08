@@ -25,8 +25,8 @@
   /* PREMIUM DARK GLASS (Default for maximum float contrast) */
   background: rgba(18, 18, 20, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(12px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
   box-shadow:
     0 20px 50px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;

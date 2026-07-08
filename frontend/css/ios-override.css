@@ -108,7 +108,6 @@ body {
   /* body must be overflow:visible so html remains THE scroll container */
   overflow: visible;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
 }
 
 /* Mini player padding handled by nav-glass.css .app padding-bottom */
