@@ -1946,22 +1946,19 @@
        but frees the critical rendering path for the hero image. */
     requestAnimationFrame(function() {
       (function() {
-        const theme = localStorage.getItem('anhad_theme') || 'auto';
-        if (theme === 'auto') {
-          let slot = localStorage.getItem('anhad_forced_time_of_day');
-          if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
-            const h = new Date().getHours();
-            slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
-          }
-          const bgMap = {
-            morning: 'assets/darbar-sahib-morning-bg.webp',
-            day:     'assets/darbar-sahib-day-bg.webp',
-            evening: 'assets/darbar-sahib-evening-bg.webp',
-            night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
-          };
-          const bgUrl = bgMap[slot] || bgMap.day;
-          document.documentElement.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
+        let slot = localStorage.getItem('anhad_forced_time_of_day');
+        if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+          const h = new Date().getHours();
+          slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
         }
+        const bgMap = {
+          morning: 'assets/darbar-sahib-morning-bg.webp',
+          day:     'assets/darbar-sahib-day-bg.webp',
+          evening: 'assets/darbar-sahib-evening-bg.webp',
+          night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+        };
+        const bgUrl = bgMap[slot] || bgMap.day;
+        document.documentElement.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
       })();
     });
   </script>
