@@ -84,7 +84,10 @@
     document.body.style.backgroundSize = 'cover';
     document.body.style.backgroundPosition = 'center top';
     document.body.style.backgroundRepeat = 'no-repeat';
-    document.body.style.backgroundAttachment = 'fixed';
+    /* PERF FIX: 'fixed' demotes the compositor on mobile Safari/Chrome,
+       forcing a full software repaint on every scroll frame.
+       'scroll' keeps the background on the GPU compositor thread. */
+    document.body.style.backgroundAttachment = 'scroll';
   }
 
   // ── Hero card image map ───────────────────────────────────────────────────

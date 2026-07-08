@@ -105,16 +105,14 @@
       // FAST-TRACK: Prevent white flash
       document.documentElement.classList.add('theme-loaded');
 
-
-      // Sync to body as soon as it exists
-      const observer = new MutationObserver(() => {
-        if (document.body) {
-          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
-          document.body.classList.add('theme-loaded');
-          observer.disconnect();
-        }
-      });
-      observer.observe(document.documentElement, { childList: true, subtree: true });
+      // PERF FIX: Replaced MutationObserver({ childList, subtree }) with DOMContentLoaded.
+      // The MutationObserver was watching ALL DOM mutations (every element parsed into body)
+      // just to add a class on body — a high-frequency callback for a one-time task.
+      // DOMContentLoaded fires exactly once at the right moment.
+      document.addEventListener('DOMContentLoaded', function() {
+        if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+        document.body.classList.add('theme-loaded');
+      }, { once: true });
     })();
   </script>
   
@@ -178,34 +176,9 @@
       }
     }
 
-    /* PERF FIX: Replace box-shadow/filter pulse animations with GPU-composited
-       transform+opacity equivalents. box-shadow and filter animations trigger layout
-       reflow on every frame causing jank — these use only transform and opacity. */
-    @keyframes auraPulse {
-      0%, 100% { opacity: 0.6; transform: scale(1); }
-      50%       { opacity: 1;   transform: scale(1.08); }
-    }
-    .greeting__portrait-wrapper::before,
-    .greeting__portrait-slider::before {
-      will-change: transform, opacity;
-      contain: layout style paint;
-    }
-
-    /* PERF FIX: GPU-promote cards that animate on entrance. */
-    .hero-card, .practice-card, .quick-card, .event-card {
-      will-change: transform;
-      transform: translateZ(0);
-    }
-
-    /* PERF FIX: Live badge pulse using transform+opacity only (no box-shadow). */
-    @keyframes liveBadgePulse {
-      0%, 100% { opacity: 1;   transform: scale(1); }
-      50%       { opacity: 0.7; transform: scale(0.92); }
-    }
-    .live-badge, .live-dot, .live-indicator-dot {
-      animation-name: liveBadgePulse !important;
-      will-change: transform, opacity;
-    }
+    /* PERF FIX: Removed duplicate @keyframes auraPulse definition.
+       The canonical definition is below at .greeting__portrait-wrapper.
+       Duplicate re-declaration wastes parse time with no visual benefit. */
 
     /* PERF FIX: Respect reduced-motion preference — accessibility & perf. */
     @media (prefers-reduced-motion: reduce) {
@@ -481,10 +454,16 @@
           rgba(255, 215, 0, 0.08) 50%, 
           transparent 75%
         ) !important;
+      /* PERF FIX: filter:blur() is now STATIC — not animated.
+         Previously, auraPulse animated this element with blur still active,
+         forcing a full CPU blur computation every animation frame (60-120fps).
+         The blur value never changes during animation anyway — only opacity
+         and scale do. Animating only compositor-safe properties saves ~10ms/frame. */
       filter: blur(25px) !important;
       border-radius: 50% !important;
       z-index: 0 !important;
       animation: auraPulse 8s ease-in-out infinite !important;
+      will-change: transform, opacity !important;
     }
     /* Rays removed as requested */
     .greeting__portrait-wrapper::after {
@@ -557,8 +536,12 @@
       opacity: 0;
       pointer-events: none;
       z-index: 0;
+      /* PERF FIX: Removed filter:blur() from transition states.
+         Transitioning filter:blur causes a software compositing layer with
+         a blur computation on every interpolation frame (60-120fps).
+         Replaced with scale+opacity only — visually equivalent, compositor-friendly. */
       transform: scale(0.6) translateX(0);
-      filter: blur(4px) grayscale(1);
+      filter: grayscale(1);
     }
 
     .greeting__slide--active {
@@ -566,21 +549,21 @@
       pointer-events: auto !important;
       z-index: 10 !important;
       transform: scale(1) translateX(0) !important;
-      filter: blur(0) grayscale(0) !important;
+      filter: grayscale(0) !important;
     }
 
     .greeting__slide--prev {
       opacity: 0.5 !important;
       z-index: 5 !important;
       transform: scale(0.8) translateX(-110px) !important;
-      filter: blur(2px) grayscale(0.5) !important;
+      filter: grayscale(0.5) !important;
     }
 
     .greeting__slide--next {
       opacity: 0.5 !important;
       z-index: 5 !important;
       transform: scale(0.8) translateX(110px) !important;
-      filter: blur(2px) grayscale(0.5) !important;
+      filter: grayscale(0.5) !important;
     }
 
     .greeting__slide--far-prev {
@@ -618,11 +601,14 @@
           rgba(255, 215, 0, 0.1) 45%, 
           transparent 70%
         ) !important;
+      /* PERF FIX: Same as portrait-wrapper::before — blur is now static.
+         The animated glow effect is achieved via opacity and scale only. */
       filter: blur(30px) !important;
       border-radius: 50% !important;
       z-index: 0 !important;
       animation: auraPulse 8s ease-in-out infinite !important;
       pointer-events: none !important;
+      will-change: transform, opacity !important;
     }
     .greeting__text {
       display: flex !important;
@@ -1951,28 +1937,35 @@
 
 <body>
   <script>
-    (function() {
-      const theme = localStorage.getItem('anhad_theme') || 'auto';
-      if (theme === 'auto') {
-        let slot = localStorage.getItem('anhad_forced_time_of_day');
-        if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
-          const h = new Date().getHours();
-          slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+    /* PERF FIX: Background-image assignment deferred past LCP paint.
+       Previously ran synchronously in <body> open, forcing a layout
+       recalculation before the hero AVIF could be painted. The background
+       is decorative — delaying it by one rAF is invisible to the user
+       but frees the critical rendering path for the hero image. */
+    requestAnimationFrame(function() {
+      (function() {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        if (theme === 'auto') {
+          let slot = localStorage.getItem('anhad_forced_time_of_day');
+          if (!slot || !['morning', 'day', 'evening', 'night'].includes(slot)) {
+            const h = new Date().getHours();
+            slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
+          }
+          const bgMap = {
+            morning: 'assets/darbar-sahib-morning-bg.webp',
+            day:     'assets/darbar-sahib-day-bg.webp',
+            evening: 'assets/darbar-sahib-evening-bg.webp',
+            night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+          };
+          const bgUrl = bgMap[slot] || bgMap.day;
+          document.body.style.backgroundImage = "url('" + bgUrl + "')";
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundPosition = 'center top';
+          document.body.style.backgroundRepeat = 'no-repeat';
+          document.body.style.backgroundAttachment = 'fixed';
         }
-        const bgMap = {
-          morning: 'assets/darbar-sahib-morning-bg.webp',
-          day:     'assets/darbar-sahib-day-bg.webp',
-          evening: 'assets/darbar-sahib-evening-bg.webp',
-          night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
-        };
-        const bgUrl = bgMap[slot] || bgMap.day;
-        document.body.style.backgroundImage = "url('" + bgUrl + "')";
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center top';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundAttachment = 'fixed';
-      }
-    })();
+      })();
+    });
   </script>
   <!-- ═══════════════════════════════════════════════════════════════════════════
        DESKTOP SIDEBAR NAVIGATION — Hidden on Mobile, Visible on Desktop

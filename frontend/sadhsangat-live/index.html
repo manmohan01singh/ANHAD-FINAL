@@ -6045,12 +6045,10 @@
           fetchWithUser(`/api/sadhsangat/search?q=${encodeURIComponent(query)}`),
           fetchWithUser(`/api/sadhsangat/content-search?q=${encodeURIComponent(query)}`)
         ]);
-        
         const channelData = await readJsonResponse(channelRes, { channels: [] });
         const contentData = await readJsonResponse(contentRes, { videos: [] });
         
         if (!channelRes.ok) throw new Error(channelData.error || 'Channels not found');
-        // Content search errors are not fatal, just show channel results if available
 
         const resultsList = $('searchResultsList');
         resultsList.innerHTML = '';
@@ -6066,177 +6064,276 @@
           showChannels = true;
           showVideos = true;
         }
+
+        // 1. Classify query intent: channels on top vs videos on top
+        let channelsOnTop = true;
+        
+        // Video-centric keywords that indicate user wants to search for specific videos/streams
+        const videoKeywords = [
+          'live', 'latest', 'today', 'shabad', 'kirtan', 'katha', 'nitnem', 'paath', 'simran',
+          'vyakhya', 'dharmik', 'video', 'song', 'bhajan', 'aarti', 'sewa', 'darbar sahib',
+          'harmandir sahib', 'sukhmani', 'japji', 'jaap', 'rehras', 'sohila', 'chaupai',
+          'anand sahib', 'savaiye', 'hukamnama', 'record', 'kirtan live', 'katha live', 'darbar'
+        ];
+        
+        const queryLower = query.toLowerCase();
+        const searchHasVideoKeyword = videoKeywords.some(kw => queryLower.includes(kw));
+        
+        // If query has a strong video-centric keyword, prioritize videos
+        if (searchHasVideoKeyword) {
+          channelsOnTop = false;
+        } else {
+          // Otherwise check match quality: do we have channel results that closely match the query?
+          const hasCloserChannelMatch = channels.some(ch => {
+            const chName = (ch.channelName || '').toLowerCase();
+            const chHandle = (ch.channelHandle || '').toLowerCase();
+            return chName.includes(queryLower) || queryLower.includes(chName) || chHandle.includes(queryLower);
+          });
+          // If no channel matches query closely but we have video results, default videos to top
+          if (!hasCloserChannelMatch && videos.length > 0) {
+            channelsOnTop = false;
+          }
+        }
         
         if ((showChannels && channels.length === 0 && !showVideos) || (showVideos && videos.length === 0 && !showChannels) || (channels.length === 0 && videos.length === 0)) {
           resultsList.innerHTML = `<div style="text-align:center; padding:16px; font-size:13.5px; color:var(--text-secondary);">No results found. Try again.</div>`;
         } else {
-          if (showChannels) {
-            channels.forEach(ch => {
-            const row = CE('div');
-            row.className = 'search-result-row';
 
-            const avDiv = CE('div');
-            avDiv.className = 'search-result-avatar';
-            if (ch.thumbnail) {
-              const img = CE('img');
-              img.src = ch.thumbnail;
-              img.onerror = () => { img.remove(); avDiv.textContent = getInitials(ch.channelName); };
-              avDiv.appendChild(img);
-            } else {
-              avDiv.textContent = getInitials(ch.channelName);
-            }
-            row.appendChild(avDiv);
+          // Under-helper to draw channel results list card collection
+          const createChannelsSection = (channelsList) => {
+            if (channelsList.length === 0) return null;
+            
+            const container = CE('div');
+            container.className = 'search-channels-section';
+            
+            const sectionTitle = CE('div');
+            sectionTitle.style.fontSize = '13px';
+            sectionTitle.style.fontWeight = '600';
+            sectionTitle.style.color = 'var(--text-secondary)';
+            sectionTitle.style.marginBottom = '12px';
+            sectionTitle.style.marginTop = '8px';
+            sectionTitle.textContent = `Channels (${channelsList.length})`;
+            container.appendChild(sectionTitle);
+            
+            const rowsContainer = CE('div');
+            rowsContainer.className = 'search-channels-rows';
+            container.appendChild(rowsContainer);
+            
+            // Render channels (up to 4 initially, or all if we expand)
+            const renderChannelRows = (limitAll) => {
+              rowsContainer.innerHTML = '';
+              const channelsToRender = limitAll ? channelsList : channelsList.slice(0, 4);
+              
+              channelsToRender.forEach(ch => {
+                const row = CE('div');
+                row.className = 'search-result-row';
 
-            const info = CE('div');
-            info.className = 'search-result-info';
-            info.innerHTML = `
-              <div class="search-result-name">${ch.channelName}</div>
-              <div class="search-result-meta">${ch.subscriberCount || 'Gurbani Channel'}${ch.channelHandle ? ' • ' + ch.channelHandle : ''}</div>
-            `;
-            row.appendChild(info);
+                const avDiv = CE('div');
+                avDiv.className = 'search-result-avatar';
+                if (ch.thumbnail) {
+                  const img = CE('img');
+                  img.src = ch.thumbnail;
+                  img.onerror = () => { img.remove(); avDiv.textContent = getInitials(ch.channelName); };
+                  avDiv.appendChild(img);
+                } else {
+                  avDiv.textContent = getInitials(ch.channelName);
+                }
+                row.appendChild(avDiv);
 
-            const btn = CE('button');
-            if (ch.alreadyMonitored) {
-              btn.className = 'search-result-action-btn monitored';
-              btn.disabled = true;
-              btn.textContent = 'Monitored';
-            } else {
-              btn.className = 'search-result-action-btn add';
-              btn.textContent = 'Add';
-              btn.addEventListener('click', async () => {
-                console.log('[AI Validation] User clicked Add for channel:', ch.channelName);
-                btn.disabled = true;
-                btn.textContent = '...';
-                try {
-                  // ─── CLIENT-SIDE PRE-CHECK (instant, zero API cost) ───────────
-                  // Mirrors the backend INSTANT_REJECT lists. Catches cases where
-                  // the server has a stale cache or the AI gets confused.
-                  const _nameLower = (ch.channelName || '').toLowerCase();
-                  const _rejectArtists = [
-                    'karan aujla','diljit dosanjh','sidhu moose wala','ap dhillon','r nait',
-                    'mankirt aulakh','jazzy b','babbal rak','amrit maan','gippy grewal',
-                    'arjan dhillon','shubh','badshah','yo yo honey singh',
-                    'guru randhawa','harrdy sandhu','b praak','jaani','prabh gill',
-                    'garry sandhu','akshay kumar','salman khan','shah rukh khan','aamir khan',
-                  ];
-                  const _rejectKws = [
-                    't-series','zee music','yrf','tips music','speed records','saregama',
-                    'set india','sony tv','sony liv','star plus','star sports','hotstar',
-                    'colors tv','zee tv','zee punjabi','zee cinema',
-                    'ndtv','aaj tak','abp news','news18','republic tv','times now',
-                    'mtv india','comedy central','netflix','amazon prime video',
-                    'bigg boss','indian idol','bollywood','kollywood',
-                  ];
-                  const _matchedArtist = _rejectArtists.find(a => _nameLower.includes(a));
-                  const _matchedKw     = _rejectKws.find(k => _nameLower.includes(k));
-                  if (_matchedArtist || _matchedKw) {
-                    const _term = _matchedArtist || _matchedKw;
-                    console.log(`[AI Validation] ❌ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
-                    showToast(`⚠️ "${ch.channelName}" is not suitable for Sadhsangat Live`);
-                    btn.disabled = false;
-                    btn.textContent = 'Add';
-                    return;
-                  }
-                  // ─────────────────────────────────────────────────────────────
+                const info = CE('div');
+                info.className = 'search-result-info';
+                info.innerHTML = `
+                  <div class="search-result-name">${ch.channelName}</div>
+                  <div class="search-result-meta">${ch.subscriberCount || 'Gurbani Channel'}${ch.channelHandle ? ' • ' + ch.channelHandle : ''}</div>
+                `;
+                row.appendChild(info);
 
-                  console.log('[AI Validation] Calling validation API...');
-                  // AI Validation: Check if channel is appropriate for Sadhsangat Live
-                  const validateRes = await fetchWithUser('/api/sadhsangat/validate-channel', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      channelName: ch.channelName,
-                      channelId: ch.channelId,
-                      channelHandle: ch.channelHandle
-                    })
-                  });
-                  console.log('[AI Validation] Validation API response status:', validateRes.status);
-                  const validateData = await readJsonResponse(validateRes, { isValid: false });
-                  console.log('[AI Validation] Validation result:', validateData);
-                  
-                  if (!validateData.isValid) {
-                    console.log('[AI Validation] Channel REJECTED:', validateData.reason);
-                    showToast(`⚠️ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
-                    btn.disabled = false;
-                    btn.textContent = 'Add';
-                    return;
-                  }
-                  
-                  console.log('[AI Validation] Channel APPROVED, adding to monitored...');
-                  const addRes = await fetchWithUser('/api/sadhsangat/my-channels', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ handle: ch.channelHandle || ch.channelId, channelId: ch.channelId })
-                  });
-                  const addData = await readJsonResponse(addRes, {});
-                  if (!addRes.ok) throw new Error(addData.error || 'Failed to add');
-
-                  showToast(`✅ Added ${ch.channelName}`);
+                const btn = CE('button');
+                if (ch.alreadyMonitored) {
                   btn.className = 'search-result-action-btn monitored';
                   btn.disabled = true;
                   btn.textContent = 'Monitored';
-                  addSearchToHistory(query);
-                  await loadData();
-                } catch (addErr) {
-                  showToast('⚠️ ' + addErr.message);
-                  btn.disabled = false;
+                } else {
+                  btn.className = 'search-result-action-btn add';
                   btn.textContent = 'Add';
+                  btn.addEventListener('click', async () => {
+                    console.log('[AI Validation] User clicked Add for channel:', ch.channelName);
+                    btn.disabled = true;
+                    btn.textContent = '...';
+                    try {
+                      // Client-side instant pre-check
+                      const _nameLower = (ch.channelName || '').toLowerCase();
+                      const _rejectArtists = [
+                        'karan aujla','diljit dosanjh','sidhu moose wala','ap dhillon','r nait',
+                        'mankirt aulakh','jazzy b','babbal rak','amrit maan','gippy grewal',
+                        'arjan dhillon','shubh','badshah','yo yo honey singh',
+                        'guru randhawa','harrdy sandhu','b praak','jaani','prabh gill',
+                        'garry sandhu','akshay kumar','salman khan','shah rukh khan','aamir khan',
+                      ];
+                      const _rejectKws = [
+                        't-series','zee music','yrf','tips music','speed records','saregama',
+                        'set india','sony tv','sony liv','star plus','star sports','hotstar',
+                        'colors tv','zee tv','zee punjabi','zee cinema',
+                        'ndtv','aaj tak','abp news','news18','republic tv','times now',
+                        'mtv india','comedy central','netflix','amazon prime video',
+                        'bigg boss','indian idol','bollywood','kollywood',
+                      ];
+                      const _matchedArtist = _rejectArtists.find(a => _nameLower.includes(a));
+                      const _matchedKw     = _rejectKws.find(k => _nameLower.includes(k));
+                      if (_matchedArtist || _matchedKw) {
+                        const _term = _matchedArtist || _matchedKw;
+                        console.log(`[AI Validation] ❌ CLIENT PRE-CHECK blocked "${ch.channelName}" — matched "${_term}"`);
+                        showToast(`⚠️ "${ch.channelName}" is not suitable for Sadhsangat Live`);
+                        btn.disabled = false;
+                        btn.textContent = 'Add';
+                        return;
+                      }
+
+                      console.log('[AI Validation] Calling validation API...');
+                      const validateRes = await fetchWithUser('/api/sadhsangat/validate-channel', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          channelName: ch.channelName,
+                          channelId: ch.channelId,
+                          channelHandle: ch.channelHandle
+                        })
+                      });
+                      const validateData = await readJsonResponse(validateRes, { isValid: false });
+                      
+                      if (!validateData.isValid) {
+                        showToast(`⚠️ ${validateData.reason || 'This channel is not appropriate for Sadhsangat Live'}`);
+                        btn.disabled = false;
+                        btn.textContent = 'Add';
+                        return;
+                      }
+                      
+                      const addRes = await fetchWithUser('/api/sadhsangat/my-channels', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ handle: ch.channelHandle || ch.channelId, channelId: ch.channelId })
+                      });
+                      const addData = await readJsonResponse(addRes, {});
+                      if (!addRes.ok) throw new Error(addData.error || 'Failed to add');
+
+                      showToast(`✅ Added ${ch.channelName}`);
+                      btn.className = 'search-result-action-btn monitored';
+                      btn.disabled = true;
+                      btn.textContent = 'Monitored';
+                      addSearchToHistory(query);
+                      await loadData();
+                    } catch (addErr) {
+                      showToast('⚠️ ' + addErr.message);
+                      btn.disabled = false;
+                      btn.textContent = 'Add';
+                    }
+                  });
+                }
+                row.appendChild(btn);
+                rowsContainer.appendChild(row);
+              });
+            };
+            
+            renderChannelRows(false);
+            
+            // Show More Button if more than 4 channels
+            if (channelsList.length > 4) {
+              const showMoreBtn = CE('div');
+              showMoreBtn.className = 'show-more-channels-btn';
+              showMoreBtn.style.padding = '10px';
+              showMoreBtn.style.textAlign = 'center';
+              showMoreBtn.style.fontSize = '12.5px';
+              showMoreBtn.style.fontWeight = '600';
+              showMoreBtn.style.color = 'var(--gold-accent)';
+              showMoreBtn.style.cursor = 'pointer';
+              showMoreBtn.style.borderBottom = '1px solid var(--border-color)';
+              showMoreBtn.textContent = 'Show More Channels ∨';
+              
+              let isExpanded = false;
+              showMoreBtn.addEventListener('click', () => {
+                isExpanded = !isExpanded;
+                if (isExpanded) {
+                  renderChannelRows(true);
+                  showMoreBtn.textContent = 'Show Less Channels ∧';
+                } else {
+                  renderChannelRows(false);
+                  showMoreBtn.textContent = 'Show More Channels ∨';
                 }
               });
+              container.appendChild(showMoreBtn);
             }
-            row.appendChild(btn);
-            resultsList.appendChild(row);
-          });
-          }
-          
-          // Show video content results if any
-          if (showVideos && videos.length > 0) {
-          const videosSection = CE('div');
-          videosSection.style.marginTop = '16px';
-          videosSection.style.borderTop = '1px solid var(--border-color)';
-          videosSection.style.paddingTop = '16px';
-          
-          const videosTitle = CE('div');
-          videosTitle.style.fontSize = '13px';
-          videosTitle.style.fontWeight = '600';
-          videosTitle.style.color = 'var(--text-secondary)';
-          videosTitle.style.marginBottom = '12px';
-          videosTitle.textContent = `Video Results (${videos.length})`;
-          videosSection.appendChild(videosTitle);
-          
-          videos.slice(0, 10).forEach(v => {
-            const videoRow = CE('div');
-            videoRow.className = 'search-result-row';
-            videoRow.style.cursor = 'pointer';
             
-            const thumb = CE('img');
-            thumb.className = 'search-result-thumb';
-            thumb.src = `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`;
-            thumb.alt = v.title;
-            thumb.onerror = () => {
-              thumb.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect fill="%23d1d5db" width="24" height="24"/></svg>';
-            };
-            videoRow.appendChild(thumb);
+            return container;
+          };
+
+          // Under-helper to draw video results list card collection
+          const createVideosSection = (videosList) => {
+            if (videosList.length === 0) return null;
             
-            const vInfo = CE('div');
-            vInfo.className = 'search-result-info';
-            vInfo.innerHTML = `
-              <div class="search-result-name" style="font-size:13px;">${v.title}</div>
-              <div class="search-result-meta" style="font-size:11px;">${v.channelName} ${v.publishedTime ? ' • ' + v.publishedTime : ''}</div>
-            `;
-            videoRow.appendChild(vInfo);
+            const container = CE('div');
+            container.className = 'search-videos-section';
+            if (channelsOnTop) {
+              container.style.marginTop = '16px';
+              container.style.borderTop = '1px solid var(--border-color)';
+              container.style.paddingTop = '16px';
+            } else {
+              container.style.marginBottom = '16px';
+              container.style.borderBottom = '1px solid var(--border-color)';
+              container.style.paddingBottom = '16px';
+            }
             
-            videoRow.addEventListener('click', () => {
-              openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail, false);
+            const sectionTitle = CE('div');
+            sectionTitle.style.fontSize = '13px';
+            sectionTitle.style.fontWeight = '600';
+            sectionTitle.style.color = 'var(--text-secondary)';
+            sectionTitle.style.marginBottom = '12px';
+            sectionTitle.textContent = `Video Results (${videosList.length})`;
+            container.appendChild(sectionTitle);
+            
+            videosList.slice(0, 10).forEach(v => {
+              const videoRow = CE('div');
+              videoRow.className = 'search-result-row';
+              videoRow.style.cursor = 'pointer';
+              
+              const thumb = CE('img');
+              thumb.className = 'search-result-thumb';
+              thumb.src = `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`;
+              thumb.alt = v.title;
+              thumb.onerror = () => {
+                thumb.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect fill="%23d1d5db" width="24" height="24"/></svg>';
+              };
+              videoRow.appendChild(thumb);
+              
+              const vInfo = CE('div');
+              vInfo.className = 'search-result-info';
+              vInfo.innerHTML = `
+                <div class="search-result-name" style="font-size:13px;">${v.title}</div>
+                <div class="search-result-meta" style="font-size:11px;">${v.channelName} ${v.publishedTime ? ' • ' + v.publishedTime : ''}</div>
+              `;
+              videoRow.appendChild(vInfo);
+              
+              videoRow.addEventListener('click', () => {
+                openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail, false);
+              });
+              
+              container.appendChild(videoRow);
             });
             
-            videosSection.appendChild(videoRow);
-          });
+            return container;
+          };
+
+          // Render both segments in appropriate priority order
+          const channelsElement = showChannels ? createChannelsSection(channels) : null;
+          const videosElement = showVideos ? createVideosSection(videos) : null;
           
-          resultsList.appendChild(videosSection);
+          if (channelsOnTop) {
+            if (channelsElement) resultsList.appendChild(channelsElement);
+            if (videosElement) resultsList.appendChild(videosElement);
+          } else {
+            if (videosElement) resultsList.appendChild(videosElement);
+            if (channelsElement) resultsList.appendChild(channelsElement);
+          }
         }
-        
-        } // Close else block
         
         $('previewCard').classList.add('visible');
       } catch (err) {

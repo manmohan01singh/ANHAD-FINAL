@@ -4311,7 +4311,7 @@ app.get('/api/sadhsangat/streams', async (req, res) => {
 // ═══════════════════════════════════════════════════════════════════
 
 // Video validation cache (5 minute TTL, separate from channel cache)
-const videoValidationCache = new Map();
+// videoValidationCache is already declared above
 const VIDEO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 // Cleanup expired video validation cache entries every 5 minutes
