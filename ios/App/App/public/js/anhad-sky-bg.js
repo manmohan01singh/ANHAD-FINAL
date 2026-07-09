@@ -68,6 +68,12 @@
     if (current.includes(bgUrl)) return;
 
     document.documentElement.style.setProperty('--dynamic-bg-url', `url('${bgUrl}')`);
+    
+    // CRITICAL FIX: Remove solid background color once image is set
+    requestAnimationFrame(() => {
+      document.documentElement.style.backgroundColor = 'transparent';
+    });
+    
     if (document.body.style.backgroundImage && document.body.style.backgroundImage !== 'none') {
       document.body.style.backgroundImage = 'none';
       document.body.style.backgroundSize = '';

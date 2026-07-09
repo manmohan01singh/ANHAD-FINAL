@@ -4915,7 +4915,7 @@
 
     // 11. PWA SERVICE WORKER SETUP FOR BACKGROUND AUDIO
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(reg => {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
         console.log('Service Worker registered');
         
         // Listen for messages from service worker
@@ -5224,13 +5224,17 @@
 
     const API_BASE = (() => {
       try {
+        if (window.Capacitor) {
+          return 'https://anhad-final.onrender.com';
+        }
         const protocol = window.location.protocol;
         const host = window.location.hostname;
         const port = window.location.port;
 
-        // Native app wrappers (Capacitor/Electron file scheme) connect to local server
+        // Native app wrappers (Capacitor/Electron/Ionic) connect to production server
+        // APK doesn't have a local server, so use the remote backend
         if (protocol === 'file:' || protocol === 'capacitor:' || protocol === 'ionic:') {
-          return 'http://localhost:3000';
+          return 'https://anhad-final.onrender.com';
         }
 
         // Browser environment: dynamically use actual host & port to avoid CORS issues
@@ -5255,15 +5259,18 @@
     }
 
     async function readJsonResponse(response, fallback = {}) {
-      const text = await response.text();
-      if (!text) return fallback;
       try {
-        return JSON.parse(text);
-      } catch (err) {
-        console.error('[Sadhsangat] JSON parse error:', err.message, 'Response text:', text.substring(0, 200));
-        const clean = text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-        const message = clean.slice(0, 140) || `HTTP ${response.status}`;
-        throw new Error(`JSON parse error: ${message}`);
+        const text = await response.text();
+        if (!text) return fallback;
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          console.error('[Sadhsangat] JSON parse error:', err.message, 'Response text:', text.substring(0, 200));
+          return fallback;
+        }
+      } catch (e) {
+        console.error('[Sadhsangat] Response read error:', e);
+        return fallback;
       }
     }
 
@@ -6019,6 +6026,17 @@
         renderWorkspace();
       } catch (e) {
         console.error('[Sync error]', e);
+        const main = document.getElementById('mainContainer');
+        if (main && (!State.live || State.live.length === 0) && (!State.myChannels || State.myChannels.length === 0)) {
+          main.innerHTML = `
+            <div style="padding:40px 20px; text-align:center;">
+              <div style="font-size:48px; margin-bottom:16px;">⚠️</div>
+              <div style="font-size:16px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Connection Failed</div>
+              <div style="font-size:13px; color:var(--text-secondary); margin-bottom:16px;">Unable to connect to Sadhsangat Live servers. Please check your network connection.</div>
+              <button onclick="window.location.reload()" style="background:var(--gold-gradient); border:none; padding:10px 20px; border-radius:30px; font-weight:600; color:#000; cursor:pointer;">Retry Connection</button>
+            </div>
+          `;
+        }
       }
     }
 
@@ -6738,11 +6756,12 @@
     }
 
     // Function to generate a beautiful collage of all channel logos
+    // Updated to use CollageGenerator for proper canvas-based collage
     function generateChannelCollage(channels) {
       if (!channels || channels.length === 0) {
         // Fallback to default grid icon if no channels
         return `
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="color: #FFFFFF;">
             <circle cx="8" cy="8" r="2.5"/>
             <circle cx="16" cy="8" r="2.5"/>
             <circle cx="8" cy="16" r="2.5"/>
@@ -6751,31 +6770,32 @@
         `;
       }
 
-      const channelCount = Math.min(channels.length, 4);
-      
-      // For single channel, show it full size
-      if (channelCount === 1) {
-        return getChannelAvatarHTML(channels[0]);
+      // Check if we have a generated collage available
+      if (State.allButtonState.collageDataUrl && !State.allButtonState.useIconFallback) {
+        return `<img src="${State.allButtonState.collageDataUrl}" 
+                     alt="All channels collage" 
+                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />`;
       }
-      
-      // For 2-4 channels, create a clean grid collage
-      let collageHTML = '<div class="collage-grid">';
-      
-      // Add channel logos to the collage
-      for (let i = 0; i < channelCount; i++) {
-        const channel = channels[i];
-        const avatarHTML = getChannelAvatarHTML(channel);
-        collageHTML += `<div class="collage-item">${avatarHTML}</div>`;
+
+      // Show loading state if generating
+      if (State.allButtonState.isGenerating) {
+        return `
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="color: #FFFFFF;" class="spin-animation">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" 
+                    stroke-dasharray="31.4" stroke-dashoffset="10" />
+          </svg>
+        `;
       }
-      
-      // Fill remaining grid cells with subtle placeholders only if we have space
-      const remainingCells = 4 - channelCount;
-      for (let i = 0; i < remainingCells; i++) {
-        collageHTML += `<div class="collage-placeholder">•</div>`;
-      }
-      
-      collageHTML += '</div>';
-      return collageHTML;
+
+      // Fallback to icon if error or not yet generated
+      return `
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="color: #FFFFFF;">
+          <circle cx="8" cy="8" r="2.5"/>
+          <circle cx="16" cy="8" r="2.5"/>
+          <circle cx="8" cy="16" r="2.5"/>
+          <circle cx="16" cy="16" r="2.5"/>
+        </svg>
+      `;
     }
 
     function renderSubscriptionsCircleBar() {
@@ -8780,5 +8800,19 @@
       <button class="comments-drawer-send" id="commentsSendBtn">Post</button>
     </div>
   </div>
+
+  <!-- Channel Collage All Button - Module Scripts -->
+  <script src="js/collage-grid-calculator.js"></script>
+  <script src="js/collage-fallback-generator.js"></script>
+  <script src="js/collage-image-loader.js"></script>
+  <script src="js/collage-canvas-renderer.js"></script>
+  <script src="js/collage-cache-manager.js"></script>
+  <script src="js/collage-debounce.js"></script>
+  <script src="js/collage-generator.js"></script>
+  <script>
+    // Initialize CollageGenerator
+    const collageGenerator = new CollageGenerator();
+    console.log('[Collage] CollageGenerator initialized');
+  </script>
 </body>
 </html>

@@ -291,77 +291,18 @@
         });
     }
 
-    // ─── AUDIO ENGINE ──────────────────────────────────────────────────────────
+    // ─── AUDIO ENGINE (DELEGATED TO UNIFIED ANHADAUDIO SINGLETON) ──────────────
 
+    // Keep dummy audio reference mapping to AnhadAudio raw audio to avoid reference errors in page
+    try {
+        audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
+    } catch (e) { }
+
+    // Dummy makeAudio mapping
     function makeAudio() {
-        if (audio) {
-            audio.pause();
-            audio.removeAttribute('src');
-            audio.load();
-        }
-        audio = new Audio();
-        audio.preload = 'none';
-        audio.volume = parseFloat(elVolInput?.value || 0.7);
-
-        audio.addEventListener('playing', () => {
-            playing = true;
-            setConn(false);
-            updateUI();
-            bridgeState();
-            updateMediaSession();
-        });
-
-        audio.addEventListener('pause', () => {
-            playing = false;
-            updateUI();
-            bridgeState();
-        });
-
-        audio.addEventListener('waiting', () => setConn(true));
-        audio.addEventListener('canplay', () => setConn(false));
-
-        audio.addEventListener('ended', () => {
-            const st = STREAMS[curStream];
-            if (st && (st.type === 'playlist' || st.type === 'simran')) {
-                // Use advanceTrack but keep audio element alive to avoid breaking listener chain
-                advanceTrack('keepElement');
-            }
-        });
-
-        audio.addEventListener('timeupdate', () => {
-            if (!audio.duration || !isFinite(audio.duration)) return;
-            const pct = Math.min((audio.currentTime / audio.duration) * 100, 100);
-            if (elProgFill) elProgFill.style.width = pct + '%';
-            if (elProgKnob) elProgKnob.style.left = pct + '%';
-            const s = Math.floor(audio.currentTime % 60);
-            const m = Math.floor(audio.currentTime / 60);
-            if (elElapsed) elElapsed.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-
-            // Live status and drift detection
-            const st = STREAMS[curStream];
-            if (st && st.type !== 'live') {
-                const livePos = localPos();
-                if (curTrack !== livePos.trackIndex) {
-                    setLiveSynced(false);
-                } else {
-                    const diff = livePos.position - audio.currentTime;
-                    if (diff > 5) {
-                        setLiveSynced(false);
-                    } else {
-                        setLiveSynced(true);
-                    }
-                }
-            } else if (st && st.type === 'live') {
-                setLiveSynced(true);
-            }
-        });
-
-        audio.addEventListener('error', () => {
-            playing = false;
-            updateUI();
-            showErr('Stream Error', 'Could not connect — retrying…');
-            setTimeout(() => startStream(curStream), 4000);
-        });
+        try {
+            audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
+        } catch (e) { }
     }
 
     async function startStream(name) {
@@ -369,140 +310,47 @@
         const st = STREAMS[name];
         setConn(true, st.name);
 
-        makeAudio();
-
         if (window.AudioCoordinator) window.AudioCoordinator.requestPlay('GurbaniRadioPage');
 
-        if (st.type === 'live') {
-            const url = st.url + '?t=' + Date.now() + '&r=' + Math.random();
-            audio.src = url; audio.load();
-            try { await audio.play(); } catch (e) { playing = false; setConn(false); updateUI(); }
-
-        } else {
-            // Virtual live — get server position
-            try {
-                const pos = await getServerPos(true);
-                curTrack = pos.trackIndex;
-                if (st.type === 'simran' && pos.trackFilename) {
-                    audio.src = `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(pos.trackFilename)}`;
-                } else {
-                    audio.src = st.getTrackUrl(curTrack);
+        try {
+            if (window.AnhadAudio) {
+                // If it is already playing this stream, don't restart it to avoid audio cut out!
+                const grState = window.AnhadAudio.getState();
+                if (grState.isPlaying && grState.currentStream === name) {
+                    setConn(false);
+                    return;
                 }
-                audio.load();
-
-                const seekAndPlay = async () => {
-                    const dur = audio.duration || (st.type === 'simran' ? 600 : 3600);
-                    audio.currentTime = Math.min(pos.position, dur - 5);
-                    try { await audio.play(); } catch (e) { }
-                };
-
-                if (audio.readyState >= 2) { await seekAndPlay(); }
-                else { audio.addEventListener('canplay', seekAndPlay, { once: true }); }
-            } catch (e) {
-                // Fallback local
-                const pos = localPos();
-                curTrack = pos.trackIndex;
-                if (st.type === 'simran' && pos.trackFilename) {
-                    audio.src = `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(pos.trackFilename)}`;
-                } else {
-                    audio.src = st.getTrackUrl(curTrack);
-                }
-                audio.load();
-                audio.addEventListener('canplay', () => {
-                    audio.currentTime = Math.min(pos.position, (audio.duration || (st.type === 'simran' ? 600 : 3600)) - 5);
-                    audio.play().catch(() => { });
-                }, { once: true });
+                await window.AnhadAudio.play(name);
             }
+        } catch (e) {
+            playing = false;
+            setConn(false);
+            updateUI();
         }
-
-        setStream(name);
-        bridgeState();
     }
 
+    // Dummy advanceTrack mapping (AnhadAudio handles this autonomously)
     async function advanceTrack(keepElement) {
-        const st = STREAMS[curStream];
-        if (!st || (st.type !== 'playlist' && st.type !== 'simran')) return;
-        // When called from 'ended', reuse same audio element (keepElement) — do NOT call makeAudio()
-        // Otherwise (e.g. Next button) recreate fresh
-        if (!keepElement) makeAudio();
-        const pos = await getServerPos(true);
-        curTrack = pos.trackIndex;
-        let newSrc;
-        if (st.type === 'simran' && pos.trackFilename) {
-            newSrc = `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(pos.trackFilename)}`;
-        } else {
-            newSrc = st.getTrackUrl(curTrack);
+        if (window.AnhadAudio) {
+            await window.AnhadAudio.playNextTrack();
         }
-        audio.src = newSrc;
-        audio.load();
-        audio.addEventListener('canplay', () => {
-            const dur = audio.duration || (st.type === 'simran' ? 600 : 3600);
-            audio.currentTime = Math.min(pos.position, dur - 5);
-            audio.play().catch(() => { });
-        }, { once: true });
     }
 
     async function togglePlay() {
-        if (!audio || !audio.src || audio.src === window.location.href) {
-            await startStream(curStream); return;
-        }
-        if (audio.paused) {
-            const st = STREAMS[curStream];
-            if (st.type === 'live') {
-                // Re-connect live
-                audio.src = st.url + '?t=' + Date.now() + '&r=' + Math.random();
-                audio.load();
-                try { await audio.play(); } catch (e) { }
-            } else {
-                // For virtual live, just resume playing from the paused position!
-                // Do NOT jump to live on every play/pause!
-                try { await audio.play(); } catch (e) { }
-            }
+        if (!window.AnhadAudio) return;
+        const gaState = window.AnhadAudio.getState();
+        if (!gaState.isPlaying || gaState.currentStream !== curStream) {
+            await startStream(curStream);
         } else {
-            audio.pause();
+            window.AnhadAudio.pause();
         }
     }
 
-    // ─── BRIDGE TO GLOBAL MINI-PLAYER ─────────────────────────────────────────
+    // Dummy bridgeState mapping (AnhadAudio authoritatively manages global state)
+    function bridgeState() { }
 
-    function bridgeState() {
-        try {
-            localStorage.setItem(STATE_KEY, JSON.stringify({
-                isPlaying: playing,
-                stream: curStream,
-                volume: audio ? audio.volume : 0.7,
-                trackIndex: curTrack,
-                currentTime: audio ? audio.currentTime : 0,
-                lastUpdateTime: Date.now(),
-                timestamp: Date.now()
-            }));
-        } catch (e) { }
-
-        // Tell GMP to stay quiet on this page
-        window.dispatchEvent(new CustomEvent('anhadaudiostatechange', {
-            detail: { isPlaying: playing, source: 'GurbaniRadioPage' }
-        }));
-    }
-
-    // ─── MEDIA SESSION ─────────────────────────────────────────────────────────
-
-    function updateMediaSession() {
-        if (window.Capacitor) return;
-        if (!('mediaSession' in navigator)) return;
-        const st = STREAMS[curStream];
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: st.trackTitle || st.name,
-            artist: st.subtitle,
-            album: 'Gurbani Radio — ANHAD',
-            artwork: [
-                { src: st.artwork, sizes: '1024x1024', type: 'image/webp' }
-            ]
-        });
-        navigator.mediaSession.setActionHandler('play', () => togglePlay());
-        navigator.mediaSession.setActionHandler('pause', () => audio?.pause());
-        navigator.mediaSession.setActionHandler('stop', () => { audio?.pause(); });
-        navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
-    }
+    // Dummy updateMediaSession mapping (AnhadAudio manages this globally)
+    function updateMediaSession() { }
 
     // ─── STREAM SWITCHING ──────────────────────────────────────────────────────
 
@@ -745,30 +593,9 @@
     // Live button — seek to current live edge (YouTube-style drift seek, not restart)
     if (elLiveBtn) {
         elLiveBtn.addEventListener('click', async () => {
-            if (!audio) return;
-            const st = STREAMS[curStream];
-            if (st.type === 'live') {
-                // Hard reconnect for real live streams
-                audio.src = st.url + '?t=' + Date.now();
-                audio.load();
-                audio.play().catch(() => { });
-            } else {
-                // For virtual live: seek within current track if same track, else restart stream
-                try {
-                    const pos = await getServerPos(true);
-                    if (pos.trackIndex === curTrack && audio.duration && pos.position < audio.duration - 1) {
-                        // Same track — just seek forward
-                        audio.currentTime = Math.min(pos.position, audio.duration - 2);
-                        if (audio.paused) audio.play().catch(() => { });
-                    } else {
-                        // Different track — restart stream at live position
-                        await startStream(curStream);
-                    }
-                } catch (e) {
-                    await startStream(curStream);
-                }
+            if (window.AnhadAudio) {
+                await window.AnhadAudio.jumpToLive();
             }
-            setLiveSynced(true);
         });
     }
 
@@ -912,7 +739,88 @@
         } catch (e) { }
 
         setStream(initialStream);
-        startStream(initialStream);
+
+        // Listen to global singleton state updates
+        if (window.AnhadAudio) {
+            window.AnhadAudio.on('statechange', (state) => {
+                audio = window.AnhadAudio.getAudio();
+                playing = state.isPlaying;
+                if (state.currentStream) {
+                    curStream = state.currentStream;
+                    curTrack = state.currentTrackIndex;
+
+                    [elBtnDarbar, elBtnAmrit, elBtnSimran].forEach(b => {
+                        if (b) b.classList.toggle('active', b.dataset.stream === curStream);
+                    });
+                    if (elPill) elPill.className = 'stream-pill ' + curStream;
+                    if (elPlayer) elPlayer.dataset.stream = curStream;
+
+                    const st = STREAMS[curStream];
+                    if (st) {
+                        if (elTitle) elTitle.textContent = state.currentTrackTitle || st.trackTitle || st.name;
+                        if (elArtist) elArtist.textContent = state.currentTrackArtist || st.name;
+                        if (elSub) elSub.textContent = state.streamSubtitle || st.subtitle;
+
+                        const slot = getSlot();
+                        const artSrc = (st.artworkSlots && st.artworkSlots[slot]) || state.artwork || st.artwork;
+                        if (elArtImg && !elArtImg.src.includes(artSrc)) {
+                            elArtImg.classList.add('xfade');
+                            setTimeout(() => {
+                                elArtImg.src = artSrc + '?v=' + Date.now();
+                                elArtImg.classList.remove('xfade');
+                            }, 320);
+                        }
+                        if (elArtGlow) elArtGlow.style.background = `radial-gradient(circle, ${st.accent}66, transparent 70%)`;
+                    }
+                }
+
+                const activeSt = STREAMS[curStream];
+                if (activeSt && activeSt.type === 'live') {
+                    if (elProgFill) elProgFill.style.width = '0%';
+                    if (elProgKnob) elProgKnob.style.left = '0%';
+                    if (elElapsed) elElapsed.textContent = '∞';
+                } else {
+                    if (state.duration && isFinite(state.duration)) {
+                        const pct = Math.min((state.currentTime / state.duration) * 100, 100);
+                        if (elProgFill) elProgFill.style.width = pct + '%';
+                        if (elProgKnob) elProgKnob.style.left = pct + '%';
+                        const s = Math.floor(state.currentTime % 60);
+                        const m = Math.floor(state.currentTime / 60);
+                        if (elElapsed) elElapsed.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                    }
+                }
+
+                setConn(state.isLoading);
+                updateUI();
+
+                setLiveSynced(!state.isBehind);
+                if (state.isBehind && state.liveOffset) {
+                    const diff = Math.round(state.liveOffset);
+                    if (elLiveBehind) {
+                        if (diff < 60) elLiveBehind.textContent = `-${diff}s`;
+                        else elLiveBehind.textContent = `-${Math.floor(diff / 60)}m${diff % 60 > 0 ? (diff % 60) + 's' : ''}`;
+                    }
+                } else {
+                    if (elLiveBehind) elLiveBehind.textContent = '';
+                }
+
+                updateSeekButtons();
+            });
+
+            // Initialize or sync with currently playing singleton state
+            const state = window.AnhadAudio.getState();
+            if (state.isPlaying && state.currentStream === initialStream) {
+                playing = true;
+                updateUI();
+            } else if (forcePlay) {
+                startStream(initialStream);
+            } else {
+                updateUI();
+            }
+        } else {
+            // Fallback if singleton is not loaded
+            if (forcePlay) startStream(initialStream);
+        }
     }
 
     if (document.readyState === 'loading') {

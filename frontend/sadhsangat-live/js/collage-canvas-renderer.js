@@ -68,3 +68,11 @@ function applyCircularMask(canvas) {
   
   return clippedCanvas;
 }
+
+// Export for use in other modules and tests
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    renderCollageToCanvas,
+    applyCircularMask
+  };
+}

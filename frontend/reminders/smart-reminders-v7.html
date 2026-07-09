@@ -338,7 +338,7 @@
   <script src="../lib/native-notifications.js"></script>
   <script>if(!window.Capacitor||!window.Capacitor.isNativePlatform()){document.write('<script src="js/bg-alarm.js"><\/script><script src="../lib/global-alarm-system.js"><\/script>')}</script>
   <script src="js/nitnem-sync.js"></script>
-  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js',{scope:'/'}).catch(()=>{})</script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{})</script>
   <script src="../lib/capacitor-notifications-global.js"></script>
   <script src="../lib/anhad-widget-bridge.js"></script>
   <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>

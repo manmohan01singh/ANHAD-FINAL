@@ -24,8 +24,8 @@ body {
   background-color: transparent !important;
 }
 
-/* Universal dynamic background with premium blur */
-body::before {
+/* Universal dynamic background - ONLY FOR AUTO THEME MODE */
+html[data-theme-mode="auto"] body::before {
   content: "" !important;
   display: block;
   position: fixed;
@@ -34,16 +34,37 @@ body::before {
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-  filter: blur(20px) brightness(0.92);
-  transform: scale(1.1);
+  filter: blur(3px) brightness(1.0);
+  transform: scale(1.05);
+  z-index: -9999;
+  pointer-events: none;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* Light mode - solid cream background */
+html[data-theme-mode="light"] body::before,
+html:not([data-theme-mode="auto"]):not([data-theme-mode="dark"]) body::before {
+  content: "" !important;
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: #FFF8F0 !important;
+  background-image: none !important;
   z-index: -9999;
   pointer-events: none;
 }
 
-/* In dark mode, make it slightly darker and warmer */
-html.dark-mode body::before,
-[data-theme="dark"] body::before {
-  filter: blur(20px) brightness(0.6) saturate(0.8);
+/* Dark mode - solid black background */
+html[data-theme-mode="dark"] body::before,
+html.dark-mode body::before {
+  content: "" !important;
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: #000000 !important;
+  background-image: none !important;
+  z-index: -9999;
+  pointer-events: none;
 }
 
 /* ── MAIN APP CONTAINER ── */

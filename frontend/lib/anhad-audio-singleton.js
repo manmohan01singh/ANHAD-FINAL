@@ -35,7 +35,7 @@
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
   // PERF FIX: Fixed UTC epoch for backend-free virtual live sync.
-  const VIRTUAL_LIVE_EPOCH_START = 1735689600; // 2025-01-01 00:00:00 UTC
+  const VIRTUAL_LIVE_EPOCH_START = 1704067200; // 2024-01-01 00:00:00 UTC
   // PERF FIX: Known measured durations from backend state files, with defaults for unknown tracks.
   const AMRITVELA_KNOWN_DURATIONS = {
     2: 5191, 5: 5638, 10: 5591, 12: 5633, 13: 6537, 14: 5640,
@@ -178,6 +178,7 @@
   let lastLoadedAt = 0;        // Timestamp of last audio.load() call
   let lastWatchTime = 0;       // For stall detection
   let stalledWatchTicks = 0;   // Consecutive stall ticks
+  let lastTransitionProof = null; // Debug proof that next-track starts at 0:00
   let foregroundServiceGraceUntil = 0; // CAPACITOR FIX: grace window after startForegroundService()
   let foregroundServiceActive = false;  // CAPACITOR FIX: prevents double-starting the foreground service
   let capacitorWatchdogGraceUntil = 0; // CAPACITOR FIX: suppress watchdog for 2 minutes after play
@@ -891,14 +892,10 @@
       try { audio.load(); } catch (e) { }
     }
 
-    // SAFARI AUTOPLAY FIX: Safari iOS pauses the media element on `ended`. If we don't call
-    // `play()` synchronously within the same call stack, it permanently blocks playback 
-    // AND refuses to load metadata (causing the 8s metadata timeout deadlock).
-    audio.volume = 0; // Mute temporarily to avoid glitch before seek
-    try {
-      const initPlay = audio.play();
-      if (initPlay && initPlay.catch) initPlay.catch(() => { });
-    } catch (e) { }
+    // Wait for metadata before the first play(). Starting muted playback here and
+    // then calling play() again after metadata causes "interrupted by a new load
+    // request" on Chromium/Android.
+    audio.volume = 0;
 
     // Update live sync anchor after load
     liveSyncAnchor = {
@@ -927,11 +924,39 @@
       if (isFromBeginning) {
         console.log(`[AnhadAudio] ▶️ Track transition: playing from 0:00 (${reason})`);
         try {
-          if (audio.currentTime > 2) audio.currentTime = 0;
+          audio.currentTime = 0;
         } catch (e) { }
-        audio.volume = 0.8; // RESTORE VOLUME from the Safari autoplay fix
+        lastTransitionProof = {
+          stream: streamName,
+          trackIndex: currentTrackIndex,
+          requestedPosition,
+          startedAt: 0,
+          reason,
+          timestamp: Date.now()
+        };
+        audio.volume = 0;
         audio.play()
-          .then(() => { isPlaying = true; isLoading = false; emit('statechange', getPublicState()); })
+          .then(() => {
+            isPlaying = true;
+            isLoading = false;
+            const actualStart = Number(audio.currentTime) || 0;
+            lastTransitionProof.actualStart = actualStart;
+            lastTransitionProof.verified = actualStart < 1.5;
+            emit('statechange', getPublicState());
+
+            const targetVol = 0.8;
+            const fadeMs = 2000;
+            const steps = 20;
+            let step = 0;
+            const interval = setInterval(() => {
+              step++;
+              if (audio) audio.volume = targetVol * (step / steps);
+              if (step >= steps) {
+                clearInterval(interval);
+                if (audio) audio.volume = targetVol;
+              }
+            }, fadeMs / steps);
+          })
           .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; emit('statechange', getPublicState()); });
         return;
       }
@@ -985,6 +1010,7 @@
           emit('statechange', getPublicState());
 
           const doCapacitorSeek = () => {
+            if (requestId !== playRequestId || currentStream !== streamName) return;
             performSeek(true);
             setTimeout(() => { audio.volume = 0.8; }, 150);
             console.log(`[AnhadAudio] ▶️ Capacitor: Seeked to ${Math.floor(seekPos)}s (${reason})`);
@@ -1635,16 +1661,13 @@
     if (!isPlaying || !currentStream || !audio) return;
     const stream = STREAMS[currentStream];
     if (!stream || stream.type !== 'playlist') return;
-    if (!liveSyncAnchor) return;
+    const drift = getVirtualDrift();
+    const offsetSeconds = Math.max(0, Math.round(drift.driftSeconds || 0));
+    const isAtLive = offsetSeconds <= 10;
 
-    const elapsedSinceSync = (Date.now() - liveSyncAnchor.wallTime) / 1000;
-    const expectedAudioTime = liveSyncAnchor.audioTime + elapsedSinceSync;
-    const offsetSeconds = Math.max(0, Math.round(expectedAudioTime - (audio.currentTime || 0)));
-    const isAtLive = offsetSeconds <= 5;
-
-    emit('liveoffset', { offsetSeconds, isAtLive, stream: currentStream });
+    emit('liveoffset', { offsetSeconds, isAtLive, stream: currentStream, ...drift });
     window.dispatchEvent(new CustomEvent('anhadLiveOffset', {
-      detail: { offsetSeconds, isAtLive, stream: currentStream }
+      detail: { offsetSeconds, isAtLive, stream: currentStream, ...drift }
     }));
   }, 1000));
 
@@ -2027,6 +2050,8 @@
     STREAMS: Object.keys(STREAMS),
     getStreamInfo: (name) => STREAMS[name] ? { ...STREAMS[name] } : null,
     getLiveOffset,         // Returns seconds behind live edge (0 = at live)
+    getLiveDrift: getVirtualDrift,
+    getLastTransitionProof: () => lastTransitionProof,
     getLiveSyncAnchor: () => liveSyncAnchor  // Exposed for debugging
   };
 

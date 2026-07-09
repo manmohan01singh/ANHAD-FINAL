@@ -86,19 +86,20 @@
         document.documentElement.setAttribute('data-time-of-day', timeOfDay);
       }
       document.documentElement.style.colorScheme = effectiveTheme;
-      if (effectiveTheme === 'dark') {
+      
+      // CRITICAL FIX: Don't add dark-mode class in auto mode (prevents overly dark background filter)
+      if (effectiveTheme === 'dark' && theme !== 'auto') {
         document.documentElement.classList.add('dark', 'dark-mode');
       } else {
         document.documentElement.classList.remove('dark', 'dark-mode');
       }
       
-      // CRITICAL: Immediately set background to prevent white flash
-      let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
-      if (theme === 'auto') {
-         if (timeOfDay === 'morning') bg = '#FFF5EC';
-         else if (timeOfDay === 'day') bg = '#FFFDF9';
-         else if (timeOfDay === 'evening') bg = '#FFF8E7';
-         else if (timeOfDay === 'night') bg = '#0F0F12';
+      // CRITICAL: Set background color based on mode
+      // In auto mode, use TRANSPARENT to allow background images to show
+      // In manual modes, use solid colors to prevent white flash
+      let bg = 'transparent';
+      if (theme !== 'auto') {
+        bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
       }
       document.documentElement.style.backgroundColor = bg;
       
@@ -110,7 +111,10 @@
       // just to add a class on body — a high-frequency callback for a one-time task.
       // DOMContentLoaded fires exactly once at the right moment.
       document.addEventListener('DOMContentLoaded', function() {
-        if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+        // Only add dark-mode class to body if NOT in auto mode
+        if (effectiveTheme === 'dark' && theme !== 'auto') {
+          document.body.classList.add('dark-mode');
+        }
         document.body.classList.add('theme-loaded');
       }, { once: true });
     })();
@@ -118,8 +122,10 @@
   
   <style>
     html { color-scheme: light dark; }
-    html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
-    html:not(.dark-mode) { background-color: var(--bg-primary, #FAF8F5) !important; }
+    html.dark-mode:not([data-theme-mode="auto"]) { background-color: var(--bg-primary, #0D0D0F) !important; }
+    html:not(.dark-mode):not([data-theme-mode="auto"]) { background-color: var(--bg-primary, #FAF8F5) !important; }
+    /* Auto mode: allow transparent background for image layers to show */
+    html[data-theme-mode="auto"] { background-color: transparent !important; }
     body { background-color: transparent !important; }
     /* Simple scroll — let browser handle it natively */
     html, body {
@@ -189,6 +195,121 @@
     }
   </style>
   
+  <!-- ANHAD Title Background Bar - Dynamic Theme Support -->
+  <style id="anhad-title-bar-dynamic">
+    /* Light mode - visible white bar */
+    html:not(.dark-mode) .header__center,
+    html[data-theme="light"] .header__center {
+      padding: 10px 32px !important;
+      border-radius: 25px !important;
+      background: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(30px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.06) !important;
+    }
+    
+    /* Dark mode - visible dark bar */
+    html.dark-mode .header__center,
+    html[data-theme="dark"] .header__center {
+      padding: 10px 32px !important;
+      border-radius: 25px !important;
+      background: rgba(44, 44, 46, 0.85) !important;
+      backdrop-filter: blur(30px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    
+    /* Auto mode - adjust based on time of day */
+    html[data-theme-mode="auto"] .header__center {
+      padding: 10px 32px !important;
+      border-radius: 25px !important;
+      background: rgba(0, 0, 0, 0.25) !important;
+      backdrop-filter: blur(30px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    /* Ensure text stays visible on all backgrounds */
+    .header__center .header__title,
+    .header__center .header__title-gurmukhi {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+
+  <!-- FORCE BACKGROUND BAR VIA JAVASCRIPT - BYPASS ALL CACHE -->
+  <script>
+    (function() {
+      function applyTitlePill() {
+        const pill = document.querySelector('.anhad-title-pill');
+        if (pill) {
+          const isDark = document.documentElement.classList.contains('dark-mode') || 
+                        document.documentElement.getAttribute('data-theme') === 'dark';
+          const isAuto = document.documentElement.getAttribute('data-theme-mode') === 'auto';
+          
+          if (isAuto) {
+            pill.style.cssText = `
+              display: inline-flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 3px !important;
+              padding: 12px 36px !important;
+              border-radius: 28px !important;
+              background: rgba(0, 0, 0, 0.4) !important;
+              backdrop-filter: blur(40px) saturate(200%) !important;
+              -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+              box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+              border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            `;
+          } else if (isDark) {
+            pill.style.cssText = `
+              display: inline-flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 3px !important;
+              padding: 12px 36px !important;
+              border-radius: 28px !important;
+              background: rgba(44, 44, 46, 0.9) !important;
+              backdrop-filter: blur(40px) saturate(200%) !important;
+              -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+              box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+              border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            `;
+          } else {
+            pill.style.cssText = `
+              display: inline-flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              gap: 3px !important;
+              padding: 12px 36px !important;
+              border-radius: 28px !important;
+              background: rgba(255, 255, 255, 0.9) !important;
+              backdrop-filter: blur(40px) saturate(200%) !important;
+              -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+              box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+              border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            `;
+          }
+          console.log('✅ ANHAD title pill applied!');
+        }
+      }
+      
+      // Apply immediately when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', applyTitlePill);
+      } else {
+        applyTitlePill();
+      }
+      
+      // Reapply on theme change
+      const observer = new MutationObserver(applyTitlePill);
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme', 'data-theme-mode'] });
+    })();
+  </script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <meta name="theme-color" content="#F2F2F7">
   <meta name="mobile-web-app-capable" content="yes">
@@ -269,7 +390,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=optional" media="print" onload="this.media='all'">
   
   <!-- Critical CSS (render-blocking — required for first paint) -->
-  <link rel="stylesheet" href="css/trendora-premium.css?v=9">
+  <link rel="stylesheet" href="css/trendora-premium.css?v=10">
   <link rel="stylesheet" href="css/anhad-clay.css?v=1">
   <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
   <link rel="stylesheet" href="css/nav-glass.css?v=4.1.9">
@@ -281,9 +402,160 @@
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
   <!-- ANHAD: Animated Sky Background (Auto Mode) — async load -->
-  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=1" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/scroll-engine.css">
 
+  <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
+  <style id="anhad-header-title-override">
+    /* Import elegant font */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap');
+    
+    /* NEW PILL WRAPPER - VISIBLE BACKGROUND BAR */
+    .anhad-title-pill {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 12px 36px !important;
+      border-radius: 28px !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(40px) saturate(200%) !important;
+      -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    /* Dark mode pill */
+    html.dark-mode .anhad-title-pill,
+    html[data-theme="dark"] .anhad-title-pill,
+    html[data-theme-mode="dark"] .anhad-title-pill {
+      background: rgba(44, 44, 46, 0.9) !important;
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.7),
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    /* Auto mode pill - darker for visibility */
+    html[data-theme-mode="auto"] .anhad-title-pill {
+      background: rgba(0, 0, 0, 0.35) !important;
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    /* Reset header__center to not interfere */
+    .header__center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 3px;
+      background: none !important;
+      padding: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* ✨ AUTO THEME - Gold title for dynamic backgrounds ✨ */
+    html[data-theme-mode="auto"] .anhad-title-pill h1.header__title,
+    html[data-theme-mode="auto"] h1.header__title {
+      color: #FFD700 !important;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      background-clip: text !important;
+      font-family: 'Cinzel Decorative', Georgia, serif !important;
+      font-weight: 900 !important;
+      font-size: 24px !important;
+      letter-spacing: 2px !important;
+      text-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.6),
+        0 2px 4px rgba(255, 255, 255, 0.3) !important;
+      filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)) !important;
+    }
+    
+    html[data-theme-mode="auto"] .anhad-title-pill span.header__title-gurmukhi,
+    html[data-theme-mode="auto"] span.header__title-gurmukhi {
+      color: #FFEB99 !important;
+      font-family: 'Noto Sans Gurmukhi', serif !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      letter-spacing: 1px !important;
+      text-shadow: 
+        0 0 8px rgba(255, 235, 153, 0.7),
+        0 0 15px rgba(255, 235, 153, 0.5) !important;
+    }
+    
+    /* ✨ LIGHT MODE - Dark brown text for cream background ✨ */
+    html[data-theme-mode="light"] .anhad-title-pill h1.header__title,
+    html[data-theme-mode="light"] h1.header__title,
+    html:not([data-theme-mode]) .anhad-title-pill h1.header__title,
+    html:not([data-theme-mode]) h1.header__title {
+      color: #5D4037 !important;
+      background: none !important;
+      -webkit-text-fill-color: #5D4037 !important;
+      font-family: 'Cinzel Decorative', Georgia, serif !important;
+      font-weight: 900 !important;
+      font-size: 24px !important;
+      letter-spacing: 2px !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      filter: none !important;
+    }
+    
+    html[data-theme-mode="light"] .anhad-title-pill span.header__title-gurmukhi,
+    html[data-theme-mode="light"] span.header__title-gurmukhi,
+    html:not([data-theme-mode]) .anhad-title-pill span.header__title-gurmukhi,
+    html:not([data-theme-mode]) span.header__title-gurmukhi {
+      color: #6D4C41 !important;
+      background: none !important;
+      -webkit-text-fill-color: #6D4C41 !important;
+      font-family: 'Noto Sans Gurmukhi', serif !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      letter-spacing: 1px !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      filter: none !important;
+    }
+    
+    /* ✨ DARK MODE - White text for black background ✨ */
+    html[data-theme-mode="dark"] .anhad-title-pill h1.header__title,
+    html[data-theme-mode="dark"] h1.header__title,
+    html.dark-mode .anhad-title-pill h1.header__title,
+    html.dark-mode h1.header__title {
+      color: #FFFFFF !important;
+      background: none !important;
+      -webkit-text-fill-color: #FFFFFF !important;
+      font-family: 'Cinzel Decorative', Georgia, serif !important;
+      font-weight: 900 !important;
+      font-size: 24px !important;
+      letter-spacing: 2px !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+      filter: none !important;
+    }
+    
+    html[data-theme-mode="dark"] .anhad-title-pill span.header__title-gurmukhi,
+    html[data-theme-mode="dark"] span.header__title-gurmukhi,
+    html.dark-mode .anhad-title-pill span.header__title-gurmukhi,
+    html.dark-mode span.header__title-gurmukhi {
+      color: #E0E0E0 !important;
+      background: none !important;
+      -webkit-text-fill-color: #E0E0E0 !important;
+      font-family: 'Noto Sans Gurmukhi', serif !important;
+      font-weight: 700 !important;
+      font-size: 16px !important;
+      letter-spacing: 1px !important;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+      filter: none !important;
+    }
+  </style>
 
   <!-- FIX: Hero carousel must NOT capture vertical swipes — allow page to scroll freely -->
   <style>
@@ -1472,8 +1744,8 @@
         position: relative !important;
       }
       
-      /* Override trendora-premium.css body::before with MAXIMUM specificity */
-      html body::before {
+      /* Override trendora-premium.css body::before - ONLY FOR AUTO THEME */
+      html[data-theme-mode="auto"] body::before {
         content: '' !important;
         position: fixed !important;
         top: 0 !important;
@@ -1487,10 +1759,44 @@
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
-        filter: blur(2px) brightness(1.0) saturate(0.9) !important;
-        transform: scale(1.15) !important;
+        filter: blur(3px) brightness(1.0) saturate(1.0) !important;
+        transform: scale(1.05) !important;
         opacity: 1 !important;
         visibility: visible !important;
+        display: block !important;
+      }
+
+      /* Light mode - solid cream background */
+      html[data-theme-mode="light"] body::before,
+      html:not([data-theme-mode="auto"]):not([data-theme-mode="dark"]) body::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: -10000 !important;
+        background: #FFF8F0 !important;
+        background-image: none !important;
+        display: block !important;
+      }
+
+      /* Dark mode - solid black background */
+      html[data-theme-mode="dark"] body::before,
+      html.dark-mode body::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: -10000 !important;
+        background: #000000 !important;
+        background-image: none !important;
         display: block !important;
       }
 
@@ -1502,37 +1808,16 @@
         animation: none !important;
       }
 
-      /* Hide background image in dark mode to prevent dark appearance */
-      html body.dark-mode::before,
-      body.dark-mode::before {
-        display: none !important;
-      }
-      
-      /* Override trendora-premium.css body::after with MAXIMUM specificity */
+      /* Override trendora-premium.css body::after - REMOVE FADE/GRADIENT OVERLAY */
       html body::after {
         content: '' !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: -9999 !important;
-        background: linear-gradient(180deg,
-          rgba(255, 255, 255, 0.72) 0%,
-          rgba(248, 250, 252, 0.77) 100%) !important;
-        pointer-events: none !important;
-        opacity: 1 !important;
-        display: block !important;
+        display: none !important;
       }
 
       /* Dark mode desktop background */
       html body.dark-mode::after,
       body.dark-mode::after {
-        background: linear-gradient(180deg,
-          #000000 0%,
-          #111111 100%) !important;
+        display: none !important;
       }
       
       /* Main content colors */
@@ -2082,9 +2367,11 @@
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
         </button>
       </div>
-      <div class="header__center">
-        <h1 class="header__title">ANHAD</h1>
-        <span class="header__title-gurmukhi" aria-label="Anhad in Gurmukhi">ਅਨਹਦ</span>
+      <div class="header__center" style="display: none !important;">
+        <div class="anhad-title-pill">
+          <h1 class="header__title">ANHAD</h1>
+          <span class="header__title-gurmukhi" aria-label="Anhad in Gurmukhi">ਅਨਹਦ</span>
+        </div>
       </div>
       <div class="header__right">
         <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme">

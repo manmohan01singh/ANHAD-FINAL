@@ -342,7 +342,7 @@
   <script src="../lib/ios-android-notifications.js?v=3.0.0" defer></script>
   <script>
     if ('serviceWorker' in navigator)
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+      navigator.serviceWorker.register('../sw.js').catch(() => {});
   </script>
 
     <!-- Global Engine -->

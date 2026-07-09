@@ -11,7 +11,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const SW_REDIRECT_VERSION = 'redirect-v5.0.0';
+const SW_REDIRECT_VERSION = 'redirect-v5.1.0';
 
 // Immediately take control
 self.addEventListener('install', (event) => {

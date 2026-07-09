@@ -76,3 +76,8 @@ function simpleHash(str) {
   }
   return hash.toString(36);
 }
+
+// Export for use in other modules and tests
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CollageCache, simpleHash };
+}

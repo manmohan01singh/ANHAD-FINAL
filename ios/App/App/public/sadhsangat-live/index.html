@@ -5228,9 +5228,10 @@
         const host = window.location.hostname;
         const port = window.location.port;
 
-        // Native app wrappers (Capacitor/Electron file scheme) connect to local server
+        // Native app wrappers (Capacitor/Electron/Ionic) connect to production server
+        // APK doesn't have a local server, so use the remote backend
         if (protocol === 'file:' || protocol === 'capacitor:' || protocol === 'ionic:') {
-          return 'http://localhost:3000';
+          return 'https://anhad-final.onrender.com';
         }
 
         // Browser environment: dynamically use actual host & port to avoid CORS issues

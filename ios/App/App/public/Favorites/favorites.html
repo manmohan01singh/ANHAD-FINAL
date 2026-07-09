@@ -150,8 +150,26 @@
     }
     
     .header__title {
-      font-size: 20px;
-      font-weight: 700;
+      font-size: 22px !important;
+      font-weight: 700 !important;
+      font-family: 'Georgia', 'Palatino', serif !important;
+      letter-spacing: 0.5px !important;
+      padding: 10px 32px !important;
+      border-radius: 25px !important;
+      /* Solid visible background bar - iOS style */
+      background: rgba(255, 255, 255, 0.92) !important;
+      backdrop-filter: blur(30px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+      color: #1A1D26 !important;
+      /* Strong shadows for depth */
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.9),
+        inset 0 1px 2px rgba(255, 255, 255, 1) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.04) !important;
+      margin: 0 !important;
+      display: inline-block !important;
     }
     
     .header__btn {
@@ -606,7 +624,19 @@
         0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     }
     
-    html.dark-mode .header__title { color: #F5F5F7 !important; }
+    html.dark-mode .header__title {
+      color: #FFFFFF !important;
+      /* Solid dark background bar */
+      background: rgba(44, 44, 46, 0.92) !important;
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.6),
+        0 2px 8px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        inset 0 1px 2px rgba(255, 255, 255, 0.06) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+    }
     
     /* Tabs dark mode - darker subtle */
     html.dark-mode .tabs { 
@@ -791,7 +821,7 @@
       <a href="../index.html" class="header__back glass-nav__back" aria-label="Back">
         <i class="fas fa-chevron-left"></i>
       </a>
-      <h1 class="header__title">Favorites</h1>
+      <h1 class="header__title" style="background: rgba(255, 255, 255, 0.92) !important; padding: 10px 32px !important; border-radius: 25px !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important; backdrop-filter: blur(30px) !important;">Favorites</h1>
     </header>
     
     <!-- Tabs -->
@@ -895,7 +925,7 @@
           if (shabads.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">??</div>
+                <div class="empty-state__icon">❤️</div>
                 <h3 class="empty-state__title">No saved Shabads</h3>
                 <p class="empty-state__desc">Save Shabads from Gurbani Khoj or Random Shabad</p>
               </div>
@@ -948,7 +978,7 @@
           if (bookmarks.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">??</div>
+                <div class="empty-state__icon">❤️</div>
                 <h3 class="empty-state__title">No bookmarked Ang</h3>
                 <p class="empty-state__desc">Bookmark pages in Sehaj Paath Reader</p>
               </div>
@@ -990,7 +1020,7 @@
           if (notes.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">??</div>
+                <div class="empty-state__icon">waheguru</div>
                 <h3 class="empty-state__title">No notes yet</h3>
                 <p class="empty-state__desc">Add notes while reading in Sehaj Paath</p>
               </div>

@@ -1231,42 +1231,7 @@ async function writeProgressFile(progress, filePath) {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// PER-USER IDENTITY — UUID cookie, one progress file per user
-// ═══════════════════════════════════════════════════════════════════
 
-// UUID_REGEX defined above
-
-function getUserId(req, res) {
-    // 1. Check custom header (for Capacitor persistent sessions)
-    const headerUserId = req.headers['x-user-id'];
-    if (headerUserId && UUID_REGEX.test(headerUserId)) {
-        return headerUserId;
-    }
-
-    // 2. Check query parameter
-    const queryUserId = req.query.userId;
-    if (queryUserId && UUID_REGEX.test(queryUserId)) {
-        return queryUserId;
-    }
-
-    // 3. Fallback to Cookie
-    const cookieHeader = req.headers.cookie || '';
-    const match = cookieHeader.match(/(?:^|;\s*)anhad_user_id=([^;]+)/);
-    let userId = match ? match[1] : null;
-    if (!userId || !UUID_REGEX.test(userId)) {
-        userId = crypto.randomUUID();
-        res.setHeader('Set-Cookie',
-            `anhad_user_id=${userId}; Path=/; Max-Age=31536000; SameSite=Lax; HttpOnly`
-        );
-    }
-    return userId;
-}
-
-function getProgressFilePath(userId) {
-    const safeId = userId.replace(/[^0-9a-f-]/gi, '');
-    return path.join(CONFIG.SEHAJ_PROGRESS_DIR, `sehaj-progress-${safeId}.json`);
-}
 
 // Create default progress structure
 function createDefaultProgress() {

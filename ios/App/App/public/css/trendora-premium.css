@@ -587,27 +587,53 @@ a:active {
   align-items: center;
   text-align: center;
   gap: 3px;
+  
+  /* iOS DYNAMIC ISLAND STYLE BACKGROUND BAR */
+  padding: 10px 32px !important;
+  border-radius: 25px !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(30px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+  border: 0.5px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Dark mode background bar */
+.dark-mode .header__center {
+  background: rgba(44, 44, 46, 0.85) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Auto mode - semi-transparent for dynamic backgrounds */
+html[data-theme-mode="auto"] .header__center {
+  background: rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 /* ANHAD — iOS Clean Typography */
 .header__title {
   font-family: 'Optimus Princeps', 'Trajan Pro', serif !important;
-  font-size: clamp(1.8rem, 5vw, 2.5rem) !important;
-  /* Dynamic fluid responsive text */
+  font-size: clamp(2rem, 5.5vw, 2.8rem) !important;
   font-weight: 900 !important;
-  letter-spacing: 3px !important;
+  letter-spacing: 4px !important;
   line-height: 1.1 !important;
   text-transform: uppercase !important;
   display: inline-block !important;
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: initial !important;
-  background-clip: initial !important;
-  text-fill-color: initial !important;
-  color: #FFD566 !important;
-  /* Premium glowing gold */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
-  /* Crisp text shadow for readability */
+  color: #654321 !important;
+  /* Simple solid dark brown color */
+  text-shadow: none !important;
+  /* No shadows for clean look */
   filter: none !important;
   animation: none !important;
   margin-top: 8px;
@@ -616,32 +642,32 @@ a:active {
 
 /* Dark mode override */
 .dark-mode .header__title {
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: initial !important;
-  color: #FFD566 !important;
+  color: #FFD700 !important;
+  /* Simple gold color for dark mode */
+  text-shadow: none !important;
   filter: none !important;
 }
 
 .header__title-gurmukhi {
   font-family: var(--font-gurmukhi) !important;
-  font-size: clamp(0.9rem, 2.5vw, 1.2rem) !important;
-  /* Responsive dynamic Gurmukhi subtitle */
+  font-size: clamp(1rem, 2.8vw, 1.4rem) !important;
   font-weight: 700 !important;
-  color: #FFFFFF !important;
-  /* Crisp solid high-contrast white */
-  letter-spacing: 0.5px !important;
-  opacity: 0.95 !important;
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  -webkit-text-fill-color: initial !important;
-  background-clip: initial !important;
-  text-fill-color: initial !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
-  /* Subtle dark dropshadow */
+  color: #654321 !important;
+  /* Dark brown for visibility on light bg */
+  letter-spacing: 1px !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  /* No shadows for clean look */
   filter: none !important;
   display: inline-block !important;
   transition: color 0.3s ease;
+}
+
+/* Dark mode for Gurmukhi subtitle */
+.dark-mode .header__title-gurmukhi {
+  color: #FFD700 !important;
+  /* Bright gold in dark mode */
+  text-shadow: none !important;
 }
 
 .header__right {

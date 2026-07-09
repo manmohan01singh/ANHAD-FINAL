@@ -651,16 +651,26 @@
       if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
       if (!window.Capacitor.Plugins.LocalNotifications) return;
       try {
-        await window.Capacitor.Plugins.LocalNotifications.createChannel({
-          id: 'anhad_reminders',
-          name: 'ANHAD Reminders',
-          description: 'Nitnem and spiritual practice reminders',
-          importance: 5, // MAX importance — shows heads-up notification
-          visibility: 1, // PUBLIC
-          sound: 'default',
-          vibration: true,
-          lights: true
-        });
+        const channels = [
+          { id: 'anhad_reminders', name: 'ANHAD Reminders', sound: 'default' },
+          ...Object.keys(CONFIG.audio.files).map(tone => ({
+            id: 'anhad_reminders_' + tone,
+            name: 'ANHAD Reminders ' + tone,
+            sound: CONFIG.audio.files[tone]
+          }))
+        ];
+        for (const channel of channels) {
+          await window.Capacitor.Plugins.LocalNotifications.createChannel({
+            id: channel.id,
+            name: channel.name,
+            description: 'Nitnem and spiritual practice reminders',
+            importance: 5, // MAX importance - shows heads-up notification
+            visibility: 1, // PUBLIC
+            sound: channel.sound,
+            vibration: true,
+            lights: true
+          });
+        }
         console.log('[AlarmScheduler] Notification channel created');
       } catch (e) {
         console.warn('[AlarmScheduler] Channel creation failed:', e);
@@ -715,8 +725,8 @@
                 allowWhileIdle: true,
                 exact: true // CRITICAL: Without this, Android batches and delays
               },
-              channelId: 'anhad_reminders',
-              sound: 'default',
+              channelId: 'anhad_reminders_' + (alarm.tone || 'audio1'),
+              sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
               smallIcon: 'ic_stat_notify',
               extra: {
                 action: 'show_alarm',
@@ -787,6 +797,25 @@
       });
     },
 
+    getFireToken(alarm, date = new Date(), suffix = 'main') {
+      return [alarm.id, Utils.today(), suffix].join('_');
+    },
+
+    hasFireToken(alarm, suffix = 'main') {
+      const fired = Storage.get('sr_alarm_fire_tokens_v7', {});
+      return !!fired[this.getFireToken(alarm, new Date(), suffix)];
+    },
+
+    setFireToken(alarm, suffix = 'main') {
+      const fired = Storage.get('sr_alarm_fire_tokens_v7', {});
+      fired[this.getFireToken(alarm, new Date(), suffix)] = Date.now();
+      const cutoff = Date.now() - 8 * 24 * 60 * 60 * 1000;
+      Object.keys(fired).forEach(key => {
+        if (Number(fired[key]) < cutoff) delete fired[key];
+      });
+      Storage.set('sr_alarm_fire_tokens_v7', fired);
+    },
+
     checkAlarms() {
       const now = new Date();
       const today = now.getDay();
@@ -805,7 +834,7 @@
       // OR scheduled within the last 3 minutes and not yet responded to today)
       const activeAlarms = allReminders.filter(alarm => {
         if (!alarm.enabled || !alarm.days.includes(today)) return false;
-        if (todayLog[alarm.id]) return false; // Already responded today
+        if (todayLog[alarm.id] || this.hasFireToken(alarm)) return false;
 
         const [h, m] = alarm.time.split(':').map(Number);
         const alarmTimeToday = new Date(now);
@@ -819,7 +848,7 @@
       activeAlarms.forEach(alarm => {
         // Check if we already triggered this alarm recently (prevent duplicates)
         const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
-        if (!lastTriggered || (Date.now() - lastTriggered) > 60000) {
+        if (!this.hasFireToken(alarm) && (!lastTriggered || (Date.now() - lastTriggered) > 60000)) {
           this.scheduled.set(alarm.id + '_triggered', Date.now());
           this.triggerAlarm(alarm);
         }
@@ -842,7 +871,7 @@
       
       allReminders.forEach(alarm => {
         if (!alarm.enabled || !alarm.days.includes(today)) return;
-        if (todayLog[alarm.id]) return; // Already responded
+        if (todayLog[alarm.id] || this.hasFireToken(alarm)) return;
         
         // Parse alarm time
         const [h, m] = alarm.time.split(':').map(Number);
@@ -854,7 +883,7 @@
         if (diff >= 0 && diff <= 5) {
           // Alarm should have triggered recently
           const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
-          if (!lastTriggered || (Date.now() - lastTriggered) > 300000) {
+          if (!this.hasFireToken(alarm) && (!lastTriggered || (Date.now() - lastTriggered) > 300000)) {
             console.log('[AlarmScheduler] Triggering missed alarm:', alarm.label);
             this.scheduled.set(alarm.id + '_triggered', Date.now());
             this.triggerAlarm(alarm);
@@ -891,7 +920,13 @@
       Storage.set('sr_triggered_alarms', triggeredAlarms);
     },
 
-    triggerAlarm(alarm) {
+    triggerAlarm(alarm, options = {}) {
+      const suffix = options.suffix || 'main';
+      if (!options.force && this.hasFireToken(alarm, suffix)) {
+        console.log('[AlarmScheduler] Suppressed duplicate alarm:', alarm.label);
+        return;
+      }
+      this.setFireToken(alarm, suffix);
       console.log('[AlarmScheduler] Triggering:', alarm.label);
       
       // Persist triggered alarm state for background/Capacitor support
@@ -969,8 +1004,8 @@
               allowWhileIdle: true,
               exact: true // CRITICAL: Exact timing for alarm-like behavior
             },
-            channelId: 'anhad_reminders',
-            sound: 'default',
+            channelId: 'anhad_reminders_' + (alarm.tone || 'audio1'),
+            sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
             smallIcon: 'ic_stat_notify',
             extra: {
               action: 'show_alarm',
@@ -1047,8 +1082,8 @@
               allowWhileIdle: true,
               exact: true
             },
-            channelId: 'anhad_reminders',
-            sound: 'default',
+            channelId: 'anhad_reminders_' + (alarm.tone || 'audio1'),
+            sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
             smallIcon: 'ic_stat_notify',
             extra: {
               alarmId: alarmId,
@@ -1061,7 +1096,7 @@
 
       // Also schedule with setTimeout for in-app triggering
       setTimeout(() => {
-        this.triggerAlarm(alarm);
+        this.triggerAlarm(alarm, { suffix: 'snooze_' + snoozeTime, force: true });
       }, minutes * 60000);
 
       Toast.show(`Snoozed for ${minutes} minutes`, 'info');

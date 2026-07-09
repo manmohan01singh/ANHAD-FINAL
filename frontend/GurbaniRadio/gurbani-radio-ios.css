@@ -65,17 +65,20 @@ body {
 
 .bg-layer {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
   object-fit: cover;
-  transition: opacity 1.6s var(--ease);
-  filter: saturate(1.1) brightness(1.02);
-  will-change: opacity;
+  transition: opacity 1.8s var(--ease), transform 1.8s var(--ease), filter 1.8s var(--ease);
+  filter: saturate(1.1) brightness(1.02) blur(0px);
+  will-change: opacity, transform, filter;
+  transform: scale(1.02) translate3d(0, 0, 0);
 }
 
 .bg-layer.hidden {
   opacity: 0;
+  filter: saturate(1.1) brightness(1.02) blur(20px);
+  transform: scale(1.08) translate3d(0, 0, 0);
 }
 
 /* Soft vignette + content lift */

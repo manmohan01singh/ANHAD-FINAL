@@ -24,7 +24,7 @@ body {
   background-color: transparent !important;
 }
 
-/* Universal dynamic background with premium blur */
+/* Universal dynamic background with subtle blur for depth, no overlay fade */
 body::before {
   content: "" !important;
   display: block;
@@ -34,8 +34,8 @@ body::before {
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
-  filter: blur(20px) brightness(0.92);
-  transform: scale(1.1);
+  filter: blur(3px) brightness(1.0);
+  transform: scale(1.05);
   z-index: -9999;
   pointer-events: none;
 }
@@ -43,7 +43,7 @@ body::before {
 /* In dark mode, make it slightly darker and warmer */
 html.dark-mode body::before,
 [data-theme="dark"] body::before {
-  filter: blur(20px) brightness(0.6) saturate(0.8);
+  filter: blur(3px) brightness(0.65) saturate(0.9);
 }
 
 /* ── MAIN APP CONTAINER ── */

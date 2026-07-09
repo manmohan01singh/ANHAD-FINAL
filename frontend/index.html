@@ -281,8 +281,136 @@
   <link rel="stylesheet" href="css/ios-override.css?v=8" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/hero-clean-desktop.css" media="print" onload="this.media='all'">
   <!-- ANHAD: Animated Sky Background (Auto Mode) — async load -->
-  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=1" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="css/anhad-sky-bg.css?v=2" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/scroll-engine.css">
+
+  <!-- CRITICAL: ANHAD Adaptive Title - Changes with background -->
+  <style id="anhad-header-title-override">
+    /* Import Cinzel font */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap');
+    
+    /* HEADER WITH BETTER SPACING */
+    .header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 20px !important;
+      gap: 16px !important;
+      position: relative;
+    }
+    
+    /* LEFT BUTTON PAIR - SEPARATE WATERDROPLET */
+    .header__left {
+      display: flex !important;
+      gap: 6px !important;
+      padding: 4px !important;
+      border-radius: 50px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      backdrop-filter: blur(60px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* RIGHT BUTTON PAIR - SEPARATE WATERDROPLET */
+    .header__right {
+      display: flex !important;
+      gap: 6px !important;
+      padding: 4px !important;
+      border-radius: 50px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      backdrop-filter: blur(60px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* DARK MODE BUTTON PAIRS */
+    html.dark-mode .header__left,
+    html.dark-mode .header__right {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    /* CENTER TITLE - SEPARATE WATERDROPLET */
+    .anhad-title-pill {
+      display: inline-flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 1px !important;
+      padding: 6px 24px !important;
+      border-radius: 20px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      backdrop-filter: blur(60px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(60px) saturate(180%) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+      box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* DARK MODE CENTER TITLE */
+    html.dark-mode .anhad-title-pill,
+    html[data-theme="dark"] .anhad-title-pill,
+    html[data-theme-mode="dark"] .anhad-title-pill {
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.15),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+    }
+    
+    /* CINZEL FONT FOR ANHAD */
+    .anhad-title-pill h1.header__title,
+    h1.header__title {
+      color: #FFEB3B !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+      background: none !important;
+      -webkit-text-fill-color: #FFEB3B !important;
+      font-family: 'Cinzel', serif !important;
+      font-weight: 500 !important;
+      font-size: 20px !important;
+      letter-spacing: 2px !important;
+      filter: none !important;
+      text-transform: uppercase !important;
+    }
+    
+    /* Simple Gurmukhi subtitle */
+    .anhad-title-pill span.header__title-gurmukhi,
+    span.header__title-gurmukhi {
+      color: #FFFACD !important;
+      background: none !important;
+      -webkit-text-fill-color: #FFFACD !important;
+      font-family: 'Noto Sans Gurmukhi', serif !important;
+      font-weight: 400 !important;
+      font-size: 11px !important;
+      letter-spacing: 1.5px !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+      filter: none !important;
+    }
+    
+    /* CENTER THE HEADER CENTER */
+    .header__center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
 
 
   <!-- FIX: Hero carousel must NOT capture vertical swipes — allow page to scroll freely -->
@@ -743,6 +871,41 @@
       display: none;
     }
 
+    /* ═══ HEADER — ANHAD Title — Light & Clear ═══ */
+    .header__title {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      color: #A67C00 !important;
+      /* Lighter golden brown */
+      text-shadow: none !important;
+      filter: none !important;
+    }
+    .header__title-gurmukhi {
+      font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 500 !important;
+      color: #B8860B !important;
+      /* Lighter brown for Gurmukhi */
+      text-shadow: none !important;
+      filter: none !important;
+    }
+    
+    /* Dark Mode */
+    .dark-mode .header__title {
+      color: #F5DFA0 !important;
+      /* Light cream gold for dark mode */
+      text-shadow: none !important;
+      filter: none !important;
+    }
+    .dark-mode .header__title-gurmukhi {
+      color: #E8C87C !important;
+      /* Light golden for Gurmukhi in dark */
+      text-shadow: none !important;
+      filter: none !important;
+    }
+
     /* ═══════════════════════════════════════════════════════════════════════════
        COMPACT VIEWPORT LAYOUT — Fit all content on single screen
        ═══════════════════════════════════════════════════════════════════════════ */
@@ -754,11 +917,9 @@
       }
       .header__title {
         font-size: 18px !important;
-        text-shadow: none !important;
       }
       .header__title-gurmukhi {
         font-size: 14px !important;
-        text-shadow: none !important;
       }
       
       /* Greeting - Compact */
@@ -1178,6 +1339,26 @@
       gap: 16px !important;
     }
     
+    /* ═══ SECTION HEADERS — Centered, Small, Beautiful Typography ═══ */
+    .section-header {
+      text-align: center !important;
+      margin: 24px 0 16px !important;
+      padding: 0 20px !important;
+    }
+    .section-header__title {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+      text-transform: uppercase !important;
+      color: var(--text-secondary, #6E6E73) !important;
+      margin: 0 !important;
+      opacity: 0.75 !important;
+    }
+    .dark-mode .section-header__title {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+
     /* Practice Cards - Cushion style with colors */
     .practice-card--nitnem {
       background: var(--card-gold-gradient) !important;
@@ -1463,6 +1644,59 @@
     /* ═══════════════════════════════════════════════════════════════════════════
        DESKTOP BACKGROUND — Darbar Sahib (MAXIMUM SPECIFICITY OVERRIDE)
        ════════════════════════════════════════════════════════════════════════════ */
+    /* ONLY AUTO THEME - Dynamic background images */
+    html[data-theme-mode="auto"] body::before {
+      content: '' !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: -10000 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background-image: var(--dynamic-bg-url, url('assets/homepage-hero/darbar-sahib-day-1.png')) !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      filter: blur(3px) brightness(1.0) saturate(1.0) !important;
+      transform: scale(1.05) !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      pointer-events: none !important;
+      transition: opacity 1.5s ease-in-out !important;
+    }
+    
+    /* Light mode - solid cream background */
+    html[data-theme-mode="light"] body::before,
+    html:not([data-theme-mode="auto"]):not([data-theme-mode="dark"]) body::before {
+      content: '' !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: -10000 !important;
+      background: #FFF8F0 !important;
+      background-image: none !important;
+      display: block !important;
+    }
+    
+    /* Dark mode - solid black background */
+    html[data-theme-mode="dark"] body::before,
+    html.dark-mode body::before {
+      content: '' !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: -10000 !important;
+      background: #000000 !important;
+      background-image: none !important;
+      display: block !important;
+    }
+    
+    html body::after {
+      content: '' !important;
+      display: none !important;
+    }
+    html body.dark-mode::after,
+    body.dark-mode::after {
+      display: none !important;
+    }
     @media screen and (min-width: 1024px) {
       html {
         background: transparent !important;
@@ -1472,7 +1706,7 @@
         position: relative !important;
       }
       
-      /* Override trendora-premium.css body::before with MAXIMUM specificity */
+      /* Override trendora-premium.css body::before with MAXIMUM specificity - Subtle blur */
       html body::before {
         content: '' !important;
         position: fixed !important;
@@ -1483,12 +1717,12 @@
         width: 100vw !important;
         height: 100vh !important;
         z-index: -10000 !important;
-        background-image: url('assets/darbar-sahib-bg.png') !important;
+        background-image: var(--dynamic-bg-url, url('assets/homepage-hero/darbar-sahib-day-1.png')) !important;
         background-size: cover !important;
         background-position: center !important;
         background-repeat: no-repeat !important;
-        filter: blur(2px) brightness(1.0) saturate(0.9) !important;
-        transform: scale(1.15) !important;
+        filter: blur(3px) brightness(1.0) saturate(1.0) !important;
+        transform: scale(1.05) !important;
         opacity: 1 !important;
         visibility: visible !important;
         display: block !important;
@@ -1502,9 +1736,21 @@
         animation: none !important;
       }
 
-      /* Hide background image in dark mode to prevent dark appearance */
       html body.dark-mode::before,
       body.dark-mode::before {
+        display: block !important;
+        filter: blur(3px) brightness(0.65) saturate(0.9) !important;
+        opacity: 1 !important;
+      }
+      
+      /* Override trendora-premium.css body::after - REMOVE FADE/GRADIENT */
+      html body::after {
+        content: '' !important;
+        display: none !important;
+      }
+      
+      html body.dark-mode::after,
+      body.dark-mode::after {
         display: none !important;
       }
       
@@ -1952,10 +2198,10 @@
           slot = (h >= 5 && h < 9) ? 'morning' : (h >= 9 && h < 16) ? 'day' : (h >= 16 && h < 20) ? 'evening' : 'night';
         }
         const bgMap = {
-          morning: 'assets/darbar-sahib-morning-bg.webp',
-          day:     'assets/darbar-sahib-day-bg.webp',
+          morning: 'assets/HERO CARD IMAGES/new morning bg.avif',
+          day:     'assets/homepage-hero/darbar-sahib-day-1.png',
           evening: 'assets/darbar-sahib-evening-bg.webp',
-          night:   'assets/HERO CARD IMAGES/new-night-bg.webp',
+          night:   'assets/HERO CARD IMAGES/new night bg.avif',
         };
         const bgUrl = bgMap[slot] || bgMap.day;
         document.documentElement.style.setProperty('--dynamic-bg-url', "url('" + bgUrl + "')");
@@ -2083,8 +2329,10 @@
         </button>
       </div>
       <div class="header__center">
-        <h1 class="header__title">ANHAD</h1>
-        <span class="header__title-gurmukhi" aria-label="Anhad in Gurmukhi">ਅਨਹਦ</span>
+        <div class="anhad-title-pill">
+          <h1 class="header__title">ANHAD</h1>
+          <span class="header__title-gurmukhi" aria-label="Anhad in Gurmukhi">ਅਨਹਦ</span>
+        </div>
       </div>
       <div class="header__right">
         <button class="header__btn ios-haptic" id="themeToggleBtn" aria-label="Toggle Theme">
