@@ -1,15 +1,7 @@
 {
-  "version": "4.1.0",
-  "buildTime": "2026-07-09T00:00:00.000Z",
-  "timestamp": 1783612800000,
-  "commitHash": "auto-update",
-  "branch": "main",
-  "features": [
-    "Enhanced auto-update system with aggressive cache refresh",
-    "Service Worker v7.3.0 with improved update detection",
-    "Version polling every 90 seconds for instant updates",
-    "Stale-while-revalidate strategy for all navigation requests",
-    "Navigation Preload API for zero SW-boot latency",
-    "Safe reload with cooldown protection"
-  ]
+  "version": "4.0.0",
+  "buildTime": "2026-07-10T06:19:04.690Z",
+  "timestamp": 1783664344691,
+  "commitHash": "583e681",
+  "branch": "main"
 }

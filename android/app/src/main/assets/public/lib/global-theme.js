@@ -76,7 +76,13 @@
         html.setAttribute('data-theme-mode', theme);
 
         // Clear inline background color to allow CSS variables to take over
-        html.style.backgroundColor = '';
+        // EXCEPT in auto mode where we need transparent background for image layers
+        if (theme !== 'auto') {
+            html.style.backgroundColor = '';
+        } else {
+            // In auto mode, keep background transparent for image layers
+            html.style.backgroundColor = 'transparent';
+        }
 
         // Update meta theme-color (cached — not queried on every tick)
         if (!_metaTheme) _metaTheme = document.querySelector('meta[name="theme-color"]');
@@ -127,7 +133,7 @@
         if (current === 'light') next = 'dark';
         else if (current === 'dark') next = 'auto';
         else next = 'light';
-        
+
         setTheme(next);
         return next;
     }

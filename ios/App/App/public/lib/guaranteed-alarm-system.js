@@ -155,29 +155,10 @@
             }
         }
 
-        // 2. Load Naam Abhyas sessions
-        const naamSessions = localStorage.getItem('naamAbhyas_sessions');
-        if (naamSessions) {
-            try {
-                const sessions = JSON.parse(naamSessions);
-                if (Array.isArray(sessions)) {
-                    sessions.forEach(session => {
-                        if (session.enabled) {
-                            allReminders.push({
-                                id: `naam_${session.hour}`,
-                                title: 'Naam Abhyas',
-                                time: `${String(session.hour).padStart(2, '0')}:${String(session.startMinute || 0).padStart(2, '0')}`,
-                                enabled: true,
-                                tone: 'audio1',
-                                type: 'naamAbhyas'
-                            });
-                        }
-                    });
-                }
-            } catch (e) {
-                console.error('Error loading Naam Abhyas sessions', e);
-            }
-        }
+        // Naam Abhyas reminders are owned by naam_abhyas_schedule and the
+        // NaamAbhyas notification engine. Do not read naamAbhyas_sessions here:
+        // that key is completion history and caused disabled Naam reminders to
+        // resurrect as alarms on later page opens.
 
         console.log(`[GuaranteedAlarms] Loaded ${allReminders.length} active reminders`);
         return allReminders;

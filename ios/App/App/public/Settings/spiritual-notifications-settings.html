@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="color-scheme" content="light dark">
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Spiritual Notifications - ANHAD</title>

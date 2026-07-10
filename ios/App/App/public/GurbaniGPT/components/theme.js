@@ -1,18 +1,31 @@
 export function initTheme() {
-  const STORAGE_KEY = 'gpt_theme';
+  const STORAGE_KEY = 'anhad_theme';
+
+  function getAutoTheme() {
+    const forced = localStorage.getItem('anhad_forced_time_of_day');
+    if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+      return (forced === 'night') ? 'dark' : 'light';
+    }
+    const hour = new Date().getHours();
+    return (hour >= 5 && hour < 20) ? 'light' : 'dark';
+  }
 
   function getPreferredTheme() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'dark' || stored === 'light') return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return localStorage.getItem(STORAGE_KEY) || 'auto';
   }
 
   function applyTheme(theme) {
-    const isDark = theme === 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
+    const effectiveTheme = theme === 'auto' ? getAutoTheme() : theme;
+    const isDark = effectiveTheme === 'dark';
+
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    document.documentElement.setAttribute('data-theme-mode', theme);
+
     document.body.classList.toggle('dark', isDark);
     document.body.classList.toggle('light', !isDark);
+    document.body.classList.toggle('dark-mode', isDark);
     document.body.style.background = isDark ? '#0F0F12' : '#FFFDF9';
+
     localStorage.setItem(STORAGE_KEY, theme);
     updateIcon(isDark);
   }
@@ -26,17 +39,46 @@ export function initTheme() {
   }
 
   function toggle() {
-    const next = document.body.classList.contains('dark') ? 'light' : 'dark';
+    const current = getPreferredTheme();
+    let next;
+    if (current === 'light') next = 'dark';
+    else if (current === 'dark') next = 'auto';
+    else next = 'light';
+
     applyTheme(next);
+
+    // Dispatch custom event to notify other parts
+    const eventDetail = { bubbles: true, detail: { theme: next } };
+    document.dispatchEvent(new CustomEvent('themechange', eventDetail));
+    document.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
   }
 
   const theme = getPreferredTheme();
   applyTheme(theme);
 
+  // Storage listener for cross-tab sync
+  window.addEventListener('storage', (e) => {
+    if (e.key === STORAGE_KEY || e.key === 'anhad_forced_time_of_day') {
+      applyTheme(getPreferredTheme());
+    }
+  });
+
+  // Event listener for custom theme change events
+  window.addEventListener('themechange', (e) => {
+    if (e.detail?.theme) {
+      applyTheme(e.detail.theme);
+    }
+  });
+  window.addEventListener('anhadThemeChanged', (e) => {
+    if (e.detail?.theme) {
+      applyTheme(e.detail.theme);
+    }
+  });
+
   const mq = window.matchMedia('(prefers-color-scheme: dark)');
   mq.addEventListener('change', () => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      applyTheme(mq.matches ? 'dark' : 'light');
+    if (getPreferredTheme() === 'auto') {
+      applyTheme('auto');
     }
   });
 

@@ -17,3 +17,8 @@ function debounce(func, delay = 500) {
     }, delay);
   };
 }
+
+// Export for use in other modules and tests
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { debounce };
+}

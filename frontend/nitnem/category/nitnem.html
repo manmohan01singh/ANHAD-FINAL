@@ -157,18 +157,36 @@
         }
 
         .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: none;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            background: rgba(120, 120, 128, 0.2) !important;
+            color: var(--text-primary) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            font-size: 18px !important;
+            transition: background-color 0.3s ease, transform 0.2s ease !important;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(120, 120, 128, 0.3) !important;
+            transform: scale(1.05) !important;
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95) !important;
+        }
+
+        /* Dark mode version */
+        [data-theme="dark"] .theme-toggle {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        [data-theme="dark"] .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
         }
 
         .hero {
@@ -433,7 +451,7 @@
                 Back
             </a>
             <h1>ਨਿਤਨੇਮ</h1>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" style="background: rgba(120, 120, 128, 0.2) !important; border: none !important; width: 40px !important; height: 40px !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important;">
                 <span id="themeIcon">🌙</span>
             </button>
         </header>
@@ -467,7 +485,7 @@
                 <span class="time-badge">🌄 Morning (3-6 AM)</span>
                 <div class="bani-list">
                     <a href="../reader.html?id=2" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਜਪੁਜੀ ਸਾਹਿਬ</div>
                             <div class="bani-english">Japji Sahib</div>
@@ -482,7 +500,7 @@
                     </a>
 
                     <a href="../reader.html?id=4" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਜਾਪੁ ਸਾਹਿਬ</div>
                             <div class="bani-english">Jaap Sahib</div>
@@ -497,7 +515,7 @@
                     </a>
 
                     <a href="../reader.html?id=6" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਤਵ ਪ੍ਰਸਾਦਿ ਸਵੱਯੇ</div>
                             <div class="bani-english">Tav Prasad Savaiye</div>
@@ -512,7 +530,7 @@
                     </a>
 
                     <a href="../reader.html?id=9" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurugobindsinghsahebji.jpeg" alt="Guru Gobind Singh Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਬੇਨਤੀ ਚੌਪਈ</div>
                             <div class="bani-english">Chaupai Sahib</div>
@@ -527,7 +545,7 @@
                     </a>
 
                     <a href="../reader.html?id=10" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/guruamardasji.jpeg" alt="Guru Amar Das Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/guruamardasji.jpeg" alt="Guru Amar Das Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਅਨੰਦੁ ਸਾਹਿਬ</div>
                             <div class="bani-english">Anand Sahib</div>
@@ -552,7 +570,7 @@
                 <span class="time-badge">🌆 Evening (6 PM)</span>
                 <div class="bani-list">
                     <a href="../reader.html?id=21" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gururamdassahebji.jpeg" alt="Guru Ram Das Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gururamdassahebji.jpeg" alt="Guru Ram Das Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਰਹਿਰਾਸ ਸਾਹਿਬ</div>
                             <div class="bani-english">Rehras Sahib</div>
@@ -577,7 +595,7 @@
                 <span class="time-badge">🌙 Before Sleep</span>
                 <div class="bani-list">
                     <a href="../reader.html?id=23" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurunanakdevsahebji.jpeg" alt="Guru Nanak Dev Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਸੋਹਿਲਾ ਸਾਹਿਬ</div>
                             <div class="bani-english">Kirtan Sohila</div>
@@ -601,7 +619,7 @@
                 </div>
                 <div class="bani-list">
                     <a href="../reader.html?id=24" class="bani-card">
-                        <div class="bani-icon"><img decoding="async" src="../../../guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji"></div>
+                        <div class="bani-icon"><img decoding="async" src="../../guruimages/gurugranthsahebji.jpeg" alt="Sri Guru Granth Sahib Ji"></div>
                         <div class="bani-content">
                             <div class="bani-name">ਅਰਦਾਸ</div>
                             <div class="bani-english">Ardas</div>

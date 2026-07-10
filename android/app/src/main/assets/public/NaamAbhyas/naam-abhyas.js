@@ -1570,6 +1570,12 @@ class NaamAbhyas {
             this.notificationEngine.cancelCapacitorBatch();
         }
 
+        try {
+            localStorage.removeItem('naam_abhyas_schedule');
+            localStorage.removeItem('naam_abhyas_native_schedule_v2');
+            localStorage.setItem('naam_abhyas_disabled_at', String(Date.now()));
+        } catch (e) { /* non-critical */ }
+
         // Update UI
         this.updateUI();
 
@@ -2024,6 +2030,9 @@ class NaamAbhyas {
     }
 
     getNextScheduledSession() {
+        if (!this.config.enabled) {
+            return null;
+        }
         const now = new Date();
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();

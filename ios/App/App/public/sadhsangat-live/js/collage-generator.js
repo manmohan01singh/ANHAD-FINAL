@@ -3,6 +3,14 @@
  * Task 2.3: Orchestrates collage generation
  */
 
+// Import dependencies (for Node.js test environment)
+if (typeof require !== 'undefined') {
+  var { CollageCache } = require('./collage-cache-manager.js');
+  var { calculateGridLayout } = require('./collage-grid-calculator.js');
+  var { loadChannelImages } = require('./collage-image-loader.js');
+  var { renderCollageToCanvas } = require('./collage-canvas-renderer.js');
+}
+
 class CollageGenerator {
   constructor() {
     this.cache = new CollageCache(5);
@@ -103,9 +111,16 @@ class CollageGenerator {
 }
 
 // Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-  if (typeof collageGenerator !== 'undefined') {
-    collageGenerator.clearCache();
-    console.log('[Collage] Cleaned up resources on page unload');
-  }
-});
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    if (typeof collageGenerator !== 'undefined') {
+      collageGenerator.clearCache();
+      console.log('[Collage] Cleaned up resources on page unload');
+    }
+  });
+}
+
+// Export for use in other modules and tests
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { CollageGenerator };
+}

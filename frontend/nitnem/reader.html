@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="color-scheme" content="light dark">
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -16,47 +70,7 @@
     <link rel="stylesheet" href="css/fonts.css">
     <link rel="stylesheet" href="css/reader.css">
     
-    <!-- Theme Initialization (Instant & Isolated) -->
-    <script>
-        (function() {
-            try {
-                var override = localStorage.getItem('nitnem_theme_override');
-                var effectiveTheme;
-                if (override === 'light' || override === 'dark') {
-                    effectiveTheme = override;
-                } else {
-                    // Auto time-based: 6am - 7pm is light, otherwise dark
-                    var hour = new Date().getHours();
-                    effectiveTheme = (hour >= 6 && hour < 19) ? 'light' : 'dark';
-                }
-                var html = document.documentElement;
-                html.setAttribute('data-theme', effectiveTheme);
-                html.style.colorScheme = effectiveTheme;
-                html.style.backgroundColor = (effectiveTheme === 'dark') ? '#000000' : '#F8F9FA';
-                
-                if (effectiveTheme === 'dark') {
-                    html.classList.add('dark', 'dark-mode');
-                } else {
-                    html.classList.remove('dark', 'dark-mode');
-                }
-                
-                // Sync class to body once DOM is ready
-                var observer = new MutationObserver(function() {
-                    if (document.body) {
-                        if (effectiveTheme === 'dark') {
-                            document.body.classList.add('dark', 'dark-mode');
-                            document.body.style.backgroundColor = '#000000';
-                        } else {
-                            document.body.classList.remove('dark', 'dark-mode');
-                            document.body.style.backgroundColor = '#F8F9FA';
-                        }
-                        observer.disconnect();
-                    }
-                });
-                observer.observe(html, { childList: true, subtree: true });
-            } catch(e) {}
-        })();
-    </script>
+    
     
     <!-- Navigation Libraries -->
     <script src="../lib/smart-back.js"></script>
@@ -277,6 +291,17 @@
                     <div class="setting-divider"></div>
                     <div class="setting-row">
                         <div class="setting-info">
+                            <span class="setting-label">Best Version Mode</span>
+                            <span class="setting-desc">Line break after every ॥ (double danda)</span>
+                        </div>
+                        <button class="ios-toggle" id="bestVersionToggle" aria-checked="false">
+                            <span class="toggle-track"></span>
+                            <span class="toggle-thumb"></span>
+                        </button>
+                    </div>
+                    <div class="setting-divider"></div>
+                    <div class="setting-row">
+                        <div class="setting-info">
                             <span class="setting-label">Paper Background</span>
                             <span class="setting-desc">Classic paper reading feel</span>
                         </div>
@@ -474,11 +499,11 @@
                             <span class="setting-label">Font Family</span>
                         </div>
                         <select class="setting-select font-select" id="fontFamilySelect">
-                            <option value="noto" selected>Noto Sans</option>
-                            <option value="pg-serif">PG Serif</option>
-                            <option value="mfjashan">MFJashan</option>
-                            <option value="pg-khanna">PG Khanna</option>
-                            <option value="pixel-r">Pixel R</option>
+                            <option value="noto" selected>Gurmukhi Lipi</option>
+                            <option value="pg-serif">Gurmukhi Font 1</option>
+                            <option value="mfjashan">Gurmukhi Font 2</option>
+                            <option value="pg-khanna">Gurmukhi Font 3</option>
+                            <option value="pixel-r">Gurmukhi Font 4</option>
                         </select>
                     </div>
                     <div class="setting-divider"></div>

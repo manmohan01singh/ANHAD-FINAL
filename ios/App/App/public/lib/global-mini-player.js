@@ -247,469 +247,55 @@
   let pendingUIUpdate = null; // Queue for UI updates before mini player is ready
 
   function createAudio() {
-    // CRITICAL FIX: Always create NEW audio element to avoid cache
-    if (audio) {
-      // Save current position before destroying
-      const wasPlaying = !audio.paused;
-      const savedPosition = audio.currentTime;
-      const savedSrc = audio.src;
-
-      console.log(`[GMP] 🔄 Recreating audio - was at ${Math.floor(savedPosition)}s, playing: ${wasPlaying}`);
-
-      // Kill old audio completely - remove ALL event listeners
-      const oldAudio = audio;
-      oldAudio.pause();
-      oldAudio.src = '';
-      oldAudio.removeAttribute('src');
-      oldAudio.load();
-      // Remove from DOM if attached
-      if (oldAudio.parentNode) oldAudio.parentNode.removeChild(oldAudio);
-      // Don't set audio = null here - create new one immediately below
-      // Store saved state temporarily to return later
-      audio._savedState = { wasPlaying, savedPosition, savedSrc };
-    }
-
-    // CRITICAL FIX: Create new audio element IMMEDIATELY (never leave audio as null)
-    audio = new Audio();
-    audio.preload = 'none'; // CRITICAL: Don't preload to avoid caching
-    audio.volume = 0.8;
-
-    audio.addEventListener('playing', () => {
-      isPlaying = true;
-      // Notify coordinator that we're playing
-      if (window.AudioCoordinator) {
-        window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
-      }
-      persistState();
-      updateMiniPlayerUI();
-      updateMediaSession();
-
-      // Notify KirtanListeningTracker
-      window.dispatchEvent(new CustomEvent('anhadaudiostatechange', { detail: { isPlaying: true } }));
-    });
-
-    audio.addEventListener('pause', () => {
-      isPlaying = false;
-      // Notify coordinator that we paused
-      if (window.AudioCoordinator) {
-        window.AudioCoordinator.notifyPause('GlobalMiniPlayer');
-      }
-      persistState();
-      // FIX: Don't hide mini-player on pause - only close button should hide it
-      // Pass forceVisible=true to keep player visible even when paused
-      updateMiniPlayerUI(true);
-
-      // Notify KirtanListeningTracker
-      window.dispatchEvent(new CustomEvent('anhadaudiostatechange', { detail: { isPlaying: false } }));
-    });
-
-    audio.addEventListener('ended', () => {
-      if (STREAMS[currentStream].type === 'playlist') {
-        playNextTrack();
-      }
-    });
-
-    audio.addEventListener('timeupdate', () => {
-      if (!audio || !audio.duration || !isFinite(audio.duration)) return;
-      const pct = (audio.currentTime / audio.duration) * 100;
-      const fill = miniPlayerEl?.querySelector('.gmp__progress-fill');
-      if (fill) fill.style.width = pct + '%';
-    });
-
-    audio.addEventListener('error', () => {
-      isPlaying = false;
-      updateMiniPlayerUI();
-      showGmpToast('Kirtan unavailable — check connection');
-      setTimeout(() => resumePlayback(), 3000);
-    });
-
-    // Return saved state if we destroyed an old audio
-    return audio._savedState || null;
+    // No-op: all audio operations are handled by window.AnhadAudio singleton
   }
 
   function persistState() {
-    // BRUTAL VIRTUAL LIVE: Save current position for comparison on next page
-    // This lets us know if we're ahead of server position
-    saveState({
-      isPlaying,
-      stream: currentStream,
-      volume: audio ? audio.volume : 0.8,
-      trackIndex: currentTrackIndex,
-      currentTime: audio ? audio.currentTime : 0,
-      lastUpdateTime: Date.now() // When this position was saved
-    });
+    // No-op: state persistence is handled authoritatively by window.AnhadAudio singleton
   }
 
   async function playStream(streamName) {
-    // CRITICAL: Show mini player immediately with loading state
-    // This prevents the "disappearing" feeling when user clicks play
+    if (!window.AnhadAudio) return;
     currentStream = streamName;
-    isPlaying = true; // Optimistically set to true for UI
-    updateMiniPlayerUI(true); // Force show immediately
-    setLoadingState(true); // Show loading spinner
-
-    // CRITICAL: Create fresh audio element EVERY time to avoid cache
-    createAudio();
-
-    // Add loading event listeners
-    audio.addEventListener('waiting', () => {
-      console.log('[GMP] ⏳ Audio loading...');
-      setLoadingState(true);
-    });
-
-    audio.addEventListener('playing', () => {
-      console.log('[GMP] ▶ Audio playing');
-      setLoadingState(false);
-    });
-
-    audio.addEventListener('canplay', () => {
-      console.log('[GMP] ✓ Audio can play');
-      // Don't hide loading yet - wait for actual playing
-    });
-
-    // Notify AudioCoordinator BEFORE playing to pause other players
-    if (window.AudioCoordinator) {
-      window.AudioCoordinator.requestPlay('GlobalMiniPlayer');
-    }
-
-    const stream = STREAMS[streamName];
-
-    if (stream.type === 'live') {
-      // CRITICAL FIX: Add cache buster AND disable caching headers
-      const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&nocache=' + Math.random();
-      console.log('[GMP] 🔴 LIVE: Loading fresh stream:', freshUrl);
-      audio.src = freshUrl;
-      audio.load(); // Force reload
-      try {
-        await audio.play();
-        setLoadingState(false); // Hide loading once playing
-      } catch (e) {
-        console.warn('[GMP] Autoplay blocked');
-        setLoadingState(false);
-        isPlaying = false;
-        updateMiniPlayerUI();
-      }
-    } else if (stream.type === 'playlist' || stream.type === 'simran') {
-      // CRITICAL FIX: ALWAYS fetch fresh server position
-      try {
-        const pos = await getServerLivePosition(true); // Force fresh sync
-        currentTrackIndex = pos.trackIndex;
-        const baseSrc = stream.getTrackUrl(currentTrackIndex);
-        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
-        audio.src = freshUrl;
-        audio.load(); // Force reload to avoid cache
-        console.log(`[GMP] 🔴 LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
-
-        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-        const seekAndPlay = () => {
-          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-          const serverPos = Math.min(pos.position, dur - 5);
-          const currentPos = audio.currentTime;
-
-          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
-          if (serverPos > currentPos + 2) {
-            console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
-            audio.currentTime = serverPos;
-          } else if (serverPos < currentPos - 5) {
-            console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
-          } else {
-            console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
-          }
-
-          // Small delay to ensure seek takes effect
-          setTimeout(() => {
-            console.log(`[GMP] ✅ Playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => { });
-          }, 100);
-        };
-
-        if (audio.readyState >= 2) {
-          // HAVE_ENOUGH_DATA - seek immediately
-          seekAndPlay();
-        } else {
-          // Wait until we can play
-          audio.addEventListener('canplay', seekAndPlay, { once: true });
-        }
-      } catch (e) {
-        console.error('[GMP] Failed to get live position:', e);
-        // Fallback to local calculation
-        const localPos = getLocalLivePosition();
-        currentTrackIndex = localPos.trackIndex;
-        const baseSrc = stream.getTrackUrl(currentTrackIndex);
-        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
-        audio.src = freshUrl;
-        audio.load(); // Force reload
-        console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
-        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-        const seekAndPlay = () => {
-          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-          const serverPos = Math.min(localPos.position, dur - 5);
-          const currentPos = audio.currentTime;
-
-          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
-          if (serverPos > currentPos + 2) {
-            console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
-            audio.currentTime = serverPos;
-          } else if (serverPos < currentPos - 5) {
-            console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
-          } else {
-            console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
-          }
-
-          // Small delay to ensure seek takes effect
-          setTimeout(() => {
-            console.log(`[GMP] ✅ Fallback playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => { });
-          }, 100);
-        };
-
-        if (audio.readyState >= 2) {
-          // HAVE_ENOUGH_DATA - seek immediately
-          seekAndPlay();
-        } else {
-          // Wait until we can play
-          audio.addEventListener('canplay', seekAndPlay, { once: true });
-        }
-      }
-    }
-
-    persistState();
-    updateMiniPlayerUI();
+    isPlaying = true;
+    updateMiniPlayerUI(true);
+    setLoadingState(true);
+    await window.AnhadAudio.play(streamName);
   }
 
   async function playNextTrack() {
-    const stream = STREAMS[currentStream];
-    if (stream.type !== 'playlist' && stream.type !== 'simran') return;
-
-    // CRITICAL: Create fresh audio element to avoid cache
-    createAudio();
-
-    // For Virtual Live, don't just increment. Always resync with the server
-    // so drift is corrected perfectly on every track boundary.
-    const pos = await getServerLivePosition(true); // Force fresh sync
-    currentTrackIndex = pos.trackIndex;
-    const baseSrc = stream.getTrackUrl(currentTrackIndex);
-    const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
-    audio.src = freshUrl;
-    audio.load(); // Force reload
-    console.log(`[GMP] 🔴 NEXT TRACK (LIVE): Track ${pos.trackIndex + 1}`);
-
-    audio.addEventListener('loadedmetadata', function seek() {
-      audio.removeEventListener('loadedmetadata', seek);
-      const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-      const serverPos = Math.min(pos.position, dur - 5);
-      const currentPos = audio.currentTime;
-
-      // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-      if (serverPos > currentPos + 2) {
-        console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
-        audio.currentTime = serverPos;
-      } else if (serverPos < currentPos - 5) {
-        console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
-      } else {
-        console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
-      }
-    }, { once: true });
-    // FIX: If already loaded, seek immediately
-    if (audio.readyState >= 1) {
-      const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-      const serverPos = Math.min(pos.position, dur - 5);
-      const currentPos = audio.currentTime;
-
-      // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-      if (serverPos > currentPos + 2) {
-        console.log(`[GMP] 🔴 FORWARD JUMP: ${currentPos.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - currentPos).toFixed(1)}s)`);
-        audio.currentTime = serverPos;
-      } else if (serverPos < currentPos - 5) {
-        console.log(`[GMP] ✓ AHEAD OF LIVE: ${currentPos.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(currentPos - serverPos).toFixed(1)}s ahead) - continuing`);
-      } else {
-        console.log(`[GMP] ✓ IN SYNC: ${currentPos.toFixed(1)}s`);
-      }
-    }
-
-    try { await audio.play(); } catch (e) { }
-    persistState();
+    if (!window.AnhadAudio) return;
+    await window.AnhadAudio.playNextTrack();
   }
 
   async function togglePlayPause() {
-    if (!audio || !audio.src || audio.src === window.location.href) {
-      // Nothing loaded — start darbar by default
-      playStream(currentStream);
-      return;
-    }
-    if (audio.paused) {
-      // Just resume playing from where it was paused!
-      // Do NOT jump to live on every play/pause!
-      try {
-        await audio.play();
-      } catch (e) {
-        console.warn('[GMP] Autoplay blocked');
-      }
+    if (!window.AnhadAudio) return;
+    if (window.AnhadAudio.isPlaying()) {
+      window.AnhadAudio.pause();
     } else {
-      audio.pause();
+      await window.AnhadAudio.resumeInPlace();
     }
   }
 
   function stopAudio() {
-    if (audio) {
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-    }
     isPlaying = false;
-    currentStream = null; // Clear current stream so mini player hides
-    saveState({ isPlaying: false, stream: null, trackIndex: 0, volume: audio?.volume || 0.8, currentTime: 0 });
-    updateMiniPlayerUI();
+    if (window.AnhadAudio) {
+      window.AnhadAudio.stop();
+    }
+    updateMiniPlayerUI(false);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AUTO-RESUME ON PAGE LOAD
-  // ═══════════════════════════════════════════════════════════════════════════
-
   async function resumePlayback() {
-    const state = loadState();
-    if (!state || !state.isPlaying || !state.stream) {
-      // Don't resume if no stream (user closed it) - ensure mini player is hidden
-      updateMiniPlayerUI(false);
-      return;
-    }
-    if (Date.now() - (state.timestamp || 0) > RESUME_THRESHOLD_MS) return;
-
-    // Don't resume on player pages — those have their own audio
-    if (isPlayerPage) return;
-
-    currentStream = state.stream;
-
-    // BRUTAL VIRTUAL LIVE: Calculate where audio SHOULD be now based on saved position
-    const timeSinceLastUpdate = (Date.now() - (state.lastUpdateTime || state.timestamp)) / 1000;
-    const estimatedCurrentPosition = (state.currentTime || 0) + timeSinceLastUpdate;
-
-    console.log(`[GMP] 📍 Last saved position: ${Math.floor(state.currentTime || 0)}s (${Math.floor(timeSinceLastUpdate)}s ago)`);
-    console.log(`[GMP] 📍 Estimated current position: ${Math.floor(estimatedCurrentPosition)}s`);
-
-    createAudio();
-    audio.volume = state.volume || 0.8;
-
-    const stream = STREAMS[currentStream];
-    if (!stream) return;
-
-    // Show loading state immediately while resuming
-    setLoadingState(true);
-    updateMiniPlayerUI(true);
-
-    if (stream.type === 'live') {
-      // CRITICAL FIX: Add multiple cache busters to force fresh live connection
-      const freshUrl = stream.url + (stream.url.includes('?') ? '&' : '?') + 't=' + Date.now() + '&nocache=' + Math.random();
-      audio.src = freshUrl;
-      audio.load(); // Force reload
-      console.log(`[GMP] 🔴 RESUMING LIVE with fresh connection`);
-    } else if (stream.type === 'playlist' || stream.type === 'simran') {
-      // CRITICAL FIX: ALWAYS fetch fresh server position on resume (ignore saved state)
-      try {
-        const pos = await getServerLivePosition(true); // Force fresh sync
-        currentTrackIndex = pos.trackIndex;
-        const baseSrc = stream.getTrackUrl(currentTrackIndex);
-        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
-        audio.src = freshUrl;
-        audio.load(); // Force reload
-        console.log(`[GMP] 🔴 RESUMING AT LIVE: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
-        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-        const seekAndPlay = () => {
-          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-          const serverPos = Math.min(pos.position, dur - 5);
-          const currentPos = audio.currentTime; // This will be 0 for new audio element
-
-          // SMART: Use estimated position from saved state, not currentPos (which is 0)
-          const actualPosition = estimatedCurrentPosition;
-
-          console.log(`[GMP] 🎯 Server position: ${serverPos.toFixed(1)}s`);
-          console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
-
-          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
-          if (serverPos > actualPosition + 2) {
-            console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
-            audio.currentTime = serverPos;
-          } else if (serverPos < actualPosition - 5) {
-            console.log(`[GMP] ✓ AHEAD OF LIVE: ${actualPosition.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(actualPosition - serverPos).toFixed(1)}s ahead) - continuing`);
-            // Continue from where we were (estimated position)
-            audio.currentTime = Math.min(actualPosition, dur - 5);
-          } else {
-            console.log(`[GMP] ✓ IN SYNC: ${actualPosition.toFixed(1)}s ≈ ${serverPos.toFixed(1)}s`);
-            // Use server position since we're in sync
-            audio.currentTime = serverPos;
-          }
-
-          // Small delay to ensure seek takes effect
-          setTimeout(() => {
-            console.log(`[GMP] ✅ Resume playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => { });
-          }, 100);
-        };
-
-        if (audio.readyState >= 2) {
-          // HAVE_ENOUGH_DATA - seek immediately
-          seekAndPlay();
-        } else {
-          // Wait until we can play
-          audio.addEventListener('canplay', seekAndPlay, { once: true });
-        }
-      } catch (e) {
-        console.error('[GMP] Failed to get live position on resume:', e);
-        // Fallback to local calculation
-        const localPos = getLocalLivePosition();
-        currentTrackIndex = localPos.trackIndex;
-        const baseSrc = stream.getTrackUrl(currentTrackIndex);
-        const freshUrl = baseSrc + (baseSrc.includes('?') ? '&' : '?') + 'r=' + Math.random();
-        audio.src = freshUrl;
-        audio.load(); // Force reload
-        console.log(`[GMP] Using fallback: Track ${localPos.trackIndex + 1} at ${Math.floor(localPos.position)}s`);
-        // BRUTAL VIRTUAL LIVE: Only jump FORWARD, never pull BACK
-        const seekAndPlay = () => {
-          const dur = audio.duration || (stream.type === 'simran' ? 600 : 3600);
-          const serverPos = Math.min(localPos.position, dur - 5);
-          const actualPosition = estimatedCurrentPosition;
-
-          console.log(`[GMP] 🎯 Fallback server position: ${serverPos.toFixed(1)}s`);
-          console.log(`[GMP] 🎯 Our estimated position: ${actualPosition.toFixed(1)}s`);
-
-          // BRUTAL: Only jump FORWARD to catch up, never pull BACK
-          if (serverPos > actualPosition + 2) {
-            console.log(`[GMP] 🔴 FORWARD JUMP: ${actualPosition.toFixed(1)}s → ${serverPos.toFixed(1)}s (+${(serverPos - actualPosition).toFixed(1)}s)`);
-            audio.currentTime = serverPos;
-          } else if (serverPos < actualPosition - 5) {
-            console.log(`[GMP] ✓ AHEAD OF LIVE: ${actualPosition.toFixed(1)}s vs ${serverPos.toFixed(1)}s (${(actualPosition - serverPos).toFixed(1)}s ahead) - continuing`);
-            audio.currentTime = Math.min(actualPosition, dur - 5);
-          } else {
-            console.log(`[GMP] ✓ IN SYNC: ${actualPosition.toFixed(1)}s ≈ ${serverPos.toFixed(1)}s`);
-            audio.currentTime = serverPos;
-          }
-
-          // Small delay to ensure seek takes effect
-          setTimeout(() => {
-            console.log(`[GMP] ✅ Resume fallback playing from ${Math.floor(audio.currentTime)}s`);
-            audio.play().catch(() => { });
-          }, 100);
-        };
-
-        if (audio.readyState >= 2) {
-          // HAVE_ENOUGH_DATA - seek immediately
-          seekAndPlay();
-        } else {
-          // Wait until we can play
-          audio.addEventListener('canplay', seekAndPlay, { once: true });
-        }
-      }
-    }
-
-    if (stream.type === 'live') {
-      try {
-        await audio.play();
-        console.log(`[GMP] ▶ Resumed: ${stream.name}`);
-      } catch (e) {
-        console.log('[GMP] Autoplay blocked — waiting for user interaction');
-        isPlaying = false;
-        updateMiniPlayerUI(true);
-      }
+    // No-op: AnhadAudio handles auto-resume autonomously on page load.
+    // Sync local state to match window.AnhadAudio state.
+    if (window.AnhadAudio) {
+      const state = window.AnhadAudio.getState();
+      isPlaying = state.isPlaying;
+      isLoading = state.isLoading;
+      currentStream = state.currentStream || 'darbar';
+      currentTrackIndex = state.currentTrackIndex;
+      updateMiniPlayerUI(state.isPlaying);
+      updatePlayPauseIcon();
     }
   }
 
@@ -947,7 +533,8 @@
     // Determine if we should actually show the mini player
     // Show when: explicitly forced, OR audio is playing/loading with valid stream
     const hasActiveStream = currentStream && stream;
-    const actuallyPlaying = isPlaying && audio && audio.src && audio.src !== window.location.href;
+    const singletonAudio = window.AnhadAudio && window.AnhadAudio.getAudio ? window.AnhadAudio.getAudio() : audio;
+    const actuallyPlaying = isPlaying && singletonAudio && singletonAudio.src && singletonAudio.src !== window.location.href;
     const isActive = isLoading || actuallyPlaying || forceVisible;
     // MODIFIED: Show when forceVisible is true even without active stream
     const shouldShow = (isActive && hasActiveStream) || forceVisible;
@@ -1088,31 +675,48 @@
     injectMiniPlayer();
     console.log('[GMP] after injectMiniPlayer, miniPlayerEl:', miniPlayerEl);
 
-    // CRITICAL: Check if we should show mini player immediately
-    // This prevents the "gap" when navigating between pages
-    const state = loadState();
-    const wasNavigating = sessionStorage.getItem('anhad_navigating');
+    // Setup window.AnhadAudio synchronizers
+    if (window.AnhadAudio) {
+      window.AnhadAudio.on('statechange', (state) => {
+        audio = window.AnhadAudio.getAudio();
+        isPlaying = state.isPlaying;
+        isLoading = state.isLoading;
+        currentStream = state.currentStream || currentStream;
+        currentTrackIndex = state.currentTrackIndex;
+        updateMiniPlayerUI();
+        updatePlayPauseIcon();
+      });
 
-    if (state?.isPlaying || wasNavigating) {
-      // Show mini player UI immediately BEFORE resuming audio
-      // This creates the visual continuity
-      currentStream = state?.stream || 'darbar';
-      isPlaying = state?.isPlaying || false;
+      window.AnhadAudio.on('loading', (e) => {
+        isLoading = e.isLoading;
+        setLoadingState(e.isLoading);
+      });
 
-      // Force visible immediately with animation
-      if (miniPlayerEl) {
-        miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
-        updateMiniPlayerUI(true);
-
-        // Remove animation class after it plays
-        setTimeout(() => {
-          miniPlayerEl?.classList.remove('gmp--animate-in');
-        }, 250);
+      const targetAudio = window.AnhadAudio.getAudio();
+      if (targetAudio) {
+        targetAudio.addEventListener('timeupdate', () => {
+          if (!targetAudio || !targetAudio.duration || !isFinite(targetAudio.duration)) return;
+          const pct = (targetAudio.currentTime / targetAudio.duration) * 100;
+          const fill = miniPlayerEl?.querySelector('.gmp__progress-fill');
+          if (fill) fill.style.width = pct + '%';
+        });
       }
+    }
 
-      // Clear navigation flag
-      if (wasNavigating) {
-        sessionStorage.removeItem('anhad_navigating');
+    // Check if we should show mini player based on AnhadAudio getState()
+    if (window.AnhadAudio) {
+      const state = window.AnhadAudio.getState();
+      const wasNavigating = sessionStorage.getItem('anhad_navigating');
+      if (state.isPlaying || wasNavigating) {
+        currentStream = state.currentStream || 'darbar';
+        isPlaying = state.isPlaying;
+        if (miniPlayerEl) {
+          miniPlayerEl.classList.add('gmp--visible');
+          updateMiniPlayerUI(true);
+        }
+        if (wasNavigating) {
+          sessionStorage.removeItem('anhad_navigating');
+        }
       }
     }
 
@@ -1121,16 +725,18 @@
 
   // Listen for restore event from smooth-navigation.js
   window.addEventListener('anhadRestoreMiniPlayer', (e) => {
-    const state = loadState();
-    if (state?.isPlaying && miniPlayerEl) {
-      currentStream = state.stream || 'darbar';
-      isPlaying = true;
-      miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
-      updateMiniPlayerUI(true);
+    if (window.AnhadAudio && miniPlayerEl) {
+      const state = window.AnhadAudio.getState();
+      if (state.isPlaying) {
+        currentStream = state.currentStream || 'darbar';
+        isPlaying = true;
+        miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
+        updateMiniPlayerUI(true);
 
-      setTimeout(() => {
-        miniPlayerEl?.classList.remove('gmp--animate-in');
-      }, 250);
+        setTimeout(() => {
+          miniPlayerEl?.classList.remove('gmp--animate-in');
+        }, 250);
+      }
     }
   });
 
@@ -1181,7 +787,7 @@
   setInterval(function () {
     // PRIMARY: Check isPlaying flag
     // BACKUP: Also check audio.paused directly in case event listeners missed
-    const actuallyPlaying = isPlaying || (audio && !audio.paused && audio.currentTime > 0);
+    const actuallyPlaying = window.AnhadAudio ? window.AnhadAudio.isPlaying() : isPlaying;
 
     console.log('[GMP] ⏱️ Timer tick - isPlaying:', isPlaying, 'audio?.paused:', audio?.paused, 'actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
 

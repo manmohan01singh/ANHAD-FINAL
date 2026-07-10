@@ -43,7 +43,10 @@
    DARK THEME
    ══════════════════════════════════════════════════ */
 [data-theme="dark"],
-html.dark-mode {
+html.dark-mode,
+html.dark,
+body.dark-mode,
+body.dark {
     --bg-primary: #1C1C1E;
     --bg-secondary: #2C2C2E;
     --bg-tertiary: #3A3A3C;
@@ -58,6 +61,16 @@ html.dark-mode {
     --accent-rgb: 212, 175, 55;
     --system-blue: #0A84FF;
     --system-green: #30D158;
+}
+
+/* Force dark mode on all children */
+[data-theme="dark"] body,
+html.dark-mode body,
+html.dark body,
+body.dark-mode,
+body.dark {
+    background: #1C1C1E !important;
+    color: #F5F5F7 !important;
 }
 
 /* ══════════════════════════════════════════════════
@@ -76,12 +89,13 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-primary);
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    background: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ══════════════════════════════════════════════════
@@ -91,7 +105,7 @@ body {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 0; /* Below everything */
     overflow: hidden;
     opacity: 0; /* Default: hidden — controlled by reader-engine.js orbsOpacity setting */
     transition: opacity 0.4s ease;
@@ -264,32 +278,106 @@ body {
     min-height: 100vh;
     background: transparent;
     position: relative;
+    z-index: 10; /* Ensure content is above backgrounds */
 }
 
 /* ══════════════════════════════════════════════════
-   PAPER BACKGROUND - BEAUTIFUL iOS PAPER
+   PAPER MODE - TEXT COLOR ADJUSTMENTS
+   ══════════════════════════════════════════════════ */
+.reader-app.paper-active .verse-gurmukhi {
+    color: #000000 !important; /* Black text on paper */
+}
+
+.reader-app.paper-active .verse-roman,
+.reader-app.paper-active .verse-english,
+.reader-app.paper-active .verse-punjabi {
+    color: #333333 !important; /* Dark gray for translations */
+}
+
+.reader-app.paper-active .reader-header {
+    background: rgba(255, 255, 255, 0.98) !important; /* Light header on paper */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.reader-app.paper-active .reader-header * {
+    color: #000000 !important; /* All header text black on paper */
+}
+
+.reader-app.paper-active .reader-back,
+.reader-app.paper-active .reader-btn {
+    color: #007AFF !important; /* iOS blue for buttons */
+}
+
+.reader-app.paper-active .reader-back svg {
+    stroke: #007AFF !important;
+    fill: none !important;
+}
+
+.reader-app.paper-active .reader-btn svg {
+    stroke: #007AFF !important;
+    fill: none !important;
+}
+
+.reader-app.paper-active .reader-gurmukhi {
+    color: #000000 !important; /* Black title on paper */
+}
+
+.reader-app.paper-active .reader-title {
+    color: #000000 !important; /* Black title on paper */
+}
+
+.reader-app.paper-active .reader-english {
+    color: #000000 !important;
+}
+
+/* Toggle bar in paper mode */
+.reader-app.paper-active .reader-toggles {
+    background: rgba(242, 242, 247, 0.98) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.reader-app.paper-active .toggle-btn {
+    color: #666666 !important;
+}
+
+.reader-app.paper-active .toggle-btn.active {
+    background: #D4AF37 !important;
+    color: #000000 !important;
+}
+
+/* ══════════════════════════════════════════════════
+   PAPER BACKGROUND - USING PROVIDED IMAGE
    ══════════════════════════════════════════════════ */
 .paper-background {
     position: fixed;
     inset: 0;
     opacity: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1; /* Same as ikonkar-background */
     transition: opacity 0.4s var(--ios-spring);
     background:
-        /* Subtle paper texture */
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
-        /* Warm paper gradient */
+        /* Use the provided paper image (same folder as reader.css) */
+        url('image.png') center/cover no-repeat,
+        /* Fallback vintage paper texture */
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.12'/%3E%3C/svg%3E"),
+        /* Warm vintage paper base */
         linear-gradient(180deg,
-            #F5E6D3 0%,
-            #FDF8F0 15%,
-            #FDF8F0 85%,
-            #F5E6D3 100%);
+            #F4ECD8 0%,
+            #FAF6EB 8%,
+            #FDF9F0 20%,
+            #FFFDF8 50%,
+            #FDF9F0 80%,
+            #FAF6EB 92%,
+            #F4ECD8 100%);
     background-color: #FAF6ED;
 }
 
 .paper-background.visible {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 /* Paper mode adjustments */
@@ -299,6 +387,10 @@ body {
 
 .reader-app.paper-active .reader-content {
     background: transparent;
+    /* Add padding for text to sit nicely on paper */
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 /* ══════════════════════════════════════════════════
@@ -381,6 +473,30 @@ body {
     border: none;
     padding: 0;
     cursor: pointer;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--fill-primary);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s var(--ios-spring), transform 0.2s var(--ios-spring);
+}
+
+.theme-toggle:hover {
+    background: var(--bg-tertiary);
+    transform: scale(1.05);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
 }
 
 .reader-btn.active svg {
@@ -555,43 +671,65 @@ body {
     margin-bottom: 8px;
     transition: font-family 0.3s, font-size 0.3s;
     letter-spacing: 0.5px;
+    /* CRITICAL FIX: Add word wrapping for Larivaar mode */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    /* Ensure text never overflows on mobile */
+    max-width: 100%;
+    white-space: normal;
 }
 
-/* Font Classes - For handwritten fonts */
-.verse-gurmukhi.font-riyasti-naveen {
+/* Font Classes - For handwritten fonts - WITH CSS VARIABLE FALLBACK */
+.verse-gurmukhi.font-riyasti-naveen,
+.font-riyasti-naveen .verse-gurmukhi {
     font-family: 'Riyasti Naveen', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-khicho {
+.verse-gurmukhi.font-khicho,
+.font-khicho .verse-gurmukhi {
     font-family: 'Khicho', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-pg-serif {
+.verse-gurmukhi.font-pg-serif,
+.font-pg-serif .verse-gurmukhi {
     font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-pg-thikriwala {
+.verse-gurmukhi.font-pg-thikriwala,
+.font-pg-thikriwala .verse-gurmukhi {
     font-family: 'PG Thikriwala', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-mfjashan {
+.verse-gurmukhi.font-mfjashan,
+.font-mfjashan .verse-gurmukhi {
     font-family: 'MFJashan', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-pg-bhojanshala {
+.verse-gurmukhi.font-pg-bhojanshala,
+.font-pg-bhojanshala .verse-gurmukhi {
     font-family: 'PG Bhojanshala', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-pg-khanna {
+.verse-gurmukhi.font-pg-khanna,
+.font-pg-khanna .verse-gurmukhi {
     font-family: 'PG Khanna', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-pixel-r {
+.verse-gurmukhi.font-pixel-r,
+.font-pixel-r .verse-gurmukhi {
     font-family: 'Pixel R', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
-.verse-gurmukhi.font-noto {
+.verse-gurmukhi.font-noto,
+.font-noto .verse-gurmukhi {
     font-family: 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+/* Apply font size and weight from CSS variables */
+.verse-gurmukhi {
+    font-size: var(--gurmukhi-size) !important;
+    font-weight: var(--font-weight) !important;
 }
 
 /* Roman Transliteration */
@@ -631,7 +769,22 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   CONTINUOUS READING — FIXED (Block layout, no flicker)
+   VERSE HEADINGS - Always centered with special styling
+   ══════════════════════════════════════════════════ */
+.verse.verse-heading {
+    text-align: center !important;
+    margin: 20px 0 16px 0;
+}
+
+.verse.verse-heading .verse-gurmukhi {
+    text-align: center !important;
+    font-weight: 600;
+    color: var(--accent);
+    display: block;
+}
+
+/* ══════════════════════════════════════════════════
+   CONTINUOUS READING — TRUE CONTINUOUS FLOW (Like a book)
    ══════════════════════════════════════════════════ */
 .verses-container.continuous-mode {
     display: block;
@@ -639,17 +792,48 @@ body {
 }
 
 .verses-container.continuous-mode .verse {
-    display: block;
-    padding: 4px 0;
+    display: inline; /* CRITICAL: Inline flow */
+    padding: 0;
     margin: 0;
     animation: none;
 }
 
 .verses-container.continuous-mode .verse-gurmukhi {
-    display: block;
+    display: inline; /* CRITICAL: Inline like paragraph text */
     margin: 0;
+    padding: 0;
     text-align: left;
     line-height: 2.0;
+}
+
+/* Add space between verses in continuous flow */
+.verses-container.continuous-mode .verse::after {
+    content: " "; /* Space after each verse */
+    white-space: pre;
+}
+
+/* HEADINGS: Always centered even in continuous mode */
+.verses-container.continuous-mode .verse.verse-heading {
+    display: block !important;
+    text-align: center !important;
+    margin: 16px 0 12px 0 !important;
+}
+
+.verses-container.continuous-mode .verse.verse-heading::before {
+    content: "\A";
+    white-space: pre;
+}
+
+.verses-container.continuous-mode .verse.verse-heading::after {
+    content: "\A";
+    white-space: pre;
+}
+
+.verses-container.continuous-mode .verse.verse-heading .verse-gurmukhi {
+    display: block !important;
+    text-align: center !important;
+    font-weight: 600;
+    color: var(--accent);
 }
 
 .verses-container.continuous-mode .verse-roman,
@@ -659,19 +843,131 @@ body {
 }
 
 /* ══════════════════════════════════════════════════
-   PARAGRAPH MODE - Sectional display
+   PARAGRAPH MODE - Continuous flow with paudi spacing
+   Detects paudi endings (॥੧॥, ॥੨॥, ॥੩॥, etc.) and Rahao (ਰਹਾਉ) and adds breaks
    ══════════════════════════════════════════════════ */
 .verses-container.paragraph-mode {
-    gap: 8px;
+    display: block;
+    gap: 0;
 }
 
 .verses-container.paragraph-mode .verse {
+    display: inline; /* CRITICAL: Inline flow like continuous */
     padding: 0;
     margin: 0;
+    animation: none;
 }
 
 .verses-container.paragraph-mode .verse-gurmukhi {
-    margin-bottom: 4px;
+    display: inline; /* CRITICAL: Inline flow */
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+
+/* Add space between verses */
+.verses-container.paragraph-mode .verse::after {
+    content: " ";
+    white-space: pre;
+}
+
+/* SMART PAUDI + RAHAO DETECTION: Add double line break */
+.verses-container.paragraph-mode .verse.paudi-end::after {
+    content: "\A\A"; /* Double line break for paudi/rahao spacing */
+    white-space: pre;
+}
+
+/* HEADINGS: Always centered and on their own line, even in paragraph mode */
+.verses-container.paragraph-mode .verse.verse-heading {
+    display: block !important; /* Force block display */
+    text-align: center !important;
+    margin: 16px 0 12px 0 !important;
+    padding: 0 !important;
+}
+
+.verses-container.paragraph-mode .verse.verse-heading::before {
+    content: "\A"; /* Line break before heading */
+    white-space: pre;
+}
+
+.verses-container.paragraph-mode .verse.verse-heading::after {
+    content: "\A"; /* Line break after heading */
+    white-space: pre;
+}
+
+.verses-container.paragraph-mode .verse.verse-heading .verse-gurmukhi {
+    display: block !important;
+    text-align: center !important;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Paudi ending detection: verses ending with ॥੧॥, ॥੨॥, ॥੩॥, etc. */
+.verses-container.paragraph-mode .verse.paudi-end::after {
+    content: "\A\A"; /* Double line break after paudi */
+    white-space: pre;
+}
+
+.verses-container.paragraph-mode .verse-roman,
+.verses-container.paragraph-mode .verse-english,
+.verses-container.paragraph-mode .verse-punjabi {
+    display: none !important;
+}
+
+/* Section dividers in paragraph mode */
+.verses-container.paragraph-mode .section-divider {
+    display: block;
+    margin: 32px 0 24px 0;
+}
+
+/* ══════════════════════════════════════════════════
+   BEST VERSION MODE - Line break after every 2 panktis
+   Most readable format with proper spacing (2 panktis, then space)
+   ══════════════════════════════════════════════════ */
+.verses-container.best-version-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.verses-container.best-version-mode .verse {
+    display: block;
+    padding: 0;
+    margin: 0 0 4px 0;
+    animation: fadeIn 0.4s var(--ios-spring) both;
+}
+
+.verses-container.best-version-mode .verse-gurmukhi {
+    display: block;
+    margin: 0;
+    padding: 0;
+    /* CRITICAL FIX: Use CSS variable for text-align so user setting works */
+    text-align: var(--text-align, center);
+    line-height: 2.0;
+}
+
+/* Add extra spacing after every 2nd verse (even numbered) */
+.verses-container.best-version-mode .verse:nth-child(2n) {
+    margin-bottom: 16px;
+}
+
+/* Headings ALWAYS centered in best version mode */
+.verses-container.best-version-mode .verse.verse-heading {
+    text-align: center !important;
+    margin: 20px 0 16px 0 !important;
+}
+
+.verses-container.best-version-mode .verse.verse-heading .verse-gurmukhi {
+    text-align: center !important;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.verses-container.best-version-mode .verse-roman,
+.verses-container.best-version-mode .verse-english,
+.verses-container.best-version-mode .verse-punjabi {
+    display: none !important;
 }
 
 /* ══════════════════════════════════════════════════
@@ -680,6 +976,11 @@ body {
 body.larivaar-mode .verse-gurmukhi {
     word-spacing: -0.25em;
     letter-spacing: 0.02em;
+    /* CRITICAL: Ensure larivaar text wraps properly on mobile */
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+    white-space: normal !important;
 }
 
 body.larivaar-assist .verse-gurmukhi .word-alt {
@@ -745,12 +1046,9 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 
 .end-gurmukhi {
     font-family: var(--font-gurmukhi);
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--system-blue));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--accent);
     margin: 0 0 8px;
     line-height: 1.4;
 }
@@ -786,13 +1084,13 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 }
 
 .end-btn.primary {
-    background: linear-gradient(135deg, var(--accent), #FFD700);
+    background: var(--accent);
     color: #000;
-    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
 }
 
 .end-btn.primary:hover {
-    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 3px 12px rgba(212, 175, 55, 0.35);
 }
 
 .end-btn.secondary {
@@ -908,18 +1206,15 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 .settings-header {
     text-align: center;
     padding: 16px 16px 20px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 140, 0, 0.05));
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--separator);
 }
 
 .settings-header h2 {
     font-family: var(--font-gurmukhi);
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--system-blue));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--accent);
     margin: 0 0 4px;
 }
 
@@ -1076,25 +1371,31 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     cursor: pointer;
 }
 
-/* Font Preview */
+/* Font Preview - Clean iOS Style (No Gradient) */
 .font-preview {
-    padding: 20px;
+    padding: 28px 24px;
     text-align: center;
-    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-    border-radius: 12px;
-    margin: 10px 16px;
+    background: var(--bg-elevated);
+    border-radius: 18px;
+    margin: 12px 16px;
     border: 1px solid var(--separator);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 2px 12px rgba(0, 0, 0, 0.06),
+        0 1px 4px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
 
 .font-preview-text {
     font-family: var(--font-gurmukhi);
-    font-size: 24px;
-    background: linear-gradient(135deg, var(--accent), var(--system-blue));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    font-size: 32px;
+    color: var(--text-primary);
     font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+}
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 /* Theme */
@@ -1205,7 +1506,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 .settings-footer {
     text-align: center;
     padding: 32px 16px 24px;
-    background: linear-gradient(180deg, transparent, rgba(212, 175, 55, 0.03));
+    background: var(--bg-secondary);
     border-top: 1px solid var(--separator);
     margin-top: 20px;
 }
@@ -1213,10 +1514,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 .version-info {
     font-size: 13px;
     font-weight: 600;
-    background: linear-gradient(135deg, var(--accent), var(--system-blue));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--accent);
 }
 
 .api-credit {
@@ -1453,7 +1751,7 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
 }
 
 /* ══════════════════════════════════════════════════
-   IK ONKAR BACKGROUND IMAGE
+   IK ONKAR BACKGROUND IMAGE - FIXED Z-INDEX
    ══════════════════════════════════════════════════ */
 .ikonkar-background {
     position: fixed;
@@ -1461,11 +1759,11 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     top: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1;
+    z-index: 1; /* CRITICAL: Must be above base (0) but below content */
     pointer-events: none;
-    opacity: 0; /* Default: hidden — controlled by reader-engine.js ikonkarTransparency setting */
-    display: block;
-    visibility: visible;
+    opacity: 0; /* Default: hidden — controlled by reader-engine.js */
+    display: block !important;
+    visibility: visible !important;
     transition: opacity 0.4s ease;
 }
 
@@ -1477,20 +1775,18 @@ filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
     display: block;
 }
 
-[data-theme="light"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0);
+/* Light theme filter */
+[data-theme="light"] .ikonkar-background img {
+    filter: brightness(1.1) contrast(0.9);
 }
 
-[data-theme="dark"] .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0);
-}
-
-html.dark-mode .ikonkar-background {
-    opacity: var(--ikonkar-opacity, 0);
-}
-
-.ikonkar-background.hidden {
-    opacity: 0;
+/* Dark theme filter */
+[data-theme="dark"] .ikonkar-background img,
+html.dark-mode .ikonkar-background img,
+html.dark .ikonkar-background img,
+body.dark-mode .ikonkar-background img,
+body.dark .ikonkar-background img {
+    filter: brightness(0.7) contrast(1.1);
 }
 
 /* ══════════════════════════════════════════════════

@@ -3,21 +3,32 @@
 // Supports 12 Themes + All Visual Customizations
 // ═══════════════════════════════════════════════════════════════
 
-(function() {
+(function () {
   'use strict';
 
   // Helper to get time-based or local override theme for isolated Nitnem system
   function getNitnemDefaultTheme() {
     var override = localStorage.getItem('nitnem_theme_override');
-    if (override === 'light' || override === 'dark') return override;
-    var hour = new Date().getHours();
-    return (hour >= 6 && hour < 19) ? 'light' : 'dark';
+    if (override && THEMES.includes(override)) return override;
+
+    // Fall back to global theme setting
+    const globalTheme = localStorage.getItem('anhad_theme') || 'auto';
+    if (globalTheme === 'dark') return 'dark';
+    if (globalTheme === 'light') return 'light';
+
+    // Auto Mode: match global theme auto hours (5am-8pm day, night otherwise)
+    const forced = localStorage.getItem('anhad_forced_time_of_day');
+    if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+      return (forced === 'night') ? 'dark' : 'light';
+    }
+    const hour = new Date().getHours();
+    return (hour >= 5 && hour < 20) ? 'light' : 'dark';
   }
 
   // ═══════════════════════════════════════════════════════════════
   // DEFAULT SETTINGS
   // ═══════════════════════════════════════════════════════════════
-  
+
   const DEFAULTS = {
     gurmukhiSize: 28,
     transliterationSize: 18,
@@ -43,7 +54,7 @@
   // Available themes
   const THEMES = [
     'dark',
-    'light', 
+    'light',
     'sepia',
     'deep-blue',
     'indigo',
@@ -59,7 +70,7 @@
   // ═══════════════════════════════════════════════════════════════
   // DOM ELEMENTS
   // ═══════════════════════════════════════════════════════════════
-  
+
   let settingsBtn;
   let settingsPanel;
   let settingsOverlay;
@@ -80,7 +91,7 @@
   // ═══════════════════════════════════════════════════════════════
   // CURRENT SETTINGS STATE
   // ═══════════════════════════════════════════════════════════════
-  
+
   let settings = { ...DEFAULTS };
 
   // ═══════════════════════════════════════════════════════════════
@@ -93,7 +104,7 @@
     settingsOverlay = document.getElementById('settingsOverlay');
     settingsClose = document.getElementById('settingsClose');
     resetSettings = document.getElementById('resetSettings');
-    
+
     gurmukhiSizeDisplay = document.getElementById('gurmukhiSize');
     transliterationSizeDisplay = document.getElementById('transliterationSize');
     translationSizeDisplay = document.getElementById('translationSize');
@@ -108,7 +119,7 @@
   // ═══════════════════════════════════════════════════════════════
   // PANEL TOGGLE
   // ═══════════════════════════════════════════════════════════════
-  
+
   function openSettings() {
     if (settingsPanel) settingsPanel.classList.add('visible');
     if (settingsOverlay) settingsOverlay.classList.add('visible');
@@ -124,20 +135,20 @@
   // ═══════════════════════════════════════════════════════════════
   // APPLY SETTINGS TO CSS
   // ═══════════════════════════════════════════════════════════════
-  
+
   function applySettings() {
     const root = document.documentElement;
-    
+
     // Apply font sizes as CSS custom properties
     root.style.setProperty('--font-gurmukhi', `${settings.gurmukhiSize}px`);
     root.style.setProperty('--font-transliteration', `${settings.transliterationSize}px`);
     root.style.setProperty('--font-translation', `${settings.translationSize}px`);
     root.style.setProperty('--font-punjabi', `${settings.punjabiSize || settings.translationSize}px`);
-    
+
     // Apply theme to both html and body for maximum compatibility
     document.documentElement.setAttribute('data-theme', settings.theme);
     document.body.setAttribute('data-theme', settings.theme);
-    
+
     // Apply spacing to body
     document.body.setAttribute('data-spacing', settings.spacing);
 
@@ -147,7 +158,7 @@
     root.style.setProperty('--glass-glow', String(settings.glassGlow ?? DEFAULTS.glassGlow));
     root.style.setProperty('--edge-chroma', String(settings.edgeChroma ?? DEFAULTS.edgeChroma));
     root.style.setProperty('--ui-motion', String(settings.uiMotion ?? DEFAULTS.uiMotion));
-    
+
     // Update size displays
     if (gurmukhiSizeDisplay) gurmukhiSizeDisplay.textContent = settings.gurmukhiSize;
     if (transliterationSizeDisplay) transliterationSizeDisplay.textContent = settings.transliterationSize;
@@ -158,12 +169,12 @@
     if (edgeChromaSlider) edgeChromaSlider.value = String(settings.edgeChroma ?? DEFAULTS.edgeChroma);
     if (uiMotionSlider) uiMotionSlider.value = String(settings.uiMotion ?? DEFAULTS.uiMotion);
     if (ripplesToggle) ripplesToggle.dataset.on = String((settings.ripples ?? DEFAULTS.ripples) === true);
-    
+
     // Update active buttons
     updateActiveButtons();
 
     if (lensModeToggle) lensModeToggle.dataset.active = String(settings.lensMode === true);
-    
+
     console.log('⚙️ Settings applied:', settings);
   }
 
@@ -582,7 +593,7 @@
       const isActive = btn.dataset.theme === settings.theme;
       btn.classList.toggle('active', isActive);
     });
-    
+
     // Spacing buttons
     document.querySelectorAll('.spacing-btn').forEach(btn => {
       const isActive = btn.dataset.spacing === settings.spacing;
@@ -669,13 +680,13 @@
         settings = { ...DEFAULTS, ...parsed };
         console.log('📂 Settings loaded:', settings);
       }
-      
+
       // Always sync with isolated Nitnem theme on load
       const nitnemTheme = getNitnemDefaultTheme();
       if (THEMES.includes(nitnemTheme)) {
         settings.theme = nitnemTheme;
       }
-      
+
     } catch (e) {
       console.warn('Could not load settings:', e);
       settings = { ...DEFAULTS };
@@ -697,20 +708,20 @@
   function adjustSize(target, action) {
     const key = `${target}Size`;
     const limits = SIZE_LIMITS[target];
-    
+
     if (!limits || settings[key] === undefined) {
       console.warn('Unknown size target:', target);
       return;
     }
-    
+
     const step = 2;
-    
+
     if (action === 'increase' && settings[key] < limits.max) {
       settings[key] = Math.min(settings[key] + step, limits.max);
     } else if (action === 'decrease' && settings[key] > limits.min) {
       settings[key] = Math.max(settings[key] - step, limits.min);
     }
-    
+
     applySettings();
     saveSettings();
   }
@@ -726,13 +737,13 @@
       applyOpticalDefaultsForTheme(themeName);
       applySettings();
       saveSettings();
-      
+
       // Add transition effect
       document.body.style.transition = 'background 0.5s ease, color 0.3s ease';
       setTimeout(() => {
         document.body.style.transition = '';
       }, 500);
-      
+
       console.log('🎨 Theme changed to:', themeName);
     } else {
       console.warn('Unknown theme:', themeName);
@@ -756,12 +767,12 @@
   // ═══════════════════════════════════════════════════════════════
   // RESET TO DEFAULTS
   // ═══════════════════════════════════════════════════════════════
-  
+
   function resetToDefaults() {
     settings = { ...DEFAULTS };
     applySettings();
     saveSettings();
-    
+
     // Visual feedback
     if (resetSettings) {
       const originalHTML = resetSettings.innerHTML;
@@ -769,7 +780,7 @@
       resetSettings.style.background = 'var(--success-color)';
       resetSettings.style.borderColor = 'var(--success-color)';
       resetSettings.style.color = '#fff';
-      
+
       setTimeout(() => {
         resetSettings.innerHTML = originalHTML;
         resetSettings.style.background = '';
@@ -777,14 +788,14 @@
         resetSettings.style.color = '';
       }, 1500);
     }
-    
+
     console.log('🔄 Settings reset to defaults');
   }
 
   // ═══════════════════════════════════════════════════════════════
   // EVENT LISTENERS
   // ═══════════════════════════════════════════════════════════════
-  
+
   function setupEventListeners() {
     // Open/Close panel
     if (settingsBtn) {
@@ -793,25 +804,25 @@
         openSettings();
       });
     }
-    
+
     if (settingsClose) {
       settingsClose.addEventListener('click', (e) => {
         e.preventDefault();
         closeSettings();
       });
     }
-    
+
     if (settingsOverlay) {
       settingsOverlay.addEventListener('click', closeSettings);
     }
-    
+
     // Close on Escape key
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && settingsPanel && settingsPanel.classList.contains('visible')) {
         closeSettings();
       }
     });
-    
+
     // Size buttons
     document.querySelectorAll('.size-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -820,7 +831,7 @@
         const target = btn.dataset.target;
         if (action && target) {
           adjustSize(target, action);
-          
+
           // Add click animation
           btn.style.transform = 'scale(0.9)';
           setTimeout(() => {
@@ -829,7 +840,7 @@
         }
       });
     });
-    
+
     // Theme buttons
     document.querySelectorAll('.theme-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -840,7 +851,7 @@
         }
       });
     });
-    
+
     // Spacing buttons
     document.querySelectorAll('.spacing-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -851,7 +862,7 @@
         }
       });
     });
-    
+
     // Reset button
     if (resetSettings) {
       resetSettings.addEventListener('click', (e) => {
@@ -896,6 +907,17 @@
     // GLOBAL THEME SYNC — Listen for theme changes from other parts of the app
     // ═══════════════════════════════════════════════════════════════
     window.addEventListener('storage', (e) => {
+      if (e.key === 'anhad_theme') {
+        const val = e.newValue || 'auto';
+        if (val === 'auto') {
+          localStorage.removeItem('nitnem_theme_override');
+          settings.theme = getNitnemDefaultTheme();
+        } else if (THEMES.includes(val)) {
+          settings.theme = val;
+        }
+        applySettings();
+        console.log('🎨 Bani reader synced with global theme changes:', val);
+      }
       if (e.key === 'nitnem_theme_override' && e.newValue) {
         if (THEMES.includes(e.newValue)) {
           settings.theme = e.newValue;
@@ -907,10 +929,16 @@
 
     // Listen for custom theme change events
     window.addEventListener('themechange', (e) => {
-      if (e.detail?.theme && THEMES.includes(e.detail.theme)) {
-        settings.theme = e.detail.theme;
+      const targetTheme = e.detail?.theme;
+      if (targetTheme === 'auto') {
+        localStorage.removeItem('nitnem_theme_override');
+        settings.theme = getNitnemDefaultTheme();
         applySettings();
-        console.log('🎨 Bani reader theme changed via event:', e.detail.theme);
+        console.log('🎨 Bani reader reverted to dynamic auto theme');
+      } else if (targetTheme && THEMES.includes(targetTheme)) {
+        settings.theme = targetTheme;
+        applySettings();
+        console.log('🎨 Bani reader theme changed via event:', targetTheme);
       }
     });
 
@@ -932,7 +960,7 @@
           openSettings();
         }
       }
-      
+
       // Ctrl/Cmd + 0 to reset zoom
       if ((e.ctrlKey || e.metaKey) && e.key === '0') {
         e.preventDefault();
@@ -958,7 +986,7 @@
   // ═══════════════════════════════════════════════════════════════
   // INITIALIZE
   // ═══════════════════════════════════════════════════════════════
-  
+
   function init() {
     initDOMReferences();
     ensureOpticalControlsExist();

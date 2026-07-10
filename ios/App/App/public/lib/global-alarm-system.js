@@ -29,8 +29,8 @@
     // ══════════════════════════════════════════════════════════════════════════
     const CONFIG = {
         // Storage Keys
-        REMINDERS_KEYS: ['sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1', 'cine_alarms_v4', 'anhad_cine_v5'],
-        SETTINGS_KEY: 'sr_settings_v4',
+        REMINDERS_KEYS: ['sr_reminders_v7', 'sr_reminders_v4', 'sr_reminders_v3', 'smart_reminders_v1', 'cine_alarms_v4', 'anhad_cine_v5'],
+        SETTINGS_KEY: 'sr_settings_v7',
         ALARM_LOG_KEY: 'nitnemTracker_alarmLog',
         NAAM_ABHYAS_LOG: 'naamAbhyas_sessions',
 
@@ -274,7 +274,7 @@
             }
 
             // Load settings
-            const settingsRaw = localStorage.getItem(CONFIG.SETTINGS_KEY);
+            const settingsRaw = localStorage.getItem('sr_settings_v7') || localStorage.getItem('sr_settings_v4');
             const settings = settingsRaw ? JSON.parse(settingsRaw) : (data.options || {});
             State.isNeverMissMode = settings?.neverMissMode || false;
 
@@ -1235,15 +1235,21 @@
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    // INITIALIZATION
-    // ══════════════════════════════════════════════════════════════════════════
     function init() {
         // FIX: Prevent duplicate init if GuaranteedAlarmSystem is already active
         if (window.GuaranteedAlarmSystem && window.GuaranteedAlarmSystem._isActive) {
             console.log('🔔 GlobalAlarmSystem: GuaranteedAlarmSystem active, skipping to avoid duplicate polling');
             return;
         }
-        
+
+        // FIX: Suppress alarms on native Capacitor platform to prevent duplicate notifications and overlapping modals
+        if (window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()) {
+            console.log('🔔 GlobalAlarmSystem: Native Capacitor platform detected. Suppressing alarm polling and modals to avoid duplicates. Maintaining core sync.');
+            initBroadcastChannel();
+            setupNaamAbhyasSync();
+            return;
+        }
+
         console.log('🔔 Global Alarm System v3.0 Initializing...');
 
         // Initialize broadcast channel

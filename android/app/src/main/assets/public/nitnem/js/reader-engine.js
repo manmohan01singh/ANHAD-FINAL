@@ -18,6 +18,7 @@
         larivaarAssist: false,
         continuousReading: false,
         paragraphMode: false,
+        bestVersion: false,
         showVisraams: false,
         paperBackground: false,
         showTitles: true,
@@ -82,6 +83,24 @@
         'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
         'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
         'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif"
+    };
+
+    // Font Display Names (User-friendly)
+    const FONT_NAMES = {
+        'noto': 'Gurmukhi Lipi',
+        'pg-serif': 'Gurmukhi Font 1',
+        'mfjashan': 'Gurmukhi Font 2',
+        'pg-khanna': 'Gurmukhi Font 3',
+        'pixel-r': 'Gurmukhi Font 4'
+    };
+
+    // Default font sizes (larger for non-Noto fonts)
+    const FONT_SIZES = {
+        'noto': 28,      // Noto Sans default
+        'pg-serif': 36,  // Larger for handwritten fonts
+        'mfjashan': 36,
+        'pg-khanna': 34,
+        'pixel-r': 34
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -155,6 +174,7 @@
             larivaarAssistDivider: $('larivaarAssistDivider'),
             continuousReadingToggle: $('continuousReadingToggle'),
             paragraphModeToggle: $('paragraphModeToggle'),
+            bestVersionToggle: $('bestVersionToggle'),
             showVisraamsToggle: $('showVisraamsToggle'),
             paperBackgroundToggle: $('paperBackgroundToggle'),
             showTitlesToggle: $('showTitlesToggle'),
@@ -589,6 +609,10 @@
             gurmukhi = verse.unicode || verse.gurmukhi || '';
         }
 
+        // CRITICAL FIX: Clean up corrupted Unicode characters
+        // Replace common encoding issues
+        gurmukhi = cleanupCorruptedText(gurmukhi);
+
         let roman = '';
         const translit = verseData.transliteration || verse.transliteration;
         if (translit) {
@@ -624,10 +648,113 @@
         return { gurmukhi, roman, english, punjabi, visraam: verse.visraam };
     }
 
+    // Clean up corrupted/malformed Unicode text
+    function cleanupCorruptedText(text) {
+        if (!text) return '';
+        
+        // Remove replacement characters (�) and other common corruption
+        text = text.replace(/�+/g, '');
+        
+        // Fix common Gurmukhi encoding issues
+        const fixMap = {
+            // Add space after ॥ if missing (simple character match)
+            '॥ੴ': '॥ ੴ',
+            '॥ਅ': '॥ ਅ',
+            '॥ਆ': '॥ ਆ',
+            '॥ਇ': '॥ ਇ',
+            '॥ਸ': '॥ ਸ',
+            '॥ਗ': '॥ ਗ',
+            '॥ਹ': '॥ ਹ',
+            '॥ਜ': '॥ ਜ',
+            '॥ਨ': '॥ ਨ',
+            '॥ਕ': '॥ ਕ',
+            '॥ਪ': '॥ ਪ',
+            '॥ਤ': '॥ ਤ',
+            '॥ਮ': '॥ ਮ',
+            '॥ਰ': '॥ ਰ',
+            '॥ਧ': '॥ ਧ',
+            '॥ਵ': '॥ ਵ',
+            '॥ਦ': '॥ ਦ',
+            '॥ਚ': '॥ ਚ',
+            '॥ਬ': '॥ ਬ',
+            // Fix doubled punctuation
+            '॥॥': '॥'
+        };
+        
+        Object.entries(fixMap).forEach(([pattern, replacement]) => {
+            text = text.replace(new RegExp(pattern, 'g'), replacement);
+        });
+        
+        // Remove zero-width characters
+        text = text.replace(/[\u200B-\u200D\uFEFF]/g, '');
+        
+        // Trim extra whitespace
+        text = text.trim().replace(/\s+/g, ' ');
+        
+        return text;
+    }
+
     function createVerseElement(parsed, index) {
         const el = document.createElement('div');
         el.className = 'verse';
         el.style.animationDelay = `${Math.min(index * 0.03, 0.3)}s`;
+
+        // SMART PAUDI + RAHAO DETECTION: Check if verse ends with paudi marker OR contains rahao
+        // Paudi markers use Gurmukhi numbers: ॥੧॥ ॥੨॥ ॥੩॥ ॥੪॥ ॥੫॥ etc.
+        // Rahao markers: ਰਹਾਉ (can be at start or end of verse)
+        const paudiPattern = /॥[੦੧੨੩੪੫੬੭੮੯]+॥\s*$/;
+        const rahaoPattern = /ਰਹਾਉ/;
+        
+        if (paudiPattern.test(parsed.gurmukhi) || rahaoPattern.test(parsed.gurmukhi)) {
+            el.classList.add('paudi-end');
+            const marker = rahaoPattern.test(parsed.gurmukhi) ? 'Rahao' : 'Paudi';
+            console.log(`[${marker} detected]:`, parsed.gurmukhi.slice(-20));
+        }
+
+        // SMART HEADING DETECTION
+        // 1. Ik Onkar lines: ੴ ਸਤਿਗੁਰ ਪ੍ਰਸਾਦਿ ॥
+        const ikOnkarPattern = /^੧ਓ|^ੴ/;
+        
+        // 2. Raag headings: Must have ਰਾਗੁ at START and be short (< 50 chars)
+        const raagPattern = /^ਰਾਗੁ\s/;
+        
+        // 3. Mahala headings: Must have ਮਹਲਾ and be short (< 60 chars), not in middle of long verse
+        const mahalaPattern = /ਮਹਲਾ\s*[੦੧੨੩੪੫੬੭੮੯]/;
+        
+        // 4. Other heading markers that are typically at START
+        // FIXED: Changed ਵਾਰ to more specific pattern to avoid false matches like "ਵਾਰਿਆ ਨ ਜਾਵਾ"
+        // Added ਅਸਟਪਦੀ (Asht Padi - Sukhmani Sahib) and ਭੁਜੰਗ (Bhujang Prayat - Jaap Sahib)
+        const otherHeadingPattern = /^(ਛੰਦ|ਸਲੋਕੁ|ਪਉੜੀ|ਚੌਪਈ|ਦੋਹਰਾ|ਸਵੱਯੇ|ਅਸਟਪਦੀ|ਭੁਜੰਗ\s*ਪ੍ਰਯਾਤ)/;
+        
+        // 5. Special case: "ਵਾਰ" ONLY when it's at START and followed by specific patterns (not part of a sentence)
+        // This catches "ਵਾਰ ਰਾਗ" etc. but NOT "ਵਾਰਿਆ ਨ ਜਾਵਾ"
+        const vaarHeadingPattern = /^ਵਾਰ\s+(ਰਾਗ|ਸਾਰੰਗ|ਮਾਰੂ|ਆਸਾ|ਗੂਜਰੀ|ਸੋਰਠਿ)/;
+        
+        // 6. EXCLUDE: Bani titles (like "ਜਪੁਜੀ ਸਾਹਿਬ", "ਜਾਪੁ ਸਾਹਿਬ") - these are NOT headings
+        const baniTitlePattern = /(ਜਪੁਜੀ|ਜਾਪੁ|ਅਨੰਦੁ|ਰਹਿਰਾਸਿ|ਸੋਹਿਲਾ|ਸੁਖਮਨੀ)\s+(ਸਾਹਿਬ|ਸਾਹਿਬੁ)/;
+        
+        // 7. EXCLUDE: Verses containing "ਵਾਰਿਆ" (this is NOT a heading, it's part of verse content)
+        const falseVaarPattern = /ਵਾਰਿਆ/;
+        
+        const isShortVerse = parsed.gurmukhi.length < 60;
+        const isVeryShort = parsed.gurmukhi.length < 40;
+        const isBaniTitle = baniTitlePattern.test(parsed.gurmukhi);
+        const isFalseVaar = falseVaarPattern.test(parsed.gurmukhi);
+        
+        if (
+            !isBaniTitle && // EXCLUDE bani titles
+            !isFalseVaar && // EXCLUDE false "ਵਾਰ" matches like "ਵਾਰਿਆ ਨ ਜਾਵਾ"
+            (
+                ikOnkarPattern.test(parsed.gurmukhi) || // Ik Onkar
+                raagPattern.test(parsed.gurmukhi) || // Raag
+                (mahalaPattern.test(parsed.gurmukhi) && isShortVerse) || // Mahala (only if short)
+                (otherHeadingPattern.test(parsed.gurmukhi) && isVeryShort) || // Other headings (very short only)
+                (vaarHeadingPattern.test(parsed.gurmukhi) && isVeryShort) // Vaar headings (specific patterns only)
+            )
+        ) {
+            el.classList.add('verse-heading');
+            console.log('[Heading detected]:', parsed.gurmukhi);
+        }
 
         // Get current font class
         const fontClass = `font-${state.settings.fontFamily}`;
@@ -737,6 +864,15 @@
         const fontSize = state.settings.gurbaniFontSize || 28;
         const textAlign = state.settings.textAlign || 'center';
 
+        // Update CSS custom properties for font (works on deployed version too)
+        const root = document.documentElement;
+        root.style.setProperty('--font-gurmukhi', fontFamily);
+        root.style.setProperty('--gurmukhi-size', `${fontSize}px`);
+        root.style.setProperty('--font-weight', fontWeight);
+        
+        // CRITICAL FIX: Set text-align as CSS variable so Best Version mode can use it
+        root.style.setProperty('--text-align', textAlign);
+
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
             el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
@@ -744,14 +880,11 @@
             // Add current font class
             el.classList.add(`font-${fontKey}`);
 
-            // FIX: Use individual property assignment instead of cssText
-            // cssText wipes ALL inline styles (including color settings from color picker)
-            el.style.setProperty('font-family', fontFamily, 'important');
-            el.style.setProperty('font-weight', fontWeight, 'important');
-            el.style.setProperty('font-size', `${fontSize}px`, 'important');
+            // CRITICAL FIX: Don't use cssText or individual styles - use CSS class
+            // This ensures settings work on both localhost and deployed version
         });
 
-        // Apply text alignment
+        // Apply text alignment directly to verses (for non-Best Version modes)
         document.querySelectorAll('.verse').forEach(el => {
             el.style.textAlign = textAlign;
         });
@@ -760,6 +893,8 @@
         const preview = document.querySelector('.font-preview-text');
         if (preview) {
             preview.style.fontFamily = fontFamily;
+            preview.style.fontWeight = fontWeight;
+            preview.style.fontSize = `${fontSize}px`;
         }
 
         // Update font select value
@@ -821,15 +956,36 @@
 
     function updateIkonkarBackground() {
         const opacity = state.settings.ikonkarTransparency / 100;
+        
         if (els.ikonkarBackground) {
-            els.ikonkarBackground.style.setProperty('--ikonkar-opacity', opacity);
-            els.ikonkarBackground.style.opacity = opacity;
+            // CRITICAL FIX: Set opacity directly on element
+            els.ikonkarBackground.style.opacity = opacity.toString();
             els.ikonkarBackground.style.display = 'block';
             els.ikonkarBackground.style.visibility = 'visible';
+            
             if (opacity > 0) {
                 els.ikonkarBackground.classList.remove('hidden');
             }
+
+            // Ensure image loads properly
+            const img = els.ikonkarBackground.querySelector('img');
+            if (img) {
+                // Force image reload if src is not set
+                if (!img.src || img.src === window.location.href) {
+                    img.src = '../assets/icons/bg-nitnem.jpg';
+                }
+                // Check if image exists
+                img.onerror = function() {
+                    console.error('❌ Ik Onkar background image not found at: ../assets/icons/bg-nitnem.jpg');
+                };
+                img.onload = function() {
+                    console.log('✅ Ik Onkar background image loaded successfully');
+                };
+            }
+            
+            console.log(`🖼️ Ik Onkar background opacity set to: ${opacity} (${state.settings.ikonkarTransparency}%)`);
         }
+        
         if (els.ikonkarTransparency) {
             els.ikonkarTransparency.value = state.settings.ikonkarTransparency;
         }
@@ -853,7 +1009,13 @@
     }
 
     function setIkonkarTransparency(value) {
-        state.settings.ikonkarTransparency = parseInt(value, 10);
+        const newValue = parseInt(value, 10);
+        if (isNaN(newValue) || newValue < 0 || newValue > 100) {
+            console.warn('Invalid Ik Onkar transparency value:', value);
+            return;
+        }
+        state.settings.ikonkarTransparency = newValue;
+        console.log('🎚️ Ik Onkar transparency changed to:', newValue);
         updateIkonkarBackground();
         saveSettings();
     }
@@ -942,6 +1104,9 @@
         // Paragraph mode
         container.classList.toggle('paragraph-mode', state.settings.paragraphMode && !state.settings.continuousReading);
 
+        // Best Version mode (line break after every ॥)
+        container.classList.toggle('best-version-mode', state.settings.bestVersion && !state.settings.continuousReading && !state.settings.paragraphMode);
+
         // Show/hide larivaar assist option
         if (els.larivaarAssistRow) {
             els.larivaarAssistRow.style.display = state.settings.larivaar ? 'flex' : 'none';
@@ -961,6 +1126,7 @@
             larivaarAssistToggle: 'larivaarAssist',
             continuousReadingToggle: 'continuousReading',
             paragraphModeToggle: 'paragraphMode',
+            bestVersionToggle: 'bestVersion',
             showVisraamsToggle: 'showVisraams',
             paperBackgroundToggle: 'paperBackground',
             showTitlesToggle: 'showTitles',
@@ -1493,6 +1659,7 @@
         els.larivaarAssistToggle?.addEventListener('click', () => toggleSetting('larivaarAssist'));
         els.continuousReadingToggle?.addEventListener('click', () => toggleSetting('continuousReading'));
         els.paragraphModeToggle?.addEventListener('click', () => toggleSetting('paragraphMode'));
+        els.bestVersionToggle?.addEventListener('click', () => toggleSetting('bestVersion'));
         els.showVisraamsToggle?.addEventListener('click', () => toggleSetting('showVisraams'));
         els.paperBackgroundToggle?.addEventListener('click', () => toggleSetting('paperBackground'));
         els.showTitlesToggle?.addEventListener('click', () => toggleSetting('showTitles'));
@@ -1542,9 +1709,16 @@
             }
         });
 
-        // Font select - DIRECT FONT APPLICATION
+        // Font select - DIRECT FONT APPLICATION + SIZE ADJUSTMENT
         els.fontFamilySelect?.addEventListener('change', (e) => {
-            state.settings.fontFamily = e.target.value;
+            const fontKey = e.target.value;
+            state.settings.fontFamily = fontKey;
+            
+            // Auto-adjust size based on font (larger for handwritten fonts)
+            if (FONT_SIZES[fontKey]) {
+                state.settings.gurbaniFontSize = FONT_SIZES[fontKey];
+            }
+            
             applyFontToVerses();
             saveSettings();
         });

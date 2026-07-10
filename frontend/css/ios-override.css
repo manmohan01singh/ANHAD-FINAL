@@ -885,6 +885,11 @@ body {
   background-color: var(--ios-bg-primary);
 }
 
+/* Dark Mode Scroll State Fix - Disable transitions during scroll */
+[data-theme="dark"].scrolling * {
+  transition: none !important;
+}
+
 [data-theme="dark"] .practice-card--nitnem {
   background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
   box-shadow:
@@ -1949,4 +1954,43 @@ body,
   -webkit-backdrop-filter: blur(16px) saturate(150%) !important;
   transition: transform 0.15s var(--ios-ease, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
     box-shadow 0.15s ease !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 19. DARK MODE SCROLL STABILITY FIX — GPU Acceleration & Rendering Optimization
+   Fix for: Element disappearance, text flickering, navigation position shifts during scroll
+   Bug Condition: isBugCondition_DarkMode(scrollEvent) in dark theme
+   Expected: All UI elements remain visible, stable, without flickering during scroll
+═══════════════════════════════════════════════════════════════════════════════ */
+
+/* GPU Acceleration for Dark Mode Elements */
+[data-theme="dark"] .practice-card,
+[data-theme="dark"] .quick-card,
+[data-theme="dark"] .tab-item,
+[data-theme="dark"] .nav-tab,
+[data-theme="dark"] button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  will-change: auto;
+}
+
+/* Font Smoothing Optimization */
+[data-theme="dark"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navigation Position Stability */
+[data-theme="dark"] .nav-tab,
+[data-theme="dark"] .tab-item {
+  position: relative;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Isolate Compositor Layers for Icons */
+[data-theme="dark"] .practice-card__ring-icon,
+[data-theme="dark"] .quick-card__icon {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }

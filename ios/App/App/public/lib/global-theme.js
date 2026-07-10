@@ -60,17 +60,9 @@
         html.classList.add('theme-switching');
 
         // 2. APPLY THEME ATTRIBUTES & CLASSES
-        // In auto mode, don't add dark-mode class (use data-time-of-day instead for styling)
-        // This prevents background images from being overly darkened
-        if (effectiveTheme === 'dark' && theme !== 'auto') {
+        if (effectiveTheme === 'dark') {
             html.classList.add('dark', 'dark-mode');
             if (document.body) document.body.classList.add('dark-mode');
-            html.setAttribute('data-theme', 'dark');
-            html.style.colorScheme = 'dark';
-        } else if (effectiveTheme === 'dark' && theme === 'auto') {
-            // Auto mode at night: set dark theme but without dark-mode class
-            html.classList.remove('dark', 'dark-mode');
-            if (document.body) document.body.classList.remove('dark-mode');
             html.setAttribute('data-theme', 'dark');
             html.style.colorScheme = 'dark';
         } else {
@@ -141,7 +133,7 @@
         if (current === 'light') next = 'dark';
         else if (current === 'dark') next = 'auto';
         else next = 'light';
-        
+
         setTheme(next);
         return next;
     }

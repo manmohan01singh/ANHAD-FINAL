@@ -20,7 +20,7 @@
       if (!('serviceWorker' in navigator)) return null;
       try {
         // Use the main site service worker
-        const reg = await navigator.serviceWorker.register('/sw.js');
+        const reg = await navigator.serviceWorker.register('../sw.js');
         return reg;
       } catch {
         return null;

@@ -1,33 +1,58 @@
 <!DOCTYPE html>
 <html lang="en" data-global-theme="force">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
-(function() {
-  try {
-    const theme = localStorage.getItem('anhad_theme') || 'auto';
-    let effectiveTheme = theme;
-    if (theme === 'auto') {
-      const forced = localStorage.getItem('anhad_forced_time_of_day');
-      if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
-        effectiveTheme = (forced === 'night') ? 'dark' : 'light';
-      } else {
-        const hour = new Date().getHours();
-        effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-      }
-    }
-    document.documentElement.setAttribute('data-theme', effectiveTheme);
-    document.documentElement.setAttribute('data-theme-mode', theme);
-    document.documentElement.style.colorScheme = effectiveTheme;
-    if (effectiveTheme === 'dark') {
-      document.documentElement.classList.add('dark', 'dark-mode');
-      document.documentElement.style.backgroundColor = '#0D0D0F';
-    } else {
-      document.documentElement.classList.remove('dark', 'dark-mode');
-      document.documentElement.style.backgroundColor = '#FAF8F5';
-    }
-  } catch (e) {}
-})();
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
   </script>
   <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
@@ -150,26 +175,8 @@
     }
     
     .header__title {
-      font-size: 22px !important;
-      font-weight: 700 !important;
-      font-family: 'Georgia', 'Palatino', serif !important;
-      letter-spacing: 0.5px !important;
-      padding: 10px 32px !important;
-      border-radius: 25px !important;
-      /* Solid visible background bar - iOS style */
-      background: rgba(255, 255, 255, 0.92) !important;
-      backdrop-filter: blur(30px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
-      color: #1A1D26 !important;
-      /* Strong shadows for depth */
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.12),
-        0 2px 8px rgba(0, 0, 0, 0.08),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.9),
-        inset 0 1px 2px rgba(255, 255, 255, 1) !important;
-      border: 0.5px solid rgba(0, 0, 0, 0.04) !important;
-      margin: 0 !important;
-      display: inline-block !important;
+      font-size: 20px;
+      font-weight: 700;
     }
     
     .header__btn {
@@ -624,19 +631,7 @@
         0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     }
     
-    html.dark-mode .header__title {
-      color: #FFFFFF !important;
-      /* Solid dark background bar */
-      background: rgba(44, 44, 46, 0.92) !important;
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.6),
-        0 2px 8px rgba(0, 0, 0, 0.4),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-        inset 0 1px 2px rgba(255, 255, 255, 0.06) !important;
-      border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-    }
+    html.dark-mode .header__title { color: #F5F5F7 !important; }
     
     /* Tabs dark mode - darker subtle */
     html.dark-mode .tabs { 
@@ -821,7 +816,7 @@
       <a href="../index.html" class="header__back glass-nav__back" aria-label="Back">
         <i class="fas fa-chevron-left"></i>
       </a>
-      <h1 class="header__title" style="background: rgba(255, 255, 255, 0.92) !important; padding: 10px 32px !important; border-radius: 25px !important; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important; backdrop-filter: blur(30px) !important;">Favorites</h1>
+      <h1 class="header__title">Favorites</h1>
     </header>
     
     <!-- Tabs -->
@@ -925,7 +920,7 @@
           if (shabads.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">❤️</div>
+                <div class="empty-state__icon">🙏</div>
                 <h3 class="empty-state__title">No saved Shabads</h3>
                 <p class="empty-state__desc">Save Shabads from Gurbani Khoj or Random Shabad</p>
               </div>
@@ -978,7 +973,7 @@
           if (bookmarks.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">❤️</div>
+                <div class="empty-state__icon">📖</div>
                 <h3 class="empty-state__title">No bookmarked Ang</h3>
                 <p class="empty-state__desc">Bookmark pages in Sehaj Paath Reader</p>
               </div>
@@ -1020,7 +1015,7 @@
           if (notes.length === 0) {
             container.innerHTML = `
               <div class="empty-state">
-                <div class="empty-state__icon">waheguru</div>
+                <div class="empty-state__icon">✨</div>
                 <h3 class="empty-state__title">No notes yet</h3>
                 <p class="empty-state__desc">Add notes while reading in Sehaj Paath</p>
               </div>

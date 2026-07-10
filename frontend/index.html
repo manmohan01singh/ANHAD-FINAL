@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en" data-anhad-home>
 <head>
+  <meta name="color-scheme" content="light dark">
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
   <script>
     (function() {
       'use strict';
@@ -61,61 +115,6 @@
   </script>
   <meta charset="UTF-8">
   
-  <script>
-    (function() {
-      try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-      const theme = localStorage.getItem('anhad_theme') || 'auto';
-      let effectiveTheme = theme;
-      let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
-      if (theme === 'auto') {
-        if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
-          effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
-        } else {
-          const hour = new Date().getHours();
-          effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-          
-          if (hour >= 5 && hour < 9) timeOfDay = 'morning';
-          else if (hour >= 9 && hour < 16) timeOfDay = 'day';
-          else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
-          else timeOfDay = 'night';
-        }
-      }
-      document.documentElement.setAttribute('data-theme', effectiveTheme);
-      document.documentElement.setAttribute('data-theme-mode', theme);
-      if (theme === 'auto') {
-        document.documentElement.setAttribute('data-time-of-day', timeOfDay);
-      }
-      document.documentElement.style.colorScheme = effectiveTheme;
-      if (effectiveTheme === 'dark') {
-        document.documentElement.classList.add('dark', 'dark-mode');
-      } else {
-        document.documentElement.classList.remove('dark', 'dark-mode');
-      }
-      
-      // CRITICAL: Immediately set background to prevent white flash
-      let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
-      if (theme === 'auto') {
-         if (timeOfDay === 'morning') bg = '#FFF5EC';
-         else if (timeOfDay === 'day') bg = '#FFFDF9';
-         else if (timeOfDay === 'evening') bg = '#FFF8E7';
-         else if (timeOfDay === 'night') bg = '#0F0F12';
-      }
-      document.documentElement.style.backgroundColor = bg;
-      
-      // FAST-TRACK: Prevent white flash
-      document.documentElement.classList.add('theme-loaded');
-
-      // PERF FIX: Replaced MutationObserver({ childList, subtree }) with DOMContentLoaded.
-      // The MutationObserver was watching ALL DOM mutations (every element parsed into body)
-      // just to add a class on body — a high-frequency callback for a one-time task.
-      // DOMContentLoaded fires exactly once at the right moment.
-      document.addEventListener('DOMContentLoaded', function() {
-        if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
-        document.body.classList.add('theme-loaded');
-      }, { once: true });
-    })();
-  </script>
-  
   <style>
     html { color-scheme: light dark; }
     html.dark-mode { background-color: var(--bg-primary, #0D0D0F) !important; }
@@ -138,6 +137,12 @@
     .hero-card, .event-card, .clay-card, .clay-hero {
       box-shadow: none !important;
       filter: none !important;
+    }
+    
+    /* REMOVE ALL SHADOWS GLOBALLY */
+    * {
+      box-shadow: none !important;
+      -webkit-box-shadow: none !important;
     }
 
     /* ═════════════════════════════════════════════════════════════════
@@ -251,6 +256,40 @@
 
   <script src="js/scroll-engine.js" defer></script>
   <script src="./js/anhad-core.js" defer></script>
+  
+  <!-- CRITICAL: Remove all shadows added by JavaScript -->
+  <script>
+    (function() {
+      // Function to remove all shadows
+      function removeAllShadows() {
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(el => {
+          el.style.boxShadow = 'none';
+          el.style.webkitBoxShadow = 'none';
+          el.style.filter = 'none';
+        });
+      }
+      
+      // Remove shadows immediately on DOM load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', removeAllShadows);
+      } else {
+        removeAllShadows();
+      }
+      
+      // Keep removing shadows every 100ms for dynamic content
+      setInterval(removeAllShadows, 100);
+      
+      // Also watch for DOM changes
+      const observer = new MutationObserver(removeAllShadows);
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class']
+      });
+    })();
+  </script>
 
   <!-- REMOVED: Broken inline script that tried to access document.body in <head> -->
   <!-- theme-loaded is now set by the MutationObserver in the first theme IIFE above -->
@@ -273,6 +312,8 @@
   <link rel="stylesheet" href="css/anhad-clay.css?v=1">
   <link rel="stylesheet" href="css/claymorphism-system.css?v=1">
   <link rel="stylesheet" href="css/nav-glass.css?v=4.1.9">
+  <!-- NO SHADOWS - Remove all shadows from buttons and cards -->
+  <link rel="stylesheet" href="css/no-shadows.css?v=2">
   <!-- Non-critical CSS loaded async via media trick -->
   <link rel="stylesheet" href="css/gurpurab-event-semantics.css?v=1" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="css/gurpurab-special-mode.css" media="print" onload="this.media='all'">
@@ -388,6 +429,24 @@
       text-transform: uppercase !important;
     }
     
+    /* DAY TIME OVERRIDE: Dark title on bright sky */
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill h1.header__title,
+    [data-theme-mode="auto"][data-time-of-day="day"] h1.header__title {
+      color: #000814 !important;
+      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
+      -webkit-text-fill-color: #000814 !important;
+    }
+    
+    /* LIGHT MODE: Dark title for visibility */
+    [data-theme-mode="light"] .anhad-title-pill h1.header__title,
+    [data-theme-mode="light"] h1.header__title,
+    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill h1.header__title,
+    html:not(.dark-mode):not([data-theme-mode="auto"]) h1.header__title {
+      color: #000814 !important;
+      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
+      -webkit-text-fill-color: #000814 !important;
+    }
+    
     /* Simple Gurmukhi subtitle */
     .anhad-title-pill span.header__title-gurmukhi,
     span.header__title-gurmukhi {
@@ -402,6 +461,24 @@
       filter: none !important;
     }
     
+    /* DAY TIME OVERRIDE: Dark Gurmukhi subtitle on bright sky */
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill span.header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="day"] span.header__title-gurmukhi {
+      color: #02162E !important;
+      -webkit-text-fill-color: #02162E !important;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    /* LIGHT MODE: Dark Gurmukhi subtitle for visibility */
+    [data-theme-mode="light"] .anhad-title-pill span.header__title-gurmukhi,
+    [data-theme-mode="light"] span.header__title-gurmukhi,
+    html:not(.dark-mode):not([data-theme-mode="auto"]) .anhad-title-pill span.header__title-gurmukhi,
+    html:not(.dark-mode):not([data-theme-mode="auto"]) span.header__title-gurmukhi {
+      color: #02162E !important;
+      -webkit-text-fill-color: #02162E !important;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+    }
+    
     /* CENTER THE HEADER CENTER */
     .header__center {
       display: flex;
@@ -409,6 +486,90 @@
       align-items: center;
       position: relative;
       z-index: 1;
+    }
+
+    /* ─── AUTO MODE CONTRAST OVERRIDES (PREVENT FLASH ON LOAD) ─── */
+    [data-theme-mode="auto"] .header__title,
+    [data-theme-mode="auto"] .header-title {
+      color: #FFFFFF !important;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.75), 0 1px 4px rgba(0, 0, 0, 0.9) !important;
+      font-weight: 700 !important;
+    }
+    
+    /* DAY TIME: Dark colored ANHAD title for contrast on bright sky */
+    [data-theme-mode="auto"][data-time-of-day="day"] .header__title,
+    [data-theme-mode="auto"][data-time-of-day="day"] .header-title {
+      color: #000814 !important;
+      text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6) !important;
+      font-weight: 700 !important;
+    }
+    
+    [data-theme-mode="auto"] .header__title-gurmukhi,
+    [data-theme-mode="auto"] .gurmukhi-title {
+      color: #FFFFFF !important;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+      font-weight: 600 !important;
+    }
+    
+    /* DAY TIME: Dark colored Gurmukhi title for contrast on bright sky */
+    [data-theme-mode="auto"][data-time-of-day="day"] .header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="day"] .gurmukhi-title {
+      color: #02162E !important;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+      font-weight: 600 !important;
+    }
+    [data-theme-mode="auto"] .english-title {
+      color: var(--sky-txt-gold, #D4943A) !important;
+      text-shadow: var(--sky-text-shadow-light, 0 1px 8px rgba(0,0,0,0.18)) !important;
+    }
+    [data-theme-mode="auto"] .header-subtitle {
+      color: var(--sky-txt-secondary, #4A1508) !important;
+      text-shadow: var(--sky-text-shadow-dark, 0 1px 4px rgba(0,0,0,0.12)) !important;
+    }
+    [data-theme-mode="auto"] #greetingSalutation,
+    [data-theme-mode="auto"] .greeting__salutation {
+      color: var(--sky-txt-accent, #9C3610) !important;
+      text-shadow: var(--sky-text-shadow-dark, 0 1px 6px rgba(0,0,0,0.16)) !important;
+      font-weight: 700 !important;
+    }
+    [data-theme-mode="auto"] #greetingGurbani,
+    [data-theme-mode="auto"] .greeting__gurbani {
+      color: var(--sky-txt-primary, #260804) !important;
+      text-shadow: var(--sky-text-shadow-dark, 0 1px 8px rgba(0,0,0,0.12)) !important;
+      font-weight: 600 !important;
+    }
+    [data-theme-mode="auto"] #greetingTranslation,
+    [data-theme-mode="auto"] .greeting__translation {
+      color: var(--sky-txt-secondary, #4A1508) !important;
+      text-shadow: var(--sky-text-shadow-dark, none) !important;
+      font-weight: 600 !important;
+    }
+    [data-theme-mode="auto"] .progress-inline__label {
+      color: var(--sky-txt-label, #6B2810) !important;
+      text-shadow: var(--sky-text-shadow-dark, none) !important;
+    }
+    [data-theme-mode="auto"] .progress-inline__text {
+      color: var(--sky-txt-secondary, #4A1508) !important;
+      text-shadow: var(--sky-text-shadow-dark, none) !important;
+    }
+    [data-theme-mode="auto"] .greeting__text {
+      background: var(--sky-greeting-bg, transparent);
+      border-radius: 50%;
+      padding: 15px 0 !important;
+      margin-top: -10px;
+    }
+    [data-theme-mode="auto"] .card-title,
+    [data-theme-mode="auto"] .card-subtitle {
+      color: var(--sky-txt-primary, #1A0402) !important;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+    }
+    [data-theme-mode="auto"] .app-header {
+      background: rgba(0, 0, 0, 0.3) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+    }
+    [data-theme-mode="auto"] .header-blur-bg {
+      background: rgba(0, 0, 0, 0.4) !important;
     }
   </style>
 
@@ -1642,51 +1803,58 @@
   </style>
   <style>
     /* ═══════════════════════════════════════════════════════════════════════════
-       DESKTOP BACKGROUND — Darbar Sahib (MAXIMUM SPECIFICITY OVERRIDE)
+       DESKTOP BACKGROUND & SIDEBAR VISIBILITY SYSTEM
+       Only active on desktop screen widths. Mobile uses .anhad-bg-container.
        ════════════════════════════════════════════════════════════════════════════ */
-    /* ONLY AUTO THEME - Dynamic background images */
-    html[data-theme-mode="auto"] body::before {
-      content: '' !important;
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: -10000 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      background-image: var(--dynamic-bg-url, url('assets/homepage-hero/darbar-sahib-day-1.png')) !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
-      filter: blur(3px) brightness(1.0) saturate(1.0) !important;
-      transform: scale(1.05) !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-      display: block !important;
-      pointer-events: none !important;
-      transition: opacity 1.5s ease-in-out !important;
-    }
-    
-    /* Light mode - solid cream background */
-    html[data-theme-mode="light"] body::before,
-    html:not([data-theme-mode="auto"]):not([data-theme-mode="dark"]) body::before {
-      content: '' !important;
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: -10000 !important;
-      background: #FFF8F0 !important;
-      background-image: none !important;
-      display: block !important;
-    }
-    
-    /* Dark mode - solid black background */
-    html[data-theme-mode="dark"] body::before,
-    html.dark-mode body::before {
-      content: '' !important;
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: -10000 !important;
-      background: #000000 !important;
-      background-image: none !important;
-      display: block !important;
+    @media screen and (min-width: 1024px) {
+      .anhad-bg-container {
+        display: none !important;
+      }
+
+      /* ONLY AUTO THEME - Dynamic background images */
+      html[data-theme-mode="auto"] body::before {
+        content: '' !important;
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: -10000 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background-image: var(--dynamic-bg-url, url('assets/homepage-hero/darbar-sahib-day-1.png')) !important;
+        background-size: cover !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+        filter: blur(3px) brightness(1.0) saturate(1.0) !important;
+        transform: scale(1.05) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        display: block !important;
+        pointer-events: none !important;
+        transition: opacity 1.5s ease-in-out !important;
+      }
+      
+      /* Light mode - solid cream background */
+      html[data-theme-mode="light"] body::before,
+      html:not([data-theme-mode="auto"]):not([data-theme-mode="dark"]) body::before {
+        content: '' !important;
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: -10000 !important;
+        background: #FFF8F0 !important;
+        background-image: none !important;
+        display: block !important;
+      }
+      
+      /* Dark mode - solid black background */
+      html[data-theme-mode="dark"] body::before,
+      html.dark-mode body::before {
+        content: '' !important;
+        position: fixed !important;
+        inset: 0 !important;
+        z-index: -10000 !important;
+        background: #000000 !important;
+        background-image: none !important;
+        display: block !important;
+      }
     }
     
     html body::after {
@@ -3122,7 +3290,15 @@
       }
 
       // Close on Escape
-      document.addEventListener('keydown', function(e) {
+      if (window.anhadComingSoonEscHandler) {
+        document.removeEventListener('keydown', window.anhadComingSoonEscHandler);
+      }
+      window.anhadComingSoonEscHandler = function(e) {
+        if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) hideComingSoon();
+      };
+      document.addEventListener('keydown', window.anhadComingSoonEscHandler);
+      // Disabled duplicate listener
+      if (false) document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && overlay && overlay.classList.contains('active')) hideComingSoon();
       });
     })();
@@ -3153,10 +3329,17 @@
   </nav>
 
   <!-- Hero Card Badge Interactions — Direct Jump to Live -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Small delay to ensure AnhadAudio is initialized
-      setTimeout(function() {
+    <script>
+    (function() {
+      function initHeroInteractions() {
+        console.log('[Homepage] Initializing hero interactions...');
+        
+        // Clean up previous interval if it exists to prevent memory leaks
+        if (window.anhadHeroBadgeInterval) {
+          clearInterval(window.anhadHeroBadgeInterval);
+          window.anhadHeroBadgeInterval = null;
+        }
+
         const badges = document.querySelectorAll('.hero-card__badge--live, .hero-card__badge--dlive');
         
         // 1. Click Handler for jumping to live
@@ -3208,7 +3391,7 @@
         });
 
         // 2. Real-time Status Updates (DVR-style)
-        setInterval(function() {
+        function updateStatuses() {
           if (document.hidden) return; // Guard when tab is hidden
           if (!window.AnhadAudio) return;
           const state = window.AnhadAudio.getState();
@@ -3253,9 +3436,22 @@
               }
             }
           });
-        }, 5000); // PERF FIX: Home badges follow the 5s live-drift cadence instead of waking every second.
-      }, 1000);
-    });
+        }
+
+        // Run immediately once
+        updateStatuses();
+        
+        // 2. Real-time Status Updates (DVR-style) cadence 5s
+        window.anhadHeroBadgeInterval = setInterval(updateStatuses, 5000);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroInteractions);
+      } else {
+        // Small delay to ensure AnhadAudio is initialized if this is a SPA load
+        setTimeout(initHeroInteractions, 300);
+      }
+    })();
   </script>
 
   <script>

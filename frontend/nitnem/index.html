@@ -1,6 +1,59 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
   <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <link rel="stylesheet" href="../css/anhad-core.css">
@@ -33,55 +86,23 @@
             }
         })();
 
-        // Theme Initialization (Instant & Synced with Global)
+
+    <script>
+        // Module Version Check (Lightweight)
         (function() {
-            try {
-                var override = localStorage.getItem('nitnem_theme_override');
-                var globalTheme = localStorage.getItem('anhad_theme'); // global key from index.html
-                var effectiveTheme;
-                if (override === 'light' || override === 'dark') {
-                    // Nitnem reader's own override takes top priority
-                    effectiveTheme = override;
-                } else if (globalTheme === 'light' || globalTheme === 'dark') {
-                    // Use the global homepage theme preference
-                    effectiveTheme = globalTheme;
-                } else if (globalTheme === 'auto' || !globalTheme) {
-                    // Auto time-based: 5am - 8pm is light, otherwise dark (matches global-theme.js logic)
-                    var hour = new Date().getHours();
-                    effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-                } else {
-                    // Fallback: time-based
-                    var hour = new Date().getHours();
-                    effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-                }
-                var html = document.documentElement;
-                html.setAttribute('data-theme', effectiveTheme);
-                html.style.colorScheme = effectiveTheme;
-                html.style.backgroundColor = (effectiveTheme === 'dark') ? '#000000' : '#F8F9FA';
-                
-                if (effectiveTheme === 'dark') {
-                    html.classList.add('dark', 'dark-mode');
-                } else {
-                    html.classList.remove('dark', 'dark-mode');
-                }
-                
-                // Sync class to body once DOM is ready
-                var observer = new MutationObserver(function() {
-                    if (document.body) {
-                        if (effectiveTheme === 'dark') {
-                            document.body.classList.add('dark', 'dark-mode');
-                            document.body.style.backgroundColor = '#000000';
-                        } else {
-                            document.body.classList.remove('dark', 'dark-mode');
-                            document.body.style.backgroundColor = '#F8F9FA';
-                        }
-                        observer.disconnect();
-                    }
-                });
-                observer.observe(html, { childList: true, subtree: true });
-            } catch(e) {}
+            const MOD_VERSION = '1.0.1';
+            const stored = localStorage.getItem('anhad_nitnem_version');
+            if (stored !== MOD_VERSION) {
+                localStorage.setItem('anhad_nitnem_version', MOD_VERSION);
+            }
         })();
     </script>
+    
+    <script src="../js/anhad-core.js?v=2" defer></script>
+    <script src="../lib/global-theme.js?v=2" defer></script>
+    <script src="js/banidb-api.js?v=5"></script>
+    <script src="js/preload-manager.js?v=1"></script>
+    <script src="js/hub-app.js?v=5"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,31 +112,6 @@
     <link rel="preload" href="js/banidb-api.js" as="script">
     <link rel="preload" href="../data/all-banis-offline.json" as="fetch" crossorigin>
     <link rel="preload" href="css/reader.css" as="style">
-    
-    <!-- Prefetch next likely pages -->
-    <link rel="prefetch" href="category/sggs.html">
-    <link rel="prefetch" href="category/dasam.html">
-    <link rel="prefetch" href="reader.html">
-    
-    <script src="../js/anhad-core.js?v=2" defer></script>
-    
-    <!-- BaniDB API - CHUNKED OFFLINE VERSION -->
-    <script src="js/banidb-api.js?v=5"></script>
-    
-    <!-- Preload Manager for instant navigation -->
-    <script src="js/preload-manager.js?v=1"></script>
-    
-    <!-- Hub App with cache bust -->
-    <script src="js/hub-app.js?v=5"></script>
-    
-    <!-- Global Theme System -->
-    <!-- global-theme.js REMOVED: Nitnem has its own isolated theme system -->
-    
-    <!-- Navigation Libraries -->
-    <!-- smart-back.js REMOVED from Nitnem -->
-    <!-- page-lifecycle.js REMOVED from Nitnem -->
-    <!-- smooth-navigation.js REMOVED: causes broken state in Nitnem sub-app -->
-    <!-- state-preservation.js REMOVED from Nitnem -->
     
     <!-- Custom Gurmukhi Fonts -->
     <style>
@@ -168,6 +164,20 @@
             
             /* Tab Bar */
             --tab-bar-height: 83px;
+
+            /* Card Theme Variables */
+            --card-bg-gradient: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
+            --card-border-color: rgba(255, 255, 255, 0.9);
+            --card-shadow:
+                0 4px 16px rgba(60, 60, 70, 0.08),
+                0 2px 6px rgba(60, 60, 70, 0.04),
+                inset 0 1px 2px rgba(255, 255, 255, 0.9);
+            --shadow-active:
+                inset 8px 8px 20px rgba(60, 60, 70, 0.25),
+                inset 4px 4px 10px rgba(60, 60, 70, 0.15),
+                inset -5px -5px 15px rgba(255, 255, 255, 0.6),
+                0 0 0 2px rgba(255, 255, 255, 0.4),
+                4px 4px 12px rgba(60, 60, 70, 0.18);
         }
         
         * {
@@ -183,13 +193,14 @@
         
         body {
             font-family: var(--font-primary);
-            background: #F8F9FA;
+            background: var(--bg-primary) !important; /* Use CSS variable for theme support */
             color: #1D1D1F;
             min-height: 100vh;
             min-height: 100dvh;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             padding-bottom: 32px;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transition */
         }
 
         html, body {
@@ -211,33 +222,22 @@
             --glass-bg: rgba(28, 28, 30, 0.85);
             --separator: rgba(255, 255, 255, 0.12);
             --card-border: rgba(255, 255, 255, 0.1);
-        }
 
-        [data-theme="dark"] body {
-            background: #000000;
-            color: #F5F5F7;
-        }
-
-        /* Dark mode: Cards */
-        [data-theme="dark"] .quick-card,
-        [data-theme="dark"] .category-card,
-        [data-theme="dark"] .search-trigger,
-        [data-theme="dark"] .hero-greeting,
-        [data-theme="dark"] .theme-toggle {
-            background: linear-gradient(160deg, #2C2C2E 0%, #252529 40%, #1C1C1E 100%);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow:
+            --card-bg-gradient: linear-gradient(160deg, #2C2C2E 0%, #252529 40%, #1C1C1E 100%);
+            --card-border-color: rgba(255, 255, 255, 0.12);
+            --card-shadow:
                 0 4px 16px rgba(0, 0, 0, 0.4),
                 0 2px 6px rgba(0, 0, 0, 0.3),
                 inset 0 1px 2px rgba(255, 255, 255, 0.08);
-        }
-        
-        [data-theme="dark"] .quick-card:active,
-        [data-theme="dark"] .category-card:active {
-            box-shadow:
+            --shadow-active:
                 inset 6px 6px 16px rgba(0, 0, 0, 0.5),
                 inset 3px 3px 8px rgba(0, 0, 0, 0.3),
                 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        [data-theme="dark"] body {
+            background: #000000 !important; /* Force dark background */
+            color: #F5F5F7;
         }
 
         /* Dark mode: Header glass */
@@ -432,31 +432,33 @@
             align-items: center;
             justify-content: center;
             justify-self: end;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 3px solid rgba(255, 255, 255, 0.7);
+            background: rgba(120, 120, 128, 0.2) !important;
+            border: none !important;
             border-radius: 50%;
             font-size: 16px;
             cursor: pointer;
-            box-shadow:
-                8px 8px 25px rgba(60, 60, 70, 0.22),
-                4px 4px 12px rgba(60, 60, 70, 0.15),
-                -4px -4px 12px rgba(255, 255, 255, 0.95),
-                -2px -2px 6px rgba(255, 255, 255, 0.85),
-                0 0 0 2px rgba(255, 255, 255, 0.6),
-                inset 0 2px 3px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(60, 60, 70, 0.08);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
+            position: relative;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(120, 120, 128, 0.3) !important;
+            transform: scale(1.05);
         }
         
         .theme-toggle:active {
             transform: scale(0.9);
-            box-shadow:
-                inset 4px 4px 10px rgba(60, 60, 70, 0.25),
-                inset 2px 2px 5px rgba(60, 60, 70, 0.15),
-                inset -2px -2px 6px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                2px 2px 6px rgba(60, 60, 70, 0.18);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .theme-toggle {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        [data-theme="dark"] .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -520,12 +522,10 @@
             align-items: center;
             gap: 8px;
             padding: 8px 18px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: var(--card-bg-gradient);
+            border: 2px solid var(--card-border-color);
             border-radius: 100px;
-            box-shadow:
-                0 4px 12px rgba(60, 60, 70, 0.08),
-                0 2px 4px rgba(60, 60, 70, 0.05);
+            box-shadow: var(--card-shadow);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
@@ -552,39 +552,24 @@
             gap: 10px;
             width: 100%;
             padding: 10px 14px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: var(--card-bg-gradient);
+            border: 2px solid var(--card-border-color);
             border-radius: 18px;
             color: var(--text-tertiary);
             font-size: 15px;
             cursor: pointer;
-            box-shadow:
-                0 4px 16px rgba(60, 60, 70, 0.1),
-                0 2px 6px rgba(60, 60, 70, 0.05);
+            box-shadow: var(--card-shadow);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
         
         .search-trigger:hover {
             border-color: rgba(212, 175, 55, 0.5);
-            box-shadow:
-                16px 16px 50px rgba(212, 175, 55, 0.2),
-                8px 8px 25px rgba(60, 60, 70, 0.2),
-                -8px -8px 25px rgba(255, 255, 255, 0.95),
-                -4px -4px 12px rgba(255, 255, 255, 0.85),
-                0 0 0 3px rgba(212, 175, 55, 0.25),
-                inset 0 2px 4px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(60, 60, 70, 0.06);
         }
         
         .search-trigger:active {
             transform: scale(0.98) translateY(2px);
-            box-shadow:
-                inset 5px 5px 15px rgba(60, 60, 70, 0.25),
-                inset 2px 2px 8px rgba(60, 60, 70, 0.15),
-                inset -3px -3px 10px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                2px 2px 8px rgba(60, 60, 70, 0.18);
+            box-shadow: var(--shadow-active);
         }
         
         .search-trigger svg {
@@ -645,29 +630,21 @@
             align-items: center;
             justify-content: center;
             padding: 18px 12px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 2px solid rgba(255, 255, 255, 0.9);
+            background: var(--card-bg-gradient);
+            border: 2px solid var(--card-border-color);
             border-radius: 22px;
             text-decoration: none;
             color: inherit;
             text-align: center;
             overflow: hidden;
-            box-shadow:
-                0 4px 16px rgba(60, 60, 70, 0.08),
-                0 2px 6px rgba(60, 60, 70, 0.04),
-                inset 0 1px 2px rgba(255, 255, 255, 0.9);
+            box-shadow: var(--card-shadow);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
         
         .quick-card:active {
             transform: scale(0.96) translateY(4px);
-            box-shadow:
-                inset 8px 8px 20px rgba(60, 60, 70, 0.25),
-                inset 4px 4px 10px rgba(60, 60, 70, 0.15),
-                inset -5px -5px 15px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                4px 4px 12px rgba(60, 60, 70, 0.18);
+            box-shadow: var(--shadow-active);
         }
         
         .quick-card-glow {
@@ -720,32 +697,20 @@
             align-items: center;
             gap: 12px;
             padding: 14px 14px;
-            background: linear-gradient(160deg, #FFFFFF 0%, #FAFAFC 40%, #F0F0F5 100%);
-            border: 3px solid rgba(255, 255, 255, 0.7);
+            background: var(--card-bg-gradient);
+            border: 3px solid var(--card-border-color);
             border-radius: 20px;
             text-decoration: none;
             color: inherit;
             overflow: hidden;
-            box-shadow:
-                16px 16px 50px rgba(60, 60, 70, 0.22),
-                8px 8px 25px rgba(60, 60, 70, 0.16),
-                -8px -8px 25px rgba(255, 255, 255, 0.95),
-                -4px -4px 12px rgba(255, 255, 255, 0.85),
-                0 0 0 2px rgba(255, 255, 255, 0.6),
-                inset 0 2px 4px rgba(255, 255, 255, 1),
-                inset 0 -1px 2px rgba(60, 60, 70, 0.06);
+            box-shadow: var(--card-shadow);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
         }
         
         .category-card:active {
             transform: scale(0.98) translateY(3px);
-            box-shadow:
-                inset 6px 6px 16px rgba(60, 60, 70, 0.25),
-                inset 3px 3px 8px rgba(60, 60, 70, 0.15),
-                inset -4px -4px 12px rgba(255, 255, 255, 0.6),
-                0 0 0 2px rgba(255, 255, 255, 0.4),
-                3px 3px 10px rgba(60, 60, 70, 0.18);
+            box-shadow: var(--shadow-active);
         }
         
         .category-card:hover {
@@ -1200,7 +1165,7 @@
                 Home
             </a>
             <span class="header-title">ਨਿਤਨੇਮ ਗੁਟਕਾ</span>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle theme-icon" id="themeToggle" style="background: rgba(120, 120, 128, 0.25) !important; border: none !important; width: 40px !important; height: 40px !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; justify-self: end !important; font-size: 20px !important;">🌙</button>
         </header>
         
         <!-- Hero -->
@@ -1458,54 +1423,40 @@
         // Hide skeleton immediately — content is static HTML, no need to wait
         document.getElementById('skeletonContainer')?.classList.add('hidden');
         
-        // Local self-contained theme toggler for isolated Nitnem system
+        // Connect to unified AnhadTheme system
         (function() {
             const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
-            const html = document.documentElement;
-
-            function applyTheme(theme) {
-                html.setAttribute('data-theme', theme);
-                html.style.colorScheme = theme;
-                html.style.backgroundColor = (theme === 'dark') ? '#000000' : '#F8F9FA';
-                
-                if (theme === 'dark') {
-                    html.classList.add('dark', 'dark-mode');
-                    if (document.body) {
-                        document.body.classList.add('dark', 'dark-mode');
-                        document.body.style.backgroundColor = '#000000';
-                    }
-                } else {
-                    html.classList.remove('dark', 'dark-mode');
-                    if (document.body) {
-                        document.body.classList.remove('dark', 'dark-mode');
-                        document.body.style.backgroundColor = '#F8F9FA';
-                    }
+            
+            // Function to update theme icon
+            function updateThemeIcon() {
+                if (themeToggle) {
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
                 }
-                
-                if (themeIcon) {
-                    themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
-                }
-                
-                // Dispatch local event for any listening readers
-                window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
             }
-
-            // Toggle button handler
+            
+            // Update icon on page load
+            updateThemeIcon();
+            
+            // Listen for theme changes
             if (themeToggle) {
                 themeToggle.addEventListener('click', () => {
-                    const currentTheme = html.getAttribute('data-theme') || 'light';
-                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                    localStorage.setItem('nitnem_theme_override', newTheme);
-                    applyTheme(newTheme);
+                    if (window.AnhadTheme) {
+                        AnhadTheme.toggle();
+                        // Update icon after theme changes
+                        setTimeout(updateThemeIcon, 100);
+                    }
                 });
             }
-
-            // Initial setup from current computed data-theme attribute
-            const initialTheme = html.getAttribute('data-theme') || 'light';
-            if (themeIcon) {
-                themeIcon.textContent = initialTheme === 'dark' ? '🌙' : '☀️';
-            }
+            
+            // Listen for theme changes from other sources (e.g., system preference)
+            const observer = new MutationObserver(() => {
+                updateThemeIcon();
+            });
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
         })();
         
         // ═══════════════════════════════════════════════════════════════

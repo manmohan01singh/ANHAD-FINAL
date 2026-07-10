@@ -1,45 +1,58 @@
 <!DOCTYPE html>
 <html lang="pa" dir="ltr">
 <head>
-  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+      <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
-(function() {
-  try {
-    var theme = localStorage.getItem('anhad_theme') || 'auto';
-    var effectiveTheme = theme;
-    if (theme === 'auto') {
-      var hour = new Date().getHours();
-      effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-    }
-    var html = document.documentElement;
-    html.setAttribute('data-theme', effectiveTheme);
-    html.setAttribute('data-theme-mode', theme);
-    html.style.colorScheme = effectiveTheme;
-    
-    var isDark = (effectiveTheme === 'dark');
-    html.style.backgroundColor = isDark ? '#0D0D0F' : '#FAF8F5';
-    
-    if (isDark) {
-      html.classList.add('dark', 'dark-mode');
-    } else {
-      html.classList.remove('dark', 'dark-mode');
-    }
-    
-    var observer = new MutationObserver(function() {
-      if (document.body) {
-        if (isDark) {
-          document.body.classList.add('dark', 'dark-mode');
-          document.body.style.backgroundColor = '#0D0D0F';
-        } else {
-          document.body.classList.remove('dark', 'dark-mode');
-          document.body.style.backgroundColor = '#FAF8F5';
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
         }
-        observer.disconnect();
-      }
-    });
-    observer.observe(html, { childList: true, subtree: true });
-  } catch(e) {}
-})();
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no">

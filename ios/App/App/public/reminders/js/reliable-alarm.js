@@ -30,7 +30,7 @@
     // CONFIGURATION
     // ══════════════════════════════════════════════════════════════════════════
     const CONFIG = {
-        swPath: '/sw.js',
+        swPath: '../sw.js',
         dbName: 'GurbaniAlarmsDB',
         dbVersion: 1,
         storeName: 'alarms',
@@ -132,7 +132,7 @@
 
         try {
             const registration = await navigator.serviceWorker.register(CONFIG.swPath, {
-                scope: '/'
+                scope: '../'
             });
 
             State.swRegistration = registration;

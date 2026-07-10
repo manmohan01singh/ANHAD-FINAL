@@ -1178,12 +1178,12 @@ body.modal-open .page {
   gap: 8px;
   transition: background-color var(--duration-fast), color var(--duration-fast), transform var(--duration-fast);
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
+  box-shadow: none;
 }
 
 .primary:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+  box-shadow: none;
 }
 
 .secondary {
@@ -1505,7 +1505,7 @@ body.modal-open .page {
     rgba(0, 122, 255, 0.06) 100%);
   border-left: 3px solid var(--ios-blue);
   padding-left: calc(var(--space-md) - 3px);
-  box-shadow: 0 0 16px rgba(0, 122, 255, 0.12);
+  box-shadow: none;
 }
 
 /* ─── CELEBRATION EVENTS (Prakash, Gurgaddi, Vaisakhi) — Ring lights effect ─── */

@@ -53,10 +53,33 @@
     document.head.appendChild(s);
   }
 
+  // ── Dual-layer transition active state tracking ──────────────────────────
+  let activeLayerIndex = 1;
+  function ensureBgLayers() {
+    let container = document.getElementById('anhadBgTransitionContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'anhadBgTransitionContainer';
+      container.className = 'anhad-bg-container';
+
+      const layer1 = document.createElement('div');
+      layer1.id = 'anhadBgLayer1';
+      layer1.className = 'anhad-bg-fade-layer';
+
+      const layer2 = document.createElement('div');
+      layer2.id = 'anhadBgLayer2';
+      layer2.className = 'anhad-bg-fade-layer';
+
+      container.appendChild(layer1);
+      container.appendChild(layer2);
+      document.body.insertBefore(container, document.body.firstChild || null);
+    }
+    return container;
+  }
+
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
-    const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     document.documentElement.setAttribute('data-time-of-day', slot);
 
     applyTimeAdaptiveCardColors(slot);
@@ -64,16 +87,53 @@
     const bgUrl = BG_IMAGES[slot];
     if (!bgUrl) return;
 
-    const current = document.documentElement.style.getPropertyValue('--dynamic-bg-url') || '';
-    if (current.includes(bgUrl)) return;
+    // Ensure transition layers exist in DOM
+    ensureBgLayers();
 
+    const layer1 = document.getElementById('anhadBgLayer1');
+    const layer2 = document.getElementById('anhadBgLayer2');
+    if (!layer1 || !layer2) return;
+
+    const layer1Url = layer1.style.backgroundImage || '';
+    const layer2Url = layer2.style.backgroundImage || '';
+
+    // First load: set image instantly on layer 1 without transition
+    if (!layer1Url && !layer2Url) {
+      layer1.style.backgroundImage = `url('${bgUrl}')`;
+      layer1.classList.add('active');
+      layer2.classList.remove('active');
+      activeLayerIndex = 1;
+      document.documentElement.style.setProperty('--dynamic-bg-url', `url('${bgUrl}')`);
+      
+      // CRITICAL FIX: Remove solid background color once image layer is active
+      // This allows the background image to show through
+      requestAnimationFrame(() => {
+        document.documentElement.style.backgroundColor = 'transparent';
+      });
+      return;
+    }
+
+    // Active/inactive layer selection
+    const activeLayer = activeLayerIndex === 1 ? layer1 : layer2;
+    const inactiveLayer = activeLayerIndex === 1 ? layer2 : layer1;
+
+    const activeUrl = activeLayer.style.backgroundImage || '';
+    if (activeUrl.includes(bgUrl)) return;
+
+    // Set background on inactive layer, then swap classes for smooth transition
+    inactiveLayer.style.backgroundImage = `url('${bgUrl}')`;
+    inactiveLayer.classList.add('active');
+    activeLayer.classList.remove('active');
+    activeLayerIndex = activeLayerIndex === 1 ? 2 : 1;
+
+    // Save for backward compatibility
     document.documentElement.style.setProperty('--dynamic-bg-url', `url('${bgUrl}')`);
     
-    // CRITICAL FIX: Remove solid background color once image is set
+    // CRITICAL FIX: Remove solid background color once image layer is active
     requestAnimationFrame(() => {
       document.documentElement.style.backgroundColor = 'transparent';
     });
-    
+
     if (document.body.style.backgroundImage && document.body.style.backgroundImage !== 'none') {
       document.body.style.backgroundImage = 'none';
       document.body.style.backgroundSize = '';
@@ -153,9 +213,9 @@
 
   // ── TIME-ADAPTIVE CARD COLORS ─────────────────────────────────────────────
   const CARD_PALETTES = {
-    morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(18,15,12,0.22)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#B84800' },
-    day: { bg: 'rgba(210,238,255,0.84)', bgGlass: 'rgba(240,250,255,0.72)', text: '#000814', text2: '#02162E', shadow: 'rgba(0,80,180,0.30)', border: 'rgba(60,140,220,0.28)', iconBg: 'rgba(180,220,255,0.70)', accent: '#0A4078' },
-    evening: { bg: 'rgba(255,210,175,0.84)', bgGlass: 'rgba(255,235,210,0.72)', text: '#140205', text2: '#38050C', shadow: 'rgba(18,15,12,0.22)', border: 'rgba(200,80,20,0.30)', iconBg: 'rgba(255,185,130,0.70)', accent: '#7A1410' },
+    morning: { bg: 'rgba(255,235,208,0.84)', bgGlass: 'rgba(255,248,238,0.72)', text: '#1A0402', text2: '#4A1508', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(230,140,60,0.30)', iconBg: 'rgba(255,215,160,0.70)', accent: '#B84800' },
+    day: { bg: 'rgba(210,238,255,0.84)', bgGlass: 'rgba(240,250,255,0.72)', text: '#000814', text2: '#02162E', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(60,140,220,0.28)', iconBg: 'rgba(180,220,255,0.70)', accent: '#0A4078' },
+    evening: { bg: 'rgba(255,210,175,0.84)', bgGlass: 'rgba(255,235,210,0.72)', text: '#140205', text2: '#38050C', shadow: 'rgba(0,0,0,0.08)', border: 'rgba(200,80,20,0.30)', iconBg: 'rgba(255,185,130,0.70)', accent: '#7A1410' },
     night: { bg: 'rgba(28,28,30,0.90)', bgGlass: 'rgba(28,28,30,0.80)', text: '#F5F5F7', text2: '#8E8E93', shadow: 'rgba(0,0,0,0.45)', border: 'rgba(255,255,255,0.12)', iconBg: 'rgba(58,58,60,0.70)', accent: '#FFD60A' },
   };
 

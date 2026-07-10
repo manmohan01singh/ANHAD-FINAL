@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="color-scheme" content="light dark">
+    <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+        }
+        
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+
+        if (document.documentElement.hasAttribute('data-anhad-home')) {
+          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
+        }
+      } catch (e) {}
+    })();
+  </script>
     <link rel="stylesheet" href="../css/mobile-lock.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -43,14 +97,14 @@
     <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
-            <div class="loading-ik">a¬¦</div>
+            <div class="loading-ik">aï¿½ï¿½</div>
             <p id="loadingText">Loading...</p>
         </div>
     </div>
 
     <!-- Error State -->
     <div class="error-state" id="errorState" style="display: none;">
-        <div class="error-icon">GÜán+Å</div>
+        <div class="error-icon">Gï¿½ï¿½n+ï¿½</div>
         <h2>Unable to Load</h2>
         <p id="errorMessage">Something went wrong</p>
         <button class="error-btn" id="retryBtn">Try Again</button>
@@ -78,7 +132,7 @@
             </a>
 
             <div class="reader-title" id="readerTitle">
-                <span class="reader-gurmukhi">a¿ºa¬üa¿¦ a¿òa¬Ç a¿¼a¿+a¿úa¬Ç a¿£a¬Ç</span>
+                <span class="reader-gurmukhi">aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½</span>
                 <span class="reader-english">Bani</span>
             </div>
 
@@ -104,10 +158,10 @@
 
         <!-- Display Toggles (Hide on scroll) -->
         <nav class="reader-toggles">
-            <button class="toggle-btn active" id="toggleGurmukhi">a¿ùa¬üa¿¦a¿«a¬üa¿ûa¬Ç</button>
+            <button class="toggle-btn active" id="toggleGurmukhi">aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½</button>
             <button class="toggle-btn" id="toggleRoman">Roman</button>
             <button class="toggle-btn" id="toggleEnglish">English</button>
-            <button class="toggle-btn" id="togglePunjabi">a¿¬a¬¦a¿£a¿+a¿¼a¬Ç</button>
+            <button class="toggle-btn" id="togglePunjabi">aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½</button>
         </nav>
 
         <!-- Progress Text -->
@@ -130,15 +184,15 @@
 
             <!-- End Card -->
             <div class="reader-end" id="readerEnd" style="display: none;">
-                <div class="end-khanda">Gÿ¼</div>
-                <h2 class="end-gurmukhi">a¿¦a¿+a¿¦a¿+a¿ùa¬üa¿¦a¬é a¿£a¬Ç a¿òa¿+ a¿ûa¿+a¿¦a¿+a¿+ a¿¦a¿+a¿¦a¿+a¿ùa¬üa¿¦a¬é a¿£a¬Ç a¿òa¬Ç a¿½a¿ña¿¦a¿+</h2>
+                <div class="end-khanda">Gï¿½ï¿½</div>
+                <h2 class="end-gurmukhi">aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½+ aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½+aï¿½+ aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½ aï¿½ï¿½aï¿½ï¿½aï¿½ï¿½aï¿½+</h2>
                 <p class="end-english">The Khalsa belongs to God, Victory belongs to God</p>
                 
                 <!-- Next Bani in My Pothi (shown only when from=pothi) -->
                 <div class="next-bani-container" id="nextBaniContainer" style="display: none;">
                     <div class="next-bani-label">Next in My Pothi</div>
                     <a href="#" class="next-bani-btn" id="nextBaniBtn">
-                        <span class="next-bani-icon" id="nextBaniIcon">Gû¦</span>
+                        <span class="next-bani-icon" id="nextBaniIcon">Gï¿½ï¿½</span>
                         <span class="next-bani-name" id="nextBaniName">Next Bani</span>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                     </a>
@@ -172,7 +226,7 @@
         </button>
 
         <div class="settings-header">
-            <h2>a¿+a¬êa¿ƒa¿+a¬¦a¿ù</h2>
+            <h2>aï¿½+aï¿½ï¿½aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½</h2>
             <span class="settings-subtitle">Reading Preferences</span>
         </div>
 
@@ -416,7 +470,7 @@
                 <div class="setting-card">
                     <!-- Preview -->
                     <div class="font-preview" id="fontPreview">
-                        <span class="font-preview-text">a¬¦ a¿+a¿ña¿+ a¿¿a¿+a¿«a¬ü</span>
+                        <span class="font-preview-text">aï¿½ï¿½ aï¿½+aï¿½ï¿½aï¿½+ aï¿½ï¿½aï¿½+aï¿½ï¿½aï¿½ï¿½</span>
                     </div>
                     <div class="setting-divider"></div>
                     <div class="setting-row">
@@ -474,7 +528,7 @@
                 <div class="setting-card">
                     <button class="setting-action" id="resetBtn">
                         <div class="action-info">
-                            <span class="action-icon">=ƒöä</span>
+                            <span class="action-icon">=ï¿½ï¿½ï¿½</span>
                             <div class="action-text">
                                 <span class="action-label">Reset Settings</span>
                                 <span class="action-desc">Restore defaults</span>
@@ -524,18 +578,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         'use strict';
         
-        console.log('G£¿ Initializing dynamic orb effects...');
+        console.log('Gï¿½ï¿½ Initializing dynamic orb effects...');
         
         const orb1 = document.querySelector('.orb-1');
         const orb2 = document.querySelector('.orb-2');
         const orb3 = document.querySelector('.orb-3');
         
         if (!orb1 || !orb2) {
-            console.warn('GÜán+Å Orbs not found in DOM');
+            console.warn('Gï¿½ï¿½n+ï¿½ Orbs not found in DOM');
             return;
         }
         
-        console.log('G£¿ Orbs found:', { orb1, orb2, orb3 });
+        console.log('Gï¿½ï¿½ Orbs found:', { orb1, orb2, orb3 });
         
         // Sacred color palettes for scroll journey - REDDISH/PINK THEME (no green)
         const darkThemeColors = [
@@ -634,7 +688,7 @@
         
         // Initial call
         updateOrbs();
-        console.log('G£¿ Orb scroll effects initialized!');
+        console.log('Gï¿½ï¿½ Orb scroll effects initialized!');
     });
     </script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->

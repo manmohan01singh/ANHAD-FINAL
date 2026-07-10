@@ -1,6 +1,6 @@
 /**
- * Image Loader with Timeout
- * Task 1.2: Load channel images asynchronously with 5-second timeout
+ * Image Loader Module for Channel Collage
+ * Handles asynchronous loading of channel display pictures with timeout and fallback support
  */
 
 /**
@@ -8,6 +8,7 @@
  * @param {string} url - Image URL
  * @param {number} timeout - Timeout in milliseconds (default 5000)
  * @returns {Promise<HTMLImageElement>} - Loaded image element
+ * @throws {Error} - If image fails to load or times out
  */
 function loadImageWithTimeout(url, timeout = 5000) {
   return new Promise((resolve, reject) => {
@@ -15,7 +16,8 @@ function loadImageWithTimeout(url, timeout = 5000) {
     img.crossOrigin = 'anonymous'; // Handle CORS
     
     const timer = setTimeout(() => {
-      reject(new Error(`Image load timeout: ${url}`));
+      img.src = ''; // Cancel the request
+      reject(new Error(`Image load timeout after ${timeout}ms: ${url}`));
     }, timeout);
     
     img.onload = () => {
@@ -23,7 +25,7 @@ function loadImageWithTimeout(url, timeout = 5000) {
       resolve(img);
     };
     
-    img.onerror = () => {
+    img.onerror = (error) => {
       clearTimeout(timer);
       reject(new Error(`Image load failed: ${url}`));
     };
@@ -33,56 +35,72 @@ function loadImageWithTimeout(url, timeout = 5000) {
 }
 
 /**
+ * ImageLoadResult interface
+ * @typedef {Object} ImageLoadResult
+ * @property {boolean} success - True if image loaded successfully
+ * @property {HTMLImageElement} [image] - Loaded image element (present if success=true)
+ * @property {Error} [error] - Error object (present if success=false)
+ * @property {HTMLCanvasElement} [fallback] - Fallback canvas (present if success=false)
+ * @property {Object} channel - Source channel object
+ * @property {number} loadTime - Time taken to load/fail in milliseconds
+ */
+
+/**
  * Loads multiple channel images in parallel
- * @param {Array<Channel>} channels - List of channel objects
- * @param {number} timeout - Timeout per image
+ * @param {Array<Channel>} channels - List of channel objects with displayPicture URLs
+ * @param {number} timeout - Timeout per image in milliseconds (default 5000)
  * @returns {Promise<Array<ImageLoadResult>>} - Results for each channel
  */
 async function loadChannelImages(channels, timeout = 5000) {
-  const promises = channels.map(async (channel) => {
+  const startTime = Date.now();
+  
+  const promises = channels.map(async (channel, index) => {
+    const channelStartTime = Date.now();
+    
     try {
       const image = await loadImageWithTimeout(channel.displayPicture, timeout);
-      return { success: true, image, channel, loadTime: Date.now() };
+      const loadTime = Date.now() - channelStartTime;
+      
+      return {
+        success: true,
+        image: image,
+        channel: channel,
+        loadTime: loadTime
+      };
     } catch (error) {
-      return { 
-        success: false, 
-        error, 
-        channel, 
-        fallback: createFallbackPlaceholder(channel) 
+      const loadTime = Date.now() - channelStartTime;
+      
+      // Create fallback placeholder for failed image
+      // Note: createFallbackPlaceholder will be defined in collage-fallback-generator.js
+      const fallback = typeof createFallbackPlaceholder === 'function' 
+        ? createFallbackPlaceholder(channel) 
+        : null;
+      
+      console.warn(`[Collage Image Loader] Failed to load image for channel ${channel.channelId}: ${error.message}`);
+      
+      return {
+        success: false,
+        error: error,
+        fallback: fallback,
+        channel: channel,
+        loadTime: loadTime
       };
     }
   });
   
-  return Promise.all(promises);
+  const results = await Promise.all(promises);
+  const totalTime = Date.now() - startTime;
+  
+  const successCount = results.filter(r => r.success).length;
+  console.log(`[Collage Image Loader] Loaded ${successCount}/${channels.length} images in ${totalTime}ms`);
+  
+  return results;
 }
 
-/**
- * Creates a fallback placeholder canvas with channel's first letter
- * @param {Channel} channel - Channel object
- * @param {number} size - Canvas size in pixels (default 116)
- * @returns {HTMLCanvasElement} - Fallback canvas
- */
-function createFallbackPlaceholder(channel, size = 116) {
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  
-  // Background (use CSS variable value)
-  const bgColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--bg-tertiary').trim() || '#E5E5EA';
-  ctx.fillStyle = bgColor;
-  ctx.fillRect(0, 0, size, size);
-  
-  // Text (first letter of channel name)
-  const firstLetter = (channel.channelName || '?')[0].toUpperCase();
-  const textColor = getComputedStyle(document.documentElement)
-    .getPropertyValue('--text-secondary').trim() || '#636366';
-  ctx.fillStyle = textColor;
-  ctx.font = `bold ${size * 0.4}px -apple-system, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(firstLetter, size / 2, size / 2);
-  
-  return canvas;
+// Export for use in other modules and tests
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    loadImageWithTimeout,
+    loadChannelImages
+  };
 }

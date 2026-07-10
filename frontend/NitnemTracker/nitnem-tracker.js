@@ -433,8 +433,12 @@ class NitnemTrackerThemeEngine {
     }
 
     _isNight() {
+        const forced = localStorage.getItem('anhad_forced_time_of_day');
+        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            return forced === 'night';
+        }
         const hour = new Date().getHours();
-        return hour < 6 || hour >= 18;
+        return hour < 5 || hour >= 20;
     }
 
     setupGlobalThemeSync() {
@@ -466,7 +470,13 @@ class NitnemTrackerThemeEngine {
         // Apply to BOTH html and body for CSS selector compatibility
         let effectiveTheme = themeName;
         if (themeName === 'auto') {
-            effectiveTheme = (new Date().getHours() >= 6 && new Date().getHours() < 18) ? 'light' : 'dark';
+            const forced = localStorage.getItem('anhad_forced_time_of_day');
+            if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+                effectiveTheme = (forced === 'night') ? 'dark' : 'light';
+            } else {
+                const hour = new Date().getHours();
+                effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            }
         }
         document.documentElement.setAttribute('data-theme', effectiveTheme);
         document.documentElement.setAttribute('data-theme-mode', themeName);
