@@ -384,6 +384,88 @@
         inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
+    /* ═══════════════════════════════════════════════════════════════
+       TIME-BASED COLOR PALETTE FOR HEADER BUTTONS (AUTO MODE)
+       ═══════════════════════════════════════════════════════════════ */
+    
+    /* DAY TIME: Light blue tint */
+    [data-theme-mode="auto"][data-time-of-day="day"] .header__left,
+    [data-theme-mode="auto"][data-time-of-day="day"] .header__right {
+      background: rgba(220, 244, 255, 0.15) !important;
+      border: 0.5px solid rgba(80, 160, 230, 0.25) !important;
+      box-shadow: 
+        0 2px 12px rgba(80, 160, 230, 0.15),
+        inset 0 1px 1px rgba(200, 230, 255, 0.2) !important;
+    }
+    
+    /* MORNING TIME: Peach/warm tint */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .header__left,
+    [data-theme-mode="auto"][data-time-of-day="morning"] .header__right {
+      background: rgba(255, 230, 220, 0.15) !important;
+      border: 0.5px solid rgba(220, 110, 80, 0.25) !important;
+      box-shadow: 
+        0 2px 12px rgba(220, 110, 80, 0.15),
+        inset 0 1px 1px rgba(255, 240, 230, 0.2) !important;
+    }
+    
+    /* EVENING TIME: Orange/sunset tint */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .header__left,
+    [data-theme-mode="auto"][data-time-of-day="evening"] .header__right {
+      background: rgba(255, 228, 198, 0.15) !important;
+      border: 0.5px solid rgba(190, 80, 30, 0.25) !important;
+      box-shadow: 
+        0 2px 12px rgba(190, 80, 30, 0.15),
+        inset 0 1px 1px rgba(255, 240, 220, 0.2) !important;
+    }
+    
+    /* NIGHT TIME: Golden/amber tint */
+    [data-theme-mode="auto"][data-time-of-day="night"] .header__left,
+    [data-theme-mode="auto"][data-time-of-day="night"] .header__right {
+      background: rgba(212, 148, 58, 0.08) !important;
+      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      box-shadow: 
+        0 2px 12px rgba(212, 148, 58, 0.12),
+        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+    }
+    
+    /* CENTER TITLE PILL TIME-BASED COLORS */
+    
+    /* DAY TIME: Light blue tint */
+    [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill {
+      background: rgba(220, 244, 255, 0.12) !important;
+      border: 0.5px solid rgba(80, 160, 230, 0.22) !important;
+      box-shadow: 
+        0 2px 12px rgba(80, 160, 230, 0.12),
+        inset 0 1px 1px rgba(200, 230, 255, 0.18) !important;
+    }
+    
+    /* MORNING TIME: Peach tint */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill {
+      background: rgba(255, 230, 220, 0.12) !important;
+      border: 0.5px solid rgba(220, 110, 80, 0.22) !important;
+      box-shadow: 
+        0 2px 12px rgba(220, 110, 80, 0.12),
+        inset 0 1px 1px rgba(255, 240, 230, 0.18) !important;
+    }
+    
+    /* EVENING TIME: Orange tint */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill {
+      background: rgba(255, 228, 198, 0.12) !important;
+      border: 0.5px solid rgba(190, 80, 30, 0.22) !important;
+      box-shadow: 
+        0 2px 12px rgba(190, 80, 30, 0.12),
+        inset 0 1px 1px rgba(255, 240, 220, 0.18) !important;
+    }
+    
+    /* NIGHT TIME: Golden tint */
+    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill {
+      background: rgba(212, 148, 58, 0.08) !important;
+      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      box-shadow: 
+        0 2px 12px rgba(212, 148, 58, 0.12),
+        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+    }
+    
     /* CENTER TITLE - SEPARATE WATERDROPLET */
     .anhad-title-pill {
       display: inline-flex !important;
@@ -437,6 +519,30 @@
       -webkit-text-fill-color: #000814 !important;
     }
     
+    /* MORNING TIME: Dark magenta/burgundy title on peach sky */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill h1.header__title,
+    [data-theme-mode="auto"][data-time-of-day="morning"] h1.header__title {
+      color: #5C0E3E !important;
+      text-shadow: 0 1px 3px rgba(255, 230, 200, 0.6) !important;
+      -webkit-text-fill-color: #5C0E3E !important;
+    }
+    
+    /* EVENING TIME: Dark orange/rust title on sunset sky */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill h1.header__title,
+    [data-theme-mode="auto"][data-time-of-day="evening"] h1.header__title {
+      color: #8B3A0E !important;
+      text-shadow: 0 1px 3px rgba(255, 228, 198, 0.6) !important;
+      -webkit-text-fill-color: #8B3A0E !important;
+    }
+    
+    /* NIGHT TIME: Soft golden title (not glowing) */
+    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill h1.header__title,
+    [data-theme-mode="auto"][data-time-of-day="night"] h1.header__title {
+      color: #D4AF37 !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+      -webkit-text-fill-color: #D4AF37 !important;
+    }
+    
     /* LIGHT MODE: Dark title for visibility */
     [data-theme-mode="light"] .anhad-title-pill h1.header__title,
     [data-theme-mode="light"] h1.header__title,
@@ -467,6 +573,30 @@
       color: #02162E !important;
       -webkit-text-fill-color: #02162E !important;
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    /* MORNING TIME: Dark magenta Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="morning"] .anhad-title-pill span.header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="morning"] span.header__title-gurmukhi {
+      color: #3A0624 !important;
+      -webkit-text-fill-color: #3A0624 !important;
+      text-shadow: 0 1px 2px rgba(255, 230, 200, 0.5) !important;
+    }
+    
+    /* EVENING TIME: Dark orange Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="evening"] .anhad-title-pill span.header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="evening"] span.header__title-gurmukhi {
+      color: #5C2408 !important;
+      -webkit-text-fill-color: #5C2408 !important;
+      text-shadow: 0 1px 2px rgba(255, 228, 198, 0.5) !important;
+    }
+    
+    /* NIGHT TIME: Soft golden Gurmukhi subtitle */
+    [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill span.header__title-gurmukhi,
+    [data-theme-mode="auto"][data-time-of-day="night"] span.header__title-gurmukhi {
+      color: #C9A84C !important;
+      -webkit-text-fill-color: #C9A84C !important;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
     }
     
     /* LIGHT MODE: Dark Gurmukhi subtitle for visibility */
