@@ -232,13 +232,20 @@
             const host = window.location.hostname;
             const port = window.location.port;
             let apiBase;
-            if (port === '3000' || port === '3001') {
-                apiBase = '';
-            } else if (host === 'localhost' || host === '127.0.0.1') {
-                apiBase = 'http://localhost:3000';
-            } else if (host.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-                apiBase = `http://${host}:3000`;
-            } else {
+            try {
+                // Capacitor app detection
+                if (window.Capacitor) {
+                    apiBase = 'https://anhad-final.onrender.com';
+                } else if (port === '3000' || port === '3001') {
+                    apiBase = '';
+                } else if (host === 'localhost' || host === '127.0.0.1') {
+                    apiBase = 'http://localhost:3000';
+                } else if (host.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+                    apiBase = `http://${host}:3000`;
+                } else {
+                    apiBase = 'https://anhad-final.onrender.com';
+                }
+            } catch (e) {
                 apiBase = 'https://anhad-final.onrender.com';
             }
 
@@ -305,8 +312,10 @@
             this.setSub('Loading Hukamnama...');
 
             const urls = this.getUrls();
+            console.log('[HukamPlayer] Starting audio with URLs:', urls);
             for (const url of urls) {
                 try {
+                    console.log('[HukamPlayer] Attempting URL:', url);
                     this.audio.src = url;
                     this.audio.load();
                     await new Promise((resolve, reject) => {
@@ -321,10 +330,11 @@
                         setTimeout(() => { cleanup(); reject(); }, 8000);
                     });
                     await this.audio.play();
+                    console.log('[HukamPlayer] ✅ Success with URL:', url);
                     this.setSub('Sachkhand Sri Harmandir Sahib');
                     return; // ✅ Success
                 } catch {
-                    console.warn('[HukamPlayer] URL failed, trying next:', url);
+                    console.warn('[HukamPlayer] ❌ URL failed, trying next:', url);
                 }
             }
 
