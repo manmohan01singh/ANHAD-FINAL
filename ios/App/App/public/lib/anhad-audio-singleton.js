@@ -1064,7 +1064,19 @@
               }
             }, fadeMs / steps);
           })
-          .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; emit('statechange', getPublicState()); });
+          .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; isPlayLocked = false; if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; } emit('statechange', getPublicState());
+            // Retry on next user interaction (same pattern as live stream)
+            var _streamName = streamName;
+            var _retryPlaylist = function() {
+              document.removeEventListener('click', _retryPlaylist, { capture: true });
+              document.removeEventListener('touchend', _retryPlaylist, { capture: true });
+              if (window.AnhadAudio && currentStream === _streamName) {
+                window.AnhadAudio.play(_streamName);
+              }
+            };
+            document.addEventListener('click', _retryPlaylist, { once: true, capture: true });
+            document.addEventListener('touchend', _retryPlaylist, { once: true, capture: true });
+          });
         return;
       }
 
@@ -1348,20 +1360,19 @@
           isPlayLocked = false;
           if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
           
-          // Emit error event with user-friendly message
-          emit('error', { 
-            message: 'Tap the play button to start audio',
-            code: 'AUTOPLAY_BLOCKED'
-          });
           emit('statechange', getPublicState());
           
-          // For live streams, show a user-friendly notification
-          window.dispatchEvent(new CustomEvent('anhadAutoplayBlocked', {
-            detail: {
-              stream: streamName,
-              message: 'Please tap the play button to start audio playback'
+          // Retry on next user interaction
+          const retryPlay = function() {
+            document.removeEventListener('click', retryPlay, { capture: true });
+            document.removeEventListener('touchend', retryPlay, { capture: true });
+            if (currentStream === streamName) {
+              audio.src = freshUrl;
+              audio.play().catch(function(){});
             }
-          }));
+          };
+          document.addEventListener('click', retryPlay, { once: true, capture: true });
+          document.addEventListener('touchend', retryPlay, { once: true, capture: true });
         }
 
       } else if (stream.type === 'playlist') {

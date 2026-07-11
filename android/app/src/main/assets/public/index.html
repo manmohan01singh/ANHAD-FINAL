@@ -304,6 +304,8 @@
   <link rel="preload" href="nitnem/g-fonts/pg_serif_s.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- PRELOAD: Audio engine (97KB) — fetch early so it's cached before first tap -->
+  <link rel="preload" href="lib/anhad-audio-singleton.js?v=2.2.0" as="script">
   <!-- CRITICAL FONTS: Inter + Noto Sans Gurmukhi (used in all text) -->
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet"></noscript>
@@ -338,7 +340,7 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      padding: 0 16px !important;
+      padding: 0 12px !important;
       gap: 0 !important;
       position: relative;
       min-height: 52px;
@@ -2896,7 +2898,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important; opacity: 0; transition: opacity 0.3s ease-in-out;">
+    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
@@ -2904,11 +2906,11 @@
       <div class="event-card__main">
         <div class="event-card__info">
           <div class="event-card__eyebrow">UPCOMING EVENT</div>
-          <div class="event-card__title" id="eventTitle"></div>
-          <div class="event-card__date" id="eventDate"></div>
+          <div class="event-card__title skeleton" id="eventTitle">Loading...</div>
+          <div class="event-card__date skeleton" id="eventDate">—</div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown" id="eventCountdown"></div>
-            <div class="event-card__countdown-label" id="eventCountdownLabel"></div>
+            <div class="event-card__countdown skeleton" id="eventCountdown">--</div>
+            <div class="event-card__countdown-label skeleton" id="eventCountdownLabel">days</div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
             Learn More
@@ -2916,11 +2918,11 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="lazy" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
+          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
         </div>
       </div>
       <div class="event-card__days-badge">
-        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
+        <span id="eventCountdownBadgeValue">--</span> <span id="eventCountdownBadgeLabel">days left</span>
       </div>
     </article>
 
@@ -3159,8 +3161,11 @@
   <script src="pwa-register.js?v=4.0.4" defer></script>
   <script src="js/update-controller.js" defer></script>
 
-  <!-- DEMAND LOAD: Audio engine (97KB) — loads ONLY on first play interaction.
-       This removes the single largest parse task from the startup critical path. -->
+  <!-- LAZY→IDLE LOAD: Audio engine (97KB) — preloaded via <head> link, fetched during
+       idle time so it's ready before the user's first tap. The actual play() call
+       then executes within the user gesture context (autoplay policy satisfied).
+       pointerdown triggers remain as a fast-path fallback for early tappers.
+       Retry-on-next-click in anhad-audio-singleton.js is the last-resort safety net. -->
   <script>
     (function() {
       var _audioLoaded = false;
@@ -3172,14 +3177,14 @@
       window.addEventListener('anhadPlayStream', function(e) {
         if (!_audioLoaded && e.detail && e.detail.stream) {
           window._anhadAudioQueue.push({ type: 'play', stream: e.detail.stream });
-          loadAudioEngine();
+          if (!_audioLoading) loadAudioEngine();
         }
       });
 
       function loadAudioEngine() {
         if (_audioLoaded || _audioLoading) return;
         _audioLoading = true;
-        console.log('[AnhadAudio] Demand-loading audio singleton...');
+        console.log('[AnhadAudio] Loading audio singleton...');
         var s = document.createElement('script');
         s.src = 'lib/anhad-audio-singleton.js?v=2.2.0';
         s.onload = function() {
@@ -3189,7 +3194,7 @@
           // Expose loaded status and fire ready event
           window.dispatchEvent(new Event('anhad_audio_ready'));
           
-          // Drain any queued actions
+          // Drain any queued actions that arrived before idle-load completed
           var q = window._anhadAudioQueue || [];
           window._anhadAudioQueue = [];
           q.forEach(function(action) {
@@ -3237,29 +3242,34 @@
       window.AnhadAudioLoadEngine = loadAudioEngine;
       window.AnhadAudioUnlockElement = unlockAudioElement;
 
-      // CAPACITOR FIX: Pre-load audio engine and unlock audio context immediately.
-      // On Capacitor, lazy-loading the engine causes the play() call to happen
-      // outside the user gesture context, resulting in autoplay blocking.
+      // CAPACITOR: Pre-load engine and unlock immediately (no gesture available).
       if (window.Capacitor) {
         loadAudioEngine();
-        // Also pre-unlock with a silent audio element
         unlockAudioElement('darbar');
+      } else {
+        // IDLE-LOAD: Fetch + parse the engine during browser idle so it's ready
+        // before the user taps play. The <link rel="preload"> in <head> already
+        // started the download — this injects the <script> to execute it.
+        function startIdleLoad() {
+          if (!_audioLoaded && !_audioLoading) loadAudioEngine();
+        }
+        if (typeof requestIdleCallback === 'function') {
+          requestIdleCallback(startIdleLoad, { timeout: 3000 });
+        } else {
+          setTimeout(startIdleLoad, 2000);
+        }
       }
 
-      // Trigger demand-load on first interaction with any audio control or page play action
+      // POINTERDOWN FALLBACK: For users who tap before idle-load completes,
+      // these handlers start the load immediately on interaction.
       function bindAudioTriggers() {
-        // Bind to hero play buttons by ID
         ['heroPlayBtn1', 'heroPlayBtn2', 'heroPlayBtn3', 'heroPlayBtn4'].forEach(function(id) {
           var el = document.getElementById(id);
           if (el) el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
         });
-        
-        // Bind to all elements with data-action="play"
         document.querySelectorAll('[data-action="play"]').forEach(function(el) {
           el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
         });
-
-        // Also trigger on any live-badge click
         document.querySelectorAll('.hero-card__badge--live, .hero-card__badge--dlive').forEach(function(el) {
           el.addEventListener('pointerdown', loadAudioEngine, { once: true, passive: true });
         });

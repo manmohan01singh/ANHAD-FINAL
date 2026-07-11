@@ -436,7 +436,8 @@
     // Clear inline body styles to prevent leakage from any module
     // NOTE: Do NOT clear backgroundImage — anhad-sky-bg.js owns it.
     // Clearing it causes a 1-2 frame dark flash on every navigation.
-    document.body.style.backgroundColor = '';
+    // PRE-FLASH FIX: Keep background color stable during content swap
+    const prevBgColor = document.body.style.backgroundColor;
     document.body.style.overflow = '';
     document.body.style.minHeight = '';
     document.body.style.color = '';
@@ -466,6 +467,12 @@
     // This prevents the Flash Of Unstyled Content (FOUC) seen on SPA navigation
     await syncHeadAssets(newDoc, url);
     
+    // ── PRE-FLASH: Apply theme background before any DOM change ──────────
+    // Ensures <html> background is set so no white flash appears during swap
+    const htmlEl = document.documentElement;
+    const currentTheme = htmlEl.getAttribute('data-theme') || 'light';
+    htmlEl.style.backgroundColor = currentTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
+
     // ── SWAP CONTENT — with DOM Node Cache ────────────────────────────────
     // CRITICAL FLASH FIX: For shell pages (Home, Insights, Favorites, Dashboard),
     // we store the live DOM node tree in DOM_CACHE after first visit.

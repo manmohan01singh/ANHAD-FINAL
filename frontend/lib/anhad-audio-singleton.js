@@ -1064,7 +1064,19 @@
               }
             }, fadeMs / steps);
           })
-          .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; emit('statechange', getPublicState()); });
+          .catch(e => { console.warn('[AnhadAudio] ❌ Play failed:', e.message); isPlaying = false; isLoading = false; isPlayLocked = false; if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; } emit('statechange', getPublicState());
+            // Retry on next user interaction (same pattern as live stream)
+            var _streamName = streamName;
+            var _retryPlaylist = function() {
+              document.removeEventListener('click', _retryPlaylist, { capture: true });
+              document.removeEventListener('touchend', _retryPlaylist, { capture: true });
+              if (window.AnhadAudio && currentStream === _streamName) {
+                window.AnhadAudio.play(_streamName);
+              }
+            };
+            document.addEventListener('click', _retryPlaylist, { once: true, capture: true });
+            document.addEventListener('touchend', _retryPlaylist, { once: true, capture: true });
+          });
         return;
       }
 

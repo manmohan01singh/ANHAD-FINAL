@@ -80,7 +80,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ═══════════════════════════════════════════════════════════════
@@ -188,21 +188,15 @@
       box-sizing: border-box; margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
       font-family: var(--font-main);
-      /* NUCLEAR OPTION: Remove all shadows, gradients, masks */
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
+      /* Remove masks only on YouTube embeds to prevent rendering issues */
     }
-    /* Additional brute force for specific elements */
-    div, section, main, article, aside, nav, header, footer {
+    iframe, .ytp-* {
       -webkit-mask-image: none !important;
       mask-image: none !important;
     }
     html {
       background: var(--bg-primary);
       box-shadow: none !important;
-      /* Kill all possible bottom fades */
-      -webkit-mask-image: none !important;
-      mask-image: none !important;
     }
     html::before,
     html::after {
@@ -1248,6 +1242,7 @@
       background: var(--text-tertiary);
       cursor: pointer;
       transition: all 0.3s var(--ease-out);
+      flex-shrink: 0;
     }
     .carousel-dot.active {
       width: 18px; border-radius: 3px;
@@ -3074,7 +3069,7 @@
       max-width: 580px;
       height: var(--bottom-nav-height);
       padding: 0 8px;
-      background: rgba(255, 255, 255, 0.85);
+      background: var(--bg-glass-strong);
       backdrop-filter: blur(40px) saturate(180%);
       -webkit-backdrop-filter: blur(40px) saturate(180%);
       border: 0.5px solid var(--separator);
@@ -3089,7 +3084,7 @@
     }
     
     [data-theme="dark"] .bottom-nav {
-      background: rgba(28, 28, 30, 0.85);
+      background: var(--bg-glass-strong);
       box-shadow: none;
     }
     
@@ -3470,13 +3465,14 @@
       backdrop-filter: blur(30px) saturate(200%);
       -webkit-backdrop-filter: blur(30px) saturate(200%);
       z-index: 500;
-      display: none;
+      display: flex;
+      visibility: hidden;
       flex-direction: column;
       opacity: 0;
-      transition: opacity 0.25s var(--ease-out), backdrop-filter 0.25s var(--ease-out);
+      transition: opacity 0.25s var(--ease-out), visibility 0.25s var(--ease-out), backdrop-filter 0.25s var(--ease-out);
     }
     .search-overlay-backdrop.visible {
-      display: flex;
+      visibility: visible;
       opacity: 1;
     }
     .search-bar-header {
@@ -3572,7 +3568,7 @@
       padding: 10px 12px;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text);
+      color: var(--text-primary);
       cursor: pointer;
       border-radius: 8px;
       transition: background 0.2s;
@@ -5719,7 +5715,7 @@
           <line x1="11" y1="15" x2="13" y2="15" stroke="white"/>
         </svg>`;
       } else {
-        bgPlayBtn.style.color = 'var(--text)';
+        bgPlayBtn.style.color = 'var(--text-primary)';
         bgPlayBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <rect x="2" y="4" width="16" height="16" rx="2"/>
           <line x1="2" y1="10" x2="18" y2="10"/>
@@ -7573,7 +7569,7 @@
     function updateCarouselPosition(track, length) {
       if (!track) return;
       track.style.transform = `translateX(-${(currentSlideIndex * 100) / length}%)`;
-      const dots = track.parentElement.querySelectorAll('.carousel-dot');
+      const dots = document.querySelectorAll('#carouselDotsCentered .carousel-dot');
       dots.forEach((d, idx) => {
         if (idx === currentSlideIndex) d.classList.add('active');
         else d.classList.remove('active');

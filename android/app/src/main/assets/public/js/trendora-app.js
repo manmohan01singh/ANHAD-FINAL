@@ -813,6 +813,16 @@
       if (!card) return;
       card.style.display = '';
 
+      // Remove skeleton placeholders from all populated elements
+      if (titleEl) titleEl.classList.remove('skeleton');
+      if (dateEl) dateEl.classList.remove('skeleton');
+      if (countEl) countEl.classList.remove('skeleton');
+      if (labelEl) labelEl.classList.remove('skeleton');
+      const badgeValueEl = document.getElementById('eventCountdownBadgeValue');
+      const badgeLabelEl = document.getElementById('eventCountdownBadgeLabel');
+      if (badgeValueEl) badgeValueEl.classList.remove('skeleton');
+      if (badgeLabelEl) badgeLabelEl.classList.remove('skeleton');
+
       const events = data.events;
       let currentIndex = 0;
 
@@ -938,31 +948,35 @@
     },
 
     async updateEventCard() {
-      // 1. Synchronously render cached event if available
+      // 1. Synchronously render cached event if available — removes skeleton
       try {
         const cached = localStorage.getItem('anhad_cached_upcoming_gurpurab');
         if (cached) {
           const parsed = JSON.parse(cached);
           this._renderEventData(parsed);
+          // Check freshness: silently re-fetch in background
+          const card = document.getElementById('eventCard');
+          if (card) card.dataset.cacheRendered = 'true';
         }
       } catch (e) {
         console.warn('[EventCard] Failed to parse cached event on init:', e);
       }
 
-      // 2. Fetch fresh data asynchronously
+      // 2. Fetch fresh data asynchronously (background refresh)
       try {
         const data = await DataManager.getNextGurpurab();
         if (data) {
           localStorage.setItem('anhad_cached_upcoming_gurpurab', JSON.stringify(data));
           this._renderEventData(data);
         } else {
+          // Only hide if no cached content was rendered
           const card = document.getElementById('eventCard');
-          if (card) card.style.display = 'none';
+          if (card && !card.dataset.cacheRendered) card.style.display = 'none';
         }
       } catch (error) {
         console.error('[EventCard] Error loading event data:', error);
         const card = document.getElementById('eventCard');
-        if (card) card.style.display = 'none';
+        if (card && !card.dataset.cacheRendered) card.style.display = 'none';
       }
     },
 
@@ -2114,13 +2128,13 @@
         () => UIController.updateHeroCardImages(),
         () => UIController.updateNitnemCard(),
         () => UIController.updateSehajCard(),
-        () => UIController.updateHukamCard()
+        () => UIController.updateHukamCard(),
+        () => UIController.updateEventCard()
       ];
 
       const deferredUpdates = [
         () => UIController.updateNaamCard(),
         () => UIController.updateNotificationBadge(),
-        () => UIController.updateEventCard(),
         () => UIController.updateNanakshahiDate(),
         () => UIController.updateNotesCard(),
         () => UIController.updateNitnemQuickAccess()
