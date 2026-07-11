@@ -315,26 +315,15 @@
             console.log('[HukamPlayer] Starting audio with URLs:', urls);
             for (const url of urls) {
                 try {
-                    console.log('[HukamPlayer] Attempting URL:', url);
+                    console.log('[HukamPlayer] Attempting URL synchronously:', url);
                     this.audio.src = url;
-                    this.audio.load();
-                    await new Promise((resolve, reject) => {
-                        const ok = () => { cleanup(); resolve(); };
-                        const fail = () => { cleanup(); reject(); };
-                        const cleanup = () => {
-                            this.audio.removeEventListener('canplay', ok);
-                            this.audio.removeEventListener('error', fail);
-                        };
-                        this.audio.addEventListener('canplay', ok, { once: true });
-                        this.audio.addEventListener('error', fail, { once: true });
-                        setTimeout(() => { cleanup(); reject(); }, 8000);
-                    });
+                    // Play synchronously inside user gesture context
                     await this.audio.play();
                     console.log('[HukamPlayer] ✅ Success with URL:', url);
                     this.setSub('Sachkhand Sri Harmandir Sahib');
                     return; // ✅ Success
-                } catch {
-                    console.warn('[HukamPlayer] ❌ URL failed, trying next:', url);
+                } catch (e) {
+                    console.warn('[HukamPlayer] ❌ URL failed, trying next:', url, e.message);
                 }
             }
 

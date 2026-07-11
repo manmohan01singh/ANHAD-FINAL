@@ -223,6 +223,10 @@
     }
     .carousel-track, .drawer, .player-sheet, .ios-action-sheet {
       will-change: transform;
+      /* Performance boost: GPU acceleration */
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000px;
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -1826,10 +1830,15 @@
       z-index: 999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out);
+      /* PERFORMANCE: Reduced transition time and blur for faster rendering */
+      transition: opacity 0.3s var(--ease-out), backdrop-filter 0.3s var(--ease-out);
       display: none;
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      /* PERFORMANCE: Reduced blur from 16px to 8px for smoother animations */
+      backdrop-filter: blur(8px) saturate(120%);
+      -webkit-backdrop-filter: blur(8px) saturate(120%);
+      /* GPU acceleration */
+      transform: translateZ(0);
+      will-change: opacity;
     }
     .player-sheet-backdrop.visible {
       display: block;
@@ -1841,37 +1850,48 @@
       position: fixed;
       bottom: 0;
       left: 50%;
-      transform: translateX(-50%) translateY(100%);
+      transform: translateX(-50%) translateY(100%) translateZ(0);
       width: 100%;
       max-width: 600px;
       height: 100dvh;
       background: var(--bg-glass-strong);
-      backdrop-filter: blur(40px) saturate(220%);
-      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      /* PERFORMANCE: Reduced blur from 40px to 20px for smoother animations */
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       z-index: 1500;
       display: flex;
       flex-direction: column;
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      /* PERFORMANCE: Faster transition with reduced spring effect */
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       box-shadow: 0 -20px 60px rgba(0,0,0,0.35), 0 -4px 16px rgba(0,0,0,0.15);
       border-radius: 24px 24px 0 0;
       border-top: 0.5px solid var(--separator);
+      /* GPU acceleration for smoother animations */
+      will-change: transform;
+      backface-visibility: hidden;
+      perspective: 1000px;
+      /* Optimize compositing */
+      contain: layout style paint;
     }
     .player-sheet.open {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%) translateY(0) translateZ(0);
       z-index: 2500 !important;
     }
-    /* Premium grain texture overlay on player */
+    /* Premium grain texture overlay on player - PERFORMANCE: Reduced opacity for lighter rendering */
     .player-sheet::after {
       content: '';
       position: absolute;
       inset: 0;
-      opacity: 0.015;
+      /* PERFORMANCE: Reduced opacity from 0.015 to 0.008 for lighter rendering */
+      opacity: 0.008;
       pointer-events: none;
       z-index: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-repeat: repeat;
       background-size: 200px 200px;
+      /* GPU acceleration */
+      transform: translateZ(0);
     }
 
     /* Drag Handle Header — refined glass */
@@ -1930,17 +1950,22 @@
 
     /* ═══════════════════════════════════════════════════════════════
        AMBIENT GLOW — Dynamic color from video, YouTube-style
+       PERFORMANCE: Simplified for faster rendering
        ═══════════════════════════════════════════════════════════════ */
     .player-sheet::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 55%;
-      background: radial-gradient(ellipse 90% 70% at 50% 0%, var(--ambient-color, rgba(255,179,0,0.18)) 0%, transparent 70%);
+      background: radial-gradient(ellipse 90% 70% at 50% 0%, var(--ambient-color, rgba(255,179,0,0.12)) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      /* PERFORMANCE: Faster transition from 1.2s to 0.6s */
+      transition: opacity 0.6s ease;
+      /* GPU acceleration */
+      transform: translateZ(0);
+      will-change: opacity;
     }
     .player-sheet.open::before { opacity: 1; }
     .player-sheet.minimized::before { opacity: 0 !important; }
@@ -1949,17 +1974,23 @@
       position: absolute;
       top: 0;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(0);
       width: 200%;
       height: 120%;
       pointer-events: none;
       z-index: 1;
       opacity: 0;
-      transition: opacity 1.5s ease;
+      /* PERFORMANCE: Faster transition from 1.5s to 0.7s */
+      transition: opacity 0.7s ease;
       overflow: hidden;
-      filter: blur(60px);
+      /* PERFORMANCE: Reduced blur from 60px to 30px for smoother rendering */
+      filter: blur(30px);
+      /* GPU acceleration */
+      will-change: opacity;
+      backface-visibility: hidden;
     }
-    .player-sheet.open .ambient-glow-layer { opacity: 0.7; }
+    /* PERFORMANCE: Reduced opacity from 0.7 to 0.5 for lighter effect */
+    .player-sheet.open .ambient-glow-layer { opacity: 0.5; }
     .player-sheet.minimized .ambient-glow-layer { display: none !important; }
 
     .ambient-glow-layer::before {
@@ -8108,61 +8139,81 @@
 
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
-      State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      // PERFORMANCE: Use requestAnimationFrame to batch DOM updates
+      requestAnimationFrame(() => {
+        State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
 
-      // ── SAVE TO REAL WATCH HISTORY ──
-      saveToWatchHistory({
-        videoId, title, channelName, channelThumbnail, isLive,
-        duration: isLive ? 'LIVE' : '--:--',
-        progress: '0%',
-        watchedAt: Date.now()
+        // ── SAVE TO REAL WATCH HISTORY ──
+        saveToWatchHistory({
+          videoId, title, channelName, channelThumbnail, isLive,
+          duration: isLive ? 'LIVE' : '--:--',
+          progress: '0%',
+          watchedAt: Date.now()
+        });
+        
+        // PERFORMANCE: Batch text content updates
+        const playerSheet = $('playerSheet');
+        const playerBackdrop = $('playerBackdrop');
+        
+        $('playerDetailTitle').textContent = title;
+        $('playerMiniTitle').textContent = title;
+        $('playerDetailChannel').textContent = channelName;
+        $('playerMiniChannel').textContent = channelName;
+        
+        const avatarSrc = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
+        $('playerChannelAvatar').src = avatarSrc;
+        $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
+        
+        // PERFORMANCE: Defer heavy ambient color extraction to not block opening
+        requestIdleCallback(() => {
+          extractAmbientColor(videoId);
+        }, { timeout: 1000 });
+        
+        $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
+
+        const channel = State.myChannels.find(c => c.channelName === channelName);
+        updateSubscribeBtnState(channel);
+
+        // Scrubber visual layouts
+        if (isLive) {
+          $('playerProgressBar').style.display = 'none';
+          $('playerLiveBadgeRow').style.display = 'flex';
+          $('playerVideoViewsRow').textContent = 'Streaming Live';
+        } else {
+          $('playerProgressBar').style.display = 'block';
+          $('playerLiveBadgeRow').style.display = 'none';
+          $('playerVideoViewsRow').textContent = 'Video Playback';
+        }
+
+        // PERFORMANCE: Open layout with proper display then animate
+        playerSheet.style.display = 'block';
+        playerBackdrop.style.display = 'block';
+        
+        // Force reflow before animation
+        playerSheet.offsetHeight;
+        
+        requestAnimationFrame(() => {
+          playerBackdrop.classList.add('visible');
+          playerSheet.className = 'player-sheet open';
+          document.body.classList.add('mini-player-active');
+        });
+
+        State.likeState = false;
+        $('playerLikeBtn').style.color = 'var(--text-primary)';
+        $('playerLikeText').textContent = 'Like';
+
+        // Load YouTube Player
+        loadYtIframePlayer(videoId);
+        if (bgPlayEnabled) {
+          setupNativeAudioCommandListener();
+          startNativeAudioService();
+        }
+        haptic('medium');
+        
+        window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
+          detail: { title, channelName }
+        }));
       });
-      
-      $('playerDetailTitle').textContent = title;
-      $('playerMiniTitle').textContent = title;
-      $('playerDetailChannel').textContent = channelName;
-      $('playerMiniChannel').textContent = channelName;
-      
-      const avatarSrc = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
-      $('playerChannelAvatar').src = avatarSrc;
-      $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
-      extractAmbientColor(videoId);
-      $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
-
-      const channel = State.myChannels.find(c => c.channelName === channelName);
-      updateSubscribeBtnState(channel);
-
-      // Scrubber visual layouts
-      if (isLive) {
-        $('playerProgressBar').style.display = 'none';
-        $('playerLiveBadgeRow').style.display = 'flex';
-        $('playerVideoViewsRow').textContent = 'Streaming Live';
-      } else {
-        $('playerProgressBar').style.display = 'block';
-        $('playerLiveBadgeRow').style.display = 'none';
-        $('playerVideoViewsRow').textContent = 'Video Playback';
-      }
-
-      // Open layout
-      $('playerBackdrop').classList.add('visible');
-      $('playerSheet').className = 'player-sheet open';
-      document.body.classList.add('mini-player-active');
-
-      State.likeState = false;
-      $('playerLikeBtn').style.color = 'var(--text-primary)';
-      $('playerLikeText').textContent = 'Like';
-
-      // Load YouTube Player
-      loadYtIframePlayer(videoId);
-      if (bgPlayEnabled) {
-        setupNativeAudioCommandListener();
-        startNativeAudioService();
-      }
-      haptic('medium');
-      
-      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
-        detail: { title, channelName }
-      }));
     }
 
     function updateSubscribeBtnState(channel) {
@@ -8442,47 +8493,68 @@
     });
 
     function stopAndClosePlayer() {
-      if (ytPlayer && ytPlayer.stopVideo) {
-        try { ytPlayer.stopVideo(); } catch(e) {}
-      }
-      if (progressInterval) clearInterval(progressInterval);
-      stopBackgroundKeepAlive();
-      stopNativeAudioService();
+      // PERFORMANCE: Use requestAnimationFrame for smooth closing animation
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
       
-      $('playerBackdrop').classList.remove('visible');
-      $('playerSheet').className = 'player-sheet';
-      $('playerSheet').style.display = 'none';
-      $('playerBackdrop').style.display = 'none';
-      document.body.classList.remove('mini-player-active');
-      $('playerSheet').style.removeProperty('--ambient-color');
-      $('playerSheet').style.removeProperty('--ambient-color-secondary');
-      
-      // Release wake lock
-      if (window.wakeLock !== null) {
-        window.wakeLock.release().then(() => {
-          console.log('Wake lock released');
-          window.wakeLock = null;
-        }).catch(err => {
-          console.error('Wake lock release error:', err);
-        });
-      }
-      
-      window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
+      // Start close animation
+      requestAnimationFrame(() => {
+        playerBackdrop.classList.remove('visible');
+        playerSheet.className = 'player-sheet';
+        document.body.classList.remove('mini-player-active');
+        
+        // PERFORMANCE: Wait for animation to complete before cleanup
+        setTimeout(() => {
+          playerSheet.style.display = 'none';
+          playerBackdrop.style.display = 'none';
+          
+          // Cleanup after animation completes
+          if (ytPlayer && ytPlayer.stopVideo) {
+            try { ytPlayer.stopVideo(); } catch(e) {}
+          }
+          if (progressInterval) clearInterval(progressInterval);
+          stopBackgroundKeepAlive();
+          stopNativeAudioService();
+          
+          playerSheet.style.removeProperty('--ambient-color');
+          playerSheet.style.removeProperty('--ambient-color-secondary');
+          
+          // Release wake lock
+          if (window.wakeLock !== null) {
+            window.wakeLock.release().then(() => {
+              console.log('Wake lock released');
+              window.wakeLock = null;
+            }).catch(err => {
+              console.error('Wake lock release error:', err);
+            });
+          }
+          
+          window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
+        }, 300); // Match transition duration
+      });
     }
 
     function minimizePlayer() {
-      $('playerSheet').className = 'player-sheet minimized';
-      $('playerBackdrop').classList.remove('visible');
-      setTimeout(() => {
-        $('playerBackdrop').style.display = 'none';
-      }, 200);
+      // PERFORMANCE: Use requestAnimationFrame for smooth minimize
+      requestAnimationFrame(() => {
+        $('playerSheet').className = 'player-sheet minimized';
+        $('playerBackdrop').classList.remove('visible');
+        setTimeout(() => {
+          $('playerBackdrop').style.display = 'none';
+        }, 250);
+      });
     }
     function expandPlayer() {
-      $('playerSheet').className = 'player-sheet open';
-      $('playerBackdrop').style.display = 'block';
-      setTimeout(() => {
-        $('playerBackdrop').classList.add('visible');
-      }, 50);
+      // PERFORMANCE: Use requestAnimationFrame for smooth expand
+      const playerBackdrop = $('playerBackdrop');
+      playerBackdrop.style.display = 'block';
+      
+      requestAnimationFrame(() => {
+        $('playerSheet').className = 'player-sheet open';
+        requestAnimationFrame(() => {
+          playerBackdrop.classList.add('visible');
+        });
+      });
     }
 
     $('playerCloseBtn').addEventListener('click', (e) => {

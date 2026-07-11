@@ -3199,8 +3199,39 @@
         document.head.appendChild(s);
       }
 
+      function unlockAudioElement(stream) {
+        var audioEl = null;
+        if (window.__anhadPreloadedAudio && window.__anhadPreloadedAudio.audio) {
+          audioEl = window.__anhadPreloadedAudio.audio;
+        } else {
+          audioEl = new Audio();
+          window.__anhadPreloadedAudio = {
+            audio: audioEl,
+            stream: stream || 'darbar',
+            timestamp: Date.now()
+          };
+        }
+        
+        // If it doesn't have a source, set a tiny silent wav to guarantee successful play
+        if (!audioEl.src || audioEl.src === window.location.href) {
+          audioEl.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAAA";
+        }
+        
+        try {
+          var p = audioEl.play();
+          if (p !== undefined) {
+            p.catch(function(e) {
+              console.log('[AnhadAudio] Synchronous unlock catch:', e.message);
+            });
+          }
+        } catch (e) {
+          console.warn('[AnhadAudio] Synchronous unlock failed:', e);
+        }
+      }
+
       // Expose globally for sub-pages or external scripts
       window.AnhadAudioLoadEngine = loadAudioEngine;
+      window.AnhadAudioUnlockElement = unlockAudioElement;
 
       // Trigger demand-load on first interaction with any audio control or page play action
       function bindAudioTriggers() {
@@ -3510,6 +3541,9 @@
               }
             } else {
               console.log('[Homepage] Audio engine not loaded yet, queuing play for badge:', stream);
+              if (window.AnhadAudioUnlockElement) {
+                window.AnhadAudioUnlockElement(stream);
+              }
               if (window._anhadAudioQueue) {
                 window._anhadAudioQueue.push({ type: 'play', stream: stream });
               }
@@ -3539,6 +3573,9 @@
               }
             } else {
               console.log('[Homepage] Audio engine not loaded yet, queuing play for button:', stream);
+              if (window.AnhadAudioUnlockElement) {
+                window.AnhadAudioUnlockElement(stream);
+              }
               if (window._anhadAudioQueue) {
                 window._anhadAudioQueue.push({ type: 'play', stream: stream });
               }
