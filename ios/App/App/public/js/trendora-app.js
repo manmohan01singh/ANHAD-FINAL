@@ -1686,8 +1686,7 @@
           if (stream === 'hukamnama') {
             const card = btn.closest('.hero-card');
             const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
-            if (window.navigateTo) window.navigateTo(href);
-            else window.location.href = href;
+            window.location.href = href;
             return;
           }
 

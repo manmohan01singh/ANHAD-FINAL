@@ -5459,10 +5459,13 @@
 
     // Generate a reliable avatar URL from any channel data
     function getChannelAvatarUrl(ch) {
+      // Try the backend-provided thumbnail first
       if (ch.thumbnail && ch.thumbnail !== 'undefined' && ch.thumbnail !== 'null' && !ch.thumbnail.includes('_custom') && !ch.thumbnail.startsWith('//yt3')) {
+        // Handle relative protocol URLs
         if (ch.thumbnail.startsWith('//')) return 'https:' + ch.thumbnail;
         return ch.thumbnail;
       }
+      // If no valid thumbnail, use ui-avatars.com with channel name
       return `https://ui-avatars.com/api/?name=${encodeURIComponent(ch.channelName || '?')}&background=FFB300&color=1C1008&size=88&bold=true&font-size=0.35`;
     }
 
@@ -8358,6 +8361,7 @@
         $('playerVideoViewsRow').textContent = 'Video Playback';
       }
 
+      // Open in a single frame — no forced reflow, no nested rAF
       playerSheet.style.display = 'block';
       playerBackdrop.style.display = 'block';
       playerSheet.className = 'player-sheet open';
@@ -8498,6 +8502,7 @@
           });
           window.__anhadYtPlayer = ytPlayer;
         };
+        // If YT API loaded, invoke callback now; else load dynamically
         if (window.YT && window.YT.Player) {
           window.onYouTubeIframeAPIReady();
         } else {

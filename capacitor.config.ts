@@ -20,7 +20,7 @@ const config: CapacitorConfig = {
         // Enable WebView debugging during development ONLY
         webContentsDebuggingEnabled: false,
         // Background audio config
-        backgroundColor: '#000000'
+        backgroundColor: '#020205'
     },
 
     // Plugin configurations
@@ -42,9 +42,9 @@ const config: CapacitorConfig = {
 
         // Splash screen configuration
         SplashScreen: {
-            launchShowDuration: 0,
+            launchShowDuration: 2000,
             launchAutoHide: true,
-            backgroundColor: '#000000',
+            backgroundColor: '#020205',
             showSpinner: true,
             spinnerColor: '#f7c634',
             androidSpinnerStyle: 'small',

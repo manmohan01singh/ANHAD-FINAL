@@ -196,12 +196,11 @@
             const sgpcDateUrl = `https://www.sgpc.net/hukamnama/${y}/${m}/${day}/hukamnama.mp3`;
 
             const urls = [
-                `${apiBase}/api/hukamnama/audio`,  // ✅ Backend proxy (primary)
+                `${apiBase}/api/hukamnama/audio`,
                 sgpcDateUrl,
                 `https://www.sgpc.net/hukamnama/hukamnama.mp3`,
             ];
 
-            // Capacitor: add CORS proxy fallback for SGPC URLs
             if (isCapacitor) {
                 urls.push(
                     `https://corsproxy.io/?${encodeURIComponent(sgpcDateUrl)}`,
@@ -218,7 +217,6 @@
                 this.audio = new Audio();
                 this.audio.preload = 'auto';
             }
-            // iOS WKWebView / Capacitor: allow inline playback within user gesture
             this.audio.setAttribute('playsinline', '');
             this.audio.setAttribute('webkit-playsinline', '');
 
@@ -335,13 +333,10 @@
 
             this.setWave(false);
             this.setSub('Tap here to listen on SGPC →');
-            const subEl = document.getElementById('hukamPlayerSub');
-            if (subEl) {
-                subEl.style.cursor = 'pointer';
-                subEl.onclick = () => {
-                    window.open('https://sgpc.net/hukamnama-sahib/', '_blank', 'noopener');
-                };
-            }
+            document.getElementById('hukamPlayerSub').style.cursor = 'pointer';
+            document.getElementById('hukamPlayerSub').onclick = () => {
+                window.open('https://sgpc.net/hukamnama-sahib/', '_blank', 'noopener');
+            };
         },
 
         stop() {

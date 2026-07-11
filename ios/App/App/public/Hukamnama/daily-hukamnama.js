@@ -64,13 +64,27 @@
     // ─── INITIALIZATION ──────────────────────────────────────────────────
 
     async function init() {
-        console.log('🚀 Hukamnama V3 Initializing...');
-        setupListeners();
-        applySettings();
-        await fetchHukamnama();
-        
-        // Start hero animation
-        document.getElementById('hero').classList.add('panning');
+        try {
+            console.log('🚀 Hukamnama V3 Initializing...');
+            setupListeners();
+            applySettings();
+            
+            // Safety timeout: hide skeleton after 10s even if fetch hangs
+            const safetyTimer = setTimeout(() => {
+                console.warn('[Hukamnama] Safety timeout — hiding skeleton loader');
+                hideLoader();
+            }, 10000);
+            
+            await fetchHukamnama();
+            clearTimeout(safetyTimer);
+            
+            const hero = document.getElementById('hero');
+            if (hero) hero.classList.add('panning');
+        } catch (err) {
+            console.error('[Hukamnama] Init crashed:', err);
+            hideLoader();
+            showError();
+        }
     }
 
     function setupListeners() {
@@ -333,6 +347,7 @@
                 this.init();
             }
 
+            // If already showing and audio exists, just toggle play/pause
             const player = document.getElementById('hukamPlayer');
             if (player?.classList.contains('visible') && this.audio.src) {
                 if (this.audio.paused) {
@@ -350,6 +365,9 @@
             const urls = this.getUrls();
             const isCapacitor = !!(window.Capacitor);
 
+            // Capacitor (WKWebView): try all URLs synchronously within gesture context
+            // by skipping await between attempts — set src & fire play() on each, then
+            // track which one succeeds first.
             if (isCapacitor) {
                 const results = await Promise.any(urls.map(url => new Promise(async (resolve, reject) => {
                     try {
@@ -360,14 +378,15 @@
                         a.src = url;
                         a.load();
                         await a.play();
+                        // Success — replace our audio element with this working one
                         if (this.audio) { this.audio.pause(); this.audio.src = ''; }
                         this.audio = a;
-                        this.init();
+                        this.init(); // re-attach listeners to the new element
                         resolve(url);
                     } catch (e) {
                         reject(e);
                     }
-                })).catch(() => null);
+                }))).catch(() => null);
 
                 if (results) {
                     console.log('[HukamPlayer] ✅ Capacitor success with URL:', results);
@@ -376,6 +395,7 @@
                     return;
                 }
             } else {
+                // Browser: sequential attempts (safer for non-Capacitor)
                 for (const url of urls) {
                     try {
                         this.audio.src = url;
@@ -391,6 +411,7 @@
                 }
             }
 
+            // All URLs failed
             this.setWave(false);
             this.setSub('Tap here to listen on SGPC →');
             const subEl = document.getElementById('hukamPlayerSub');
@@ -493,7 +514,14 @@
 
     async function fetchHukamnama() {
         try {
-            const response = await fetch(`${CONFIG.API_BASE}${CONFIG.ENDPOINTS.TODAY}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            
+            const response = await fetch(`${CONFIG.API_BASE}${CONFIG.ENDPOINTS.TODAY}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
             const data = await response.json();
             
             if (data && data.shabads) {

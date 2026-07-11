@@ -1682,6 +1682,14 @@
           e.preventDefault();
           const stream = btn.dataset.stream;
 
+          // Hukamnama is NOT a live audio stream — navigate to its player page
+          if (stream === 'hukamnama') {
+            const card = btn.closest('.hero-card');
+            const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
+            window.location.href = href;
+            return;
+          }
+
           // Use AnhadAudio singleton directly
           if (window.AnhadAudio) {
             const state = window.AnhadAudio.getState();

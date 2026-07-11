@@ -490,6 +490,7 @@ a:active {
   transition: backdrop-filter var(--duration-normal) var(--ease-smooth),
     opacity var(--duration-normal) var(--ease-smooth);
   background: transparent !important;
+  pointer-events: auto !important;
 }
 
 /* Compact header on scroll — frosted glass with golden accent */
@@ -675,6 +676,8 @@ a:active {
     background var(--duration-fast) var(--ease-spring) !important;
   will-change: transform;
   cursor: pointer;
+  z-index: 101 !important;
+  pointer-events: auto !important;
 }
 
 .dark-mode .header__btn,

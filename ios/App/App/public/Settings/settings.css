@@ -22,6 +22,9 @@ body {
   background: var(--bg-primary, #FAF8F5) !important;
   color: var(--text-primary, #1C1C1E) !important;
   min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 html.dark-mode body,
@@ -34,6 +37,8 @@ html[data-theme="dark"] body {
   max-width: 680px;
   margin: 0 auto;
   padding: 20px 0;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
   background: transparent !important;
   min-height: 100vh;
 }

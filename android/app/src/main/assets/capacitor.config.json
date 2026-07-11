@@ -9,7 +9,7 @@
 	"android": {
 		"allowMixedContent": true,
 		"webContentsDebuggingEnabled": false,
-		"backgroundColor": "#000000"
+		"backgroundColor": "#020205"
 	},
 	"plugins": {
 		"LocalNotifications": {
@@ -19,9 +19,9 @@
 		},
 		"StreakSaverPlugin": {},
 		"SplashScreen": {
-			"launchShowDuration": 0,
+			"launchShowDuration": 2000,
 			"launchAutoHide": true,
-			"backgroundColor": "#000000",
+			"backgroundColor": "#020205",
 			"showSpinner": true,
 			"spinnerColor": "#f7c634",
 			"androidSpinnerStyle": "small",

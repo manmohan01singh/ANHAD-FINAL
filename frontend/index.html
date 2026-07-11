@@ -333,13 +333,13 @@
     /* Import Cinzel font */
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&display=swap');
     
-    /* HEADER WITH BETTER SPACING */
+    /* HEADER WITH PERFECT CENTERING */
     .header {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      padding: 0 20px !important;
-      gap: 16px !important;
+      padding: 0 16px !important;
+      gap: 0 !important;
       position: relative;
     }
     
@@ -1206,7 +1206,7 @@
     @media screen and (max-width: 480px) {
       /* Header - Compact */
       .header {
-        padding: 8px 0 4px !important;
+        padding: 8px 12px 4px !important;
         margin-bottom: 4px !important;
       }
       .header__title {
@@ -3233,6 +3233,15 @@
       window.AnhadAudioLoadEngine = loadAudioEngine;
       window.AnhadAudioUnlockElement = unlockAudioElement;
 
+      // CAPACITOR FIX: Pre-load audio engine and unlock audio context immediately.
+      // On Capacitor, lazy-loading the engine causes the play() call to happen
+      // outside the user gesture context, resulting in autoplay blocking.
+      if (window.Capacitor) {
+        loadAudioEngine();
+        // Also pre-unlock with a silent audio element
+        unlockAudioElement('darbar');
+      }
+
       // Trigger demand-load on first interaction with any audio control or page play action
       function bindAudioTriggers() {
         // Bind to hero play buttons by ID
@@ -3526,8 +3535,7 @@
             // Hukamnama badge navigates to player page instead of playing as live audio
             if (stream === 'hukamnama') {
               const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
-              if (window.navigateTo) window.navigateTo(href);
-              else window.location.href = href;
+              window.location.href = href;
               return;
             }
             if (window.AnhadAudio) {
@@ -3573,8 +3581,10 @@
               console.log('[Homepage] Hukamnama play clicked — navigating to player page');
               const card = this.closest('.hero-card');
               const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
-              if (window.navigateTo) window.navigateTo(href);
-              else window.location.href = href;
+              // CAPACITOR FIX: Always use direct location.href for reliable page navigation.
+              // window.navigateTo may have edge-case issues with relative URL resolution
+              // in Capacitor WebView when smooth-navigation is still initializing.
+              window.location.href = href;
               return;
             }
             if (window.AnhadAudio) {

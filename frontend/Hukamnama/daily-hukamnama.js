@@ -64,13 +64,27 @@
     // ─── INITIALIZATION ──────────────────────────────────────────────────
 
     async function init() {
-        console.log('🚀 Hukamnama V3 Initializing...');
-        setupListeners();
-        applySettings();
-        await fetchHukamnama();
-        
-        // Start hero animation
-        document.getElementById('hero').classList.add('panning');
+        try {
+            console.log('🚀 Hukamnama V3 Initializing...');
+            setupListeners();
+            applySettings();
+            
+            // Safety timeout: hide skeleton after 10s even if fetch hangs
+            const safetyTimer = setTimeout(() => {
+                console.warn('[Hukamnama] Safety timeout — hiding skeleton loader');
+                hideLoader();
+            }, 10000);
+            
+            await fetchHukamnama();
+            clearTimeout(safetyTimer);
+            
+            const hero = document.getElementById('hero');
+            if (hero) hero.classList.add('panning');
+        } catch (err) {
+            console.error('[Hukamnama] Init crashed:', err);
+            hideLoader();
+            showError();
+        }
     }
 
     function setupListeners() {
@@ -372,7 +386,7 @@
                     } catch (e) {
                         reject(e);
                     }
-                })).catch(() => null);
+                }))).catch(() => null);
 
                 if (results) {
                     console.log('[HukamPlayer] ✅ Capacitor success with URL:', results);
@@ -500,7 +514,14 @@
 
     async function fetchHukamnama() {
         try {
-            const response = await fetch(`${CONFIG.API_BASE}${CONFIG.ENDPOINTS.TODAY}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            
+            const response = await fetch(`${CONFIG.API_BASE}${CONFIG.ENDPOINTS.TODAY}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
             const data = await response.json();
             
             if (data && data.shabads) {

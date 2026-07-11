@@ -1206,7 +1206,7 @@
     @media screen and (max-width: 480px) {
       /* Header - Compact */
       .header {
-        padding: 8px 0 4px !important;
+        padding: 8px 12px 4px !important;
         margin-bottom: 4px !important;
       }
       .header__title {
@@ -2618,12 +2618,13 @@
     <header class="header" role="banner" style="background: transparent !important;">
       <div class="header__left" style="display: flex; gap: 8px; align-items: center;">
         <!-- Settings Button -->
-        <a href="Settings/" class="header__btn ios-haptic" id="settingsBtn"
+        <button class="header__btn ios-haptic" id="settingsBtn"
            aria-label="Settings"
            title="Settings"
-           style="text-decoration:none; display: flex; align-items: center; justify-content: center;">
+           onclick="window.location.href='./Settings/index.html'"
+           style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
-        </a>
+        </button>
         <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
         </button>
@@ -3232,6 +3233,15 @@
       window.AnhadAudioLoadEngine = loadAudioEngine;
       window.AnhadAudioUnlockElement = unlockAudioElement;
 
+      // CAPACITOR FIX: Pre-load audio engine and unlock audio context immediately.
+      // On Capacitor, lazy-loading the engine causes the play() call to happen
+      // outside the user gesture context, resulting in autoplay blocking.
+      if (window.Capacitor) {
+        loadAudioEngine();
+        // Also pre-unlock with a silent audio element
+        unlockAudioElement('darbar');
+      }
+
       // Trigger demand-load on first interaction with any audio control or page play action
       function bindAudioTriggers() {
         // Bind to hero play buttons by ID
@@ -3525,8 +3535,7 @@
             // Hukamnama badge navigates to player page instead of playing as live audio
             if (stream === 'hukamnama') {
               const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
-              if (window.navigateTo) window.navigateTo(href);
-              else window.location.href = href;
+              window.location.href = href;
               return;
             }
             if (window.AnhadAudio) {
@@ -3572,8 +3581,10 @@
               console.log('[Homepage] Hukamnama play clicked — navigating to player page');
               const card = this.closest('.hero-card');
               const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
-              if (window.navigateTo) window.navigateTo(href);
-              else window.location.href = href;
+              // CAPACITOR FIX: Always use direct location.href for reliable page navigation.
+              // window.navigateTo may have edge-case issues with relative URL resolution
+              // in Capacitor WebView when smooth-navigation is still initializing.
+              window.location.href = href;
               return;
             }
             if (window.AnhadAudio) {

@@ -851,13 +851,42 @@
             if (state.isPlaying && state.currentStream === initialStream) {
                 updateUI();
             } else if (forcePlay) {
-                startStream(initialStream);
+                // CAPACITOR FIX: Auto-play requires a user gesture — defer to first interaction
+                // Use click/touchend (NOT pointerdown/touchstart) — only click/touchend are valid
+                // user-gesture events for audio.play() on Android WebView
+                if (window.Capacitor) {
+                    console.log('[GurbaniRadio] Capacitor detected — deferring auto-play to first user interaction');
+                    const playOnInteraction = function() {
+                        document.removeEventListener('click', playOnInteraction, { capture: true });
+                        document.removeEventListener('touchend', playOnInteraction, { capture: true });
+                        startStream(initialStream);
+                    };
+                    document.addEventListener('click', playOnInteraction, { once: true, capture: true });
+                    document.addEventListener('touchend', playOnInteraction, { once: true, capture: true });
+                    updateUI();
+                } else {
+                    startStream(initialStream);
+                }
             } else {
                 updateUI();
             }
         } else {
             // Fallback if singleton is not loaded
-            if (forcePlay) startStream(initialStream);
+            if (forcePlay) {
+                if (window.Capacitor) {
+                    console.log('[GurbaniRadio] Capacitor detected — deferring auto-play to first user interaction');
+                    const playOnInteraction = function() {
+                        document.removeEventListener('click', playOnInteraction, { capture: true });
+                        document.removeEventListener('touchend', playOnInteraction, { capture: true });
+                        startStream(initialStream);
+                    };
+                    document.addEventListener('click', playOnInteraction, { once: true, capture: true });
+                    document.addEventListener('touchend', playOnInteraction, { once: true, capture: true });
+                    updateUI();
+                } else {
+                    startStream(initialStream);
+                }
+            }
         }
     }
 
