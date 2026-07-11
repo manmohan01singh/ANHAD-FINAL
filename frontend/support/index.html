@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Support | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Support</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Get Help with ANHAD</h2>
+      <div class="legal-card__content">
+        <p>We're here to help! Find answers below or contact us directly.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">📖 Frequently Asked Questions</h2>
+      <div class="legal-card__content">
+        
+        <h3>How do I enable Nitnem reminders?</h3>
+        <p>Go to <strong>Settings → Notifications</strong> and enable "Daily Nitnem Reminders". You can customize the time for each Bani.</p>
+        
+        <h3>Why isn't the live stream playing?</h3>
+        <p>Check your internet connection. If the issue persists, the stream source may be temporarily unavailable. Try switching to another stream (Virtual Live, Amritvela).</p>
+        
+        <h3>How do I change the theme?</h3>
+        <p>Navigate to <strong>Settings → Appearance → Theme</strong> and choose Light, Dark, or Auto (changes based on time of day).</p>
+        
+        <h3>Can I use ANHAD offline?</h3>
+        <p>Most Banis in the Nitnem section work offline after the first load. However, live streaming and Hukamnama require an internet connection.</p>
+        
+        <h3>How do I track Sehaj Paath progress?</h3>
+        <p>Open the Sehaj Paath section and mark Angs as you complete them. Your progress is saved locally on your device.</p>
+        
+        <h3>What if I lost my Nitnem streak data?</h3>
+        <p>Data is stored locally. If you clear app data or uninstall the app, your streak will be reset. We recommend regular backups if this feature is important to you.</p>
+
+        <h3>How do I bookmark a Shabad?</h3>
+        <p>While reading a Shabad, tap the bookmark icon. Access your bookmarks anytime from the Favorites page.</p>
+
+        <h3>Why did my bookmarks disappear?</h3>
+        <p>Bookmarks are stored locally. Clearing browser data, cache, or uninstalling the app will delete them. Always export your data if available.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">🐛 Known Issues</h2>
+      <div class="legal-card__content">
+        <ul>
+          <li><strong>Audio stuttering on some devices:</strong> Try reducing background apps or restarting the app</li>
+          <li><strong>Theme not applying immediately:</strong> Close and reopen the app</li>
+          <li><strong>Notification delays:</strong> Check battery optimization settings and allow ANHAD to run in the background</li>
+        </ul>
+        <p>We're actively working on fixes. Check the <a href="../changelog/" class="legal-link">Changelog</a> for updates.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">💬 Report a Bug</h2>
+      <div class="legal-card__content">
+        <p>Found a bug? Help us improve ANHAD by reporting it:</p>
+        <ol>
+          <li>Go to <a href="../contact/" class="legal-link">Contact page</a></li>
+          <li>Describe the issue in detail (steps to reproduce, screenshots if possible)</li>
+          <li>Include your device model and Android version</li>
+        </ol>
+        <p>We appreciate your patience as we work to resolve issues.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">✨ Suggest a Feature</h2>
+      <div class="legal-card__content">
+        <p>Have an idea to improve ANHAD? We'd love to hear it!</p>
+        <p>Submit feature requests through the <a href="../contact/" class="legal-link">Contact page</a>. While we can't implement every suggestion, community feedback shapes our roadmap.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">📧 Contact Support</h2>
+      <div class="legal-card__content">
+        <p><strong>Email:</strong> anhadsupport@gmail.com</p>
+        <p><strong>Website:</strong> <a href="https://anhad.vercel.app" target="_blank">anhad.vercel.app</a></p>
+        <p><strong>Response Time:</strong> We aim to respond within 48-72 hours. This is a personal project, so please be patient.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">📱 App Version</h2>
+      <div class="legal-card__content">
+        <p><strong>Current Version:</strong> <span id="appVersion">4.0.0</span></p>
+        <p><strong>Last Updated:</strong> <span id="lastUpdated">January 2025</span></p>
+        <p>Always keep ANHAD updated to access the latest features and bug fixes.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">🌐 Additional Resources</h2>
+      <div class="legal-card__content">
+        <ul>
+          <li><a href="../about/" class="legal-link">About ANHAD</a></li>
+          <li><a href="../changelog/" class="legal-link">Changelog</a></li>
+          <li><a href="../privacy/" class="legal-link">Privacy Policy</a></li>
+          <li><a href="../terms/" class="legal-link">Terms of Use</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../contact/">Contact</a>
+          <a href="../privacy/">Privacy</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    fetch('../version.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('appVersion').textContent = data.version;
+          document.querySelector('.legal-footer__version').textContent = `ANHAD v${data.version}`;
+        }
+        if (data.buildTime) {
+          const date = new Date(data.buildTime);
+          document.getElementById('lastUpdated').textContent = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        }
+      })
+      .catch(() => {});
+  </script>
+</body>
+</html>

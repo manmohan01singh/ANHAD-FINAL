@@ -192,22 +192,48 @@
                 apiBase = 'https://anhad-final.onrender.com';
             }
 
-            return [
-                `${apiBase}/api/hukamnama/audio`,  // ✅ Backend proxy (primary)
-                `https://www.sgpc.net/hukamnama/${y}/${m}/${day}/hukamnama.mp3`,
+            const isCapacitor = !!(window.Capacitor);
+            const sgpcDateUrl = `https://www.sgpc.net/hukamnama/${y}/${m}/${day}/hukamnama.mp3`;
+
+            const urls = [
+                `${apiBase}/api/hukamnama/audio`,
+                sgpcDateUrl,
                 `https://www.sgpc.net/hukamnama/hukamnama.mp3`,
             ];
+
+            if (isCapacitor) {
+                urls.push(
+                    `https://corsproxy.io/?${encodeURIComponent(sgpcDateUrl)}`,
+                    `https://api.allorigins.win/raw?url=${encodeURIComponent(sgpcDateUrl)}`
+                );
+            }
+
+            return urls;
         },
 
         init() {
-            this.audio = new Audio();
-            this.audio.preload = 'none';
+            // Create audio element lazily
+            if (!this.audio) {
+                this.audio = new Audio();
+                this.audio.preload = 'auto';
+            }
+            this.audio.setAttribute('playsinline', '');
+            this.audio.setAttribute('webkit-playsinline', '');
 
             // Play/Pause button in the mini player
-            document.getElementById('hukamPlayBtn')?.addEventListener('click', () => {
+            document.getElementById('hukamPlayBtn')?.addEventListener('click', async () => {
                 hapticFeedback();
                 if (this.audio.paused) {
-                    this.audio.play().catch(() => {});
+                    // AUTOPLAY FIX: If no src set, initialize in click handler
+                    if (!this.audio.src) {
+                        await this.start();
+                    } else {
+                        try {
+                            await this.audio.play();
+                        } catch (e) {
+                            console.error('[HukamPlayer] Play failed:', e);
+                        }
+                    }
                 } else {
                     this.audio.pause();
                 }
@@ -234,16 +260,23 @@
             this.audio.addEventListener('ended',       () => this.onEnded());
             this.audio.addEventListener('waiting',     () => this.setWave(true));
             this.audio.addEventListener('canplay',     () => this.setWave(false));
+            this.audio.addEventListener('error', (e) => {
+                console.error('[HukamPlayer] Audio error:', e);
+                this.setWave(false);
+            });
         },
 
         async start() {
-            if (!this.audio) this.init();
+            if (!this.audio) {
+                this.audio = new Audio();
+                this.audio.preload = 'auto';
+                this.init();
+            }
 
-            // If already showing and audio exists, just toggle play/pause
             const player = document.getElementById('hukamPlayer');
             if (player?.classList.contains('visible') && this.audio.src) {
                 if (this.audio.paused) {
-                    this.audio.play().catch(() => {});
+                    try { await this.audio.play(); } catch (e) { console.error('[HukamPlayer] Resume play failed:', e); }
                 } else {
                     this.audio.pause();
                 }
@@ -255,33 +288,49 @@
             this.setSub('Loading Hukamnama...');
 
             const urls = this.getUrls();
-            console.log('[HukamPlayer] Starting audio with URLs:', urls);
-            for (const url of urls) {
-                try {
-                    console.log('[HukamPlayer] Attempting URL:', url);
-                    this.audio.src = url;
-                    this.audio.load();
-                    await new Promise((resolve, reject) => {
-                        const ok = () => { cleanup(); resolve(); };
-                        const fail = () => { cleanup(); reject(); };
-                        const cleanup = () => {
-                            this.audio.removeEventListener('canplay', ok);
-                            this.audio.removeEventListener('error', fail);
-                        };
-                        this.audio.addEventListener('canplay', ok, { once: true });
-                        this.audio.addEventListener('error', fail, { once: true });
-                        setTimeout(() => { cleanup(); reject(); }, 8000);
-                    });
-                    await this.audio.play();
-                    console.log('[HukamPlayer] ✅ Success with URL:', url);
+            const isCapacitor = !!(window.Capacitor);
+
+            if (isCapacitor) {
+                const results = await Promise.any(urls.map(url => new Promise(async (resolve, reject) => {
+                    try {
+                        const a = new Audio();
+                        a.setAttribute('playsinline', '');
+                        a.setAttribute('webkit-playsinline', '');
+                        a.preload = 'auto';
+                        a.src = url;
+                        a.load();
+                        await a.play();
+                        if (this.audio) { this.audio.pause(); this.audio.src = ''; }
+                        this.audio = a;
+                        this.init();
+                        resolve(url);
+                    } catch (e) {
+                        reject(e);
+                    }
+                })).catch(() => null);
+
+                if (results) {
+                    console.log('[HukamPlayer] ✅ Capacitor success with URL:', results);
                     this.setSub('Sachkhand Sri Harmandir Sahib');
-                    return; // ✅ Success
-                } catch {
-                    console.warn('[HukamPlayer] ❌ URL failed, trying next:', url);
+                    this.setWave(false);
+                    return;
+                }
+            } else {
+                for (const url of urls) {
+                    try {
+                        this.audio.src = url;
+                        this.audio.load();
+                        await this.audio.play();
+                        console.log('[HukamPlayer] ✅ Success with URL:', url);
+                        this.setSub('Sachkhand Sri Harmandir Sahib');
+                        this.setWave(false);
+                        return;
+                    } catch (e) {
+                        console.warn('[HukamPlayer] ❌ URL failed:', url, e.message);
+                    }
                 }
             }
 
-            // All URLs failed
             this.setWave(false);
             this.setSub('Tap here to listen on SGPC →');
             document.getElementById('hukamPlayerSub').style.cursor = 'pointer';

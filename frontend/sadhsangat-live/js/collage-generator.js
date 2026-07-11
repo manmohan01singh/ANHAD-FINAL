@@ -5,10 +5,14 @@
 
 // Import dependencies (for Node.js test environment)
 if (typeof require !== 'undefined') {
-  var { CollageCache } = require('./collage-cache-manager.js');
-  var { calculateGridLayout } = require('./collage-grid-calculator.js');
-  var { loadChannelImages } = require('./collage-image-loader.js');
-  var { renderCollageToCanvas } = require('./collage-canvas-renderer.js');
+  const { CollageCache } = require('./collage-cache-manager.js');
+  const { calculateGridLayout } = require('./collage-grid-calculator.js');
+  const { loadChannelImages } = require('./collage-image-loader.js');
+  const { renderCollageToCanvas } = require('./collage-canvas-renderer.js');
+  globalThis.CollageCache ??= CollageCache;
+  globalThis.calculateGridLayout ??= calculateGridLayout;
+  globalThis.loadChannelImages ??= loadChannelImages;
+  globalThis.renderCollageToCanvas ??= renderCollageToCanvas;
 }
 
 class CollageGenerator {

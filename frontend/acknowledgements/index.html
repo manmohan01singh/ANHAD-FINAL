@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Acknowledgements | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Acknowledgements</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card about-gratitude">
+      <div class="about-gratitude__icon">🙏</div>
+      <h2 class="legal-card__title">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ</h2>
+      <div class="legal-card__content">
+        <p>This project exists only through <strong>Guru Sahib's infinite Kirpa (grace)</strong>. Every line of code, every design decision, and every feature is a result of blessings, not personal skill. May Guru Sahib forgive any shortcomings and continue to guide this seva.</p>
+        <p class="about-gurm">ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ ॥<br>Tu Mera Pita, Tu Hai Mera Mata<br>You are my Father, You are my Mother</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Family & Loved Ones</h2>
+      <div class="legal-card__content">
+        <p>Deepest gratitude to:</p>
+        <ul>
+          <li><strong>My Parents:</strong> For unwavering support, encouragement, and countless sacrifices that made this journey possible</li>
+          <li><strong>My Family:</strong> For patience during long development hours and belief in this vision</li>
+          <li><strong>Friends:</strong> For testing early versions, providing feedback, and spreading the word</li>
+        </ul>
+        <p>This project is dedicated to all who believe in using technology to bring people closer to Gurbani.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Beta Testers & Early Adopters</h2>
+      <div class="legal-card__content">
+        <p>Special thanks to the brave souls who tested buggy early versions and provided invaluable feedback:</p>
+        <ul>
+          <li>Your bug reports helped shape a better experience</li>
+          <li>Your feature suggestions inspired new directions</li>
+          <li>Your patience with crashes and glitches is deeply appreciated</li>
+        </ul>
+        <p>You know who you are — thank you for being part of this journey.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Open Source Community</h2>
+      <div class="legal-card__content">
+        <p>ANHAD stands on the shoulders of giants. Heartfelt gratitude to:</p>
+        <ul>
+          <li><strong>Node.js & Express:</strong> For reliable backend infrastructure</li>
+          <li><strong>Capacitor:</strong> For seamless web-to-native app conversion</li>
+          <li><strong>BaniDB:</strong> For providing free access to Gurbani APIs</li>
+          <li><strong>Font Developers:</strong> Inter, Noto Sans Gurmukhi, Cinzel, and more</li>
+          <li><strong>Countless Libraries:</strong> See <a href="../licenses/" class="legal-link">Open Source Licenses</a></li>
+        </ul>
+        <p>Without the open-source community, this project would not exist.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Content Providers</h2>
+      <div class="legal-card__content">
+        <p>Deep appreciation to organizations and individuals who make Gurbani accessible:</p>
+        <ul>
+          <li><strong>Sri Harmandir Sahib:</strong> For live Darbar Sahib streams</li>
+          <li><strong>Amritvela Trust:</strong> For beautiful Vaheguru Simran recordings</li>
+          <li><strong>Bhai Gurpreet Singh Ji:</strong> For 40-day Gurbani Kirtan series</li>
+          <li><strong>SikhNet, SearchGurbani, BaniDB:</strong> For digital Gurbani resources</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Design Inspiration</h2>
+      <div class="legal-card__content">
+        <p>ANHAD's design philosophy draws inspiration from:</p>
+        <ul>
+          <li><strong>Apple Human Interface Guidelines:</strong> For iOS-quality UX principles</li>
+          <li><strong>Spiritual Aesthetics:</strong> Golden Temple architecture, Gurbani manuscripts</li>
+          <li><strong>Minimalism:</strong> Less is more — focus on what truly matters</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">The Global Sangat</h2>
+      <div class="legal-card__content">
+        <p>To every Sikh, seeker, and spiritual soul who uses ANHAD:</p>
+        <ul>
+          <li>Your faith inspires continued improvement</li>
+          <li>Your feedback shapes the roadmap</li>
+          <li>Your prayers keep this seva alive</li>
+        </ul>
+        <p>This app is for you, by you, and because of you.</p>
+        <p class="about-gurm">ਸਾਧ ਸੰਗਤਿ ਮਿਲਿ ਰਹੀਐ ਮਾਧਉ ਜੈਸੇ ਮਧੁਪ ਮਖੀਰਾ ॥<br>Remain united with the Saadh Sangat, like bees swarming around honey.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">A Personal Note</h2>
+      <div class="legal-card__content">
+        <p>Building ANHAD has been one of the most humbling experiences of my life. Every feature implemented, every bug fixed, and every design refinement reminded me that I am merely a vessel — the true creator is Guru Sahib.</p>
+        <p>If this app brings even one person closer to Gurbani, if it helps even one soul find peace in Naam Simran, then every hour spent was worth it.</p>
+        <p>With deepest humility and gratitude,</p>
+        <p><strong>Manmohan Singh</strong><br><em>Developer, ANHAD</em></p>
+        <p class="about-gurm" style="text-align: center; margin-top: 24px;">ਤੇਰੀ ਭਗਤਿ ਭੰਡਾਰ ਭਰੇ ਬਿਅੰਤ ਬੇਅੰਤਾ ॥<br>Teri Bhagti Bhandar Bhare Biant Beanta<br>Your treasures of devotion are overflowing, infinite and endless</p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD • Built with 🙏 and ❤️</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../contact/">Contact</a>
+          <a href="../licenses/">Licenses</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

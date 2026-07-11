@@ -658,7 +658,7 @@
       }
     } else {
       audio = new Audio();
-      audio.preload = 'metadata';
+      audio.preload = 'auto'; // Changed from 'metadata' to 'auto' for better loading
       // PERF FIX: Never initialize at 100%; restore below or stay at a safe 70%.
       audio.volume = 0.7;
     }
@@ -690,6 +690,37 @@
     else if (saved && saved.volume !== undefined) audio.volume = Math.max(0, Math.min(1, Number(saved.volume)));
 
     attachAudioEventListeners();
+    
+    // AUTOPLAY FIX: Create a user interaction listener to unlock audio on first click
+    // This ensures browsers grant permission for audio playback
+    if (!window.Capacitor) {
+      const unlockAudio = () => {
+        if (audio && audio.paused) {
+          // Create a silent play/pause to unlock audio context
+          const originalSrc = audio.src;
+          const originalTime = audio.currentTime;
+          
+          // Try to play current audio (will succeed if within user gesture)
+          audio.play().then(() => {
+            console.log('[AnhadAudio] ✅ Audio context unlocked');
+            // If we were supposed to be paused, pause again
+            if (!isPlaying) {
+              audio.pause();
+            }
+          }).catch(() => {
+            // Still blocked, will try again on next user interaction
+            console.log('[AnhadAudio] Audio still locked, waiting for user gesture');
+          });
+        }
+        // Remove listener after first successful interaction
+        document.removeEventListener('click', unlockAudio);
+        document.removeEventListener('touchstart', unlockAudio);
+      };
+      
+      // Listen for first user interaction
+      document.addEventListener('click', unlockAudio, { once: true });
+      document.addEventListener('touchstart', unlockAudio, { once: true });
+    }
   }
 
   function attachAudioEventListeners() {
@@ -1259,12 +1290,26 @@
         try {
           await audio.play();
         } catch (e) {
-          console.warn('[AnhadAudio] Autoplay blocked:', e.message);
+          console.warn('[AnhadAudio] ❌ Autoplay blocked:', e.message);
           isPlaying = false;
           isLoading = false;
           isPlayLocked = false;
           if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
+          
+          // Emit error event with user-friendly message
+          emit('error', { 
+            message: 'Tap the play button to start audio',
+            code: 'AUTOPLAY_BLOCKED'
+          });
           emit('statechange', getPublicState());
+          
+          // For live streams, show a user-friendly notification
+          window.dispatchEvent(new CustomEvent('anhadAutoplayBlocked', {
+            detail: {
+              stream: streamName,
+              message: 'Please tap the play button to start audio playback'
+            }
+          }));
         }
 
       } else if (stream.type === 'playlist') {

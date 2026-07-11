@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Terms of Use | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  
+  <script src="../lib/global-theme.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Terms of Use</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Terms of Use for ANHAD</h2>
+      <div class="legal-card__content">
+        <p><strong>Effective Date:</strong> January 1, 2025</p>
+        <p>By downloading, installing, or using ANHAD ("the App"), you agree to be bound by these Terms of Use. If you do not agree, please discontinue use immediately.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">1. Acceptable Use</h2>
+      <div class="legal-card__content">
+        <p>You agree to use ANHAD only for lawful, spiritual, and personal purposes. You must not:</p>
+        <ul>
+          <li>Reverse engineer, decompile, or modify the app</li>
+          <li>Use the app for commercial purposes without permission</li>
+          <li>Attempt to bypass security measures or access restricted features</li>
+          <li>Distribute malicious content through the app</li>
+          <li>Abuse streaming services or APIs integrated into the app</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">2. User Responsibilities</h2>
+      <div class="legal-card__content">
+        <p>As a user, you are responsible for:</p>
+        <ul>
+          <li>Ensuring your device meets minimum system requirements</li>
+          <li>Maintaining a stable internet connection for streaming features</li>
+          <li>Backing up your local data (bookmarks, progress) if desired</li>
+          <li>Keeping your device secure to protect locally stored information</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">3. Content Ownership & Intellectual Property</h2>
+      <div class="legal-card__content">
+        <h3>3.1 Gurbani Content</h3>
+        <p>All Gurbani (sacred scripture) is sourced from publicly available sources such as BaniDB and is considered part of the public religious domain. ANHAD does not claim ownership of any Gurbani text.</p>
+        
+        <h3>3.2 App Design & Code</h3>
+        <p>The ANHAD application design, codebase, and original assets are © 2024 ANHAD. All rights reserved unless otherwise stated in open-source licenses.</p>
+        
+        <h3>3.3 Third-Party Content</h3>
+        <p>Live streams, audio recordings, and external APIs are owned by their respective providers. ANHAD acts as an aggregator and does not claim ownership of third-party content.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">4. Streaming Disclaimer</h2>
+      <div class="legal-card__content">
+        <p>ANHAD provides access to live Gurbani streams from various sources (e.g., Darbar Sahib Live, Amritvela Trust). We do not control:</p>
+        <ul>
+          <li>Stream availability or quality</li>
+          <li>Content accuracy or scheduling</li>
+          <li>Third-party streaming policies</li>
+        </ul>
+        <p>Streams may experience interruptions, delays, or unavailability. ANHAD is not responsible for issues with third-party streaming services.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">5. Software Updates</h2>
+      <div class="legal-card__content">
+        <p>ANHAD may provide periodic updates to:</p>
+        <ul>
+          <li>Fix bugs and improve performance</li>
+          <li>Add new features</li>
+          <li>Enhance security</li>
+          <li>Comply with platform requirements</li>
+        </ul>
+        <p>Updates may be automatic or manual. Continued use of outdated versions may result in reduced functionality.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">6. Warranty Disclaimer</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is provided "AS IS" and "AS AVAILABLE" without warranties of any kind, either express or implied, including but not limited to:</p>
+        <ul>
+          <li>Fitness for a particular purpose</li>
+          <li>Non-infringement</li>
+          <li>Uninterrupted or error-free operation</li>
+          <li>Accuracy of content</li>
+        </ul>
+        <p>We do not guarantee that the app will meet your specific needs or expectations.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">7. Limitation of Liability</h2>
+      <div class="legal-card__content">
+        <p>To the maximum extent permitted by law, ANHAD and its developer shall not be liable for:</p>
+        <ul>
+          <li>Any indirect, incidental, or consequential damages</li>
+          <li>Loss of data, profits, or goodwill</li>
+          <li>Service interruptions or technical failures</li>
+          <li>Third-party content or streaming issues</li>
+        </ul>
+        <p>Your sole remedy for dissatisfaction with the app is to discontinue use.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">8. Termination</h2>
+      <div class="legal-card__content">
+        <p>You may terminate your use of ANHAD at any time by uninstalling the app. We reserve the right to:</p>
+        <ul>
+          <li>Discontinue app support or updates</li>
+          <li>Modify or remove features</li>
+          <li>Terminate access for violations of these Terms</li>
+        </ul>
+        <p>Upon termination, all locally stored data will remain on your device unless you manually delete it.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">9. Changes to Terms</h2>
+      <div class="legal-card__content">
+        <p>We reserve the right to modify these Terms at any time. Changes will be effective when posted within the app or on our website. Continued use after changes constitutes acceptance of the new Terms.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">10. Governing Law</h2>
+      <div class="legal-card__content">
+        <p>These Terms shall be governed by and construed in accordance with applicable laws. Any disputes arising from these Terms or the use of ANHAD shall be resolved through good faith negotiation.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">11. Contact</h2>
+      <div class="legal-card__content">
+        <p>For questions about these Terms, please visit our <a href="../contact/" class="legal-link">Contact page</a>.</p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../privacy/">Privacy Policy</a>
+          <a href="../disclaimer/">Disclaimer</a>
+          <a href="../support/">Support</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>
