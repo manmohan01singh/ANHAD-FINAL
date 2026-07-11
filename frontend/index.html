@@ -3177,7 +3177,7 @@
         _audioLoading = true;
         console.log('[AnhadAudio] Demand-loading audio singleton...');
         var s = document.createElement('script');
-        s.src = 'lib/anhad-audio-singleton.js?v=2.1.5';
+        s.src = 'lib/anhad-audio-singleton.js?v=2.2.0';
         s.onload = function() {
           _audioLoaded = true;
           _audioLoading = false;
@@ -3489,10 +3489,11 @@
         badges.forEach(badge => {
           badge.addEventListener('click', function(e) {
             e.stopPropagation(); // Don't trigger card click
+            const card = this.closest('.hero-card');
+            const stream = card ? card.dataset.stream : null;
+            if (!stream) return;
+
             if (window.AnhadAudio) {
-              const card = this.closest('.hero-card');
-              const stream = card ? card.dataset.stream : null;
-              
               // If it's already playing this stream, jump to live
               const state = window.AnhadAudio.getState();
               if (state.isPlaying && state.currentStream === stream) {
@@ -3507,9 +3508,16 @@
                 console.log('[Homepage] Starting live stream for:', stream);
                 window.AnhadAudio.play(stream);
               }
-              
-              if (navigator.vibrate) navigator.vibrate(10);
+            } else {
+              console.log('[Homepage] Audio engine not loaded yet, queuing play for badge:', stream);
+              if (window._anhadAudioQueue) {
+                window._anhadAudioQueue.push({ type: 'play', stream: stream });
+              }
+              if (window.AnhadAudioLoadEngine) {
+                window.AnhadAudioLoadEngine();
+              }
             }
+            if (navigator.vibrate) navigator.vibrate(10);
           });
         });
 
@@ -3519,8 +3527,8 @@
           btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation(); // Don't trigger card navigation
+            const stream = this.dataset.stream;
             if (window.AnhadAudio) {
-              const stream = this.dataset.stream;
               console.log('[Homepage] Hero play button clicked for:', stream);
               window.AnhadAudio.play(stream);
               
@@ -3528,6 +3536,14 @@
                 window.CapacitorHaptics.impact({ style: 'medium' });
               } else if (navigator.vibrate) {
                 navigator.vibrate(10);
+              }
+            } else {
+              console.log('[Homepage] Audio engine not loaded yet, queuing play for button:', stream);
+              if (window._anhadAudioQueue) {
+                window._anhadAudioQueue.push({ type: 'play', stream: stream });
+              }
+              if (window.AnhadAudioLoadEngine) {
+                window.AnhadAudioLoadEngine();
               }
             }
           });

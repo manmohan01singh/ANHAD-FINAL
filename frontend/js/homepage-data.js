@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════
    ANHAD — Homepage Data & Logic
    Real-time data, navigation, audio sync, install, filters
    Extracted from inline scripts for clean architecture
@@ -122,6 +122,30 @@ function getGuruNameForEvent(eventName, guruNumber) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  // ━━━ REAL-TIME CLOCK — hoisted to top to prevent TDZ error in fast-return path ━━━
+  let lastTimeStr = '';
+  function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    if (timeStr !== lastTimeStr) {
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = timeStr;
+      lastTimeStr = timeStr;
+    }
+  }
+
+  // ━━━ REAL-TIME GREETING — hoisted to top to prevent TDZ error in fast-return path ━━━
+  function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = 'Good Evening';
+    if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
+    else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
+    else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
+    else greeting = 'Waheguru Ji 🌙';
+    const el = document.getElementById('greeting');
+    if (el) el.textContent = greeting;
+  }
+
   // NATIVE APP FIX: Check if we're returning from navigation with fresh state
   const isReturning = window.HomeStateManager?.isReturningFromNavigation();
   const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
@@ -195,29 +219,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // ━━━ REAL-TIME GREETING ━━━
-  function updateGreeting() {
-    const hour = new Date().getHours();
-    let greeting = 'Good Evening';
-    if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
-    else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
-    else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
-    else greeting = 'Waheguru Ji 🌙';
-    const el = document.getElementById('greeting');
-    if (el) el.textContent = greeting;
-  }
-
-  // ━━━ REAL-TIME CLOCK ━━━
-  let lastTimeStr = '';
-  function updateClock() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    if (timeStr !== lastTimeStr) {
-      const el = document.getElementById('currentTime');
-      if (el) el.textContent = timeStr;
-      lastTimeStr = timeStr;
-    }
-  }
+  // ━━━ REAL-TIME GREETING ━━━ (declared above at top of DOMContentLoaded — no duplicate)
+  // ━━━ REAL-TIME CLOCK ━━━ (declared above at top of DOMContentLoaded — no duplicate)
 
   // ━━━ LISTENER COUNT ━━━
   let baseListeners = 1247;

@@ -979,10 +979,15 @@ app.use('/Audio', express.static(path.join(CONFIG.FRONTEND_ROOT, 'Audio')));
 
 // ─── HUKAMNAMA AUDIO PROXY ─────────────────────────────────────────
 // Scrapes SGPC page to find today's audio URL and proxies/redirects it.
-// Cached for 10 minutes to reduce SGPC server load.
+// Cached for 15 minutes to reduce SGPC server load.
 let hukamAudioCache = { url: null, ts: 0 };
 
 app.get('/api/hukamnama/audio', async (req, res) => {
+    // Set CORS headers FIRST before any async operations
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Range');
+    
     try {
         const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
         const now = Date.now();
@@ -1000,7 +1005,10 @@ app.get('/api/hukamnama/audio', async (req, res) => {
                     res2.on('end', () => resolve(data));
                 });
                 r.on('error', reject);
-                r.on('timeout', () => { r.destroy(); reject(new Error('timeout')); });
+                r.on('timeout', () => { 
+                    r.destroy(); 
+                    reject(new Error('Scraping timeout')); 
+                });
             });
 
             const mp3Match = html.match(/["'](https?:\/\/[^"']+\.mp3[^"']*)['"]/i);
@@ -1017,27 +1025,17 @@ app.get('/api/hukamnama/audio', async (req, res) => {
             }
         }
 
-        // Step 2: Stream the data to the client (Bypasses CORS entirely)
-        const https = require('https');
-        const audioReq = https.get(hukamAudioCache.url, (audioRes) => {
-            // Forward headers
-            res.setHeader('Content-Type', 'audio/mpeg');
-            res.setHeader('Accept-Ranges', 'bytes');
-            if (audioRes.headers['content-length']) {
-                res.setHeader('Content-Length', audioRes.headers['content-length']);
-            }
-            // Pipe the data
-            audioRes.pipe(res);
-        });
-
-        audioReq.on('error', (err) => {
-            console.error('[🎙️ Hukamnama] Streaming error:', err.message);
-            if (!res.headersSent) res.status(502).end();
-        });
+        // Step 2: Redirect the client directly to the SGPC audio file (supports Range requests & iOS/Safari)
+        console.log('[🎙️ Hukamnama] Redirecting to:', hukamAudioCache.url);
+        res.redirect(302, hukamAudioCache.url);
 
     } catch (err) {
         console.error('[🎙️ Hukamnama] Proxy error:', err.message);
-        if (!res.headersSent) res.status(502).json({ error: 'Could not stream Hukamnama audio' });
+        if (!res.headersSent) {
+            // Return 504 for timeout errors, 502 for other errors
+            const statusCode = err.message.includes('timeout') ? 504 : 502;
+            res.status(statusCode).json({ error: 'Could not stream Hukamnama audio' });
+        }
     }
 });
 

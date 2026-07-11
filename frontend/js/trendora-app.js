@@ -1,4 +1,4 @@
-﻿/* ANHAD — TRENDORA-INSPIRED PREMIUM APPLICATION LOGIC V2 */
+/* ANHAD — TRENDORA-INSPIRED PREMIUM APPLICATION LOGIC V2 */
 (function () {
   'use strict';
 
@@ -1088,16 +1088,16 @@
       console.log('[GuruImage] Final image:', finalImg, 'Final name:', finalName);
 
       /**
-       * Helper to perform optimized image update with retries
+       * Helper to perform smooth crossfade image update with retries.
+       * The old image stays visible while the new one loads in background,
+       * then crossfades in — zero flash, zero blink.
        */
       const updateImg = (el, src, alt, classToApply = 'loaded', retries = 2) => {
         if (!el) {
           console.log('[GuruImage] Element not found for:', src);
           return;
         }
-        // FIX: Normalize src comparison — getAttribute returns raw attribute while
-        // el.src returns absolute URL. Compare filename tails to avoid false positives
-        // that would leave the portrait invisible after a cache hit.
+        // Normalize src comparison — compare filename tails to avoid false positives
         const currentSrcRaw = el.getAttribute('src') || '';
         const srcTail = src.split('/').pop().split('?')[0];
         const alreadyLoaded = currentSrcRaw.split('/').pop().split('?')[0] === srcTail
@@ -1111,54 +1111,65 @@
 
         console.log('[GuruImage] Updating image to:', src, 'alt:', alt, 'retries left:', retries);
 
-        // Reset visibility for fresh loading (with smooth transition)
-        el.style.opacity = '0';
-        el.style.transition = 'opacity 0.35s ease';
-        el.classList.remove(classToApply);
+        // ── SMOOTH CROSSFADE: preload in background, then swap ──
+        // Keep current image fully visible while new one loads
+        const wrapper = el.parentElement;
+        const preloadImg = new window.Image();
 
-        // Define load handler
-        const onLoad = () => {
-          el.style.opacity = '1';
-          el.classList.add(classToApply);
-          cleanup();
-          console.log('[GuruImage] Image loaded successfully:', src);
+        const doSwap = () => {
+          // Prepare the transition on the real element — start invisible
+          el.style.transition = 'opacity 0s'; // instant reset first
+          el.style.opacity = '0';
+          el.classList.remove(classToApply);
+
+          // One rAF to let the browser register opacity:0, then start fade
+          requestAnimationFrame(() => {
+            el.src = src;
+            el.alt = alt;
+            el.style.transition = 'opacity 0.4s ease';
+            // If browser cached it, el.complete fires instantly
+            if (el.complete && el.naturalWidth > 0) {
+              el.style.opacity = '1';
+              el.classList.add(classToApply);
+              console.log('[GuruImage] Image swapped (cached) successfully:', src);
+            } else {
+              el.onload = () => {
+                el.style.opacity = '1';
+                el.classList.add(classToApply);
+                el.onload = null; el.onerror = null;
+                console.log('[GuruImage] Image crossfaded successfully:', src);
+              };
+              el.onerror = () => {
+                el.onload = null; el.onerror = null;
+                console.warn('[GuruImage] Swap element load failed:', src);
+                el.style.opacity = '1'; // show whatever was there
+              };
+            }
+          });
         };
 
-        // Define error handler for retry and fallback
-        const onError = () => {
+        preloadImg.onload = doSwap;
+        preloadImg.onerror = () => {
           console.warn('[GuruImage] Image failed to load:', src);
           if (retries > 0) {
             console.log(`[GuruImage] Retrying... (${retries} attempts left)`);
             setTimeout(() => {
-              // Append a cache buster parameter to force a refetch
               const retrySrc = src.includes('?') ? `${src}&retry=${retries}` : `${src}?retry=${retries}`;
               updateImg(el, retrySrc, alt, classToApply, retries - 1);
-            }, 500); // Wait 500ms before retry
+            }, 500);
           } else {
             console.error('[GuruImage] All retries failed. Using fallback.');
-            cleanup();
-            if (el.src !== defaultImg) {
-              el.src = defaultImg; // Fallback to Sri Guru Granth Sahib Ji
-              el.style.opacity = '1';
+            if (el.getAttribute('src') !== defaultImg) {
+              updateImg(el, defaultImg, 'Sri Guru Granth Sahib Ji', classToApply, 0);
             }
           }
         };
 
-        const cleanup = () => {
-          el.removeEventListener('load', onLoad);
-          el.removeEventListener('error', onError);
-        };
-
-        el.addEventListener('load', onLoad);
-        el.addEventListener('error', onError);
-
-        // Execute update
-        el.src = src;
-        el.alt = alt;
-
-        // Instant check if already cached
-        if (el.complete && el.naturalWidth > 0) {
-          onLoad();
+        // Start preloading in background (old image stays visible)
+        preloadImg.src = src;
+        // If browser cached it synchronously, onload fires immediately
+        if (preloadImg.complete && preloadImg.naturalWidth > 0) {
+          doSwap();
         }
       };
 
@@ -1438,13 +1449,19 @@
         if (!img) return;
         const newAbsolute = new URL(src, document.baseURI).href;
         if (img.src === newAbsolute) return; // Already correct, no re-download
-        img.style.transition = 'opacity 0.5s ease';
-        img.style.opacity = '0';
-        setTimeout(() => {
-          img.src = src;
-          img.onload = () => { img.style.opacity = '1'; };
-          img.onerror = () => { img.style.opacity = '1'; };
-        }, 250);
+        const preload = new Image();
+        preload.onload = () => {
+          img.style.transition = 'opacity 0s';
+          img.style.opacity = '0';
+          requestAnimationFrame(() => {
+            img.src = src;
+            img.style.transition = 'opacity 0.5s ease';
+            requestAnimationFrame(() => { img.style.opacity = '1'; });
+          });
+        };
+        preload.onerror = () => { img.src = src; };
+        preload.src = src;
+        if (preload.complete && preload.naturalWidth > 0) preload.onload();
       });
     }
 
