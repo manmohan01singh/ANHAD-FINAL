@@ -341,13 +341,14 @@
       padding: 0 16px !important;
       gap: 0 !important;
       position: relative;
+      min-height: 52px;
     }
     
     /* LEFT BUTTON PAIR - SEPARATE WATERDROPLET */
     .header__left {
       display: flex !important;
-      gap: 6px !important;
-      padding: 4px !important;
+      gap: 4px !important;
+      padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
       backdrop-filter: blur(60px) saturate(180%) !important;
@@ -357,14 +358,14 @@
         0 2px 12px rgba(0, 0, 0, 0.1),
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
     
     /* RIGHT BUTTON PAIR - SEPARATE WATERDROPLET */
     .header__right {
       display: flex !important;
-      gap: 6px !important;
-      padding: 4px !important;
+      gap: 4px !important;
+      padding: 3px !important;
       border-radius: 50px !important;
       background: rgba(255, 255, 255, 0.06) !important;
       backdrop-filter: blur(60px) saturate(180%) !important;
@@ -374,7 +375,7 @@
         0 2px 12px rgba(0, 0, 0, 0.1),
         inset 0 1px 1px rgba(255, 255, 255, 0.12) !important;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
     
     /* DARK MODE BUTTON PAIRS */
@@ -612,12 +613,15 @@
       text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
     }
     
-    /* CENTER THE HEADER CENTER */
+    /* CENTER THE HEADER CENTER - Absolute positioned for perfect centering */
     .header__center {
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
       z-index: 1;
     }
 
