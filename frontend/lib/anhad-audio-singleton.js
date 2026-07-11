@@ -1137,9 +1137,45 @@
         // Safety: always restore volume after 5s
         setTimeout(() => { if (audio && audio.volume < 0.1) audio.volume = 0.8; }, 5000);
       } else {
-        performSeek(false);
+        const seeked = performSeek(false);
 
-        // FADE-IN FIX: Smooth transition when starting a new track or playing from beginning
+        // If duration is still unknown on timeout/forced path, defer play
+        // until loadedmetadata arrives — otherwise play() throws "interrupted
+        // by a new load request" because the audio element has no data.
+        if (!seeked && (reason === 'timeout' || reason === 'forced')) {
+          console.warn(`[AnhadAudio] ⏰ Duration still unknown (${reason}), deferring play until metadata loads`);
+          audio.addEventListener('loadedmetadata', () => {
+            if (requestId !== playRequestId || currentStream !== streamName) return;
+            reportTrackDuration();
+            const seeked2 = performSeek(false);
+            const fromStart = requestedPosition < 2;
+            if (fromStart) { audio.volume = 0; } else { audio.volume = 0.8; }
+            audio.play().then(() => {
+              isPlaying = true;
+              isLoading = false;
+              emit('statechange', getPublicState());
+              console.log(`[AnhadAudio] ▶️ Playing from ${Math.floor(audio.currentTime)}s (deferred)`);
+              if (fromStart) {
+                const targetVol = 0.8;
+                const fadeMs = 2000;
+                const steps = 20;
+                let step = 0;
+                const interval = setInterval(() => {
+                  step++;
+                  if (audio) { audio.volume = targetVol * (step / steps); }
+                  if (step >= steps) { clearInterval(interval); if (audio) audio.volume = targetVol; }
+                }, fadeMs / steps);
+              }
+            }).catch(e => {
+              console.warn('[AnhadAudio] ❌ Deferred play failed:', e.message);
+              isPlaying = false;
+              isLoading = false;
+              emit('statechange', getPublicState());
+            });
+          }, { once: true });
+          return;
+        }
+
         const isFromBeginning = seekPos <= 2;
         if (isFromBeginning) {
           audio.volume = 0;
@@ -1195,13 +1231,27 @@
       audio.addEventListener('loadedmetadata', onMeta, { once: true });
       // canplay as fallback in case loadedmetadata never fires (some browsers)
       audio.addEventListener('canplay', onCanPlay, { once: true });
-      // 8-second hard timeout — if CDN completely fails to respond
+      // 25-second hard timeout — CDN sometimes takes long to respond
       setTimeout(() => {
         if (!seekAndPlayCalled && requestId === playRequestId) {
-          console.warn(`[AnhadAudio] ⏰ 8s metadata timeout (readyState: ${audio.readyState}), forcing play anyway`);
-          doSeekAndPlay('timeout');
+          if (audio.readyState >= 1) {
+            console.warn(`[AnhadAudio] ⏰ 25s metadata timeout (readyState: ${audio.readyState}), metadata arrived late`);
+            doSeekAndPlay('timeout');
+          } else {
+            console.warn(`[AnhadAudio] ⏰ 25s metadata timeout (readyState: ${audio.readyState}), waiting for loadedmetadata...`);
+            audio.addEventListener('loadedmetadata', () => {
+              if (!seekAndPlayCalled && requestId === playRequestId) doSeekAndPlay('loadedmetadata');
+            }, { once: true });
+            // Final safety — force play after another 20s (45s total)
+            setTimeout(() => {
+              if (!seekAndPlayCalled && requestId === playRequestId) {
+                console.warn(`[AnhadAudio] ⏰ Final 45s timeout, forcing play`);
+                doSeekAndPlay('forced');
+              }
+            }, 20000);
+          }
         }
-      }, 8000);
+      }, 25000);
     }
   }
 
@@ -1298,20 +1348,19 @@
           isPlayLocked = false;
           if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
           
-          // Emit error event with user-friendly message
-          emit('error', { 
-            message: 'Tap the play button to start audio',
-            code: 'AUTOPLAY_BLOCKED'
-          });
           emit('statechange', getPublicState());
           
-          // For live streams, show a user-friendly notification
-          window.dispatchEvent(new CustomEvent('anhadAutoplayBlocked', {
-            detail: {
-              stream: streamName,
-              message: 'Please tap the play button to start audio playback'
+          // Retry on next user interaction
+          const retryPlay = function() {
+            document.removeEventListener('click', retryPlay, { capture: true });
+            document.removeEventListener('touchend', retryPlay, { capture: true });
+            if (currentStream === streamName) {
+              audio.src = freshUrl;
+              audio.play().catch(function(){});
             }
-          }));
+          };
+          document.addEventListener('click', retryPlay, { once: true, capture: true });
+          document.addEventListener('touchend', retryPlay, { once: true, capture: true });
         }
 
       } else if (stream.type === 'playlist') {
