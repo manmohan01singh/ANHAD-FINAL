@@ -2896,7 +2896,7 @@
     <!-- ════════════════════════════════════════════════════════════════════
          UPCOMING GURPURAB — Contextual Event Card
     ════════════════════════════════════════════════════════════════════ -->
-    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important; opacity: 0; transition: opacity 0.3s ease-in-out;">
+    <article class="event-card ios-animate-in" id="eventCard" aria-label="Upcoming Gurpurab" data-href="Calendar/GurpurabCalendar-ios.html" style="margin-top: -30px !important;">
       <!-- Celebration/Remembrance Badges -->
       <div class="gurpurab-celebration-badge">✦ Today: Gurpurab</div>
       <div class="gurpurab-remembrance-badge">🕯️ Remembrance Day</div>
@@ -2904,11 +2904,11 @@
       <div class="event-card__main">
         <div class="event-card__info">
           <div class="event-card__eyebrow">UPCOMING EVENT</div>
-          <div class="event-card__title" id="eventTitle"></div>
-          <div class="event-card__date" id="eventDate"></div>
+          <div class="event-card__title skeleton" id="eventTitle">Loading...</div>
+          <div class="event-card__date skeleton" id="eventDate">—</div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown" id="eventCountdown"></div>
-            <div class="event-card__countdown-label" id="eventCountdownLabel"></div>
+            <div class="event-card__countdown skeleton" id="eventCountdown">--</div>
+            <div class="event-card__countdown-label skeleton" id="eventCountdownLabel">days</div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
             Learn More
@@ -2916,11 +2916,11 @@
           </button>
         </div>
         <div class="event-card__guru-img-wrapper" id="eventGuruImgWrapper" style="width: 130px; height: 130px; min-width: 130px; min-height: 130px; aspect-ratio: 1/1;">
-          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" loading="lazy" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
+          <img decoding="async" class="event-card__guru-img" id="eventGuruImg" src="" alt="" width="130" height="130" style="width: 93%; height: 97%; object-fit: cover; object-position: center; border-radius: 60%;">
         </div>
       </div>
       <div class="event-card__days-badge">
-        <span id="eventCountdownBadgeValue"></span> <span id="eventCountdownBadgeLabel"></span>
+        <span id="eventCountdownBadgeValue">--</span> <span id="eventCountdownBadgeLabel">days left</span>
       </div>
     </article>
 
