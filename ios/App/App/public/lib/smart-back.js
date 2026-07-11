@@ -21,7 +21,12 @@
   /** Get a normalized page key (pathname + search, no hash) */
   function pageKey(url) {
     try {
-      var u = new URL(url || window.location.href);
+      // Capacitor file:// URLs: new URL() may fail, fallback to pathname
+      var href = url || window.location.href;
+      if (href.indexOf('file://') === 0 || href.indexOf('capacitor://') === 0) {
+        return window.location.pathname + window.location.search;
+      }
+      var u = new URL(href);
       return u.pathname + u.search;
     } catch (_) {
       return window.location.pathname + window.location.search;
@@ -371,13 +376,11 @@
   // SPA INTEGRATION: Re-wire when page content changes via smooth-navigation
   var lastHref = window.location.href;
   window.addEventListener('anhad_page_changed', function() {
-    console.log('[SmartBack] Page changed, recording SPA referrer and re-wiring back buttons...');
     if (lastHref && lastHref !== window.location.href) {
       var key = pageKey(window.location.href);
       var map = loadMap(REFERRER_KEY);
       map[key] = lastHref;
       saveMap(REFERRER_KEY, map);
-      console.log('[SmartBack] SPA Referrer recorded:', lastHref, '->', window.location.href);
     }
     lastHref = window.location.href;
     autoWire();

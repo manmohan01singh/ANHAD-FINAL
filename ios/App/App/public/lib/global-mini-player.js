@@ -21,7 +21,6 @@
   // ═══════════════════════════════════════════════════════════════════════════
   
   if (window.GlobalMiniPlayer && window.GlobalMiniPlayer._initialized) {
-    console.warn('[GlobalMiniPlayer] Already initialized, ignoring duplicate');
     return;
   }
 
@@ -831,33 +830,24 @@
   // ═══════════════════════════════════════════════════════════════════════════
 
   function init() {
-    console.log('[GMP] init() called');
     injectCSS();
     injectMiniPlayer();
-    console.log('[GMP] after injectMiniPlayer, miniPlayerEl:', miniPlayerEl);
 
-    // Setup window.AnhadAudio event synchronizers (Task 5.4)
     if (window.AnhadAudio) {
-      // Subscribe to state changes from master playback engine
       window.AnhadAudio.on('statechange', updateMiniPlayer);
-      
-      // Subscribe to time updates from master playback engine
       window.AnhadAudio.on('timeupdate', updateMiniPlayer);
-
-      // Subscribe to loading state changes
       window.AnhadAudio.on('loading', (e) => {
         setLoadingState(e.isLoading);
       });
     }
 
-    // Check if we should show mini player based on AnhadAudio getState()
     if (window.AnhadAudio) {
       const state = window.AnhadAudio.getState();
       const wasNavigating = sessionStorage.getItem('anhad_navigating');
-      if (state.isPlaying || wasNavigating) {
+      if ((state.isPlaying && state.currentStream) || wasNavigating) {
         if (miniPlayerEl) {
           miniPlayerEl.classList.add('gmp--visible');
-          updateMiniPlayer(); // Use new updateMiniPlayer function
+          updateMiniPlayer();
         }
         if (wasNavigating) {
           sessionStorage.removeItem('anhad_navigating');
@@ -928,55 +918,36 @@
   setInterval(syncPendingKirtanTime, 5000);
 
   setInterval(function () {
-    // PRIMARY: Check AnhadAudio state
-    // BACKUP: Also check audio.paused directly in case event listeners missed
     const actuallyPlaying = window.AnhadAudio ? window.AnhadAudio.isPlaying() : false;
 
-    console.log('[GMP] ⏱️ Timer tick - actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
-
     if (actuallyPlaying) {
-      // BRUTAL VIRTUAL LIVE: Save position every 10s for accurate resume
-      persistState();
+      accumulatedSeconds += 10;
 
-      accumulatedSeconds += 10; // Add 10 seconds
-
-      // Sync every 60 seconds accumulated
       if (accumulatedSeconds >= 60) {
         const minutes = Math.floor(accumulatedSeconds / 60);
-        accumulatedSeconds = accumulatedSeconds % 60; // Keep remainder
+        accumulatedSeconds = accumulatedSeconds % 60;
 
-        // Sync to AnhadStats
         if (window.AnhadStats && typeof window.AnhadStats.addListeningTime === 'function') {
           window.AnhadStats.addListeningTime(minutes);
-          console.log('[GMP] ✅ Synced', minutes, 'min to AnhadStats');
         }
 
-        // Sync to UnifiedStats (single source of truth)
         if (window.UnifiedStats) {
           window.UnifiedStats.recordKirtanListening(minutes);
-          console.log('[GMP] ✅ Synced', minutes, 'min to UnifiedStats');
         }
 
-        // DIRECT: Sync to DashboardAnalytics for immediate chart update
         if (window.DashboardAnalytics && typeof window.DashboardAnalytics.updateDailyData === 'function') {
-          // First sync any pending time from other pages
           const pending = getPendingKirtanMinutes();
           if (pending > 0) {
             window.DashboardAnalytics.updateDailyData('listen', pending);
-            console.log(`[GMP] ✅ Synced ${pending} pending min from other pages`);
             clearPendingKirtanMinutes();
           }
-          // Then sync current minute
           window.DashboardAnalytics.updateDailyData('listen', minutes);
-          console.log('[GMP] ✅ Synced', minutes, 'min to DashboardAnalytics');
         } else {
-          // Dashboard not available - store in localStorage for later
           addPendingKirtanMinutes(minutes);
-          console.log(`[GMP] ⏳ Stored ${minutes} min in localStorage (Dashboard not available). Total pending: ${getPendingKirtanMinutes()} min`);
         }
       }
     }
-  }, 10000); // Check every 10 seconds
+  }, 10000);
 
   // Start as early as possible
   if (document.readyState === 'loading') {

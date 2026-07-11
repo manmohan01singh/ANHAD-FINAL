@@ -832,8 +832,22 @@
         </div>
     </div>
 
-    <script src="../lib/smart-back.js?v=2.1"></script>
-    <script src="../lib/anhad-audio-singleton.js?v=2.5"></script>
-    <script src="daily-hukamnama.js?v=2.7"></script>
+    <script>
+    // Global error handler to prevent Capacitor blank page
+    window.addEventListener('error', function(e) {
+      var loader = document.getElementById('skeletonLoader');
+      if (loader && !loader.classList.contains('hidden')) {
+        loader.style.opacity = '0';
+        setTimeout(function() { loader.classList.add('hidden'); }, 500);
+      }
+      var content = document.getElementById('hukamContent');
+      if (content && !content.innerHTML.trim()) {
+        content.innerHTML = '<div style="text-align:center;padding:80px 24px;"><div style="font-size:2.5rem;margin-bottom:20px;">🙏</div><p style="color:var(--text-secondary);margin-bottom:8px;">Daily Hukamnama</p><p style="color:var(--text-tertiary);font-size:0.85rem;">Loading... tap Retry if stuck</p><button onclick="location.reload()" style="background:var(--accent,#C9A84C);border:none;padding:10px 28px;border-radius:20px;font-weight:500;font-size:0.9rem;color:#000;cursor:pointer;margin-top:16px;">Retry</button></div>';
+      }
+    });
+    </script>
+    <script src="../lib/smart-back.js?v=2.1" defer></script>
+    <script src="../lib/anhad-audio-singleton.js?v=2.5" defer></script>
+    <script src="daily-hukamnama.js?v=2.7" defer></script>
 </body>
 </html>

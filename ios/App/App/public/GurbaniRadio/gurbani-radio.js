@@ -140,24 +140,19 @@
     function getSlot() {
         const forced = localStorage.getItem('anhad_forced_time_of_day');
         if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
-            console.log('[GR] Using forced time:', forced);
             return forced;
         }
         const h = new Date().getHours();
-        console.log('[GR] Current hour:', h);
         if (h >= 5 && h < 9) return 'morning';
         if (h >= 9 && h < 16) return 'day';
         if (h >= 16 && h < 20) return 'evening';
-        console.log('[GR] Returning night slot');
         return 'night';
     }
 
     function syncTimeOfDay() {
         const slot = getSlot();
         const prevSlot = document.documentElement.getAttribute('data-time-of-day');
-        console.log('[GR] syncTimeOfDay - current slot:', slot, 'prev slot:', prevSlot);
         if (slot === prevSlot) return;
-        console.log('[GR] Time slot changed from', prevSlot, 'to', slot);
         document.documentElement.setAttribute('data-time-of-day', slot);
         updateBg(slot);
         const st = STREAMS[curStream];
@@ -299,21 +294,15 @@
     const BG_ELS = { morning: elBgMorning, day: elBgDay, evening: elBgEvening, night: elBgNight };
 
     function updateBg(slot) {
-        console.log('[GR] updateBg called with slot:', slot);
         Object.entries(BG_ELS).forEach(([k, el]) => {
-            if (!el) {
-                console.log('[GR] Missing element for slot:', k);
-                return;
-            }
+            if (!el) return;
             if (k === slot) {
                 el.classList.remove('hidden');
                 el.style.opacity = '1';
                 el.style.display = 'block';
-                console.log('[GR] Showing:', k);
             } else {
                 el.classList.add('hidden');
                 el.style.opacity = '0';
-                console.log('[GR] Hiding:', k);
             }
         });
     }
@@ -747,7 +736,6 @@
 
     function initBg() {
         const initialSlot = getSlot();
-        console.log('[GR] Initial time slot:', initialSlot);
         updateBg(initialSlot);
         syncTimeOfDay();
     }
@@ -855,7 +843,7 @@
                 // Use click/touchend (NOT pointerdown/touchstart) — only click/touchend are valid
                 // user-gesture events for audio.play() on Android WebView
                 if (window.Capacitor) {
-                    console.log('[GurbaniRadio] Capacitor detected — deferring auto-play to first user interaction');
+                    /* defer auto-play */
                     const playOnInteraction = function() {
                         document.removeEventListener('click', playOnInteraction, { capture: true });
                         document.removeEventListener('touchend', playOnInteraction, { capture: true });
@@ -874,7 +862,7 @@
             // Fallback if singleton is not loaded
             if (forcePlay) {
                 if (window.Capacitor) {
-                    console.log('[GurbaniRadio] Capacitor detected — deferring auto-play to first user interaction');
+                    /* defer auto-play */
                     const playOnInteraction = function() {
                         document.removeEventListener('click', playOnInteraction, { capture: true });
                         document.removeEventListener('touchend', playOnInteraction, { capture: true });

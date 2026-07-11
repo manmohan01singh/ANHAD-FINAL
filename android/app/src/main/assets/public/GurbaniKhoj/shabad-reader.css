@@ -524,101 +524,18 @@ html, body {
     position: relative;
 }
 
-/*  Highlighted Verse (Pankti) Styling — Divine Spotlight  */
+/*  Highlighted Verse (Pankti) Styling  */
 .shabad-line.highlighted {
-    position: relative;
-    background: linear-gradient(
-        135deg,
-        var(--accent-light) 0%,
-        rgba(255, 255, 255, 0.05) 50%,
-        var(--accent-light) 100%
-    );
-    border-radius: 16px;
-    padding: 20px 28px;
-    margin: 12px -12px;
-    box-shadow: 
-        0 8px 32px -8px var(--floral-primary),
-        0 2px 12px -4px var(--floral-accent),
-        inset 0 2px 24px -8px rgba(255, 255, 255, 0.4),
-        inset 0 -2px 16px -8px var(--floral-primary);
-    border: 2px solid transparent;
-    border-image: linear-gradient(
-        135deg,
-        var(--floral-primary),
-        var(--floral-accent),
-        var(--floral-primary)
-    ) 1;
-    border-image-slice: 1;
-    border-radius: 16px;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    animation: verseGlow 3s ease-in-out infinite;
-    transform: translateY(0);
-    isolation: isolate;
+    background: var(--accent-light);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin: 8px -8px;
 }
 
-/* Elegant decorative corner accents */
-.shabad-line.highlighted::before,
-.shabad-line.highlighted::after {
-    content: '◈';
-    position: absolute;
-    font-size: 12px;
-    color: var(--floral-primary);
-    opacity: 0.5;
-    animation: cornerPulse 2s ease-in-out infinite;
-}
-
-.shabad-line.highlighted::before {
-    top: 8px;
-    left: 8px;
-}
-
-.shabad-line.highlighted::after {
-    bottom: 8px;
-    right: 8px;
-    animation-delay: 1s;
-}
-
-@keyframes verseGlow {
-    0%, 100% { 
-        box-shadow: 
-            0 8px 32px -8px var(--floral-primary),
-            0 2px 12px -4px var(--floral-accent),
-            inset 0 2px 24px -8px rgba(255, 255, 255, 0.4),
-            inset 0 -2px 16px -8px var(--floral-primary);
-        transform: translateY(0) scale(1);
-    }
-    50% { 
-        box-shadow: 
-            0 12px 48px -6px var(--floral-primary),
-            0 4px 20px -2px var(--floral-accent),
-            inset 0 3px 32px -6px rgba(255, 255, 255, 0.5),
-            inset 0 -3px 24px -6px var(--floral-primary);
-        transform: translateY(-2px) scale(1.01);
-    }
-}
-
-@keyframes cornerPulse {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 0.7; transform: scale(1.2); }
-}
-
-/* Highlighted verse Gurmukhi — bold accent color with elegant gradient */
+/* Highlighted verse Gurmukhi */
 .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(
-        135deg,
-        var(--accent),
-        var(--floral-primary),
-        var(--accent)
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 800;
-    transform: scale(1.05);
-    transform-origin: center;
-    letter-spacing: 0.03em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    filter: drop-shadow(0 0 2px var(--floral-primary));
+    color: var(--accent);
+    font-weight: 700;
 }
 
 /* Highlighted verse other scripts — bold accent */
@@ -637,31 +554,12 @@ html, body {
 /* Dark mode adjustments for highlighted pankti */
 [data-reader-theme="charcoal"] .shabad-line.highlighted,
 [data-reader-theme="midnight"] .shabad-line.highlighted {
-    background: linear-gradient(
-        135deg,
-        rgba(212, 175, 55, 0.15) 0%,
-        rgba(212, 175, 55, 0.05) 50%,
-        rgba(212, 175, 55, 0.15) 100%
-    );
-    box-shadow: 
-        0 8px 32px -8px rgba(212, 175, 55, 0.4),
-        0 2px 12px -4px rgba(212, 175, 55, 0.3),
-        inset 0 2px 24px -8px rgba(255, 255, 255, 0.1),
-        inset 0 -2px 16px -8px rgba(212, 175, 55, 0.2);
+    background: rgba(212, 175, 55, 0.12);
 }
 
 [data-reader-theme="charcoal"] .shabad-line.highlighted .gurmukhi,
 [data-reader-theme="midnight"] .shabad-line.highlighted .gurmukhi {
-    background: linear-gradient(
-        135deg,
-        #f0c060,
-        #d4af37,
-        #f0c060
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.6));
+    color: #d4af37;
 }
 
 /* Subtle text-shadow on all Gurmukhi for letterpress depth */
