@@ -1212,26 +1212,28 @@
       return;
     }
 
-    // CAPACITOR FIX: Block re-entrant play() calls.
-    // On Android, the auto-retry logic + foreground service events can trigger
-    // multiple overlapping play() calls which cause the reload loop.
-    // BUGFIX: Only block if audio is actually in a loading/buffering state.
-    // If isPlayLocked is stale (audio not loading for >3s or already playing), clear it
-    // and allow the user's explicit play intent to proceed.
+    // BUGFIX: When the user explicitly requests a stream that is already loading,
+    // wait for the current load to complete instead of dropping their request.
+    // This prevents the "play blocked" scenario when autoResume is active.
     if (isPlayLocked && streamName === currentStream) {
       if (audio && !audio.paused && !audio.ended) {
-        // Already playing the same stream — this is a no-op, silently return
-        console.log('[AnhadAudio] ⚡ play() blocked — already playing stream:', streamName);
+        console.log('[AnhadAudio] ⚡ play() — already playing stream:', streamName);
         return;
       }
-      // Check if the lock is stale: audio not actually loading
-      const isActuallyBuffering = audio && audio.networkState === 2; // NETWORK_LOADING
-      if (isActuallyBuffering && (Date.now() - lastLoadedAt) < 3000) {
-        console.log('[AnhadAudio] ⚡ play() blocked — stream actively loading:', streamName);
-        return;
-      }
-      // Lock is stale — clear it and proceed with user intent
-      console.log('[AnhadAudio] 🔓 Stale play lock cleared — allowing user play for:', streamName);
+      // Wait for the current play cycle to finish (lock clears via 'playing' event or timeout)
+      console.log('[AnhadAudio] ⏳ play() deferred — waiting for current load of:', streamName);
+      await new Promise(resolve => {
+        const interval = setInterval(() => {
+          if (!isPlayLocked || (audio && !audio.paused)) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+        setTimeout(() => { clearInterval(interval); resolve(); }, 20000);
+      });
+      // If it's now playing the requested stream, we're done
+      if (currentStream === streamName && audio && !audio.paused) return;
+      // Otherwise, clear stale state and proceed with fresh play
       isPlayLocked = false;
       if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
     }

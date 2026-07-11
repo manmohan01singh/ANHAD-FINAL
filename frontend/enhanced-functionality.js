@@ -67,9 +67,14 @@ class GurbaniRadioEnhancements {
       });
     }
 
-    if (settingsBtn) {
-      settingsBtn.addEventListener('click', () => this.openSettings());
-    }
+    // Settings button - removed listener, let default link behavior work
+    // if (settingsBtn) {
+    //   settingsBtn.addEventListener('click', (e) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     this.openSettings();
+    //   });
+    // }
 
     // Dialog close (delegated) for elements with [data-close-modal]
     // This is safe alongside script.js and also enables close for dynamically created dialogs.

@@ -486,7 +486,12 @@ self.addEventListener('fetch', (event) => {
   );
 
   if (isApiOrHukamnama) {
-    event.respondWith(networkFirst(event.request));
+    event.respondWith(networkFirst(event.request).catch(() => {
+      return new Response(JSON.stringify({ error: 'offline' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }));
     return;
   }
 
@@ -495,13 +500,23 @@ self.addEventListener('fetch', (event) => {
   // background so the next navigation gets updated content.
   // Navigation Preload: if the browser already started fetching, use that response.
   if (event.request.mode === 'navigate') {
-    event.respondWith(navigateWithPreload(event));
+    event.respondWith(navigateWithPreload(event).catch(() => {
+      return new Response(JSON.stringify({ error: 'offline' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }));
     return;
   }
 
   // 4. ALL OTHER STATIC ASSETS (IMAGES, CSS, JS, AUDIO) -> CACHE FIRST (Offline-first)
   // Serve from cache immediately; if not found in cache, fetch from network and cache it.
-  event.respondWith(cacheFirst(event.request));
+  event.respondWith(cacheFirst(event.request).catch(() => {
+    return new Response(JSON.stringify({ error: 'offline' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }));
 });
 
 /**
@@ -583,7 +598,10 @@ async function networkFirst(request) {
     if (cached) {
       return cached;
     }
-    throw error;
+    return new Response(JSON.stringify({ error: 'offline' }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 
