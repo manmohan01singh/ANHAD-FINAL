@@ -473,6 +473,12 @@
     const currentTheme = htmlEl.getAttribute('data-theme') || 'light';
     htmlEl.style.backgroundColor = currentTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
 
+    // ── SMOOTH CROSSFADE: Fade out, swap, fade in ─────────────────────────
+    // Adds a quick opacity transition so page changes feel smooth, not abrupt.
+    currentApp.classList.remove('app--fade-in');
+    currentApp.classList.add('app--fade-out');
+    await new Promise(r => setTimeout(r, 80));
+
     // ── SWAP CONTENT — with DOM Node Cache ────────────────────────────────
     // CRITICAL FLASH FIX: For shell pages (Home, Insights, Favorites, Dashboard),
     // we store the live DOM node tree in DOM_CACHE after first visit.
@@ -493,6 +499,14 @@
       // First visit: standard innerHTML swap
       currentApp.innerHTML = newApp.innerHTML;
     }
+
+    // Fade in with a slight delay to let the staggered anhad-enter animation lead
+    requestAnimationFrame(() => {
+      currentApp.classList.remove('app--fade-out');
+      requestAnimationFrame(() => {
+        currentApp.classList.add('app--fade-in');
+      });
+    });
     
     // Update URL — store url in state so popstate can do cache lookup
     if (!options.replace) {

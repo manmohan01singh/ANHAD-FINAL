@@ -465,6 +465,17 @@ a:active {
   }
 }
 
+/* Crossfade transition for SPA page swaps */
+.app--fade-out {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  pointer-events: none;
+}
+.app--fade-in {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
 /* Safety: if app--exiting gets stuck (bfcache), undo it on pageshow via JS.
    This CSS-only fallback also helps: animation won't replay on restore. */
 .app:not(.app--exiting) {
