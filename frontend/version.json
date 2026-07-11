@@ -1,7 +1,7 @@
 {
-  "version": "5.2.1",
-  "buildTime": "2026-07-11T18:00:00.000Z",
-  "timestamp": 1783792800000,
-  "commitHash": "time-based-artwork-mini-player",
+  "version": "5.3.0",
+  "buildTime": "2026-07-11T18:15:00.000Z",
+  "timestamp": 1783793700000,
+  "commitHash": "force-cache-clear-time-artwork",
   "branch": "main"
 }
