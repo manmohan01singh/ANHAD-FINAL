@@ -862,6 +862,10 @@
       // 2. Look for data-href attributes (for custom cards/buttons)
       const clickable = e.target.closest('[data-href]');
       if (clickable) {
+        // Skip if element already has its own onclick handler — it handles navigation directly
+        if (clickable.hasAttribute('onclick') && clickable.getAttribute('onclick').includes('location.href')) {
+          return;
+        }
         const href = clickable.getAttribute('data-href');
         if (href) {
           e.preventDefault();
@@ -1004,8 +1008,10 @@
       const match = onclick.match(/location\.href\s*=\s*['"](.*?)['"]/);
       if (match && match[1]) {
         el.setAttribute('data-href', match[1]);
-        el.removeAttribute('onclick');
-        console.log(`[SmoothNav] Converted onclick to data-href for: ${match[1]}`);
+        // IMPORTANT: Keep the onclick as a direct fallback — do NOT remove it.
+        // Removing it breaks the Settings button in Capacitor where the
+        // delegated click handler may not work on first page load.
+        console.log(`[SmoothNav] Set data-href for: ${match[1]}`);
       }
     });
   }

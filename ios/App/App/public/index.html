@@ -3522,7 +3522,13 @@
             const card = this.closest('.hero-card');
             const stream = card ? card.dataset.stream : null;
             if (!stream) return;
-
+            // Hukamnama badge navigates to player page instead of playing as live audio
+            if (stream === 'hukamnama') {
+              const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
+              if (window.navigateTo) window.navigateTo(href);
+              else window.location.href = href;
+              return;
+            }
             if (window.AnhadAudio) {
               // If it's already playing this stream, jump to live
               const state = window.AnhadAudio.getState();
@@ -3561,6 +3567,15 @@
             e.preventDefault();
             e.stopPropagation(); // Don't trigger card navigation
             const stream = this.dataset.stream;
+            // Hukamnama is NOT a live audio stream — navigate to its dedicated player page
+            if (stream === 'hukamnama') {
+              console.log('[Homepage] Hukamnama play clicked — navigating to player page');
+              const card = this.closest('.hero-card');
+              const href = card ? card.dataset.href : 'Hukamnama/daily-hukamnama.html';
+              if (window.navigateTo) window.navigateTo(href);
+              else window.location.href = href;
+              return;
+            }
             if (window.AnhadAudio) {
               console.log('[Homepage] Hero play button clicked for:', stream);
               window.AnhadAudio.play(stream);
