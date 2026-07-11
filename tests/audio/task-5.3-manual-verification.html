@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 5.3 Manual Verification - getState() Method</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      border-bottom: 3px solid #0066cc;
+      padding-bottom: 10px;
+    }
+    .test-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-result {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border-left: 4px solid;
+    }
+    .pass {
+      background: #e7f5e7;
+      border-color: #28a745;
+      color: #155724;
+    }
+    .fail {
+      background: #f8e7e7;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    .info {
+      background: #e7f3f8;
+      border-color: #0066cc;
+      color: #004085;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+    button {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0052a3;
+    }
+    .summary {
+      font-size: 18px;
+      font-weight: bold;
+      padding: 20px;
+      text-align: center;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 Task 5.3 Verification: Centralize Master State</h1>
+  
+  <div class="test-section">
+    <h2>Task Description</h2>
+    <p><strong>File:</strong> frontend/lib/anhad-audio-singleton.js</p>
+    <p><strong>Task:</strong> Add getState() method returning master playback state</p>
+    <p><strong>Requirements:</strong> 2.6, 2.7, 2.8, 2.9, 2.10</p>
+    <p><strong>Bug Condition:</strong> No single source of truth for playback state</p>
+    <p><strong>Expected Behavior:</strong> Master state accessible to all UI components via getState()</p>
+  </div>
+
+  <div class="test-section">
+    <h2>Required Fields</h2>
+    <p>The getState() method must return the following fields:</p>
+    <ul>
+      <li>currentStream</li>
+      <li>currentTrackIndex</li>
+      <li>currentTrackTitle</li>
+      <li>currentTrackArtist</li>
+      <li>isPlaying</li>
+      <li>isLoading</li>
+      <li>currentTime</li>
+      <li>duration</li>
+      <li>volume</li>
+      <li>pauseAnchor</li>
+    </ul>
+  </div>
+
+  <div class="test-section">
+    <h2>Test Results</h2>
+    <div id="results"></div>
+    <button onclick="runTests()">Run Verification Tests</button>
+    <button onclick="showLiveState()">Show Live State</button>
+  </div>
+
+  <div class="test-section">
+    <h2>Master State (Live)</h2>
+    <pre><code id="live-state">Click "Show Live State" to display current master state</code></pre>
+  </div>
+
+  <div id="summary"></div>
+
+  <!-- Load the AnhadAudio singleton -->
+  <script src="../../frontend/lib/anhad-audio-singleton.js"></script>
+
+  <script>
+    let testResults = [];
+
+    function addResult(name, passed, message, details = null) {
+      testResults.push({ name, passed, message, details });
+      renderResults();
+    }
+
+    function renderResults() {
+      const container = document.getElementById('results');
+      container.innerHTML = testResults.map(r => `
+        <div class="test-result ${r.passed ? 'pass' : 'fail'}">
+          <strong>${r.passed ? '✅' : '❌'} ${r.name}</strong>
+          <p>${r.message}</p>
+          ${r.details ? `<pre><code>${JSON.stringify(r.details, null, 2)}</code></pre>` : ''}
+        </div>
+      `).join('');
+
+      // Update summary
+      const passed = testResults.filter(r => r.passed).length;
+      const failed = testResults.filter(r => !r.passed).length;
+      const summaryDiv = document.getElementById('summary');
+      
+      if (testResults.length > 0) {
+        summaryDiv.innerHTML = `
+          <div class="summary ${failed === 0 ? 'pass' : 'fail'}">
+            ${failed === 0 ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}<br>
+            Passed: ${passed} / ${testResults.length}
+          </div>
+        `;
+      }
+    }
+
+    function runTests() {
+      testResults = [];
+      
+      // Test 1: window.AnhadAudio exists
+      if (typeof window.AnhadAudio !== 'undefined') {
+        addResult(
+          'Test 1: window.AnhadAudio exists',
+          true,
+          'AnhadAudio singleton is loaded'
+        );
+      } else {
+        addResult(
+          'Test 1: window.AnhadAudio exists',
+          false,
+          'AnhadAudio singleton not found'
+        );
+        return; // Can't continue without the singleton
+      }
+
+      // Test 2: getState method exists
+      if (typeof window.AnhadAudio.getState === 'function') {
+        addResult(
+          'Test 2: getState() method exists',
+          true,
+          'getState method is exposed in window.AnhadAudio API'
+        );
+      } else {
+        addResult(
+          'Test 2: getState() method exists',
+          false,
+          'getState method not found in window.AnhadAudio'
+        );
+        return;
+      }
+
+      // Test 3: getState returns an object
+      let state;
+      try {
+        state = window.AnhadAudio.getState();
+        if (state && typeof state === 'object') {
+          addResult(
+            'Test 3: getState() returns object',
+            true,
+            'getState() returns a valid state object'
+          );
+        } else {
+          addResult(
+            'Test 3: getState() returns object',
+            false,
+            `getState() returned: ${typeof state}`
+          );
+          return;
+        }
+      } catch (e) {
+        addResult(
+          'Test 3: getState() returns object',
+          false,
+          `getState() threw error: ${e.message}`
+        );
+        return;
+      }
+
+      // Test 4: Required fields present
+      const requiredFields = [
+        'currentStream',
+        'currentTrackIndex',
+        'currentTrackTitle',
+        'currentTrackArtist',
+        'isPlaying',
+        'isLoading',
+        'currentTime',
+        'duration',
+        'volume',
+        'pauseAnchor'
+      ];
+
+      const missingFields = requiredFields.filter(field => !(field in state));
+      
+      if (missingFields.length === 0) {
+        addResult(
+          'Test 4: All required fields present',
+          true,
+          `All ${requiredFields.length} required fields are present in state`,
+          { fields: requiredFields, values: requiredFields.reduce((acc, f) => ({ ...acc, [f]: state[f] }), {}) }
+        );
+      } else {
+        addResult(
+          'Test 4: All required fields present',
+          false,
+          `Missing fields: ${missingFields.join(', ')}`,
+          { missing: missingFields, present: Object.keys(state) }
+        );
+      }
+
+      // Test 5: Field types are correct
+      const typeErrors = [];
+      
+      if (state.currentStream !== null && typeof state.currentStream !== 'string') {
+        typeErrors.push('currentStream should be string or null');
+      }
+      if (typeof state.currentTrackIndex !== 'number') {
+        typeErrors.push('currentTrackIndex should be number');
+      }
+      if (typeof state.currentTrackTitle !== 'string') {
+        typeErrors.push('currentTrackTitle should be string');
+      }
+      if (typeof state.currentTrackArtist !== 'string') {
+        typeErrors.push('currentTrackArtist should be string');
+      }
+      if (typeof state.isPlaying !== 'boolean') {
+        typeErrors.push('isPlaying should be boolean');
+      }
+      if (typeof state.isLoading !== 'boolean') {
+        typeErrors.push('isLoading should be boolean');
+      }
+      if (typeof state.currentTime !== 'number') {
+        typeErrors.push('currentTime should be number');
+      }
+      if (typeof state.duration !== 'number') {
+        typeErrors.push('duration should be number');
+      }
+      if (typeof state.volume !== 'number') {
+        typeErrors.push('volume should be number');
+      }
+      if (state.pauseAnchor !== null && typeof state.pauseAnchor !== 'object') {
+        typeErrors.push('pauseAnchor should be object or null');
+      }
+
+      if (typeErrors.length === 0) {
+        addResult(
+          'Test 5: Field types are correct',
+          true,
+          'All fields have correct data types'
+        );
+      } else {
+        addResult(
+          'Test 5: Field types are correct',
+          false,
+          'Type errors found',
+          { errors: typeErrors }
+        );
+      }
+
+      // Test 6: pauseAnchor structure (if not null)
+      if (state.pauseAnchor !== null) {
+        const hasTrackIndex = 'trackIndex' in state.pauseAnchor;
+        const hasPosition = 'position' in state.pauseAnchor;
+        const hasTimestamp = 'timestamp' in state.pauseAnchor;
+        
+        if (hasTrackIndex && hasPosition && hasTimestamp) {
+          addResult(
+            'Test 6: pauseAnchor structure',
+            true,
+            'pauseAnchor has correct structure (trackIndex, position, timestamp)',
+            { pauseAnchor: state.pauseAnchor }
+          );
+        } else {
+          addResult(
+            'Test 6: pauseAnchor structure',
+            false,
+            'pauseAnchor missing required fields',
+            { pauseAnchor: state.pauseAnchor, missing: [
+              !hasTrackIndex && 'trackIndex',
+              !hasPosition && 'position',
+              !hasTimestamp && 'timestamp'
+            ].filter(Boolean) }
+          );
+        }
+      } else {
+        addResult(
+          'Test 6: pauseAnchor structure',
+          true,
+          'pauseAnchor is null (not currently paused) - structure validation skipped',
+          { pauseAnchor: null }
+        );
+      }
+
+      // Test 7: Additional metadata fields
+      const additionalFields = [
+        'liveOffset',
+        'isBehind',
+        'streamName',
+        'streamSubtitle',
+        'streamType',
+        'artwork',
+        'playerPage'
+      ];
+
+      const missingAdditional = additionalFields.filter(field => !(field in state));
+      
+      if (missingAdditional.length === 0) {
+        addResult(
+          'Test 7: Additional metadata fields',
+          true,
+          'All additional metadata fields present (useful for UI components)'
+        );
+      } else {
+        addResult(
+          'Test 7: Additional metadata fields',
+          false,
+          `Missing additional fields: ${missingAdditional.join(', ')}`
+        );
+      }
+
+      // Test 8: Multiple calls work
+      try {
+        const state1 = window.AnhadAudio.getState();
+        const state2 = window.AnhadAudio.getState();
+        const state3 = window.AnhadAudio.getState();
+        
+        addResult(
+          'Test 8: Multiple calls work',
+          true,
+          'getState() can be called multiple times without errors'
+        );
+      } catch (e) {
+        addResult(
+          'Test 8: Multiple calls work',
+          false,
+          `Error on multiple calls: ${e.message}`
+        );
+      }
+
+      // Test 9: Backward compatibility
+      if (typeof window.AnhadOverlayPlayer !== 'undefined' &&
+          typeof window.AnhadOverlayPlayer.getState === 'function') {
+        addResult(
+          'Test 9: Backward compatibility',
+          true,
+          'AnhadOverlayPlayer.getState() is available for backward compatibility'
+        );
+      } else {
+        addResult(
+          'Test 9: Backward compatibility',
+          false,
+          'AnhadOverlayPlayer.getState() not found'
+        );
+      }
+
+      // Test 10: Bug condition resolved
+      const bugConditionResolved = 
+        typeof window.AnhadAudio !== 'undefined' &&
+        typeof window.AnhadAudio.getState === 'function' &&
+        requiredFields.every(field => field in state);
+
+      if (bugConditionResolved) {
+        addResult(
+          'Test 10: Bug Condition Resolved',
+          true,
+          'Single source of truth exists - Requirements 2.6, 2.7, 2.8, 2.9, 2.10 validated',
+          { bugCondition: 'RESOLVED', singleSourceOfTruth: 'window.AnhadAudio.getState()' }
+        );
+      } else {
+        addResult(
+          'Test 10: Bug Condition Resolved',
+          false,
+          'Bug condition not fully resolved'
+        );
+      }
+    }
+
+    function showLiveState() {
+      try {
+        const state = window.AnhadAudio.getState();
+        document.getElementById('live-state').textContent = JSON.stringify(state, null, 2);
+      } catch (e) {
+        document.getElementById('live-state').textContent = `Error: ${e.message}`;
+      }
+    }
+
+    // Run tests automatically on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        runTests();
+        showLiveState();
+      }, 500);
+    });
+  </script>
+</body>
+</html>

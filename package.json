@@ -8,9 +8,13 @@
         "dev": "node backend/server.js",
         "build": "node scripts/generate-version.js",
         "optimize:images": "node scripts/optimize-images.js",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage",
+        "test:jest": "jest",
+        "test:jest:watch": "jest --watch",
+        "test:jest:coverage": "jest --coverage",
         "electron": "electron .",
         "electron:dev": "electron . --dev",
         "electron:build": "npm run build && electron-builder --win",
@@ -53,7 +57,9 @@
     "devDependencies": {
         "@capacitor/assets": "^3.0.5",
         "@fast-check/jest": "^2.2.0",
+        "@testing-library/dom": "^10.4.1",
         "@types/jest": "^30.0.0",
+        "@vitest/ui": "^4.1.10",
         "electron": "^28.3.3",
         "electron-builder": "^24.13.3",
         "fast-check": "^4.9.0",
@@ -61,7 +67,8 @@
         "jest-environment-jsdom": "^30.4.1",
         "jsdom": "^29.1.1",
         "lighthouse": "^13.4.0",
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "vitest": "^4.1.10"
     },
     "build": {
         "appId": "com.gurbaniradio.desktop",

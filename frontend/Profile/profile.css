@@ -957,3 +957,119 @@ body {
     color: var(--text-primary);
     background: var(--bg-glass);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   JOURNEY LINK SECTION
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.journey-link-section {
+    padding: var(--spacing-lg) var(--spacing-md);
+    padding-top: 0;
+}
+
+.journey-link-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 1px solid rgba(212, 165, 116, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.journey-link-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(212, 165, 116, 0.05), rgba(110, 231, 183, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.journey-link-card:hover::before,
+.journey-link-card:active::before {
+    opacity: 1;
+}
+
+.journey-link-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(212, 165, 116, 0.15);
+    border-color: rgba(212, 165, 116, 0.4);
+}
+
+.journey-link-card:active {
+    transform: translateY(0);
+}
+
+.journey-link__icon {
+    font-size: 3rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 8px rgba(212, 165, 116, 0.3));
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.journey-link__content {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.journey-link__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+    background: linear-gradient(90deg, var(--gold-400), var(--mint-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.journey-link__description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.journey-link__arrow {
+    color: var(--gold-400);
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.journey-link-card:hover .journey-link__arrow {
+    transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .journey-link__icon {
+        font-size: 2.5rem;
+    }
+    
+    .journey-link__title {
+        font-size: 1.125rem;
+    }
+    
+    .journey-link__description {
+        font-size: 0.8125rem;
+    }
+}

@@ -17,6 +17,15 @@
   'use strict';
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // SINGLETON GUARD - Prevent duplicate initialization
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  if (window.GlobalMiniPlayer && window.GlobalMiniPlayer._initialized) {
+    console.warn('[GlobalMiniPlayer] Already initialized, ignoring duplicate');
+    return;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // CONFIGURATION
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -172,6 +181,11 @@
   const SYNC_CACHE_TTL = 3000; // Only cache for 3 seconds
 
   async function getServerLivePosition(forceRefresh = false) {
+    if (!window.AnhadAudio) return getLocalLivePosition();
+    
+    const state = window.AnhadAudio.getState();
+    const currentStream = state.currentStream || 'darbar';
+    
     // Use cache only if fresh AND not forcing refresh
     if (!forceRefresh && cachedPosition && (Date.now() - lastSyncTime) < SYNC_CACHE_TTL) {
       const elapsedSinceSync = (Date.now() - lastSyncTime) / 1000;
@@ -216,6 +230,11 @@
 
   // Universal timeline fallback
   function getLocalLivePosition() {
+    if (!window.AnhadAudio) return { trackIndex: 0, position: 0 };
+    
+    const state = window.AnhadAudio.getState();
+    const currentStream = state.currentStream || 'darbar';
+    
     const UNIVERSAL_EPOCH = 1704067200000; // Jan 1, 2024
     const elapsed = (Date.now() - UNIVERSAL_EPOCH) / 1000;
     const isSimran = currentStream === 'simran';
@@ -235,29 +254,17 @@
   const isPlayerPage = currentPath.includes('gurbani-radio');
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // AUDIO ENGINE
+  // AUDIO ENGINE - Using AnhadAudio Singleton
   // ═══════════════════════════════════════════════════════════════════════════
 
-  let audio = null;
-  let currentStream = 'darbar';
-  let currentTrackIndex = 0;
-  let isPlaying = false;
+  // All audio state is managed by window.AnhadAudio singleton
+  // Mini player subscribes to state changes and updates UI accordingly
   let miniPlayerEl = null;
   let isInitialPageLoad = true; // Track if this is the first page load
   let pendingUIUpdate = null; // Queue for UI updates before mini player is ready
 
-  function createAudio() {
-    // No-op: all audio operations are handled by window.AnhadAudio singleton
-  }
-
-  function persistState() {
-    // No-op: state persistence is handled authoritatively by window.AnhadAudio singleton
-  }
-
   async function playStream(streamName) {
     if (!window.AnhadAudio) return;
-    currentStream = streamName;
-    isPlaying = true;
     updateMiniPlayerUI(true);
     setLoadingState(true);
     await window.AnhadAudio.play(streamName);
@@ -270,7 +277,8 @@
 
   async function togglePlayPause() {
     if (!window.AnhadAudio) return;
-    if (window.AnhadAudio.isPlaying()) {
+    const state = window.AnhadAudio.getState();
+    if (state.isPlaying) {
       window.AnhadAudio.pause();
     } else {
       await window.AnhadAudio.resumeInPlace();
@@ -278,7 +286,6 @@
   }
 
   function stopAudio() {
-    isPlaying = false;
     if (window.AnhadAudio) {
       window.AnhadAudio.stop();
     }
@@ -286,17 +293,16 @@
   }
 
   async function resumePlayback() {
-    // No-op: AnhadAudio handles auto-resume autonomously on page load.
-    // Sync local state to match window.AnhadAudio state.
+    // Sync UI to match window.AnhadAudio state
     if (window.AnhadAudio) {
       const state = window.AnhadAudio.getState();
-      isPlaying = state.isPlaying;
-      isLoading = state.isLoading;
-      currentStream = state.currentStream || 'darbar';
-      currentTrackIndex = state.currentTrackIndex;
       updateMiniPlayerUI(state.isPlaying);
       updatePlayPauseIcon();
     }
+  }
+
+  function persistState() {
+    // No-op: State persistence is handled authoritatively by window.AnhadAudio singleton
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -307,7 +313,10 @@
     // Only use web MediaSession for PWA, not Capacitor (native MediaSessionCompat handles it)
     if (window.Capacitor) return;
     if (!('mediaSession' in navigator)) return;
-    const stream = STREAMS[currentStream];
+    if (!window.AnhadAudio) return;
+    
+    const state = window.AnhadAudio.getState();
+    const stream = STREAMS[state.currentStream];
     if (!stream) return;
 
     // Multiple artwork sizes for best OS rendering — logo fallback
@@ -327,19 +336,15 @@
       artwork: artworkList
     });
 
-    // CRITICAL: Instant resume from lock screen — just audio.play()
+    // CRITICAL: Instant resume from lock screen
     navigator.mediaSession.setActionHandler('play', () => {
-      if (audio && audio.src && audio.src !== window.location.href) {
-        audio.play().catch(() => playStream(currentStream));
-      } else {
-        playStream(currentStream);
-      }
+      window.AnhadAudio.resumeInPlace();
     });
-    navigator.mediaSession.setActionHandler('pause', () => audio?.pause());
+    navigator.mediaSession.setActionHandler('pause', () => window.AnhadAudio.pause());
     navigator.mediaSession.setActionHandler('stop', () => stopAudio());
-    navigator.mediaSession.setActionHandler('previoustrack', () => playStream(currentStream));
+    navigator.mediaSession.setActionHandler('previoustrack', () => window.AnhadAudio.play(state.currentStream));
 
-    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    navigator.mediaSession.playbackState = state.isPlaying ? 'playing' : 'paused';
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -403,7 +408,13 @@
       <div class="gmp__progress"><div class="gmp__progress-fill" id="gmpProgress"></div></div>
     `;
 
-    document.body.appendChild(el);
+    // Insert BEFORE bottom navigation for Application Shell positioning
+    const bottomNav = document.querySelector('.bottom-nav, .nav-pill, .pill-nav, nav[role="navigation"], .tab-bar');
+    if (bottomNav) {
+      document.body.insertBefore(el, bottomNav);
+    } else {
+      document.body.appendChild(el);
+    }
     miniPlayerEl = el;
 
     // Create Spotify-style background element
@@ -433,7 +444,9 @@
 
     document.getElementById('gmpTap')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      const stream = STREAMS[currentStream];
+      if (!window.AnhadAudio) return;
+      const state = window.AnhadAudio.getState();
+      const stream = STREAMS[state.currentStream];
       if (stream?.playerPage) {
         const href = GMP_BASE ? GMP_BASE + stream.playerPage : stream.playerPage;
         window.location.href = href;
@@ -467,8 +480,9 @@
 
   function updateBackground(artworkUrl) {
     if (!backgroundEl) createBackgroundElement();
-
-    if (artworkUrl && isPlaying) {
+    
+    const state = window.AnhadAudio ? window.AnhadAudio.getState() : { isPlaying: false };
+    if (artworkUrl && state.isPlaying) {
       backgroundEl.style.backgroundImage = `url('${artworkUrl}')`;
       backgroundEl.classList.add('gmp-background--visible');
     } else {
@@ -508,11 +522,13 @@
   }
 
   function updatePlayPauseIcon() {
+    if (!window.AnhadAudio) return;
+    const state = window.AnhadAudio.getState();
     const playIcon = document.getElementById('gmpPlayIcon');
     if (playIcon && !isLoading) {
       playIcon.style.opacity = '0';
       setTimeout(() => {
-        playIcon.innerHTML = isPlaying
+        playIcon.innerHTML = state.isPlaying
           ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
           : '<path d="M8 5v14l11-7z"/>';
         playIcon.style.opacity = '1';
@@ -528,14 +544,16 @@
       return;
     }
 
-    const stream = STREAMS[currentStream];
+    if (!window.AnhadAudio) return;
+    const state = window.AnhadAudio.getState();
+    const stream = STREAMS[state.currentStream || 'darbar'];
 
     // Determine if we should actually show the mini player
     // Show when: explicitly forced, OR audio is playing/loading with valid stream
-    const hasActiveStream = currentStream && stream;
-    const singletonAudio = window.AnhadAudio && window.AnhadAudio.getAudio ? window.AnhadAudio.getAudio() : audio;
-    const actuallyPlaying = isPlaying && singletonAudio && singletonAudio.src && singletonAudio.src !== window.location.href;
-    const isActive = isLoading || actuallyPlaying || forceVisible;
+    const hasActiveStream = state.currentStream && stream;
+    const singletonAudio = window.AnhadAudio.getAudio ? window.AnhadAudio.getAudio() : null;
+    const actuallyPlaying = state.isPlaying && singletonAudio && singletonAudio.src && singletonAudio.src !== window.location.href;
+    const isActive = state.isLoading || actuallyPlaying || forceVisible;
     // MODIFIED: Show when forceVisible is true even without active stream
     const shouldShow = (isActive && hasActiveStream) || forceVisible;
 
@@ -566,7 +584,7 @@
     if (liveDot) liveDot.style.display = stream?.type === 'live' ? '' : 'none';
 
     // Update loading state visual
-    setLoadingState(isLoading);
+    setLoadingState(state.isLoading || isLoading);
   }
 
   // Expose setLoadingState globally for external use
@@ -577,33 +595,32 @@
   };
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SAVE STATE BEFORE PAGE UNLOADS (critical for persistence)
+  // SAVE STATE BEFORE PAGE UNLOADS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  window.addEventListener('pagehide', () => {
-    if (audio && isPlaying) {
-      persistState();
-    }
-  });
-
-  window.addEventListener('pagehide', () => {
-    if (audio && isPlaying) {
-      persistState();
-    }
-  });
+  // State persistence is handled by AnhadAudio singleton
 
   // ═══════════════════════════════════════════════════════════════════════════
   // EXPOSE GLOBAL API (for other scripts to interact)
   // ═══════════════════════════════════════════════════════════════════════════
 
   window.GlobalMiniPlayer = {
+    _initialized: true,
     play: playStream,
-    pause: () => { if (audio) audio.pause(); },
+    pause: () => { if (window.AnhadAudio) window.AnhadAudio.pause(); },
     toggle: togglePlayPause,
     stop: stopAudio,
-    isPlaying: () => isPlaying,
-    getStream: () => currentStream,
-    getAudio: () => audio,
+    isPlaying: () => {
+      if (!window.AnhadAudio) return false;
+      const state = window.AnhadAudio.getState();
+      return state.isPlaying;
+    },
+    getStream: () => {
+      if (!window.AnhadAudio) return null;
+      const state = window.AnhadAudio.getState();
+      return state.currentStream;
+    },
+    getAudio: () => window.AnhadAudio ? window.AnhadAudio.getAudio() : null,
     show: () => updateMiniPlayerUI(true),
     hide: () => { miniPlayerEl?.classList.remove('gmp--visible'); }
   };
@@ -611,9 +628,17 @@
   // Register with AudioCoordinator if available
   if (window.AudioCoordinator) {
     window.AudioCoordinator.register('GlobalMiniPlayer', {
-      pause: () => { if (audio) audio.pause(); },
-      isPlaying: () => isPlaying,
-      getStream: () => currentStream
+      pause: () => { if (window.AnhadAudio) window.AnhadAudio.pause(); },
+      isPlaying: () => {
+        if (!window.AnhadAudio) return false;
+        const state = window.AnhadAudio.getState();
+        return state.isPlaying;
+      },
+      getStream: () => {
+        if (!window.AnhadAudio) return null;
+        const state = window.AnhadAudio.getState();
+        return state.currentStream;
+      }
     });
     console.log('[GMP] Registered with AudioCoordinator');
   } else {
@@ -621,9 +646,17 @@
     setTimeout(() => {
       if (window.AudioCoordinator) {
         window.AudioCoordinator.register('GlobalMiniPlayer', {
-          pause: () => { if (audio) audio.pause(); },
-          isPlaying: () => isPlaying,
-          getStream: () => currentStream
+          pause: () => { if (window.AnhadAudio) window.AnhadAudio.pause(); },
+          isPlaying: () => {
+            if (!window.AnhadAudio) return false;
+            const state = window.AnhadAudio.getState();
+            return state.isPlaying;
+          },
+          getStream: () => {
+            if (!window.AnhadAudio) return null;
+            const state = window.AnhadAudio.getState();
+            return state.currentStream;
+          }
         });
         console.log('[GMP] Registered with AudioCoordinator (delayed)');
       }
@@ -666,6 +699,81 @@
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // MASTER STATE SUBSCRIPTION (Task 5.4)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * updateMiniPlayer - Reads from master state and updates UI
+   * 
+   * Subscribes to:
+   * - window.AnhadAudio.on('statechange', updateMiniPlayer)
+   * - window.AnhadAudio.on('timeupdate', updateMiniPlayer)
+   * 
+   * Requirements: 2.6, 2.7, 2.8, 2.9, 2.10
+   * Bug Condition: isBugCondition() where Mini Player shows stale/different state
+   * Expected: Mini Player always shows current master state
+   */
+  function updateMiniPlayer() {
+    if (!window.AnhadAudio || !miniPlayerEl) return;
+    
+    // Read from master state (single source of truth)
+    const state = window.AnhadAudio.getState();
+    const stream = STREAMS[state.currentStream || 'darbar'];
+    
+    // Update title and artist from master state
+    const titleEl = document.getElementById('gmpTitle');
+    const subEl = document.getElementById('gmpSub');
+    if (titleEl) {
+      titleEl.textContent = state.currentTrackTitle || (stream?.name || '—');
+    }
+    if (subEl) {
+      subEl.textContent = state.currentTrackArtist || (stream?.subtitle || '—');
+    }
+    
+    // Update progress bar from master state
+    const fill = miniPlayerEl?.querySelector('.gmp__progress-fill');
+    if (fill && state.duration && isFinite(state.duration)) {
+      const pct = (state.currentTime / state.duration) * 100;
+      fill.style.width = pct + '%';
+    }
+    
+    // Update play/pause icon from master state
+    const playIcon = document.getElementById('gmpPlayIcon');
+    if (playIcon && !isLoading) {
+      playIcon.style.opacity = '0';
+      setTimeout(() => {
+        playIcon.innerHTML = state.isPlaying
+          ? '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>'
+          : '<path d="M8 5v14l11-7z"/>';
+        playIcon.style.opacity = '1';
+      }, 150);
+    }
+    
+    // Update live dot visibility
+    const liveDot = document.getElementById('gmpLiveDot');
+    if (liveDot) {
+      liveDot.style.display = stream?.type === 'live' ? '' : 'none';
+    }
+    
+    // Update artwork from master state
+    const artImg = document.getElementById('gmpArt');
+    if (artImg && stream?.artwork) {
+      artImg.src = stream.artwork;
+    }
+    
+    // Update visibility based on playing state
+    const hasActiveStream = state.currentStream && stream;
+    const actuallyPlaying = state.isPlaying;
+    const shouldShow = (actuallyPlaying || state.isLoading) && hasActiveStream;
+    
+    if (shouldShow) {
+      miniPlayerEl.classList.add('gmp--visible');
+    } else {
+      miniPlayerEl.classList.remove('gmp--visible');
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // INITIALIZATION
   // ═══════════════════════════════════════════════════════════════════════════
 
@@ -675,32 +783,18 @@
     injectMiniPlayer();
     console.log('[GMP] after injectMiniPlayer, miniPlayerEl:', miniPlayerEl);
 
-    // Setup window.AnhadAudio synchronizers
+    // Setup window.AnhadAudio event synchronizers (Task 5.4)
     if (window.AnhadAudio) {
-      window.AnhadAudio.on('statechange', (state) => {
-        audio = window.AnhadAudio.getAudio();
-        isPlaying = state.isPlaying;
-        isLoading = state.isLoading;
-        currentStream = state.currentStream || currentStream;
-        currentTrackIndex = state.currentTrackIndex;
-        updateMiniPlayerUI();
-        updatePlayPauseIcon();
-      });
+      // Subscribe to state changes from master playback engine
+      window.AnhadAudio.on('statechange', updateMiniPlayer);
+      
+      // Subscribe to time updates from master playback engine
+      window.AnhadAudio.on('timeupdate', updateMiniPlayer);
 
+      // Subscribe to loading state changes
       window.AnhadAudio.on('loading', (e) => {
-        isLoading = e.isLoading;
         setLoadingState(e.isLoading);
       });
-
-      const targetAudio = window.AnhadAudio.getAudio();
-      if (targetAudio) {
-        targetAudio.addEventListener('timeupdate', () => {
-          if (!targetAudio || !targetAudio.duration || !isFinite(targetAudio.duration)) return;
-          const pct = (targetAudio.currentTime / targetAudio.duration) * 100;
-          const fill = miniPlayerEl?.querySelector('.gmp__progress-fill');
-          if (fill) fill.style.width = pct + '%';
-        });
-      }
     }
 
     // Check if we should show mini player based on AnhadAudio getState()
@@ -708,11 +802,9 @@
       const state = window.AnhadAudio.getState();
       const wasNavigating = sessionStorage.getItem('anhad_navigating');
       if (state.isPlaying || wasNavigating) {
-        currentStream = state.currentStream || 'darbar';
-        isPlaying = state.isPlaying;
         if (miniPlayerEl) {
           miniPlayerEl.classList.add('gmp--visible');
-          updateMiniPlayerUI(true);
+          updateMiniPlayer(); // Use new updateMiniPlayer function
         }
         if (wasNavigating) {
           sessionStorage.removeItem('anhad_navigating');
@@ -728,10 +820,8 @@
     if (window.AnhadAudio && miniPlayerEl) {
       const state = window.AnhadAudio.getState();
       if (state.isPlaying) {
-        currentStream = state.currentStream || 'darbar';
-        isPlaying = true;
         miniPlayerEl.classList.add('gmp--visible', 'gmp--animate-in');
-        updateMiniPlayerUI(true);
+        updateMiniPlayer(); // Use new updateMiniPlayer function
 
         setTimeout(() => {
           miniPlayerEl?.classList.remove('gmp--animate-in');
@@ -785,11 +875,11 @@
   setInterval(syncPendingKirtanTime, 5000);
 
   setInterval(function () {
-    // PRIMARY: Check isPlaying flag
+    // PRIMARY: Check AnhadAudio state
     // BACKUP: Also check audio.paused directly in case event listeners missed
-    const actuallyPlaying = window.AnhadAudio ? window.AnhadAudio.isPlaying() : isPlaying;
+    const actuallyPlaying = window.AnhadAudio ? window.AnhadAudio.isPlaying() : false;
 
-    console.log('[GMP] ⏱️ Timer tick - isPlaying:', isPlaying, 'audio?.paused:', audio?.paused, 'actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
+    console.log('[GMP] ⏱️ Timer tick - actuallyPlaying:', actuallyPlaying, 'DashboardAnalytics:', !!window.DashboardAnalytics, 'Pending:', getPendingKirtanMinutes());
 
     if (actuallyPlaying) {
       // BRUTAL VIRTUAL LIVE: Save position every 10s for accurate resume

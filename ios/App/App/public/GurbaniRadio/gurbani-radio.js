@@ -222,10 +222,8 @@
 
     // ─── STATE ─────────────────────────────────────────────────────────────────
 
-    let audio = null;
-    let curStream = 'darbar';
-    let curTrack = 0;
-    let playing = false;
+    // Removed duplicate audio state - now using window.AnhadAudio.getState()
+    let curStream = 'darbar'; // Local UI state for stream selection
     let sleepTimer = null;
     let sleepEnd = 0;
     let sleepTick = null;
@@ -293,17 +291,8 @@
 
     // ─── AUDIO ENGINE (DELEGATED TO UNIFIED ANHADAUDIO SINGLETON) ──────────────
 
-    // Keep dummy audio reference mapping to AnhadAudio raw audio to avoid reference errors in page
-    try {
-        audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
-    } catch (e) { }
-
-    // Dummy makeAudio mapping
-    function makeAudio() {
-        try {
-            audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
-        } catch (e) { }
-    }
+    // All audio state is managed by window.AnhadAudio singleton
+    // This page subscribes to state changes via event listeners
 
     async function startStream(name) {
         curStream = name;
@@ -323,7 +312,6 @@
                 await window.AnhadAudio.play(name);
             }
         } catch (e) {
-            playing = false;
             setConn(false);
             updateUI();
         }
@@ -403,9 +391,13 @@
     function updateUI() {
         if (!elPlayBtn || !elPlayIcon) return;
 
+        // Read playing state from AnhadAudio singleton
+        const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
+        const playing = state.isPlaying || false;
+
         if (playing) {
             elPlayBtn.classList.remove('paused');
-            elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+            elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="16" rx="1"/>';
             elArtwork?.classList.add('playing');
             elMiniEq?.classList.add('playing');
             elArtGlow?.classList.add('pulse');
@@ -440,15 +432,20 @@
             elLiveBtn.classList.add('behind');
             elLiveBtn.classList.remove('synced');
             elLiveDot.classList.add('pulsing');
-            if (elLiveBehind && audio) {
+            if (elLiveBehind) {
+                // Read from AnhadAudio singleton instead of local state
+                const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
+                const curTrack = state.currentTrackIndex || 0;
+                const audioCurrentTime = state.currentTime || 0;
+                
                 // Compute total drift from live edge
                 const liveNow = localPos();
                 let diff = 0;
                 if (curTrack === liveNow.trackIndex) {
-                    diff = Math.round(liveNow.position - audio.currentTime);
+                    diff = Math.round(liveNow.position - audioCurrentTime);
                 } else {
                     const dur = curStream === 'simran' ? 600 : 3600;
-                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audio.currentTime);
+                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audioCurrentTime);
                 }
                 // Show as -Xs or -Xm — YouTube-style
                 if (diff > 0) {
@@ -517,7 +514,10 @@
         }
         sleepEnd = Date.now() + mins * 60000;
         sleepTimer = setTimeout(() => {
-            audio?.pause();
+            // Pause through AnhadAudio singleton
+            if (window.AnhadAudio) {
+                window.AnhadAudio.pause();
+            }
             clearInterval(sleepTick);
             if (elSleepBubble) { elSleepBubble.classList.remove('visible'); elSleepBubble.textContent = ''; }
             showStatus('Sleep timer — Goodnight 🙏');
@@ -544,7 +544,11 @@
     if (elVolInput) {
         elVolInput.addEventListener('input', function () {
             const v = this.value;
-            if (audio) audio.volume = parseFloat(v);
+            // Set volume through AnhadAudio singleton
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                if (audio) audio.volume = parseFloat(v);
+            }
             if (elVolFill) elVolFill.style.width = (v * 100) + '%';
         });
     }
@@ -557,19 +561,27 @@
 
     if (elRewindBtn) {
         elRewindBtn.addEventListener('click', () => {
-            if (audio && audio.src && audio.src !== window.location.href) {
-                audio.currentTime = Math.max(0, audio.currentTime - 10);
-                showStatus('Rewinded 10s');
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                const state = window.AnhadAudio.getState();
+                if (audio && state.currentStream) {
+                    audio.currentTime = Math.max(0, audio.currentTime - 10);
+                    showStatus('Rewinded 10s');
+                }
             }
         });
     }
 
     if (elForwardBtn) {
         elForwardBtn.addEventListener('click', () => {
-            if (audio && audio.src && audio.src !== window.location.href) {
-                const dur = audio.duration || 3600;
-                audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
-                showStatus('Forwarded 10s');
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                const state = window.AnhadAudio.getState();
+                if (audio && state.currentStream) {
+                    const dur = audio.duration || 3600;
+                    audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
+                    showStatus('Forwarded 10s');
+                }
             }
         });
     }
@@ -743,11 +755,8 @@
         // Listen to global singleton state updates
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (state) => {
-                audio = window.AnhadAudio.getAudio();
-                playing = state.isPlaying;
                 if (state.currentStream) {
                     curStream = state.currentStream;
-                    curTrack = state.currentTrackIndex;
 
                     [elBtnDarbar, elBtnAmrit, elBtnSimran].forEach(b => {
                         if (b) b.classList.toggle('active', b.dataset.stream === curStream);
@@ -810,7 +819,6 @@
             // Initialize or sync with currently playing singleton state
             const state = window.AnhadAudio.getState();
             if (state.isPlaying && state.currentStream === initialStream) {
-                playing = true;
                 updateUI();
             } else if (forcePlay) {
                 startStream(initialStream);

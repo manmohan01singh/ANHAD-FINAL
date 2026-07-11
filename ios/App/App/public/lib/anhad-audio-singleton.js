@@ -426,7 +426,21 @@
   // SERVER SYNC — Single source of live position truth
   // ═══════════════════════════════════════════════════════════════════════════
 
+  // BUGFIX: Cache variables for stream-specific invalidation (Task 3.3)
+  let _syncCache = null;
+  let _syncCacheAt = 0;
+  let _syncStream = null; // Track which stream the cache is for
+
   async function getServerLivePosition() {
+    // BUGFIX: Detect stream switch - invalidate cache (Task 3.3)
+    // Ensure cache from previous stream (Darbar/Amritvela/Simran) doesn't persist
+    if (_syncStream !== currentStream) {
+      _syncCache = null;
+      _syncCacheAt = 0;
+      _syncStream = currentStream;
+      console.log(`[AnhadAudio] Stream switch detected (${_syncStream} → ${currentStream}), cache invalidated`);
+    }
+
     // PERF FIX: Virtual live streams are synchronized by UTC math, not a backend round trip.
     if (currentStream && STREAMS[currentStream] && STREAMS[currentStream].type === 'playlist') {
       const localPos = getLocalLivePosition();
@@ -683,6 +697,11 @@
         console.log('[AnhadAudio] ⚡ Suppressing spurious pause (grace window)');
         return;
       }
+
+      // BUGFIX: Invalidate sync anchor on pause to force fresh calculation on resume
+      // This prevents timeline drift accumulation when user pauses and resumes
+      liveSyncAnchor = null;
+      console.log('[AnhadAudio] 🔄 Cache invalidated on pause');
 
       manualPauseUntil = 0;
       isPlaying = false;

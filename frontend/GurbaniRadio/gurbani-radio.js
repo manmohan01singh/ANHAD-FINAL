@@ -68,7 +68,7 @@
         morning: '../assets/darbar-sahib-morning-bg.webp',
         day: '../assets/darbar-sahib-day-bg.webp',
         evening: '../assets/darbar-sahib-evening-bg.webp',
-        night: '../assets/darbar-sahib-night-bg.webp',
+        night: '../assets/HERO CARD IMAGES/new-night-bg.avif',
     };
 
     const HERO = '../assets/HERO CARD IMAGES';
@@ -105,7 +105,7 @@
             },
             bgSlots: BG_SLOTS,
             trackTitle: 'Amritvela Kirtan',
-            accent: '#D83A56',
+            accent: '#B8860B',
             getTrackUrl(idx) {
                 const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
                 return `${R2_BASE}/day-${i}.webm?t=${Date.now()}`;
@@ -126,7 +126,7 @@
             },
             bgSlots: BG_SLOTS,
             trackTitle: 'Waheguru • Waheguru',
-            accent: '#1A88D0',
+            accent: '#8B7355',
             getTrackUrl(idx) {
                 const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks;
                 const filename = SIMRAN_FILENAMES[i];
@@ -139,18 +139,25 @@
 
     function getSlot() {
         const forced = localStorage.getItem('anhad_forced_time_of_day');
-        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) return forced;
+        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            console.log('[GR] Using forced time:', forced);
+            return forced;
+        }
         const h = new Date().getHours();
+        console.log('[GR] Current hour:', h);
         if (h >= 5 && h < 9) return 'morning';
         if (h >= 9 && h < 16) return 'day';
         if (h >= 16 && h < 20) return 'evening';
+        console.log('[GR] Returning night slot');
         return 'night';
     }
 
     function syncTimeOfDay() {
         const slot = getSlot();
         const prevSlot = document.documentElement.getAttribute('data-time-of-day');
+        console.log('[GR] syncTimeOfDay - current slot:', slot, 'prev slot:', prevSlot);
         if (slot === prevSlot) return;
+        console.log('[GR] Time slot changed from', prevSlot, 'to', slot);
         document.documentElement.setAttribute('data-time-of-day', slot);
         updateBg(slot);
         const st = STREAMS[curStream];
@@ -172,6 +179,14 @@
     });
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) syncTimeOfDay();
+    });
+
+    // Listen for theme changes from global-theme.js
+    document.addEventListener('anhadThemeChanged', () => {
+        syncTimeOfDay();
+    });
+    window.addEventListener('anhadTimeForced', () => {
+        syncTimeOfDay();
     });
 
     // ─── SERVER SYNC ───────────────────────────────────────────────────────────
@@ -222,10 +237,9 @@
 
     // ─── STATE ─────────────────────────────────────────────────────────────────
 
-    let audio = null;
-    let curStream = 'darbar';
-    let curTrack = 0;
-    let playing = false;
+    // All audio state managed by window.AnhadAudio singleton
+    // Radio Page subscribes to master state for perfect synchronization (Category 3 fix)
+    let curStream = 'darbar'; // Local UI-only state for stream selection display
     let sleepTimer = null;
     let sleepEnd = 0;
     let sleepTick = null;
@@ -285,25 +299,29 @@
     const BG_ELS = { morning: elBgMorning, day: elBgDay, evening: elBgEvening, night: elBgNight };
 
     function updateBg(slot) {
+        console.log('[GR] updateBg called with slot:', slot);
         Object.entries(BG_ELS).forEach(([k, el]) => {
-            if (!el) return;
-            el.classList.toggle('hidden', k !== slot);
+            if (!el) {
+                console.log('[GR] Missing element for slot:', k);
+                return;
+            }
+            if (k === slot) {
+                el.classList.remove('hidden');
+                el.style.opacity = '1';
+                el.style.display = 'block';
+                console.log('[GR] Showing:', k);
+            } else {
+                el.classList.add('hidden');
+                el.style.opacity = '0';
+                console.log('[GR] Hiding:', k);
+            }
         });
     }
 
     // ─── AUDIO ENGINE (DELEGATED TO UNIFIED ANHADAUDIO SINGLETON) ──────────────
 
-    // Keep dummy audio reference mapping to AnhadAudio raw audio to avoid reference errors in page
-    try {
-        audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
-    } catch (e) { }
-
-    // Dummy makeAudio mapping
-    function makeAudio() {
-        try {
-            audio = window.AnhadAudio ? window.AnhadAudio.getAudio() : null;
-        } catch (e) { }
-    }
+    // All audio state is managed by window.AnhadAudio singleton
+    // This page subscribes to state changes via event listeners
 
     async function startStream(name) {
         curStream = name;
@@ -323,7 +341,6 @@
                 await window.AnhadAudio.play(name);
             }
         } catch (e) {
-            playing = false;
             setConn(false);
             updateUI();
         }
@@ -403,6 +420,10 @@
     function updateUI() {
         if (!elPlayBtn || !elPlayIcon) return;
 
+        // Read playing state from AnhadAudio singleton
+        const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
+        const playing = state.isPlaying || false;
+
         if (playing) {
             elPlayBtn.classList.remove('paused');
             elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
@@ -440,15 +461,20 @@
             elLiveBtn.classList.add('behind');
             elLiveBtn.classList.remove('synced');
             elLiveDot.classList.add('pulsing');
-            if (elLiveBehind && audio) {
+            if (elLiveBehind) {
+                // Read from AnhadAudio singleton instead of local state
+                const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
+                const curTrack = state.currentTrackIndex || 0;
+                const audioCurrentTime = state.currentTime || 0;
+                
                 // Compute total drift from live edge
                 const liveNow = localPos();
                 let diff = 0;
                 if (curTrack === liveNow.trackIndex) {
-                    diff = Math.round(liveNow.position - audio.currentTime);
+                    diff = Math.round(liveNow.position - audioCurrentTime);
                 } else {
                     const dur = curStream === 'simran' ? 600 : 3600;
-                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audio.currentTime);
+                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audioCurrentTime);
                 }
                 // Show as -Xs or -Xm — YouTube-style
                 if (diff > 0) {
@@ -517,7 +543,10 @@
         }
         sleepEnd = Date.now() + mins * 60000;
         sleepTimer = setTimeout(() => {
-            audio?.pause();
+            // Pause through AnhadAudio singleton
+            if (window.AnhadAudio) {
+                window.AnhadAudio.pause();
+            }
             clearInterval(sleepTick);
             if (elSleepBubble) { elSleepBubble.classList.remove('visible'); elSleepBubble.textContent = ''; }
             showStatus('Sleep timer — Goodnight 🙏');
@@ -544,7 +573,11 @@
     if (elVolInput) {
         elVolInput.addEventListener('input', function () {
             const v = this.value;
-            if (audio) audio.volume = parseFloat(v);
+            // Set volume through AnhadAudio singleton
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                if (audio) audio.volume = parseFloat(v);
+            }
             if (elVolFill) elVolFill.style.width = (v * 100) + '%';
         });
     }
@@ -557,19 +590,27 @@
 
     if (elRewindBtn) {
         elRewindBtn.addEventListener('click', () => {
-            if (audio && audio.src && audio.src !== window.location.href) {
-                audio.currentTime = Math.max(0, audio.currentTime - 10);
-                showStatus('Rewinded 10s');
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                const state = window.AnhadAudio.getState();
+                if (audio && state.currentStream) {
+                    audio.currentTime = Math.max(0, audio.currentTime - 10);
+                    showStatus('Rewinded 10s');
+                }
             }
         });
     }
 
     if (elForwardBtn) {
         elForwardBtn.addEventListener('click', () => {
-            if (audio && audio.src && audio.src !== window.location.href) {
-                const dur = audio.duration || 3600;
-                audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
-                showStatus('Forwarded 10s');
+            if (window.AnhadAudio) {
+                const audio = window.AnhadAudio.getAudio();
+                const state = window.AnhadAudio.getState();
+                if (audio && state.currentStream) {
+                    const dur = audio.duration || 3600;
+                    audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
+                    showStatus('Forwarded 10s');
+                }
             }
         });
     }
@@ -705,9 +746,10 @@
     // ─── DYNAMIC BG ON INIT ────────────────────────────────────────────────────
 
     function initBg() {
+        const initialSlot = getSlot();
+        console.log('[GR] Initial time slot:', initialSlot);
+        updateBg(initialSlot);
         syncTimeOfDay();
-        setInterval(syncTimeOfDay, 30000);
-        window.addEventListener('anhadTimeForced', syncTimeOfDay);
     }
 
     // ─── INIT ──────────────────────────────────────────────────────────────────
@@ -743,11 +785,8 @@
         // Listen to global singleton state updates
         if (window.AnhadAudio) {
             window.AnhadAudio.on('statechange', (state) => {
-                audio = window.AnhadAudio.getAudio();
-                playing = state.isPlaying;
                 if (state.currentStream) {
                     curStream = state.currentStream;
-                    curTrack = state.currentTrackIndex;
 
                     [elBtnDarbar, elBtnAmrit, elBtnSimran].forEach(b => {
                         if (b) b.classList.toggle('active', b.dataset.stream === curStream);
@@ -810,7 +849,6 @@
             // Initialize or sync with currently playing singleton state
             const state = window.AnhadAudio.getState();
             if (state.isPlaying && state.currentStream === initialStream) {
-                playing = true;
                 updateUI();
             } else if (forcePlay) {
                 startStream(initialStream);

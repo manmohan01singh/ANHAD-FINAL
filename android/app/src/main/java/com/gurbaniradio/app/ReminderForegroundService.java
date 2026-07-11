@@ -50,14 +50,13 @@ public class ReminderForegroundService extends Service {
      */
     private void rescheduleAlarmsFromPrefs() {
         try {
-            android.content.SharedPreferences prefs =
-                getSharedPreferences("streak_saver_prefs", MODE_PRIVATE);
+            android.content.SharedPreferences prefs = getSharedPreferences("CapacitorStorage", MODE_PRIVATE);
             prefs.edit()
-                .putBoolean("needs_alarm_reschedule", true)
-                .putLong("reschedule_requested_at", System.currentTimeMillis())
-                .apply();
+                    .putString("needs_alarm_reschedule", "true")
+                    .putLong("reschedule_requested_at", System.currentTimeMillis())
+                    .apply();
             android.util.Log.d("ReminderFGService",
-                "Post-boot reschedule flag set — JS will re-register alarms on next open");
+                    "Post-boot reschedule flag set in CapacitorStorage — JS will re-register alarms on next open");
         } catch (Exception e) {
             android.util.Log.e("ReminderFGService", "rescheduleAlarmsFromPrefs failed", e);
         }
@@ -71,15 +70,15 @@ public class ReminderForegroundService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "ANHAD Reminder Service",
-                NotificationManager.IMPORTANCE_HIGH
-            );
+                    CHANNEL_ID,
+                    "ANHAD Reminder Service",
+                    NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("Ensures spiritual reminder alarms fire reliably even in Doze mode");
             channel.setShowBadge(false);
             channel.setSound(null, null);
             NotificationManager nm = getSystemService(NotificationManager.class);
-            if (nm != null) nm.createNotificationChannel(channel);
+            if (nm != null)
+                nm.createNotificationChannel(channel);
         }
     }
 
@@ -87,16 +86,16 @@ public class ReminderForegroundService extends Service {
         Intent openIntent = new Intent(this, MainActivity.class);
         openIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingOpen = PendingIntent.getActivity(this, 200, openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("ANHAD Reminders Active")
-            .setContentText("Spiritual practice reminders are running")
-            .setSmallIcon(R.drawable.ic_stat_notify)
-            .setContentIntent(pendingOpen)
-            .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .build();
+                .setContentTitle("ANHAD Reminders Active")
+                .setContentText("Spiritual practice reminders are running")
+                .setSmallIcon(R.drawable.ic_stat_notify)
+                .setContentIntent(pendingOpen)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .build();
     }
 }

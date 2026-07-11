@@ -2412,7 +2412,7 @@
            title="Back to Welcome"
            style="text-decoration:none; display: flex; align-items: center; justify-content: center;"
            onclick="try{sessionStorage.removeItem('anhad_welcomed');}catch(e){}">
-          <img decoding="async" src="assets/radio.png" alt="Radio Logo" class="header__btn-img">
+          <span class="ios-emoji" role="img" aria-label="radio" style="font-size: 20px;">📻</span>
         </a>
         <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
@@ -2830,6 +2830,16 @@
       </div>
       <div class="quick-card__meta">
         <span class="quick-card__meta-value" id="sadhsangatMeta" style="color: #FF4D4F; font-weight: 700; font-size: 11px;">● LIVE</span>
+      </div>
+      <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
+    </article>
+
+    <!-- 🌿 The Journey -->
+    <article class="quick-card quick-card--green ios-haptic" id="journeyCard" aria-label="The Journey" data-href="Journey/journey.html">
+      <div class="quick-card__icon" aria-hidden="true"><span class="ios-emoji" role="img" aria-label="seedling">🌿</span></div>
+      <div class="quick-card__content">
+        <div class="quick-card__title">The Journey</div>
+        <div class="quick-card__subtitle">Discover the story behind ANHAD</div>
       </div>
       <svg class="quick-card__chevron" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
     </article>

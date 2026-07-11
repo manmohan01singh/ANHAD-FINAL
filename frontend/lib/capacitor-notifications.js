@@ -34,7 +34,7 @@ async function requestPermission() {
             return 'denied';
         }
     }
-    
+
     // Web fallback for browser testing
     if ('Notification' in window) {
         try {
@@ -44,7 +44,7 @@ async function requestPermission() {
             return 'denied';
         }
     }
-    
+
     console.warn('[CapacitorNotifications] Notifications not available');
     return 'denied';
 }
@@ -64,12 +64,12 @@ async function checkPermission() {
             return 'denied';
         }
     }
-    
+
     // Web fallback
     if ('Notification' in window) {
         return Notification.permission;
     }
-    
+
     return 'denied';
 }
 
@@ -95,7 +95,7 @@ async function scheduleNotification(options) {
     if (!options.title) {
         throw new Error('[CapacitorNotifications] Notification title is required');
     }
-    
+
     if (isCapacitorAvailable()) {
         try {
             // Convert options to Capacitor format
@@ -115,12 +115,12 @@ async function scheduleNotification(options) {
                 actionTypeId: options.actions ? 'default' : undefined,
                 group: options.tag || undefined
             };
-            
+
             // Schedule the notification
             await window.Capacitor.Plugins.LocalNotifications.schedule({
                 notifications: [capacitorNotification]
             });
-            
+
             console.log('[CapacitorNotifications] Scheduled via Capacitor:', capacitorNotification.id);
             return;
         } catch (error) {
@@ -128,21 +128,21 @@ async function scheduleNotification(options) {
             // Fall through to web fallback
         }
     }
-    
+
     // Web fallback for browser testing
     if ('Notification' in window) {
         const permission = await checkPermission();
-        
+
         if (permission !== 'granted') {
             console.warn('[CapacitorNotifications] Notification permission not granted');
             return;
         }
-        
+
         try {
             // For scheduled notifications, use setTimeout
             if (options.scheduledTime) {
                 const delay = new Date(options.scheduledTime).getTime() - Date.now();
-                
+
                 if (delay > 0) {
                     setTimeout(() => {
                         new Notification(options.title, {
@@ -155,13 +155,13 @@ async function scheduleNotification(options) {
                             actions: options.actions
                         });
                     }, delay);
-                    
+
                     console.log('[CapacitorNotifications] Scheduled via Web API (delayed)');
                     return;
                 }
                 // FIX: If delay is <= 0 (overdue), show immediately instead of silently dropping the notification
             }
-            
+
             // Show immediately (also catches overdue notifications)
             new Notification(options.title, {
                 body: options.body,
@@ -172,15 +172,15 @@ async function scheduleNotification(options) {
                 data: options.data,
                 actions: options.actions
             });
-            
+
             console.log('[CapacitorNotifications] Shown via Web API (immediate)');
         } catch (error) {
             console.error('[CapacitorNotifications] Web notification failed:', error);
         }
-        
+
         return;
     }
-    
+
     console.warn('[CapacitorNotifications] Notifications not available');
 }
 
@@ -219,7 +219,7 @@ async function getPendingNotifications() {
             return [];
         }
     }
-    
+
     // Web API doesn't support getting pending notifications
     return [];
 }
@@ -304,18 +304,18 @@ window.CapacitorNotifications = {
             if (!targetUrl && extra.action) {
                 // Legacy action-based routing
                 const actionMap = {
-                    'open_radio':        'GurbaniRadio/gurbani-radio.html',
+                    'open_radio': 'GurbaniRadio/gurbani-radio.html',
                     'open_radio_darbar': 'GurbaniRadio/gurbani-radio.html?stream=darbar',
-                    'open_amritvela':    'GurbaniRadio/gurbani-radio.html?stream=amritvela',
-                    'open_simran':       'GurbaniRadio/gurbani-radio.html?stream=simran',
-                    'open_nitnem':       'NitnemTracker/nitnem-tracker.html',
-                    'open_naam_abhyas':  'NaamAbhyas/naam-abhyas.html',
-                    'open_streak':       'NitnemTracker/nitnem-tracker.html#streak',
-                    'show_tracker':      'NitnemTracker/nitnem-tracker.html',
+                    'open_amritvela': 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
+                    'open_simran': 'GurbaniRadio/gurbani-radio.html?stream=simran',
+                    'open_nitnem': 'NitnemTracker/nitnem-tracker.html',
+                    'open_naam_abhyas': 'NaamAbhyas/naam-abhyas.html',
+                    'open_streak': 'NitnemTracker/nitnem-tracker.html#streak',
+                    'show_tracker': 'NitnemTracker/nitnem-tracker.html',
                     'show_streak_saver': 'NitnemTracker/nitnem-tracker.html?streakSaver=activate',
-                    'auto_start_naam':   'NaamAbhyas/naam-abhyas.html?autoStart=true',
-                    'show_naam':         'NaamAbhyas/naam-abhyas.html',
-                    'show_alarm':        'reminders/reminders.html'
+                    'auto_start_naam': 'NaamAbhyas/naam-abhyas.html?autoStart=true',
+                    'show_naam': 'NaamAbhyas/naam-abhyas.html',
+                    'show_alarm': 'reminders/reminders.html'
                 };
                 targetUrl = actionMap[extra.action] || null;
                 if (extra.action === 'auto_start_naam') {
@@ -324,6 +324,30 @@ window.CapacitorNotifications = {
                     if (extra.minute !== undefined) params.set('minute', extra.minute);
                     targetUrl = 'NaamAbhyas/naam-abhyas.html?' + params.toString();
                 }
+            }
+
+            // Resolve absolute target relative to ANHAD_ROOT (or fallback to location.origin)
+            let absoluteTarget;
+            if (targetUrl) {
+                if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://') || targetUrl.startsWith('capacitor://')) {
+                    absoluteTarget = targetUrl;
+                } else {
+                    const cleanTargetUrl = targetUrl.startsWith('/') ? targetUrl.substring(1) : targetUrl;
+                    const root = window.ANHAD_ROOT || (window.location.origin + '/');
+                    absoluteTarget = new URL(cleanTargetUrl, root).href;
+                }
+
+                console.log('[NotifRouter] Navigating to:', absoluteTarget);
+
+                // Use window.navigateTo SPA router if available, otherwise fallback
+                if (window.navigateTo) {
+                    window.navigateTo(absoluteTarget);
+                } else if (window.SmoothNav && window.SmoothNav.navigate) {
+                    window.SmoothNav.navigate(absoluteTarget);
+                } else {
+                    window.location.href = absoluteTarget;
+                }
+                return;
             }
 
             if (!targetUrl) {

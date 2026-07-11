@@ -1524,6 +1524,12 @@ a,
   color: var(--sky-card-text) !important;
 }
 
+[data-theme-mode="auto"] .header__btn img,
+[data-theme-mode="auto"] .header-btn--glass img,
+[data-theme-mode="auto"] .header__back img {
+  filter: brightness(0) invert(1) !important;
+}
+
 [data-theme-mode="auto"] .header__btn:active,
 [data-theme-mode="auto"] .header-btn--glass:active,
 [data-theme-mode="auto"] .header__back:active,

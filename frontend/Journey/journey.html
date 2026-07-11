@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>About ANHAD - The Journey</title>
+    
+    <!-- Theme System -->
+    <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        }
+      } catch (e) {}
+    })();
+    </script>
+    
+    <link rel="stylesheet" href="../css/anhad-core.css">
+    <link rel="stylesheet" href="../css/claymorphism-system.css">
+    <link rel="stylesheet" href="../css/nav-glass.css">
+    <link rel="stylesheet" href="journey.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="glass-nav" aria-label="Navigation">
+        <button class="glass-nav__back" onclick="window.history.back()" aria-label="Back">
+            <svg class="back-chevron" viewBox="0 0 9 16" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="back-label">Back</span>
+        </button>
+        <span class="glass-nav__title">About ANHAD</span>
+        <div class="glass-nav__action"></div>
+    </nav>
+
+    <div class="journey-container">
+        <!-- Hero Section with App Logo -->
+        <section class="hero-section">
+            <div class="hero-logo">
+                <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="app-logo">
+            </div>
+            <h1 class="hero-title">ANHAD</h1>
+            <p class="hero-subtitle">Your Complete Gurbani Companion</p>
+        </section>
+
+        <!-- Sabh Kirpa Tumhari Section - MOST IMPORTANT -->
+        <section class="content-section kirpa-section">
+            <h2 class="section-title">🙏 Sabh Kirpa Tumhari</h2>
+            <div class="story-text kirpa-text">
+                <p><strong>Before sharing anything about this project, there is one thing I want to say.</strong></p>
+                
+                <p>If ANHAD has become what it is today, the credit does not belong to me.</p>
+                
+                <p>Every line of code written, every idea that came to mind, every difficult problem that was solved, every feature that works today, and every step of this journey has only been possible through the kirpa of Sri Guru Gobind Singh Ji Maharaj.</p>
+                
+                <p>There were many moments when I felt stuck, when solutions simply weren't visible, and yet somehow a way always appeared. Looking back, I cannot say that this happened because of my own ability alone.</p>
+                
+                <p>Whatever little seva has been done through this application is only because Guru Sahib blessed me with the opportunity to do it.</p>
+                
+                <p class="highlight-text"><strong>"Sabh Kirpa Tumhari."</strong></p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- About Me Section -->
+        <section class="content-section about-section">
+            <h2 class="section-title">🌿 How ANHAD Began</h2>
+            <div class="about-card">
+                <div class="creator-photo-wrapper">
+                    <img src="image.png" alt="Manmohan Singh" class="creator-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="photo-placeholder" style="display: none;">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="creator-info">
+                    <h3>Manmohan Singh</h3>
+                    <p class="creator-role">Electronics & Communication Engineering Student</p>
+                    <p class="creator-location">📍 Punjab, India</p>
+                </div>
+            </div>
+            
+            <div class="story-text">
+                <p>The idea behind ANHAD came from a simple thought.</p>
+                
+                <p>Every day I found myself opening different apps for different things.</p>
+                
+                <p>One app for Nitnem.<br>
+                Another for Gurbani Radio.<br>
+                Another for live Darbar Sahib.<br>
+                Another for Naam Simran.<br>
+                Another for reminders.<br>
+                Another for bookmarks.</p>
+                
+                <p>Every app had something good, but none of them brought everything together.</p>
+                
+                <p>I kept thinking,</p>
+                <p class="highlight-text">"What if there was one peaceful place where a Sikh could find everything needed to stay connected with Gurbani throughout the day?"</p>
+                
+                <p><strong>That single thought became ANHAD.</strong></p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- The Journey Section -->
+        <section class="content-section journey-story-section">
+            <h2 class="section-title">💛 This Journey</h2>
+            <div class="story-text">
+                <p>Over the next six months, alongside my engineering studies, ANHAD slowly grew feature by feature.</p>
+                
+                <p>There were days when progress felt easy, and there were days when a single bug took hours—or even days—to understand.</p>
+                
+                <p>Many features were redesigned several times before they finally felt right.</p>
+                
+                <p>Each challenge became another lesson, not only in programming but also in patience.</p>
+                
+                <p><strong>Throughout this journey, I never saw ANHAD as just another software project.</strong></p>
+                
+                <p>For me, it became a way to learn, to improve, and to contribute in whatever small way I could.</p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- The Vision Section -->
+        <section class="content-section vision-section">
+            <h2 class="section-title">💡 What ANHAD Offers Today</h2>
+            <div class="story-text">
+                <p>Today, ANHAD brings together many features in one peaceful place:</p>
+            </div>
+            
+            <div class="features-list">
+                <div class="feature-item">📖 Beautiful Nitnem Reader</div>
+                <div class="feature-item">📻 24×7 Gurbani Radio</div>
+                <div class="feature-item">🎵 Darbar Sahib Live</div>
+                <div class="feature-item">🌅 Amritvela Kirtan</div>
+                <div class="feature-item">📿 Waheguru Simran</div>
+                <div class="feature-item">⏰ Naam Abhyas</div>
+                <div class="feature-item">🔔 Smart Reminders</div>
+                <div class="feature-item">📊 Daily Progress Tracking</div>
+                <div class="feature-item">🔖 Bookmarks</div>
+                <div class="feature-item">🔍 Gurbani Search</div>
+                <div class="feature-item">📱 PWA & Android Support</div>
+            </div>
+            
+            <div class="story-text">
+                <p>And by Guru Sahib's kirpa, there is still much more planned.</p>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Humble Request Section -->
+        <section class="content-section request-section">
+            <h2 class="section-title">🙏 A Small Humble Request</h2>
+            <div class="story-text">
+                <p>If ANHAD has helped you in any way—whether by making Nitnem easier, helping you spend more time in Naam Simran, listening to Gurbani, or simply remembering Guru Sahib during your day—then please do one thing for me.</p>
+                
+                <p><strong>Please keep me in your Ardaas.</strong></p>
+                
+                <p>That is the greatest encouragement I could ever receive.</p>
+                
+                <p>May Guru Sahib continue to bless all of us with the strength to remain connected to Gurbani and Naam.</p>
+                
+                <p class="blessing">ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਿਹ</p>
+            </div>
+        </section>
+
+        <!-- Footer Credit -->
+        <footer class="journey-footer">
+            <div class="footer-content">
+                <p class="footer-label">Designed & Developed by</p>
+                <h3 class="footer-name">Manmohan Singh</h3>
+                <p class="footer-subtitle">ECE Student • Punjab, India</p>
+                <p class="footer-version">Version <span id="version">4.2</span></p>
+            </div>
+        </footer>
+
+        <!-- Bottom Spacer -->
+        <div style="height: 100px;"></div>
+    </div>
+
+    <script src="journey.js"></script>
+</body>
+</html>

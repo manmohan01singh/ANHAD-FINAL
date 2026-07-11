@@ -84,12 +84,12 @@
 <div class="bg-stack">
   <img id="bgMorning" class="bg-layer hidden"
        src="../assets/darbar-sahib-morning-bg.webp" alt="" loading="eager" fetchpriority="low">
-  <img id="bgDay"     class="bg-layer"
+  <img id="bgDay"     class="bg-layer hidden"
        src="../assets/darbar-sahib-day-bg.webp"     alt="" loading="eager" fetchpriority="high">
   <img id="bgEvening" class="bg-layer hidden"
        src="../assets/darbar-sahib-evening-bg.webp" alt="" loading="lazy">
   <img id="bgNight"   class="bg-layer hidden"
-       src="../assets/darbar-sahib-night-bg.webp"   alt="" loading="lazy">
+       src="../assets/HERO CARD IMAGES/new-night-bg.avif"   alt="" loading="lazy">
 
   <div class="bg-vignette"></div>
   <div class="bg-gradient"></div>
@@ -101,6 +101,38 @@
 </div>
 <div class="bg-blur-wash"></div>
 <div class="bg-noise"></div>
+
+<!-- Inline script to show correct background immediately -->
+<script>
+(function() {
+  const hour = new Date().getHours();
+  let slot = 'day';
+  if (hour >= 5 && hour < 9) slot = 'morning';
+  else if (hour >= 9 && hour < 16) slot = 'day';
+  else if (hour >= 16 && hour < 20) slot = 'evening';
+  else slot = 'night';
+  
+  console.log('[GR-INLINE] Setting initial background to:', slot, 'hour:', hour);
+  
+  const bgElements = {
+    morning: document.getElementById('bgMorning'),
+    day: document.getElementById('bgDay'),
+    evening: document.getElementById('bgEvening'),
+    night: document.getElementById('bgNight')
+  };
+  
+  Object.entries(bgElements).forEach(([key, el]) => {
+    if (el) {
+      if (key === slot) {
+        el.classList.remove('hidden');
+        console.log('[GR-INLINE] Showing:', key);
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+  });
+})();
+</script>
 
 <!-- ══════════════════════════════════════════════════════
      MAIN PLAYER

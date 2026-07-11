@@ -222,10 +222,8 @@
 
     // ─── STATE ─────────────────────────────────────────────────────────────────
 
-    let audio = null;
-    let curStream = 'darbar';
-    let curTrack = 0;
-    let playing = false;
+    // Removed duplicate audio state - now using window.AnhadAudio.getState()
+    let curStream = 'darbar'; // Local UI state for stream selection
     let sleepTimer = null;
     let sleepEnd = 0;
     let sleepTick = null;

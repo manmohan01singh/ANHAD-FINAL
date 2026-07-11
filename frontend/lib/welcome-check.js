@@ -12,6 +12,7 @@
   //  5. Running inside Capacitor WebView (capacitor:// protocol)
   //  6. Referrer is from our own origin (internal navigation)
   //  7. URL hash contains '#app' or '?spa=' (SPA back-nav)
+  //  8. HomeStateManager indicates we're returning from navigation (NEW)
   // ═══════════════════════════════════════════════════════════════════════
 
   var ACTIVE_KEY  = 'anhad_session_active_ts';
@@ -70,6 +71,13 @@
     var search = window.location.search;
     var hash   = window.location.hash;
     if (search.indexOf('spa=') !== -1 || hash.indexOf('#app') !== -1) {
+      bypass(); return;
+    }
+  } catch(e) {}
+
+  // 8) NEW: Check if HomeStateManager indicates returning from navigation
+  try {
+    if (window.HomeStateManager && window.HomeStateManager.isReturningFromNavigation()) {
       bypass(); return;
     }
   } catch(e) {}

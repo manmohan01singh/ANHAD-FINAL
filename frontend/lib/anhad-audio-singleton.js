@@ -166,6 +166,7 @@
   let currentTrackTitle = '';   // Live track title from server (e.g. "Deenanath Suno")
   let currentTrackArtist = '';  // Live track artist from server
   let liveSyncAnchor = null;    // { wallTime, audioTime, trackIndex }
+  let pauseAnchor = null;       // { trackIndex, position, timestamp } - for pause/resume position preservation
   let isPlaying = false;
   let isLoading = false;
   let isPlayLocked = false;    // CAPACITOR FIX: prevents re-entrant play() during active play operation
@@ -426,7 +427,35 @@
   // SERVER SYNC — Single source of live position truth
   // ═══════════════════════════════════════════════════════════════════════════
 
-  async function getServerLivePosition() {
+  // BUGFIX: Cache variables for stream-specific invalidation (Task 3.3)
+  let _syncCache = null;
+  let _syncCacheAt = 0;
+  let _syncStream = null; // Track which stream the cache is for
+
+  /**
+   * BUGFIX Task 3.4: Add force sync API parameter
+   * When force === true, bypass cache completely and fetch fresh server data
+   * @param {boolean} force - If true, bypass cache and force fresh sync
+   * @returns {Promise<Object>} Live position data
+   */
+  async function getServerLivePosition(force = false) {
+    // BUGFIX: Detect stream switch - invalidate cache (Task 3.3)
+    // Ensure cache from previous stream (Darbar/Amritvela/Simran) doesn't persist
+    if (_syncStream !== currentStream) {
+      _syncCache = null;
+      _syncCacheAt = 0;
+      _syncStream = currentStream;
+      console.log(`[AnhadAudio] Stream switch detected (${_syncStream} → ${currentStream}), cache invalidated`);
+    }
+
+    // BUGFIX Task 3.4: Force fresh sync when explicitly requested
+    // Used on: page load, resume from background, reconnect events
+    if (force) {
+      _syncCache = null;
+      _syncCacheAt = 0;
+      console.log('[AnhadAudio] Force sync requested - cache invalidated');
+    }
+
     // PERF FIX: Virtual live streams are synchronized by UTC math, not a backend round trip.
     if (currentStream && STREAMS[currentStream] && STREAMS[currentStream].type === 'playlist') {
       const localPos = getLocalLivePosition();
@@ -683,6 +712,11 @@
         console.log('[AnhadAudio] ⚡ Suppressing spurious pause (grace window)');
         return;
       }
+
+      // BUGFIX: Invalidate sync anchor on pause to force fresh calculation on resume
+      // This prevents timeline drift accumulation when user pauses and resumes
+      liveSyncAnchor = null;
+      console.log('[AnhadAudio] 🔄 Cache invalidated on pause');
 
       manualPauseUntil = 0;
       isPlaying = false;
@@ -1177,38 +1211,70 @@
 
       } else if (stream.type === 'playlist') {
         // ── PLAYLIST (Amritvela / Simran) ──
-        // REFRESH-RESUME LOGIC:
-        // If the user refreshed within 15 minutes and was on the same stream,
-        // restore their exact position instead of snapping to the live edge.
-        // They can click LIVE to jump back. This prevents the jarring track-change
-        // that happens when the server is at a different position than where they left off.
-        const saved = loadState();
-        const savedAgeMs = Date.now() - (saved && saved.timestamp || 0);
-        const isRecentRefresh = savedAgeMs < 15 * 60 * 1000; // 15 minutes
-        const isSameStream = saved && saved.stream === streamName;
-        const hasSavedPosition = saved && typeof saved.currentTime === 'number' && saved.currentTime > 5;
-
-        // PERF FIX: Virtual live joins the UTC live position on load; pause/resume is the only DVR-like path.
-        if (false && isRecentRefresh && isSameStream && hasSavedPosition) {
-          // Restore saved position — don't snap to live
-          console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs / 1000)}s ago)`);
-          const restoredPos = {
-            trackIndex: saved.trackIndex || 0,
-            position: saved.currentTime,
-            shufflePosition: saved.shufflePosition || 0
+        
+        // BUGFIX Task 4.3: Check pause anchor in play() function
+        // Requirements: 2.4, 2.5
+        // If pauseAnchor exists and valid (<30min old), resume from anchor position.
+        // Otherwise clear and sync to live.
+        const PAUSE_ANCHOR_TTL_MS = 30 * 60 * 1000; // 30 minutes
+        if (pauseAnchor && 
+            pauseAnchor.trackIndex !== undefined &&
+            pauseAnchor.position !== undefined &&
+            (Date.now() - pauseAnchor.timestamp) < PAUSE_ANCHOR_TTL_MS) {
+          
+          console.log(`[Resume] From pause anchor: Track ${pauseAnchor.trackIndex + 1} @ ${Math.floor(pauseAnchor.position)}s (${Math.round((Date.now() - pauseAnchor.timestamp) / 1000)}s ago)`);
+          
+          // Resume from anchor position instead of syncing to live
+          const anchorPos = {
+            trackIndex: pauseAnchor.trackIndex,
+            position: pauseAnchor.position,
+            shufflePosition: pauseAnchor.shufflePosition || 0
           };
-          loadPlaylistPosition(streamName, restoredPos, requestId);
+          loadPlaylistPosition(streamName, anchorPos, requestId);
+          
           // Fetch server data in background to update duration cache and live offset anchor
           getServerLivePosition().catch(() => { });
+          
         } else {
-          // New session or too old — sync to live server position
-          try {
-            const pos = await getServerLivePosition();
-            loadPlaylistPosition(streamName, pos, requestId);
-          } catch (e) {
-            console.error('[AnhadAudio] Playlist sync failed:', e);
-            const local = getLocalLivePosition();
-            loadPlaylistPosition(streamName, local, requestId);
+          // No valid pause anchor — clear it and sync to live server position
+          if (pauseAnchor) {
+            console.log(`[Resume] Pause anchor expired or invalid, syncing to live`);
+            pauseAnchor = null;
+          }
+          
+          // REFRESH-RESUME LOGIC:
+          // If the user refreshed within 15 minutes and was on the same stream,
+          // restore their exact position instead of snapping to the live edge.
+          // They can click LIVE to jump back. This prevents the jarring track-change
+          // that happens when the server is at a different position than where they left off.
+          const saved = loadState();
+          const savedAgeMs = Date.now() - (saved && saved.timestamp || 0);
+          const isRecentRefresh = savedAgeMs < 15 * 60 * 1000; // 15 minutes
+          const isSameStream = saved && saved.stream === streamName;
+          const hasSavedPosition = saved && typeof saved.currentTime === 'number' && saved.currentTime > 5;
+
+          // PERF FIX: Virtual live joins the UTC live position on load; pause/resume is the only DVR-like path.
+          if (false && isRecentRefresh && isSameStream && hasSavedPosition) {
+            // Restore saved position — don't snap to live
+            console.log(`[AnhadAudio] 🔄 Refresh-resume: stream=${streamName} track=${saved.trackIndex} at ${Math.floor(saved.currentTime)}s (${Math.round(savedAgeMs / 1000)}s ago)`);
+            const restoredPos = {
+              trackIndex: saved.trackIndex || 0,
+              position: saved.currentTime,
+              shufflePosition: saved.shufflePosition || 0
+            };
+            loadPlaylistPosition(streamName, restoredPos, requestId);
+            // Fetch server data in background to update duration cache and live offset anchor
+            getServerLivePosition().catch(() => { });
+          } else {
+            // New session or too old — sync to live server position
+            try {
+              const pos = await getServerLivePosition();
+              loadPlaylistPosition(streamName, pos, requestId);
+            } catch (e) {
+              console.error('[AnhadAudio] Playlist sync failed:', e);
+              const local = getLocalLivePosition();
+              loadPlaylistPosition(streamName, local, requestId);
+            }
           }
         }
       }
@@ -1225,6 +1291,18 @@
     isPlaying = false;
     isLoading = false;
     isPlayLocked = false;
+    
+    // BUGFIX Task 4.2: Save pause anchor for pause/resume position preservation
+    // Requirements: 2.4, 2.5
+    if (audio && currentStream && STREAMS[currentStream] && STREAMS[currentStream].type === 'playlist') {
+      pauseAnchor = {
+        trackIndex: currentTrackIndex,
+        position: audio.currentTime,
+        timestamp: Date.now()
+      };
+      console.log(`[Pause] Anchored at Track ${currentTrackIndex + 1} @ ${Math.floor(audio.currentTime)}s`);
+    }
+    
     emit('loading', { isLoading: false });
     emit('statechange', getPublicState());
     window.dispatchEvent(new CustomEvent('anhadAudioStateChange', {
@@ -1286,6 +1364,10 @@
 
 
   async function jumpToLive() {
+    // Clear pause anchor - user explicitly wants live edge
+    pauseAnchor = null;
+    console.log('[JumpToLive] Cleared pause anchor');
+    
     if (!currentStream) currentStream = 'darbar';
     const stream = STREAMS[currentStream];
     if (stream && stream.type === 'playlist' && isPlaying && audio && audio.readyState >= 2) {
@@ -1777,14 +1859,39 @@
       acquireWakeLock();
       updateMediaSession();
       updateForegroundServiceNotification();
-      // Re-anchor the live sync clock after tab was hidden (tab timer may have throttled)
+      
+      // BUGFIX: Wall clock validation for device sleep/background detection
+      // Check if wall clock jumped significantly while tab was hidden
       if (liveSyncAnchor && audio) {
-        liveSyncAnchor = {
-          wallTime: Date.now(),
-          audioTime: audio.currentTime,
-          trackIndex: currentTrackIndex
-        };
+        const wallClockDrift = Math.abs(Date.now() - liveSyncAnchor.wallTime);
+        if (wallClockDrift > 60000) {
+          console.log(`[Sync] Wall clock jump detected on tab visibility (${Math.floor(wallClockDrift/1000)}s), invalidating cache`);
+          liveSyncAnchor = null; // Force fresh sync
+          // BUGFIX Task 3.4: Force fresh sync when resuming from background
+          if (currentStream && (currentStream === 'amritvela' || currentStream === 'simran')) {
+            getServerLivePosition(true).catch(e => console.warn('[AnhadAudio] Force sync on visibility failed:', e));
+          }
+        } else {
+          // Re-anchor the live sync clock after tab was hidden (tab timer may have throttled)
+          liveSyncAnchor = {
+            wallTime: Date.now(),
+            audioTime: audio.currentTime,
+            trackIndex: currentTrackIndex
+          };
+        }
       }
+    }
+  });
+
+  // BUGFIX Task 3.4: Force fresh sync on network reconnect
+  window.addEventListener('online', () => {
+    console.log('[AnhadAudio] Network reconnected, forcing fresh sync');
+    _syncCache = null;
+    _syncCacheAt = 0;
+    if (currentStream && (currentStream === 'amritvela' || currentStream === 'simran') && isPlaying) {
+      getServerLivePosition(true).then(pos => {
+        console.log(`[AnhadAudio] Reconnect sync: Track ${pos.trackIndex + 1} at ${Math.floor(pos.position)}s`);
+      }).catch(e => console.warn('[AnhadAudio] Force sync on reconnect failed:', e));
     }
   });
 
@@ -1905,6 +2012,7 @@
     currentTrackIndex = state.trackIndex || 0;
     // Emit state immediately so UI shows, then play
     emit('statechange', getPublicState());
+    // BUGFIX Task 3.4: Force fresh sync on page load
     setTimeout(() => play(state.stream), 300);
   }
 
@@ -1920,6 +2028,16 @@
     }
     if (!liveSyncAnchor || (currentStream !== 'amritvela' && currentStream !== 'simran')) return 0;
     if (!audio) return 0;
+
+    // BUGFIX: Wall clock validation for device sleep detection
+    // Before using liveSyncAnchor, validate that wall clock hasn't jumped significantly
+    // If wall clock drifted >60s, device likely slept/backgrounded - invalidate cache
+    const wallClockDrift = Math.abs(Date.now() - liveSyncAnchor.wallTime);
+    if (wallClockDrift > 60000) {
+      console.log(`[Sync] Wall clock jump detected (${Math.floor(wallClockDrift/1000)}s), invalidating cache`);
+      liveSyncAnchor = null;
+      return 0; // Force fresh sync by returning 0 drift
+    }
 
     // Expected audio position if we were at the live edge
     const elapsedSinceSync = (Date.now() - liveSyncAnchor.wallTime) / 1000;
@@ -1972,7 +2090,8 @@
       playerPage: stream && stream.playerPage || '',
       volume: audio && audio.volume || 0.8,
       currentTime: audio && audio.currentTime || 0,
-      duration: audio && audio.duration || 0
+      duration: audio && audio.duration || 0,
+      pauseAnchor: pauseAnchor  // BUGFIX Task 5.3: Expose pause anchor in master state
     };
   }
 

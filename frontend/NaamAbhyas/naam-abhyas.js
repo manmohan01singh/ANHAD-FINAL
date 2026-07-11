@@ -673,6 +673,20 @@ class NaamAbhyas {
             });
         }
 
+        const closeStatsBtn = document.getElementById('closeStatsBtn');
+        if (closeStatsBtn) {
+            closeStatsBtn.addEventListener('click', () => {
+                this.hideStatsPanel();
+            });
+        }
+
+        const statsPanelBackdrop = document.getElementById('statsPanelBackdrop');
+        if (statsPanelBackdrop) {
+            statsPanelBackdrop.addEventListener('click', () => {
+                this.hideStatsPanel();
+            });
+        }
+
         // ─── Modals: Session Alert (Ready / Silent / Skip) ─────────────────────
         const alertStartNowBtn = document.getElementById('alertStartNowBtn');
         const alertSilentBtn = document.getElementById('alertSilentBtn');
@@ -2438,6 +2452,25 @@ class NaamAbhyas {
             recordedAt: new Date().toISOString()
         };
 
+        // ─── DUPLICATE GUARD ─────────────────────────────────────────────────
+        // For scheduled sessions (not extra), reject a second completion for the
+        // same hour on the same date. This prevents double-counting when a user
+        // taps a notification twice, or the alarm re-fires before the first record
+        // is written.
+        if (!session.isExtra && session.status === 'completed' && session.hour !== undefined) {
+            const alreadyRecorded = this.history.sessions.some(s =>
+                s.date === session.date &&
+                s.hour === session.hour &&
+                !s.isExtra &&
+                s.status === 'completed'
+            );
+            if (alreadyRecorded) {
+                console.warn(`[NaamAbhyas] Duplicate session for hour ${session.hour} on ${session.date} — suppressed.`);
+                return;
+            }
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
         this.history.sessions.push(session);
 
         // Initialize extra session tracking if needed
@@ -2551,6 +2584,102 @@ class NaamAbhyas {
     }
 
     renderScheduleTimeline() {
+        const container = document.getElementById('scheduleTimeline');
+        if (!container) return;
+
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const today = this.getTodayString();
+
+        let html = '';
+
+        // Group 1: Hourly Reminders
+        html += `<div class="timeline-section-header">Hourly Reminders</div>`;
+        html += `<div class="timeline-scheduled-list">`;
+        let scheduledHtml = '';
+
+        for (let hour = this.config.activeHours.start; hour <= this.config.activeHours.end; hour++) {
+            const session = this.currentSchedule[hour];
+            if (!session) continue;
+
+            let statusClass = 'pending';
+            let statusIcon = '';
+
+            if (session.status === 'completed') {
+                statusClass = 'completed';
+                statusIcon = '✓';
+            } else if (session.status === 'skipped') {
+                statusClass = 'skipped';
+                statusIcon = '✗';
+            } else if (hour === currentHour) {
+                // Check if current hour session time has passed
+                if (session.endMinute !== undefined && currentMinute > session.endMinute) {
+                    statusClass = 'missed';
+                    statusIcon = '✗';
+                } else {
+                    statusClass = 'current';
+                    statusIcon = '●';
+                }
+            } else if (hour < currentHour) {
+                // Past hour with pending status = MISSED
+                statusClass = 'missed';
+                statusIcon = '✗';
+            } else {
+                statusClass = 'upcoming';
+            }
+
+            scheduledHtml += `
+                <div class="schedule-item ${statusClass}">
+                    <div class="schedule-status ${statusClass}">${statusIcon}</div>
+                    <div class="schedule-time">
+                        <div class="schedule-time-value">${session.startTime}</div>
+                        <div class="schedule-time-range">for ${this.config.duration} min</div>
+                    </div>
+                    <div class="schedule-hour">${hour}:00</div>
+                </div>
+            `;
+        }
+
+        if (!scheduledHtml) {
+            scheduledHtml = '<div class="schedule-empty"><p>No scheduled sessions configured</p></div>';
+        }
+        html += scheduledHtml;
+        html += `</div>`;
+
+        // Group 2: Manual Practice (Extra Devotion)
+        const todaysExtraCompleted = this.history.sessions.filter(s => s.date === today && s.isExtra && s.status === 'completed');
+
+        html += `<div class="timeline-section-header extra-header">Extra Simran Sessions</div>`;
+        html += `<div class="timeline-extra-list">`;
+        if (todaysExtraCompleted.length > 0) {
+            todaysExtraCompleted.forEach(s => {
+                const startedTime = s.startedAt ? new Date(s.startedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : s.startTime || '';
+                const durationText = s.duration ? `${Math.round(s.duration / 60)} min` : `${this.config.duration} min`;
+                html += `
+                    <div class="schedule-item completed extra-session-item">
+                        <div class="schedule-status completed">✓</div>
+                        <div class="schedule-time">
+                            <div class="schedule-time-value">${startedTime}</div>
+                            <div class="schedule-time-range">Manual session completed</div>
+                        </div>
+                        <div class="schedule-hour duration-badge" style="font-size: 11px; opacity: 0.8; font-weight: 600; background: rgba(255, 149, 0, 0.15); color: #FF9500; padding: 4px 8px; border-radius: 8px;">${durationText}</div>
+                    </div>
+                `;
+            });
+        } else {
+            html += `<div class="schedule-empty"><p style="font-size:12px; color:rgba(255,255,255,0.4)">No extra sessions completed today yet.</p></div>`;
+        }
+        html += `</div>`;
+
+        if (!this.config.enabled) {
+            container.innerHTML = '<div class="schedule-empty"><p>Enable Naam Abhyas to see your schedule</p></div>';
+        } else {
+            container.innerHTML = html;
+        }
+    }
+
+    _oldRenderScheduleTimeline() {
         const container = document.getElementById('scheduleTimeline');
         if (!container) return;
 
@@ -2868,6 +2997,32 @@ class NaamAbhyas {
         const hours = Math.floor(totalMinutes / 60);
         const mins = totalMinutes % 60;
 
+        // Generate last 7 days bar chart details
+        let weekBarsHtml = '';
+        const daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        const todayDate = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(todayDate.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const dayLabel = daysOfWeek[d.getDay()];
+
+            // Count completed sessions for this dateStr
+            const sessionsForDay = this.history.sessions.filter(s => s.date === dateStr && s.status === 'completed');
+            const completedCount = sessionsForDay.length;
+
+            // Generate bar height (assume max 5 sessions or relative height)
+            const percent = Math.min(100, Math.max(0, completedCount * 20));
+            weekBarsHtml += `
+                <div class="week-bar-col">
+                    <div class="week-bar">
+                        <div class="week-bar-fill" style="height: ${percent}%"></div>
+                    </div>
+                    <span class="week-bar-day">${dayLabel}</span>
+                </div>
+            `;
+        }
+
         container.innerHTML = `
             <div class="stats-section">
                 <h3 class="stats-section-title">Today</h3>
@@ -2887,6 +3042,13 @@ class NaamAbhyas {
                 </div>
             </div>
             
+            <div class="stats-section">
+                <h3 class="stats-section-title">7-Day Activity</h3>
+                <div class="week-bars">
+                    ${weekBarsHtml}
+                </div>
+            </div>
+
             <div class="stats-section">
                 <h3 class="stats-section-title">This Week</h3>
                 <div class="stats-row">

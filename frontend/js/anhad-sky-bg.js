@@ -80,6 +80,13 @@
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
+    const currentSlot = document.documentElement.getAttribute('data-time-of-day');
+    
+    // NATIVE APP FIX: If slot hasn't changed, skip expensive updates
+    if (currentSlot === slot) {
+      return;
+    }
+    
     document.documentElement.setAttribute('data-time-of-day', slot);
 
     applyTimeAdaptiveCardColors(slot);
@@ -110,6 +117,11 @@
       requestAnimationFrame(() => {
         document.documentElement.style.backgroundColor = 'transparent';
       });
+      
+      // Save image state
+      if (window.HomeStateManager) {
+        window.HomeStateManager.saveImageState(slot, [bgUrl]);
+      }
       return;
     }
 
@@ -140,6 +152,11 @@
       document.body.style.backgroundPosition = '';
       document.body.style.backgroundRepeat = '';
       document.body.style.backgroundAttachment = '';
+    }
+    
+    // Save image state
+    if (window.HomeStateManager) {
+      window.HomeStateManager.saveImageState(slot, [bgUrl]);
     }
   }
 
