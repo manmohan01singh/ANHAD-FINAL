@@ -1,0 +1,238 @@
+/**
+ * ANHAD Settings Page Styles
+ * iOS-inspired settings interface
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   CRITICAL: Force correct backgrounds
+   ═══════════════════════════════════════════════════════════════════ */
+
+html {
+  background: var(--bg-primary, #FAF8F5) !important;
+  color-scheme: light !important;
+}
+
+html.dark-mode,
+html[data-theme="dark"] {
+  background: var(--bg-primary, #0D0D0F) !important;
+  color-scheme: dark !important;
+}
+
+body {
+  background: var(--bg-primary, #FAF8F5) !important;
+  color: var(--text-primary, #1C1C1E) !important;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.dark-mode body,
+html[data-theme="dark"] body {
+  background: var(--bg-primary, #0D0D0F) !important;
+  color: var(--text-primary, #F5F5F7) !important;
+}
+
+.settings-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 0;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 64px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
+  background: transparent !important;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SECTION
+   ═══════════════════════════════════════════════════════════════════ */
+
+.settings-section {
+  margin-bottom: 36px;
+}
+
+.settings-section__title {
+  font-family: var(--font-system, 'Inter', sans-serif);
+  font-size: var(--text-footnote, 0.8125rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary, #AEAEB2);
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GROUP
+   ═══════════════════════════════════════════════════════════════════ */
+
+.settings-group {
+  background: var(--bg-secondary, #F2F2F7);
+  border-radius: var(--radius-md, 20px);
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+html.dark-mode .settings-group,
+html[data-theme="dark"] .settings-group {
+  background: var(--bg-secondary, #2C2C2E);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ITEM
+   ═══════════════════════════════════════════════════════════════════ */
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  cursor: pointer;
+  transition: background 0.2s ease;
+  min-height: 56px;
+}
+
+html.dark-mode .settings-item,
+html[data-theme="dark"] .settings-item {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-item:active {
+  background: var(--bg-tertiary, #E5E5EA);
+}
+
+html.dark-mode .settings-item:active,
+html[data-theme="dark"] .settings-item:active {
+  background: var(--bg-tertiary, #3A3A3C);
+}
+
+.settings-item__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+
+.settings-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-item__label {
+  font-family: var(--font-system, 'Inter', sans-serif);
+  font-size: var(--text-body, 1.0625rem);
+  font-weight: 500;
+  color: var(--text-primary, #1C1C1E);
+  margin-bottom: 2px;
+}
+
+html.dark-mode .settings-item__label,
+html[data-theme="dark"] .settings-item__label {
+  color: var(--text-primary, #F5F5F7);
+}
+
+.settings-item__desc {
+  font-family: var(--font-system, 'Inter', sans-serif);
+  font-size: var(--text-footnote, 0.8125rem);
+  color: var(--text-secondary, #6E6E73);
+  line-height: 1.4;
+}
+
+.settings-item__value {
+  font-family: var(--font-system, 'Inter', sans-serif);
+  font-size: var(--text-body, 1.0625rem);
+  color: var(--text-tertiary, #AEAEB2);
+  text-align: right;
+}
+
+.settings-item__arrow {
+  font-size: 1.5rem;
+  color: var(--text-quaternary, #C7C7CC);
+  flex-shrink: 0;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════════ */
+
+.settings-footer {
+  text-align: center;
+  padding: 48px 20px 32px;
+  margin-top: 40px;
+}
+
+.settings-footer__logo {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md, 16px);
+  margin: 0 auto 16px;
+  display: block;
+}
+
+.settings-footer__title {
+  font-family: 'Cinzel', serif;
+  font-size: var(--text-title-2, 1.375rem);
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--accent, #D4943A);
+  margin: 0 0 4px 0;
+}
+
+.settings-footer__tagline {
+  font-family: 'Noto Sans Gurmukhi', serif;
+  font-size: var(--text-subhead, 0.9375rem);
+  color: var(--text-secondary, #6E6E73);
+  margin: 0 0 12px 0;
+}
+
+.settings-footer__version {
+  font-size: var(--text-footnote, 0.8125rem);
+  color: var(--text-tertiary, #AEAEB2);
+  margin: 0 0 4px 0;
+}
+
+.settings-footer__copyright {
+  font-size: var(--text-caption, 0.75rem);
+  color: var(--text-quaternary, #C7C7CC);
+  margin: 0 0 8px 0;
+}
+
+.settings-footer__motto {
+  font-size: var(--text-caption, 0.75rem);
+  color: var(--text-tertiary, #AEAEB2);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .settings-page {
+    padding: 16px 0;
+  }
+
+  .settings-section {
+    margin-bottom: 28px;
+  }
+
+  .settings-group {
+    margin: 0 12px;
+  }
+
+  .settings-item {
+    padding: 12px 14px;
+    min-height: 52px;
+  }
+
+  .settings-item__icon {
+    font-size: 1.375rem;
+    width: 28px;
+  }
+}

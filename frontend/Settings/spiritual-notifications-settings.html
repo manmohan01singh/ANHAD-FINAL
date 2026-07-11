@@ -97,6 +97,24 @@
             font-size: 32px;
             font-weight: 700;
             margin-bottom: 8px;
+            position: relative;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            width: 8px;
+            height: 8px;
+            background: #f7c634;
+            border-radius: 50%;
+            transform: translateY(-50%) scale(0);
+            transition: transform 0.3s ease;
+        }
+
+        .header h1.has-changes::after {
+            transform: translateY(-50%) scale(1);
         }
 
         .header p {
@@ -110,18 +128,34 @@
 
         .back-btn {
             position: absolute;
-            top: 60px;
+            top: 16px;
             left: 16px;
             background: none;
             border: none;
-            font-size: 24px;
+            font-size: 28px;
             cursor: pointer;
             padding: 8px;
             color: var(--text-primary, #1a1a2e);
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         [data-theme="dark"] .back-btn {
             color: #ffffff;
+        }
+
+        [data-theme="dark"] .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .settings-container {
@@ -273,11 +307,22 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(247, 198, 52, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .save-btn:hover {
+            box-shadow: 0 6px 16px rgba(247, 198, 52, 0.4);
+            transform: translateX(-50%) translateY(-2px);
         }
 
         .save-btn:active {
             transform: translateX(-50%) scale(0.95);
+        }
+
+        .save-btn.saving {
+            background: linear-gradient(135deg, #aaa, #888);
+            cursor: not-allowed;
         }
 
         /* Toast */
@@ -346,7 +391,13 @@
     <script src="../lib/spiritual-notifications.js"></script>
     <script>
         function goBack() {
-            window.history.back() || (window.location.href = '../index.html');
+            // Try to go back to Settings page
+            if (document.referrer && document.referrer.includes('Settings')) {
+                window.history.back();
+            } else {
+                // Direct navigation to Settings page
+                window.location.href = './index.html';
+            }
         }
 
         function showToast(message) {
@@ -497,55 +548,82 @@
             document.querySelectorAll('.toggle').forEach(toggle => {
                 toggle.onclick = function() {
                     this.classList.toggle('active');
-                    document.getElementById('saveBtn').style.display = 'block';
+                    showSaveButton();
                 };
             });
 
             document.querySelectorAll('input[type="time"]').forEach(input => {
                 input.onchange = function() {
-                    document.getElementById('saveBtn').style.display = 'block';
+                    showSaveButton();
                 };
             });
         }
 
-        function saveSettings() {
-            const config = window.SpiritualNotifications.getConfig();
+        function showSaveButton() {
+            document.getElementById('saveBtn').style.display = 'block';
+            document.querySelector('.header h1').classList.add('has-changes');
+        }
 
-            // Get time values
-            document.querySelectorAll('input[type="time"]').forEach(input => {
-                const key = input.dataset.key;
-                if (key) {
-                    const [section, prop] = key.split('.');
-                    config[section][prop] = input.value;
+        async function saveSettings() {
+            const saveBtn = document.getElementById('saveBtn');
+            const originalText = saveBtn.textContent;
+            
+            try {
+                // Disable button and show saving state
+                saveBtn.classList.add('saving');
+                saveBtn.textContent = 'Saving...';
+                saveBtn.disabled = true;
+
+                const config = window.SpiritualNotifications.getConfig();
+
+                // Get time values
+                document.querySelectorAll('input[type="time"]').forEach(input => {
+                    const key = input.dataset.key;
+                    if (key) {
+                        const [section, prop] = key.split('.');
+                        config[section][prop] = input.value;
+                    }
+                });
+
+                // Get toggle values
+                document.querySelectorAll('.toggle[data-key]').forEach(toggle => {
+                    const key = toggle.dataset.key;
+                    if (key) {
+                        const [section, prop] = key.split('.');
+                        config[section][prop] = toggle.classList.contains('active');
+                    }
+                });
+
+                // Random toggle
+                const randomToggle = document.getElementById('randomToggle');
+                if (randomToggle) {
+                    config.random.enabled = randomToggle.classList.contains('active');
                 }
-            });
 
-            // Get toggle values
-            document.querySelectorAll('.toggle[data-key]').forEach(toggle => {
-                const key = toggle.dataset.key;
-                if (key) {
-                    const [section, prop] = key.split('.');
-                    config[section][prop] = toggle.classList.contains('active');
-                }
-            });
+                // Save config
+                window.SpiritualNotifications.config = config;
+                window.SpiritualNotifications.saveConfig();
 
-            // Random toggle
-            const randomToggle = document.getElementById('randomToggle');
-            if (randomToggle) {
-                config.random.enabled = randomToggle.classList.contains('active');
+                // Reschedule notifications
+                await window.SpiritualNotifications.scheduleAll();
+
+                showToast('✓ Settings saved successfully!');
+
+                // Hide save button after a brief delay
+                setTimeout(() => {
+                    saveBtn.style.display = 'none';
+                    saveBtn.classList.remove('saving');
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                    document.querySelector('.header h1').classList.remove('has-changes');
+                }, 500);
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                showToast('⚠ Failed to save settings');
+                saveBtn.classList.remove('saving');
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
             }
-
-            // Save config
-            window.SpiritualNotifications.config = config;
-            window.SpiritualNotifications.saveConfig();
-
-            // Reschedule notifications
-            window.SpiritualNotifications.scheduleAll();
-
-            showToast('Settings saved!');
-
-            // Hide save button
-            document.getElementById('saveBtn').style.display = 'none';
         }
 
         // Initialize

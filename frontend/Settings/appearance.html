@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Appearance | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="./settings.css">
+  <script src="../lib/global-theme.js"></script>
+  
+  <style>
+    .appearance-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 80px 16px 100px;
+    }
+
+    .theme-preview-section {
+      margin-bottom: 32px;
+    }
+
+    .theme-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .theme-option {
+      background: var(--bg-secondary, #F2F2F7);
+      border-radius: var(--radius-md, 20px);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 3px solid transparent;
+      position: relative;
+    }
+
+    html.dark-mode .theme-option,
+    html[data-theme="dark"] .theme-option {
+      background: var(--bg-secondary, #2C2C2E);
+    }
+
+    .theme-option.active {
+      border-color: var(--accent, #D4943A);
+      background: linear-gradient(135deg, rgba(212, 148, 58, 0.1) 0%, rgba(212, 148, 58, 0.05) 100%);
+    }
+
+    .theme-option:active {
+      transform: scale(0.98);
+    }
+
+    .theme-option-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .theme-icon {
+      font-size: 2.5rem;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-tertiary, #E5E5EA);
+      border-radius: 16px;
+    }
+
+    html.dark-mode .theme-icon,
+    html[data-theme="dark"] .theme-icon {
+      background: var(--bg-tertiary, #3A3A3C);
+    }
+
+    .theme-option.active .theme-icon {
+      background: linear-gradient(135deg, var(--accent, #D4943A) 0%, var(--accent-hover, #C4842A) 100%);
+    }
+
+    .theme-info {
+      flex: 1;
+    }
+
+    .theme-name {
+      font-size: var(--text-title-3, 1.25rem);
+      font-weight: 700;
+      color: var(--text-primary, #1C1C1E);
+      margin: 0 0 4px 0;
+    }
+
+    html.dark-mode .theme-name,
+    html[data-theme="dark"] .theme-name {
+      color: var(--text-primary, #F5F5F7);
+    }
+
+    .theme-description {
+      font-size: var(--text-subhead, 0.9375rem);
+      color: var(--text-secondary, #6E6E73);
+      margin: 0;
+    }
+
+    .theme-preview {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+    }
+
+    html.dark-mode .theme-preview,
+    html[data-theme="dark"] .theme-preview {
+      border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .theme-swatch {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    }
+
+    .theme-swatch.bg {
+      background: #FAF8F5;
+    }
+
+    .theme-swatch.card {
+      background: #F2F2F7;
+    }
+
+    .theme-swatch.text {
+      background: #1C1C1E;
+    }
+
+    .theme-dark .theme-swatch.bg {
+      background: #0D0D0F;
+    }
+
+    .theme-dark .theme-swatch.card {
+      background: #2C2C2E;
+    }
+
+    .theme-dark .theme-swatch.text {
+      background: #F5F5F7;
+    }
+
+    .theme-auto .theme-swatch:nth-child(1) {
+      background: linear-gradient(135deg, #FFF5EC 0%, #FFFDF9 50%, #FFF8E7 100%);
+    }
+
+    .theme-auto .theme-swatch:nth-child(2) {
+      background: linear-gradient(135deg, #FAF8F5 0%, #0D0D0F 100%);
+    }
+
+    .theme-auto .theme-swatch:nth-child(3) {
+      background: linear-gradient(135deg, #D4943A 0%, #6E6E73 100%);
+    }
+
+    .check-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      background: var(--accent, #D4943A);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.25rem;
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
+
+    .theme-option.active .check-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .info-card {
+      background: linear-gradient(135deg, rgba(212, 148, 58, 0.1) 0%, rgba(212, 148, 58, 0.05) 100%);
+      border: 1px solid var(--accent, #D4943A);
+      border-radius: var(--radius-md, 20px);
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .info-card-title {
+      font-size: var(--text-callout, 1rem);
+      font-weight: 600;
+      color: var(--accent, #D4943A);
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card-text {
+      font-size: var(--text-footnote, 0.8125rem);
+      color: var(--text-secondary, #6E6E73);
+      margin: 0;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Appearance</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="appearance-container">
+    
+    <section class="theme-preview-section">
+      <div class="theme-options">
+        
+        <!-- Light Theme -->
+        <div class="theme-option" data-theme="light" onclick="selectTheme('light')">
+          <div class="theme-option-header">
+            <div class="theme-icon">☀️</div>
+            <div class="theme-info">
+              <h3 class="theme-name">Light</h3>
+              <p class="theme-description">Clean and bright interface</p>
+            </div>
+          </div>
+          <div class="theme-preview">
+            <div class="theme-swatch bg"></div>
+            <div class="theme-swatch card"></div>
+            <div class="theme-swatch text"></div>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+
+        <!-- Dark Theme -->
+        <div class="theme-option theme-dark" data-theme="dark" onclick="selectTheme('dark')">
+          <div class="theme-option-header">
+            <div class="theme-icon">🌙</div>
+            <div class="theme-info">
+              <h3 class="theme-name">Dark</h3>
+              <p class="theme-description">Easy on the eyes, perfect for night</p>
+            </div>
+          </div>
+          <div class="theme-preview">
+            <div class="theme-swatch bg"></div>
+            <div class="theme-swatch card"></div>
+            <div class="theme-swatch text"></div>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+
+        <!-- Auto Theme -->
+        <div class="theme-option theme-auto" data-theme="auto" onclick="selectTheme('auto')">
+          <div class="theme-option-header">
+            <div class="theme-icon">✨</div>
+            <div class="theme-info">
+              <h3 class="theme-name">Auto</h3>
+              <p class="theme-description">Adapts to time of day</p>
+            </div>
+          </div>
+          <div class="theme-preview theme-auto">
+            <div class="theme-swatch"></div>
+            <div class="theme-swatch"></div>
+            <div class="theme-swatch"></div>
+          </div>
+          <div class="check-badge">✓</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Info Card -->
+    <div class="info-card">
+      <h4 class="info-card-title">
+        <span>💡</span>
+        About Auto Mode
+      </h4>
+      <p class="info-card-text">
+        Auto mode changes the app's appearance based on the time of day. Morning brings warm peach tones, day has cream colors, evening shows amber hues, and night switches to dark mode for comfortable viewing.
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    function selectTheme(theme) {
+      // Update theme
+      if (window.AnhadTheme) {
+        window.AnhadTheme.set(theme);
+      } else {
+        localStorage.setItem('anhad_theme', theme);
+        location.reload();
+      }
+
+      // Update active state
+      updateActiveTheme(theme);
+
+      // Show feedback
+      showFeedback('Theme changed to ' + theme.charAt(0).toUpperCase() + theme.slice(1));
+    }
+
+    function updateActiveTheme(theme) {
+      document.querySelectorAll('.theme-option').forEach(option => {
+        if (option.dataset.theme === theme) {
+          option.classList.add('active');
+        } else {
+          option.classList.remove('active');
+        }
+      });
+    }
+
+    function showFeedback(message) {
+      // Create toast notification
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.style.cssText = `
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 14px;
+        z-index: 10000;
+        animation: slideUp 0.3s ease;
+      `;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2000);
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentTheme = window.AnhadTheme ? window.AnhadTheme.get() : localStorage.getItem('anhad_theme') || 'auto';
+      updateActiveTheme(currentTheme);
+    });
+
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
