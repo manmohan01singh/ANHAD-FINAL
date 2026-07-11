@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v7.5.0'; // BUMP: Force client PWA cache refresh - Auto-update enabled
+const CACHE_VERSION = 'anhad-v7.5.1'; // Time-based artwork for mini player + Hukamnama support
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

@@ -94,12 +94,40 @@
     '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3'
   ];
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TIME-BASED ARTWORK HELPER (like Gurbani Radio)
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  function getTimeOfDay() {
+    const forced = localStorage.getItem('anhad_forced_time_of_day');
+    if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+      return forced;
+    }
+    const h = new Date().getHours();
+    if (h >= 5 && h < 9) return 'morning';
+    if (h >= 9 && h < 16) return 'day';
+    if (h >= 16 && h < 20) return 'evening';
+    return 'night';
+  }
+
+  function getArtworkForStream(stream) {
+    if (!stream || !stream.artworkSlots) return stream?.artwork || '';
+    const timeSlot = getTimeOfDay();
+    return stream.artworkSlots[timeSlot] || stream.artwork;
+  }
+
   const STREAMS = {
     darbar: {
       name: 'Darbar Sahib Live',
       subtitle: 'Sri Harmandir Sahib Ji',
       url: 'https://live.sgpc.net:8443/;nocache=1',
       artwork: resolveAsset('HERO CARD IMAGES/day-darbar-sahib.webp'),
+      artworkSlots: {
+        morning: resolveAsset('HERO CARD IMAGES/morning-darbar-sahib.webp'),
+        day: resolveAsset('HERO CARD IMAGES/day-darbar-sahib.webp'),
+        evening: resolveAsset('HERO CARD IMAGES/evening-darbar-sahib.webp'),
+        night: resolveAsset('HERO CARD IMAGES/night-darbar-sahib.webp')
+      },
       type: 'live',
       playerPage: 'GurbaniRadio/gurbani-radio.html'
     },
@@ -107,6 +135,12 @@
       name: 'Amritvela Kirtan',
       subtitle: 'ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ',
       artwork: resolveAsset('HERO CARD IMAGES/day-amritvela-kirtan.webp'),
+      artworkSlots: {
+        morning: resolveAsset('HERO CARD IMAGES/morning-amritvela-kirtan.webp'),
+        day: resolveAsset('HERO CARD IMAGES/day-amritvela-kirtan.webp'),
+        evening: resolveAsset('HERO CARD IMAGES/evening-amritvela-kirtan.webp'),
+        night: resolveAsset('HERO CARD IMAGES/night-amritvela-kirtan.webp')
+      },
       type: 'playlist',
       totalTracks: 40,
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=amritvela',
@@ -119,6 +153,12 @@
       name: 'Waheguru Simran',
       subtitle: 'Naam Simran • Virtual Live',
       artwork: resolveAsset('HERO CARD IMAGES/day-waheguru-simran.webp'),
+      artworkSlots: {
+        morning: resolveAsset('HERO CARD IMAGES/morning-waheguru-simran.webp'),
+        day: resolveAsset('HERO CARD IMAGES/day-waheguru-simran.webp'),
+        evening: resolveAsset('HERO CARD IMAGES/evening-waheguru-simran.webp'),
+        night: resolveAsset('HERO CARD IMAGES/night-waheguru-simran.webp')
+      },
       type: 'simran',
       totalTracks: 38,
       playerPage: 'GurbaniRadio/gurbani-radio.html?stream=simran',
@@ -127,6 +167,15 @@
         const filename = SIMRAN_FILENAMES[i];
         return `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(filename)}`;
       }
+    },
+    hukamnama: {
+      name: 'Daily Hukamnama',
+      subtitle: 'Sachkhand Sri Harmandir Sahib',
+      url: `${API_BASE}/api/hukamnama/audio`,
+      artwork: resolveAsset('HUKAMNAMA-SAHIB.webp'),
+      type: 'live',
+      skipCacheBuster: true,
+      playerPage: 'Hukamnama/daily-hukamnama.html'
     }
   };
 
@@ -569,9 +618,12 @@
     // Show mini player - CSS .gmp--visible has display:flex
     miniPlayerEl.classList.add('gmp--visible');
 
-    // Update artwork only when showing
+    // Update artwork only when showing - USE TIME-BASED ARTWORK
     const artImg = document.getElementById('gmpArt');
-    if (artImg && stream?.artwork) artImg.src = stream.artwork;
+    if (artImg && stream) {
+      const timeBasedArtwork = getArtworkForStream(stream);
+      artImg.src = timeBasedArtwork;
+    }
 
     // Update title/subtitle
     const titleEl = document.getElementById('gmpTitle');
@@ -755,10 +807,11 @@
       liveDot.style.display = stream?.type === 'live' ? '' : 'none';
     }
     
-    // Update artwork from master state
+    // Update artwork from master state - USE TIME-BASED ARTWORK
     const artImg = document.getElementById('gmpArt');
-    if (artImg && stream?.artwork) {
-      artImg.src = stream.artwork;
+    if (artImg && stream) {
+      const timeBasedArtwork = getArtworkForStream(stream);
+      artImg.src = timeBasedArtwork;
     }
     
     // Update visibility based on playing state

@@ -1,7 +1,7 @@
 {
-  "version": "5.2.0",
-  "buildTime": "2026-07-11T12:00:00.000Z",
-  "timestamp": 1783771200000,
-  "commitHash": "auto-update-enabled",
+  "version": "5.2.1",
+  "buildTime": "2026-07-11T18:00:00.000Z",
+  "timestamp": 1783792800000,
+  "commitHash": "time-based-artwork-mini-player",
   "branch": "main"
 }
