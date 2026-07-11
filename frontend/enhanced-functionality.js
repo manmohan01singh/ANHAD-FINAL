@@ -344,7 +344,8 @@ class GurbaniRadioEnhancements {
   }
 
   openSettings() {
-    this.showSettingsModal();
+    // Navigate to settings page instead of modal
+    window.location.href = './Settings/index.html';
   }
 
   // Sehaj Paath System

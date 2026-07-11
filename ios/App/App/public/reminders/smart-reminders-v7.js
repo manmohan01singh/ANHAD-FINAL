@@ -16,7 +16,7 @@
   // ════════════════════════════════════════════════════════════════════════════
   // CONFIGURATION
   // ════════════════════════════════════════════════════════════════════════════
-  
+
   const CONFIG = {
     version: '7.0.0',
     storage: {
@@ -104,7 +104,7 @@
 
       const today = now.getDay();
       let daysUntil = 0;
-      
+
       // Find next valid day
       while (!days.includes((today + daysUntil) % 7)) {
         daysUntil++;
@@ -131,14 +131,14 @@
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
       if (hours > 0) {
-        return { 
-          value: hours, 
+        return {
+          value: hours,
           unit: hours === 1 ? 'hr' : 'hrs',
           text: `${hours} ${hours === 1 ? 'hr' : 'hrs'} ${minutes} min`
         };
       }
-      return { 
-        value: minutes, 
+      return {
+        value: minutes,
         unit: minutes === 1 ? 'min' : 'mins',
         text: `${minutes} minutes`
       };
@@ -361,7 +361,7 @@
     currentAudio: null,
     currentTone: null,
     isPlaying: false,
-    
+
     sounds: [
       { id: 'audio1', name: 'Waheguru Simran', desc: 'Soft melodic simran', icon: '🕉️' },
       { id: 'audio2', name: 'Amritvela Dhun', desc: 'Peaceful morning raga', icon: '🌅' },
@@ -382,7 +382,7 @@
       this.currentAudio.loop = loop;
       this.currentAudio.volume = 0.8;
       this.isPlaying = true;
-      
+
       // Handle ended event for non-looping audio
       if (!loop) {
         this.currentAudio.addEventListener('ended', () => {
@@ -390,7 +390,7 @@
           this.updatePlayButtons();
         });
       }
-      
+
       // Handle autoplay restrictions
       const playPromise = this.currentAudio.play();
       if (playPromise !== undefined) {
@@ -399,7 +399,7 @@
           this.isPlaying = false;
         });
       }
-      
+
       this.updatePlayButtons();
     },
 
@@ -419,7 +419,7 @@
         this.stop();
         return false;
       }
-      
+
       // Otherwise play the new tone
       this.play(tone, false);
       return true;
@@ -430,12 +430,12 @@
       document.querySelectorAll('.sound-play').forEach(btn => {
         const tone = btn.dataset.sound;
         const isThisPlaying = this.isPlaying && this.currentTone === tone;
-        
+
         // Update icon
-        btn.innerHTML = isThisPlaying 
+        btn.innerHTML = isThisPlaying
           ? `<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`
           : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        
+
         // Update visual state
         btn.classList.toggle('playing', isThisPlaying);
       });
@@ -526,7 +526,7 @@
 
     updateStats(status) {
       let stats = Storage.get(CONFIG.storage.stats, { completed: 0, missed: 0, streak: 0 });
-      
+
       if (status === 'completed' || status === 'followed') {
         stats.completed++;
       } else if (status === 'missed') {
@@ -545,7 +545,7 @@
       if (this.channel) {
         this.channel.postMessage({ type, data });
       }
-      
+
       // Also dispatch locally
       window.dispatchEvent(new CustomEvent('nitnemSync', {
         detail: { type, data }
@@ -579,19 +579,19 @@
       // CRITICAL: Request notification permission on Android 13+ first
       await this.requestNotificationPermission();
       await this.requestAlarmReliability();
-      
+
       // CRITICAL: Create notification channel (required Android 8+)
       await this.createNotificationChannel();
 
       // Check alarms every 10 seconds (more reliable)
       this.checkInterval = setInterval(() => this.checkAlarms(), 10000);
-      
+
       // Check immediately on load
       this.checkAlarms();
-      
+
       // Check for missed alarms from when app was closed
       this.checkMissedAlarms();
-      
+
       // Check for pending alarms that triggered while app was closed
       this.checkPendingAlarms();
 
@@ -609,7 +609,7 @@
           this.scheduleAllWithCapacitor(); // Reschedule on every app foreground
         }
       });
-      
+
       // Check when window gets focus
       window.addEventListener('focus', () => {
         this.checkAlarms();
@@ -656,7 +656,7 @@
           ...Object.keys(CONFIG.audio.files).map(tone => ({
             id: 'anhad_reminders_' + tone,
             name: 'ANHAD Reminders ' + tone,
-            sound: CONFIG.audio.files[tone]
+            sound: (window.Capacitor && window.Capacitor.getPlatform() === 'android') ? tone : CONFIG.audio.files[tone]
           }))
         ];
         for (const channel of channels) {
@@ -705,17 +705,17 @@
             const checkDate = new Date(now);
             checkDate.setDate(checkDate.getDate() + dayOffset);
             const dayOfWeek = checkDate.getDay();
-            
+
             // Only schedule if this day is in the alarm's active days
             if (!alarm.days.includes(dayOfWeek)) continue;
-            
+
             const [h, m] = alarm.time.split(':').map(Number);
             const scheduleTime = new Date(checkDate);
             scheduleTime.setHours(h, m, 0, 0);
-            
+
             // Skip if time has already passed
             if (scheduleTime <= now) continue;
-            
+
             notifications.push({
               id: this.hashString(alarm.id + '_d' + dayOffset),
               title: alarm.label || alarm.title || 'Reminder',
@@ -854,32 +854,32 @@
         }
       });
     },
-    
+
     checkMissedAlarms() {
       // Check for alarms that should have triggered while app was closed
       const now = new Date();
       const today = now.getDay();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      
+
       const allReminders = [
         ...Object.values(State.reminders.core),
         ...State.reminders.custom
       ];
-      
+
       const alarmLog = Storage.get(CONFIG.storage.alarmLog, {});
       const todayLog = alarmLog[Utils.today()] || {};
-      
+
       allReminders.forEach(alarm => {
         if (!alarm.enabled || !alarm.days.includes(today)) return;
         if (todayLog[alarm.id] || this.hasFireToken(alarm)) return;
-        
+
         // Parse alarm time
         const [h, m] = alarm.time.split(':').map(Number);
         const alarmMinutes = h * 60 + m;
-        
+
         // Check if alarm time passed in last 5 minutes
         const diff = currentMinutes - alarmMinutes;
-        
+
         if (diff >= 0 && diff <= 5) {
           // Alarm should have triggered recently
           const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
@@ -891,16 +891,16 @@
         }
       });
     },
-    
+
     checkPendingAlarms() {
       // Check for alarms that were triggered but modal wasn't shown (app was closed)
       const triggeredAlarms = Storage.get('sr_triggered_alarms', {});
       const now = new Date();
       const fiveMinutesAgo = new Date(now - 5 * 60000);
-      
+
       Object.entries(triggeredAlarms).forEach(([alarmId, data]) => {
         const triggeredTime = new Date(data.timestamp);
-        
+
         // If alarm was triggered in last 5 minutes and wasn't shown
         if (triggeredTime > fiveMinutesAgo && !data.shown) {
           // Find the alarm
@@ -910,13 +910,13 @@
             this.triggerAlarm(alarm);
           }
         }
-        
+
         // Clean up old entries (older than 1 hour)
         if (triggeredTime < new Date(now - 60 * 60000)) {
           delete triggeredAlarms[alarmId];
         }
       });
-      
+
       Storage.set('sr_triggered_alarms', triggeredAlarms);
     },
 
@@ -928,7 +928,7 @@
       }
       this.setFireToken(alarm, suffix);
       console.log('[AlarmScheduler] Triggering:', alarm.label);
-      
+
       // Persist triggered alarm state for background/Capacitor support
       const triggeredAlarms = Storage.get('sr_triggered_alarms', {});
       triggeredAlarms[alarm.id] = {
@@ -937,10 +937,50 @@
         shown: false
       };
       Storage.set('sr_triggered_alarms', triggeredAlarms);
-      
-      // Play sound
+
+      // Play sound / stream
       if (State.settings.sound) {
-        AudioManager.play(alarm.tone, true);
+        if (alarm.awakenStream && alarm.awakenStream !== 'none' && navigator.onLine) {
+          console.log('[AlarmScheduler] Awaken stream requested:', alarm.awakenStream);
+
+          // Track that this alarm started the stream, so dismiss only stops alarm-started playback
+          State._alarmStartedStream = null;
+
+          const tryPlayStream = (retriesLeft) => {
+            if (window.GlobalMiniPlayer && window.AnhadAudio) {
+              // Capture pre-alarm playing state so dismiss won't stomp existing Gurbani
+              const wasAlreadyPlaying = window.GlobalMiniPlayer.isPlaying();
+              const previousStream = window.GlobalMiniPlayer.getStream();
+
+              window.GlobalMiniPlayer.play(alarm.awakenStream)
+                .then(() => {
+                  console.log('[AlarmScheduler] Stream started:', alarm.awakenStream);
+                  State._alarmStartedStream = alarm.awakenStream;
+                  State._preAlarmWasPlaying = wasAlreadyPlaying && previousStream === alarm.awakenStream;
+                })
+                .catch(err => {
+                  console.warn('[AlarmScheduler] Stream failed, falling back to local tone:', err);
+                  State._alarmStartedStream = null;
+                  AudioManager.play(alarm.tone, true);
+                });
+            } else if (retriesLeft > 0) {
+              console.warn(`[AlarmScheduler] GMP/AnhadAudio not ready, retrying... (${retriesLeft} retries left)`);
+              setTimeout(() => tryPlayStream(retriesLeft - 1), 1000);
+            } else {
+              console.warn('[AlarmScheduler] GMP unavailable after retries, falling back to local tone');
+              State._alarmStartedStream = null;
+              AudioManager.play(alarm.tone, true);
+            }
+          };
+
+          tryPlayStream(3); // Retry up to 3 times, 1s apart (handles cold-start)
+        } else {
+          if (alarm.awakenStream && alarm.awakenStream !== 'none' && !navigator.onLine) {
+            console.log('[AlarmScheduler] Device offline, falling back to local tone');
+          }
+          State._alarmStartedStream = null;
+          AudioManager.play(alarm.tone, true);
+        }
       }
 
       // Vibrate
@@ -950,7 +990,7 @@
 
       // Show modal
       UI.showAlarmModal(alarm);
-      
+
       // Mark as shown
       triggeredAlarms[alarm.id].shown = true;
       Storage.set('sr_triggered_alarms', triggeredAlarms);
@@ -975,7 +1015,7 @@
       }
 
       const delay = next.nextTime - Date.now();
-      
+
       // Update hero card
       UI.updateHeroCard(next.alarm, next.nextTime);
 
@@ -1005,7 +1045,9 @@
               exact: true // CRITICAL: Exact timing for alarm-like behavior
             },
             channelId: 'anhad_reminders_' + (alarm.tone || 'audio1'),
-            sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
+            sound: (window.Capacitor && window.Capacitor.getPlatform() === 'android')
+              ? (alarm.tone || 'audio1')
+              : (CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1),
             smallIcon: 'ic_stat_notify',
             extra: {
               action: 'show_alarm',
@@ -1049,7 +1091,7 @@
       allReminders.forEach(alarm => {
         const nextTime = Utils.getNextOccurrence(alarm.time, alarm.days);
         const delay = nextTime - now;
-        
+
         if (delay > 0 && delay < nearestTime) {
           nearest = alarm;
           nearestTime = delay;
@@ -1133,15 +1175,19 @@
         'coreAlarmsList', 'customAlarmsList', 'customEmptyState',
         'streakValue', 'completedValue', 'obedienceValue',
         'fabAddAlarm', 'modalBackdrop', 'editSheet', 'addSheet', 'settingsSheet', 'alarmModal',
-        'editSheetTitle', 'editLabel', 'editTime', 'editNitnemSync',
-        'editDays', 'soundSelector', 'addLabel', 'addTime', 'addDays', 'addSoundSelector',
+        'editSheetTitle', 'editLabel', 'editTime', 'editNitnemSync', 'editAwakenStream',
+        'editDays', 'soundSelector', 'addLabel', 'addTime', 'addDays', 'addSoundSelector', 'addAwakenStream',
         'saveAlarmBtn', 'deleteAlarmBtn', 'cancelEditBtn', 'cancelAddBtn', 'createAlarmBtn',
         'closeEditSheet', 'closeAddSheet', 'closeSettingsSheet', 'settingsBtn',
         'neverMissToggle', 'smartSnoozeToggle', 'preReminderToggle', 'nitnemSyncToggle',
         'vibrationToggle', 'soundToggle', 'forceSyncBtn',
-        'alarmModalIcon', 'alarmModalTime', 'alarmModalLabel',
+        'alarmModalIcon', 'alarmModalTime', 'alarmModalLabel', 'alarmModalSubtitle',
+        'alarmModalClock', 'flareAudioIndicator',
         'modalSnoozeBtn', 'modalCompleteBtn', 'toastContainer',
-        'backBtn', 'addCustomBtn', 'nitnemLinkBtn'
+        'backBtn', 'addCustomBtn', 'nitnemLinkBtn',
+        'androidSettingsGroup', 'exactAlarmBtn', 'exactAlarmStatus', 'exactAlarmVal',
+        'batteryOptBtn', 'batteryOptStatus', 'batteryOptVal',
+        'androidPermissionBanner', 'bannerResolveBtn', 'bannerDismissBtn'
       ];
 
       els.forEach(id => {
@@ -1211,6 +1257,52 @@
       // Modal actions
       this.elements.modalSnoozeBtn?.addEventListener('click', () => this.snoozeCurrentAlarm());
       this.elements.modalCompleteBtn?.addEventListener('click', () => this.completeCurrentAlarm());
+
+      // Android settings actions
+      this.elements.exactAlarmBtn?.addEventListener('click', () => {
+        if (!window.Capacitor) return;
+        const AlarmReliability = window.Capacitor.Plugins.AlarmReliability;
+        if (AlarmReliability) {
+          Haptic.tap();
+          AlarmReliability.requestExactAlarmPermission().then(() => {
+            setTimeout(() => this.checkAndroidPermissions(), 1000);
+          });
+        }
+      });
+
+      this.elements.batteryOptBtn?.addEventListener('click', () => {
+        if (!window.Capacitor) return;
+        const AlarmReliability = window.Capacitor.Plugins.AlarmReliability;
+        if (AlarmReliability) {
+          Haptic.tap();
+          AlarmReliability.requestIgnoreBatteryOptimizations().then(() => {
+            setTimeout(() => this.checkAndroidPermissions(), 1000);
+          });
+        }
+      });
+
+      // Banner actions
+      this.elements.bannerResolveBtn?.addEventListener('click', () => {
+        Haptic.tap();
+        this.openSheet('settingsSheet');
+        setTimeout(() => {
+          this.elements.androidSettingsGroup?.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      });
+
+      this.elements.bannerDismissBtn?.addEventListener('click', () => {
+        Haptic.tap();
+        localStorage.setItem('anhad_dismissed_reliability_banner', 'true');
+        if (this.elements.androidPermissionBanner) {
+          this.elements.androidPermissionBanner.style.display = 'none';
+        }
+        Toast.show('Reliability notice ignored. Note that alarms may be delayed by Android.', 'info');
+      });
+
+      // Check on window focus (so returning from system settings updates the dashboard instantly)
+      window.addEventListener('focus', () => {
+        this.checkAndroidPermissions();
+      });
 
       // Keyboard shortcuts
       document.addEventListener('keydown', (e) => {
@@ -1311,13 +1403,95 @@
       });
     },
 
+    checkAndroidPermissions() {
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+        return; // Only runs on native Android
+      }
+
+      const AlarmReliability = window.Capacitor.Plugins.AlarmReliability;
+      if (!AlarmReliability) return;
+
+      AlarmReliability.getStatus().then(status => {
+        console.log('[AndroidReliability] Status:', status);
+        const hasExact = status.exactAlarm;
+        const isOptimized = status.batteryOptimized; // true means optimization is ON (bad for alarms), false means exempt (good)
+
+        // Show/hide settings container
+        if (this.elements.androidSettingsGroup) {
+          this.elements.androidSettingsGroup.style.display = 'block';
+        }
+
+        // Update exact alarm row
+        if (this.elements.exactAlarmStatus && this.elements.exactAlarmVal) {
+          if (hasExact) {
+            this.elements.exactAlarmStatus.textContent = 'Active / Granted';
+            this.elements.exactAlarmStatus.style.color = '#34C759';
+            this.elements.exactAlarmVal.textContent = 'Granted';
+            this.elements.exactAlarmVal.disabled = true;
+            this.elements.exactAlarmVal.style.background = 'var(--green-soft)';
+            this.elements.exactAlarmVal.style.color = '#34C759';
+          } else {
+            this.elements.exactAlarmStatus.textContent = 'Permission denied - tap to grant';
+            this.elements.exactAlarmStatus.style.color = '#FF3B30';
+            this.elements.exactAlarmVal.textContent = 'Grant';
+            this.elements.exactAlarmVal.disabled = false;
+            this.elements.exactAlarmVal.style.background = 'var(--badge-bg)';
+            this.elements.exactAlarmVal.style.color = 'var(--badge-text)';
+          }
+        }
+
+        // Update battery optimization row
+        if (this.elements.batteryOptStatus && this.elements.batteryOptVal) {
+          if (!isOptimized) { // Exempt (good)
+            this.elements.batteryOptStatus.textContent = 'Exempt / High Reliability';
+            this.elements.batteryOptStatus.style.color = '#34C759';
+            this.elements.batteryOptVal.textContent = 'Allowed';
+            this.elements.batteryOptVal.disabled = true;
+            this.elements.batteryOptVal.style.background = 'var(--green-soft)';
+            this.elements.batteryOptVal.style.color = '#34C759';
+          } else { // Restricted (bad)
+            this.elements.batteryOptStatus.textContent = 'Restricted - tap to exempt';
+            this.elements.batteryOptStatus.style.color = '#FF9500';
+            this.elements.batteryOptVal.textContent = 'Allow';
+            this.elements.batteryOptVal.disabled = false;
+            this.elements.batteryOptVal.style.background = 'var(--badge-bg)';
+            this.elements.batteryOptVal.style.color = 'var(--badge-text)';
+          }
+        }
+
+        // Handle high-profile Warning Banner
+        if (this.elements.androidPermissionBanner) {
+          const isDismissed = localStorage.getItem('anhad_dismissed_reliability_banner') === 'true';
+          const needsFix = !hasExact || isOptimized;
+
+          if (needsFix && !isDismissed) {
+            this.elements.androidPermissionBanner.style.display = 'block';
+            if (this.elements.permissionBannerText) {
+              if (!hasExact && isOptimized) {
+                this.elements.permissionBannerText.textContent = 'ANHAD requires both Exact Alarm and Battery Exemption permissions to guarantee reminders deliver on time.';
+              } else if (!hasExact) {
+                this.elements.permissionBannerText.textContent = 'ANHAD requires Exact Alarm permissions to ensure reminds do not delay under system sleep.';
+              } else {
+                this.elements.permissionBannerText.textContent = 'ANHAD is restricted by battery optimization. Set it to "Unrestricted" to avoid missed alarms.';
+              }
+            }
+          } else {
+            this.elements.androidPermissionBanner.style.display = 'none';
+          }
+        }
+      }).catch(err => {
+        console.error('[AndroidReliability] getStatus failed:', err);
+      });
+    },
+
     render() {
       this.renderCoreAlarms();
       this.renderCustomAlarms();
       this.updateStats();
       AlarmScheduler.scheduleNext();
       AlarmScheduler.scheduleAllWithCapacitor();
-      
+      this.checkAndroidPermissions();
+
       // Hide loading
       setTimeout(() => {
         this.elements.appLoading?.classList.add('hidden');
@@ -1389,7 +1563,7 @@
       if (!container) return;
 
       const customAlarms = State.reminders.custom || [];
-      
+
       if (customAlarms.length === 0) {
         container.style.display = 'none';
         emptyState.style.display = 'block';
@@ -1491,7 +1665,7 @@
       const time12 = Utils.formatTime12(alarm.time);
       const countdown = Utils.getCountdown(nextTime);
       const daysText = Utils.getDayNames(alarm.days);
-      
+
       // Calculate time until alarm
       const delay = nextTime - Date.now();
       const isAlarmTime = delay <= 0; // Alarm time has passed
@@ -1502,7 +1676,7 @@
       this.elements.heroTime.textContent = `${time12.hour}:${time12.min}`;
       this.elements.heroPeriod.textContent = time12.period;
       this.elements.heroDays.textContent = daysText;
-      
+
       // Update countdown text (compact format)
       if (isAlarmTime) {
         this.elements.heroCountdown.innerHTML = `<span class="time-value">Now</span>`;
@@ -1511,7 +1685,7 @@
         this.elements.heroCountdown.innerHTML = `in <span class="time-value">${countdown.text}</span>`;
         this.elements.statusText.textContent = 'Next Alarm';
       }
-      
+
       // Update snooze button text based on state
       if (this.elements.snoozeHeroBtn) {
         if (isAlarmTime) {
@@ -1532,7 +1706,7 @@
           `;
         }
       }
-      
+
       // Update status bar
       this.elements.nextTime.textContent = `${time12.hour}:${time12.min}`;
       this.elements.nextCountdown.textContent = countdown.text;
@@ -1545,7 +1719,7 @@
         const updatedDelay = nextTime - Date.now();
         const updatedIsAlarmTime = updatedDelay <= 0;
         const updatedCountdown = Utils.getCountdown(nextTime);
-        
+
         if (updatedIsAlarmTime) {
           this.elements.heroCountdown.innerHTML = `<span class="time-value">Now</span>`;
           this.elements.statusText.textContent = 'Alarm Now';
@@ -1567,7 +1741,7 @@
     closeSheet(sheetId) {
       // Stop audio preview when closing any sheet
       AudioManager.stop();
-      
+
       this.elements[sheetId]?.classList.remove('active');
       if (!document.querySelector('.bottom-sheet.active')) {
         this.elements.modalBackdrop?.classList.remove('active');
@@ -1596,6 +1770,7 @@
       this.elements.editLabel.value = alarm.label;
       this.elements.editTime.value = alarm.time;
       this.elements.editNitnemSync.checked = alarm.nitnemSync !== false;
+      this.elements.editAwakenStream.value = alarm.awakenStream || 'none';
       this.elements.deleteAlarmBtn.style.display = isCore ? 'none' : 'flex';
 
       // Set days
@@ -1625,6 +1800,7 @@
       alarm.label = this.elements.editLabel.value;
       alarm.time = this.elements.editTime.value;
       alarm.nitnemSync = this.elements.editNitnemSync.checked;
+      alarm.awakenStream = this.elements.editAwakenStream.value || 'none';
 
       // Get days
       alarm.days = [];
@@ -1649,7 +1825,7 @@
 
       const id = State.currentEditId;
       const idx = State.reminders.custom.findIndex(r => r.id === id);
-      
+
       if (idx > -1) {
         State.reminders.custom.splice(idx, 1);
         Storage.set(CONFIG.storage.reminders, State.reminders);
@@ -1674,6 +1850,7 @@
       // Get sound
       const activeSound = this.elements.addSoundSelector?.querySelector('.sound-option.active');
       const tone = activeSound ? activeSound.dataset.sound : 'audio1';
+      const awakenStream = this.elements.addAwakenStream.value || 'none';
 
       const newAlarm = {
         id: Utils.generateId(),
@@ -1683,6 +1860,7 @@
         enabled: true,
         days: days.length > 0 ? days : [0, 1, 2, 3, 4, 5, 6],
         tone,
+        awakenStream,
         snooze: 10,
         nitnemSync: true,
         icon: '⏰',
@@ -1705,11 +1883,44 @@
       State.isModalOpen = true;
       State.currentModalAlarm = alarm;
 
-      const time12 = Utils.formatTime12(alarm.time);
+      // — Clock display
+      const now = new Date();
+      const h = now.getHours();
+      const m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = ((h + 11) % 12 + 1);
+      const mm = m < 10 ? '0' + m : m;
+      if (this.elements.alarmModalClock) {
+        this.elements.alarmModalClock.textContent = `${h12}:${mm} ${ampm}`;
+      }
 
+      // — Icon, label, subtitle
       this.elements.alarmModalIcon.textContent = alarm.icon || '🔔';
-      this.elements.alarmModalTime.textContent = `${time12.hour}:${time12.min}`;
-      this.elements.alarmModalLabel.textContent = alarm.gurmukhi || alarm.label;
+      if (this.elements.alarmModalLabel) {
+        this.elements.alarmModalLabel.textContent = alarm.label || 'Reminder';
+      }
+      if (this.elements.alarmModalSubtitle) {
+        const awakenName = {
+          darbar: 'Darbar Sahib Live Stream',
+          amritvela: 'Amritvela Kirtan Playlist',
+          simran: 'Waheguru Simran Virtual Live'
+        };
+        const streamLabel = alarm.awakenStream && alarm.awakenStream !== 'none'
+          ? awakenName[alarm.awakenStream] || alarm.awakenStream
+          : alarm.gurmukhi || alarm.label;
+        this.elements.alarmModalSubtitle.textContent = streamLabel;
+      }
+
+      // — Per-alarm accent color via CSS var
+      if (alarm.color) {
+        document.getElementById('alarmModal')?.style.setProperty('--alarm-glow-color', alarm.color);
+      }
+
+      // — Show audio indicator if streaming
+      const isStreaming = alarm.awakenStream && alarm.awakenStream !== 'none' && navigator.onLine;
+      if (this.elements.flareAudioIndicator) {
+        this.elements.flareAudioIndicator.style.display = isStreaming ? 'flex' : 'none';
+      }
 
       this.elements.alarmModal.classList.add('active');
     },
@@ -1719,11 +1930,19 @@
       State.currentModalAlarm = null;
       this.elements.alarmModal.classList.remove('active');
       AudioManager.stop();
+
+      // Only pause GlobalMiniPlayer if this alarm was the one that started the stream.
+      // This prevents dismissing an alarm from also stopping pre-existing Gurbani the user was listening to.
+      if (window.GlobalMiniPlayer && State._alarmStartedStream) {
+        console.log('[UI] Stopping alarm-started stream:', State._alarmStartedStream);
+        window.GlobalMiniPlayer.pause();
+        State._alarmStartedStream = null;
+      }
     },
 
     snoozeCurrentAlarm() {
       if (!State.currentModalAlarm) return;
-      
+
       Haptic.tap();
       AlarmScheduler.snoozeAlarm(State.currentModalAlarm.id, 10);
       this.closeAlarmModal();
@@ -1742,13 +1961,13 @@
     completeAlarm(alarmId) {
       // Record in Nitnem Sync
       NitnemSync.recordResponse(alarmId, 'completed');
-      
+
       // Update UI
       this.updateAlarmStatus(alarmId, 'completed');
       this.updateStats();
-      
+
       Toast.show('Great job! Alarm completed', 'success');
-      
+
       // Schedule next alarm
       AlarmScheduler.scheduleNext();
       AlarmScheduler.scheduleAllWithCapacitor();
@@ -1777,6 +1996,7 @@
           enabled: true,
           days: [0, 1, 2, 3, 4, 5, 6],
           tone: 'audio1',
+          awakenStream: 'none',
           icon: '🌅',
           color: '#FFD60A',
           nitnemSync: true
@@ -1790,6 +2010,7 @@
           enabled: true,
           days: [0, 1, 2, 3, 4, 5, 6],
           tone: 'audio3',
+          awakenStream: 'none',
           icon: '🌆',
           color: '#FF9500',
           nitnemSync: true
@@ -1803,6 +2024,7 @@
           enabled: true,
           days: [0, 1, 2, 3, 4, 5, 6],
           tone: 'audio4',
+          awakenStream: 'none',
           icon: '🌙',
           color: '#AF52DE',
           nitnemSync: true
@@ -1827,6 +2049,31 @@
     AlarmScheduler.init();
     UI.init();
     ThemeSync.init();
+
+    // ─── POST-REBOOT RESCHEDULE ──────────────────────────────────────────────
+    // After a device reboot, ReminderForegroundService.java sets a flag in
+    // SharedPreferences. We read it here via the Capacitor Preferences plugin.
+    // If set, we immediately re-register all alarms with Capacitor and clear
+    // the flag so it only fires once.
+    (async () => {
+      try {
+        if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+          const { Preferences } = window.Capacitor.Plugins;
+          if (Preferences) {
+            const { value } = await Preferences.get({ key: 'needs_alarm_reschedule' });
+            if (value === 'true') {
+              console.log('[SmartReminders] Post-reboot flag detected — rescheduling all alarms');
+              AlarmScheduler.scheduleAllWithCapacitor();
+              await Preferences.remove({ key: 'needs_alarm_reschedule' });
+              console.log('[SmartReminders] Post-reboot reschedule complete. Flag cleared.');
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[SmartReminders] Boot-reschedule check failed:', e);
+      }
+    })();
+    // ─────────────────────────────────────────────────────────────────────────
 
     console.log('[SmartReminders] Ready');
   }
@@ -1854,10 +2101,10 @@
 
     applyTheme(theme) {
       const html = document.documentElement;
-      
+
       html.setAttribute('data-theme', theme);
       html.style.colorScheme = theme;
-      
+
       if (theme === 'dark') {
         html.classList.add('dark', 'dark-mode');
       } else {

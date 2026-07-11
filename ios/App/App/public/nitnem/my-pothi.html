@@ -2,7 +2,19 @@
 <html lang="pa" dir="ltr">
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>ਮੇਰੀ ਪੋਥੀ - My Pothi</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
     (function() {
@@ -365,6 +377,89 @@
 
         .footer { padding: 40px 20px; text-align: center; }
         .footer p { font-family: var(--font-gurmukhi); font-size: 14px; color: var(--text-tertiary); }
+
+        /* ═══════════════════════════════════════════════════
+           MOBILE OPTIMIZATIONS
+           ═══════════════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            /* Smaller orbs on mobile for better performance */
+            .orb-1 { width: 250px; height: 250px; }
+            .orb-2 { width: 200px; height: 200px; }
+
+            /* More compact header */
+            .header { padding: calc(var(--safe-top) + 6px) 16px 10px; }
+            .header-title { font-size: 16px; }
+            .back-btn { font-size: 15px; }
+            .edit-btn { width: 32px; height: 32px; font-size: 14px; }
+
+            /* Tighter spacing on cards */
+            .pothi-list { padding: 0 12px; gap: 8px; }
+            .pothi-bani-card { 
+                padding: 12px; 
+                gap: 10px;
+                border-radius: 18px;
+            }
+            .pothi-bani-card .card-num { width: 24px; height: 24px; font-size: 12px; }
+            .pothi-bani-card .card-icon { width: 40px; height: 40px; font-size: 22px; }
+            .pothi-bani-card .card-name { font-size: 15px; }
+            .pothi-bani-card .card-english { font-size: 12px; }
+            .card-read-btn, .card-complete-btn { width: 32px; height: 32px; }
+            .card-drag span { width: 16px; }
+
+            /* Hero section */
+            .pothi-hero { padding: 20px 16px 6px; }
+            .pothi-hero .icon { font-size: 40px; margin-bottom: 6px; }
+            .pothi-hero h1 { font-size: 20px; }
+            .pothi-hero .subtitle { font-size: 13px; }
+
+            /* Edit mode */
+            .edit-hero { padding: 16px; }
+            .edit-hero h2 { font-size: 18px; }
+            .edit-hero p { font-size: 13px; }
+            .edit-section { padding: 0 12px; margin-bottom: 20px; }
+            .bani-select-card { padding: 10px 12px; gap: 10px; border-radius: 12px; }
+            .bani-select-icon { font-size: 20px; }
+            .bani-select-name { font-size: 14px; }
+            .bani-select-english { font-size: 11px; }
+            .bani-checkbox { width: 24px; height: 24px; }
+
+            /* Save button */
+            .save-section { left: 12px; right: 12px; bottom: calc(var(--safe-bottom) + 12px); }
+            .save-btn { padding: 13px; font-size: 16px; border-radius: 12px; }
+
+            /* Empty state */
+            .empty-state { padding: 40px 20px; }
+            .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+            .empty-state h2 { font-size: 20px; margin-bottom: 6px; }
+            .empty-state p { font-size: 14px; margin-bottom: 20px; }
+            .empty-state .start-btn { padding: 12px 24px; font-size: 15px; border-radius: 12px; }
+
+            /* Reorder hint */
+            .reorder-hint { margin: 6px 16px 10px; padding: 7px 12px; font-size: 11px; border-radius: 8px; }
+
+            /* Selected count */
+            .selected-count { margin: 0 16px 12px; padding: 8px 14px; font-size: 13px; border-radius: 10px; }
+            .selected-count .count { font-size: 18px; }
+
+            /* Toast */
+            .toast { padding: 10px 20px; font-size: 14px; border-radius: 10px; }
+
+            /* Footer */
+            .footer { padding: 30px 16px; }
+            .footer p { font-size: 13px; }
+
+            /* Reduce body bottom padding */
+            body { padding-bottom: calc(var(--safe-bottom) + 30px); }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 360px) {
+            .header-title { font-size: 15px; }
+            .pothi-bani-card .card-name { font-size: 14px; }
+            .pothi-bani-card .card-english { font-size: 11px; }
+            .card-read-btn, .card-complete-btn { width: 30px; height: 30px; }
+            .pothi-bani-card .card-num { display: none; } /* Hide numbers on very small screens */
+        }
 
         @media (min-width: 768px) {
             .pothi-list, .edit-section { max-width: 600px; margin-left: auto; margin-right: auto; }
@@ -1002,6 +1097,11 @@
 
         loadPothi();
         renderReadingView();
+
+        // Back button handler
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.history.back();
+        });
 
         document.getElementById('editBtn').addEventListener('click', toggleEditMode);
         document.getElementById('saveBtn').addEventListener('click', () => {

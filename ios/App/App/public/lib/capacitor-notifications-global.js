@@ -553,33 +553,77 @@
                     } catch (e) { }
                 }
 
-                // ═══ FIX 2: Richer bilingual Naam Abhyas notification messages ═══
-                var spiritualMessages = [
-                    { gurmukhi: 'ਵਾਹਿਗੁਰੂ ਜੀ — ਸਮਾਂ ਹੋ ਗਿਆ', english: 'Time for Naam! Leave everything for 2 minutes 🙏' },
-                    { gurmukhi: 'ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ', english: 'Leave all work, remember Vaheguru Ji 🙏' },
-                    { gurmukhi: 'ਜਪਿ ਮਨ ਸਤਿ ਨਾਮੁ ਸਦਾ ਸਤਿ ਨਾਮੁ', english: 'Chant the True Name — Sat Naam always' },
-                    { gurmukhi: 'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ', english: 'Meditate, meditate, meditate and find peace' },
-                    { gurmukhi: 'ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ', english: 'Naam japan naal anand aunda hai 🙏' },
-                    { gurmukhi: 'ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ', english: 'Recognize your divine origin' },
-                    { gurmukhi: 'ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ', english: 'Chant the Lord\'s Name day and night' },
-                    { gurmukhi: 'ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ', english: 'O my mind, chant the Naam as Gurmukh' },
-                    { gurmukhi: 'ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ', english: 'You are my Father, You are my Mother' },
-                    { gurmukhi: 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ', english: 'The One Name is the Lord\'s Command' },
-                    { gurmukhi: 'ਕਿਰਪਾ ਕਰਕੇ 2 ਮਿੰਟ ਲਈ ਅੱਖਾਂ ਬੰਦ ਕਰੋ', english: 'Sat Naam, Waheguru 🙏 2 min only' },
-                    { english: 'Phone pocket vich rakh lo • akhan band kro • Waheguru japo 🙏' },
-                    { english: '2 minutes with Waheguru > 2 hours of scrolling 🙏' },
-                    { english: 'Tera schedule ho gya. Chal 2 min Waheguru bol 🙏' },
-                    { english: 'Har kise nu wait kra, Waheguru nu nahi. Time ho gya! 🙏' },
-                    { english: 'Drop everything. Your appointment with the Divine is NOW.' },
-                    { english: 'In the noise of life, find 2 minutes of Naam silence.' },
-                    { english: 'Naam Abhyas slot live! 120 seconds Rab naal 🙏' },
-                    { english: '2-minute Simran break: kaam pause, Waheguru play 🙏' },
-                    { english: 'Your streak grows stronger with every session. Japo Waheguru!' },
-                    { english: 'The Divine is waiting. Just 2 minutes, right now. 🙏' },
-                    { english: 'Be still. Breathe. Close your eyes. Waheguru Waheguru... 🙏' },
-                    { english: 'Discipline compounds. Every 2 min session brings moksha closer.' },
-                    { english: 'Waheguru Waheguru Waheguru... bas 2 min. Tu kar sakda hai! 🙏' }
-                ];
+                // ═══ FIX 2: Refined, respectful Naam Abhyas notification messages ═══
+                // Time-based categorization for more contextual reminders
+                var naamMessages = {
+                    // 🌅 Morning (Amrit Vela & Early Morning: 3 AM - 8 AM)
+                    morning: [
+                        { gurmukhi: "ਵਾਹਿਗੁਰੂ ਜੀ — ਸਿਮਰਨ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ 🙏", english: "Waheguru Ji — it is time for Naam Simran." },
+                        { gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ", english: "Meditate upon the Divine and find peace." },
+                        { english: "Begin your day with Naam Simran. 🙏" },
+                        { english: "The morning hours are precious for Simran. Begin now." },
+                        { english: "With Guru Sahib's Kirpa, let this moment become a moment of Simran." }
+                    ],
+                    // ☀️ Daytime (9 AM - 5 PM)
+                    daytime: [
+                        { gurmukhi: "ਕਿਰਪਾ ਕਰਕੇ 2 ਮਿੰਟ ਲਈ ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ", english: "Please take 2 minutes for Naam Simran." },
+                        { gurmukhi: "ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ", english: "Remember the Divine Name day and night." },
+                        { gurmukhi: "ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ", english: "O my mind, lovingly meditate on the Naam." },
+                        { english: "Take a peaceful 2-minute pause for Naam Simran. 🙏" },
+                        { english: "Even two minutes of sincere Simran can transform your day." },
+                        { english: "Wherever you are, pause for a moment and remember Waheguru Ji." },
+                        { english: "Take a gentle break and fill your heart with Naam. 🙏" },
+                        { english: "Take two quiet minutes for Waheguru Ji. The world can wait." }
+                    ],
+                    // 🌆 Evening (6 PM - 9 PM)
+                    evening: [
+                        { gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ", english: "O mind, recognize your divine origin." },
+                        { gurmukhi: "ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ", english: "Meditation on the Divine Name brings spiritual purification." },
+                        { english: "End your day by pausing for Naam Simran." },
+                        { english: "Let the mind become still. Remember Waheguru Ji." },
+                        { english: "May these few moments bring peace, humility and remembrance of Waheguru Ji." }
+                    ],
+                    // 🌙 Night (10 PM - 2 AM)
+                    night: [
+                        { gurmukhi: "ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ", english: "You are my Father, You are my Mother." },
+                        { gurmukhi: "ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ", english: "The One Name is the Eternal Command." },
+                        { gurmukhi: "ਅੱਖਾਂ ਬੰਦ ਕਰੋ ਅਤੇ ਵਾਹਿਗੁਰੂ ਜੀ ਨੂੰ ਯਾਦ ਕਰੋ 🙏", english: "Close your eyes and remember Waheguru Ji." },
+                        { english: "Offer these final moments of the day to Naam. 🙏" },
+                        { english: "Pause. Breathe. Close your eyes. Waheguru... Waheguru... 🙏" },
+                        { english: "Leave the noise behind for two minutes and rest your mind in Naam." }
+                    ],
+                    // General messages (used as fallback or mixed in)
+                    general: [
+                        { english: "Your Naam Abhyas reminder is here. Waheguru Ji awaits your remembrance." },
+                        { english: "Every moment spent in Naam is precious. Begin your Simran now." },
+                        { english: "Satnam Waheguru 🙏 Your Naam Abhyas session is ready." },
+                        { english: "May this reminder become a blessing in your day. Waheguru Ji 🙏" },
+                        { english: "A gentle reminder to reconnect with the Divine through Naam." }
+                    ]
+                };
+
+                // Helper function to select message based on time of day
+                function getTimeBasedMessage(hour) {
+                    var timeCategory;
+                    if (hour >= 3 && hour < 9) {
+                        timeCategory = naamMessages.morning;
+                    } else if (hour >= 9 && hour < 18) {
+                        timeCategory = naamMessages.daytime;
+                    } else if (hour >= 18 && hour < 22) {
+                        timeCategory = naamMessages.evening;
+                    } else {
+                        timeCategory = naamMessages.night;
+                    }
+                    
+                    // Mix in some general messages (20% chance)
+                    if (Math.random() < 0.2) {
+                        timeCategory = naamMessages.general;
+                    }
+                    
+                    // Select message from appropriate category
+                    var msgIdx = Math.floor(Math.random() * timeCategory.length);
+                    return timeCategory[msgIdx];
+                }
 
                 for (var nd = 0; nd < 7; nd++) {
                     for (var nh = sh; nh <= eh; nh++) {
@@ -601,9 +645,9 @@
                         if (ndt <= now) continue;
                         if (alertTime <= now) alertTime = new Date(now.getTime() + 1000);
 
-                        // Deterministic message selection (consistent per hour)
-                        var msgIdx = (nh + nd * 7) % spiritualMessages.length;
-                        var message = spiritualMessages[msgIdx];
+                        // Time-based message selection using the helper function
+                        var message = getTimeBasedMessage(nh);
+
                         var bodyText = message.gurmukhi && message.english
                             ? message.gurmukhi + ' — ' + message.english
                             : message.english || message.gurmukhi;

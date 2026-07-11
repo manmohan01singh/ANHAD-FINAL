@@ -1736,7 +1736,7 @@ ol {
 .complete-all-btn {
     background: var(--ios-blue);
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: none;
 }
 
 .complete-all-btn:hover {
@@ -3692,7 +3692,7 @@ display: none;
 .modal-btn.primary {
     background: var(--ios-blue);
     color: white;
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+    box-shadow: none;
 }
 
 .modal-btn.primary:hover {
@@ -4289,13 +4289,13 @@ display: none;
     border-radius: var(--radius-full);
     font-size: var(--text-lg);
     font-weight: var(--font-semibold);
-    box-shadow: 0 8px 30px rgba(0, 122, 255, 0.4);
+    box-shadow: none;
     transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
 }
 
 .celebration-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 122, 255, 0.5);
+    box-shadow: none;
 }
 
 /* Confetti Container */
@@ -6401,7 +6401,7 @@ display: none;
 
 .primary-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+    box-shadow: none;
 }
 
 .primary-btn:active {
@@ -6526,11 +6526,11 @@ display: none;
 
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4);
+        box-shadow: none;
     }
 
     50% {
-        box-shadow: 0 0 0 8px rgba(0, 122, 255, 0);
+        box-shadow: none;
     }
 }
 
@@ -6810,13 +6810,13 @@ display: none;
     border: none;
     border-radius: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
+    box-shadow: none;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .sync-reminders-btn.premium-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0, 122, 255, 0.45);
+    box-shadow: none;
 }
 
 .sync-reminders-btn.premium-btn:active {

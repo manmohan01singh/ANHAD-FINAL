@@ -110,7 +110,7 @@ class NotificationEngine {
             return notification;
         } catch (e) {
             console.error('Failed to show notification:', e);
-            
+
             // Retry logic
             if (retryCount < this.maxRetries) {
                 console.log(`Retrying notification (${retryCount + 1}/${this.maxRetries}) in ${this.retryDelay}ms`);
@@ -126,7 +126,7 @@ class NotificationEngine {
                     error: e.message
                 });
             }
-            
+
             return null;
         }
     }
@@ -352,81 +352,6 @@ class NotificationEngine {
     }
 
     /**
-     * Cancel a scheduled notification
-     * @param {string} id - Notification ID
-     */
-    cancel(id) {
-        const scheduled = this.scheduledNotifications.find(n => n.id === id);
-        if (scheduled) {
-            clearTimeout(scheduled.timeoutId);
-            this.scheduledNotifications = this.scheduledNotifications.filter(n => n.id !== id);
-            console.log(`🔔 Cancelled notification "${id}"`);
-        }
-    }
-
-    /**
-     * Cancel all scheduled notifications
-     */
-    cancelAll() {
-        this.scheduledNotifications.forEach(n => {
-            clearTimeout(n.timeoutId);
-        });
-        this.scheduledNotifications = [];
-        console.log('🔔 Cancelled all scheduled notifications');
-    }
-
-    /**
-     * Cancel notifications for a specific hour
-     * @param {number} hour - Hour to cancel
-     */
-    cancelHour(hour) {
-        const idsToCancel = [
-            `naam_hour_${hour}`,
-            `naam_pre_${hour}`,
-            `naam_start_${hour}`
-        ];
-
-        idsToCancel.forEach(id => this.cancel(id));
-    }
-
-    /**
-     * Get scheduled notifications
-     * @returns {Array} Scheduled notifications
-     */
-    getScheduled() {
-        return this.scheduledNotifications.map(n => ({
-            id: n.id,
-            time: new Date(n.time),
-            title: n.title
-        }));
-    }
-
-    /**
-     * Check if notifications are permitted
-     * @returns {boolean}
-     */
-    isPermitted() {
-        return this.permission === 'granted';
-    }
-
-    /**
-     * Helper to generate a deterministic pseudo-random minute between 10 and 50
-     * based on the date and hour, ensuring consistency across app reloads.
-     */
-    _getRandomMinuteForHour(dateStr, hour) {
-        // Simple hash of date string + hour
-        let hash = 0;
-        const str = dateStr + "_" + hour;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        // Get pseudo-random number between 10 and 50
-        return 10 + Math.abs(hash) % 41;
-    }
-
-    /**
      * Schedule Capacitor-native notifications for Naam Abhyas.
      * ═══ OVERHAULED: Fixes BUG 3 (importance), BUG 4 (no channel delete), BUG 5 (no priority field) ═══
      * Also persists schedule to dedicated localStorage key for cross-page sync.
@@ -493,11 +418,11 @@ class NotificationEngine {
                 for (let hour = startHour; hour <= endHour; hour++) {
                     const scheduleDate = new Date(now);
                     scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
-                    
+
                     const dateStr = scheduleDate.toISOString().split('T')[0];
                     // Use deterministic random minute between 10 and 50
                     const sessionMinute = this._getRandomMinuteForHour(dateStr, hour);
-                    
+
                     scheduleDate.setHours(hour, sessionMinute, 0, 0);
 
                     // Skip times that have already passed

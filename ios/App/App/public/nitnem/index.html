@@ -432,19 +432,33 @@
             align-items: center;
             justify-content: center;
             justify-self: end;
-            background: var(--card-bg-gradient);
-            border: 3px solid var(--card-border-color);
+            background: rgba(120, 120, 128, 0.2) !important;
+            border: none !important;
             border-radius: 50%;
             font-size: 16px;
             cursor: pointer;
-            box-shadow: var(--card-shadow);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             transform: translateY(0);
+            position: relative;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(120, 120, 128, 0.3) !important;
+            transform: scale(1.05);
         }
         
         .theme-toggle:active {
             transform: scale(0.9);
-            box-shadow: var(--shadow-active);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+        
+        [data-theme="dark"] .theme-toggle {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        [data-theme="dark"] .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
         }
         
         /* ═══════════════════════════════════════════════════════════════
@@ -1151,7 +1165,7 @@
                 Home
             </a>
             <span class="header-title">ਨਿਤਨੇਮ ਗੁਟਕਾ</span>
-            <button class="theme-toggle theme-icon" id="themeToggle">🌙</button>
+            <button class="theme-toggle theme-icon" id="themeToggle" style="background: rgba(120, 120, 128, 0.25) !important; border: none !important; width: 40px !important; height: 40px !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; justify-self: end !important; font-size: 20px !important;">🌙</button>
         </header>
         
         <!-- Hero -->
@@ -1412,13 +1426,37 @@
         // Connect to unified AnhadTheme system
         (function() {
             const themeToggle = document.getElementById('themeToggle');
+            
+            // Function to update theme icon
+            function updateThemeIcon() {
+                if (themeToggle) {
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+                }
+            }
+            
+            // Update icon on page load
+            updateThemeIcon();
+            
+            // Listen for theme changes
             if (themeToggle) {
                 themeToggle.addEventListener('click', () => {
                     if (window.AnhadTheme) {
                         AnhadTheme.toggle();
+                        // Update icon after theme changes
+                        setTimeout(updateThemeIcon, 100);
                     }
                 });
             }
+            
+            // Listen for theme changes from other sources (e.g., system preference)
+            const observer = new MutationObserver(() => {
+                updateThemeIcon();
+            });
+            observer.observe(document.documentElement, {
+                attributes: true,
+                attributeFilter: ['data-theme']
+            });
         })();
         
         // ═══════════════════════════════════════════════════════════════

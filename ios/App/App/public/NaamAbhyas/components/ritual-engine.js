@@ -391,7 +391,7 @@ class RitualEngine {
             if (this.app.audioManager.audioContext) {
                 this.app.audioManager.initAudioContext();
             }
-            
+
             // Play ambient sound with retry logic
             this.playAmbientWithRetry(0.25, 3).then(() => {
                 console.log('[RitualEngine] ✅ Ambient sound started successfully');
@@ -574,19 +574,31 @@ class RitualEngine {
     }
 
     /**
-     * Toggle silence mode
+     * Toggle silence mode \u2014 wired to AudioManager mute/unmute
      */
     toggleSilence() {
         this.silenceMode = !this.silenceMode;
+
+        // Wire to AudioManager for actual audio control
+        const am = this.app?.audioManager;
+        if (am) {
+            if (this.silenceMode) {
+                am.mute();
+            } else {
+                am.unmute();
+            }
+        }
 
         const silenceBtn = document.getElementById('silenceBtn');
         if (silenceBtn) {
             silenceBtn.classList.toggle('active', this.silenceMode);
             const icon = silenceBtn.querySelector('.btn-icon');
-            if (icon) {
-                icon.textContent = this.silenceMode ? '🔇' : '🔕';
-            }
+            const text = silenceBtn.querySelector('.btn-text');
+            if (icon) icon.textContent = this.silenceMode ? '\ud83d\udd07' : '\ud83d\udd15';
+            if (text) text.textContent = this.silenceMode ? 'Muted' : 'Silence';
         }
+
+        console.log(`[RitualEngine] Silence mode: ${this.silenceMode ? 'ON' : 'OFF'}`);
     }
 
     /**
@@ -634,6 +646,25 @@ class RitualEngine {
      */
     completeSession() {
         console.log('[RitualEngine] Session complete - auto-closing');
+
+        // ─── SILENCE AUTO-RESTORE ────────────────────────────────────────────
+        // If silence was active during this session, restore audio before exiting
+        // so the NEXT alarm / ritual fires with sound as expected.
+        if (this.silenceMode) {
+            this.silenceMode = false;
+            const am = this.app?.audioManager;
+            if (am) am.unmute();
+            const silenceBtn = document.getElementById('silenceBtn');
+            if (silenceBtn) {
+                silenceBtn.classList.remove('active');
+                const icon = silenceBtn.querySelector('.btn-icon');
+                const text = silenceBtn.querySelector('.btn-text');
+                if (icon) icon.textContent = '🔔';
+                if (text) text.textContent = 'Silence';
+            }
+            console.log('[RitualEngine] Silence auto-restored on session completion');
+        }
+        // ─────────────────────────────────────────────────────────────────────
 
         this.cleanup();
 
@@ -978,13 +1009,13 @@ class RitualEngine {
             } catch (e) {
                 console.warn(`[RitualEngine] Ambient sound attempt ${attempt} failed:`, e);
             }
-            
+
             // Wait before retry (with progressive delay)
             if (attempt < maxRetries) {
                 await new Promise(resolve => setTimeout(resolve, attempt * 200));
             }
         }
-        
+
         // If all retries failed, try fallback beep
         console.warn('[RitualEngine] All ambient sound attempts failed, using fallback');
         this.playBeep('start');

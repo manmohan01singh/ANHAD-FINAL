@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Contact Us | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+  
+  <style>
+    .contact-method {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: var(--bg-tertiary, #E5E5EA);
+      border-radius: var(--radius-md, 20px);
+      margin-bottom: 16px;
+      transition: background 0.3s ease;
+    }
+    html.dark-mode .contact-method {
+      background: var(--bg-tertiary, #3A3A3C);
+    }
+    .contact-method__icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+    .contact-method__content h3 {
+      margin: 0 0 6px 0 !important;
+      font-size: var(--text-headline, 1.0625rem);
+      font-weight: 600;
+    }
+    .contact-method__content p {
+      margin: 0 !important;
+      color: var(--text-secondary, #6E6E73);
+    }
+    .contact-method__content a {
+      color: var(--accent, #D4943A);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Contact Us</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Get in Touch</h2>
+      <div class="legal-card__content">
+        <p>We'd love to hear from you! Whether you have a question, feedback, or need support, feel free to reach out.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Contact Methods</h2>
+      <div class="legal-card__content">
+        
+        <div class="contact-method">
+          <div class="contact-method__icon">📧</div>
+          <div class="contact-method__content">
+            <h3>Email Support</h3>
+            <p><a href="mailto:anhadsupport@gmail.com">anhadsupport@gmail.com</a></p>
+            <p>For general inquiries, bug reports, and feature requests</p>
+          </div>
+        </div>
+
+        <div class="contact-method">
+          <div class="contact-method__icon">🌐</div>
+          <div class="contact-method__content">
+            <h3>Website</h3>
+            <p><a href="https://anhad.vercel.app" target="_blank">anhad.vercel.app</a></p>
+            <p>Visit our website for more information</p>
+          </div>
+        </div>
+
+        <div class="contact-method">
+          <div class="contact-method__icon">🐛</div>
+          <div class="contact-method__content">
+            <h3>Bug Reports</h3>
+            <p>Send detailed bug reports to <a href="mailto:anhadsupport@gmail.com?subject=Bug%20Report">anhadsupport@gmail.com</a></p>
+            <p>Include: device model, Android version, steps to reproduce</p>
+          </div>
+        </div>
+
+        <div class="contact-method">
+          <div class="contact-method__icon">💡</div>
+          <div class="contact-method__content">
+            <h3>Feature Suggestions</h3>
+            <p>Share your ideas at <a href="mailto:anhadsupport@gmail.com?subject=Feature%20Request">anhadsupport@gmail.com</a></p>
+            <p>We love hearing from the community!</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Developer</h2>
+      <div class="legal-card__content">
+        <p><strong>Name:</strong> Manmohan Singh</p>
+        <p><strong>Role:</strong> Independent Developer</p>
+        <p><strong>Project Type:</strong> Personal Seva (Service)</p>
+        <p>ANHAD is built with dedication and humility as an offering to the global Sangat. This is a one-person project, so response times may vary. Your patience and understanding are greatly appreciated.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Response Expectations</h2>
+      <div class="legal-card__content">
+        <ul>
+          <li><strong>General Inquiries:</strong> 48-72 hours</li>
+          <li><strong>Bug Reports:</strong> Acknowledged within 3-5 days, fix timeline depends on severity</li>
+          <li><strong>Feature Requests:</strong> Reviewed periodically, implementation not guaranteed</li>
+        </ul>
+        <p>This is a personal project maintained alongside other responsibilities. Thank you for your understanding.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Feedback Form</h2>
+      <div class="legal-card__content">
+        <p>Prefer a form? Email us with:</p>
+        <ul>
+          <li><strong>Subject:</strong> Feedback, Bug Report, Feature Request, or General Inquiry</li>
+          <li><strong>Description:</strong> Be as detailed as possible</li>
+          <li><strong>Device Info:</strong> Model, Android version, app version (if reporting a bug)</li>
+          <li><strong>Screenshots:</strong> Attach if relevant</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Social & Community</h2>
+      <div class="legal-card__content">
+        <p><strong>GitHub:</strong> Coming soon (open source roadmap)</p>
+        <p><strong>Community Forum:</strong> Planned for future release</p>
+        <p>Stay tuned for community features where Sangat can connect and share experiences.</p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD • ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../support/">Support</a>
+          <a href="../privacy/">Privacy</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Copyright | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Copyright</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Copyright Notice</h2>
+      <div class="legal-card__content">
+        <p>© 2024 ANHAD. All rights reserved unless otherwise stated.</p>
+        <p>This page outlines the copyright ownership and attribution for content used in ANHAD.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Application Assets</h2>
+      <div class="legal-card__content">
+        <h3>Logo & Branding</h3>
+        <p><strong>ANHAD Logo:</strong> © 2024 ANHAD. All rights reserved.</p>
+        <p><strong>Name & Wordmark:</strong> "ANHAD" and "ਅਨਹਦ" are the property of ANHAD.</p>
+        
+        <h3>Icons & Graphics</h3>
+        <p>Custom icons and graphics created for ANHAD are © 2024 ANHAD unless sourced from third-party libraries (see Open Source Licenses).</p>
+        
+        <h3>User Interface Design</h3>
+        <p>The visual design, layout, color schemes, and overall user interface of ANHAD are © 2024 ANHAD.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Gurbani Content</h2>
+      <div class="legal-card__content">
+        <h3>Sri Guru Granth Sahib Ji</h3>
+        <p>Gurbani (sacred scripture) is considered sacred text within the public religious domain. ANHAD does not claim ownership of any Gurbani text, translations, or transliterations.</p>
+        
+        <h3>Sources</h3>
+        <ul>
+          <li><strong>BaniDB API:</strong> Gurbani text sourced from publicly available databases</li>
+          <li><strong>Translations:</strong> Various translators (attributed where possible)</li>
+          <li><strong>Transliteration:</strong> Standard Gurmukhi to Roman transliteration systems</li>
+        </ul>
+        
+        <p>All Gurbani is offered respectfully for educational and spiritual purposes.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Audio Content</h2>
+      <div class="legal-card__content">
+        <h3>Gurbani Kirtan</h3>
+        <p><strong>40-Day Kirtan Series:</strong> © Bhai Gurpreet Singh Ji. Used with respect for spiritual distribution.</p>
+        
+        <h3>Vaheguru Simran</h3>
+        <p><strong>38 Simran Tracks:</strong> © Amritvela Trust. Gratefully used for spiritual purposes.</p>
+        
+        <h3>Live Streams</h3>
+        <ul>
+          <li><strong>Darbar Sahib Live:</strong> Official stream from Sri Harmandir Sahib (via YouTube)</li>
+          <li><strong>Amritvela Kirtan:</strong> Various Gurdwaras and organizations</li>
+        </ul>
+        
+        <p>All audio content is used respectfully for non-commercial, spiritual purposes. If you represent any content creator and wish to discuss usage, please <a href="../contact/" class="legal-link">contact us</a>.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Third-Party Acknowledgements</h2>
+      <div class="legal-card__content">
+        <h3>Fonts</h3>
+        <ul>
+          <li><strong>Inter:</strong> © 2020 The Inter Project Authors (SIL OFL 1.1)</li>
+          <li><strong>Noto Sans Gurmukhi:</strong> © Google Fonts (SIL OFL 1.1)</li>
+          <li><strong>Cinzel:</strong> © Natanael Gama (SIL OFL 1.1)</li>
+          <li><strong>Playfair Display:</strong> © Claus Eggers Sørensen (SIL OFL 1.1)</li>
+        </ul>
+        
+        <h3>Libraries</h3>
+        <p>See <a href="../licenses/" class="legal-link">Open Source Licenses</a> for a complete list of third-party libraries and their respective licenses.</p>
+        
+        <h3>APIs</h3>
+        <ul>
+          <li><strong>BaniDB:</strong> Gurbani database API (free and open)</li>
+          <li><strong>YouTube API:</strong> For live streaming integration</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Respectful Use Policy</h2>
+      <div class="legal-card__content">
+        <p>All Gurbani content, Kirtan, and Simran recordings are used with deep respect and devotion. ANHAD is a <strong>non-commercial, spiritual service</strong> offered free of charge to the global Sikh community.</p>
+        <p>If you are a copyright holder and believe your content is being used inappropriately, please <a href="../contact/" class="legal-link">contact us</a> immediately, and we will address your concerns promptly.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">User-Generated Content</h2>
+      <div class="legal-card__content">
+        <p>Currently, ANHAD does not support user-generated content (comments, uploads, etc.). All content is curated by the app developer.</p>
+        <p>Future features may include community contributions, which will be governed by separate terms.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">DMCA & Takedown Requests</h2>
+      <div class="legal-card__content">
+        <p>If you believe any content in ANHAD infringes your copyright, please contact us at:</p>
+        <p><strong>Email:</strong> anhadsupport@gmail.com</p>
+        <p>Include:</p>
+        <ul>
+          <li>Your contact information</li>
+          <li>Description of the copyrighted work</li>
+          <li>Location of the infringing content within the app</li>
+          <li>Statement of good faith belief</li>
+        </ul>
+        <p>We will respond promptly and take appropriate action.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">Trademarks</h2>
+      <div class="legal-card__content">
+        <p>ANHAD and the ANHAD logo are trademarks of ANHAD. All other trademarks, service marks, and logos referenced within the app are the property of their respective owners.</p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD • All rights reserved</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../licenses/">Licenses</a>
+          <a href="../acknowledgements/">Acknowledgements</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

@@ -1285,7 +1285,7 @@ body {
 
 .form-input:focus {
     border-color: var(--system-blue);
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+    box-shadow: none;
 }
 
 .form-input::placeholder {

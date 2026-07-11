@@ -82,6 +82,15 @@
 
   /* ─── Page-enter transition ─────────────────────────────────────────────── */
   function initTransition(selector) {
+    // NATIVE APP FIX: Skip page-enter animation if returning to Home
+    const isReturning = window.HomeStateManager?.isReturningFromNavigation();
+    const hasPlayedAnimations = window.HomeStateManager?.hasPlayedAnimations();
+    
+    if (isReturning && hasPlayedAnimations) {
+      // Skip animation - just show content instantly
+      return;
+    }
+    
     var el = selector
       ? document.querySelector(selector)
       : (document.querySelector('.page-enter') || document.querySelector('.app') || document.body);
@@ -93,6 +102,11 @@
     el.addEventListener('animationend', function handler() {
       el.classList.remove('page-enter');
       el.removeEventListener('animationend', handler);
+      
+      // Mark animations as played
+      if (window.HomeStateManager) {
+        window.HomeStateManager.markAnimationsPlayed();
+      }
     }, { once: true });
   }
 

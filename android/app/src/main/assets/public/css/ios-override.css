@@ -885,6 +885,11 @@ body {
   background-color: var(--ios-bg-primary);
 }
 
+/* Dark Mode Scroll State Fix - Disable transitions during scroll */
+[data-theme="dark"].scrolling * {
+  transition: none !important;
+}
+
 [data-theme="dark"] .practice-card--nitnem {
   background: linear-gradient(165deg, #2C2315 0%, #3A2D1A 100%) !important;
   box-shadow:
@@ -1517,6 +1522,12 @@ a,
 [data-theme-mode="auto"] .header__back svg,
 [data-theme-mode="auto"] .glass-nav__back svg {
   color: var(--sky-card-text) !important;
+}
+
+[data-theme-mode="auto"] .header__btn img,
+[data-theme-mode="auto"] .header-btn--glass img,
+[data-theme-mode="auto"] .header__back img {
+  filter: brightness(0) invert(1) !important;
 }
 
 [data-theme-mode="auto"] .header__btn:active,

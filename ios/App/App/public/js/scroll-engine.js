@@ -66,7 +66,21 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const target = entry.target;
-                    target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
+                    
+                    // NATIVE APP FIX: Check if animations have already been played
+                    // Don't replay animations if we're returning to the page
+                    const hasPlayedAnimations = window.HomeStateManager?.hasPlayedAnimations();
+                    
+                    if (hasPlayedAnimations) {
+                        // Just add classes without animation
+                        target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
+                        // Remove animation to make it instant
+                        target.style.animation = 'none';
+                    } else {
+                        // First time - play animation
+                        target.classList.add('revealed', 'scroll-revealed', 'in-viewport');
+                    }
+                    
                     // Stop observing once revealed — single-fire, no ongoing cost
                     AnhadScrollObserver.unobserve(target);
                 }

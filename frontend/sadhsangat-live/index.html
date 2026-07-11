@@ -2007,7 +2007,7 @@
       opacity: 0;
       pointer-events: none;
       /* PERFORMANCE: Reduced transition time and blur for faster rendering */
-      transition: opacity 0.3s var(--ease-out), backdrop-filter 0.3s var(--ease-out);
+      transition: opacity 0.25s var(--ease-out), backdrop-filter 0.25s var(--ease-out);
       display: none;
       /* PERFORMANCE: Reduced blur from 16px to 8px for smoother animations */
       backdrop-filter: blur(8px) saturate(120%);
@@ -2037,8 +2037,7 @@
       z-index: 1500;
       display: flex;
       flex-direction: column;
-      /* PERFORMANCE: Faster transition with reduced spring effect */
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       border-radius: 24px 24px 0 0;
       border-top: 0.5px solid var(--separator);
@@ -2744,21 +2743,16 @@
       border-radius: 50%;
       border: none;
       box-shadow: 0 4px 30px rgba(255,179,0,0.45), 0 0 0 3px rgba(255,179,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25);
-      animation: play-pulse-glow 3s ease-in-out infinite;
+      transition: box-shadow 0.2s, transform 0.15s;
     }
     .player-control-icon-btn.play-pause:active {
       transform: scale(0.88);
       box-shadow: 0 2px 12px rgba(255,179,0,0.3);
-      animation: none;
     }
     .player-control-icon-btn.play-pause svg {
       width: 34px;
       height: 34px;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
-    }
-    @keyframes play-pulse-glow {
-      0%, 100% { box-shadow: 0 4px 30px rgba(255,179,0,0.45), 0 0 0 3px rgba(255,179,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25); }
-      50% { box-shadow: 0 4px 50px rgba(255,179,0,0.6), 0 0 0 6px rgba(255,179,0,0.08), inset 0 1px 0 rgba(255,255,255,0.25); }
     }
 
     /* Comments block — premium glass card */
@@ -2819,7 +2813,7 @@
     .player-sheet.minimized {
       height: calc(64px + var(--safe-bottom)) !important;
       transform: translateX(-50%) translateY(0) !important;
-      bottom: calc(var(--bottom-nav-height) + var(--safe-bottom)) !important;
+      bottom: calc(12px + var(--bottom-nav-height) + var(--safe-bottom) + 8px) !important;
       border-top: 0.5px solid var(--separator);
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
@@ -2829,7 +2823,7 @@
       box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
       cursor: pointer;
       overflow: hidden;
-      animation: miniPlayerSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: miniPlayerSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 2000 !important;
     }
     
@@ -3107,7 +3101,7 @@
     }
     
     body.mini-player-active .page-content {
-      padding-bottom: calc(64px + var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+      padding-bottom: calc(64px + 12px + var(--bottom-nav-height) + var(--safe-bottom) + 16px);
     }
 
     .nav-tab-btn {
@@ -8339,81 +8333,49 @@
 
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
-      // PERFORMANCE: Use requestAnimationFrame to batch DOM updates
-      requestAnimationFrame(() => {
-        State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
 
-        // ── SAVE TO REAL WATCH HISTORY ──
-        saveToWatchHistory({
-          videoId, title, channelName, channelThumbnail, isLive,
-          duration: isLive ? 'LIVE' : '--:--',
-          progress: '0%',
-          watchedAt: Date.now()
-        });
-        
-        // PERFORMANCE: Batch text content updates
-        const playerSheet = $('playerSheet');
-        const playerBackdrop = $('playerBackdrop');
-        
-        $('playerDetailTitle').textContent = title;
-        $('playerMiniTitle').textContent = title;
-        $('playerDetailChannel').textContent = channelName;
-        $('playerMiniChannel').textContent = channelName;
-        
-        const avatarSrc = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
-        $('playerChannelAvatar').src = avatarSrc;
-        $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
-        
-        // PERFORMANCE: Defer heavy ambient color extraction to not block opening
-        requestIdleCallback(() => {
-          extractAmbientColor(videoId);
-        }, { timeout: 1000 });
-        
-        $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
 
-        const channel = State.myChannels.find(c => c.channelName === channelName);
-        updateSubscribeBtnState(channel);
+      $('playerDetailTitle').textContent = title;
+      $('playerMiniTitle').textContent = title;
+      $('playerDetailChannel').textContent = channelName;
+      $('playerMiniChannel').textContent = channelName;
+      $('playerChannelAvatar').src = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
+      $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
+      requestIdleCallback(() => { extractAmbientColor(videoId); }, { timeout: 1000 });
+      $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
 
-        // Scrubber visual layouts
-        if (isLive) {
-          $('playerProgressBar').style.display = 'none';
-          $('playerLiveBadgeRow').style.display = 'flex';
-          $('playerVideoViewsRow').textContent = 'Streaming Live';
-        } else {
-          $('playerProgressBar').style.display = 'block';
-          $('playerLiveBadgeRow').style.display = 'none';
-          $('playerVideoViewsRow').textContent = 'Video Playback';
-        }
+      const channel = State.myChannels.find(c => c.channelName === channelName);
+      updateSubscribeBtnState(channel);
 
-        // PERFORMANCE: Open layout with proper display then animate
-        playerSheet.style.display = 'block';
-        playerBackdrop.style.display = 'block';
-        
-        // Force reflow before animation
-        playerSheet.offsetHeight;
-        
-        requestAnimationFrame(() => {
-          playerBackdrop.classList.add('visible');
-          playerSheet.className = 'player-sheet open';
-          document.body.classList.add('mini-player-active');
-        });
+      if (isLive) {
+        $('playerProgressBar').style.display = 'none';
+        $('playerLiveBadgeRow').style.display = 'flex';
+        $('playerVideoViewsRow').textContent = 'Streaming Live';
+      } else {
+        $('playerProgressBar').style.display = 'block';
+        $('playerLiveBadgeRow').style.display = 'none';
+        $('playerVideoViewsRow').textContent = 'Video Playback';
+      }
 
-        State.likeState = false;
-        $('playerLikeBtn').style.color = 'var(--text-primary)';
-        $('playerLikeText').textContent = 'Like';
+      // Open in a single frame — no forced reflow, no nested rAF
+      playerSheet.style.display = 'block';
+      playerBackdrop.style.display = 'block';
+      playerSheet.className = 'player-sheet open';
+      playerBackdrop.classList.add('visible');
+      document.body.classList.add('mini-player-active');
 
-        // Load YouTube Player
-        loadYtIframePlayer(videoId);
-        if (bgPlayEnabled) {
-          setupNativeAudioCommandListener();
-          startNativeAudioService();
-        }
-        haptic('medium');
-        
-        window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
-          detail: { title, channelName }
-        }));
-      });
+      State.likeState = false;
+      $('playerLikeBtn').style.color = 'var(--text-primary)';
+      $('playerLikeText').textContent = 'Like';
+
+      loadYtIframePlayer(videoId);
+      if (bgPlayEnabled) { setupNativeAudioCommandListener(); startNativeAudioService(); }
+      haptic('medium');
+      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
     }
 
     function updateSubscribeBtnState(channel) {
@@ -8718,68 +8680,38 @@
     });
 
     function stopAndClosePlayer() {
-      // PERFORMANCE: Use requestAnimationFrame for smooth closing animation
       const playerSheet = $('playerSheet');
       const playerBackdrop = $('playerBackdrop');
+
+      playerBackdrop.classList.remove('visible');
+      playerSheet.className = 'player-sheet';
+      document.body.classList.remove('mini-player-active');
       
-      // Start close animation
       requestAnimationFrame(() => {
-        playerBackdrop.classList.remove('visible');
-        playerSheet.className = 'player-sheet';
-        document.body.classList.remove('mini-player-active');
-        
-        // PERFORMANCE: Wait for animation to complete before cleanup
-        setTimeout(() => {
-          playerSheet.style.display = 'none';
-          playerBackdrop.style.display = 'none';
-          
-          // Cleanup after animation completes
-          if (ytPlayer && ytPlayer.stopVideo) {
-            try { ytPlayer.stopVideo(); } catch(e) {}
-          }
-          if (progressInterval) clearInterval(progressInterval);
-          stopBackgroundKeepAlive();
-          stopNativeAudioService();
-          
-          playerSheet.style.removeProperty('--ambient-color');
-          playerSheet.style.removeProperty('--ambient-color-secondary');
-          
-          // Release wake lock
-          if (window.wakeLock !== null) {
-            window.wakeLock.release().then(() => {
-              console.log('Wake lock released');
-              window.wakeLock = null;
-            }).catch(err => {
-              console.error('Wake lock release error:', err);
-            });
-          }
-          
-          window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
-        }, 300); // Match transition duration
+        playerSheet.style.display = 'none';
+        playerBackdrop.style.display = 'none';
       });
+
+      if (ytPlayer && ytPlayer.stopVideo) { try { ytPlayer.stopVideo(); } catch(e) {} }
+      if (progressInterval) clearInterval(progressInterval);
+      stopBackgroundKeepAlive();
+      stopNativeAudioService();
+      playerSheet.style.removeProperty('--ambient-color');
+      playerSheet.style.removeProperty('--ambient-color-secondary');
+      if (window.wakeLock !== null) { window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {}); }
+      window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
     }
 
     function minimizePlayer() {
-      // PERFORMANCE: Use requestAnimationFrame for smooth minimize
-      requestAnimationFrame(() => {
-        $('playerSheet').className = 'player-sheet minimized';
-        $('playerBackdrop').classList.remove('visible');
-        setTimeout(() => {
-          $('playerBackdrop').style.display = 'none';
-        }, 250);
-      });
+      $('playerSheet').className = 'player-sheet minimized';
+      $('playerBackdrop').classList.remove('visible');
+      requestAnimationFrame(() => { $('playerBackdrop').style.display = 'none'; });
     }
     function expandPlayer() {
-      // PERFORMANCE: Use requestAnimationFrame for smooth expand
       const playerBackdrop = $('playerBackdrop');
       playerBackdrop.style.display = 'block';
-      
-      requestAnimationFrame(() => {
-        $('playerSheet').className = 'player-sheet open';
-        requestAnimationFrame(() => {
-          playerBackdrop.classList.add('visible');
-        });
-      });
+      $('playerSheet').className = 'player-sheet open';
+      requestAnimationFrame(() => { playerBackdrop.classList.add('visible'); });
     }
 
     $('playerCloseBtn').addEventListener('click', (e) => {

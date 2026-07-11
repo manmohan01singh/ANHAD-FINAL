@@ -63,17 +63,7 @@ html.dark-mode {
 .clay {
   border-radius: var(--clay-radius-lg);
   background: linear-gradient(155deg, #FFFFFF 0%, #F5F5F7 60%, #EDEDF0 100%);
-  box-shadow:
-    /* Ground shadow: creates physical lift */
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 10px rgba(0, 0, 0, 0.14),
-    0 14px 32px rgba(0, 0, 0, 0.12),
-    /* Top highlight: lit from above — makes it 3D */
-    inset 0 2px 0 rgba(255, 255, 255, 0.85),
-    /* Side highlight: mild left-side catch-light */
-    inset 2px 0 0 rgba(255, 255, 255, 0.40),
-    /* Bottom darkening: completes the cushion curve */
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(255, 255, 255, 0.70);
   transition: box-shadow 0.3s var(--clay-spring), transform 0.3s var(--clay-spring);
   transform: translateY(0);
@@ -83,34 +73,19 @@ html.dark-mode .clay-card,
 html.dark-mode .clay {
   background: linear-gradient(155deg, #2E2E30 0%, #222224 60%, #1A1A1C 100%);
   border-color: rgba(255, 255, 255, 0.10);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(0, 0, 0, 0.38),
-    0 14px 36px rgba(0, 0, 0, 0.42),
-    inset 0 2px 0 rgba(255, 255, 255, 0.12),
-    inset 2px 0 0 rgba(255, 255, 255, 0.06),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
 }
 
 .clay-card:hover,
 .clay:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.10),
-    0 8px 18px rgba(0, 0, 0, 0.16),
-    0 22px 48px rgba(0, 0, 0, 0.14),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 .clay-card:active,
 .clay:active {
   transform: scale(0.97) translateY(2px);
-  box-shadow:
-    inset 0 4px 14px rgba(0, 0, 0, 0.22),
-    inset 0 2px 6px rgba(0, 0, 0, 0.16),
-    0 2px 8px rgba(0, 0, 0, 0.14);
+  box-shadow: none;
 }
 
 /* ─── Colored Clay Variants ─── */
@@ -118,168 +93,91 @@ html.dark-mode .clay {
 /* Gold Clay - Spiritual/Golden theme */
 .clay-gold {
   background: linear-gradient(155deg, #FFF9F0 0%, #FFEFD6 55%, #FFE4C0 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-gold), 0.32),
-    0 14px 36px rgba(var(--clay-gold), 0.22),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-gold), 0.35);
 }
 
 html.dark-mode .clay-gold {
   background: linear-gradient(155deg, #3D3020 0%, #2D2010 55%, #1D1808 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-gold), 0.20),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-gold), 0.20);
 }
 
 /* Orange Clay - Warm/Energy theme */
 .clay-orange {
   background: linear-gradient(155deg, #FFF8F0 0%, #FFEEE2 55%, #FFE0CC 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-orange), 0.28),
-    0 14px 36px rgba(var(--clay-orange), 0.18),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-orange), 0.30);
 }
 
 html.dark-mode .clay-orange {
   background: linear-gradient(155deg, #3D2818 0%, #2D2010 55%, #1D1808 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-orange), 0.18),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-orange), 0.18);
 }
 
 /* Blue Clay - Calm/Trust theme */
 .clay-blue {
   background: linear-gradient(155deg, #F0F8FF 0%, #E4F0FF 55%, #D8EAFF 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-blue), 0.25),
-    0 14px 36px rgba(var(--clay-blue), 0.16),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-blue), 0.25);
 }
 
 html.dark-mode .clay-blue {
   background: linear-gradient(155deg, #1A2840 0%, #102040 55%, #0A1830 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-blue), 0.22),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-blue), 0.16);
 }
 
 /* Green Clay - Growth/Nature theme */
 .clay-green {
   background: linear-gradient(155deg, #F0FFF5 0%, #E4F9EC 55%, #D8F4E2 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-green), 0.25),
-    0 14px 36px rgba(var(--clay-green), 0.14),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-green), 0.25);
 }
 
 html.dark-mode .clay-green {
   background: linear-gradient(155deg, #183020 0%, #102818 55%, #082010 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-green), 0.20),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-green), 0.16);
 }
 
 /* Purple Clay - Wisdom/Spiritual theme */
 .clay-purple {
   background: linear-gradient(155deg, #F8F5FF 0%, #EDE8FF 55%, #E2DBFF 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-purple), 0.26),
-    0 14px 36px rgba(var(--clay-purple), 0.16),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-purple), 0.25);
 }
 
 html.dark-mode .clay-purple {
   background: linear-gradient(155deg, #281830 0%, #201028 55%, #180820 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-purple), 0.20),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-purple), 0.16);
 }
 
 /* Rose Clay - Devotion/Love theme */
 .clay-rose {
   background: linear-gradient(155deg, #FFF5F5 0%, #FFE8E8 55%, #FFDADA 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-rose), 0.22),
-    0 14px 36px rgba(var(--clay-rose), 0.12),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-rose), 0.22);
 }
 
 html.dark-mode .clay-rose {
   background: linear-gradient(155deg, #301818 0%, #281010 55%, #200808 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-rose), 0.16),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-rose), 0.12);
 }
 
 /* Red Clay - Alert/Important theme */
 .clay-red {
   background: linear-gradient(155deg, #FFF0F0 0%, #FFE4E4 55%, #FFD8D8 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(var(--clay-red), 0.26),
-    0 14px 36px rgba(var(--clay-red), 0.14),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(var(--clay-red), 0.22);
 }
 
 html.dark-mode .clay-red {
   background: linear-gradient(155deg, #301818 0%, #281010 55%, #200808 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.28),
-    0 4px 12px rgba(var(--clay-red), 0.18),
-    0 14px 36px rgba(0, 0, 0, 0.38),
-    inset 0 2px 0 rgba(255, 255, 255, 0.10),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.28);
+  box-shadow: none;
   border-color: rgba(var(--clay-red), 0.12);
 }
 
@@ -287,11 +185,7 @@ html.dark-mode .clay-red {
 .clay-btn {
   border-radius: var(--clay-radius-full);
   background: linear-gradient(145deg, #FFFFFF 0%, #F2F2F5 100%);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.10),
-    0 4px 12px rgba(0, 0, 0, 0.16),
-    inset 0 2px 0 rgba(255, 255, 255, 0.90),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   border: 1.5px solid rgba(255, 255, 255, 0.65);
   transition: box-shadow 0.25s var(--clay-spring), transform 0.25s var(--clay-spring);
   cursor: pointer;
@@ -304,20 +198,13 @@ html.dark-mode .clay-red {
 }
 
 .clay-btn:hover {
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.10),
-    0 6px 18px rgba(0, 0, 0, 0.18),
-    inset 0 2px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 
 .clay-btn:active {
   transform: scale(0.95) translateY(1px);
-  box-shadow:
-    inset 0 3px 10px rgba(0, 0, 0, 0.20),
-    inset 0 1px 4px rgba(0, 0, 0, 0.12),
-    0 1px 4px rgba(0, 0, 0, 0.10);
+  box-shadow: none;
 }
 
 /* Small circular button */

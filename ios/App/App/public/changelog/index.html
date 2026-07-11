@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Changelog | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+  
+  <style>
+    .version-block {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    }
+    .version-block:last-child {
+      border-bottom: none;
+    }
+    .version-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .version-number {
+      font-size: var(--text-title-2, 1.375rem);
+      font-weight: 700;
+      color: var(--accent, #D4943A);
+    }
+    .version-date {
+      font-size: var(--text-subhead, 0.9375rem);
+      color: var(--text-tertiary, #AEAEB2);
+    }
+    .change-category {
+      margin-top: 16px;
+    }
+    .change-category h4 {
+      font-size: var(--text-callout, 1rem);
+      font-weight: 600;
+      color: var(--text-secondary, #6E6E73);
+      margin: 0 0 8px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.875rem;
+    }
+    .change-category ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .change-category li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Changelog</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">What's New in ANHAD</h2>
+      <div class="legal-card__content">
+        <p>Track the evolution of ANHAD through our version history. Each update brings us closer to a perfect Gurbani companion experience.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <div class="legal-card__content">
+        
+        <!-- Version 4.0.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 4.0.0</span>
+            <span class="version-date">January 2025</span>
+          </div>
+          <p><strong>Release Candidate 1 — Google Play Launch</strong></p>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Complete Settings page with organized sections</li>
+              <li>Legal compliance pages (Privacy Policy, Terms, Disclaimer)</li>
+              <li>Support and Contact pages</li>
+              <li>Changelog and Acknowledgements</li>
+              <li>Open Source Licenses page</li>
+              <li>Enhanced About page with developer story</li>
+            </ul>
+          </div>
+          
+          <div class="change-category">
+            <h4>🎨 Design Improvements</h4>
+            <ul>
+              <li>Refined theme engine with time-of-day colors</li>
+              <li>Improved navigation consistency</li>
+              <li>Better glassmorphism effects</li>
+              <li>Optimized mobile responsiveness</li>
+            </ul>
+          </div>
+          
+          <div class="change-category">
+            <h4>🐛 Bug Fixes</h4>
+            <ul>
+              <li>Fixed theme flashing on page load</li>
+              <li>Resolved audio playback issues on some devices</li>
+              <li>Improved notification reliability</li>
+              <li>Fixed Sehaj Paath progress saving</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 3.9.4 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 3.9.4</span>
+            <span class="version-date">December 2024</span>
+          </div>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Virtual Live streaming with server-synchronized playback</li>
+              <li>Enhanced Sadhsangat Live with multiple channels</li>
+              <li>Improved mini-player with artwork support</li>
+              <li>Background playback optimization</li>
+            </ul>
+          </div>
+          
+          <div class="change-category">
+            <h4>🔧 Improvements</h4>
+            <ul>
+              <li>Performance optimizations across the app</li>
+              <li>Better caching for faster load times</li>
+              <li>Improved theme transitions</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 3.8.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 3.8.0</span>
+            <span class="version-date">November 2024</span>
+          </div>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Gurbani Khoj (Search) with BaniDB integration</li>
+              <li>Bookmark system for favorite Shabads</li>
+              <li>Reading history tracking</li>
+              <li>Enhanced Nitnem tracker with streaks</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 3.5.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 3.5.0</span>
+            <span class="version-date">October 2024</span>
+          </div>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Naam Abhyas (Meditation) mode</li>
+              <li>Vaheguru Simran with 38 curated tracks</li>
+              <li>Session timer and progress tracking</li>
+              <li>Peaceful meditation interface</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 3.0.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 3.0.0</span>
+            <span class="version-date">September 2024</span>
+          </div>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Sehaj Paath tracker with Ang progress</li>
+              <li>Daily Hukamnama from Darbar Sahib</li>
+              <li>Journey page with spiritual statistics</li>
+              <li>Profile page with user preferences</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 2.0.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 2.0.0</span>
+            <span class="version-date">August 2024</span>
+          </div>
+          
+          <div class="change-category">
+            <h4>✨ New Features</h4>
+            <ul>
+              <li>Live Darbar Sahib stream</li>
+              <li>Amritvela Kirtan (early morning stream)</li>
+              <li>Enhanced theme engine with Auto mode</li>
+              <li>Notification system for reminders</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Version 1.0.0 -->
+        <div class="version-block">
+          <div class="version-header">
+            <span class="version-number">Version 1.0.0</span>
+            <span class="version-date">July 2024</span>
+          </div>
+          <p><strong>Initial Release</strong></p>
+          
+          <div class="change-category">
+            <h4>✨ Core Features</h4>
+            <ul>
+              <li>24/7 Gurbani Radio (Virtual Live)</li>
+              <li>Nitnem Banis with Gurmukhi, transliteration, and translation</li>
+              <li>Nitnem Tracker with completion logging</li>
+              <li>Theme system (Light/Dark)</li>
+              <li>Beautiful iOS-inspired design</li>
+              <li>PWA support for web and Android</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../support/">Support</a>
+          <a href="../privacy/">Privacy</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

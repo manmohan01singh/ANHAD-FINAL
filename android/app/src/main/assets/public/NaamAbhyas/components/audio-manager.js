@@ -12,6 +12,9 @@ class AudioManager {
         this.audioContext = null;
         this.isInitialized = false;
         this.volume = 0.7;
+        this._isMuted = false;      // Silence mode flag
+        this._ambientVolume = 0.25; // Remembered ambient volume for unmute
+        this._activeAmbientId = null; // Track which ambient sound is playing
 
         this.init();
     }
@@ -33,6 +36,17 @@ class AudioManager {
         // Initialize Audio Context on first user interaction
         document.addEventListener('click', () => this.initAudioContext(), { once: true });
         document.addEventListener('touchstart', () => this.initAudioContext(), { once: true });
+
+        // Register with AudioCoordinator
+        if (window.AudioCoordinator) {
+            window.AudioCoordinator.register('NaamAbhyas', {
+                pause: () => this.stopAll(),
+                isPlaying: () => {
+                    return Object.values(this.sounds).some(audio => audio && !audio.paused);
+                }
+            });
+            console.log('[AudioManager] Registered with AudioCoordinator');
+        }
 
         this.isInitialized = true;
     }
@@ -111,6 +125,11 @@ class AudioManager {
             audio.currentTime = 0;
             audio.volume = volume;
             audio.loop = loop;
+
+            // Focus coordination: Pause Gurbani Radio if playing
+            if (window.AudioCoordinator) {
+                window.AudioCoordinator.requestPlay('NaamAbhyas');
+            }
 
             // Play
             await audio.play();
@@ -227,19 +246,29 @@ class AudioManager {
     async playAmbient(volume = 0.3) {
         // Ensure audio context is initialized
         this.initAudioContext();
-        
+        this._ambientVolume = volume;
+
+        // If in silence mode, don't start audio but track intent
+        if (this._isMuted) {
+            this._activeAmbientId = 'vaheguru-jaap';
+            return null;
+        }
+
         // Try dedicated vaheguru-jaap first, fallback to ambient-waheguru
         let audio = await this.play('vaheguru-jaap', { volume, loop: true });
-        if (!audio) {
+        if (audio) {
+            this._activeAmbientId = 'vaheguru-jaap';
+        } else {
             audio = await this.play('ambient-waheguru', { volume, loop: true });
+            if (audio) this._activeAmbientId = 'ambient-waheguru';
         }
-        
+
         if (audio) {
             console.log('[AudioManager] ✅ Ambient sound started successfully');
         } else {
             console.warn('[AudioManager] ⚠️ Failed to start ambient sound');
         }
-        
+
         return audio;
     }
 
@@ -249,6 +278,43 @@ class AudioManager {
     stopAmbient() {
         this.stop('vaheguru-jaap');
         this.stop('ambient-waheguru');
+        this._activeAmbientId = null;
+    }
+
+    /**
+     * Mute all audio (Silence Mode ON)
+     * Pauses all active sounds but keeps them seekable.
+     */
+    mute() {
+        this._isMuted = true;
+        Object.values(this.sounds).forEach(audio => {
+            if (!audio.paused) audio.pause();
+        });
+        console.log('[AudioManager] 🔇 Silence mode ON');
+    }
+
+    /**
+     * Unmute — Silence Mode OFF
+     * Resumes the ambient track if one was playing.
+     */
+    unmute() {
+        this._isMuted = false;
+        // Resume ambient if it was playing before mute
+        if (this._activeAmbientId) {
+            const audio = this.sounds[this._activeAmbientId];
+            if (audio && audio.paused) {
+                audio.volume = this._ambientVolume;
+                audio.play().catch(e => console.warn('[AudioManager] unmute resume failed:', e));
+            }
+        }
+        console.log('[AudioManager] 🔊 Silence mode OFF');
+    }
+
+    /**
+     * Check if currently muted
+     */
+    isMuted() {
+        return this._isMuted;
     }
 
     /**

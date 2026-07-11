@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+        }
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        let color = (effectiveTheme === 'dark') ? '#F5F5F7' : '#1C1C1E';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.style.color = color;
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Settings | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="./settings.css">
+  
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Settings</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="settings-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <!-- GENERAL Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">GENERAL</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.location.href='./appearance.html'">
+          <div class="settings-item__icon">🎨</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Appearance</div>
+            <div class="settings-item__value" id="themeValue">Auto</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='./spiritual-notifications-settings.html'">
+          <div class="settings-item__icon">🔔</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Notifications</div>
+            <div class="settings-item__desc">Nitnem reminders & alerts</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item__icon">🌍</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Language</div>
+            <div class="settings-item__value">English</div>
+          </div>
+          <div class="settings-item__arrow" style="opacity: 0.3;">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">ABOUT</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.location.href='../about/'">
+          <div class="settings-item__icon">ℹ️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">About ANHAD</div>
+            <div class="settings-item__desc">Story, vision & developer</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item__icon">📱</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Version</div>
+            <div class="settings-item__value" id="appVersionSettings">4.0.0</div>
+          </div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../about/'">
+          <div class="settings-item__icon">👤</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Developer</div>
+            <div class="settings-item__value">Manmohan Singh</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../licenses/'">
+          <div class="settings-item__icon">📜</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Open Source</div>
+            <div class="settings-item__desc">Licenses & attributions</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../changelog/'">
+          <div class="settings-item__icon">📝</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">What's New</div>
+            <div class="settings-item__desc">Version history & updates</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEGAL Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">LEGAL</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.location.href='../privacy/'">
+          <div class="settings-item__icon">🔒</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Privacy Policy</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../terms/'">
+          <div class="settings-item__icon">📋</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Terms of Use</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../disclaimer/'">
+          <div class="settings-item__icon">⚠️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Disclaimer</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../licenses/'">
+          <div class="settings-item__icon">©️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Licenses</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../copyright/'">
+          <div class="settings-item__icon">™️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Copyright</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPPORT Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">SUPPORT</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.location.href='../contact/'">
+          <div class="settings-item__icon">📧</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Contact</div>
+            <div class="settings-item__desc">Get in touch with us</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../support/'">
+          <div class="settings-item__icon">❓</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Help & FAQ</div>
+            <div class="settings-item__desc">Common questions</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../contact/'">
+          <div class="settings-item__icon">🐛</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Report Bug</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../contact/'">
+          <div class="settings-item__icon">💡</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Suggest Feature</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../contact/'">
+          <div class="settings-item__icon">💬</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Send Feedback</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL Section -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">SOCIAL</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.open('https://anhad.vercel.app', '_blank')">
+          <div class="settings-item__icon">🌐</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Website</div>
+            <div class="settings-item__value">anhad.vercel.app</div>
+          </div>
+          <div class="settings-item__arrow">↗</div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item__icon">💻</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">GitHub</div>
+            <div class="settings-item__desc">Coming soon</div>
+          </div>
+          <div class="settings-item__arrow" style="opacity: 0.3;">↗</div>
+        </div>
+
+        <div class="settings-item" onclick="window.location.href='../contact/'">
+          <div class="settings-item__icon">✉️</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Email</div>
+            <div class="settings-item__value">anhadsupport@gmail.com</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acknowledgements -->
+    <section class="settings-section">
+      <h2 class="settings-section__title">ACKNOWLEDGEMENTS</h2>
+      
+      <div class="settings-group">
+        <div class="settings-item" onclick="window.location.href='../acknowledgements/'">
+          <div class="settings-item__icon">🙏</div>
+          <div class="settings-item__content">
+            <div class="settings-item__label">Acknowledgements</div>
+            <div class="settings-item__desc">Gratitude to all contributors</div>
+          </div>
+          <div class="settings-item__arrow">›</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="settings-footer">
+      <img src="../assets/app-logo-96.avif" alt="ANHAD" class="settings-footer__logo">
+      <p class="settings-footer__title">ANHAD</p>
+      <p class="settings-footer__tagline">ਅਨਹਦ • Divine Gurbani Companion</p>
+      <p class="settings-footer__version" id="footerVersion">Version 4.0.0</p>
+      <p class="settings-footer__copyright">© 2024 ANHAD</p>
+      <p class="settings-footer__motto">Built with 🙏 and ❤️</p>
+    </footer>
+
+  </main>
+
+  <script>
+    // Load version dynamically
+    fetch('../version.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('appVersionSettings').textContent = data.version;
+          document.getElementById('footerVersion').textContent = `Version ${data.version}`;
+        }
+      })
+      .catch(() => {});
+
+    // Load current theme
+    const currentTheme = localStorage.getItem('anhad_theme') || 'auto';
+    const themeNames = {
+      'auto': 'Auto',
+      'light': 'Light',
+      'dark': 'Dark'
+    };
+    document.getElementById('themeValue').textContent = themeNames[currentTheme] || 'Auto';
+  </script>
+
+</body>
+</html>

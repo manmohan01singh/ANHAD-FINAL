@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- CRITICAL: Theme blocker - MUST run before paint -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') {
+          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        }
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+        document.addEventListener('DOMContentLoaded', function() {
+          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
+          document.body.classList.add('theme-loaded');
+        }, { once: true });
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta name="color-scheme" content="light dark">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0d12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>About ANHAD | ਅਨਹਦ</title>
+  <meta name="description" content="Learn about ANHAD - A sacred Gurbani companion built with Guru Sahib's Kirpa">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/claymorphism-system.css">
+  <link rel="stylesheet" href="../css/nav-glass.css?v=4.1.9">
+  <link rel="stylesheet" href="./legal-shared.css">
+  
+  <!-- Scripts -->
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="glass-nav" aria-label="Navigation">
+    <button class="glass-nav__back" id="backBtn" aria-label="Back">
+      <svg class="back-chevron" viewBox="0 0 9 16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">About ANHAD</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <!-- Hero Section -->
+    <section class="about-hero">
+      <div class="about-logo">
+        <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="app-logo">
+      </div>
+      <h1 class="about-title">
+        <span class="about-title__eng">ANHAD</span>
+        <span class="about-title__gurm">ਅਨਹਦ</span>
+      </h1>
+      <p class="about-tagline">A Divine Gurbani Companion</p>
+      <p class="about-version" id="appVersion">Version 4.0.0</p>
+    </section>
+
+    <!-- Gratitude Section -->
+    <section class="legal-card about-gratitude">
+      <div class="about-gratitude__icon">🙏</div>
+      <h2 class="legal-card__title">Guru Sahib's Kirpa</h2>
+      <div class="legal-card__content">
+        <p>This project exists only through the infinite grace of Guru Sahib. Everything accomplished here is a blessing, not a personal achievement. May Guru Sahib forgive any mistakes and guide this seva to serve the Sangat with humility.</p>
+        <p class="about-gurm">ਤੇਰੀ ਭਗਤਿ ਭੰਡਾਰ ਭਰੇ ਬਿਅੰਤ ਬੇਅੰਤਾ ॥<br>Your treasures of devotion are overflowing, infinite and endless.</p>
+      </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">The Story</h2>
+      <div class="legal-card__content">
+        <p>ANHAD began as a personal engineering project — a vision to bring together the best features of many Gurbani applications into one peaceful, unified experience.</p>
+        
+        <p>Over approximately six months, this app was crafted with careful attention to detail, combining live Gurbani streams, Nitnem tracking, Naam Abhyas, Hukamnama, Sehaj Paath progress, and much more into a seamless interface.</p>
+        
+        <p>The name "ANHAD" (ਅਨਹਦ) means "unstruck sound" — the eternal divine melody that resonates within. It represents the continuous flow of Gurbani Kirtan that connects us to Waheguru.</p>
+      </div>
+    </section>
+
+    <!-- Vision & Mission -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Vision & Mission</h2>
+      <div class="legal-card__content">
+        <div class="about-section">
+          <h3>Vision</h3>
+          <p>To create a sacred digital space where Sikhs worldwide can connect with Gurbani anytime, anywhere — fostering daily spiritual practice through technology that respects tradition.</p>
+        </div>
+        
+        <div class="about-section">
+          <h3>Mission</h3>
+          <p>To provide a comprehensive, peaceful, and intuitive Gurbani companion that supports:</p>
+          <ul>
+            <li>24/7 access to live Gurbani Kirtan and Darbar Sahib streams</li>
+            <li>Daily Nitnem tracking and habit building</li>
+            <li>Naam Abhyas and meditation support</li>
+            <li>Sehaj Paath progress tracking</li>
+            <li>Gurbani search, bookmarks, and personalization</li>
+            <li>Background playback for uninterrupted spiritual practice</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Development Journey -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Development Journey</h2>
+      <div class="legal-card__content">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Concept & Planning</h4>
+              <p>Researched existing Gurbani apps, identified gaps, and envisioned a unified experience</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Core Features</h4>
+              <p>Built foundation: live radio, Nitnem tracker, audio playback, theme engine</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Enhanced Experience</h4>
+              <p>Added Hukamnama, Sehaj Paath tracking, bookmarks, search, mini-player</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Polish & Refinement</h4>
+              <p>Performance optimization, design refinement, accessibility improvements</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <h4>Release Preparation</h4>
+              <p>Legal compliance, Google Play readiness, documentation</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Roadmap</h2>
+      <div class="legal-card__content">
+        <p>Future enhancements planned (with Guru Sahib's grace):</p>
+        <ul>
+          <li>Enhanced Gurbani search with transliteration</li>
+          <li>Offline mode for Banis</li>
+          <li>Community features (moderated)</li>
+          <li>More live stream sources</li>
+          <li>Widget support for home screen</li>
+          <li>Advanced Nitnem reminders</li>
+          <li>Accessibility enhancements</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Developer Section -->
+    <section class="legal-card about-developer">
+      <h2 class="legal-card__title">Developer</h2>
+      <div class="legal-card__content">
+        <div class="developer-info">
+          <div class="developer-avatar">
+            <img src="image.png" alt="Manmohan Singh" class="creator-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="developer-avatar__placeholder" style="display: none;">MS</div>
+          </div>
+          <div class="developer-details">
+            <h3>Manmohan Singh</h3>
+            <p class="developer-role">Independent Developer</p>
+            <p>Built with dedication, humility, and gratitude to Guru Sahib. This project is a personal seva offered to the global Sangat.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Stack -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Technology</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is built as a Progressive Web App (PWA) wrapped with Capacitor for native Android functionality:</p>
+        <ul>
+          <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript (Vanilla)</li>
+          <li><strong>Backend:</strong> Node.js, Express</li>
+          <li><strong>Native:</strong> Capacitor (Android wrapper)</li>
+          <li><strong>APIs:</strong> BaniDB, YouTube Live, R2 Storage</li>
+          <li><strong>Deployment:</strong> Vercel (web), Google Play (Android)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Open Source -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Open Source</h2>
+      <div class="legal-card__content">
+        <p>ANHAD stands on the shoulders of many open-source projects. We are grateful to the global developer community.</p>
+        <p><a href="../licenses/" class="legal-link">View all open source licenses →</a></p>
+      </div>
+    </section>
+
+    <!-- Acknowledgements -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Acknowledgements</h2>
+      <div class="legal-card__content">
+        <p>Deep gratitude to:</p>
+        <ul>
+          <li><strong>Guru Sahib</strong> — For everything</li>
+          <li><strong>Parents & Family</strong> — For constant support and encouragement</li>
+          <li><strong>Friends & Beta Testers</strong> — For invaluable feedback</li>
+          <li><strong>Open Source Community</strong> — For enabling this project</li>
+          <li><strong>The Global Sangat</strong> — For inspiring this work</li>
+        </ul>
+        <p><a href="../acknowledgements/" class="legal-link">Read full acknowledgements →</a></p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD. Built with 🙏 and ❤️</p>
+        <nav class="legal-footer__links">
+          <a href="../privacy/">Privacy Policy</a>
+          <a href="../terms/">Terms of Use</a>
+          <a href="../support/">Support</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    // Back button handler
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '../';
+      }
+    });
+
+    // Load version dynamically
+    fetch('../version.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          document.getElementById('appVersion').textContent = `Version ${data.version}`;
+          document.querySelector('.legal-footer__version').textContent = `ANHAD v${data.version}`;
+        }
+      })
+      .catch(() => {});
+  </script>
+
+</body>
+</html>

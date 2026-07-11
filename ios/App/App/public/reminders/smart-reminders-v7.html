@@ -178,6 +178,21 @@
   <!-- Main -->
   <main class="app-container">
 
+    <!-- Android Permission Warning Banner -->
+    <div class="seg" id="androidPermissionBanner" style="display:none; margin-bottom:16px;">
+      <div style="background:var(--red-soft); border:0.5px solid rgba(255, 59, 48, 0.2); border-radius:var(--radius-lg); padding:16px; display:flex; align-items:flex-start; gap:12px; backdrop-filter:blur(16px);">
+        <span style="font-size:22px; line-height:1;">⚠️</span>
+        <div style="flex:1;">
+          <h4 style="font-size:14px; font-weight:700; color:#FF3B30; margin-bottom:4px;">Reminder Reliability Alert</h4>
+          <p style="font-size:11px; color:var(--text-sub); line-height:1.4; margin-bottom:12px;" id="permissionBannerText">To prevent missing or delayed alarms, ANHAD requires system permission to schedule exact alerts and run exempt from battery restrictions.</p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-prime" id="bannerResolveBtn" style="padding:6px 14px; font-size:11px; border-radius:var(--radius-full); width:auto; flex:none;">Configure</button>
+            <button class="btn btn-muted" id="bannerDismissBtn" style="padding:6px 14px; font-size:11px; border-radius:var(--radius-full); width:auto; flex:none;">Ignore</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Core Alarms -->
     <section class="seg">
       <div class="seg-head">
@@ -277,6 +292,15 @@
         <div class="sound-selector" id="soundSelector"></div>
       </div>
       <div class="fld">
+        <label class="fld-label">Awaken Stream (Optional)</label>
+        <select class="fld-inp" id="editAwakenStream">
+          <option value="none">None (Play chosen sound)</option>
+          <option value="darbar">Darbar Sahib Live Stream</option>
+          <option value="amritvela">Amritvela Kirtan Playlist</option>
+          <option value="simran">Waheguru Simran Virtual Live</option>
+        </select>
+      </div>
+      <div class="fld">
         <label class="fld-row">
           <span>Sync to Nitnem Tracker</span>
           <input type="checkbox" class="ios-toggle" id="editNitnemSync" checked>
@@ -325,6 +349,15 @@
         <label class="fld-label">Sound</label>
         <div class="sound-selector" id="addSoundSelector"></div>
       </div>
+      <div class="fld">
+        <label class="fld-label">Awaken Stream (Optional)</label>
+        <select class="fld-inp" id="addAwakenStream">
+          <option value="none">None (Play chosen sound)</option>
+          <option value="darbar">Darbar Sahib Live Stream</option>
+          <option value="amritvela">Amritvela Kirtan Playlist</option>
+          <option value="simran">Waheguru Simran Virtual Live</option>
+        </select>
+      </div>
       <div class="fld-acts">
         <button class="btn btn-muted" id="cancelAddBtn">Cancel</button>
         <button class="btn btn-prime" id="createAlarmBtn">Create</button>
@@ -356,27 +389,63 @@
         <label class="set-row"><span><strong>Vibration</strong></span><input type="checkbox" class="ios-toggle" id="vibrationToggle" checked></label>
         <label class="set-row"><span><strong>Sound</strong></span><input type="checkbox" class="ios-toggle" id="soundToggle" checked></label>
       </div>
+      <div class="set-grp" id="androidSettingsGroup" style="display:none;">
+        <div class="set-grp-title">Android Reliability</div>
+        <div class="set-row" id="exactAlarmBtn" style="cursor:pointer; display:flex;">
+          <span style="flex:1;">
+            <strong>Exact Alarm Permission</strong>
+            <small id="exactAlarmStatus" style="font-size:10px; color:var(--text-dim);">Checking...</small>
+          </span>
+          <button class="btn" id="exactAlarmVal" style="flex:none; width:auto; padding:6px 14px; font-size:11px; font-weight:700; border-radius:var(--radius-full); margin:0;">Grant</button>
+        </div>
+        <div class="set-row" id="batteryOptBtn" style="cursor:pointer; display:flex;">
+          <span style="flex:1;">
+            <strong>Battery Optimization</strong>
+            <small id="batteryOptStatus" style="font-size:10px; color:var(--text-dim);">Checking...</small>
+          </span>
+          <button class="btn" id="batteryOptVal" style="flex:none; width:auto; padding:6px 14px; font-size:11px; font-weight:700; border-radius:var(--radius-full); margin:0;">Allow</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Alarm Modal -->
-  <div class="flare" id="alarmModal">
-    <div class="flare-bg"></div>
-    <div class="flare-card">
-      <div class="flare-ring">
-        <span></span><span></span>
-        <div class="flare-ico" id="alarmModalIcon">🌅</div>
+  <!-- Alarm Modal (iOS Full-Screen Lock style) -->
+  <div class="flare-overlay" id="alarmModal">
+    <div class="flare-mesh-bg" id="alarmModalMeshBg"></div>
+    <div class="flare-ambient-glow"></div>
+    
+    <div class="flare-wrapper">
+      <div class="flare-top-time" id="alarmModalClock">04:00 AM</div>
+      
+      <div class="flare-artwork-container">
+        <div class="flare-artwork-ring">
+          <span></span><span></span>
+          <div class="flare-artwork-inner" id="alarmModalIcon">🌅</div>
+        </div>
       </div>
-      <div class="flare-digits" id="alarmModalTime">04:00</div>
-      <div class="flare-name" id="alarmModalLabel">Amritvela Simran</div>
-      <div class="flare-acts">
-        <button class="flare-btn flare-snooze" id="modalSnoozeBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-          Snooze
+      
+      <div class="flare-details">
+        <h1 class="flare-title" id="alarmModalLabel">Amritvela Simran</h1>
+        <p class="flare-subtitle" id="alarmModalSubtitle">Waheguru Simran • Active</p>
+      </div>
+
+      <!-- Elegant volume / audio indicator if live stream is playing -->
+      <div class="flare-audio-indicator" id="flareAudioIndicator" style="display:none">
+        <div class="flare-wave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span class="flare-wave-text">Playing Live Stream</span>
+      </div>
+      
+      <div class="flare-actions-container">
+        <button class="flare-action-btn snooze-btn" id="modalSnoozeBtn">
+          <div class="btn-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
+          <span>Snooze (10m)</span>
         </button>
-        <button class="flare-btn flare-go" id="modalCompleteBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24"><path d="M5 13l4 4L19 7"/></svg>
-          Complete
+        
+        <button class="flare-action-btn complete-btn" id="modalCompleteBtn">
+          <div class="btn-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+          <span>Complete</span>
         </button>
       </div>
     </div>

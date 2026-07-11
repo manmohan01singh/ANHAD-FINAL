@@ -68,7 +68,7 @@
         morning: '../assets/darbar-sahib-morning-bg.webp',
         day: '../assets/darbar-sahib-day-bg.webp',
         evening: '../assets/darbar-sahib-evening-bg.webp',
-        night: '../assets/darbar-sahib-night-bg.webp',
+        night: '../assets/HERO CARD IMAGES/new-night-bg.avif',
     };
 
     const HERO = '../assets/HERO CARD IMAGES';
@@ -105,7 +105,7 @@
             },
             bgSlots: BG_SLOTS,
             trackTitle: 'Amritvela Kirtan',
-            accent: '#D83A56',
+            accent: '#B8860B',
             getTrackUrl(idx) {
                 const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
                 return `${R2_BASE}/day-${i}.webm?t=${Date.now()}`;
@@ -126,7 +126,7 @@
             },
             bgSlots: BG_SLOTS,
             trackTitle: 'Waheguru • Waheguru',
-            accent: '#1A88D0',
+            accent: '#8B7355',
             getTrackUrl(idx) {
                 const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks;
                 const filename = SIMRAN_FILENAMES[i];
@@ -139,18 +139,25 @@
 
     function getSlot() {
         const forced = localStorage.getItem('anhad_forced_time_of_day');
-        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) return forced;
+        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
+            console.log('[GR] Using forced time:', forced);
+            return forced;
+        }
         const h = new Date().getHours();
+        console.log('[GR] Current hour:', h);
         if (h >= 5 && h < 9) return 'morning';
         if (h >= 9 && h < 16) return 'day';
         if (h >= 16 && h < 20) return 'evening';
+        console.log('[GR] Returning night slot');
         return 'night';
     }
 
     function syncTimeOfDay() {
         const slot = getSlot();
         const prevSlot = document.documentElement.getAttribute('data-time-of-day');
+        console.log('[GR] syncTimeOfDay - current slot:', slot, 'prev slot:', prevSlot);
         if (slot === prevSlot) return;
+        console.log('[GR] Time slot changed from', prevSlot, 'to', slot);
         document.documentElement.setAttribute('data-time-of-day', slot);
         updateBg(slot);
         const st = STREAMS[curStream];
@@ -172,6 +179,14 @@
     });
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) syncTimeOfDay();
+    });
+
+    // Listen for theme changes from global-theme.js
+    document.addEventListener('anhadThemeChanged', () => {
+        syncTimeOfDay();
+    });
+    window.addEventListener('anhadTimeForced', () => {
+        syncTimeOfDay();
     });
 
     // ─── SERVER SYNC ───────────────────────────────────────────────────────────
@@ -222,8 +237,9 @@
 
     // ─── STATE ─────────────────────────────────────────────────────────────────
 
-    // Removed duplicate audio state - now using window.AnhadAudio.getState()
-    let curStream = 'darbar'; // Local UI state for stream selection
+    // All audio state managed by window.AnhadAudio singleton
+    // Radio Page subscribes to master state for perfect synchronization (Category 3 fix)
+    let curStream = 'darbar'; // Local UI-only state for stream selection display
     let sleepTimer = null;
     let sleepEnd = 0;
     let sleepTick = null;
@@ -283,9 +299,22 @@
     const BG_ELS = { morning: elBgMorning, day: elBgDay, evening: elBgEvening, night: elBgNight };
 
     function updateBg(slot) {
+        console.log('[GR] updateBg called with slot:', slot);
         Object.entries(BG_ELS).forEach(([k, el]) => {
-            if (!el) return;
-            el.classList.toggle('hidden', k !== slot);
+            if (!el) {
+                console.log('[GR] Missing element for slot:', k);
+                return;
+            }
+            if (k === slot) {
+                el.classList.remove('hidden');
+                el.style.opacity = '1';
+                el.style.display = 'block';
+                console.log('[GR] Showing:', k);
+            } else {
+                el.classList.add('hidden');
+                el.style.opacity = '0';
+                console.log('[GR] Hiding:', k);
+            }
         });
     }
 
@@ -397,7 +426,7 @@
 
         if (playing) {
             elPlayBtn.classList.remove('paused');
-            elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="16" rx="1"/>';
+            elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
             elArtwork?.classList.add('playing');
             elMiniEq?.classList.add('playing');
             elArtGlow?.classList.add('pulse');
@@ -717,9 +746,10 @@
     // ─── DYNAMIC BG ON INIT ────────────────────────────────────────────────────
 
     function initBg() {
+        const initialSlot = getSlot();
+        console.log('[GR] Initial time slot:', initialSlot);
+        updateBg(initialSlot);
         syncTimeOfDay();
-        setInterval(syncTimeOfDay, 30000);
-        window.addEventListener('anhadTimeForced', syncTimeOfDay);
     }
 
     // ─── INIT ──────────────────────────────────────────────────────────────────

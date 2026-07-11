@@ -114,6 +114,9 @@
     edgeChromaSlider = document.getElementById('edgeChroma');
     uiMotionSlider = document.getElementById('uiMotion');
     ripplesToggle = document.getElementById('ripplesToggle');
+    
+    // Setup storage listener for cross-tab font updates
+    setupStorageListener();
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -174,6 +177,18 @@
     updateActiveButtons();
 
     if (lensModeToggle) lensModeToggle.dataset.active = String(settings.lensMode === true);
+
+    // CRITICAL FIX: Dispatch custom event for instant font updates across all verses
+    window.dispatchEvent(new CustomEvent('baniSettingsChanged', {
+      detail: {
+        gurmukhiSize: settings.gurmukhiSize,
+        transliterationSize: settings.transliterationSize,
+        translationSize: settings.translationSize,
+        punjabiSize: settings.punjabiSize || settings.translationSize,
+        theme: settings.theme,
+        spacing: settings.spacing
+      }
+    }));
 
     console.log('⚙️ Settings applied:', settings);
   }
@@ -699,6 +714,35 @@
     if (typeof settings.ripples !== 'boolean') settings.ripples = DEFAULTS.ripples;
 
     applySettings();
+  }
+
+  // CRITICAL FIX: Listen for storage events from other tabs/windows
+  // This ensures font changes in one Bani instantly reflect in all open Banis
+  function setupStorageListener() {
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'baniSettings' && e.newValue) {
+        try {
+          const newSettings = JSON.parse(e.newValue);
+          
+          // Validate and update settings
+          if (newSettings.theme && !THEMES.includes(newSettings.theme)) {
+            newSettings.theme = DEFAULTS.theme;
+          }
+          
+          settings = { ...DEFAULTS, ...newSettings };
+          settings.lensMode = settings.lensMode === true;
+          settings.glassGlow = clampNumber(settings.glassGlow, 0, 0.8, DEFAULTS.glassGlow);
+          settings.edgeChroma = clampNumber(settings.edgeChroma, 0, 0.8, DEFAULTS.edgeChroma);
+          settings.uiMotion = clampNumber(settings.uiMotion, 0, 1, DEFAULTS.uiMotion);
+          if (typeof settings.ripples !== 'boolean') settings.ripples = DEFAULTS.ripples;
+          
+          applySettings();
+          console.log('🔄 Settings updated from storage event');
+        } catch (err) {
+          console.warn('Failed to parse storage event:', err);
+        }
+      }
+    });
   }
 
   // ═══════════════════════════════════════════════════════════════

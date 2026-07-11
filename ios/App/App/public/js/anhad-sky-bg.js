@@ -80,6 +80,13 @@
   // ── Update time-of-day attribute on <html> ───────────────────────────────
   function applyTimeOfDay() {
     const slot = getSlot();
+    const currentSlot = document.documentElement.getAttribute('data-time-of-day');
+    
+    // NATIVE APP FIX: If slot hasn't changed, skip expensive updates
+    if (currentSlot === slot) {
+      return;
+    }
+    
     document.documentElement.setAttribute('data-time-of-day', slot);
 
     applyTimeAdaptiveCardColors(slot);
@@ -110,6 +117,11 @@
       requestAnimationFrame(() => {
         document.documentElement.style.backgroundColor = 'transparent';
       });
+      
+      // Save image state
+      if (window.HomeStateManager) {
+        window.HomeStateManager.saveImageState(slot, [bgUrl]);
+      }
       return;
     }
 
@@ -141,6 +153,11 @@
       document.body.style.backgroundRepeat = '';
       document.body.style.backgroundAttachment = '';
     }
+    
+    // Save image state
+    if (window.HomeStateManager) {
+      window.HomeStateManager.saveImageState(slot, [bgUrl]);
+    }
   }
 
   // ── Hero card image map ───────────────────────────────────────────────────
@@ -167,6 +184,36 @@
     ],
   };
 
+  /**
+   * Smoothly crossfade a hero card image src.
+   * Old image stays fully visible while new one preloads.
+   * Once loaded, fades in with a 500ms CSS opacity transition.
+   */
+  function swapHeroImgSmooth(el, newSrc) {
+    if (!el || !newSrc) return;
+    let newAbsolute;
+    try { newAbsolute = new URL(newSrc, document.baseURI).href; } catch (e) { newAbsolute = newSrc; }
+    if (el.src === newAbsolute) return; // already correct
+
+    const preload = new Image();
+    preload.onload = () => {
+      // Old image visible → quick opacity-0 → src swap → fade in
+      el.style.transition = 'opacity 0s';
+      el.style.opacity = '0';
+      requestAnimationFrame(() => {
+        el.src = newSrc;
+        el.style.transition = 'opacity 0.5s ease';
+        requestAnimationFrame(() => { el.style.opacity = '1'; });
+      });
+    };
+    preload.onerror = () => {
+      // Fallback: just set src directly without fade
+      el.src = newSrc;
+    };
+    preload.src = newSrc;
+    if (preload.complete && preload.naturalWidth > 0) preload.onload();
+  }
+
   function updateHeroCardImages() {
     const mode = document.documentElement.getAttribute('data-theme-mode') || 'light';
     const slot = getSlot();
@@ -189,10 +236,7 @@
         else newSrc = img.getAttribute('data-img-night') || images[idx] || '';
       }
       if (!newSrc) return;
-      try {
-        const newAbsolute = new URL(newSrc, document.baseURI).href;
-        if (img.src !== newAbsolute) img.src = newSrc;
-      } catch (e) { img.src = newSrc; }
+      swapHeroImgSmooth(img, newSrc);
     });
 
     const idMap = [
@@ -202,12 +246,7 @@
     ];
     idMap.forEach(({ id, src }) => {
       const el = document.getElementById(id);
-      if (el && src) {
-        try {
-          const newAbsolute = new URL(src, document.baseURI).href;
-          if (el.src !== newAbsolute) el.src = src;
-        } catch (e) { el.src = src; }
-      }
+      if (el && src) swapHeroImgSmooth(el, src);
     });
   }
 

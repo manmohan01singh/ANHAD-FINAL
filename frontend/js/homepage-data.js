@@ -146,6 +146,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (el) el.textContent = greeting;
   }
 
+  // ━━━ NAVIGATION PATHS — hoisted to prevent TDZ error in fast-return path ━━━
+  const NAV_PATHS = {
+    gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
+    DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
+    shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
+    nitnemCard: 'nitnem/index.html',
+    sehajPaathCard: 'SehajPaath/sehaj-paath.html',
+    gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
+    naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
+    calendarCard: 'Calendar/GurpurabCalendar-ios.html',
+    nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
+    remindersCard: 'reminders/smart-reminders-v7.html',
+    notesCard: 'Notes/notes.html'
+  };
+
   // NATIVE APP FIX: Check if we're returning from navigation with fresh state
   const isReturning = window.HomeStateManager?.isReturningFromNavigation();
   const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
@@ -185,21 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // FIX: Track intervals for cleanup
   const _hpIntervals = [];
-
-  // ━━━ NAVIGATION PATHS ━━━
-  const NAV_PATHS = {
-    gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
-    DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
-    shabadVicharCard: 'ShabadVichar/shabad-vichar.html',
-    nitnemCard: 'nitnem/index.html',
-    sehajPaathCard: 'SehajPaath/sehaj-paath.html',
-    gurbaniKhojCard: 'GurbaniKhoj/gurbani-khoj.html',
-    naamAbhyasCard: 'NaamAbhyas/naam-abhyas.html',
-    calendarCard: 'Calendar/GurpurabCalendar-ios.html',
-    nitnemTrackerCard: 'NitnemTracker/nitnem-tracker.html',
-    remindersCard: 'reminders/smart-reminders-v7.html',
-    notesCard: 'Notes/notes.html'
-  };
 
   Object.entries(NAV_PATHS).forEach(([id, path]) => {
     const el = document.getElementById(id);

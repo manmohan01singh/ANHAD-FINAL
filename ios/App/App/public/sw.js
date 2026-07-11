@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v8.0.0'; // FORCE CLEAR ALL CACHES - Time-based artwork update
+const CACHE_VERSION = 'anhad-v8.0.1'; // FORCE CLEAR ALL CACHES - Time-based artwork update v8.0.1
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

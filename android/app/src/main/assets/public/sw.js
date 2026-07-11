@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * ANHAD - SERVICE WORKER v5.0.0 — Aggressive Auto-Update
+ * ANHAD - SERVICE WORKER v5.1.0 — Aggressive Auto-Update
  * iOS/Android Optimized with Persistent Background Notifications
  * ═══════════════════════════════════════════════════════════════════════════════
  * 
@@ -8,10 +8,11 @@
  * ✅ iOS 16.4+ Web Push Support
  * ✅ Android Native Notifications
  * ✅ Periodic Background Sync
+ * ✅ Automatic Updates via Version Polling
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v7.3.0'; // BUMP: Force client PWA cache refresh - Auto-update enabled
+const CACHE_VERSION = 'anhad-v8.0.1'; // FORCE CLEAR ALL CACHES - Time-based artwork update v8.0.1
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Disclaimer | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  
+  <script src="../lib/global-theme.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Disclaimer</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Disclaimer</h2>
+      <div class="legal-card__content">
+        <p>Please read this disclaimer carefully before using ANHAD.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">1. Independent Application</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is an <strong>independent Gurbani companion application</strong> developed as a personal project. It is <strong>not officially affiliated with, endorsed by, or sponsored by</strong>:</p>
+        <ul>
+          <li>Shiromani Gurdwara Parbandhak Committee (SGPC)</li>
+          <li>Sri Harmandir Sahib (Golden Temple)</li>
+          <li>Any Gurdwara institution or Sikh organization</li>
+          <li>BaniDB, YouTube, or other third-party service providers</li>
+        </ul>
+        <p>The app is offered as a free service to the global Sikh community with humility and devotion.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">2. Content Accuracy</h2>
+      <div class="legal-card__content">
+        <p>While every effort has been made to ensure the accuracy of Gurbani text, translations, and transliterations:</p>
+        <ul>
+          <li>ANHAD sources Gurbani from publicly available databases (e.g., BaniDB)</li>
+          <li>Errors in source data may be reflected in the app</li>
+          <li>Users are encouraged to verify important religious information through authoritative sources</li>
+        </ul>
+        <p>For definitive references, please consult <em>Sri Guru Granth Sahib Ji</em> directly or speak with knowledgeable Gursikhs.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">3. Live Streaming Sources</h2>
+      <div class="legal-card__content">
+        <p>ANHAD provides access to live Gurbani streams from various sources:</p>
+        <ul>
+          <li><strong>Darbar Sahib Live:</strong> Official live stream from Harmandir Sahib (via YouTube)</li>
+          <li><strong>Amritvela Kirtan:</strong> Early morning Kirtan sessions</li>
+          <li><strong>Virtual Live Radio:</strong> 24/7 curated Gurbani Kirtan (hosted by ANHAD)</li>
+        </ul>
+        <p>These streams are provided by their respective organizations. ANHAD:</p>
+        <ul>
+          <li>Does <strong>not</strong> own or control these streams</li>
+          <li>Cannot guarantee availability, quality, or schedule</li>
+          <li>Is not responsible for content broadcast on third-party streams</li>
+        </ul>
+        <p>If a stream is unavailable or contains inappropriate content, please contact the source directly.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">4. Religious Guidance</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is a <strong>spiritual companion tool</strong>, not a replacement for:</p>
+        <ul>
+          <li>Personal religious study</li>
+          <li>Guidance from knowledgeable Gursikhs or Gianis</li>
+          <li>Sangat (congregation) participation</li>
+          <li>Direct engagement with <em>Sri Guru Granth Sahib Ji</em></li>
+        </ul>
+        <p>Users should seek proper religious instruction and guidance for deep spiritual questions.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">5. Technical Limitations</h2>
+      <div class="legal-card__content">
+        <p>ANHAD depends on:</p>
+        <ul>
+          <li>Stable internet connection for streaming features</li>
+          <li>Device compatibility (Android 6.0+, modern web browsers)</li>
+          <li>Third-party APIs and services (BaniDB, YouTube, R2 Storage)</li>
+        </ul>
+        <p>Service interruptions, bugs, or data loss may occur. Users are encouraged to:</p>
+        <ul>
+          <li>Maintain backups of important data (if possible)</li>
+          <li>Report issues through the app's support channels</li>
+          <li>Keep the app updated to the latest version</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">6. Medical & Mental Health Disclaimer</h2>
+      <div class="legal-card__content">
+        <p>ANHAD includes meditation and Naam Abhyas features. While meditation has many benefits:</p>
+        <ul>
+          <li>The app is <strong>not a substitute for professional medical or mental health treatment</strong></li>
+          <li>Users with medical conditions should consult healthcare providers</li>
+          <li>If you experience distress, please seek appropriate professional help</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">7. No Guarantees</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is provided "as is" without guarantees of:</p>
+        <ul>
+          <li>Continuous availability</li>
+          <li>Error-free operation</li>
+          <li>Meeting specific user needs</li>
+          <li>Future feature support</li>
+        </ul>
+        <p>The app is a personal seva (service) project maintained with best effort.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">8. User Responsibility</h2>
+      <div class="legal-card__content">
+        <p>By using ANHAD, you acknowledge:</p>
+        <ul>
+          <li>You are responsible for verifying important religious information</li>
+          <li>You understand the app's limitations and disclaimer</li>
+          <li>You will use the app respectfully and for spiritual purposes</li>
+          <li>You accept the risks associated with digital applications</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">9. Questions</h2>
+      <div class="legal-card__content">
+        <p>If you have questions about this disclaimer or concerns about the app's content, please <a href="../contact/" class="legal-link">contact us</a>.</p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD • ਵਾਹਿਗੁਰੂ ਜੀ ਕਾ ਖਾਲਸਾ, ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤਹਿ</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../privacy/">Privacy</a>
+          <a href="../terms/">Terms</a>
+          <a href="../support/">Support</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

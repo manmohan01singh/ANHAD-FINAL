@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme === 'auto' ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark') : theme;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Open Source Licenses | ANHAD</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  <script src="../lib/global-theme.js" defer></script>
+  
+  <style>
+    .license-group {
+      margin-bottom: 24px;
+    }
+    .license-item {
+      padding: 16px;
+      background: var(--bg-tertiary, #E5E5EA);
+      border-radius: var(--radius-sm, 16px);
+      margin-bottom: 12px;
+    }
+    html.dark-mode .license-item {
+      background: var(--bg-tertiary, #3A3A3C);
+    }
+    .license-item__name {
+      font-weight: 600;
+      color: var(--text-primary, #1C1C1E);
+      margin-bottom: 4px;
+    }
+    html.dark-mode .license-item__name {
+      color: var(--text-primary, #F5F5F7);
+    }
+    .license-item__license {
+      font-size: var(--text-footnote, 0.8125rem);
+      color: var(--text-secondary, #6E6E73);
+    }
+    .license-item__url {
+      font-size: var(--text-footnote, 0.8125rem);
+      color: var(--accent, #D4943A);
+      text-decoration: none;
+      word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" onclick="history.back()">
+      <svg class="back-chevron" viewBox="0 0 9 16"><path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Open Source Licenses</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Open Source Attribution</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is built with gratitude upon the work of countless open-source contributors. Below are the libraries and tools that made this project possible.</p>
+      </div>
+    </section>
+
+    <!-- Backend / Node.js Dependencies -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Backend & Server</h2>
+      <div class="legal-card__content">
+        
+        <div class="license-group">
+          <div class="license-item">
+            <div class="license-item__name">Node.js</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://nodejs.org" target="_blank" class="license-item__url">https://nodejs.org</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Express</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://expressjs.com" target="_blank" class="license-item__url">https://expressjs.com</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">dotenv</div>
+            <div class="license-item__license">BSD-2-Clause</div>
+            <a href="https://github.com/motdotla/dotenv" target="_blank" class="license-item__url">github.com/motdotla/dotenv</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">compression</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://github.com/expressjs/compression" target="_blank" class="license-item__url">github.com/expressjs/compression</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">express-rate-limit</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://github.com/express-rate-limit/express-rate-limit" target="_blank" class="license-item__url">github.com/express-rate-limit</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">fluent-ffmpeg</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://github.com/fluent-ffmpeg/node-fluent-ffmpeg" target="_blank" class="license-item__url">github.com/fluent-ffmpeg/node-fluent-ffmpeg</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">ffmpeg-static</div>
+            <div class="license-item__license">GPL-3.0 / MIT Dual</div>
+            <a href="https://github.com/eugeneware/ffmpeg-static" target="_blank" class="license-item__url">github.com/eugeneware/ffmpeg-static</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Capacitor & Mobile -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Mobile & Native</h2>
+      <div class="legal-card__content">
+        
+        <div class="license-group">
+          <div class="license-item">
+            <div class="license-item__name">Capacitor</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://capacitorjs.com" target="_blank" class="license-item__url">https://capacitorjs.com</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/android</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/app</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/haptics</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/local-notifications</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/splash-screen</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor/status-bar</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">@capacitor-community/native-audio</div>
+            <div class="license-item__license">MIT License</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Fonts -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Fonts</h2>
+      <div class="legal-card__content">
+        
+        <div class="license-group">
+          <div class="license-item">
+            <div class="license-item__name">Inter (UI Font)</div>
+            <div class="license-item__license">SIL Open Font License 1.1</div>
+            <a href="https://rsms.me/inter/" target="_blank" class="license-item__url">https://rsms.me/inter/</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Noto Sans Gurmukhi</div>
+            <div class="license-item__license">SIL Open Font License 1.1</div>
+            <a href="https://fonts.google.com/noto/specimen/Noto+Sans+Gurmukhi" target="_blank" class="license-item__url">Google Fonts</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Cinzel (Decorative)</div>
+            <div class="license-item__license">SIL Open Font License 1.1</div>
+            <a href="https://fonts.google.com/specimen/Cinzel" target="_blank" class="license-item__url">Google Fonts</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Playfair Display SC</div>
+            <div class="license-item__license">SIL Open Font License 1.1</div>
+            <a href="https://fonts.google.com/specimen/Playfair+Display+SC" target="_blank" class="license-item__url">Google Fonts</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- APIs & Services -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">APIs & Services</h2>
+      <div class="legal-card__content">
+        
+        <div class="license-group">
+          <div class="license-item">
+            <div class="license-item__name">BaniDB API</div>
+            <div class="license-item__license">Open API (Free Use)</div>
+            <a href="https://api.banidb.com" target="_blank" class="license-item__url">https://api.banidb.com</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">YouTube Live Streaming</div>
+            <div class="license-item__license">YouTube Terms of Service</div>
+            <a href="https://www.youtube.com/t/terms" target="_blank" class="license-item__url">YouTube Terms</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Cloudflare R2 Storage</div>
+            <div class="license-item__license">Commercial Service</div>
+            <a href="https://www.cloudflare.com/products/r2/" target="_blank" class="license-item__url">Cloudflare R2</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Utilities -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Development Tools</h2>
+      <div class="legal-card__content">
+        
+        <div class="license-group">
+          <div class="license-item">
+            <div class="license-item__name">sharp (Image Processing)</div>
+            <div class="license-item__license">Apache-2.0</div>
+            <a href="https://sharp.pixelplumbing.com" target="_blank" class="license-item__url">https://sharp.pixelplumbing.com</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Vitest (Testing)</div>
+            <div class="license-item__license">MIT License</div>
+            <a href="https://vitest.dev" target="_blank" class="license-item__url">https://vitest.dev</a>
+          </div>
+
+          <div class="license-item">
+            <div class="license-item__name">Lighthouse (Performance Testing)</div>
+            <div class="license-item__license">Apache-2.0</div>
+            <a href="https://github.com/GoogleChrome/lighthouse" target="_blank" class="license-item__url">Chrome Lighthouse</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- License Texts -->
+    <section class="legal-card">
+      <h2 class="legal-card__title">Common License Texts</h2>
+      <div class="legal-card__content">
+        <p><strong>MIT License:</strong> <a href="https://opensource.org/licenses/MIT" target="_blank" class="legal-link">View Full Text</a></p>
+        <p><strong>Apache License 2.0:</strong> <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" class="legal-link">View Full Text</a></p>
+        <p><strong>SIL Open Font License 1.1:</strong> <a href="https://scripts.sil.org/OFL" target="_blank" class="legal-link">View Full Text</a></p>
+      </div>
+    </section>
+
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD • Thank you to all open source contributors</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../acknowledgements/">Acknowledgements</a>
+          <a href="../copyright/">Copyright</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

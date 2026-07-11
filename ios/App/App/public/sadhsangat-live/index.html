@@ -188,6 +188,25 @@
       box-sizing: border-box; margin: 0; padding: 0;
       -webkit-tap-highlight-color: transparent;
       font-family: var(--font-main);
+      /* NUCLEAR OPTION: Remove all shadows, gradients, masks */
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+    /* Additional brute force for specific elements */
+    div, section, main, article, aside, nav, header, footer {
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+    html {
+      background: var(--bg-primary);
+      box-shadow: none !important;
+      /* Kill all possible bottom fades */
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+    html::before,
+    html::after {
+      display: none !important;
     }
     body {
       background: var(--bg-primary);
@@ -201,6 +220,14 @@
       transition: background 0.4s var(--ease-ios), color 0.4s var(--ease-ios);
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
+      /* Force clean bottom - no shadows */
+      box-shadow: none !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+    body::before,
+    body::after {
+      display: none !important;
     }
     .page-content {
       position: relative; z-index: 1;
@@ -212,6 +239,28 @@
       -webkit-overflow-scrolling: touch;
       content-visibility: auto;
       contain-intrinsic-size: 1000px;
+      /* No shadows or effects */
+      box-shadow: none !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+    }
+    .page-content::before,
+    .page-content::after {
+      display: none !important;
+    }
+    /* Main container - absolutely no effects */
+    main,
+    #mainContainer {
+      box-shadow: none !important;
+      -webkit-mask-image: none !important;
+      mask-image: none !important;
+      background: transparent !important;
+    }
+    main::before,
+    main::after,
+    #mainContainer::before,
+    #mainContainer::after {
+      display: none !important;
     }
     /* Performance: lazily render offscreen sections */
     .channels-feed-section, .upcoming-live-list, .library-section {
@@ -223,6 +272,10 @@
     }
     .carousel-track, .drawer, .player-sheet, .ios-action-sheet {
       will-change: transform;
+      /* Performance boost: GPU acceleration */
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      perspective: 1000px;
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -764,17 +817,28 @@
 
     /* ═══════════════════════════════════════════════════════════════
        FROSTED GLASS HEADER — iOS Control Centre vibrancy
+       Semi-circular BOTTOM corners with enhanced blur, connected to top
        ═══════════════════════════════════════════════════════════════ */
     .header {
       position: sticky; top: 0; z-index: 200;
       height: calc(var(--header-height) + var(--safe-top));
       padding: var(--safe-top) 14px 0;
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg-glass);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      background: var(--bg-glass-strong);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       border-bottom: 0.5px solid var(--separator);
-      transition: background 0.3s var(--ease-ios);
+      transition: background 0.3s var(--ease-ios), border-radius 0.3s var(--ease-ios);
+      /* Semi-circular BOTTOM corners only - stays connected to top */
+      border-radius: 0 0 24px 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Capacitor support - ensure backdrop-filter works */
+    @supports not (backdrop-filter: blur(40px)) {
+      .header {
+        background: var(--bg-primary);
+      }
     }
 
     .hdr-logo-area {
@@ -844,7 +908,7 @@
       height: 18px;
       line-height: 1;
       margin-left: 2px;
-      box-shadow: 0 2px 8px rgba(255,179,0,0.35);
+      box-shadow: none;
     }
     .hdr-logo-live-dot {
       width: 4px;
@@ -1155,19 +1219,14 @@
     }
     .carousel-overlay {
       position: absolute; inset: 0; z-index: 1;
-      background: linear-gradient(
-        to bottom,
-        rgba(0,0,0,0.05) 0%,
-        rgba(0,0,0,0.15) 50%,
-        rgba(0,0,0,0.75) 100%
-      );
+      background: transparent;
     }
     /* The minimal bottom strip */
     .carousel-content { position: absolute; inset: 0; z-index: 2; }
     .carousel-content.carousel-minimal {
       top: auto; bottom: 0; left: 0; right: 0;
       padding: 40px 14px 12px;
-      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
       display: flex; flex-direction: column; gap: 2px;
     }
     .carousel-channel-name {
@@ -1610,16 +1669,18 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════
-       SLIDE-OUT LEFT NAVIGATION DRAWER
+       SLIDE-OUT LEFT NAVIGATION DRAWER — Premium iOS-style
        ═══════════════════════════════════════════════════════════════ */
     .drawer-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
       z-index: 1000;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.35s ease, backdrop-filter 0.35s ease;
     }
     .drawer-backdrop.visible {
       opacity: 1;
@@ -1629,90 +1690,209 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 290px;
+      width: 300px;
       height: 100dvh;
-      background: var(--bg-glass);
-      backdrop-filter: blur(30px) saturate(200%);
-      -webkit-backdrop-filter: blur(30px) saturate(200%);
+      background: var(--bg-glass-strong);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
       z-index: 1001;
       transform: translateX(-100%);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
-      box-shadow: 6px 0 40px rgba(0,0,0,0.2);
+      box-shadow: 4px 0 32px rgba(0,0,0,0.12);
       border-right: 0.5px solid var(--separator);
+      -webkit-mask-image: none;
+      mask-image: none;
     }
     .drawer.open {
       transform: translateX(0);
     }
     .drawer-header {
-      padding: 16px;
+      padding: 18px 16px 14px;
+      padding-top: max(18px, var(--safe-top));
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 0.5px solid var(--separator);
-      background: var(--bg-glass);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: transparent;
+    }
+    .drawer-header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .drawer-header-logo img {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+    }
+    .drawer-header-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-primary) 60%, var(--gold-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .drawer-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s var(--ease-out);
+    }
+    .drawer-close-btn:active {
+      background: var(--gold-accent);
+      color: #000;
+      transform: scale(0.88);
     }
     .drawer-content {
       flex: 1;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      -webkit-mask-image: none;
+      mask-image: none;
+      background: transparent;
+      padding-bottom: 8px;
+    }
+    .drawer-content::-webkit-scrollbar {
+      width: 3px;
+    }
+    .drawer-content::-webkit-scrollbar-thumb {
+      background: var(--separator);
+      border-radius: 100px;
     }
     .drawer-user-section {
-      padding: 20px 16px;
-      background: var(--bg-secondary);
+      padding: 20px 18px;
+      background: linear-gradient(135deg, rgba(255,179,0,0.07) 0%, rgba(255,149,0,0.04) 100%);
       display: flex;
       align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid var(--border-color);
+      gap: 14px;
+      border-bottom: 0.5px solid var(--separator);
+      margin: 0 0 8px;
     }
     .drawer-avatar {
-      width: 44px;
-      height: 44px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: var(--gold-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 22px;
+      box-shadow: 0 4px 14px rgba(255,179,0,0.28);
+      flex-shrink: 0;
+    }
+    .drawer-user-info {
+      flex: 1;
+      min-width: 0;
     }
     .drawer-username {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .drawer-user-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-top: 2px;
     }
     .drawer-menu-list {
       display: flex;
       flex-direction: column;
-      padding: 12px 8px;
+      padding: 4px 10px;
+      gap: 2px;
     }
     .drawer-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       color: var(--text-primary);
       text-decoration: none;
       font-size: 14.5px;
       font-weight: 600;
-      border-radius: 8px;
-      transition: background 0.2s;
+      border-radius: 11px;
+      transition: all 0.2s var(--ease-out);
+      position: relative;
+      cursor: pointer;
     }
     .drawer-item:active {
       background: var(--card-active);
+      transform: scale(0.97);
+    }
+    .drawer-item:hover {
+      background: var(--bg-secondary);
     }
     .drawer-item.active {
-      background: rgba(255, 179, 0, 0.08);
-      color: #FF8F00;
+      background: linear-gradient(135deg, rgba(255,179,0,0.12) 0%, rgba(255,149,0,0.08) 100%);
+      color: var(--gold-accent);
+      font-weight: 700;
+    }
+    .drawer-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3.5px;
+      height: 22px;
+      background: var(--gold-gradient);
+      border-radius: 0 4px 4px 0;
+    }
+    .drawer-item-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+    }
+    .drawer-item.active .drawer-item-icon {
+      color: var(--gold-accent);
+    }
+    .drawer-item-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+    .drawer-section-label {
+      padding: 16px 16px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
     }
     .drawer-divider {
-      height: 1px;
-      background: var(--border-color);
-      margin: 12px 16px;
+      height: 0.5px;
+      background: var(--separator);
+      margin: 10px 16px;
+    }
+    .drawer-footer {
+      padding: 12px 16px 16px;
+      border-top: 0.5px solid var(--separator);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: var(--text-tertiary);
+      font-weight: 500;
+    }
+    .drawer-footer-version {
+      opacity: 0.6;
     }
 
     /* ═══════════════════════════════════════════════════════════════
@@ -1826,10 +2006,15 @@
       z-index: 999;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out);
+      /* PERFORMANCE: Reduced transition time and blur for faster rendering */
+      transition: opacity 0.25s var(--ease-out), backdrop-filter 0.25s var(--ease-out);
       display: none;
-      backdrop-filter: blur(16px) saturate(140%);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      /* PERFORMANCE: Reduced blur from 16px to 8px for smoother animations */
+      backdrop-filter: blur(8px) saturate(120%);
+      -webkit-backdrop-filter: blur(8px) saturate(120%);
+      /* GPU acceleration */
+      transform: translateZ(0);
+      will-change: opacity;
     }
     .player-sheet-backdrop.visible {
       display: block;
@@ -1841,37 +2026,47 @@
       position: fixed;
       bottom: 0;
       left: 50%;
-      transform: translateX(-50%) translateY(100%);
+      transform: translateX(-50%) translateY(100%) translateZ(0);
       width: 100%;
       max-width: 600px;
       height: 100dvh;
       background: var(--bg-glass-strong);
-      backdrop-filter: blur(40px) saturate(220%);
-      -webkit-backdrop-filter: blur(40px) saturate(220%);
+      /* PERFORMANCE: Reduced blur from 40px to 20px for smoother animations */
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       z-index: 1500;
       display: flex;
       flex-direction: column;
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
-      box-shadow: 0 -20px 60px rgba(0,0,0,0.35), 0 -4px 16px rgba(0,0,0,0.15);
       border-radius: 24px 24px 0 0;
       border-top: 0.5px solid var(--separator);
+      /* GPU acceleration for smoother animations */
+      will-change: transform;
+      backface-visibility: hidden;
+      perspective: 1000px;
+      /* Optimize compositing */
+      contain: layout style paint;
     }
     .player-sheet.open {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%) translateY(0) translateZ(0);
       z-index: 2500 !important;
+      box-shadow: 0 -20px 60px rgba(0,0,0,0.35), 0 -4px 16px rgba(0,0,0,0.15);
     }
-    /* Premium grain texture overlay on player */
+    /* Premium grain texture overlay on player - PERFORMANCE: Reduced opacity for lighter rendering */
     .player-sheet::after {
       content: '';
       position: absolute;
       inset: 0;
-      opacity: 0.015;
+      /* PERFORMANCE: Reduced opacity from 0.015 to 0.008 for lighter rendering */
+      opacity: 0.008;
       pointer-events: none;
       z-index: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-repeat: repeat;
       background-size: 200px 200px;
+      /* GPU acceleration */
+      transform: translateZ(0);
     }
 
     /* Drag Handle Header — refined glass */
@@ -1930,17 +2125,22 @@
 
     /* ═══════════════════════════════════════════════════════════════
        AMBIENT GLOW — Dynamic color from video, YouTube-style
+       PERFORMANCE: Simplified for faster rendering
        ═══════════════════════════════════════════════════════════════ */
     .player-sheet::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 55%;
-      background: radial-gradient(ellipse 90% 70% at 50% 0%, var(--ambient-color, rgba(255,179,0,0.18)) 0%, transparent 70%);
+      background: radial-gradient(ellipse 90% 70% at 50% 0%, var(--ambient-color, rgba(255,179,0,0.12)) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      /* PERFORMANCE: Faster transition from 1.2s to 0.6s */
+      transition: opacity 0.6s ease;
+      /* GPU acceleration */
+      transform: translateZ(0);
+      will-change: opacity;
     }
     .player-sheet.open::before { opacity: 1; }
     .player-sheet.minimized::before { opacity: 0 !important; }
@@ -1949,17 +2149,23 @@
       position: absolute;
       top: 0;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateZ(0);
       width: 200%;
       height: 120%;
       pointer-events: none;
       z-index: 1;
       opacity: 0;
-      transition: opacity 1.5s ease;
+      /* PERFORMANCE: Faster transition from 1.5s to 0.7s */
+      transition: opacity 0.7s ease;
       overflow: hidden;
-      filter: blur(60px);
+      /* PERFORMANCE: Reduced blur from 60px to 30px for smoother rendering */
+      filter: blur(30px);
+      /* GPU acceleration */
+      will-change: opacity;
+      backface-visibility: hidden;
     }
-    .player-sheet.open .ambient-glow-layer { opacity: 0.7; }
+    /* PERFORMANCE: Reduced opacity from 0.7 to 0.5 for lighter effect */
+    .player-sheet.open .ambient-glow-layer { opacity: 0.5; }
     .player-sheet.minimized .ambient-glow-layer { display: none !important; }
 
     .ambient-glow-layer::before {
@@ -2537,21 +2743,16 @@
       border-radius: 50%;
       border: none;
       box-shadow: 0 4px 30px rgba(255,179,0,0.45), 0 0 0 3px rgba(255,179,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25);
-      animation: play-pulse-glow 3s ease-in-out infinite;
+      transition: box-shadow 0.2s, transform 0.15s;
     }
     .player-control-icon-btn.play-pause:active {
       transform: scale(0.88);
       box-shadow: 0 2px 12px rgba(255,179,0,0.3);
-      animation: none;
     }
     .player-control-icon-btn.play-pause svg {
       width: 34px;
       height: 34px;
       filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
-    }
-    @keyframes play-pulse-glow {
-      0%, 100% { box-shadow: 0 4px 30px rgba(255,179,0,0.45), 0 0 0 3px rgba(255,179,0,0.12), inset 0 1px 0 rgba(255,255,255,0.25); }
-      50% { box-shadow: 0 4px 50px rgba(255,179,0,0.6), 0 0 0 6px rgba(255,179,0,0.08), inset 0 1px 0 rgba(255,255,255,0.25); }
     }
 
     /* Comments block — premium glass card */
@@ -2612,7 +2813,7 @@
     .player-sheet.minimized {
       height: calc(64px + var(--safe-bottom)) !important;
       transform: translateX(-50%) translateY(0) !important;
-      bottom: calc(var(--bottom-nav-height) + var(--safe-bottom)) !important;
+      bottom: calc(12px + var(--bottom-nav-height) + var(--safe-bottom) + 8px) !important;
       border-top: 0.5px solid var(--separator);
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
@@ -2622,7 +2823,7 @@
       box-shadow: 0 -8px 32px rgba(0,0,0,0.2);
       cursor: pointer;
       overflow: hidden;
-      animation: miniPlayerSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: miniPlayerSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 2000 !important;
     }
     
@@ -2862,28 +3063,45 @@
 
     /* ═══════════════════════════════════════════════════════════════
        BOTTOM TAB NAV (YouTube Sticky Bottom Row)
+       Floating with semi-circular corners and blur - content visible through
        ═══════════════════════════════════════════════════════════════ */
     .bottom-nav {
       position: fixed;
-      bottom: 0;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      width: 100%;
-      max-width: 600px;
-      height: calc(var(--bottom-nav-height) + var(--safe-bottom));
-      padding-bottom: var(--safe-bottom);
-      background: var(--bg-primary);
-      border-top: 0.5px solid var(--border-color);
+      width: calc(100% - 24px);
+      max-width: 580px;
+      height: var(--bottom-nav-height);
+      padding: 0 8px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+      border: 0.5px solid var(--separator);
       display: flex;
       align-items: center;
       justify-content: space-around;
       z-index: 90;
-      transition: background 0.3s, border 0.3s;
+      transition: background 0.3s, border 0.3s, transform 0.3s;
+      /* Fully rounded corners for floating effect */
+      border-radius: 28px;
       box-shadow: none;
     }
     
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(28, 28, 30, 0.85);
+      box-shadow: none;
+    }
+    
+    /* Capacitor support - ensure backdrop-filter works */
+    @supports not (backdrop-filter: blur(40px)) {
+      .bottom-nav {
+        background: var(--bg-primary);
+      }
+    }
+    
     body.mini-player-active .page-content {
-      padding-bottom: calc(64px + var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+      padding-bottom: calc(64px + 12px + var(--bottom-nav-height) + var(--safe-bottom) + 16px);
     }
 
     .nav-tab-btn {
@@ -3091,7 +3309,7 @@
       left: 0;
       right: 0;
       padding: 30px 14px 12px;
-      background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%);
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
       display: flex;
       flex-direction: column;
       gap: 3px;
@@ -3821,12 +4039,12 @@
       z-index: 9999;
       transform: translateY(100%);
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
     }
     .comments-drawer.open {
       transform: translateY(0);
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
     }
     .comments-drawer-header {
       padding: 16px;
@@ -4150,33 +4368,52 @@
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
   <div class="drawer" id="leftDrawer">
     <div class="drawer-header">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <div class="hdr-logo-icon">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="var(--gold-accent)">
-            <circle cx="12" cy="12" r="10" fill="var(--gold-accent)"/>
-            <polygon points="10 8 16 12 10 16 10 8" fill="white"/>
-          </svg>
-        </div>
-        <div class="hdr-logo-text" style="font-size:18px;">Sadhsangat</div>
+      <div class="drawer-header-logo">
+        <img src="../assets/app-logo-384.avif" alt="ANHAD Logo">
+        <span class="drawer-header-title">Sadhsangat</span>
       </div>
-      <button class="hdr-btn" id="closeDrawerBtn">✕</button>
+      <button class="drawer-close-btn" id="closeDrawerBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
     </div>
     <div class="drawer-content">
       <div class="drawer-user-section">
         <div class="drawer-avatar">🙏</div>
-        <div class="drawer-username">Gurbani Listener</div>
+        <div class="drawer-user-info">
+          <div class="drawer-username">Gurbani Listener</div>
+          <div class="drawer-user-sub">Your spiritual journey</div>
+        </div>
       </div>
       <div class="drawer-menu-list">
         <a class="drawer-item" href="../index.html">
-          <span>🏠</span> Back to ANHAD Home
+          <span class="drawer-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </span>
+          ANHAD Home
         </a>
         <a class="drawer-item active" href="#" onclick="window.location.reload(); return false;">
-          <span>📻</span> Sadhsangat Live Home
+          <span class="drawer-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="2"/>
+              <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+            </svg>
+          </span>
+          Sadhsangat Live
         </a>
         <div class="drawer-divider"></div>
-        <div style="padding:10px 16px; font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">Gurbani Channels</div>
+        <div class="drawer-section-label">Gurbani Channels</div>
         <div id="drawerChannelsList"></div>
       </div>
+    </div>
+    <div class="drawer-footer">
+      <span class="drawer-footer-version">Sadhsangat Live v2.0</span>
+      <span>ANHAD</span>
     </div>
   </div>
 
@@ -4227,9 +4464,11 @@
       </button>
       
       <a href="#" class="hdr-logo-area" id="logoLink">
+        <div class="hdr-logo-icon">
+          <img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="app-logo" style="width: 32px; height: 32px; border-radius: 8px;">
+        </div>
         <div class="hdr-logo-text">
           <span style="font-family:'Cinzel Decorative', display; font-size:20px; font-weight:600;">Sadhsangat</span>
-          <span class="hdr-logo-live-badge"><span class="hdr-logo-live-dot"></span>LIVE</span>
         </div>
       </a>
       
@@ -4354,12 +4593,6 @@
         <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><polygon points="10 8 14 10 10 12 10 8"/>
       </svg>
       <span>Videos</span>
-    </button>
-    <button class="nav-tab-btn tap-ripple" data-tab="playlists" id="navTabPlaylists">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1"/><circle cx="3" cy="12" r="1"/><circle cx="3" cy="18" r="1"/>
-      </svg>
-      <span>Playlists</span>
     </button>
     <button class="nav-tab-btn tap-ripple" data-tab="library" id="navTabLibrary">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -4633,8 +4866,7 @@
 
   </div>
 
-  <!-- Load YouTube Player Iframe API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
+  <!-- Load YouTube Player Iframe API (dynamic with retry) -->
 
   <!-- ═══════════════════════════════════════════════════════════════
        JAVASCRIPT APP LOGIC
@@ -5213,18 +5445,8 @@
       }
     ];
 
-    // Initialize channels with profile pictures
-    function initializeChannelsWithProfilePictures() {
-      FALLBACK_CHANNELS.forEach(channel => {
-        if (!channel.thumbnail) {
-          // Use a reliable placeholder service that generates consistent avatars based on channel ID
-          channel.thumbnail = `https://ui-avatars.com/api/?name=${encodeURIComponent(channel.channelName)}&background=random&size=88&bold=true`;
-        }
-      });
-    }
-
-    // Call initialization
-    initializeChannelsWithProfilePictures();
+    // Fallback channels get thumbnail from our generator
+    FALLBACK_CHANNELS.forEach(ch => enhanceChannelWithProfilePicture(ch));
 
     // Static curated previous lives with verified video IDs (using real video IDs from popular Gurbani channels)
     const STATIC_PREVIOUS_LIVES = [
@@ -5235,27 +5457,24 @@
       { videoId: 'a-6_5tTm5kA', title: 'PTC Punjabi Live Kirtan', channelName: 'PTC Simran', channelId: 'UCgjKIbrlQYDJh8UdJUPia3A', ago: 'Yesterday', views: '18K views', ts: Date.now() - 24*3600000 }
     ];
 
-    // Function to get YouTube channel profile picture URL from channel ID
-    function getChannelProfilePicture(channelId) {
-      // YouTube profile picture URL pattern
-      return `https://yt3.ggpht.com/${channelId}=s88-c-k-c0x00ffffff-no-rj`;
+    // Generate a reliable avatar URL from any channel data
+    function getChannelAvatarUrl(ch) {
+      if (ch.thumbnail && ch.thumbnail !== 'undefined' && ch.thumbnail !== 'null' && !ch.thumbnail.includes('_custom') && !ch.thumbnail.startsWith('//yt3')) {
+        if (ch.thumbnail.startsWith('//')) return 'https:' + ch.thumbnail;
+        return ch.thumbnail;
+      }
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(ch.channelName || '?')}&background=FFB300&color=1C1008&size=88&bold=true&font-size=0.35`;
     }
 
     // Function to enhance channel data with profile pictures
     function enhanceChannelWithProfilePicture(channel) {
-      if (!channel.thumbnail || channel.thumbnail.includes('_custom')) {
-        channel.thumbnail = getChannelProfilePicture(channel.channelId);
-      }
+      channel.thumbnail = getChannelAvatarUrl(channel);
       return channel;
     }
 
     function getChannelAvatarHTML(ch) {
-      // Use real channel profile picture URLs with beautiful styling
-      if (ch.thumbnail && ch.thumbnail !== 'undefined' && ch.thumbnail !== '') {
-        return `<img decoding="async" src="${ch.thumbnail}" alt="${ch.channelName}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.outerHTML='<div class=\\'circle-fallback\\'>${getInitials(ch.channelName)}</div>'">`;
-      }
-      // Fallback to initials if no valid thumbnail
-      return `<div class="circle-fallback">${getInitials(ch.channelName)}</div>`;
+      const url = getChannelAvatarUrl(ch);
+      return `<img decoding="async" src="${url}" alt="${ch.channelName}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.outerHTML='<div class=\\'circle-fallback\\'>${getInitials(ch.channelName)}</div>'">`;
     }
 
     let currentTheme = localStorage.getItem('sl_theme') || 'light';
@@ -5408,8 +5627,12 @@
         const row = CE('a');
         row.className = 'drawer-item';
         row.href = '#';
+        const isActive = ch.channelId === State.selectedChannelId;
+        if (isActive) row.classList.add('active');
         row.innerHTML = `
-          <img decoding="async" src="${ch.thumbnail}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;">
+          <span class="drawer-item-icon">
+            <img decoding="async" src="${getChannelAvatarUrl(ch)}" alt="${ch.channelName}" style="width:20px; height:20px; border-radius:50%; object-fit:cover;" onerror="this.outerHTML='<span style=\\'display:flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:var(--bg-tertiary); font-size:10px; font-weight:700; color:var(--text-secondary);\\'>${getInitials(ch.channelName)}</span>'">
+          </span>
           <span>${ch.channelName}</span>
         `;
         row.addEventListener('click', (e) => {
@@ -6006,7 +6229,7 @@
 
         State.live = liveRes.live || [];
         State.upcoming = liveRes.upcoming || [];
-        State.myChannels = myChannelsRes.channels || [];
+        State.myChannels = (myChannelsRes.channels || []).map(ch => enhanceChannelWithProfilePicture(ch));
         State.streams = streamsRes.videos || [];
         const streamVideos = State.streams;
 
@@ -6872,9 +7095,8 @@
       const allCircle = CE('div');
       allCircle.className = 'channel-logo-circle';
       
-      // Dynamic channel collage
-      const channelsForCollage = State.myChannels.length > 0 ? State.myChannels : FALLBACK_CHANNELS;
-      allCircle.innerHTML = generateChannelCollage(channelsForCollage);
+      // Use ANHAD app logo for "All" button
+      allCircle.innerHTML = '<img src="../assets/app-logo-384.avif" alt="ANHAD Logo" class="app-logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
       allCircleWrap.appendChild(allCircle);
       allItem.appendChild(allCircleWrap);
 
@@ -7828,7 +8050,7 @@
         card.innerHTML = `
           <div class="yt-live-now-thumb-wrap">
             <img decoding="async" class="yt-live-now-thumb" src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" loading="lazy" data-tried-fallback="false">
-            <span class="yt-live-now-badge"><span class="hdr-logo-live-dot"></span>LIVE</span>
+           
           </div>
           <div class="yt-live-now-info">
             <div class="yt-live-now-title">${v.title}</div>
@@ -8109,30 +8331,23 @@
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
       State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
 
-      // ── SAVE TO REAL WATCH HISTORY ──
-      saveToWatchHistory({
-        videoId, title, channelName, channelThumbnail, isLive,
-        duration: isLive ? 'LIVE' : '--:--',
-        progress: '0%',
-        watchedAt: Date.now()
-      });
-      
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
+
       $('playerDetailTitle').textContent = title;
       $('playerMiniTitle').textContent = title;
       $('playerDetailChannel').textContent = channelName;
       $('playerMiniChannel').textContent = channelName;
-      
-      const avatarSrc = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
-      $('playerChannelAvatar').src = avatarSrc;
+      $('playerChannelAvatar').src = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
       $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
-      extractAmbientColor(videoId);
+      requestIdleCallback(() => { extractAmbientColor(videoId); }, { timeout: 1000 });
       $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
 
       const channel = State.myChannels.find(c => c.channelName === channelName);
       updateSubscribeBtnState(channel);
 
-      // Scrubber visual layouts
       if (isLive) {
         $('playerProgressBar').style.display = 'none';
         $('playerLiveBadgeRow').style.display = 'flex';
@@ -8143,26 +8358,20 @@
         $('playerVideoViewsRow').textContent = 'Video Playback';
       }
 
-      // Open layout
-      $('playerBackdrop').classList.add('visible');
-      $('playerSheet').className = 'player-sheet open';
+      playerSheet.style.display = 'block';
+      playerBackdrop.style.display = 'block';
+      playerSheet.className = 'player-sheet open';
+      playerBackdrop.classList.add('visible');
       document.body.classList.add('mini-player-active');
 
       State.likeState = false;
       $('playerLikeBtn').style.color = 'var(--text-primary)';
       $('playerLikeText').textContent = 'Like';
 
-      // Load YouTube Player
       loadYtIframePlayer(videoId);
-      if (bgPlayEnabled) {
-        setupNativeAudioCommandListener();
-        startNativeAudioService();
-      }
+      if (bgPlayEnabled) { setupNativeAudioCommandListener(); startNativeAudioService(); }
       haptic('medium');
-      
-      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', {
-        detail: { title, channelName }
-      }));
+      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
     }
 
     function updateSubscribeBtnState(channel) {
@@ -8216,6 +8425,38 @@
       }
     });
 
+    // Dynamic YouTube iframe API loader with retry
+    function loadYtIframeApi(maxRetries = 3) {
+      return new Promise((resolve, reject) => {
+        if (window.YT && window.YT.Player) return resolve();
+        let attempts = 0;
+        function tryLoad() {
+          attempts++;
+          const tag = document.createElement('script');
+          tag.src = 'https://www.youtube.com/iframe_api';
+          tag.onload = () => {
+            const check = setInterval(() => {
+              if (window.YT && window.YT.Player) {
+                clearInterval(check);
+                resolve();
+              }
+            }, 100);
+            setTimeout(() => { clearInterval(check); }, 5000);
+          };
+          tag.onerror = () => {
+            if (attempts < maxRetries) {
+              console.warn(`[YT API] Load attempt ${attempts} failed, retrying...`);
+              setTimeout(tryLoad, 2000 * attempts);
+            } else {
+              reject(new Error('YouTube iframe API failed to load after ' + maxRetries + ' attempts'));
+            }
+          };
+          document.head.appendChild(tag);
+        }
+        tryLoad();
+      });
+    }
+
     function loadYtIframePlayer(videoId) {
       if (ytPlayer && ytPlayer.loadVideoById) {
         ytPlayer.loadVideoById(videoId);
@@ -8229,40 +8470,25 @@
               modestbranding: 1,
               rel: 0,
               playsinline: 1,
-              // AGGRESSIVE BACKGROUND PLAYBACK SETTINGS (YouTube Premium-like)
-              iv_load_policy: 3,          // Hide annotations
-              cc_load_policy: 0,          // Hide closed captions
-              showinfo: 0,                // Hide video info
-              fs: 0,                      // Hide fullscreen button (use custom)
-              disablekb: 1,               // Disable keyboard controls
-              // Mobile-specific for background play
+              iv_load_policy: 3,
+              cc_load_policy: 0,
+              showinfo: 0,
+              fs: 0,
+              disablekb: 1,
               'playsinline': 1,
-              // Performance optimizations
               'hl': 'en',
               'color': 'white'
             },
             events: {
               onReady: (event) => {
                 console.log('YouTube Player ready with AGGRESSIVE background playback support');
-                
-                // Request wake lock immediately
                 requestWakeLock();
-                
-                // Setup Media Session always (for background playback)
                 setupMediaSession();
-                
-                // Start keep-alive if background play is enabled
-                if (bgPlayEnabled) {
-                  startBackgroundKeepAlive();
-                }
-                
+                if (bgPlayEnabled) startBackgroundKeepAlive();
                 onPlayerReady(event);
               },
               onStateChange: (event) => {
-                // Update Media Session on state change
-                if (bgPlayEnabled) {
-                  updateMediaSessionPlaybackState();
-                }
+                if (bgPlayEnabled) updateMediaSessionPlaybackState();
                 onPlayerStateChange(event);
               },
               onError: (error) => {
@@ -8274,6 +8500,13 @@
         };
         if (window.YT && window.YT.Player) {
           window.onYouTubeIframeAPIReady();
+        } else {
+          loadYtIframeApi().then(() => {
+            window.onYouTubeIframeAPIReady();
+          }).catch((err) => {
+            console.error('[YT API] Failed to load YouTube player:', err);
+            showToast('⚠️ Video player unavailable. Please try again.');
+          });
         }
       }
     }
@@ -8442,47 +8675,38 @@
     });
 
     function stopAndClosePlayer() {
-      if (ytPlayer && ytPlayer.stopVideo) {
-        try { ytPlayer.stopVideo(); } catch(e) {}
-      }
+      const playerSheet = $('playerSheet');
+      const playerBackdrop = $('playerBackdrop');
+
+      playerBackdrop.classList.remove('visible');
+      playerSheet.className = 'player-sheet';
+      document.body.classList.remove('mini-player-active');
+      
+      requestAnimationFrame(() => {
+        playerSheet.style.display = 'none';
+        playerBackdrop.style.display = 'none';
+      });
+
+      if (ytPlayer && ytPlayer.stopVideo) { try { ytPlayer.stopVideo(); } catch(e) {} }
       if (progressInterval) clearInterval(progressInterval);
       stopBackgroundKeepAlive();
       stopNativeAudioService();
-      
-      $('playerBackdrop').classList.remove('visible');
-      $('playerSheet').className = 'player-sheet';
-      $('playerSheet').style.display = 'none';
-      $('playerBackdrop').style.display = 'none';
-      document.body.classList.remove('mini-player-active');
-      $('playerSheet').style.removeProperty('--ambient-color');
-      $('playerSheet').style.removeProperty('--ambient-color-secondary');
-      
-      // Release wake lock
-      if (window.wakeLock !== null) {
-        window.wakeLock.release().then(() => {
-          console.log('Wake lock released');
-          window.wakeLock = null;
-        }).catch(err => {
-          console.error('Wake lock release error:', err);
-        });
-      }
-      
+      playerSheet.style.removeProperty('--ambient-color');
+      playerSheet.style.removeProperty('--ambient-color-secondary');
+      if (window.wakeLock !== null) { window.wakeLock.release().then(() => { window.wakeLock = null; }).catch(() => {}); }
       window.dispatchEvent(new CustomEvent('sadhsangatPlayerClosed'));
     }
 
     function minimizePlayer() {
       $('playerSheet').className = 'player-sheet minimized';
       $('playerBackdrop').classList.remove('visible');
-      setTimeout(() => {
-        $('playerBackdrop').style.display = 'none';
-      }, 200);
+      requestAnimationFrame(() => { $('playerBackdrop').style.display = 'none'; });
     }
     function expandPlayer() {
+      const playerBackdrop = $('playerBackdrop');
+      playerBackdrop.style.display = 'block';
       $('playerSheet').className = 'player-sheet open';
-      $('playerBackdrop').style.display = 'block';
-      setTimeout(() => {
-        $('playerBackdrop').classList.add('visible');
-      }, 50);
+      requestAnimationFrame(() => { playerBackdrop.classList.add('visible'); });
     }
 
     $('playerCloseBtn').addEventListener('click', (e) => {

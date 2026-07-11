@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- CRITICAL: Theme blocker -->
+  <script>
+    (function() {
+      try {
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
+        let effectiveTheme = theme;
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (theme === 'auto') {
+          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+          } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
+            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
+            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
+            else timeOfDay = 'night';
+          }
+        }
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', theme);
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
+        document.documentElement.style.colorScheme = effectiveTheme;
+        if (effectiveTheme === 'dark') {
+          document.documentElement.classList.add('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#0D0D0F';
+          document.documentElement.style.color = '#F5F5F7';
+        } else {
+          document.documentElement.classList.remove('dark', 'dark-mode');
+          document.documentElement.style.backgroundColor = '#FAF8F5';
+          document.documentElement.style.color = '#1C1C1E';
+        }
+        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
+        if (theme === 'auto') {
+          if (timeOfDay === 'morning') bg = '#FFF5EC';
+          else if (timeOfDay === 'day') bg = '#FFFDF9';
+          else if (timeOfDay === 'evening') bg = '#FFF8E7';
+          else if (timeOfDay === 'night') bg = '#0F0F12';
+        }
+        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.classList.add('theme-loaded');
+      } catch (e) {}
+    })();
+  </script>
+  <!-- CRITICAL: Inline theme styles to prevent flash -->
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      background-color: #FAF8F5 !important;
+      color: #1C1C1E !important;
+    }
+    html[data-theme="dark"],
+    html.dark-mode {
+      background-color: #0D0D0F !important;
+      color: #F5F5F7 !important;
+    }
+    body {
+      background-color: inherit !important;
+      color: inherit !important;
+    }
+  </style>
+  <meta name="color-scheme" content="light dark">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Privacy Policy | ANHAD</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=optional" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../css/theme-variables.css">
+  <link rel="stylesheet" href="../css/trendora-premium.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="../css/nav-glass.css">
+  <link rel="stylesheet" href="../about/legal-shared.css">
+  
+  <script src="../lib/global-theme.js" defer></script>
+  <script src="../js/anhad-core.js" defer></script>
+</head>
+
+<body>
+  <nav class="glass-nav">
+    <button class="glass-nav__back" id="backBtn">
+      <svg class="back-chevron" viewBox="0 0 9 16" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 1L1 8L8 15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="back-label">Back</span>
+    </button>
+    <span class="glass-nav__title">Privacy Policy</span>
+    <div class="glass-nav__action"></div>
+  </nav>
+
+  <main class="legal-page" style="padding-top: calc(var(--safe-top) + 64px); padding-bottom: 100px;">
+    
+    <section class="legal-card">
+      <h2 class="legal-card__title">Privacy Policy for ANHAD</h2>
+      <div class="legal-card__content">
+        <p><strong>Effective Date:</strong> January 1, 2025</p>
+        <p><strong>Last Updated:</strong> <span id="lastUpdated">January 1, 2025</span></p>
+        <p>ANHAD ("we," "our," or "the app") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use the ANHAD application.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">1. Information We Collect</h2>
+      <div class="legal-card__content">
+        
+        <h3>1.1 Information You Provide</h3>
+        <p>ANHAD does <strong>not</strong> collect personally identifiable information such as names, email addresses, phone numbers, or payment information. We do not require user registration or account creation.</p>
+        
+        <h3>1.2 Automatically Collected Information</h3>
+        <p>The app may collect the following technical information automatically:</p>
+        <ul>
+          <li><strong>Device Information:</strong> Device type, operating system version, app version</li>
+          <li><strong>Usage Statistics:</strong> Features accessed, session duration, interaction patterns (stored locally)</li>
+          <li><strong>Internet Access:</strong> Required for streaming live Gurbani Kirtan, fetching Hukamnama, and accessing online content</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">2. How We Use Your Information</h2>
+      <div class="legal-card__content">
+        <p>We use collected information solely to:</p>
+        <ul>
+          <li>Provide core app functionality (streaming, notifications, reading progress)</li>
+          <li>Remember your preferences (theme, bookmarks, Nitnem progress)</li>
+          <li>Improve app performance and user experience</li>
+          <li>Send notifications (Nitnem reminders, Amritvela alerts) if you enable them</li>
+        </ul>
+        <p><strong>We do NOT:</strong></p>
+        <ul>
+          <li>Sell, rent, or share your data with third parties for marketing purposes</li>
+          <li>Track your location</li>
+          <li>Collect payment information (the app is free)</li>
+          <li>Use your data for advertising</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">3. Data Storage</h2>
+      <div class="legal-card__content">
+        
+        <h3>3.1 Local Storage</h3>
+        <p>The following data is stored <strong>locally on your device</strong> and is never transmitted to our servers:</p>
+        <ul>
+          <li><strong>Preferences:</strong> Theme selection, notification settings, language preferences</li>
+          <li><strong>Bookmarks:</strong> Saved Banis, favorite streams, reading history</li>
+          <li><strong>Progress Tracking:</strong> Nitnem completion, Sehaj Paath progress, meditation session history</li>
+          <li><strong>User Activity:</strong> Last accessed pages, playback position, reading position</li>
+        </ul>
+        
+        <h3>3.2 Cloud Storage</h3>
+        <p>ANHAD does <strong>not</strong> use cloud storage or remote servers to store your personal data.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">4. Internet Access & Live Streaming</h2>
+      <div class="legal-card__content">
+        <p>ANHAD requires internet access for the following features:</p>
+        <ul>
+          <li><strong>Live Gurbani Streams:</strong> Streaming audio from external sources (e.g., Darbar Sahib Live, Amritvela Kirtan)</li>
+          <li><strong>Virtual Live Playback:</strong> Synchronized 24/7 Gurbani Kirtan from our server</li>
+          <li><strong>Daily Hukamnama:</strong> Fetching the daily Hukamnama from Gurdwara APIs</li>
+          <li><strong>Gurbani Search:</strong> Querying the BaniDB API for Gurbani text and translations</li>
+        </ul>
+        <p>When you stream content, your device connects to third-party streaming providers. We do <strong>not</strong> control the privacy practices of these external services.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">5. Permissions</h2>
+      <div class="legal-card__content">
+        <p>ANHAD may request the following device permissions:</p>
+        <ul>
+          <li><strong>Internet Access:</strong> Required for streaming, API calls, and content delivery</li>
+          <li><strong>Notifications:</strong> Optional — used for Nitnem reminders and Naam Abhyas alerts</li>
+          <li><strong>Background Playback:</strong> Allows audio to continue when the app is minimized</li>
+          <li><strong>Boot Receiver:</strong> Reschedules reminders after device restart</li>
+          <li><strong>Wake Lock:</strong> Prevents screen from sleeping during meditation sessions (if enabled)</li>
+        </ul>
+        <p>You can revoke these permissions at any time through your device settings.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">6. Notifications</h2>
+      <div class="legal-card__content">
+        <p>ANHAD uses local notifications to:</p>
+        <ul>
+          <li>Remind you of daily Nitnem (if enabled)</li>
+          <li>Alert you for Amritvela (early morning) sessions</li>
+          <li>Notify you of Naam Abhyas reminders</li>
+        </ul>
+        <p>All notifications are <strong>generated locally</strong> on your device. We do <strong>not</strong> send push notifications from external servers.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">7. Third-Party Services</h2>
+      <div class="legal-card__content">
+        <p>ANHAD integrates with the following third-party services:</p>
+        <ul>
+          <li><strong>BaniDB API:</strong> For Gurbani text, translations, and search</li>
+          <li><strong>YouTube Live:</strong> For streaming live Gurbani from various Gurdwaras</li>
+          <li><strong>R2 Storage (Cloudflare):</strong> For hosting audio files</li>
+        </ul>
+        <p>These services have their own privacy policies. We recommend reviewing them:</p>
+        <ul>
+          <li>BaniDB: <a href="https://api.banidb.com" target="_blank" rel="noopener">https://api.banidb.com</a></li>
+          <li>YouTube Privacy Policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">https://policies.google.com/privacy</a></li>
+          <li>Cloudflare Privacy Policy: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">https://www.cloudflare.com/privacypolicy/</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">8. Children's Privacy</h2>
+      <div class="legal-card__content">
+        <p>ANHAD is designed for users of all ages, including children. We do <strong>not</strong> knowingly collect personally identifiable information from anyone, including children under 13. Since the app does not require registration or account creation, no personal information is collected from any user.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">9. Data Security</h2>
+      <div class="legal-card__content">
+        <p>We take reasonable measures to protect your locally stored data:</p>
+        <ul>
+          <li>Data is stored in encrypted local storage (provided by the device operating system)</li>
+          <li>No sensitive information (passwords, payment details) is collected or stored</li>
+          <li>Internet connections use HTTPS encryption where available</li>
+        </ul>
+        <p>However, no method of electronic storage is 100% secure. We cannot guarantee absolute security.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">10. Data Retention</h2>
+      <div class="legal-card__content">
+        <p>Your data is stored locally on your device and remains there until:</p>
+        <ul>
+          <li>You uninstall the app (all local data is deleted)</li>
+          <li>You clear the app's data through device settings</li>
+          <li>You manually delete specific data (bookmarks, progress) within the app</li>
+        </ul>
+        <p>We do <strong>not</strong> have access to or control over your locally stored data.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">11. Your Rights</h2>
+      <div class="legal-card__content">
+        <p>Since all data is stored locally on your device, you have full control:</p>
+        <ul>
+          <li><strong>Access:</strong> View all your data within the app (bookmarks, preferences, progress)</li>
+          <li><strong>Delete:</strong> Clear individual items or reset the app to remove all data</li>
+          <li><strong>Export:</strong> (Future feature) Export your data for backup purposes</li>
+          <li><strong>Portability:</strong> Your data is stored in standard formats on your device</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">12. Changes to This Policy</h2>
+      <div class="legal-card__content">
+        <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal reasons. When we make changes:</p>
+        <ul>
+          <li>The "Last Updated" date at the top will be revised</li>
+          <li>Significant changes will be announced within the app</li>
+          <li>Continued use of the app after changes constitutes acceptance</li>
+        </ul>
+        <p>We encourage you to review this policy periodically.</p>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">13. Contact Us</h2>
+      <div class="legal-card__content">
+        <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact us:</p>
+        <ul>
+          <li><strong>Email:</strong> anhadsupport@gmail.com</li>
+          <li><strong>Website:</strong> <a href="https://anhad.vercel.app" target="_blank" rel="noopener">https://anhad.vercel.app</a></li>
+          <li><strong>In-App Contact:</strong> <a href="../contact/" class="legal-link">Contact page</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="legal-card">
+      <h2 class="legal-card__title">14. Acknowledgment</h2>
+      <div class="legal-card__content">
+        <p>By using ANHAD, you acknowledge that you have read and understood this Privacy Policy and agree to its terms.</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="legal-footer">
+      <div class="legal-footer__content">
+        <p class="legal-footer__version">ANHAD v4.0.0</p>
+        <p class="legal-footer__copyright">© 2024 ANHAD. Built with 🙏 and ❤️</p>
+        <nav class="legal-footer__links">
+          <a href="../about/">About</a>
+          <a href="../terms/">Terms of Use</a>
+          <a href="../support/">Support</a>
+          <a href="../contact/">Contact</a>
+        </nav>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '../';
+      }
+    });
+
+    // Update last updated date dynamically
+    const now = new Date();
+    const formatted = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('lastUpdated').textContent = formatted;
+
+    // Load version
+    fetch('../version.json')
+      .then(res => res.json())
+      .then(data => {
+        if (data.version) {
+          document.querySelector('.legal-footer__version').textContent = `ANHAD v${data.version}`;
+        }
+      })
+      .catch(() => {});
+  </script>
+
+</body>
+</html>

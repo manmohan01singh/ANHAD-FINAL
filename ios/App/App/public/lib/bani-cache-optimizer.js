@@ -31,11 +31,11 @@ class BaniCacheOptimizer {
         
         // Guru images to preload
         this.guruImages = [
-            'assets/darbar-sahib-day.webp',
-            'assets/Darbar-sahib-AMRITVELA.webp',
-            'assets/darbar-sahib-evening.webp',
-            'assets/darbar-sahib-evening.jpg',
-            'assets/HUKAMNAMA-SAHIB.webp'
+            '../assets/darbar-sahib-day.webp',
+            '../assets/Darbar-sahib-AMRITVELA.webp',
+            '../assets/darbar-sahib-evening.webp',
+            '../assets/darbar-sahib-evening.jpg',
+            '../assets/HUKAMNAMA-SAHIB.webp'
         ];
         
         // Background download queue
@@ -171,6 +171,28 @@ class BaniCacheOptimizer {
                 return await window.BaniDB.getBani(baniId);
             }
             
+            // Load index to find which file contains this bani
+            const indexResponse = await fetch('data/banis-chunks/index.json');
+            if (indexResponse.ok) {
+                const indexData = await indexResponse.json();
+                const chunkFile = indexData.baniIndex[String(baniId)];
+                
+                if (chunkFile) {
+                    console.log(`[BaniCache] Loading bani ${baniId} from ${chunkFile}`);
+                    const response = await fetch(`data/banis-chunks/${chunkFile}`);
+                    if (response.ok) {
+                        const jsonData = await response.json();
+                        
+                        if (jsonData.banis && jsonData.banis[baniId]) {
+                            console.log(`[BaniCache] ✅ Loaded from ${chunkFile}: ${baniId}`);
+                            return jsonData.banis[baniId];
+                        }
+                    } else {
+                        console.warn(`[BaniCache] Chunk file ${chunkFile} not found, falling back to API`);
+                    }
+                }
+            }
+            
             // Fallback to nitnem bundle for nitnem banis
             const nitnemBanis = [1, 2, 3, 4, 5, 6, 7, 9, 10, 21, 22, 23, 24, 25, 26];
             if (nitnemBanis.includes(baniId)) {
@@ -184,7 +206,16 @@ class BaniCacheOptimizer {
                 }
             }
             
-            throw new Error(`Bani ${baniId} not found in offline data`);
+            // Final fallback: Try API endpoint
+            console.log(`[BaniCache] Falling back to API for bani ${baniId}`);
+            const apiResponse = await fetch(`/api/banidb/v2/${baniId}`);
+            if (apiResponse.ok) {
+                const apiData = await apiResponse.json();
+                console.log(`[BaniCache] ✅ Loaded from API: ${baniId}`);
+                return apiData;
+            }
+            
+            throw new Error(`Bani ${baniId} not found in offline data or API`);
         } catch (error) {
             console.error(`[BaniCache] ❌ Failed to load from offline data:`, error);
             throw error;

@@ -140,7 +140,7 @@
     <!-- Error State -->
     <div class="bani-error" id="baniError">
       <i class="fas fa-exclamation-triangle"></i>
-      <p class="error-title">Failed to load Jaap Sahib</p>
+      <p class="error-title">Failed to load Japji Sahib</p>
       <p class="error-message" id="errorMessage"></p>
       <button class="retry-btn" id="retryBtn">
         <i class="fas fa-redo"></i> Try Again
@@ -353,13 +353,13 @@
        ═══════════════════════════════════════════════════════════════ -->
   <script>
     // ═══════════════════════════════════════════════════════════════
-    // BANIDB API HANDLER - JAAP SAHIB
+    // BANIDB API HANDLER - JAPJI SAHIB
     // ═══════════════════════════════════════════════════════════════
 
     const API_BASE = 'https://api.banidb.com/v2';
 
-    // Jaap Sahib Bani ID in BaniDB
-    const JAAP_SAHIB_BANI_ID = 2;
+    // Japji Sahib Bani ID in BaniDB
+    const JAPJI_SAHIB_BANI_ID = 2;
 
     // ═══════════════════════════════════════════════════════════════
     // DOM ELEMENTS
@@ -406,13 +406,13 @@
       versesContainer.innerHTML = '';
 
       try {
-        const url = `${API_BASE}/banis/${JAAP_SAHIB_BANI_ID}`;
-        console.log('Fetching Jaap Sahib from:', url);
+        const url = `${API_BASE}/banis/${JAPJI_SAHIB_BANI_ID}`;
+        console.log('Fetching Japji Sahib from:', url);
 
         const response = await fetch(url);
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch Jaap Sahib: HTTP ${response.status}`);
+          throw new Error(`Failed to fetch Japji Sahib: HTTP ${response.status}`);
         }
 
         const data = await response.json();
@@ -435,8 +435,8 @@
         baniLoading.style.display = 'none';
 
         // Update stats
-        const baniName = data.baniInfo?.unicode || 'ਜਾਪੁ ਸਾਹਿਬ';
-        statsBar.innerHTML = `✓ ${escapeHtml(baniName)} • ${data.verses.length} verses • ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ`;
+        const baniName = data.baniInfo?.unicode || 'ਜਪੁਜੀ ਸਾਹਿਬ';
+        statsBar.innerHTML = `✓ ${escapeHtml(baniName)} • ${data.verses.length} verses • ਸ੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ`;
         statsBar.classList.add('visible');
 
         // Render verses
@@ -737,7 +737,7 @@
     // ═══════════════════════════════════════════════════════════════
 
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('🙏 Initializing Jaap Sahib Reader...');
+      console.log('🙏 Initializing Japji Sahib Reader...');
       
       loadPreferences();
       setupToggles();
@@ -749,6 +749,10 @@
 
   <!-- Settings Panel Script (Keep this) -->
   <script src="bani-setting-panel.js"></script>
+  
+  <!-- CRITICAL FIX: Font Reactivity Engine for Instant Updates -->
+  <script src="js/bani-font-reactivity.js"></script>
+  
   <!-- Liquid Glass Effects -->
 <script src="../Hukamnama/optical-glass-physics.js"></script>
     <!-- Global Alarm/Notification Engine + Back Button + Widget Bridge -->

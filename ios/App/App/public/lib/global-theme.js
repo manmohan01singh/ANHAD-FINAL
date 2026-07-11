@@ -65,23 +65,30 @@
             if (document.body) document.body.classList.add('dark-mode');
             html.setAttribute('data-theme', 'dark');
             html.style.colorScheme = 'dark';
+            // FORCE inline styles to ensure immediate visual update
+            html.style.backgroundColor = '#0D0D0F';
+            html.style.color = '#F5F5F7';
         } else {
             html.classList.remove('dark', 'dark-mode');
             if (document.body) document.body.classList.remove('dark-mode');
             html.setAttribute('data-theme', 'light');
             html.style.colorScheme = 'light';
+            // FORCE inline styles to ensure immediate visual update
+            html.style.backgroundColor = '#FAF8F5';
+            html.style.color = '#1C1C1E';
         }
 
         // Store original mode for UI
         html.setAttribute('data-theme-mode', theme);
 
-        // Clear inline background color to allow CSS variables to take over
-        // EXCEPT in auto mode where we need transparent background for image layers
-        if (theme !== 'auto') {
-            html.style.backgroundColor = '';
-        } else {
-            // In auto mode, keep background transparent for image layers
-            html.style.backgroundColor = 'transparent';
+        // In auto mode with time-based backgrounds
+        if (theme === 'auto') {
+            let autoBg = '#FAF8F5';
+            if (timeOfDay === 'morning') autoBg = '#FFF5EC';
+            else if (timeOfDay === 'day') autoBg = '#FFFDF9';
+            else if (timeOfDay === 'evening') autoBg = '#FFF8E7';
+            else if (timeOfDay === 'night') autoBg = '#0F0F12';
+            html.style.backgroundColor = autoBg;
         }
 
         // Update meta theme-color (cached — not queried on every tick)
@@ -111,6 +118,9 @@
             html.classList.remove('theme-switching');
             html.classList.remove('theme-changing');
         });
+
+        // Force repaint by triggering reflow
+        void html.offsetHeight;
     }
 
     function getTheme() {
@@ -200,6 +210,16 @@
             }
         });
     }
+
+    // Add scroll state detection to prevent transition interference
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        document.documentElement.classList.add('scrolling');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            document.documentElement.classList.remove('scrolling');
+        }, 150);
+    }, { passive: true });
 
     // Expose Global API
     window.AnhadTheme = {

@@ -1,4 +1,4 @@
-﻿/* ═══════════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════
    ANHAD — Homepage Data & Logic
    Real-time data, navigation, audio sync, install, filters
    Extracted from inline scripts for clean architecture
@@ -122,18 +122,31 @@ function getGuruNameForEvent(eventName, guruNumber) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  // FIX: Guard against duplicate initialization on SPA re-mount
-  // BUT: Allow re-initialization on SPA page change (back navigation)
-  if (window._homepageDataInitialized) {
-    console.log('[HomepageData] Already initialized, skipping duplicate init');
-    return;
+  // ━━━ REAL-TIME CLOCK — hoisted to top to prevent TDZ error in fast-return path ━━━
+  let lastTimeStr = '';
+  function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    if (timeStr !== lastTimeStr) {
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = timeStr;
+      lastTimeStr = timeStr;
+    }
   }
-  window._homepageDataInitialized = true;
 
-  // FIX: Track intervals for cleanup
-  const _hpIntervals = [];
+  // ━━━ REAL-TIME GREETING — hoisted to top to prevent TDZ error in fast-return path ━━━
+  function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = 'Good Evening';
+    if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
+    else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
+    else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
+    else greeting = 'Waheguru Ji 🌙';
+    const el = document.getElementById('greeting');
+    if (el) el.textContent = greeting;
+  }
 
-  // ━━━ NAVIGATION PATHS ━━━
+  // ━━━ NAVIGATION PATHS — hoisted to prevent TDZ error in fast-return path ━━━
   const NAV_PATHS = {
     gurbaniRadioCard: 'GurbaniRadio/gurbani-radio.html',
     DailyHukamnamaCard: 'Hukamnama/daily-hukamnama.html',
@@ -147,6 +160,46 @@ document.addEventListener('DOMContentLoaded', function () {
     remindersCard: 'reminders/smart-reminders-v7.html',
     notesCard: 'Notes/notes.html'
   };
+
+  // NATIVE APP FIX: Check if we're returning from navigation with fresh state
+  const isReturning = window.HomeStateManager?.isReturningFromNavigation();
+  const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
+  
+  if (isReturning && hasRecentState) {
+    console.log('[HomepageData] 🚀 Fast return - restoring from cached state');
+    
+    // Restore data from cache without re-fetching
+    const cachedState = window.HomeStateManager.getState();
+    if (cachedState?.data) {
+      // Restore UI from cached data instantly
+      restoreUIFromCache(cachedState.data);
+    }
+    
+    // Only update time-sensitive data
+    updateClock();
+    updateGreeting();
+    
+    // Bind event listeners (always needed)
+    bindNavigationListeners();
+    bindProfileDropdown();
+    bindThemeToggle();
+    
+    // Start lightweight timers only
+    startLightweightTimers();
+    
+    console.log('[HomepageData] ✓ Fast return complete');
+    return;
+  }
+
+  // FIX: Guard against duplicate initialization on SPA re-mount
+  if (window._homepageDataInitialized) {
+    console.log('[HomepageData] Already initialized, skipping duplicate init');
+    return;
+  }
+  window._homepageDataInitialized = true;
+
+  // FIX: Track intervals for cleanup
+  const _hpIntervals = [];
 
   Object.entries(NAV_PATHS).forEach(([id, path]) => {
     const el = document.getElementById(id);
@@ -166,29 +219,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // ━━━ REAL-TIME GREETING ━━━
-  function updateGreeting() {
-    const hour = new Date().getHours();
-    let greeting = 'Good Evening';
-    if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
-    else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
-    else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
-    else greeting = 'Waheguru Ji 🌙';
-    const el = document.getElementById('greeting');
-    if (el) el.textContent = greeting;
-  }
-
-  // ━━━ REAL-TIME CLOCK ━━━
-  let lastTimeStr = '';
-  function updateClock() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    if (timeStr !== lastTimeStr) {
-      const el = document.getElementById('currentTime');
-      if (el) el.textContent = timeStr;
-      lastTimeStr = timeStr;
-    }
-  }
+  // ━━━ REAL-TIME GREETING ━━━ (declared above at top of DOMContentLoaded — no duplicate)
+  // ━━━ REAL-TIME CLOCK ━━━ (declared above at top of DOMContentLoaded — no duplicate)
 
   // ━━━ LISTENER COUNT ━━━
   let baseListeners = 1247;
@@ -617,6 +649,116 @@ document.addEventListener('DOMContentLoaded', function () {
       updateHukamDate();
     }
   });
+
+  // ━━━ FAST RETURN HELPERS ━━━
+  function restoreUIFromCache(cachedData) {
+    if (cachedData.greeting) {
+      const el = document.getElementById('greeting');
+      if (el) el.textContent = cachedData.greeting;
+    }
+    if (cachedData.clock) {
+      const el = document.getElementById('currentTime');
+      if (el) el.textContent = cachedData.clock;
+    }
+    if (cachedData.nitnem) {
+      const { completedToday, totalBanis, streak } = cachedData.nitnem;
+      const textEl = document.getElementById('streakText');
+      const streakEl = document.getElementById('nitnemStreak');
+      if (textEl && streakEl) {
+        if (completedToday > 0) {
+          textEl.textContent = completedToday >= totalBanis ? '🎉 All banis completed! Waheguru ji!' : `${completedToday}/${totalBanis} banis completed today`;
+          streakEl.innerHTML = streak > 0 ? `<span class="quick-card__streak">🔥 ${streak} day${streak > 1 ? 's' : ''}</span>` : `<span class="quick-card__progress">${completedToday}/${totalBanis}</span>`;
+        }
+      }
+    }
+    // Add more restore logic as needed for other cards
+  }
+
+  function bindNavigationListeners() {
+    Object.entries(NAV_PATHS).forEach(([id, path]) => {
+      const el = document.getElementById(id);
+      if (el && !el._navBound) {
+        el._navBound = true;
+        el.addEventListener('click', () => {
+          el.style.transform = 'scale(0.97)';
+          if (navigator.vibrate) navigator.vibrate(10);
+          setTimeout(() => {
+            if (window.navigateTo) window.navigateTo(path);
+            else window.location.href = path;
+          }, 100);
+        });
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+        });
+      }
+    });
+  }
+
+  function bindProfileDropdown() {
+    const profileBtn = document.getElementById('profileBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    if (profileBtn && profileDropdown && !profileBtn._dropdownBound) {
+      profileBtn._dropdownBound = true;
+      let backdrop = document.querySelector('.profile-dropdown-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'profile-dropdown-backdrop';
+        document.body.appendChild(backdrop);
+      }
+      profileBtn.addEventListener('click', () => {
+        profileDropdown.classList.toggle('open');
+        backdrop.classList.toggle('active');
+      });
+      backdrop.addEventListener('click', () => {
+        profileDropdown.classList.remove('open');
+        backdrop.classList.remove('active');
+      });
+    }
+  }
+
+  function bindThemeToggle() {
+    const themeToggleDropdown = document.getElementById('themeToggleDropdown');
+    if (themeToggleDropdown && !themeToggleDropdown._toggleBound) {
+      themeToggleDropdown._toggleBound = true;
+      themeToggleDropdown.addEventListener('click', () => {
+        if (window.AnhadTheme) {
+          window.AnhadTheme.toggle();
+          updateThemeUI();
+        }
+      });
+    }
+  }
+
+  function startLightweightTimers() {
+    // Only start minimal timers for time-sensitive UI
+    const lightweightIntervals = [
+      setInterval(() => { if (!document.hidden) updateClock(); }, 15000),
+      setInterval(() => { if (!document.hidden) updateGreeting(); }, 300000)
+    ];
+    
+    window.addEventListener('pagehide', () => {
+      lightweightIntervals.forEach(id => clearInterval(id));
+    }, { once: true });
+  }
+
+  // Save state after full initialization
+  if (window.HomeStateManager) {
+    const stateData = {
+      data: {
+        greeting: document.getElementById('greeting')?.textContent,
+        clock: document.getElementById('currentTime')?.textContent,
+        nitnem: {
+          completedToday: 0, // Will be updated by updateNitnemTracker
+          totalBanis: 0,
+          streak: 0
+        }
+      },
+      animations: {
+        playedOnce: true
+      }
+    };
+    window.HomeStateManager.saveState(stateData);
+  }
 
   console.log('✨ ANHAD Premium Homepage Data Initialized');
 });

@@ -1,0 +1,111 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NO SHADOWS - Global Shadow Removal Override
+   Apply this CSS last to remove ALL shadows from buttons and cards
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* AGGRESSIVE: Remove all box-shadows globally with maximum specificity */
+*,
+*::before,
+*::after,
+div,
+button,
+a,
+section,
+article,
+header,
+nav,
+footer,
+main {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+
+/* Target specific card and button classes */
+.hero-card,
+.hero-card *,
+.practice-card,
+.practice-card *,
+.quick-card,
+.quick-card *,
+.event-card,
+.event-card *,
+.clay-card,
+.clay-card *,
+.clay-btn,
+.clay-btn *,
+.clay-blue,
+.clay-purple,
+.clay-green,
+.clay-gold,
+.clay-orange,
+.clay-rose,
+.clay-red,
+button,
+button *,
+.header__btn,
+.header__btn *,
+.header__logo-btn,
+.header__logo-btn *,
+.header__theme-dot,
+.header__badge,
+.mini-player,
+.mini-player *,
+.bottom-nav,
+.bottom-nav *,
+.nav-item,
+.nav-item *,
+.quick-card--blue,
+.quick-card--blue *,
+.quick-card--purple,
+.quick-card--purple *,
+.quick-card--green,
+.quick-card--green *,
+.quick-card--gold,
+.quick-card--gold *,
+.quick-card--rose,
+.quick-card--rose *,
+[class*="card"],
+[class*="card"] *,
+[class*="btn"],
+[class*="btn"] * {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+/* Remove shadow CSS variables */
+:root,
+html,
+body {
+  --shadow-0: none !important;
+  --shadow-xs: none !important;
+  --shadow-sm: none !important;
+  --shadow-md: none !important;
+  --shadow-lg: none !important;
+  --shadow-xl: none !important;
+  --shadow-2xl: none !important;
+  --shadow-card: none !important;
+  --shadow-card-hover: none !important;
+  --shadow-float: none !important;
+  --shadow-inset: none !important;
+  --accent-shadow: none !important;
+  --accent-shadow-sm: none !important;
+  --clay-shadow-outer: none !important;
+  --clay-shadow-inner: none !important;
+  --clay-shadow-convex: none !important;
+  --clay-shadow-outer-light: none !important;
+  --clay-shadow-inner-light: none !important;
+  --clay-shadow-convex-light: none !important;
+}
+
+/* Remove any drop-shadow filters */
+img,
+svg,
+.icon {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
