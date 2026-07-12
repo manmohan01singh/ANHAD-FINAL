@@ -1381,8 +1381,17 @@
     if (isPlayLocked && streamName === currentStream) {
       if (audio && !audio.paused && !audio.ended) {
         console.log('[AnhadAudio] ⚡ play() — already playing stream:', streamName);
-        // Ensure audio actually outputs sound (page navigation can suspend playback)
-        if (audio.readyState >= 2) { audio.play().catch(function(){}); }
+        // Page navigation can suspend playback — force re-play to ensure audio outputs
+        audio.play().catch(function(){});
+        // Reset title for live streams (they don't go through loadPlaylistPosition)
+        if (STREAMS[streamName] && STREAMS[streamName].type === 'live') {
+          currentTrackTitle = STREAMS[streamName].name;
+          currentTrackArtist = STREAMS[streamName].subtitle || '';
+          updateMediaSession();
+          window.dispatchEvent(new CustomEvent('anhadTrackChanged', {
+            detail: { stream: streamName, trackTitle: currentTrackTitle, trackArtist: currentTrackArtist }
+          }));
+        }
         return;
       }
       // Wait for the current play cycle to finish (lock clears via 'playing' event or timeout)
@@ -1451,6 +1460,13 @@
         console.log('[AnhadAudio] 🔴 LIVE: ' + freshUrl);
         audio.src = freshUrl;
         lastLoadedAt = Date.now(); // Track when we started loading
+        // Reset title for live streams (they don't go through loadPlaylistPosition)
+        currentTrackTitle = streamName === 'darbar' ? 'Darbar Sahib Live' : stream.name;
+        currentTrackArtist = stream.subtitle || '';
+        updateMediaSession();
+        window.dispatchEvent(new CustomEvent('anhadTrackChanged', {
+          detail: { stream: streamName, trackTitle: currentTrackTitle, trackArtist: currentTrackArtist }
+        }));
         // NOTE: Do NOT call audio.load() here — setting audio.src already resets the element.
         // Calling audio.load() before audio.play() fires a 'pause' event that (when isLoading=true)
         // gets suppressed, leaving isPlayLocked stuck. It also breaks the iOS user gesture chain.

@@ -89,6 +89,8 @@
   
   <style>
     /* Tab bar styles now handled by shared css/nav-glass.css */
+    /* Prevent nav label overflow on narrower layouts */
+    .tab-label { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; max-width: 100% !important; }
   </style>
 </head>
 

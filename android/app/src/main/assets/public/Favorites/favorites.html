@@ -807,6 +807,8 @@
     html.dark-mode .section-divider__line { background: rgba(255,255,255,0.06); }
     html.dark-mode .section-divider__text { color: #666; }
 
+    /* Prevent nav label overflow on narrower layouts */
+    .tab-label { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; max-width: 100% !important; }
   </style>
 </head>
 <body>
