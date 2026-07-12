@@ -1199,16 +1199,6 @@
             document.getElementById('guruSlider') !== null;
 
         if (isMainPage) {
-            // Bind manual trigger to guide button in header
-            const guideBtn = document.getElementById('tourGuideBtn');
-            if (guideBtn) {
-                guideBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.startAnhadOnboardingTour(true); // force language select on manual click
-                });
-            }
-
             // Check if user has already completed the onboarding
             if (localStorage.getItem(TOUR_KEY) !== 'true') {
                 selectedLang = localStorage.getItem(LANG_KEY);

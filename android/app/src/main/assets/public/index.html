@@ -2634,7 +2634,7 @@
            style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
         </button>
-        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Start Tour" title="Start Guided Tour">
+        <button class="header__btn ios-haptic" id="tourGuideBtn" aria-label="Guide" title="App Guide">
           <span class="ios-emoji" role="img" aria-label="guide" style="font-size: 20px;">🧭</span>
         </button>
       </div>
@@ -3337,7 +3337,7 @@
   </script>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
-       GUIDE BUTTON - ensures click works even before lazy loader finishes
+       GUIDE BUTTON - opens the new Guide page with all features listed
   ════════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function() {
@@ -3346,19 +3346,7 @@
         guideBtn.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
-          if (typeof window.startAnhadOnboardingTour === 'function') {
-            window.startAnhadOnboardingTour(true);
-          } else {
-            // Script not loaded yet — load it now
-            var s = document.createElement('script');
-            s.src = 'js/anhad-onboarding.js';
-            s.onload = function() {
-              if (typeof window.startAnhadOnboardingTour === 'function') {
-                window.startAnhadOnboardingTour(true);
-              }
-            };
-            document.head.appendChild(s);
-          }
+          window.location.href = 'guide/index.html';
         });
       }
     })();
