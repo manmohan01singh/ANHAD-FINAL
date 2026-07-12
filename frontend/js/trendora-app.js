@@ -1687,6 +1687,23 @@
         return;
       }
       this._initialized = true;
+      
+      // ══ CAPACITOR OPTIMIZATION: Listen for cached page restore ══
+      // When user returns to home from cache, ONLY sync UI state
+      // Do NOT re-initialize audio engine or mini-player
+      window.addEventListener('anhad_page_restored', (e) => {
+        if (e.detail.fromCache) {
+          console.log('[AudioSync] ⚡ Cached page restored, syncing UI only');
+          // Quick UI sync without heavy initialization
+          if (window.AnhadAudio) {
+            const state = window.AnhadAudio.getState();
+            if (state.isPlaying) {
+              this._sync({ isPlaying: true, stream: state.currentStream || 'darbar' });
+            }
+          }
+        }
+      });
+      
       // Both hero play buttons - trigger mini player directly instead of navigating
       ['heroPlayBtn1', 'heroPlayBtn2', 'heroPlayBtn3', 'heroPlayBtn4'].forEach(id => {
         const btn = document.getElementById(id);
@@ -1734,6 +1751,7 @@
       window.addEventListener('anhadAudioStateChange', (e) => this._sync(e.detail));
 
       // Check initial state using AnhadAudio singleton
+      // REDUCED delay from 800ms to 300ms for faster initial sync
       setTimeout(() => {
         if (window.AnhadAudio) {
           const state = window.AnhadAudio.getState();
@@ -1745,12 +1763,16 @@
         } else if (window.GlobalMiniPlayer && window.GlobalMiniPlayer.isPlaying()) {
           this._sync({ isPlaying: true, stream: window.GlobalMiniPlayer.getStream() || 'darbar' });
         }
-      }, 800);
+      }, 300); // Reduced from 800ms
     },
 
     _sync({ isPlaying, stream }) {
       const pauseIcon = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
       const playIcon = '<polygon points="6,3 20,12 6,21"/>';
+
+      // ══ CAPACITOR OPTIMIZATION: Batch DOM updates for zero lag ══
+      // Use DocumentFragment to batch updates before applying to DOM
+      const updates = [];
 
       // Hero cards
       ['1', '2', '3', '4'].forEach(n => {
@@ -1758,27 +1780,39 @@
         const icon = document.getElementById('heroPlayIcon' + n);
         const cardStream = card?.dataset.stream;
         const isThis = stream === cardStream && isPlaying;
-        if (card) card.classList.toggle('hero-card--playing', isThis);
-        if (icon) icon.innerHTML = isThis ? pauseIcon : playIcon;
+        if (card) updates.push({ el: card, class: 'hero-card--playing', add: isThis });
+        if (icon) updates.push({ el: icon, html: isThis ? pauseIcon : playIcon });
+      });
+
+      // Apply all updates in a single requestAnimationFrame
+      requestAnimationFrame(() => {
+        updates.forEach(({ el, class: cls, add, html }) => {
+          if (cls !== undefined) {
+            el.classList.toggle(cls, add);
+          }
+          if (html !== undefined) {
+            el.innerHTML = html;
+          }
+        });
       });
 
       // Mini player (legacy element in index.html)
       const miniPlayer = document.getElementById('miniPlayer');
       if (miniPlayer) {
         if (isPlaying) {
+          // INSTANT show - no delay
           miniPlayer.style.display = 'flex';
-          // Small delay to allow display:flex to take effect before transition
-          requestAnimationFrame(() => {
-            miniPlayer.classList.add('mini-player--visible');
-          });
+          miniPlayer.style.opacity = '1';
+          miniPlayer.classList.add('mini-player--visible');
         } else {
+          miniPlayer.style.opacity = '0';
           miniPlayer.classList.remove('mini-player--visible');
-          // Wait for transition then hide
+          // Quick hide after fade
           setTimeout(() => {
             if (!miniPlayer.classList.contains('mini-player--visible')) {
               miniPlayer.style.display = 'none';
             }
-          }, 500);
+          }, 200); // Reduced from 500ms
         }
       }
 
@@ -1799,15 +1833,18 @@
       const miniPlayIcon = document.getElementById('miniPlayIcon');
       const miniThumb = document.querySelector('.mini-player__thumb');
 
-      if (miniTitle) {
-        miniTitle.innerHTML = (stream === 'darbar' ? '<span class="mini-player__live-dot"></span>' : '') + info.title;
-      }
-      if (miniSubtitle) miniSubtitle.textContent = info.subtitle;
-      if (miniPlayIcon) miniPlayIcon.innerHTML = isPlaying ? pauseIcon : playIcon;
-      if (miniThumb) {
-        miniThumb.src = stream === 'amritvela' ? '/assets/Darbar-sahib-AMRITVELA.webp' : '/assets/darbar-sahib-evening.webp';
-        miniThumb.alt = info.title;
-      }
+      // Batch mini-player UI updates
+      requestAnimationFrame(() => {
+        if (miniTitle) {
+          miniTitle.innerHTML = (stream === 'darbar' ? '<span class="mini-player__live-dot"></span>' : '') + info.title;
+        }
+        if (miniSubtitle) miniSubtitle.textContent = info.subtitle;
+        if (miniPlayIcon) miniPlayIcon.innerHTML = isPlaying ? pauseIcon : playIcon;
+        if (miniThumb) {
+          miniThumb.src = stream === 'amritvela' ? '/assets/Darbar-sahib-AMRITVELA.webp' : '/assets/darbar-sahib-evening.webp';
+          miniThumb.alt = info.title;
+        }
+      });
     }
   };
 
@@ -1826,6 +1863,13 @@
 
       if (this._isStandalone()) {
         console.log('[PWA] App is already standalone, hiding banner');
+        banner.style.display = 'none';
+        return;
+      }
+
+      // Capacitor native app — no PWA install needed
+      if (window.Capacitor) {
+        console.log('[PWA] Running in Capacitor native app, hiding install banner');
         banner.style.display = 'none';
         return;
       }

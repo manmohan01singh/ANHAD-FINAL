@@ -1179,7 +1179,7 @@
     };
 
     // Auto-launch trigger
-    window.addEventListener('load', () => {
+    function setupOnboarding() {
         // Only run on the main home screen (index.html), not sub-pages
         const isMainPage = window.location.pathname.endsWith('index.html') ||
             window.location.pathname.endsWith('/') ||
@@ -1207,6 +1207,13 @@
                 }
             }
         }
-    });
+    }
+
+    // Run immediately if page already loaded, otherwise wait for load event
+    if (document.readyState === 'complete') {
+        setupOnboarding();
+    } else {
+        window.addEventListener('load', setupOnboarding);
+    }
 
 })();

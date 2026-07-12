@@ -283,6 +283,41 @@ class NaamAbhyas {
         try {
             console.log('🙏 Initializing Naam Abhyas...');
 
+            // Capture auto-start params from URL (notification click) BEFORE cleaning URL
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('autoStart') === 'true') {
+                    this._capturedAutoStartParams = {
+                        autoStart: true,
+                        hour: urlParams.get('hour'),
+                        minute: urlParams.get('minute')
+                    };
+                    window.history.replaceState({}, '', window.location.pathname);
+                    console.log('[NaamAbhyas] 📩 Captured auto-start params from notification:', this._capturedAutoStartParams);
+                } else {
+                    // Fallback: check localStorage for pending launch (cold-start bridge)
+                    try {
+                        var pendingRaw = localStorage.getItem('anhad_pending_naam_launch');
+                        if (pendingRaw) {
+                            var pending = JSON.parse(pendingRaw);
+                            if (pending && pending.autoStart && (Date.now() - (pending.timestamp || 0)) < 15000) {
+                                this._capturedAutoStartParams = {
+                                    autoStart: true,
+                                    hour: pending.hour,
+                                    minute: pending.minute
+                                };
+                                localStorage.removeItem('anhad_pending_naam_launch');
+                                console.log('[NaamAbhyas] 📩 Captured auto-start from localStorage fallback:', this._capturedAutoStartParams);
+                            } else {
+                                localStorage.removeItem('anhad_pending_naam_launch');
+                            }
+                        }
+                    } catch (e) {}
+                }
+            } catch (e) {
+                console.error('❌ URL param capture failed:', e);
+            }
+
             // Phase 1: CRITICAL PATH - Must complete fast
             try {
                 this.config = this.loadConfig();
@@ -1988,7 +2023,7 @@ class NaamAbhyas {
         // ═══ 30-SECOND PRE-ALERT: Show humble Nimrata banner when <=30s remain ═══
         const nextSession = this.getNextScheduledSession();
         if (nextSession && diff > 0 && diff <= 30000) {
-            const preKey = pre_ + nextSession.hour + _ + nextSession.startMinute;
+            const preKey = 'pre_' + nextSession.hour + '_' + nextSession.startMinute;
             if (!this._preAlertShownFor || this._preAlertShownFor !== preKey) {
                 this._preAlertShownFor = preKey;
                 setTimeout(() => { if (this._preAlertShownFor === preKey) this._preAlertShownFor = null; }, 35000);

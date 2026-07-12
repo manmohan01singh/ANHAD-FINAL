@@ -80,6 +80,7 @@
     // ══════════════════════════════════════════════════════════════════════════
     const IOSInstallPrompt = {
         shouldShow: function () {
+            if (window.Capacitor) return false; // Native app, no PWA install needed
             if (DeviceInfo.isPWA) return false;
 
             if (sessionStorage.getItem('anhad_ios_install_shown')) return false;

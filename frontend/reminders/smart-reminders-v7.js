@@ -735,7 +735,7 @@
                 alarmTime: alarm.time || '',
                 alarmIcon: alarm.icon || '🔔',
                 alarmTone: alarm.tone || 'audio1',
-                url: window.location.href
+                url: 'reminders/smart-reminders-v7.html'
               }
             });
 
@@ -777,24 +777,10 @@
     },
 
     setupCapacitorListener() {
-      if (!window.Capacitor || !window.Capacitor.Plugins.LocalNotifications) {
-        return;
-      }
-
-      window.Capacitor.Plugins.LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
-        console.log('[AlarmScheduler] Notification action performed:', notification);
-        const alarmId = notification.notification.extra?.alarmId;
-        if (alarmId) {
-          const alarm = this.findAlarmById(alarmId);
-          if (alarm) {
-            // Navigate to reminders page and trigger alarm
-            window.location.href = 'smart-reminders-v7.html';
-            setTimeout(() => {
-              this.triggerAlarm(alarm);
-            }, 1000);
-          }
-        }
-      });
+      // REMOVED: This listener conflicted with capacitor-notifications-global.js's showAlarmPopup.
+      // Alarm notification clicks are now handled by capacitor-notifications-global.js which
+      // shows the proper alarm popup with sound. Navigating to the reminders page on every
+      // notification click was wrong — it interrupted whatever the user was doing.
     },
 
     getFireToken(alarm, date = new Date(), suffix = 'main') {
@@ -841,8 +827,8 @@
         alarmTimeToday.setHours(h, m, 0, 0);
 
         const diffMs = now - alarmTimeToday;
-        // Trigger if current time is within 3 minutes after the scheduled time
-        return diffMs >= 0 && diffMs <= 3 * 60000;
+        // Trigger if current time is within 15 minutes after the scheduled time
+        return diffMs >= 0 && diffMs <= 15 * 60000;
       });
 
       activeAlarms.forEach(alarm => {
@@ -859,7 +845,6 @@
       // Check for alarms that should have triggered while app was closed
       const now = new Date();
       const today = now.getDay();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
       const allReminders = [
         ...Object.values(State.reminders.core),
@@ -873,15 +858,15 @@
         if (!alarm.enabled || !alarm.days.includes(today)) return;
         if (todayLog[alarm.id] || this.hasFireToken(alarm)) return;
 
-        // Parse alarm time
         const [h, m] = alarm.time.split(':').map(Number);
-        const alarmMinutes = h * 60 + m;
+        const alarmTimeToday = new Date(now);
+        alarmTimeToday.setHours(h, m, 0, 0);
 
-        // Check if alarm time passed in last 5 minutes
-        const diff = currentMinutes - alarmMinutes;
+        // Use Date comparison instead of minute arithmetic to handle midnight rollover
+        const diffMs = now - alarmTimeToday;
 
-        if (diff >= 0 && diff <= 5) {
-          // Alarm should have triggered recently
+        // Check if alarm time passed in last 30 minutes
+        if (diffMs >= 0 && diffMs <= 30 * 60000) {
           const lastTriggered = this.scheduled.get(alarm.id + '_triggered');
           if (!this.hasFireToken(alarm) && (!lastTriggered || (Date.now() - lastTriggered) > 300000)) {
             console.log('[AlarmScheduler] Triggering missed alarm:', alarm.label);
@@ -1036,30 +1021,28 @@
       try {
         await window.Capacitor.Plugins.LocalNotifications.schedule({
           notifications: [{
-            id: this.hashString(alarm.id),
+            id: this.hashString(alarm.id + '_d0'),
             title: alarm.label || alarm.title || 'Reminder',
             body: 'Time for your spiritual practice 🙏',
             schedule: {
               at: new Date(scheduledTime),
               allowWhileIdle: true,
-              exact: true // CRITICAL: Exact timing for alarm-like behavior
+              exact: true
             },
             channelId: 'anhad_reminders_' + (alarm.tone || 'audio1'),
-            sound: (window.Capacitor && window.Capacitor.getPlatform() === 'android')
-              ? (alarm.tone || 'audio1')
-              : (CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1),
+            sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
             smallIcon: 'ic_stat_notify',
-            extra: {
-              action: 'show_alarm',
-              alarmId: alarm.id,
-              alarmLabel: alarm.label || alarm.title || 'Alarm',
-              alarmTime: alarm.time || '',
-              alarmIcon: alarm.icon || '🔔',
-              alarmTone: alarm.tone || 'audio1',
-              url: window.location.href
-            }
-          }]
-        });
+              extra: {
+                action: 'show_alarm',
+                alarmId: alarm.id,
+                alarmLabel: alarm.label || alarm.title || 'Alarm',
+                alarmTime: alarm.time || '',
+                alarmIcon: alarm.icon || '🔔',
+                alarmTone: alarm.tone || 'audio1',
+                url: 'reminders/smart-reminders-v7.html'
+              }
+            }]
+          });
         await this.scheduleFullScreenAlarm(alarm, scheduledTime, 0);
         console.log('[AlarmScheduler] Scheduled with Capacitor:', alarm.label, 'at', new Date(scheduledTime).toLocaleString());
       } catch (error) {
@@ -1128,9 +1111,13 @@
             sound: CONFIG.audio.files[alarm.tone] || CONFIG.audio.files.audio1,
             smallIcon: 'ic_stat_notify',
             extra: {
+              action: 'show_alarm',
               alarmId: alarmId,
-              isSnooze: true,
-              url: window.location.href
+              alarmLabel: alarm.label || alarm.title || 'Reminder',
+              alarmTime: alarm.time || '',
+              alarmIcon: alarm.icon || '🔔',
+              alarmTone: alarm.tone || 'audio1',
+              url: 'reminders/smart-reminders-v7.html'
             }
           }]
         }).catch(err => console.error('[AlarmScheduler] Capacitor snooze failed:', err));
@@ -1404,14 +1391,15 @@
     },
 
     checkAndroidPermissions() {
-      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
-        return; // Only runs on native Android
-      }
+      try {
+        if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+          return; // Only runs on native Android
+        }
 
-      const AlarmReliability = window.Capacitor.Plugins.AlarmReliability;
-      if (!AlarmReliability) return;
+        const AlarmReliability = window.Capacitor.Plugins.AlarmReliability;
+        if (!AlarmReliability) return;
 
-      AlarmReliability.getStatus().then(status => {
+        AlarmReliability.getStatus().then(status => {
         console.log('[AndroidReliability] Status:', status);
         const hasExact = status.exactAlarm;
         const isOptimized = status.batteryOptimized; // true means optimization is ON (bad for alarms), false means exempt (good)
@@ -1482,17 +1470,23 @@
       }).catch(err => {
         console.error('[AndroidReliability] getStatus failed:', err);
       });
+    } catch (e) {
+      console.warn('[AndroidReliability] check failed:', e);
+    }
     },
 
     render() {
-      this.renderCoreAlarms();
-      this.renderCustomAlarms();
-      this.updateStats();
-      AlarmScheduler.scheduleNext();
-      AlarmScheduler.scheduleAllWithCapacitor();
-      this.checkAndroidPermissions();
-
-      // Hide loading
+      try {
+        this.renderCoreAlarms();
+        this.renderCustomAlarms();
+        this.updateStats();
+        AlarmScheduler.scheduleNext();
+        AlarmScheduler.scheduleAllWithCapacitor();
+        this.checkAndroidPermissions();
+      } catch (e) {
+        console.error('[UI] render error:', e);
+      }
+      // Hide loading (always)
       setTimeout(() => {
         this.elements.appLoading?.classList.add('hidden');
       }, 500);
@@ -1570,7 +1564,7 @@
         return;
       }
 
-      container.style.display = 'flex';
+      container.style.display = 'block';
       emptyState.style.display = 'none';
 
       const alarmLog = Storage.get(CONFIG.storage.alarmLog, {});
@@ -1979,103 +1973,56 @@
   // ════════════════════════════════════════════════════════════════════════════
 
   function init() {
-    console.log('[SmartReminders] Initializing v' + CONFIG.version);
+    try {
+      console.log('[SmartReminders] Initializing v' + CONFIG.version);
 
-    // Migrate storage if needed
-    Storage.migrate();
+      // Migrate storage if needed
+      Storage.migrate();
 
-    // Load state
-    const defaultReminders = {
-      core: {
-        amritvela: {
-          id: 'amritvela',
-          type: 'core',
-          label: 'Amritvela Simran',
-          gurmukhi: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ',
-          time: '04:00',
-          enabled: true,
-          days: [0, 1, 2, 3, 4, 5, 6],
-          tone: 'audio1',
-          awakenStream: 'none',
-          icon: '🌅',
-          color: '#FFD60A',
-          nitnemSync: true
+      // Load state
+      const defaultReminders = {
+        core: {
+          amritvela: { id: 'amritvela', type: 'core', label: 'Amritvela Simran', gurmukhi: 'ਅੰਮ੍ਰਿਤ ਵੇਲਾ', time: '04:00', enabled: true, days: [0, 1, 2, 3, 4, 5, 6], tone: 'audio1', awakenStream: 'none', icon: '🌅', color: '#FFD60A', nitnemSync: true },
+          rehras: { id: 'rehras', type: 'core', label: 'Rehras Sahib', gurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ', time: '18:30', enabled: true, days: [0, 1, 2, 3, 4, 5, 6], tone: 'audio3', awakenStream: 'none', icon: '🌆', color: '#FF9500', nitnemSync: true },
+          sohila: { id: 'sohila', type: 'core', label: 'Sohila Sahib', gurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ', time: '21:30', enabled: true, days: [0, 1, 2, 3, 4, 5, 6], tone: 'audio4', awakenStream: 'none', icon: '🌙', color: '#AF52DE', nitnemSync: true }
         },
-        rehras: {
-          id: 'rehras',
-          type: 'core',
-          label: 'Rehras Sahib',
-          gurmukhi: 'ਰਹਿਰਾਸ ਸਾਹਿਬ',
-          time: '18:30',
-          enabled: true,
-          days: [0, 1, 2, 3, 4, 5, 6],
-          tone: 'audio3',
-          awakenStream: 'none',
-          icon: '🌆',
-          color: '#FF9500',
-          nitnemSync: true
-        },
-        sohila: {
-          id: 'sohila',
-          type: 'core',
-          label: 'Sohila Sahib',
-          gurmukhi: 'ਸੋਹਿਲਾ ਸਾਹਿਬ',
-          time: '21:30',
-          enabled: true,
-          days: [0, 1, 2, 3, 4, 5, 6],
-          tone: 'audio4',
-          awakenStream: 'none',
-          icon: '🌙',
-          color: '#AF52DE',
-          nitnemSync: true
-        }
-      },
-      custom: []
-    };
+        custom: []
+      };
 
-    State.reminders = Storage.get(CONFIG.storage.reminders, defaultReminders);
-    State.settings = Storage.get(CONFIG.storage.settings, {
-      neverMissMode: false,
-      smartSnooze: true,
-      preReminder: false,
-      nitnemSync: true,
-      vibration: true,
-      sound: true
-    });
-    State.stats = Storage.get(CONFIG.storage.stats, { completed: 0, missed: 0, streak: 0 });
+      State.reminders = Storage.get(CONFIG.storage.reminders, defaultReminders);
+      State.settings = Storage.get(CONFIG.storage.settings, { neverMissMode: false, smartSnooze: true, preReminder: false, nitnemSync: true, vibration: true, sound: true });
+      State.stats = Storage.get(CONFIG.storage.stats, { completed: 0, missed: 0, streak: 0 });
 
-    // Setup event listeners
-    NitnemSync.init();
-    AlarmScheduler.init();
-    UI.init();
-    ThemeSync.init();
+      // Setup event listeners
+      NitnemSync.init();
+      AlarmScheduler.init();
+      UI.init();
+      ThemeSync.init();
 
-    // ─── POST-REBOOT RESCHEDULE ──────────────────────────────────────────────
-    // After a device reboot, ReminderForegroundService.java sets a flag in
-    // SharedPreferences. We read it here via the Capacitor Preferences plugin.
-    // If set, we immediately re-register all alarms with Capacitor and clear
-    // the flag so it only fires once.
-    (async () => {
-      try {
-        if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-          const { Preferences } = window.Capacitor.Plugins;
-          if (Preferences) {
-            const { value } = await Preferences.get({ key: 'needs_alarm_reschedule' });
-            if (value === 'true') {
-              console.log('[SmartReminders] Post-reboot flag detected — rescheduling all alarms');
-              AlarmScheduler.scheduleAllWithCapacitor();
-              await Preferences.remove({ key: 'needs_alarm_reschedule' });
-              console.log('[SmartReminders] Post-reboot reschedule complete. Flag cleared.');
+      // ─── POST-REBOOT RESCHEDULE ──────────────────────────────────────────────
+      (async () => {
+        try {
+          if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+            const { Preferences } = window.Capacitor.Plugins;
+            if (Preferences) {
+              const { value } = await Preferences.get({ key: 'needs_alarm_reschedule' });
+              if (value === 'true') {
+                console.log('[SmartReminders] Post-reboot flag detected — rescheduling all alarms');
+                AlarmScheduler.scheduleAllWithCapacitor();
+                await Preferences.remove({ key: 'needs_alarm_reschedule' });
+                console.log('[SmartReminders] Post-reboot reschedule complete. Flag cleared.');
+              }
             }
           }
+        } catch (e) {
+          console.warn('[SmartReminders] Boot-reschedule check failed:', e);
         }
-      } catch (e) {
-        console.warn('[SmartReminders] Boot-reschedule check failed:', e);
-      }
-    })();
-    // ─────────────────────────────────────────────────────────────────────────
+      })();
 
-    console.log('[SmartReminders] Ready');
+      console.log('[SmartReminders] Ready');
+    } catch (e) {
+      console.error('[SmartReminders] Init error:', e);
+    }
   }
 
   // ════════════════════════════════════════════════════════════════════════════
