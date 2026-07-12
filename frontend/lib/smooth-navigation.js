@@ -16,7 +16,7 @@
   'use strict';
 
   // Set to true only for debugging — kills all console.log overhead in production
-  const NAV_DEBUG = false;
+  const NAV_DEBUG = true; // TEMPORARILY ENABLED for Capacitor debugging
 
   const MAIN_TARGET_ID = 'app';
   const PAGE_CACHE = new Map();
@@ -99,6 +99,64 @@
   const _initApp = document.getElementById('app');
   if (_initApp) {
     PAGE_CACHE.set(currentActiveUrl, document.documentElement.outerHTML);
+    
+    // CRITICAL FIX: Save initial page to DOM_CACHE using multiple event listeners
+    // to ensure it works in all environments (Capacitor, PWA, localhost)
+    function saveInitialCache() {
+      console.log('[SmoothNav] 🔍 Attempting to save initial cache...');
+      console.log('[SmoothNav] 🔍 currentActiveUrl:', currentActiveUrl);
+      console.log('[SmoothNav] 🔍 isShellPage result:', isShellPage(currentActiveUrl));
+      
+      const app = document.getElementById('app');
+      if (!app) {
+        console.log('[SmoothNav] ❌ #app not found');
+        return;
+      }
+      
+      // ALWAYS save, regardless of isShellPage check
+      app.dataset.cached = 'true';
+      var _cacheClone = app.cloneNode(true);
+      // Sanitize: Strip gmp--visible class from mini-player before caching to prevent
+      // stale "visible" state from being preserved across navigations.
+      var _cachedMini = _cacheClone.querySelector('#gmp');
+      if (_cachedMini) {
+        _cachedMini.classList.remove('gmp--visible');
+        _cachedMini.style.display = 'none';
+      }
+      DOM_CACHE.set(currentActiveUrl, _cacheClone);
+      window._homepageDataCached = true;
+      console.log('[SmoothNav] 💾💾💾 INITIAL DOM SAVED TO CACHE:', currentActiveUrl);
+      console.log('[SmoothNav] Set window._homepageDataCached = true');
+      console.log('[SmoothNav] DOM_CACHE size:', DOM_CACHE.size);
+    }
+    
+    // Try multiple event listeners to ensure it fires
+    let cacheSaved = false;
+    
+    // Method 1: window load event
+    window.addEventListener('load', () => {
+      if (!cacheSaved) {
+        console.log('[SmoothNav] 🎯 window.load fired');
+        setTimeout(saveInitialCache, 1000);
+        cacheSaved = true;
+      }
+    });
+    
+    // Method 2: DOMContentLoaded + delay (backup)
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (!cacheSaved) {
+          console.log('[SmoothNav] 🎯 DOMContentLoaded fired');
+          setTimeout(saveInitialCache, 1500);
+          cacheSaved = true;
+        }
+      });
+    } else {
+      // Already loaded, save immediately
+      console.log('[SmoothNav] 🎯 Document already loaded, saving now');
+      setTimeout(saveInitialCache, 1000);
+      cacheSaved = true;
+    }
   }
 
 
@@ -204,7 +262,21 @@
     const absoluteUrl = new URL(url, window.location.href).href;
     const normalized = normalizeUrl(absoluteUrl);
     
+    console.log('[SmoothNav] 🚀 navigateTo called');
+    console.log('[SmoothNav] 🚀 Input url:', url);
+    console.log('[SmoothNav] 🚀 Absolute URL:', absoluteUrl);
+    console.log('[SmoothNav] 🚀 Normalized URL:', normalized);
+    console.log('[SmoothNav] 🚀 Current active URL:', currentActiveUrl);
+    
     if (normalized === currentActiveUrl && !options.force) return;
+
+    // NUCLEAR FIX: Clear cached return flags when user navigates AWAY from home
+    // This allows audio to be controlled normally on the destination page
+    if (window._ANHAD_SKIP_AUDIO_INIT || window._ANHAD_CACHED_RETURN) {
+      window._ANHAD_SKIP_AUDIO_INIT = false;
+      window._ANHAD_CACHED_RETURN = false;
+      console.log('[SmoothNav] 🚀 Cleared cached return flags for navigation away');
+    }
 
     // Save current page scroll BEFORE we swap away
     saveScrollPosition();
@@ -473,40 +545,64 @@
     const currentTheme = htmlEl.getAttribute('data-theme') || 'light';
     htmlEl.style.backgroundColor = currentTheme === 'dark' ? '#0D0D0F' : '#FAF8F5';
 
-    // ── SMOOTH CROSSFADE: Fade out, swap, fade in ─────────────────────────
-    // Adds a quick opacity transition so page changes feel smooth, not abrupt.
-    currentApp.classList.remove('app--fade-in');
-    currentApp.classList.add('app--fade-out');
-    await new Promise(r => setTimeout(r, 80));
-
     // ── SWAP CONTENT — with DOM Node Cache ────────────────────────────────
     // CRITICAL FLASH FIX: For shell pages (Home, Insights, Favorites, Dashboard),
     // we store the live DOM node tree in DOM_CACHE after first visit.
     // On return, we clone it back instead of setting innerHTML — this means all
     // <img> elements keep their decoded pixels in the GPU and never repaint.
     // The result: ZERO flash when switching between tabs or pressing back.
+    
+    // DEBUG: Log cache lookup
+    console.log('[SmoothNav] 🔍 DOM_CACHE lookup for URL:', url);
+    console.log('[SmoothNav] 🔍 DOM_CACHE keys:', Array.from(DOM_CACHE.keys()));
+    console.log('[SmoothNav] 🔍 DOM_CACHE size:', DOM_CACHE.size);
+    
     const isCachedDom = DOM_CACHE.has(url);
+    console.log('[SmoothNav] 🔍 DOM_CACHE.has(url):', isCachedDom);
+    
     if (isCachedDom) {
-      // Return path: clone cached node subtree back (no image reload, no flash)
+      // ═══ ULTRA-FAST PATH: Instant return with ZERO fade ═══
+      // CAPACITOR FIX: Completely skip transition - no await, no fade
+      // This makes navigation back to home feel like a native iOS/Android app
       const cachedNode = DOM_CACHE.get(url);
       const fragment = cachedNode.cloneNode(true);
-      // Clear the current content and append the cached fragment
+      
+      // VISUAL DEBUG: Show cache restore
+      console.log('[SmoothNav] ⚡⚡⚡ DOM CACHE RESTORE - INSTANT MODE ⚡⚡⚡');
+      
+      // INSTANT swap with zero visual delay - use instant class
+      currentApp.classList.add('app--instant');
+      currentApp.classList.remove('app--fade-out', 'app--fade-in');
+      
+      // Clear and restore DOM in a single frame
       while (currentApp.firstChild) currentApp.removeChild(currentApp.firstChild);
-      // Move children from the clone to currentApp (cloneNode on a fragment is deep)
       Array.from(fragment.childNodes).forEach(child => currentApp.appendChild(child));
-      NAV_DEBUG && console.log('[SmoothNav] DOM_CACHE hit for:', url);
+      
+      // Mark as cached for homepage-data.js instant detection
+      currentApp.dataset.cached = 'true';
+      window._homepageDataCached = true;
+      
+      // Force immediate paint
+      currentApp.offsetHeight; // trigger reflow
+      
+      NAV_DEBUG && console.log('[SmoothNav] ⚡ DOM_CACHE INSTANT HIT:', url);
     } else {
+      // SLOW PATH: First visit - use minimal fade transition
+      currentApp.classList.remove('app--fade-in');
+      currentApp.classList.add('app--fade-out');
+      await new Promise(r => setTimeout(r, 30)); // Reduced from 50ms for faster feel
+      
       // First visit: standard innerHTML swap
       currentApp.innerHTML = newApp.innerHTML;
-    }
-
-    // Fade in with a slight delay to let the staggered anhad-enter animation lead
-    requestAnimationFrame(() => {
-      currentApp.classList.remove('app--fade-out');
+      
+      // Fade in quickly
       requestAnimationFrame(() => {
-        currentApp.classList.add('app--fade-in');
+        currentApp.classList.remove('app--fade-out');
+        requestAnimationFrame(() => {
+          currentApp.classList.add('app--fade-in');
+        });
       });
-    });
+    }
     
     // Update URL — store url in state so popstate can do cache lookup
     if (!options.replace) {
@@ -516,14 +612,49 @@
     }
 
     // Execute Page-Specific Scripts (Sequential & Async-aware)
-    await executePageScripts(newDoc, url);
+    // SKIP for cached pages - scripts already ran on first visit
+    // CRITICAL CAPACITOR FIX: Also skip script execution when returning to home
+    // to prevent mini-player re-initialization lag
+    if (!isCachedDom) {
+      await executePageScripts(newDoc, url);
+    } else {
+      // Cached page return - only trigger lightweight recovery events
+      NAV_DEBUG && console.log('[SmoothNav] ⚡ Skipping script execution for cached page');
+      
+      // NUCLEAR FIX: Set a persistent global flag to tell ALL systems this is a cached return.
+      // These flags remain set until the user explicitly navigates to a new page
+      // (cleared in navigateTo() above). This prevents audio re-init on every back-to-home.
+      window._ANHAD_CACHED_RETURN = true;
+      window._ANHAD_SKIP_AUDIO_INIT = true;
+      
+      // Dispatch minimal event for UI-only updates (not audio related)
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('anhad_cached_return', { 
+          detail: { url, isCached: true, skipHeavyInit: true, skipAudio: true } 
+        }));
+      }, 0);
+    }
 
     // ── SAVE to DOM_CACHE after first visit (only shell pages) ───────────────
     // We do this AFTER scripts have run so any dynamic mutations (status texts,
     // ring progress, etc.) are baked into the saved node.
     if (!isCachedDom && isShellPage(url)) {
-      DOM_CACHE.set(url, currentApp.cloneNode(true));
+      // Mark the app as cached for instant restore
+      currentApp.dataset.cached = 'true';
+      var _cacheClone2 = currentApp.cloneNode(true);
+      var _cachedMini2 = _cacheClone2.querySelector('#gmp');
+      if (_cachedMini2) {
+        _cachedMini2.classList.remove('gmp--visible');
+        _cachedMini2.style.display = 'none';
+      }
+      DOM_CACHE.set(url, _cacheClone2);
+      console.log('[SmoothNav] 💾💾💾 DOM SAVED TO CACHE (after first visit):', url);
+      console.log('[SmoothNav] 💾 DOM_CACHE size:', DOM_CACHE.size);
+      console.log('[SmoothNav] 💾 DOM_CACHE keys:', Array.from(DOM_CACHE.keys()));
       NAV_DEBUG && console.log('[SmoothNav] DOM_CACHE saved for:', url);
+      // Set global flag so homepage-data.js knows DOM is cached
+      window._homepageDataCached = true;
+      console.log('[SmoothNav] Set window._homepageDataCached = true');
     }
 
     // Restore saved scroll for this URL, or scroll to top if first visit
@@ -533,19 +664,24 @@
     document.documentElement.style.overscrollBehaviorY = 'auto';
 
     // Re-apply global theme to new content after every SPA swap
-    if (window.AnhadTheme) {
+    // SKIP for cached returns - theme is already applied
+    if (!isCachedDom && window.AnhadTheme) {
       try { window.AnhadTheme.apply(window.AnhadTheme.get()); } catch(e) {}
     }
+    
     // Re-apply sky background + hero images for new page
-    if (window.AnhadSky) {
+    // SKIP for cached returns to avoid image repaint
+    if (!isCachedDom && window.AnhadSky) {
       try {
         window.AnhadSky.applyTimeOfDay();
         window.AnhadSky.updateHeroCardImages();
       } catch(e) {}
     }
     
-    // Trigger lifecycle recovery
-    if (window.AnhadPageLifecycle && window.AnhadPageLifecycle.recover) {
+    // Trigger lightweight lifecycle recovery for cached pages
+    if (isCachedDom && window.AnhadPageLifecycle && window.AnhadPageLifecycle.quickRecover) {
+      window.AnhadPageLifecycle.quickRecover();
+    } else if (!isCachedDom && window.AnhadPageLifecycle && window.AnhadPageLifecycle.recover) {
       window.AnhadPageLifecycle.recover();
     }
     
@@ -554,12 +690,22 @@
     absoluteifyShellLinks();
 
     // Re-init any core components
-    if (window.AnhadCore && window.AnhadCore.init) {
+    // SKIP for cached pages - already initialized
+    if (!isCachedDom && window.AnhadCore && window.AnhadCore.init) {
       window.AnhadCore.init();
     }
 
     currentActiveUrl = url;
-    window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+    
+    // CAPACITOR OPTIMIZATION: For cached pages, dispatch a lightweight event
+    // that tells scripts to REFRESH state without re-initializing
+    if (isCachedDom) {
+      window.dispatchEvent(new CustomEvent('anhad_page_restored', { 
+        detail: { url, fromCache: true } 
+      }));
+    } else {
+      window.dispatchEvent(new CustomEvent('anhad_page_changed', { detail: { url } }));
+    }
   }
 
   /**
@@ -586,9 +732,9 @@
   }
 
   /**
-   * Resolves relative links inside shell elements (.desktop-sidebar, .tab-bar)
+   * Resolves relative links and images inside shell elements (.desktop-sidebar, .tab-bar)
    * to absolute pathnames relative to window.ANHAD_ROOT.
-   * This prevents directory nesting from corrupting links.
+   * This prevents directory nesting from corrupting links and image paths.
    */
   function absoluteifyShellLinks() {
     const root = window.ANHAD_ROOT;
@@ -599,17 +745,31 @@
       const shellEl = document.querySelector(selector);
       if (!shellEl) return;
       
+      // Resolve links
       shellEl.querySelectorAll('a[href]').forEach(link => {
         const href = link.getAttribute('href');
         if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('#')) return;
         
         try {
-          // Resolve relative to the app root
           const resolved = new URL(href, root).pathname;
           link.setAttribute('href', resolved);
           console.log(`[SmoothNav] Resolved shell link: ${href} -> ${resolved}`);
         } catch (e) {
           console.warn('[SmoothNav] Failed to resolve shell link:', href, e);
+        }
+      });
+      
+      // Resolve images
+      shellEl.querySelectorAll('img[src]').forEach(img => {
+        const src = img.getAttribute('src');
+        if (!src || src.startsWith('http') || src.startsWith('/') || src.startsWith('data:')) return;
+        
+        try {
+          const resolved = new URL(src, root).pathname;
+          img.setAttribute('src', resolved);
+          console.log(`[SmoothNav] Resolved shell image: ${src} -> ${resolved}`);
+        } catch (e) {
+          console.warn('[SmoothNav] Failed to resolve shell image:', src, e);
         }
       });
     });
@@ -864,7 +1024,14 @@
       const link = e.target.closest('a');
       if (link) {
         const href = link.getAttribute('href');
+        console.log('[SmoothNav] 🖱️ Link clicked:', href);
+        console.log('[SmoothNav] 🖱️ Starts with http?', href?.startsWith('http'));
+        console.log('[SmoothNav] 🖱️ Starts with #?', href?.startsWith('#'));
+        console.log('[SmoothNav] 🖱️ Has data-no-spa?', link.hasAttribute('data-no-spa'));
+        
         if (href && !href.startsWith('http') && !href.startsWith('#') && !link.hasAttribute('data-no-spa')) {
+          console.log('[SmoothNav] ✅ Intercepting link, calling navigateTo');
+          
           // CRITICAL: Before navigating to index.html stamp session flags so
           // welcome-check.js NEVER triggers the splash screen on back navigation
           if (href.endsWith('index.html') || href.endsWith('/index') || href === '../' || href === './') {
@@ -877,6 +1044,8 @@
           e.preventDefault();
           window.navigateTo(href);
           return;
+        } else {
+          console.log('[SmoothNav] ❌ NOT intercepting link (full reload will happen)');
         }
       }
 
@@ -1070,10 +1239,10 @@
       ];
       shellPages.forEach(url => {
         try {
-          const absolute = new URL(url, window.ANHAD_ROOT).href;
+          const absolute = new URL(url, window.ANHAD_ROOT || '/').href;
           prefetchPage(absolute);
         } catch (e) {
-          prefetchPage(url);
+          console.warn('[SmoothNav] Prefetch failed for:', url, e);
         }
       });
     }, 1500);

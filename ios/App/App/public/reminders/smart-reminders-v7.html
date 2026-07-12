@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
     (function() {
       try {
@@ -14,7 +13,6 @@
           } else {
             const hour = new Date().getHours();
             effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-            
             if (hour >= 5 && hour < 9) timeOfDay = 'morning';
             else if (hour >= 9 && hour < 16) timeOfDay = 'day';
             else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
@@ -23,16 +21,13 @@
         }
         document.documentElement.setAttribute('data-theme', effectiveTheme);
         document.documentElement.setAttribute('data-theme-mode', theme);
-        if (theme === 'auto') {
-          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
-        }
+        if (theme === 'auto') document.documentElement.setAttribute('data-time-of-day', timeOfDay);
         document.documentElement.style.colorScheme = effectiveTheme;
         if (effectiveTheme === 'dark') {
           document.documentElement.classList.add('dark', 'dark-mode');
         } else {
           document.documentElement.classList.remove('dark', 'dark-mode');
         }
-        
         let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
         if (theme === 'auto') {
           if (timeOfDay === 'morning') bg = '#FFF5EC';
@@ -42,44 +37,11 @@
         }
         document.documentElement.style.backgroundColor = bg;
         document.documentElement.classList.add('theme-loaded');
-
         document.addEventListener('DOMContentLoaded', function() {
           if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
           document.body.classList.add('theme-loaded');
         }, { once: true });
-
-        if (document.documentElement.hasAttribute('data-anhad-home')) {
-          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-        }
       } catch (e) {}
-    })();
-  </script>
-  <script>
-    (function() {
-      try {
-        var th = localStorage.getItem('anhad_theme') || 'auto';
-        if (th === 'auto') {
-          var ftd = localStorage.getItem('anhad_forced_time_of_day');
-          var h;
-          if (ftd && ['morning','day','evening','night'].includes(ftd)) {
-            h = ftd === 'night' ? 'dark' : 'light';
-          } else {
-            var hr = new Date().getHours();
-            h = (hr >= 5 && hr < 20) ? 'light' : 'dark';
-          }
-          th = h;
-        }
-        var dd = document.documentElement;
-        if (th === 'dark') {
-          dd.classList.add('dark','dark-mode');
-          dd.setAttribute('data-theme','dark');
-          dd.style.colorScheme = 'dark';
-        } else {
-          dd.classList.remove('dark','dark-mode');
-          dd.setAttribute('data-theme','light');
-          dd.style.colorScheme = 'light';
-        }
-      } catch(e) {}
     })();
   </script>
   <meta name="color-scheme" content="light dark">
@@ -88,381 +50,223 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0A0A0A">
-  <meta name="description" content="Smart Reminders - Spiritual discipline tracker with Nitnem sync">
-  <title>ਯਾਦ ਕਰਵਾਓ | Smart Reminders</title>
+  <title>Coming Soon | Reminders</title>
   <link rel="stylesheet" href="../css/anhad-core.css">
   <link rel="stylesheet" href="../css/theme-variables.css">
-  <link rel="stylesheet" href="smart-reminders-v7.css?v=3">
   <link rel="icon" type="image/png" sizes="72x72" href="../assets/icon-72x72.png">
-  <link rel="manifest" href="../manifest.json">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+      background: var(--surface, #F5F0EB);
+      color: var(--text, #1A150E);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: calc(env(safe-area-inset-top, 0) + 12px) 16px 12px;
+      display: flex;
+      align-items: center;
+      z-index: 10;
+    }
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: var(--surface-raised, rgba(255,255,255,.6));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--text, #1A150E);
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      transition: transform .15s ease;
+    }
+    .back-btn:active { transform: scale(.9); }
+    .coming-soon {
+      text-align: center;
+      max-width: 360px;
+      animation: fadeUp .8s cubic-bezier(.25,.1,.25,1) forwards;
+    }
+    .coming-soon .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      display: block;
+      animation: pulse 2.5s ease-in-out infinite;
+      cursor: pointer;
+    }
+    .coming-soon h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--amber, #FF6B00), var(--gold, #D4A843));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .coming-soon p {
+      font-size: 15px;
+      color: var(--text-sub, #8A7A6A);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .coming-soon .khanda {
+      font-size: 32px;
+      opacity: .15;
+      margin-top: 16px;
+    }
+    .tap-hint {
+      font-size: 13px;
+      color: var(--text-dim, #B5A89A);
+      margin-top: 8px;
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(24px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    /* Popup */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all .3s ease;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .popup-card {
+      background: var(--surface-solid, #FFFCF8);
+      border-radius: 24px;
+      padding: 32px 28px 24px;
+      text-align: center;
+      max-width: 320px;
+      width: 100%;
+      box-shadow: 0 32px 64px rgba(0,0,0,.3);
+      animation: popIn .35s cubic-bezier(.175,.885,.32,1.275) forwards;
+    }
+    .popup-card .popup-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 16px;
+    }
+    .popup-card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .popup-card p {
+      font-size: 14px;
+      color: var(--text-sub, #8A7A6A);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .popup-card .btn-row {
+      display: flex;
+      gap: 10px;
+    }
+    .popup-card .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .15s ease;
+    }
+    .popup-card .btn:active { transform: scale(.96); }
+    .btn-primary {
+      background: linear-gradient(135deg, #FF6B00, #D4A843);
+      color: #fff;
+    }
+    .btn-ghost {
+      background: var(--surface-raised, rgba(0,0,0,.04));
+      color: var(--text-sub, #8A7A6A);
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(.85) translateY(16px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+  </style>
 </head>
 <body>
-
-  <!-- Ambient Canvas -->
-  <div class="ambient" aria-hidden="true">
-    <div class="ambient-mesh"></div>
-    <div class="ambient-ember e1"></div>
-    <div class="ambient-ember e2"></div>
-    <div class="ambient-ember e3"></div>
-    <div class="ambient-khanda">☬</div>
+  <div class="top-bar">
+    <button class="back-btn" id="backBtn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="22" height="22"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
   </div>
 
-  <!-- Loading -->
-  <div class="app-loading" id="appLoading">
-    <div class="load-ring">
-      <svg viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2" opacity="0.1"/>
-        <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2" stroke-dasharray="176" stroke-dashoffset="176" class="load-arc"/>
-      </svg>
-      <span class="load-icon">☬</span>
-    </div>
-    <div class="load-label">ਵਾਹਿਗੁਰੂ</div>
-    <div class="load-sub">Preparing your reminders</div>
+  <div class="coming-soon" id="comingSoonBanner">
+    <span class="icon">⏰</span>
+    <h1>Coming Soon</h1>
+    <p>Smart Reminders are being rebuilt with a better experience. Stay tuned for updates!</p>
+    <span class="khanda">☬</span>
+    <div class="tap-hint">Tap for details</div>
   </div>
 
-  <!-- Header -->
-  <header class="top" id="appHeader">
-    <div class="top-inner">
-      <button class="top-btn" id="backBtn" aria-label="Back">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <div class="top-brand">
-        <span class="top-brand-icon">☬</span>
-        <div>
-          <div class="top-brand-name">ਯਾਦ ਕਰਵਾਓ</div>
-          <div class="top-brand-sub">Smart Reminders</div>
-        </div>
-      </div>
-      <button class="top-btn" id="settingsBtn" aria-label="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 6.34L2.1 2.1m17.8 17.8l-4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24-4.24l-4.24 4.24M6.34 6.34l-4.24-4.24"/>
-        </svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- Horizon - Next alarm -->
-  <div class="horizon" id="heroCard">
-    <div class="horizon-fx"></div>
-    <div class="horizon-body">
-      <div class="horizon-badge">⏰ Next Alarm</div>
-      <div class="horizon-icon" id="heroIcon">🌅</div>
-      <div class="horizon-name" id="heroLabel">Amritvela Simran</div>
-      <div class="horizon-time">
-        <span class="horizon-digits" id="heroTime">04:00</span>
-        <span class="horizon-ampm" id="heroPeriod">AM</span>
-      </div>
-      <div class="horizon-extra" id="heroDays">Every day</div>
-      <div class="horizon-ticker" id="heroCountdown">in <strong>8 hrs</strong></div>
-      <button class="horizon-snooze" id="snoozeHeroBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Snooze
-      </button>
-    </div>
-    <div class="horizon-sync" id="heroSync">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
-      <span>Synced with Nitnem Tracker</span>
-    </div>
-  </div>
-
-  <!-- Status bar -->
-  <div class="ticker" id="statusBar">
-    <div class="ticker-pill" id="statusPill">
-      <span class="ticker-led"></span>
-      <span class="ticker-label" id="statusText">3 Active Alarms</span>
-    </div>
-    <div class="ticker-next">Next: <strong id="nextTime">--:--</strong> · <span id="nextCountdown">--</span></div>
-  </div>
-
-  <!-- Main -->
-  <main class="app-container">
-
-    <!-- Android Permission Warning Banner -->
-    <div class="seg" id="androidPermissionBanner" style="display:none; margin-bottom:16px;">
-      <div style="background:var(--red-soft); border:0.5px solid rgba(255, 59, 48, 0.2); border-radius:var(--radius-lg); padding:16px; display:flex; align-items:flex-start; gap:12px; backdrop-filter:blur(16px);">
-        <span style="font-size:22px; line-height:1;">⚠️</span>
-        <div style="flex:1;">
-          <h4 style="font-size:14px; font-weight:700; color:#FF3B30; margin-bottom:4px;">Reminder Reliability Alert</h4>
-          <p style="font-size:11px; color:var(--text-sub); line-height:1.4; margin-bottom:12px;" id="permissionBannerText">To prevent missing or delayed alarms, ANHAD requires system permission to schedule exact alerts and run exempt from battery restrictions.</p>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-prime" id="bannerResolveBtn" style="padding:6px 14px; font-size:11px; border-radius:var(--radius-full); width:auto; flex:none;">Configure</button>
-            <button class="btn btn-muted" id="bannerDismissBtn" style="padding:6px 14px; font-size:11px; border-radius:var(--radius-full); width:auto; flex:none;">Ignore</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Core Alarms -->
-    <section class="seg">
-      <div class="seg-head">
-        <span class="seg-icon">🙏</span>
-        <span class="seg-title">Core</span>
-      </div>
-      <div class="seg-body" id="coreAlarmsList"></div>
-    </section>
-
-    <!-- Custom Alarms -->
-    <section class="seg">
-      <div class="seg-head">
-        <span class="seg-icon">⏰</span>
-        <span class="seg-title">Custom</span>
-        <button class="seg-add" id="addCustomBtn">+ Add</button>
-      </div>
-      <div class="seg-body" id="customAlarmsList"></div>
-      <div class="seg-empty" id="customEmptyState" style="display:none">
-        <div class="seg-empty-icon">⏰</div>
-        <div class="seg-empty-title">No Custom Reminders</div>
-        <div class="seg-empty-sub">Add reminders for your daily practice</div>
-      </div>
-    </section>
-
-    <!-- Nitnem Link -->
-    <section class="seg">
-      <button class="seg-link" id="nitnemLinkBtn">
-        <span class="seg-link-icon">📊</span>
-        <span class="seg-link-txt">
-          <strong>Nitnem Tracker</strong>
-          <small>View progress &amp; streaks</small>
-        </span>
-        <svg class="seg-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-    </section>
-
-    <!-- Stats -->
-    <section class="seg stat-grid">
-      <div class="stat">
-        <div class="stat-num" id="streakValue">0</div>
-        <div class="stat-lbl">Streak</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="completedValue">0</div>
-        <div class="stat-lbl">Done</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num" id="obedienceValue">0%</div>
-        <div class="stat-lbl">Accuracy</div>
-      </div>
-    </section>
-
-    <div class="app-footer">
-      <span>☬</span> Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh
-    </div>
-
-  </main>
-
-  <!-- FAB -->
-  <button class="fab" id="fabAddAlarm" aria-label="Add Alarm">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M12 5v14M5 12h14"/></svg>
-  </button>
-
-  <!-- Backdrop -->
-  <div class="veil" id="modalBackdrop"></div>
-
-  <!-- Edit Sheet -->
-  <div class="drawer" id="editSheet">
-    <div class="drawer-notch"></div>
-    <div class="drawer-head">
-      <h3 class="drawer-title" id="editSheetTitle">Edit Alarm</h3>
-      <button class="drawer-x" id="closeEditSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="drawer-body">
-      <div class="fld">
-        <label class="fld-label">Label</label>
-        <input class="fld-inp" id="editLabel" placeholder="Alarm name">
-      </div>
-      <div class="fld">
-        <label class="fld-label">Time</label>
-        <input class="fld-inp fld-time" id="editTime" type="time">
-      </div>
-      <div class="fld">
-        <label class="fld-label">Repeat</label>
-        <div class="chip-row" id="editDays">
-          <button class="chip" data-day="0">S</button>
-          <button class="chip" data-day="1">M</button>
-          <button class="chip" data-day="2">T</button>
-          <button class="chip" data-day="3">W</button>
-          <button class="chip" data-day="4">T</button>
-          <button class="chip" data-day="5">F</button>
-          <button class="chip" data-day="6">S</button>
-        </div>
-      </div>
-      <div class="fld">
-        <label class="fld-label">Sound</label>
-        <div class="sound-selector" id="soundSelector"></div>
-      </div>
-      <div class="fld">
-        <label class="fld-label">Awaken Stream (Optional)</label>
-        <select class="fld-inp" id="editAwakenStream">
-          <option value="none">None (Play chosen sound)</option>
-          <option value="darbar">Darbar Sahib Live Stream</option>
-          <option value="amritvela">Amritvela Kirtan Playlist</option>
-          <option value="simran">Waheguru Simran Virtual Live</option>
-        </select>
-      </div>
-      <div class="fld">
-        <label class="fld-row">
-          <span>Sync to Nitnem Tracker</span>
-          <input type="checkbox" class="ios-toggle" id="editNitnemSync" checked>
-        </label>
-      </div>
-      <div class="fld-acts">
-        <button class="btn btn-muted" id="cancelEditBtn">Cancel</button>
-        <button class="btn btn-prime" id="saveAlarmBtn">Save</button>
-      </div>
-      <button class="btn btn-del" id="deleteAlarmBtn" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        Delete
-      </button>
-    </div>
-  </div>
-
-  <!-- Add Sheet -->
-  <div class="drawer" id="addSheet">
-    <div class="drawer-notch"></div>
-    <div class="drawer-head">
-      <h3 class="drawer-title">Add Custom Alarm</h3>
-      <button class="drawer-x" id="closeAddSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="drawer-body">
-      <div class="fld">
-        <label class="fld-label">Label</label>
-        <input class="fld-inp" id="addLabel" placeholder="e.g. Evening Simran">
-      </div>
-      <div class="fld">
-        <label class="fld-label">Time</label>
-        <input class="fld-inp fld-time" id="addTime" type="time">
-      </div>
-      <div class="fld">
-        <label class="fld-label">Repeat</label>
-        <div class="chip-row" id="addDays">
-          <button class="chip active" data-day="0">S</button>
-          <button class="chip active" data-day="1">M</button>
-          <button class="chip active" data-day="2">T</button>
-          <button class="chip active" data-day="3">W</button>
-          <button class="chip active" data-day="4">T</button>
-          <button class="chip active" data-day="5">F</button>
-          <button class="chip active" data-day="6">S</button>
-        </div>
-      </div>
-      <div class="fld">
-        <label class="fld-label">Sound</label>
-        <div class="sound-selector" id="addSoundSelector"></div>
-      </div>
-      <div class="fld">
-        <label class="fld-label">Awaken Stream (Optional)</label>
-        <select class="fld-inp" id="addAwakenStream">
-          <option value="none">None (Play chosen sound)</option>
-          <option value="darbar">Darbar Sahib Live Stream</option>
-          <option value="amritvela">Amritvela Kirtan Playlist</option>
-          <option value="simran">Waheguru Simran Virtual Live</option>
-        </select>
-      </div>
-      <div class="fld-acts">
-        <button class="btn btn-muted" id="cancelAddBtn">Cancel</button>
-        <button class="btn btn-prime" id="createAlarmBtn">Create</button>
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup-card">
+      <span class="popup-icon">🙏</span>
+      <h2>Coming Soon</h2>
+      <p>We're working on a completely reimagined Smart Reminders experience with enhanced reliability, better notifications, and deeper Nitnem integration. Thank you for your patience!</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="popupDismissBtn">Dismiss</button>
+        <button class="btn btn-primary" id="popupHomeBtn">Go Home</button>
       </div>
     </div>
   </div>
 
-  <!-- Settings Sheet -->
-  <div class="drawer" id="settingsSheet">
-    <div class="drawer-notch"></div>
-    <div class="drawer-head">
-      <h3 class="drawer-title">Settings</h3>
-      <button class="drawer-x" id="closeSettingsSheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-    </div>
-    <div class="drawer-body">
-      <div class="set-grp">
-        <div class="set-grp-title">Notifications</div>
-        <label class="set-row"><span><strong>Never Miss Mode</strong><small>Alarm repeats until you respond</small></span><input type="checkbox" class="ios-toggle" id="neverMissToggle"></label>
-        <label class="set-row"><span><strong>Smart Snooze</strong><small>Increasing intervals</small></span><input type="checkbox" class="ios-toggle" id="smartSnoozeToggle" checked></label>
-        <label class="set-row"><span><strong>Pre-Reminder</strong><small>Gentle nudge before alarm</small></span><input type="checkbox" class="ios-toggle" id="preReminderToggle"></label>
-      </div>
-      <div class="set-grp">
-        <div class="set-grp-title">Sync</div>
-        <label class="set-row"><span><strong>Nitnem Sync</strong><small>Share with Nitnem Tracker</small></span><input type="checkbox" class="ios-toggle" id="nitnemSyncToggle" checked></label>
-        <button class="set-act" id="forceSyncBtn"><span>Force Sync</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg></button>
-      </div>
-      <div class="set-grp">
-        <div class="set-grp-title">Appearance</div>
-        <label class="set-row"><span><strong>Vibration</strong></span><input type="checkbox" class="ios-toggle" id="vibrationToggle" checked></label>
-        <label class="set-row"><span><strong>Sound</strong></span><input type="checkbox" class="ios-toggle" id="soundToggle" checked></label>
-      </div>
-      <div class="set-grp" id="androidSettingsGroup" style="display:none;">
-        <div class="set-grp-title">Android Reliability</div>
-        <div class="set-row" id="exactAlarmBtn" style="cursor:pointer; display:flex;">
-          <span style="flex:1;">
-            <strong>Exact Alarm Permission</strong>
-            <small id="exactAlarmStatus" style="font-size:10px; color:var(--text-dim);">Checking...</small>
-          </span>
-          <button class="btn" id="exactAlarmVal" style="flex:none; width:auto; padding:6px 14px; font-size:11px; font-weight:700; border-radius:var(--radius-full); margin:0;">Grant</button>
-        </div>
-        <div class="set-row" id="batteryOptBtn" style="cursor:pointer; display:flex;">
-          <span style="flex:1;">
-            <strong>Battery Optimization</strong>
-            <small id="batteryOptStatus" style="font-size:10px; color:var(--text-dim);">Checking...</small>
-          </span>
-          <button class="btn" id="batteryOptVal" style="flex:none; width:auto; padding:6px 14px; font-size:11px; font-weight:700; border-radius:var(--radius-full); margin:0;">Allow</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Alarm Modal (iOS Full-Screen Lock style) -->
-  <div class="flare-overlay" id="alarmModal">
-    <div class="flare-mesh-bg" id="alarmModalMeshBg"></div>
-    <div class="flare-ambient-glow"></div>
-    
-    <div class="flare-wrapper">
-      <div class="flare-top-time" id="alarmModalClock">04:00 AM</div>
-      
-      <div class="flare-artwork-container">
-        <div class="flare-artwork-ring">
-          <span></span><span></span>
-          <div class="flare-artwork-inner" id="alarmModalIcon">🌅</div>
-        </div>
-      </div>
-      
-      <div class="flare-details">
-        <h1 class="flare-title" id="alarmModalLabel">Amritvela Simran</h1>
-        <p class="flare-subtitle" id="alarmModalSubtitle">Waheguru Simran • Active</p>
-      </div>
-
-      <!-- Elegant volume / audio indicator if live stream is playing -->
-      <div class="flare-audio-indicator" id="flareAudioIndicator" style="display:none">
-        <div class="flare-wave">
-          <span></span><span></span><span></span><span></span><span></span>
-        </div>
-        <span class="flare-wave-text">Playing Live Stream</span>
-      </div>
-      
-      <div class="flare-actions-container">
-        <button class="flare-action-btn snooze-btn" id="modalSnoozeBtn">
-          <div class="btn-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>
-          <span>Snooze (10m)</span>
-        </button>
-        
-        <button class="flare-action-btn complete-btn" id="modalCompleteBtn">
-          <div class="btn-icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
-          <span>Complete</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast -->
-  <div class="toast-container" id="toastContainer"></div>
-
-  <script src="../lib/global-theme.js"></script>
-  <script src="smart-reminders-v7.js"></script>
-  <script src="../lib/capacitor-notifications.js"></script>
-  <script src="../lib/native-notifications.js"></script>
-  <script>if(!window.Capacitor||!window.Capacitor.isNativePlatform()){document.write('<script src="js/bg-alarm.js"><\/script><script src="../lib/global-alarm-system.js"><\/script>')}</script>
-  <script src="js/nitnem-sync.js"></script>
-  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{})</script>
-  <script src="../lib/capacitor-notifications-global.js"></script>
-  <script src="../lib/anhad-widget-bridge.js"></script>
-  <script src="../lib/anhad-audio-singleton.js?v=2.1.5"></script>
+  <script>
+    function goBack() {
+      var ref = document.referrer;
+      if (ref && ref.includes(window.location.hostname)) { window.history.back(); }
+      else { window.location.href = '../index.html'; }
+    }
+    document.getElementById('backBtn').addEventListener('click', goBack);
+    document.getElementById('comingSoonBanner').addEventListener('click', function() {
+      document.getElementById('popupOverlay').classList.add('active');
+    });
+    document.getElementById('popupDismissBtn').addEventListener('click', function() {
+      document.getElementById('popupOverlay').classList.remove('active');
+    });
+    document.getElementById('popupHomeBtn').addEventListener('click', function() {
+      window.location.href = '../index.html';
+    });
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+  </script>
 </body>
 </html>

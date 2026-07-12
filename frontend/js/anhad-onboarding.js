@@ -1003,8 +1003,14 @@
 
             if (!isInViewport) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Disable SVG clicks during scroll to prevent race condition
+                var svgOverlayEl = document.getElementById('anhad-tour-svg-overlay');
+                if (svgOverlayEl) svgOverlayEl.style.pointerEvents = 'none';
                 // Delay rendering step until scroll settles completely
-                setTimeout(performHighlight, 550);
+                setTimeout(function () {
+                    if (svgOverlayEl) svgOverlayEl.style.pointerEvents = 'auto';
+                    performHighlight();
+                }, 550);
                 return;
             }
         }
@@ -1059,6 +1065,13 @@
                 e.preventDefault();
                 e.stopPropagation();
                 advanceTour();
+            });
+
+            // Tap anywhere on popover body to advance (except on buttons)
+            popover.addEventListener('click', function (e) {
+                if (!e.target.closest('#tourNextBtn') && !e.target.closest('#tourSkipBtn')) {
+                    advanceTour();
+                }
             });
 
             // Adjust popover placement mathematically with safe delay

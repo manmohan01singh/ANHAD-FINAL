@@ -430,11 +430,6 @@ body {
     font-weight: 400;
 }
 
-.gurmukhi-text.larivaar {
-    word-spacing: 0;
-    letter-spacing: 0.02em;
-}
-
 /* TRANSLATION TEXT */
 .translation-text {
     font-size: 14px;
@@ -482,109 +477,10 @@ body {
    Lines flow one after another with zero gap.
    ═══════════════════════════════════════════════════════════════════════════════ */
 
-.gurbani-lines.continuous-mode {
-    display: block;
-}
-
-.gurbani-lines.continuous-mode .gurbani-line {
-    display: block;
-    margin-bottom: 0;
-    padding: 6px 20px;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    animation: none;
-    contain: layout style;
-}
-
-.gurbani-lines.continuous-mode .gurbani-line::after {
-    display: none;
-}
-
-.gurbani-lines.continuous-mode .gurmukhi-text {
-    margin-bottom: 0;
-    text-align: left;
-    display: block;
-    line-height: 2.2;
-    text-shadow: none;
-}
-
-.gurbani-lines.continuous-mode .translation-text,
-.gurbani-lines.continuous-mode .transliteration-text {
-    display: none !important;
-}
-
-.gurbani-lines.continuous-mode .line-number {
-    display: none !important;
-}
-
-/* Light theme continuous mode border fix */
-[data-theme="light"] .gurbani-lines.continuous-mode .gurbani-line,
-[data-theme="sepia"] .gurbani-lines.continuous-mode .gurbani-line,
-[data-theme="auto"] .gurbani-lines.continuous-mode .gurbani-line {
-    border-bottom-color: rgba(0, 0, 0, 0.03);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   PARAGRAPH MODE — Tight grouping, minimal spacing
-   All Gurbani flows closely together like a paragraph
-   ═══════════════════════════════════════════════════════════════════════════════ */
-
-.gurbani-lines.paragraph-mode .gurbani-line {
-    margin-bottom: 2px;
-    padding: 6px 16px;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    animation: none;
-}
-
-.gurbani-lines.paragraph-mode .gurbani-line::after {
-    display: none;
-}
-
-.gurbani-lines.paragraph-mode .gurmukhi-text {
-    margin-bottom: 0;
-    text-align: left;
-    line-height: 2.0;
-    text-shadow: none;
-}
-
-.gurbani-lines.paragraph-mode .translation-text {
-    margin-top: 2px;
-    padding-top: 2px;
-    border-top: none;
-    font-size: 13px;
-    text-align: left;
-}
-
-.gurbani-lines.paragraph-mode .translation-text::before {
-    display: none;
-}
-
-.gurbani-lines.paragraph-mode .transliteration-text {
-    text-align: left;
-    font-size: 13px;
-}
-
-.gurbani-lines.paragraph-mode .line-number {
-    display: none !important;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════════
-   LARIVAAR MODE
-   ═══════════════════════════════════════════════════════════════════════════════ */
-
-body.larivaar-mode .gurmukhi-text {
-    word-spacing: -0.25em;
-    letter-spacing: 0.02em;
-    word-break: break-word;
-    overflow-wrap: break-word;
-}
-
-body.larivaar-assist .gurmukhi-text .word-alt {
-    color: var(--accent);
-}
+/* CSS visibility toggles for translation/transliteration — avoids full re-render */
+.hide-translation .translation-text { display: none !important; }
+.hide-transliteration .transliteration-text { display: none !important; }
+.hide-hindi .hindi-text { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    ANG INFO / COMPLETION

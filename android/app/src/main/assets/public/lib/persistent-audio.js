@@ -617,6 +617,7 @@
     }
 
     // Auto-resume on page load if was playing
+    // DISABLED: Causes lag when returning to index.html in Capacitor version
     function autoResume() {
         const state = getState();
         // Only auto-resume if was playing within last 30 minutes
@@ -628,12 +629,12 @@
         }
     }
 
-    // Initialize
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', autoResume);
-    } else {
-        autoResume();
-    }
+    // Initialize - DISABLED to prevent auto-play lag on navigation back to home
+    // if (document.readyState === 'loading') {
+    //     document.addEventListener('DOMContentLoaded', autoResume);
+    // } else {
+    //     autoResume();
+    // }
 
     // Cleanup on page hide to prevent memory leaks
     window.addEventListener('pagehide', () => {

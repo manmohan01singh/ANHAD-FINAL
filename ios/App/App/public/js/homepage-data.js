@@ -122,6 +122,46 @@ function getGuruNameForEvent(eventName, guruNumber) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+  // NUCLEAR FIX: If this is a cached SPA return, block ALL initialization
+  // IMPORTANT: The _ANHAD_CACHED_RETURN and _ANHAD_SKIP_AUDIO_INIT flags are 
+  // cleared by smooth-navigation.js when user navigates AWAY from home.
+  // Do NOT clear them here — they must persist for the entire cached page lifetime.
+  if (window._ANHAD_CACHED_RETURN || window._ANHAD_SKIP_AUDIO_INIT) {
+    console.log('[HomepageData] 🚫🚫🚫 CACHED RETURN DETECTED - BLOCKING ALL INIT 🚫🚫🚫');
+    // Only start the clock
+    let lastTimeStr = '';
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      if (timeStr !== lastTimeStr) {
+        const el = document.getElementById('currentTime');
+        if (el) el.textContent = timeStr;
+        lastTimeStr = timeStr;
+      }
+    }
+    function updateGreeting() {
+      const hour = new Date().getHours();
+      let greeting = 'Good Evening';
+      if (hour >= 4 && hour < 12) greeting = 'Good Morning ☀️';
+      else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon 🌤️';
+      else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌅';
+      else greeting = 'Waheguru Ji 🌙';
+      const el = document.getElementById('greeting');
+      if (el) el.textContent = greeting;
+    }
+    updateClock();
+    updateGreeting();
+    setInterval(updateClock, 10000);
+    setInterval(updateGreeting, 60000);
+    
+    // IMPORTANT: Do NOT clear these flags here! They're managed by smooth-navigation.js
+    // Clearing them here would re-enable audio init on every cached return.
+    // window._ANHAD_CACHED_RETURN = false;
+    // window._ANHAD_SKIP_AUDIO_INIT = false;
+    
+    return; // COMPLETE BLOCK - nothing else runs
+  }
+
   // ━━━ REAL-TIME CLOCK — hoisted to top to prevent TDZ error in fast-return path ━━━
   let lastTimeStr = '';
   function updateClock() {
@@ -161,7 +201,46 @@ document.addEventListener('DOMContentLoaded', function () {
     notesCard: 'Notes/notes.html'
   };
 
-  // NATIVE APP FIX: Check if we're returning from navigation with fresh state
+  // CAPACITOR ULTRA-FAST PATH: Check DOM cache FIRST (highest priority)
+  // IMPORTANT: Only check cache on SPA navigation, NOT on initial page load
+  // On initial load, window.performance.navigation.type === 0 and there's no cache yet
+  const isSPANavigation = window.history.state?.spa === true;
+  
+  console.log('[HomepageData] 🔍 Checking cache status...');
+  console.log('[HomepageData] isSPANavigation:', isSPANavigation);
+  console.log('[HomepageData] window._homepageDataCached:', window._homepageDataCached);
+  console.log('[HomepageData] #app.dataset.cached:', document.querySelector('#app')?.dataset.cached);
+  
+  // NUCLEAR FIX: Check BOTH conditions - SPA navigation OR if cached flag is already set
+  const isCachedReturn = (isSPANavigation && window._homepageDataCached) || 
+                         document.querySelector('#app')?.dataset.cached === 'true';
+  
+  if (isCachedReturn) {
+    console.log('[HomepageData] ⚡⚡⚡ INSTANT CACHED RETURN - BLOCKING ALL INIT ⚡⚡⚡');
+    
+    // VISUAL DEBUG: Show cache hit indicator
+    if (window.Capacitor) {
+      const indicator = document.createElement('div');
+      indicator.style.cssText = 'position:fixed;top:10px;left:50%;transform:translateX(-50%);background:#00ff00;color:#000;padding:8px 16px;border-radius:20px;z-index:999999;font-weight:bold;font-size:14px;box-shadow:0 4px 12px rgba(0,255,0,0.3);';
+      indicator.textContent = '⚡ INSTANT CACHE HIT - ZERO LAG';
+      document.body.appendChild(indicator);
+      setTimeout(() => indicator.remove(), 1500);
+    }
+    
+    // Only update live data (clock, greeting) - NOTHING ELSE
+    updateClock();
+    updateGreeting();
+    setInterval(updateClock, 10000);
+    setInterval(updateGreeting, 60000);
+    
+    // CRITICAL: Mark as initialized to prevent duplicate init on next SPA swap
+    window._homepageDataInitialized = true;
+    
+    console.log('[HomepageData] ✓ Cached return complete - blocked all heavy init');
+    return; // EXIT IMMEDIATELY - Zero lag
+  }
+
+  // NATIVE APP FIX: Fallback to HomeStateManager (slower than DOM cache)
   const isReturning = window.HomeStateManager?.isReturningFromNavigation();
   const hasRecentState = window.HomeStateManager?.isRecentlyInitialized();
   
@@ -845,10 +924,12 @@ document.addEventListener('DOMContentLoaded', function () {
       if (window.AnhadAudio && window.AnhadAudio.isPlaying()) {
         const stream = window.AnhadAudio.getCurrentStream() || 'darbar';
         if (stream === 'darbar') {
-          if (playIcon1) playIcon1.className = 'fas fa-pause';
+          // FIX: Use setAttribute for SVG elements instead of className
+          if (playIcon1) playIcon1.setAttribute('class', 'fas fa-pause');
           if (card1) card1.classList.add('playing');
         } else if (stream === 'amritvela') {
-          if (playIcon2) playIcon2.className = 'fas fa-pause';
+          // FIX: Use setAttribute for SVG elements instead of className
+          if (playIcon2) playIcon2.setAttribute('class', 'fas fa-pause');
           if (card2) card2.classList.add('playing');
         }
         setIslandState(true, stream);

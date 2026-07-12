@@ -178,19 +178,7 @@ class SettingsPanel {
                         </label>
                     </div>
                     
-                    <div class="setting-row">
-                        <span class="setting-label">Display Mode</span>
-                        <div class="radio-options">
-                            <label class="radio-option">
-                                <input type="radio" name="displayMode" value="padchhed" ${this.get('displayMode') === 'padchhed' ? 'checked' : ''}>
-                                <span>Padchhed</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="displayMode" value="larivaar" ${this.get('displayMode') === 'larivaar' ? 'checked' : ''}>
-                                <span>Larivaar</span>
-                            </label>
-                        </div>
-                    </div>
+
                 </section>
                 
                 <!-- Experience -->
@@ -290,13 +278,6 @@ class SettingsPanel {
 
         container.querySelector('#settingsHaptic')?.addEventListener('change', e => {
             this.set('hapticFeedback', e.target.checked);
-        });
-
-        // Display mode
-        container.querySelectorAll('input[name="displayMode"]').forEach(radio => {
-            radio.addEventListener('change', e => {
-                this.set('displayMode', e.target.value);
-            });
         });
 
         // Export

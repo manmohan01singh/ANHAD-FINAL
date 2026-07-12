@@ -290,14 +290,20 @@ window.CapacitorNotifications = {
         return;
     }
 
-    // Already registered guard
-    if (window.__anhadNotifListenerRegistered) return;
-    window.__anhadNotifListenerRegistered = true;
+    // Already registered guard - use separate flag so both this and capacitor-notifications-global.js can register
+    if (window.__anhadNotifRouterRegistered) return;
+    window.__anhadNotifRouterRegistered = true;
 
     LocalNotifications.addListener('localNotificationActionPerformed', (event) => {
         try {
             const extra = event.notification && event.notification.extra;
             if (!extra) return;
+
+            // Defer to capacitor-notifications-global.js for alarm popups — do NOT navigate away
+            if (extra.action === 'show_alarm') {
+                console.log('[NotifRouter] Deferring show_alarm to global handler');
+                return;
+            }
 
             // Determine target URL
             let targetUrl = extra.url || null;
@@ -315,7 +321,7 @@ window.CapacitorNotifications = {
                     'show_streak_saver': 'NitnemTracker/nitnem-tracker.html?streakSaver=activate',
                     'auto_start_naam': 'NaamAbhyas/naam-abhyas.html?autoStart=true',
                     'show_naam': 'NaamAbhyas/naam-abhyas.html',
-                    'show_alarm': 'reminders/reminders.html'
+                    // show_alarm intentionally omitted — handled by capacitor-notifications-global.js (alarm popup)
                 };
                 targetUrl = actionMap[extra.action] || null;
                 if (extra.action === 'auto_start_naam') {

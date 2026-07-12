@@ -7,7 +7,7 @@
  * on Android and iOS. Works with Capacitor's WidgetDataBridge plugin.
  */
 
-const WidgetBridge = {
+const WidgetBridge = window.WidgetBridge || {
     PLUGIN_NAME: 'WidgetDataBridge',
     isCapacitor: typeof Capacitor !== 'undefined',
     isNative: false,

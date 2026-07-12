@@ -15,6 +15,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+if (typeof OptimizedImageLoader === 'undefined') {
 class OptimizedImageLoader {
     constructor() {
         this.observer = null;
@@ -333,3 +334,5 @@ window.optimizedImageLoader.observeNewImages();
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = OptimizedImageLoader;
 }
+
+} // Close the if (typeof OptimizedImageLoader === 'undefined') check

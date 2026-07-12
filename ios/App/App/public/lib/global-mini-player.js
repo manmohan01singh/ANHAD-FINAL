@@ -52,6 +52,20 @@
 
   const SIMRAN_R2_BASE = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev';
   const SIMRAN_R2_PREFIX = 'waheguru';
+  // Smart API URL resolution for CORS and mobile apps
+  // NOTE: MUST be defined before STREAMS (used by hukamnama url below)
+  const API_BASE = (() => {
+    try {
+      if (window.Capacitor) return 'https://anhad-final.onrender.com';
+      const host = window.location.hostname;
+      const port = window.location.port;
+      if (port === '3000' || port === '3001') return '';
+      if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
+      return 'https://anhad-final.onrender.com';
+    } catch (e) { }
+    return 'https://anhad-final.onrender.com';
+  })();
+
   const SIMRAN_FILENAMES = [
     '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3',
     '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3',
@@ -178,27 +192,12 @@
     }
   };
 
-  // RENDER_BASE kept for legacy reference; API_BASE below does smart resolution
+  // RENDER_BASE kept for legacy reference
   const RENDER_BASE = 'https://anhad-final.onrender.com';
 
   function getAudioBase() {
     return 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   }
-
-  // Smart API URL resolution for CORS and mobile apps
-  const API_BASE = (() => {
-    try {
-      // For Capacitor apps, always use production URL
-      if (window.Capacitor) return 'https://anhad-final.onrender.com';
-
-      const host = window.location.hostname;
-      const port = window.location.port;
-      if (port === '3000' || port === '3001') return '';
-      if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
-      return 'https://anhad-final.onrender.com';
-    } catch (e) { }
-    return 'https://anhad-final.onrender.com';
-  })();
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STATE MANAGEMENT

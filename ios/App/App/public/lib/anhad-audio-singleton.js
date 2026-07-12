@@ -21,6 +21,38 @@
   // Prevent double-init
   if (window.AnhadAudio && window.AnhadAudio._singleton) return;
 
+  // NUCLEAR GUARD: If returning from cached SPA navigation, skip ALL initialization
+  // This prevents the audio engine from re-initializing, re-resuming, and causing
+  // native AudioService calls that trigger navigation lag on Capacitor.
+  if (window._ANHAD_SKIP_AUDIO_INIT) {
+    console.log('[AnhadAudio] 🚫 NUCLEAR GUARD: Cached return detected, skipping ALL init');
+    // Still expose the API so UI code doesn't crash
+    if (!window.AnhadAudio) {
+      window.AnhadAudio = {
+        _singleton: true,
+        _nuclearGuard: true,
+        play: () => { console.log('[AnhadAudio] 🚫 Nuclear guarded: play() blocked'); },
+        pause: () => {},
+        resume: () => {},
+        resumeInPlace: () => {},
+        toggle: () => {},
+        stop: () => {},
+        jumpToLive: () => {},
+        playNextTrack: () => {},
+        setVolume: () => {},
+        getState: () => ({ isPlaying: false, isLoading: false, currentStream: null, currentTrackIndex: 0 }),
+        getAudio: () => null,
+        isPlaying: () => false,
+        getCurrentStream: () => null,
+        on: () => function() {},
+        off: () => {},
+        STREAMS: [],
+        getStreamInfo: () => null
+      };
+    }
+    return;
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // CONFIGURATION
   // ═══════════════════════════════════════════════════════════════════════════
@@ -607,11 +639,20 @@
     } catch (e) { return null; }
   }
 
-  // Restore currentStream on init so toggling correctly targets the active stream
+  // Restore currentStream on init ONLY if the user was actively playing (isPlaying = true)
+  // AND the state is recent enough. This prevents the mini-player from showing on every
+  // fresh page load just because localStorage has a stale stream reference.
+  // The mini-player should only appear when the user has explicitly played Kirtan.
   const initialSavedState = loadState();
   if (initialSavedState && initialSavedState.stream && STREAMS[initialSavedState.stream]) {
-    currentStream = initialSavedState.stream;
-    currentTrackIndex = initialSavedState.trackIndex || 0;
+    const isFresh = Date.now() - (initialSavedState.timestamp || 0) < RESUME_THRESHOLD_MS;
+    if (initialSavedState.isPlaying && isFresh) {
+      currentStream = initialSavedState.stream;
+      currentTrackIndex = initialSavedState.trackIndex || 0;
+      console.log('[AnhadAudio] Restored stream from saved state:', currentStream);
+    } else {
+      console.log('[AnhadAudio] Saved state found but not restoring — isPlaying was false or state is stale');
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -627,8 +668,24 @@
       audio = window.__anhadPreloadedAudio.audio;
       // Sync state from preload
       if (window.__anhadPreloadedAudio.stream) {
-        currentStream = window.__anhadPreloadedAudio.stream;
-        currentTrackIndex = window.__anhadPreloadedAudio.trackIndex || 0;
+        var _preloadedSrc = audio.src || '';
+        if (!_preloadedSrc.startsWith('data:audio/wav;base64,')) {
+          currentStream = window.__anhadPreloadedAudio.stream;
+          currentTrackIndex = window.__anhadPreloadedAudio.trackIndex || 0;
+        } else {
+          console.log('[AnhadAudio] Preloaded audio is WAV unlock only, not setting currentStream');
+        }
+      }
+      // CRITICAL FIX: The preloaded audio plays a silent WAV only to unlock the audio
+      // context (browser autoplay policy). DO NOT set isPlaying=true for this —
+      // it would show the mini-player and trigger native AudioService bridge calls
+      // unnecessarily. Only set isPlaying if the src is a REAL stream URL.
+      var _preloadedSrc = audio.src || '';
+      if (!audio.paused && !audio.ended && _preloadedSrc && !_preloadedSrc.startsWith('data:audio/wav;base64,')) {
+        isPlaying = true;
+        console.log('[AnhadAudio] Adopted audio is already playing real stream, synced isPlaying=true');
+      } else {
+        console.log('[AnhadAudio] Adopted audio is playing silent WAV (unlock only), isPlaying stays false');
       }
       // Clear the preloaded reference
       window.__anhadPreloadedAudio = null;
@@ -727,7 +784,12 @@
     if (!audio) return;
 
     audio.addEventListener('playing', () => {
-      isPlaying = true;
+      // NUCLEAR FIX: If the audio src is the preloaded silent WAV (used only to unlock
+      // browser autoplay policy), do NOT start native AudioService or sync state.
+      // This prevents the native bridge call chain that causes navigation lag.
+      var _isWavUnlock = audio && audio.src && audio.src.startsWith('data:audio/wav;base64,');
+      
+      isPlaying = !_isWavUnlock;
       isLoading = false;
       isPlayLocked = false;
       if (playLockTimeoutId) {
@@ -736,6 +798,15 @@
       }
       emit('loading', { isLoading: false });
       audioRetryCount = 0;
+
+      // For silent WAV unlock, skip ALL native bridge calls — just update internal state
+      if (_isWavUnlock) {
+        console.log('[AnhadAudio] ℹ️ playing event for preloaded WAV (unlock only) — skipping native bridge');
+        currentStream = null;
+        currentTrackIndex = 0;
+        emit('statechange', getPublicState());
+        return;
+      }
 
       // Update anchor on every play to maintain accuracy
       if (currentStream === 'amritvela' || currentStream === 'simran') {
@@ -777,6 +848,31 @@
       isPlayLocked = false;
       if (playLockTimeoutId) { clearTimeout(playLockTimeoutId); playLockTimeoutId = null; }
       if (trackTransitionInProgress || isLoading) return;
+
+      // NUCLEAR FIX: If the preloaded silent WAV ended, just update state — no native bridge calls.
+      // The WAV is only used to unlock browser autoplay policy, not for actual playback.
+      var _isWavPause = audio && audio.src && audio.src.startsWith('data:audio/wav;base64,');
+      if (_isWavPause) {
+        console.log('[AnhadAudio] ℹ️ pause event for preloaded WAV (ended naturally) — skipping native bridge');
+        currentStream = null;
+        currentTrackIndex = 0;
+        isPlaying = false;
+        isLoading = false;
+        isPlayLocked = false;
+        emit('loading', { isLoading: false });
+        saveState();
+        emit('statechange', getPublicState());
+        return;
+      }
+
+      // NUCLEAR GUARD: On cached SPA return, suppress ALL pause events completely
+      // This prevents the chain: pause → suppressed → resume() → AudioService → spurious pause → ...
+      if (window._ANHAD_SKIP_AUDIO_INIT) {
+        console.log('[AnhadAudio] 🚫 Pause suppressed by _ANHAD_SKIP_AUDIO_INIT');
+        // Sync playing state to prevent downstream code from thinking we're paused
+        isPlaying = true;
+        return;
+      }
 
       // CAPACITOR: Suppress spurious pause from AudioService audio focus grab.
       // Android re-grants focus automatically — just ignore the pause.
@@ -1268,6 +1364,11 @@
   }
 
   async function play(streamName) {
+    // NUCLEAR GUARD: Never start playback on cached SPA return
+    if (window._ANHAD_SKIP_AUDIO_INIT) {
+      console.log('[AnhadAudio] 🚫 play() blocked by _ANHAD_SKIP_AUDIO_INIT');
+      return;
+    }
     if (!streamName) streamName = currentStream || 'darbar';
     if (!STREAMS[streamName]) {
       console.error('[AnhadAudio] Unknown stream:', streamName);
@@ -1480,12 +1581,24 @@
   }
 
   async function resume() {
+    // NUCLEAR GUARD: Never resume audio on cached SPA return
+    if (window._ANHAD_SKIP_AUDIO_INIT) {
+      console.log('[AnhadAudio] 🚫 resume() blocked by _ANHAD_SKIP_AUDIO_INIT');
+      return;
+    }
     initAudioElement();
+    // NUCLEAR GUARD: If audio src is a silent WAV (unlock only), do NOT resume
+    if (audio && audio.src && audio.src.startsWith('data:audio/wav;base64,')) {
+      console.log('[AnhadAudio] 🚫 resume() blocked — audio is WAV unlock only');
+      return;
+    }
     if (audio && audio.src && !audio.paused && currentStream) {
       console.log('[AnhadAudio] Resume ignored; audio is already playing');
       return;
     }
     if (audio && audio.src && audio.paused && currentStream) {
+      // CAPACITOR FIX: On cached return, audio may show as paused but shouldn't be resumed
+      // automagically — prevents native AudioService re-sync lag chain
       console.log('[AnhadAudio] Resuming existing stream in-place');
       try {
         isLoading = true;
@@ -1511,6 +1624,11 @@
   }
 
   async function toggle(streamName) {
+    // NUCLEAR GUARD: Never toggle audio on cached SPA return
+    if (window._ANHAD_SKIP_AUDIO_INIT) {
+      console.log('[AnhadAudio] 🚫 toggle() blocked by _ANHAD_SKIP_AUDIO_INIT');
+      return;
+    }
     initAudioElement();
 
     if (audio && !audio.paused && (!streamName || streamName === currentStream)) {
@@ -2158,6 +2276,7 @@
 
   // ═══════════════════════════════════════════════════════════════════════════
   // AUTO-RESUME on page load
+  // DISABLED: Causes lag when returning to index.html in Capacitor version
   // ═══════════════════════════════════════════════════════════════════════════
 
   function autoResume() {
@@ -2289,14 +2408,19 @@
   // Use this for the play/pause button. Use play() / jumpToLive() to jump to live.
   async function resumeInPlace() {
     initAudioElement();
+    // NUCLEAR GUARD: If audio src is a silent WAV (unlock only), do NOT resume
+    if (audio && audio.src && audio.src.startsWith('data:audio/wav;base64,')) {
+      console.log('[AnhadAudio] 🚫 resumeInPlace() blocked — audio is WAV unlock only');
+      return;
+    }
     if (!audio || !currentStream) {
-      await play(currentStream);
+      if (currentStream) await play(currentStream);
       return;
     }
     if (!audio.paused) return; // Already playing
     if (!audio.src || audio.src === window.location.href) {
       // Nothing loaded yet — do a full play
-      await play(currentStream);
+      if (currentStream) await play(currentStream);
       return;
     }
     try {
@@ -2410,12 +2534,12 @@
     if (stream) play(stream);
   });
 
-  // Auto-resume after short delay
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(autoResume, 500));
-  } else {
-    setTimeout(autoResume, 500);
-  }
+  // Auto-resume after short delay - DISABLED to prevent lag on navigation back to home
+  // if (document.readyState === 'loading') {
+  //   document.addEventListener('DOMContentLoaded', () => setTimeout(autoResume, 500));
+  // } else {
+  //   setTimeout(autoResume, 500);
+  // }
 
   console.log('🪯 ANHAD Audio Singleton loaded — ONE audio, ONE truth');
 })();

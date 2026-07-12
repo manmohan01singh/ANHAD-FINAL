@@ -420,8 +420,13 @@ class NotificationEngine {
                     scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
 
                     const dateStr = scheduleDate.toISOString().split('T')[0];
-                    // Use deterministic random minute between 10 and 50
-                    const sessionMinute = this._getRandomMinuteForHour(dateStr, hour);
+                    // FIX: Use actual schedule minute for today, fall back to hash for future days
+                    var sessionMinute;
+                    if (dayOffset === 0 && config.currentSchedule && config.currentSchedule[hour]) {
+                        sessionMinute = config.currentSchedule[hour].startMinute;
+                    } else {
+                        sessionMinute = this._getRandomMinuteForHour(dateStr, hour);
+                    }
 
                     scheduleDate.setHours(hour, sessionMinute, 0, 0);
 

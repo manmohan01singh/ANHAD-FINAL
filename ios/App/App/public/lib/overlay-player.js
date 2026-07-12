@@ -26,6 +26,14 @@
   function init() {
     console.log('[OverlayPlayerUI] Checking audio singleton availability...');
 
+    // NUCLEAR GUARD: On cached SPA return, skip all overlay player initialization
+    // The mini-player DOM is already in the cached HTML — no re-init needed.
+    if (window._ANHAD_SKIP_AUDIO_INIT) {
+      console.log('[OverlayPlayerUI] 🚫 Cached return, skipping init');
+      window.AnhadOverlayPlayerUI = true;
+      return;
+    }
+
     // Wait for singleton to be available (dynamic demand load)
     if (!window.AnhadAudio) {
       console.log('[OverlayPlayerUI] AnhadAudio not ready yet, registering ready listener');
@@ -140,6 +148,8 @@
     }
 
     // Don't show if nothing is loaded
+    // Once the user has played a stream (currentStream is set), the mini-player
+    // stays visible even on pause so they can easily resume.
     if (!state.currentStream) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');

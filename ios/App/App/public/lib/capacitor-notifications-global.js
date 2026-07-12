@@ -857,8 +857,8 @@
             return './' + url;
         }
 
-        if (!window.__anhadNotifListenerRegistered) {
-            window.__anhadNotifListenerRegistered = true;
+        if (!window.__anhadGlobalNotifListenerRegistered) {
+            window.__anhadGlobalNotifListenerRegistered = true;
             LN.addListener('localNotificationActionPerformed', function (data) {
                 var ex = data.notification && data.notification.extra;
                 if (!ex) return;
@@ -931,6 +931,10 @@
     // ═══ FOREGROUND ALARM CHECK — pass tone ═══
     var lastCheckedMin = -1;
     function checkAlarms() {
+        // Skip if smart-reminders-v7 is loaded — it has its own foreground checker
+        // that shows a richer modal. We only act as a fallback for other pages.
+        if (window.AlarmScheduler && window.AlarmScheduler.checkAlarms) return;
+
         var sr = null;
         try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7') || localStorage.getItem('sr_reminders_v4')); } catch (e) { }
         if (!sr) return;

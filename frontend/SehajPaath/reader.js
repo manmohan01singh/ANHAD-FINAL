@@ -362,47 +362,24 @@ class SehajPaathReader {
             });
         });
 
-        // ═══════════════════════════════════════════════════════════════════════════
-        // TASK 2: DISPLAY MODE PILLS
-        // ═══════════════════════════════════════════════════════════════════════════
-        document.querySelectorAll('.mode-pill').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.mode-pill').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.settings.displayMode = btn.dataset.mode;
-                this.applyModes();
-                this.renderGurbani();
-                this.saveSettings();
-            });
-        });
 
-        // Display mode radios (legacy)
-        document.querySelectorAll('input[name="displayMode"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.settings.displayMode = e.target.value;
-                this.renderGurbani();
-                this.saveSettings();
-            });
-        });
 
         // Translation toggle
         document.getElementById('showTranslation')?.addEventListener('change', (e) => {
             this.settings.showTranslation = e.target.checked;
-            this.renderGurbani();
+            document.getElementById('gurbaniLines')?.classList.toggle('hide-translation', !e.target.checked);
             this.saveSettings();
         });
 
-        // Transliteration toggle
         document.getElementById('showTransliteration')?.addEventListener('change', (e) => {
             this.settings.showTransliteration = e.target.checked;
-            this.renderGurbani();
+            document.getElementById('gurbaniLines')?.classList.toggle('hide-transliteration', !e.target.checked);
             this.saveSettings();
         });
 
-        // Hindi toggle
         document.getElementById('showHindi')?.addEventListener('change', (e) => {
             this.settings.showHindi = e.target.checked;
-            this.renderGurbani();
+            document.getElementById('gurbaniLines')?.classList.toggle('hide-hindi', !e.target.checked);
             this.saveSettings();
         });
 
@@ -415,27 +392,7 @@ class SehajPaathReader {
 
         // Auto-hide header is always enabled for immersive reading
 
-        // Continuous Reading toggle
-        document.getElementById('continuousReading')?.addEventListener('change', (e) => {
-            this.settings.continuousReading = e.target.checked;
-            this.applyModes();
-            this.saveSettings();
-        });
 
-        // Paragraph Mode toggle
-        document.getElementById('paragraphMode')?.addEventListener('change', (e) => {
-            this.settings.paragraphMode = e.target.checked;
-            this.applyModes();
-            this.saveSettings();
-        });
-
-        // Larivaar Assist toggle
-        document.getElementById('larivaarAssist')?.addEventListener('change', (e) => {
-            this.settings.larivaarAssist = e.target.checked;
-            this.applyModes();
-            this.renderGurbani();
-            this.saveSettings();
-        });
     }
 
     setupSwipeGestures() {
@@ -476,22 +433,6 @@ class SehajPaathReader {
 
         const currentPosition = scroll.scrollTop;
         const delta = currentPosition - this.lastScrollPosition;
-
-        // ═══════════════════════════════════════════════════════════════════
-        // CONTINUOUS READING — Auto-load next Ang when near bottom
-        // This is the KEY to smooth, flicker-free Sehaj Paath
-        // ═══════════════════════════════════════════════════════════════════
-        if (this.settings.continuousReading && !this._isLoadingNextAng) {
-            const scrollHeight = scroll.scrollHeight;
-            const clientHeight = scroll.clientHeight;
-            const distanceFromBottom = scrollHeight - (currentPosition + clientHeight);
-
-            // Load next Ang when within 300px of bottom
-            if (distanceFromBottom < 300 && this.currentAng < 1430) {
-                this._isLoadingNextAng = true;
-                this.loadAngContinuous(this.currentAng + 1);
-            }
-        }
 
         // ═══════════════════════════════════════════════════════════════════
         // AUTO-HIDE HEADER/FOOTER — Always enabled for immersive reading
@@ -545,16 +486,11 @@ class SehajPaathReader {
     toggleUI() {
         const header = document.getElementById('readerHeader');
         const footer = document.getElementById('readerFooter');
-        const container = document.getElementById('readerContainer');
-        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
 
         if (this.headerVisible) {
             header?.classList.add('hidden');
             footer?.classList.add('hidden');
             this.headerVisible = false;
-            if (isContinuousOrParagraph) {
-                container?.classList.add('fullscreen-reading');
-            }
         } else {
             header?.classList.remove('hidden');
             footer?.classList.remove('hidden');
@@ -584,12 +520,6 @@ class SehajPaathReader {
 
     async loadAng(angNumber) {
         if (angNumber < 1 || angNumber > 1430) return;
-
-        // In continuous reading mode, use the seamless appender instead
-        if (this.settings.continuousReading && this.angData) {
-            await this.loadAngContinuous(angNumber);
-            return;
-        }
 
         this.showLoading();
         this.currentAng = angNumber;
@@ -667,16 +597,8 @@ class SehajPaathReader {
 
             // Build fragment with new lines
             const fragment = document.createDocumentFragment();
-            const isLarivaarMode = this.settings.displayMode === 'larivaar';
-
             data.lines.forEach((line, index) => {
-                let text = isLarivaarMode ?
-                    (line.larivaar || line.gurmukhi?.replace(/\s+/g, '') || '') :
-                    (line.gurmukhi || '');
-
-                if (isLarivaarMode && this.settings.larivaarAssist && line.gurmukhi) {
-                    text = this.applyLarivaarAssist(line.gurmukhi);
-                }
+                const text = line.gurmukhi || '';
 
                 let translation = '';
                 if (line.translation) {
@@ -703,7 +625,7 @@ class SehajPaathReader {
                 lineEl.dataset.lineId = line.id || index;
                 lineEl.dataset.shabadId = line.shabadId || '';
                 lineEl.innerHTML = `
-                    <p class="gurmukhi-text ${isLarivaarMode ? 'larivaar' : ''}">${text || 'ੴ'}</p>
+                    <p class="gurmukhi-text">${text || 'ੴ'}</p>
                     ${this.settings.showTranslation && translation ?
                     `<p class="translation-text">${translation}</p>` : ''}
                     ${this.settings.showTransliteration && transliteration ?
@@ -799,23 +721,15 @@ class SehajPaathReader {
 
         console.log('🖌️ Rendering', this.angData.lines.length, 'lines');
 
-        const lines = this.angData.lines;
+        const fragment = document.createDocumentFragment();
+        const showTranslation = this.settings.showTranslation;
+        const showTransliteration = this.settings.showTransliteration;
 
-        container.innerHTML = lines.map((line, index) => {
-            // Get the Gurmukhi text
-            const isLarivaarMode = this.settings.displayMode === 'larivaar';
-            let text = isLarivaarMode ?
-                (line.larivaar || line.gurmukhi?.replace(/\s+/g, '') || '') :
-                (line.gurmukhi || '');
+        this.angData.lines.forEach((line, index) => {
+            const text = line.gurmukhi || '';
 
-            // Apply Larivaar Assist (alternating word colors)
-            if (isLarivaarMode && this.settings.larivaarAssist && line.gurmukhi) {
-                text = this.applyLarivaarAssist(line.gurmukhi);
-            }
-
-            // Get translation
             let translation = '';
-            if (line.translation) {
+            if (showTranslation && line.translation) {
                 if (typeof line.translation === 'string') {
                     translation = line.translation;
                 } else if (line.translation[this.settings.translationLang]) {
@@ -825,9 +739,8 @@ class SehajPaathReader {
                 }
             }
 
-            // Get transliteration
             let transliteration = '';
-            if (line.transliteration) {
+            if (showTransliteration && line.transliteration) {
                 if (typeof line.transliteration === 'string') {
                     transliteration = line.transliteration;
                 } else if (line.transliteration.en) {
@@ -835,17 +748,40 @@ class SehajPaathReader {
                 }
             }
 
-            return `
-                <div class="gurbani-line" data-line-id="${line.id || index}" data-shabad-id="${line.shabadId || ''}">
-                    <p class="gurmukhi-text ${isLarivaarMode ? 'larivaar' : ''}">${text || 'ੴ'}</p>
-                    ${this.settings.showTranslation && translation ?
-                    `<p class="translation-text">${translation}</p>` : ''}
-                    ${this.settings.showTransliteration && transliteration ?
-                    `<p class="transliteration-text">${transliteration}</p>` : ''}
-                    <span class="line-number">${index + 1}</span>
-                </div>
-            `;
-        }).join('');
+            const lineEl = document.createElement('div');
+            lineEl.className = 'gurbani-line';
+            lineEl.dataset.lineId = String(line.id || index);
+            lineEl.dataset.shabadId = String(line.shabadId || '');
+
+            const gurmukhiP = document.createElement('p');
+            gurmukhiP.className = 'gurmukhi-text';
+            gurmukhiP.textContent = text || 'ੴ';
+            lineEl.appendChild(gurmukhiP);
+
+            if (translation) {
+                const transP = document.createElement('p');
+                transP.className = 'translation-text';
+                transP.textContent = translation;
+                lineEl.appendChild(transP);
+            }
+
+            if (transliteration) {
+                const translitP = document.createElement('p');
+                translitP.className = 'transliteration-text';
+                translitP.textContent = transliteration;
+                lineEl.appendChild(translitP);
+            }
+
+            const numSpan = document.createElement('span');
+            numSpan.className = 'line-number';
+            numSpan.textContent = String(index + 1);
+            lineEl.appendChild(numSpan);
+
+            fragment.appendChild(lineEl);
+        });
+
+        container.innerHTML = '';
+        container.appendChild(fragment);
 
         // Update raag name
         const raagNameEl = document.getElementById('raagName');
@@ -1012,68 +948,8 @@ class SehajPaathReader {
         this.updateSettingsUI();
     }
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // DISPLAY MODES - Continuous Reading, Paragraph Mode, Larivaar
-    // ═══════════════════════════════════════════════════════════════════════════
-
     applyModes() {
-        const container = document.getElementById('gurbaniLines');
-        const readerContainer = document.getElementById('readerContainer');
-        const larivaarAssistRow = document.getElementById('larivaarAssistRow');
-        const isLarivaar = this.settings.displayMode === 'larivaar';
-
-        // Toggle Larivaar Assist Row visibility
-        if (larivaarAssistRow) {
-            larivaarAssistRow.style.display = isLarivaar ? 'flex' : 'none';
-        }
-
-        // Apply body classes for larivaar
-        document.body.classList.toggle('larivaar-mode', isLarivaar);
-        document.body.classList.toggle('larivaar-assist', isLarivaar && this.settings.larivaarAssist);
-
-        // Apply container classes
-        if (container) {
-            container.classList.toggle('continuous-mode', this.settings.continuousReading);
-            container.classList.toggle('paragraph-mode', this.settings.paragraphMode && !this.settings.continuousReading);
-        }
-
-        // In continuous/paragraph mode, auto-hide header/footer for fullscreen reading
-        const isContinuousOrParagraph = this.settings.continuousReading || this.settings.paragraphMode;
-        if (isContinuousOrParagraph && this.settings.autoHideHeader) {
-            const header = document.getElementById('readerHeader');
-            const footer = document.getElementById('readerFooter');
-            // Auto-hide after a brief delay
-            setTimeout(() => {
-                header?.classList.add('hidden');
-                footer?.classList.add('hidden');
-                readerContainer?.classList.add('fullscreen-reading');
-                this.headerVisible = false;
-            }, 800);
-        } else {
-            // Restore normal mode
-            readerContainer?.classList.remove('fullscreen-reading');
-        }
-
-        // Update toggle checkboxes
-        const continuousToggle = document.getElementById('continuousReading');
-        if (continuousToggle) continuousToggle.checked = this.settings.continuousReading;
-
-        const paragraphToggle = document.getElementById('paragraphMode');
-        if (paragraphToggle) paragraphToggle.checked = this.settings.paragraphMode;
-
-        const larivaarAssistToggle = document.getElementById('larivaarAssist');
-        if (larivaarAssistToggle) larivaarAssistToggle.checked = this.settings.larivaarAssist;
-    }
-
-    applyLarivaarAssist(text) {
-        if (!text) return '';
-        const words = text.split(/\s+/);
-        return words.map((word, i) => {
-            if (i % 2 === 1) {
-                return `<span class="word-alt">${word}</span>`;
-            }
-            return word;
-        }).join('');
+        // Removed: Continuous Reading, Paragraph Mode, Larivaar — were causing performance issues
     }
 
     applyTheme() {
@@ -1104,10 +980,6 @@ class SehajPaathReader {
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.theme === this.settings.theme);
         });
-
-        // Display mode radios
-        const displayRadio = document.querySelector(`input[name="displayMode"][value="${this.settings.displayMode}"]`);
-        if (displayRadio) displayRadio.checked = true;
 
         // Toggles
         const showTrans = document.getElementById('showTranslation');
@@ -1204,9 +1076,9 @@ class SehajPaathReader {
 
     startReadingTimer() {
         this.readingStartTime = Date.now();
+        if (this._readingTimer) clearInterval(this._readingTimer);
 
-        // Update reading time display every second
-        setInterval(() => {
+        this._readingTimer = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.readingStartTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
@@ -1215,6 +1087,13 @@ class SehajPaathReader {
                 readingTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             }
         }, 1000);
+    }
+
+    destroy() {
+        if (this._readingTimer) {
+            clearInterval(this._readingTimer);
+            this._readingTimer = null;
+        }
     }
 
     updateStats() {

@@ -468,12 +468,38 @@ a:active {
 /* Crossfade transition for SPA page swaps */
 .app--fade-out {
   opacity: 0;
-  transition: opacity 0.12s ease;
+  transition: opacity 0.08s ease; /* Reduced from 0.12s for faster feel */
   pointer-events: none;
 }
 .app--fade-in {
   opacity: 1;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.1s ease; /* Reduced from 0.15s for snappier feel */
+}
+
+/* CAPACITOR INSTANT MODE: Zero transition for cached page returns */
+.app--instant {
+  opacity: 1 !important;
+  transition: none !important;
+  pointer-events: all !important;
+}
+
+/* CAPACITOR OPTIMIZATION: Force GPU compositing on all images
+   to prevent repaint lag when navigating back to cached pages */
+#app img,
+#app .hero-card__image,
+#app picture,
+#app [style*="background-image"] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Keep decoded pixels in GPU memory - zero repaint on navigation */
+#app img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
 }
 
 /* Safety: if app--exiting gets stuck (bfcache), undo it on pageshow via JS.

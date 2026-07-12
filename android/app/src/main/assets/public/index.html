@@ -260,6 +260,9 @@
   <script src="js/scroll-engine.js" defer></script>
   <script src="./js/anhad-core.js" defer></script>
   
+  <!-- CRITICAL: SPA Navigation MUST load early to intercept clicks -->
+  <script src="lib/smooth-navigation.js" defer></script>
+  
   <!-- CRITICAL: Remove all shadows added by JavaScript -->
   <script>
     (function() {
@@ -2532,7 +2535,7 @@
     </div>
     
     <nav class="desktop-sidebar__nav" aria-label="Main Menu">
-      <a href="index.html" class="desktop-sidebar__link desktop-sidebar__link--active">
+      <a href="/index.html" class="desktop-sidebar__link desktop-sidebar__link--active">
         <span class="ios-emoji" role="img" aria-label="home">🏠</span>
         Home
       </a>
@@ -2696,6 +2699,9 @@
         <article class="hero-card" id="heroCard1" data-stream="darbar" data-color="#E8A87C" data-color-rgb="232,168,124" aria-label="Darbar Sahib Live Kirtan" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard1Picture">
+              <img decoding="async" class="hero-card__image" id="heroCard1Img"
+                alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high"
+                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#D4943A,#C4842A)'">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -2705,14 +2711,14 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard1Img" ' +
-                    'src="assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp" ' +
-                    'data-img-morning="assets/HERO CARD IMAGES/morning-darbar-sahib.webp" ' +
-                    'data-img-day="assets/HERO CARD IMAGES/day-darbar-sahib.webp" ' +
-                    'data-img-evening="assets/HERO CARD IMAGES/evening-darbar-sahib.webp" ' +
-                    'data-img-night="assets/HERO CARD IMAGES/night-darbar-sahib.webp" ' +
-                    'alt="Sri Harmandir Sahib — Golden Temple" width="430" height="242" loading="eager" fetchpriority="high" ' +
-                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#D4943A,#C4842A)\'">');
+                  var img = document.getElementById('heroCard1Img');
+                  if (img) {
+                    img.src = 'assets/HERO CARD IMAGES/' + target + '-darbar-sahib.webp';
+                    img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-darbar-sahib.webp');
+                    img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-darbar-sahib.webp');
+                    img.setAttribute('data-img-evening', 'assets/HERO CARD IMAGES/evening-darbar-sahib.webp');
+                    img.setAttribute('data-img-night', 'assets/HERO CARD IMAGES/night-darbar-sahib.webp');
+                  }
                 })();
               </script>
             </picture>
@@ -2736,6 +2742,9 @@
         <article class="hero-card" id="heroCard2" data-stream="amritvela" data-color="#E6A817" data-color-rgb="230,168,23" aria-label="Amritvela Kirtan Collection" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard2Picture">
+              <img decoding="async" class="hero-card__image" id="heroCard2Img"
+                alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low"
+                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -2745,14 +2754,14 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard2Img" ' +
-                    'src="assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp" ' +
-                    'data-img-morning="assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp" ' +
-                    'data-img-day="assets/HERO CARD IMAGES/day-amritvela-kirtan.webp" ' +
-                    'data-img-evening="assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp" ' +
-                    'data-img-night="assets/HERO CARD IMAGES/night-amritvela-kirtan.webp" ' +
-                    'alt="Amritvela — Sacred Dawn at Darbar Sahib" width="430" height="242" loading="lazy" fetchpriority="low" ' +
-                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                  var img = document.getElementById('heroCard2Img');
+                  if (img) {
+                    img.src = 'assets/HERO CARD IMAGES/' + target + '-amritvela-kirtan.webp';
+                    img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp');
+                    img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp');
+                    img.setAttribute('data-img-evening', 'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp');
+                    img.setAttribute('data-img-night', 'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp');
+                  }
                 })();
               </script>
             </picture>
@@ -2776,6 +2785,9 @@
         <article class="hero-card" id="heroCard3" data-stream="simran" data-color="#B8860B" data-color-rgb="184,134,11" aria-label="Waheguru Simran" role="group" aria-roledescription="slide">
           <div class="hero-card__image-wrapper">
             <picture id="heroCard3Picture">
+              <img decoding="async" class="hero-card__image" id="heroCard3Img"
+                alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low"
+                onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(150deg,#8B6914,#C49032)'">
               <script>
                 (function() {
                   var slot = localStorage.getItem('anhad_forced_time_of_day');
@@ -2785,14 +2797,14 @@
                   }
                   var theme = localStorage.getItem('anhad_theme') || 'auto';
                   var target = (theme === 'dark') ? 'night' : (theme === 'light' ? 'day' : slot);
-                  document.write('<img decoding="async" class="hero-card__image" id="heroCard3Img" ' +
-                    'src="assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp" ' +
-                    'data-img-morning="assets/HERO CARD IMAGES/morning-waheguru-simran.webp" ' +
-                    'data-img-day="assets/HERO CARD IMAGES/day-waheguru-simran.webp" ' +
-                    'data-img-evening="assets/HERO CARD IMAGES/evening-waheguru-simran.webp" ' +
-                    'data-img-night="assets/HERO CARD IMAGES/night-waheguru-simran.webp" ' +
-                    'alt="Waheguru Simran — Divine Meditation" width="430" height="242" loading="lazy" fetchpriority="low" ' +
-                    'onerror="this.style.display=\'none\';this.parentNode.style.background=\'linear-gradient(150deg,#8B6914,#C49032)\'">');
+                  var img = document.getElementById('heroCard3Img');
+                  if (img) {
+                    img.src = 'assets/HERO CARD IMAGES/' + target + '-waheguru-simran.webp';
+                    img.setAttribute('data-img-morning', 'assets/HERO CARD IMAGES/morning-waheguru-simran.webp');
+                    img.setAttribute('data-img-day', 'assets/HERO CARD IMAGES/day-waheguru-simran.webp');
+                    img.setAttribute('data-img-evening', 'assets/HERO CARD IMAGES/evening-waheguru-simran.webp');
+                    img.setAttribute('data-img-night', 'assets/HERO CARD IMAGES/night-waheguru-simran.webp');
+                  }
                 })();
               </script>
             </picture>
@@ -2906,11 +2918,11 @@
       <div class="event-card__main">
         <div class="event-card__info">
           <div class="event-card__eyebrow">UPCOMING EVENT</div>
-          <div class="event-card__title skeleton" id="eventTitle">Loading...</div>
-          <div class="event-card__date skeleton" id="eventDate">—</div>
+          <div class="event-card__title skeleton" id="eventTitle" style="min-height: 24px;"></div>
+          <div class="event-card__date skeleton" id="eventDate" style="min-height: 18px;"></div>
           <div class="event-card__countdown-wrapper">
-            <div class="event-card__countdown skeleton" id="eventCountdown">--</div>
-            <div class="event-card__countdown-label skeleton" id="eventCountdownLabel">days</div>
+            <div class="event-card__countdown skeleton" id="eventCountdown" style="min-height: 32px;"></div>
+            <div class="event-card__countdown-label skeleton" id="eventCountdownLabel" style="min-height: 14px;"></div>
           </div>
           <button class="event-card__learn-more" onclick="event.stopPropagation(); if (window.navigateTo) window.navigateTo('Calendar/GurpurabCalendar-ios.html'); else window.location.href='Calendar/GurpurabCalendar-ios.html'">
             Learn More
@@ -3152,6 +3164,7 @@
   <script src="js/capacitor-init.js" defer></script>
   <script src="lib/storage-manager.js" defer></script>
   <script src="lib/capacitor-notifications.js" defer></script>
+  <script src="lib/capacitor-notifications-global.js" defer></script>
   <script src="lib/audio-coordinator.js" defer></script>
   <script src="lib/overlay-player.js" defer></script>
   
@@ -3243,9 +3256,12 @@
       window.AnhadAudioUnlockElement = unlockAudioElement;
 
       // CAPACITOR: Pre-load engine and unlock immediately (no gesture available).
-      if (window.Capacitor) {
+      // NUCLEAR GUARD: Skip audio preload on cached SPA return to prevent audio re-init
+      if (window.Capacitor && !window._ANHAD_SKIP_AUDIO_INIT) {
         loadAudioEngine();
         unlockAudioElement('darbar');
+      } else if (window.Capacitor && window._ANHAD_SKIP_AUDIO_INIT) {
+        console.log('[AnhadAudio] 🚫 Skipping engine load on cached Capacitor return');
       } else {
         // IDLE-LOAD: Fetch + parse the engine during browser idle so it's ready
         // before the user taps play. The <link rel="preload"> in <head> already
@@ -3290,7 +3306,7 @@
   <script>
     var loadLazyScripts = function() {
       var lazyScripts = [
-        'lib/smooth-navigation.js',      // 45KB SPA router — only needed on first nav
+        // smooth-navigation.js MOVED TO HEAD for early load
         'widgets/widget-bridge.js',
         'lib/optimized-image-loader.js',
         'lib/audio-preload.js',
@@ -3318,6 +3334,34 @@
     } else {
       setTimeout(loadLazyScripts, 1500);
     }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════
+       GUIDE BUTTON - ensures click works even before lazy loader finishes
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <script>
+    (function() {
+      var guideBtn = document.getElementById('tourGuideBtn');
+      if (guideBtn) {
+        guideBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof window.startAnhadOnboardingTour === 'function') {
+            window.startAnhadOnboardingTour(true);
+          } else {
+            // Script not loaded yet — load it now
+            var s = document.createElement('script');
+            s.src = 'js/anhad-onboarding.js';
+            s.onload = function() {
+              if (typeof window.startAnhadOnboardingTour === 'function') {
+                window.startAnhadOnboardingTour(true);
+              }
+            };
+            document.head.appendChild(s);
+          }
+        });
+      }
+    })();
   </script>
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -3505,7 +3549,7 @@
 
   <!-- Floating Tab Bar — Same as Dashboard -->
   <nav class="tab-bar" id="mainNav" aria-label="Main Navigation" style="position: fixed !important; bottom: 32px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100000 !important;">
-    <a href="index.html" class="tab-item active">
+    <a href="/index.html" class="tab-item active">
       <span class="tab-icon">&#x1F3E0;</span>
       <span class="tab-label">Home</span>
     </a>

@@ -91,6 +91,10 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
   font-weight: 700 !important;
   letter-spacing: 0.2px !important;
   text-transform: uppercase !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 100% !important;
 }
 
 /* Hover/Active effects */

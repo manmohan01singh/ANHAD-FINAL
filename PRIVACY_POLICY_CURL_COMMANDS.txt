@@ -1,0 +1,156 @@
+╔════════════════════════════════════════════════════════════════╗
+║       PRIVACY POLICY PAGE - CURL COMMANDS REFERENCE           ║
+╚════════════════════════════════════════════════════════════════╝
+
+✅ TEST RESULT: Privacy Policy page is accessible via HTTP
+   Status: 200 OK | Size: 16,675 bytes | CORS: Enabled
+
+────────────────────────────────────────────────────────────────
+
+📝 BASIC CURL COMMANDS
+
+1. Simple GET Request (View HTML Content)
+   ─────────────────────────────────────
+   curl http://localhost:3000/privacy/index.html
+
+
+2. Get Headers Only
+   ─────────────────────────────────────
+   curl -I http://localhost:3000/privacy/index.html
+
+
+3. Verbose Output (Full Details)
+   ─────────────────────────────────────
+   curl -v http://localhost:3000/privacy/index.html
+
+
+4. Save to File
+   ─────────────────────────────────────
+   curl http://localhost:3000/privacy/index.html -o privacy-test.html
+
+
+5. Get Status Code Only
+   ─────────────────────────────────────
+   Windows CMD:
+   curl -s -o NUL -w "%{http_code}" http://localhost:3000/privacy/index.html
+
+   PowerShell:
+   (Invoke-WebRequest -Uri http://localhost:3000/privacy/index.html -UseBasicParsing).StatusCode
+
+
+6. Test with Custom Headers
+   ─────────────────────────────────────
+   curl -H "Origin: https://anhad.vercel.app" http://localhost:3000/privacy/index.html
+
+
+7. Test CORS Preflight (OPTIONS)
+   ─────────────────────────────────────
+   curl -X OPTIONS -H "Origin: https://anhad.vercel.app" -H "Access-Control-Request-Method: GET" -I http://localhost:3000/privacy/index.html
+
+────────────────────────────────────────────────────────────────
+
+🔧 POSTMAN CONFIGURATION
+
+Method:   GET
+URL:      http://localhost:3000/privacy/index.html
+Headers:  (None required - Optional: Origin, User-Agent)
+
+Expected Response:
+  Status:        200 OK
+  Content-Type:  text/html; charset=utf-8
+  CORS:          Access-Control-Allow-Origin: *
+
+────────────────────────────────────────────────────────────────
+
+💻 POWERSHELL COMMANDS
+
+1. Basic Request
+   ─────────────────────────────────────
+   Invoke-WebRequest -Uri http://localhost:3000/privacy/index.html -UseBasicParsing
+
+
+2. Get Status Code
+   ─────────────────────────────────────
+   (Invoke-WebRequest -Uri http://localhost:3000/privacy/index.html -UseBasicParsing).StatusCode
+
+
+3. Get Headers
+   ─────────────────────────────────────
+   (Invoke-WebRequest -Uri http://localhost:3000/privacy/index.html -UseBasicParsing).Headers
+
+
+4. Save Content
+   ─────────────────────────────────────
+   Invoke-WebRequest -Uri http://localhost:3000/privacy/index.html -OutFile privacy-test.html
+
+────────────────────────────────────────────────────────────────
+
+🌐 ALTERNATIVE URLS (Both Work)
+
+✅ http://localhost:3000/privacy/
+✅ http://localhost:3000/privacy/index.html
+✅ http://127.0.0.1:3000/privacy/
+✅ http://127.0.0.1:3000/privacy/index.html
+
+────────────────────────────────────────────────────────────────
+
+📊 EXPECTED RESPONSE HEADERS
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Vary: Origin, Accept-Encoding
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Range, Authorization, X-User-ID
+Access-Control-Allow-Credentials: true
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Cross-Origin-Opener-Policy: same-origin
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: text/html; charset=utf-8
+Content-Length: 16675
+
+────────────────────────────────────────────────────────────────
+
+✅ VERIFICATION CHECKLIST
+
+[✓] Returns HTTP 200 status
+[✓] Content-Type is text/html
+[✓] CORS headers present (* allowed)
+[✓] Security headers configured
+[✓] Contains "Privacy Policy for ANHAD" title
+[✓] Contains contact email (anhadsupport@gmail.com)
+[✓] File size is 16,675 bytes
+[✓] No server errors
+[✓] Accessible from multiple URL formats
+
+────────────────────────────────────────────────────────────────
+
+🚀 PRODUCTION URLS (When Deployed)
+
+Vercel Primary:     https://anhad.vercel.app/privacy/
+Vercel Secondary:   https://anhadnaam.vercel.app/privacy/
+Mobile (Capacitor): capacitor://localhost/privacy/
+
+────────────────────────────────────────────────────────────────
+
+🔍 TROUBLESHOOTING
+
+Issue: Connection Refused
+→ Solution: Start backend server
+  Command: node backend/server.js
+  Or:      npm start
+
+Issue: 404 Not Found  
+→ Solution: Check server is serving frontend directory
+  Verify CONFIG.FRONTEND_ROOT in backend/server.js
+
+Issue: CORS Error
+→ Solution: Server allows all origins in dev mode
+  Check ALLOWED_ORIGINS environment variable for production
+
+────────────────────────────────────────────────────────────────
+
+✅ CONCLUSION: Privacy Policy page is fully accessible and 
+   ready for testing with Postman, curl, or any HTTP client!
+
+────────────────────────────────────────────────────────────────

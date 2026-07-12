@@ -63,7 +63,8 @@
     var apps = document.querySelectorAll('.app, .app-container, [class*="app"]');
     for (var i = 0; i < apps.length; i++) {
       var app = apps[i];
-      app.classList.remove('app--exiting');
+      app.classList.remove('app--exiting', 'app--fade-out');
+      app.classList.add('app--instant'); // Force instant mode for recovered pages
       // Force-reset inline styles that exit animations may have applied
       app.style.opacity = '';
       app.style.transform = '';
@@ -135,6 +136,28 @@
       console.log('[PageLifecycle] ✅ Recovered from bfcache');
     }
   }
+  
+  /**
+   * CAPACITOR OPTIMIZATION: Lightweight recovery for cached SPA returns
+   * Skips heavy DOM queries and only syncs essential UI state
+   */
+  function quickRecover() {
+    // Just ensure the app container is visible and interactive
+    var app = document.querySelector('.app, #app');
+    if (app) {
+      app.classList.add('app--instant');
+      app.classList.remove('app--exiting', 'app--fade-out');
+      app.style.opacity = '1';
+      app.style.pointerEvents = 'all';
+    }
+    console.log('[PageLifecycle] ⚡ Quick recover for cached SPA return');
+  }
+  
+  // Expose recovery methods globally
+  window.AnhadPageLifecycle = {
+    recover: function() { recoverPageState(false); },
+    quickRecover: quickRecover
+  };
 
   /**
    * Pre-cache cleanup — called on pagehide BEFORE the browser stores
