@@ -1,617 +1,151 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#0A0A0C">
-  <title>Guide | ANHAD</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0A0A0C;
-      color: #FAF8F5;
-      min-height: 100vh;
-      padding: 0 0 100px 0;
-      overflow-x: hidden;
-      background-image: radial-gradient(ellipse at 50% 0%, rgba(212, 148, 58, 0.06) 0%, transparent 70%);
-    }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(212, 148, 58, 0.3); border-radius: 99px; }
-
-    /* HEADER */
-    .guide-header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10, 10, 12, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 16px 20px;
-      display: flex; align-items: center; gap: 12px;
-    }
-    .guide-header h1 {
-      font-size: 20px; font-weight: 800; flex: 1;
-      background: linear-gradient(135deg, #D4943A 0%, #B8860B 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 12px;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
-      color: #FAF8F5; font-size: 18px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease; text-decoration: none;
-    }
-    .back-btn:active { transform: scale(0.92); background: rgba(212,148,58,0.2); }
-
-    /* LANGUAGE TOGGLE */
-    .lang-bar {
-      display: flex; gap: 8px; padding: 12px 20px;
-      background: rgba(10,10,12,0.5); flex-shrink: 0;
-    }
-    .lang-btn {
-      padding: 6px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
-      background: transparent; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s ease;
-    }
-    .lang-btn.active {
-      background: rgba(212,148,58,0.2); border-color: #D4943A; color: #D4943A;
-    }
-    .lang-btn:active { transform: scale(0.95); }
-
-    /* SECTION */
-    .section-title {
-      font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-      color: rgba(255,255,255,0.3); padding: 24px 20px 12px;
-    }
-
-    /* FEATURE CARD */
-    .feature-card {
-      margin: 0 16px 10px; padding: 16px 18px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-    .feature-card:active { transform: scale(0.98); background: rgba(255,255,255,0.07); }
-    .feature-card-header {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .feature-icon {
-      width: 40px; height: 40px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .feature-name {
-      font-size: 16px; font-weight: 700; color: #FAF8F5;
-    }
-    .feature-chevron {
-      margin-left: auto; color: rgba(255,255,255,0.2); font-size: 14px;
-      transition: transform 0.3s ease;
-    }
-    .feature-card.open .feature-chevron { transform: rotate(180deg); }
-
-    .feature-details {
-      max-height: 0; overflow: hidden;
-      transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease;
-      opacity: 0; margin-top: 0;
-    }
-    .feature-card.open .feature-details {
-      max-height: 600px; opacity: 1; margin-top: 14px;
-    }
-    .feature-desc {
-      font-size: 13.5px; line-height: 1.6; color: rgba(255,255,255,0.7);
-      margin-bottom: 12px;
-    }
-    .feature-desc strong { color: #D4943A; }
-    .feature-tip {
-      background: rgba(212,148,58,0.08); border-left: 3px solid #D4943A;
-      padding: 10px 14px; border-radius: 0 10px 10px 0;
-      font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.75);
-      margin-bottom: 10px;
-    }
-    .feature-tip strong { color: #D4943A; }
-    .feature-purpose {
-      font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.55);
-      font-style: italic;
-    }
-    .feature-purpose strong { color: #D4943A; font-style: normal; }
-
-    /* COLOR THEMES FOR ICONS */
-    .icon-gold { background: rgba(212,148,58,0.15); }
-    .icon-green { background: rgba(52,199,89,0.15); }
-    .icon-blue { background: rgba(0,122,255,0.15); }
-    .icon-purple { background: rgba(175,82,222,0.15); }
-    .icon-rose { background: rgba(255,69,120,0.15); }
-    .icon-teal { background: rgba(90,200,250,0.15); }
-    .icon-orange { background: rgba(255,159,10,0.15); }
-    .icon-red { background: rgba(255,59,48,0.15); }
-    .icon-indigo { background: rgba(94,92,230,0.15); }
-    .icon-cyan { background: rgba(50,173,230,0.15); }
-
-    /* Subtitle after feature name */
-    .feature-sub {
-      font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 500; margin-top: 2px;
-    }
-
-    /* Empty state */
-    .coming-soon-tag {
-      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-      color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05);
-      padding: 2px 8px; border-radius: 6px; margin-left: 8px;
-    }
-
-    @media (min-width: 640px) {
-      .feature-card { margin: 0 auto 10px; max-width: 600px; }
-      body { padding: 0 0 40px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
+<title>Guide | ANHAD</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0A0A0C;color:#FAF8F5;min-height:100vh;padding:0 0 100px;overflow-x:hidden}
+.guide-header{position:sticky;top:0;z-index:100;background:rgba(10,10,12,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 20px;display:flex;align-items:center;gap:12px}
+.guide-header h1{font-size:20px;font-weight:800;flex:1;background:linear-gradient(135deg,#D4943A,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:#FAF8F5;font-size:18px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+.back-btn:active{transform:scale(0.92)}
+.lang-bar{display:flex;gap:8px;padding:12px 20px}
+.lang-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer}
+.lang-btn.active{background:rgba(212,148,58,0.2);border-color:#D4943A;color:#D4943A}
+.sec-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.3);padding:24px 20px 12px}
+.card{margin:0 16px 10px;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+.card:active{transform:scale(0.98)}
+.ch{display:flex;align-items:center;gap:12px}
+.ci{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cg{background:rgba(212,148,58,0.15)}
+.co{background:rgba(255,159,10,0.15)}
+.cp{background:rgba(175,82,222,0.15)}
+.ct{background:rgba(90,200,250,0.15)}
+.cb{background:rgba(0,122,255,0.15)}
+.cr{background:rgba(255,59,48,0.15)}
+.cg2{background:rgba(52,199,89,0.15)}
+.cr2{background:rgba(255,69,120,0.15)}
+.cind{background:rgba(94,92,230,0.15)}
+.cn{font-size:16px;font-weight:700;color:#FAF8F5}
+.cv{margin-left:auto;color:rgba(255,255,255,0.2);font-size:14px;transition:transform .3s}
+.card.open .cv{transform:rotate(180deg)}
+.cbdy{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .35s,opacity .25s,margin .25s}
+.card.open .cbdy{max-height:600px;opacity:1;margin-top:14px}
+.cd{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.7);margin-bottom:12px}
+.cd strong{color:#D4943A}
+.ctip{background:rgba(212,148,58,0.08);border-left:3px solid #D4943A;padding:10px 14px;border-radius:0 10px 10px 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);margin-bottom:10px}
+.ctip strong{color:#D4943A}
+.cpu{font-size:13px;line-height:1.5;color:rgba(255,255,255,0.55);font-style:italic}
+.cpu strong{color:#D4943A;font-style:normal}
+</style>
 </head>
 <body>
-
-<div class="guide-header">
-  <a href="javascript:history.back()" class="back-btn" aria-label="Go back">←</a>
-  <h1 id="guideTitle">Guide</h1>
+<div class="guide-header"><a href="javascript:history.back()" class="back-btn">&#8592;</a><h1 id="gt">Guide</h1></div>
+<div class="lang-bar" id="lb">
+  <button class="lang-btn active" data-l="en">English</button>
+  <button class="lang-btn" data-l="hi">हिन्दी</button>
+  <button class="lang-btn" data-l="pa">ਪੰਜਾਬੀ</button>
 </div>
-
-<div class="lang-bar" id="langBar">
-  <button class="lang-btn active" data-lang="en">English</button>
-  <button class="lang-btn" data-lang="hi">हिन्दी</button>
-  <button class="lang-btn" data-lang="pa">ਪੰਜਾਬੀ</button>
-</div>
-
-<div class="section-title" id="sectionEssential">ESSENTIALS</div>
-
-<div id="featuresContainer"></div>
-
+<div class="sec-title" id="se">ESSENTIALS</div>
+<div id="fc"></div>
 <script>
-  var content = {
-    en: {
-      title: 'Guide',
-      essentials: 'ESSENTIALS',
-      tools: 'TOOLS & PRACTICES',
-      media: 'MEDIA & COMMUNITY',
-      personal: 'PERSONAL & SETTINGS',
-      features: [
-        {
-          icon: '🏠', iconClass: 'icon-gold', name: 'Home',
-          desc: 'Your spiritual dashboard. The home screen greets you with a dynamic Guru portrait slider, daily Gurbani verse, Nanakshahi date, and a personalized greeting based on the time of day.',
-          tip: 'Quick actions: Tap the Guru portrait to see the full verse. Use the progress bar to track your Nitnem banis for the day.',
-          purpose: 'One place to start your daily spiritual journey — always shows what matters most right now.'
-        },
-        {
-          icon: '📿', iconClass: 'icon-gold', name: 'Nitnem (Daily Prayers)',
-          desc: 'Complete collection of Sikh daily prayers (Nitnem Banis). Read Japji Sahib, Jaap Sahib, Tav Prasad Savaiye, Chaupai Sahib, Anand Sahib, Rehras Sahib, and Sohila Sahib with beautiful typography and Gurmukhi script.',
-          tip: 'Swipe left/right to navigate between Banis. Tap any verse for translation. Use "My Pothi" to create your custom Bani playlist.',
-          purpose: 'Read and recite your daily Nitnem with the purest digital experience — clear Gurmukhi text, translations, and optional audio.'
-        },
-        {
-          icon: '🔥', iconClass: 'icon-orange', name: 'Nitnem Tracker',
-          desc: 'Track your daily Nitnem progress and build streaks. See at a glance how many Banis you\'ve completed today and maintain your spiritual consistency.',
-          tip: 'Check off each Bani as you complete it. Your streak grows with every consecutive day — stay consistent!',
-          purpose: 'Build a consistent Nitnem routine with visual progress tracking and streak motivation.'
-        },
-        {
-          icon: '📖', iconClass: 'icon-purple', name: 'Sehaj Paath (SGGS Reader)',
-          desc: 'Read Sri Guru Granth Sahib Ji from Ang 1 to 1430 with beautiful typography. Track your reading progress page by page with automatic bookmarking.',
-          tip: 'Your reading position is saved automatically. Use the progress tracker to see how far you\'ve come on your Sehaj Paath journey.',
-          purpose: 'Complete a comfortable, self-paced reading of Sri Guru Granth Sahib Ji with automatic progress tracking.'
-        },
-        {
-          icon: '🙏', iconClass: 'icon-teal', name: 'Naam Abhyas (Meditation Timer)',
-          desc: 'A gentle hourly practice timer. The app reminds you every hour to pause for 2 minutes and remember Waheguru with a beautiful notification and meditation screen.',
-          tip: 'Enable notifications to get hourly reminders. When the timer starts, close your eyes and focus on Naam Simran for 2 minutes.',
-          purpose: 'Build a habit of hourly Naam remembrance throughout your day — a core Sikh spiritual practice.'
-        },
-        {
-          icon: '📜', iconClass: 'icon-gold', name: 'Daily Hukamnama',
-          desc: 'Receive today\'s Hukamnama (divine command) from Sri Darbar Sahib, Amritsar. Read the full Shabad with Gurmukhi, Hindi, English translations, and its significance.',
-          tip: 'Visit this page first thing in the morning to start your day with Guru\'s guidance. The Hukamnama updates daily.',
-          purpose: 'Start each day with the Guru\'s divine command — the daily Hukamnama from Sri Harmandir Sahib.'
-        },
-        {
-          icon: '🔍', iconClass: 'icon-blue', name: 'Gurbani Khoj (Search)',
-          desc: 'A powerful search engine for Sri Guru Granth Sahib Ji. Search by keyword, Shabad line, or Ang number. Results show Gurmukhi, transliteration, and translations.',
-          tip: 'Use keywords in any language (English, Punjabi, Hindi). Results appear instantly with full scripture context.',
-          purpose: 'Find any Shabad or verse from Sri Guru Granth Sahib Ji instantly.'
-        },
-        {
-          icon: '🪔', iconClass: 'icon-rose', name: 'Shabad Vichar (Contemplation)',
-          desc: 'Daily divine contemplation — a featured Shabad with its deeper meaning presented for reflection. Let the Guru\'s wisdom guide your thoughts.',
-          tip: 'Take a few quiet moments to read the Shabad and its explanation. Reflect on how it applies to your life today.',
-          purpose: 'Deepen your understanding of Gurbani through daily contemplation of a featured Shabad.'
-        },
-        {
-          icon: '🤖', iconClass: 'icon-purple', name: 'Gurbani GPT',
-          desc: 'An AI-powered spiritual companion. Ask anything about Naam Simran, Gurbani, Sikh history, or the spiritual path and receive thoughtful guidance rooted in Gursikhi.',
-          tip: 'Try asking about a specific Shabad, a Sikh concept, or seek guidance on your spiritual journey. The AI draws from Gurbani wisdom.',
-          purpose: 'Get personalized spiritual guidance and answers to your questions about the Sikh path.'
-        },
-        {
-          icon: '🎲', iconClass: 'icon-blue', name: 'Random Shabad',
-          desc: 'Discover a random Shabad from Sri Guru Granth Sahib Ji. A beautiful way to receive unexpected divine wisdom — perfect for a moment of inspiration.',
-          tip: 'Tap to get a new random Shabad each time. A great daily practice — let the Guru surprise you.',
-          purpose: 'Receive unexpected divine wisdom with a random Shabad — a daily dose of inspiration.'
-        },
-        {
-          icon: '📡', iconClass: 'icon-green', name: 'Sadhsangat Live',
-          desc: 'Discover and watch live Kirtan, Katha, and spiritual programs from Gurdwaras and Sikh channels worldwide. Premium YouTube integration with a curated experience.',
-          tip: 'Browse live streams by category. Tap any stream to watch in-app. Perfect for morning and evening Sadhsangat.',
-          purpose: 'Connect with the global sangat through live Kirtan and Katha streaming.'
-        },
-        {
-          icon: '🎵', iconClass: 'icon-gold', name: 'Gurbani Radio',
-          desc: '24/7 Gurbani Kirtan streaming. Choose from multiple channels: Live Darbar Sahib Kirtan, Amritvela Kirtan collection, and Waheguru Simran meditation stream.',
-          tip: 'Play in the background while you work, read, or rest. The audio continues even when you navigate to other parts of the app.',
-          purpose: 'Immerse yourself in divine Kirtan 24/7 with multiple curated audio streams.'
-        },
-        {
-          icon: '📚', iconClass: 'icon-indigo', name: 'Insights (Learning)',
-          desc: 'A growing library of Gursikhi wisdom — articles on Sikh history, philosophy, Gurbani meanings, sakhis (stories), and spiritual knowledge to deepen your understanding.',
-          tip: 'Browse by category or search for topics. New content is added regularly to expand your learning.',
-          purpose: 'Expand your knowledge of Sikh history, philosophy, and Gurbani meanings.'
-        },
-        {
-          icon: '❤️', iconClass: 'icon-red', name: 'Favorites',
-          desc: 'Save and organize your favorite Shabads, Banis, articles, and content. Access everything you love quickly from one place.',
-          tip: 'Tap the heart icon on any Shabad or content to save it. Organize your favorites into collections.',
-          purpose: 'Your personal collection of beloved Gurbani and spiritual content — always at your fingertips.'
-        },
-        {
-          icon: '📝', iconClass: 'icon-rose', name: 'Notes (Spiritual Journal)',
-          desc: 'A private spiritual journal to write your thoughts, reflections, and learnings. Keep a personal diary of your spiritual journey.',
-          tip: 'Write after your Nitnem or meditation session. Reflect on what you\'ve learned from the day\'s Hukamnama or Shabad.',
-          purpose: 'Document your spiritual journey with a private, beautiful journal.'
-        },
-        {
-          icon: '📅', iconClass: 'icon-gold', name: 'Gurpurab Calendar',
-          desc: 'View all Sikh Gurpurabs (anniversaries), historical events, and festivals on an elegant calendar. Tap any event to learn more about its significance.',
-          tip: 'The homepage shows the next upcoming Gurpurab with a countdown. Use the calendar to plan ahead for the year.',
-          purpose: 'Never miss a Gurpurab — stay connected to Sikh history and celebrations.'
-        },
-        {
-          icon: '📿', iconClass: 'icon-teal', name: 'My Pothi (Bani Collection)',
-          desc: 'Create your personal Bani collection by selecting your favorite Banis. Read them in your preferred order every day.',
-          tip: 'Go to the Nitnem section and use the "My Pothi" feature to customize your daily reading list.',
-          purpose: 'A personalized Bani playlist for your daily spiritual practice.'
-        },
-        {
-          icon: '⏰', iconClass: 'icon-orange', name: 'Cinematic Alarm (Reminders)',
-          desc: 'A beautiful cinematic alarm system for Amritvela. Drag right for sunset timing, drag left for sunrise. Set spiritual reminders with a stunning visual interface.',
-          tip: 'Use it as an Amritvela wake-up alarm. The cinematic interface makes waking up for spiritual practice a beautiful experience.',
-          purpose: 'Wake up for Amritvela and spiritual practices with a beautiful, cinematic alarm.'
-        },
-        {
-          icon: '🎨', iconClass: 'icon-purple', name: 'Dynamic Theme',
-          desc: 'ANHAD automatically changes its appearance based on the time of day — Amritvela (dawn), Day, Evening, and Night. Each time slot has unique colors, backgrounds, and ambiance.',
-          tip: 'Let the theme run on "Auto" for the full experience. The background artwork and card colors adapt beautifully with the local hour.',
-          purpose: 'An immersive visual experience that aligns with the rhythms of the day and night.'
-        },
-        {
-          icon: '⚙️', iconClass: 'icon-blue', name: 'Settings & Profile',
-          desc: 'Customize your ANHAD experience. Manage notifications, theme preferences, audio settings, and your profile. Configure spiritual reminders and alarm preferences.',
-          tip: 'Set your preferred language, enable/disable notifications, and customize the theme to your liking.',
-          purpose: 'Make ANHAD truly yours — customize every aspect of your spiritual companion.'
-        }
-      ]
-    },
-    hi: {
-      title: 'गाइड',
-      essentials: 'आवश्यक',
-      tools: 'उपकरण और अभ्यास',
-      media: 'मीडिया और संगत',
-      personal: 'व्यक्तिगत और सेटिंग्स',
-      features: [
-        {
-          icon: '🏠', iconClass: 'icon-gold', name: 'होम',
-          desc: 'आपका आध्यात्मिक डैशबोर्ड। होम स्क्रीन आपको गुरु पोर्ट्रेट स्लाइडर, दैनिक गुरबाणी वचन, नानकशाही तिथि और दिन के समय के अनुसार व्यक्तिगत अभिवादन के साथ स्वागत करती है।',
-          tip: 'त्वरित क्रियाएँ: पूरा वचन देखने के लिए गुरु पोर्ट्रेट पर टैप करें। दिन की नितनेम बाणियों को ट्रैक करने के लिए प्रोग्रेस बार का उपयोग करें।',
-          purpose: 'एक ही स्थान पर अपनी दैनिक आध्यात्मिक यात्रा शुरू करें — हमेशा वही दिखाता है जो इस समय सबसे महत्वपूर्ण है।'
-        },
-        {
-          icon: '📿', iconClass: 'icon-gold', name: 'नितनेम (दैनिक प्रार्थनाएँ)',
-          desc: 'सिख दैनिक प्रार्थनाओं (नितनेम बाणियों) का संपूर्ण संग्रह। जपुजी साहिब, जाप साहिब, तव प्रसाद स्वैये, चौपाई साहिब, आनंद साहिब, रहिरास साहिब और सोहिला साहिब को सुंदर टाइपोग्राफी और गुरुमुखी लिपि में पढ़ें।',
-          tip: 'बाणियों के बीच जाने के लिए बाएँ/दाएँ स्वाइप करें। अनुवाद के लिए किसी भी वचन पर टैप करें। अपनी कस्टम बाणी प्लेलिस्ट बनाने के लिए "मेरी पोथी" का उपयोग करें।',
-          purpose: 'अपने दैनिक नितनेम को सबसे शुद्ध डिजिटल अनुभव के साथ पढ़ें — स्पष्ट गुरुमुखी पाठ, अनुवाद और वैकल्पिक ऑडियो।'
-        },
-        {
-          icon: '🔥', iconClass: 'icon-orange', name: 'नितनेम ट्रैकर',
-          desc: 'अपनी दैनिक नितनेम प्रगति को ट्रैक करें और स्ट्रीक्स बनाएँ। एक नज़र में देखें कि आपने आज कितनी बाणियाँ पूरी की हैं और अपनी आध्यात्मिक निरंतरता बनाए रखें।',
-          tip: 'प्रत्येक बाणी को पूरा करने पर उसे चेक करें। लगातार हर दिन आपकी स्ट्रीक बढ़ती है — निरंतर रहें!',
-          purpose: 'दृश्य प्रगति ट्रैकिंग और स्ट्रीक प्रेरणा के साथ एक सुसंगत नितनेम दिनचर्या बनाएँ।'
-        },
-        {
-          icon: '📖', iconClass: 'icon-purple', name: 'सहज पाठ (SGGS रीडर)',
-          desc: 'श्री गुरु ग्रंथ साहिब जी को अंग 1 से 1430 तक सुंदर टाइपोग्राफी के साथ पढ़ें। स्वचालित बुकमार्किंग के साथ पृष्ठ दर पृष्ठ अपनी पढ़ने की प्रगति को ट्रैक करें।',
-          tip: 'आपकी पढ़ने की स्थिति स्वचालित रूप से सहेजी जाती है। अपनी सहज पाठ यात्रा पर आप कितनी दूर आ गए हैं यह देखने के लिए प्रगति ट्रैकर का उपयोग करें।',
-          purpose: 'स्वचालित प्रगति ट्रैकिंग के साथ श्री गुरु ग्रंथ साहिब जी का आरामदायक, स्व-गति वाला पाठ पूरा करें।'
-        },
-        {
-          icon: '🙏', iconClass: 'icon-teal', name: 'नाम अभ्यास (ध्यान टाइमर)',
-          desc: 'एक सौम्य प्रति घंटा अभ्यास टाइमर। ऐप आपको हर घंटे 2 मिनट रुकने और वाहेगुरु को याद करने की याद दिलाता है, जिसमें सुंदर सूचना और ध्यान स्क्रीन होती है।',
-          tip: 'प्रति घंटा रिमाइंडर पाने के लिए सूचनाएँ सक्षम करें। जब टाइमर शुरू हो, तो अपनी आँखें बंद करें और 2 मिनट नाम सिमरन पर ध्यान केंद्रित करें।',
-          purpose: 'अपने पूरे दिन में प्रति घंटा नाम स्मरण की आदत बनाएँ — एक मुख्य सिख आध्यात्मिक अभ्यास।'
-        },
-        {
-          icon: '📜', iconClass: 'icon-gold', name: 'दैनिक हुकमनामा',
-          desc: 'श्री दरबार साहिब, अमृतसर से आज का हुकमनामा प्राप्त करें। गुरुमुखी, हिंदी, अंग्रेजी अनुवाद और इसके महत्व के साथ पूरा शब्द पढ़ें।',
-          tip: 'गुरु के मार्गदर्शन से अपने दिन की शुरुआत करने के लिए सुबह सबसे पहले इस पृष्ठ पर जाएँ। हुकमनामा प्रतिदिन अपडेट होता है।',
-          purpose: 'गुरु के दिव्य आदेश के साथ प्रत्येक दिन की शुरुआत करें — श्री हरमंदिर साहिब से दैनिक हुकमनामा।'
-        },
-        {
-          icon: '🔍', iconClass: 'icon-blue', name: 'गुरबाणी खोज (सर्च)',
-          desc: 'श्री गुरु ग्रंथ साहिब जी के लिए एक शक्तिशाली खोज इंजन। कीवर्ड, शबद लाइन या अंग नंबर द्वारा खोजें। परिणाम गुरुमुखी, लिप्यंतरण और अनुवाद दिखाते हैं।',
-          tip: 'किसी भी भाषा (अंग्रेजी, पंजाबी, हिंदी) में कीवर्ड का उपयोग करें। परिणाम पूर्ण संदर्भ के साथ तुरंत दिखाई देते हैं।',
-          purpose: 'श्री गुरु ग्रंथ साहिब जी से कोई भी शबद या वचन तुरंत खोजें।'
-        },
-        {
-          icon: '🪔', iconClass: 'icon-rose', name: 'शबद विचार (चिंतन)',
-          desc: 'दैनिक दिव्य चिंतन — एक शबद जिसका गहरा अर्थ चिंतन के लिए प्रस्तुत किया गया है। गुरु के ज्ञान को अपने विचारों का मार्गदर्शन करने दें।',
-          tip: 'शबद और उसकी व्याख्या को पढ़ने के लिए कुछ शांत पल लें। विचार करें कि यह आज आपके जीवन पर कैसे लागू होता है।',
-          purpose: 'एक विशेष शबद के दैनिक चिंतन के माध्यम से गुरबानी की अपनी समझ को गहरा करें।'
-        },
-        {
-          icon: '🤖', iconClass: 'icon-purple', name: 'गुरबाणी GPT',
-          desc: 'एक AI-संचालित आध्यात्मिक साथी। नाम सिमरन, गुरबानी, सिख इतिहास या आध्यात्मिक पथ के बारे में कुछ भी पूछें और गुरसिखी में निहित विचारशील मार्गदर्शन प्राप्त करें।',
-          tip: 'किसी विशिष्ट शबद, सिख अवधारणा के बारे में पूछने या अपनी आध्यात्मिक यात्रा पर मार्गदर्शन प्राप्त करने का प्रयास करें। AI गुरबानी ज्ञान से आकर्षित होता है।',
-          purpose: 'सिख पथ के बारे में अपने सवालों के लिए व्यक्तिगत आध्यात्मिक मार्गदर्शन और उत्तर प्राप्त करें।'
-        },
-        {
-          icon: '🎲', iconClass: 'icon-blue', name: 'रैंडम शबद',
-          desc: 'श्री गुरु ग्रंथ साहिब जी से एक यादृच्छिक शबद खोजें। अप्रत्याशित दिव्य ज्ञान प्राप्त करने का एक सुंदर तरीका — प्रेरणा के एक पल के लिए एकदम सही।',
-          tip: 'हर बार एक नया यादृच्छिक शबद पाने के लिए टैप करें। एक महान दैनिक अभ्यास — गुरु को आपको आश्चर्यचकित करने दें।',
-          purpose: 'एक यादृच्छिक शबद के साथ अप्रत्याशित दिव्य ज्ञान प्राप्त करें — प्रेरणा की एक दैनिक खुराक।'
-        },
-        {
-          icon: '📡', iconClass: 'icon-green', name: 'साधसंगत लाइव',
-          desc: 'दुनिया भर के गुरुद्वारों और सिख चैनलों से लाइव कीर्तन, कथा और आध्यात्मिक कार्यक्रम खोजें और देखें। एक क्यूरेटेड अनुभव के साथ प्रीमियम YouTube एकीकरण।',
-          tip: 'श्रेणी के अनुसार लाइव स्ट्रीम ब्राउज़ करें। इन-ऐप देखने के लिए किसी भी स्ट्रीम पर टैप करें। सुबह और शाम की संगत के लिए एकदम सही।',
-          purpose: 'लाइव कीर्तन और कथा स्ट्रीमिंग के माध्यम से वैश्विक संगत से जुड़ें।'
-        },
-        {
-          icon: '🎵', iconClass: 'icon-gold', name: 'गुरबाणी रेडियो',
-          desc: '24/7 गुरबानी कीर्तन स्ट्रीमिंग। कई चैनलों में से चुनें: लाइव दरबार साहिब कीर्तन, अमृतवेला कीर्तन संग्रह और वाहेगुरु सिमरन ध्यान स्ट्रीम।',
-          tip: 'काम करते, पढ़ते या आराम करते समय बैकग्राउंड में चलाएँ। ऐप के अन्य भागों में नेविगेट करने पर भी ऑडियो जारी रहता है।',
-          purpose: 'एकाधिक क्यूरेटेड ऑडियो स्ट्रीम के साथ 24/7 दिव्य कीर्तन में खुद को डुबोएँ।'
-        },
-        {
-          icon: '📚', iconClass: 'icon-indigo', name: 'इनसाइट्स (सीखना)',
-          desc: 'गुरसिखी ज्ञान की एक बढ़ती हुई लाइब्रेरी — सिख इतिहास, दर्शन, गुरबानी अर्थ, साखियाँ और आध्यात्मिक ज्ञान पर लेख जो आपकी समझ को गहरा करते हैं।',
-          tip: 'श्रेणी के अनुसार ब्राउज़ करें या विषय खोजें। आपकी सीखने के विस्तार के लिए नई सामग्री नियमित रूप से जोड़ी जाती है।',
-          purpose: 'सिख इतिहास, दर्शन और गुरबानी अर्थ के अपने ज्ञान का विस्तार करें।'
-        },
-        {
-          icon: '❤️', iconClass: 'icon-red', name: 'पसंदीदा',
-          desc: 'अपने पसंदीदा शबद, बाणियाँ, लेख और सामग्री को सहेजें और व्यवस्थित करें। एक स्थान से अपनी सभी पसंदीदा चीज़ों तक तुरंत पहुँचें।',
-          tip: 'किसी भी शबद या सामग्री पर हार्ट आइकन टैप करके उसे सहेजें। अपने पसंदीदा को संग्रह में व्यवस्थित करें।',
-          purpose: 'प्रिय गुरबानी और आध्यात्मिक सामग्री का आपका व्यक्तिगत संग्रह — हमेशा आपकी उंगलियों पर।'
-        },
-        {
-          icon: '📝', iconClass: 'icon-rose', name: 'नोट्स (आध्यात्मिक जर्नल)',
-          desc: 'अपने विचारों, प्रतिबिंबों और सीखने को लिखने के लिए एक निजी आध्यात्मिक जर्नल। अपनी आध्यात्मिक यात्रा की एक व्यक्तिगत डायरी रखें।',
-          tip: 'अपने नितनेम या ध्यान सत्र के बाद लिखें। दिन के हुकमनामा या शबद से आपने क्या सीखा, इस पर प्रतिबिंबित करें।',
-          purpose: 'एक निजी, सुंदर जर्नल के साथ अपनी आध्यात्मिक यात्रा का दस्तावेज़ीकरण करें।'
-        },
-        {
-          icon: '📅', iconClass: 'icon-gold', name: 'गुरपुरब कैलेंडर',
-          desc: 'सभी सिख गुरपुरबों (वर्षगाँठ), ऐतिहासिक घटनाओं और त्योहारों को एक सुरुचिपूर्ण कैलेंडर पर देखें। इसके महत्व के बारे में अधिक जानने के लिए किसी भी घटना पर टैप करें।',
-          tip: 'होमपेज काउंटडाउन के साथ अगला आगामी गुरपुरब दिखाता है। वर्ष की योजना बनाने के लिए कैलेंडर का उपयोग करें।',
-          purpose: 'कभी भी कोई गुरपुरब न चूकें — सिख इतिहास और समारोहों से जुड़े रहें।'
-        },
-        {
-          icon: '📿', iconClass: 'icon-teal', name: 'मेरी पोथी (बाणी संग्रह)',
-          desc: 'अपनी पसंदीदा बाणियों का चयन करके अपना व्यक्तिगत बाणी संग्रह बनाएँ। उन्हें हर दिन अपने पसंदीदा क्रम में पढ़ें।',
-          tip: 'नितनेम अनुभाग पर जाएँ और अपनी दैनिक पढ़ने की सूची को अनुकूलित करने के लिए "मेरी पोथी" सुविधा का उपयोग करें।',
-          purpose: 'आपकी दैनिक आध्यात्मिक प्रथा के लिए एक व्यक्तिगत बाणी प्लेलिस्ट।'
-        },
-        {
-          icon: '⏰', iconClass: 'icon-orange', name: 'सिनेमैटिक अलार्म (रिमाइंडर)',
-          desc: 'अमृतवेला के लिए एक सुंदर सिनेमैटिक अलार्म सिस्टम। सूर्यास्त के समय के लिए दाएँ ड्रैग करें, सूर्योदय के लिए बाएँ। एक शानदार विजुअल इंटरफेस के साथ आध्यात्मिक रिमाइंडर सेट करें।',
-          tip: 'इसे अमृतवेला जागने के अलार्म के रूप में उपयोग करें। सिनेमैटिक इंटरफेस आध्यात्मिक अभ्यास के लिए जागने को एक सुंदर अनुभव बनाता है।',
-          purpose: 'एक सुंदर, सिनेमैटिक अलार्म के साथ अमृतवेला और आध्यात्मिक अभ्यासों के लिए जागें।'
-        },
-        {
-          icon: '🎨', iconClass: 'icon-purple', name: 'डायनामिक थीम',
-          desc: 'ANHAD दिन के समय के अनुसार अपनी उपस्थिति स्वचालित रूप से बदलता है — अमृतवेला (भोर), दिन, शाम और रात। प्रत्येक समय स्लॉट में अद्वितीय रंग, पृष्ठभूमि और माहौल होता है।',
-          tip: 'पूर्ण अनुभव के लिए थीम को "ऑटो" पर चलने दें। पृष्ठभूमि कलाकृति और कार्ड रंग स्थानीय घंटे के साथ खूबसूरती से अनुकूलित होते हैं।',
-          purpose: 'एक immersive विजुअल अनुभव जो दिन और रात की लय के साथ संरेखित होता है।'
-        },
-        {
-          icon: '⚙️', iconClass: 'icon-blue', name: 'सेटिंग्स और प्रोफाइल',
-          desc: 'अपने ANHAD अनुभव को अनुकूलित करें। सूचनाएँ, थीम प्राथमिकताएँ, ऑडियो सेटिंग्स और अपनी प्रोफाइल प्रबंधित करें। आध्यात्मिक रिमाइंडर और अलार्म प्राथमिकताएँ कॉन्फ़िगर करें।',
-          tip: 'अपनी पसंदीदा भाषा सेट करें, सूचनाएँ सक्षम/अक्षम करें और अपनी पसंद के अनुसार थीम को अनुकूलित करें।',
-          purpose: 'ANHAD को वास्तव में अपना बनाएँ — अपने आध्यात्मिक साथी के हर पहलू को अनुकूलित करें।'
-        }
-      ]
-    },
-    pa: {
-      title: 'ਗਾਈਡ',
-      essentials: 'ਜ਼ਰੂਰੀ',
-      tools: 'ਸੰਦ ਅਤੇ ਅਭਿਆਸ',
-      media: 'ਮੀਡੀਆ ਅਤੇ ਸੰਗਤ',
-      personal: 'ਨਿੱਜੀ ਅਤੇ ਸੈਟਿੰਗਾਂ',
-      features: [
-        {
-          icon: '🏠', iconClass: 'icon-gold', name: 'ਹੋਮ',
-          desc: 'ਤੁਹਾਡਾ ਅਧਿਆਤਮਿਕ ਡੈਸ਼ਬੋਰਡ। ਹੋਮ ਸਕ੍ਰੀਨ ਤੁਹਾਨੂੰ ਗੁਰੂ ਪੋਰਟਰੇਟ ਸਲਾਈਡਰ, ਰੋਜ਼ਾਨਾ ਗੁਰਬਾਣੀ ਵਚਨ, ਨਾਨਕਸ਼ਾਹੀ ਤਾਰੀਖ ਅਤੇ ਦਿਨ ਦੇ ਸਮੇਂ ਅਨੁਸਾਰ ਨਿੱਜੀ ਸਤਿਕਾਰ ਨਾਲ ਸਵਾਗਤ ਕਰਦੀ ਹੈ।',
-          tip: 'ਤੁਰੰਤ ਕਾਰਵਾਈਆਂ: ਪੂਰਾ ਵਚਨ ਦੇਖਣ ਲਈ ਗੁਰੂ ਪੋਰਟਰੇਟ 'ਤੇ ਟੈਪ ਕਰੋ। ਦਿਨ ਦੀਆਂ ਨਿਤਨੇਮ ਬਾਣੀਆਂ ਨੂੰ ਟ੍ਰੈਕ ਕਰਨ ਲਈ ਪ੍ਰੋਗਰੈਸ ਬਾਰ ਦੀ ਵਰਤੋਂ ਕਰੋ।',
-          purpose: 'ਇੱਕ ਥਾਂ 'ਤੇ ਆਪਣੀ ਰੋਜ਼ਾਨਾ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ — ਹਮੇਸ਼ਾ ਉਹੀ ਦਿਖਾਉਂਦਾ ਹੈ ਜੋ ਇਸ ਸਮੇਂ ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਹੈ।'
-        },
-        {
-          icon: '📿', iconClass: 'icon-gold', name: 'ਨਿਤਨੇਮ (ਰੋਜ਼ਾਨਾ ਪ੍ਰਾਰਥਨਾਵਾਂ)',
-          desc: 'ਸਿੱਖ ਰੋਜ਼ਾਨਾ ਪ੍ਰਾਰਥਨਾਵਾਂ (ਨਿਤਨੇਮ ਬਾਣੀਆਂ) ਦਾ ਸੰਪੂਰਨ ਸੰਗ੍ਰਹਿ। ਜਪੁਜੀ ਸਾਹਿਬ, ਜਾਪੁ ਸਾਹਿਬ, ਤਵ ਪ੍ਰਸਾਦਿ ਸਵਯੇ, ਚੌਪਈ ਸਾਹਿਬ, ਅਨੰਦ ਸਾਹਿਬ, ਰਹਿਰਾਸ ਸਾਹਿਬ ਅਤੇ ਸੋਹਿਲਾ ਸਾਹਿਬ ਨੂੰ ਸੁੰਦਰ ਟਾਈਪੋਗ੍ਰਾਫੀ ਅਤੇ ਗੁਰਮੁਖੀ ਲਿਪੀ ਵਿੱਚ ਪੜ੍ਹੋ।',
-          tip: 'ਬਾਣੀਆਂ ਵਿਚਕਾਰ ਜਾਣ ਲਈ ਖੱਬੇ/ਸੱਜੇ ਸਵਾਈਪ ਕਰੋ। ਅਨੁਵਾਦ ਲਈ ਕਿਸੇ ਵੀ ਵਚਨ 'ਤੇ ਟੈਪ ਕਰੋ। ਆਪਣੀ ਕਸਟਮ ਬਾਣੀ ਪਲੇਲਿਸਟ ਬਣਾਉਣ ਲਈ "ਮੇਰੀ ਪੋਥੀ" ਦੀ ਵਰਤੋਂ ਕਰੋ।',
-          purpose: 'ਆਪਣੇ ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਨੂੰ ਸਭ ਤੋਂ ਸ਼ੁੱਧ ਡਿਜੀਟਲ ਅਨੁਭਵ ਨਾਲ ਪੜ੍ਹੋ — ਸਪਸ਼ਟ ਗੁਰਮੁਖੀ ਪਾਠ, ਅਨੁਵਾਦ ਅਤੇ ਵਿਕਲਪਿਕ ਆਡੀਓ।'
-        },
-        {
-          icon: '🔥', iconClass: 'icon-orange', name: 'ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ',
-          desc: 'ਆਪਣੀ ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਪ੍ਰਗਤੀ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ ਅਤੇ ਸਟ੍ਰੀਕਸ ਬਣਾਓ। ਇੱਕ ਨਜ਼ਰ ਵਿੱਚ ਦੇਖੋ ਕਿ ਤੁਸੀਂ ਅੱਜ ਕਿੰਨੀਆਂ ਬਾਣੀਆਂ ਪੂਰੀਆਂ ਕੀਤੀਆਂ ਹਨ ਅਤੇ ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਨਿਰੰਤਰਤਾ ਬਣਾਈ ਰੱਖੋ।',
-          tip: 'ਹਰੇਕ ਬਾਣੀ ਨੂੰ ਪੂਰਾ ਕਰਨ 'ਤੇ ਚੈੱਕ ਕਰੋ। ਲਗਾਤਾਰ ਹਰ ਰੋਜ਼ ਤੁਹਾਡੀ ਸਟ੍ਰੀਕ ਵਧਦੀ ਹੈ — ਨਿਰੰਤਰ ਰਹੋ!',
-          purpose: 'ਦ੍ਰਿਸ਼ ਪ੍ਰਗਤੀ ਟ੍ਰੈਕਿੰਗ ਅਤੇ ਸਟ੍ਰੀਕ ਪ੍ਰੇਰਣਾ ਨਾਲ ਇੱਕ ਸਥਿਰ ਨਿਤਨੇਮ ਰੁਟੀਨ ਬਣਾਓ।'
-        },
-        {
-          icon: '📖', iconClass: 'icon-purple', name: 'ਸਹਜ ਪਾਠ (SGGS ਰੀਡਰ)',
-          desc: 'ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਅੰਗ 1 ਤੋਂ 1430 ਤੱਕ ਸੁੰਦਰ ਟਾਈਪੋਗ੍ਰਾਫੀ ਨਾਲ ਪੜ੍ਹੋ। ਆਟੋਮੈਟਿਕ ਬੁੱਕਮਾਰਕਿੰਗ ਨਾਲ ਪੰਨਾ ਦਰ ਪੰਨਾ ਆਪਣੀ ਪੜ੍ਹਨ ਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ।',
-          tip: 'ਤੁਹਾਡੀ ਪੜ੍ਹਨ ਦੀ ਸਥਿਤੀ ਆਪਣੇ ਆਪ ਸੁਰੱਖਿਅਤ ਹੋ ਜਾਂਦੀ ਹੈ। ਆਪਣੀ ਸਹਜ ਪਾਠ ਯਾਤਰਾ 'ਤੇ ਤੁਸੀਂ ਕਿੰਨੀ ਦੂਰ ਆ ਗਏ ਹੋ ਇਹ ਦੇਖਣ ਲਈ ਪ੍ਰਗਤੀ ਟ੍ਰੈਕਰ ਦੀ ਵਰਤੋਂ ਕਰੋ।',
-          purpose: 'ਆਟੋਮੈਟਿਕ ਪ੍ਰਗਤੀ ਟ੍ਰੈਕਿੰਗ ਨਾਲ ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਦਾ ਆਰਾਮਦਾਇਕ, ਸਵੈ-ਗਤੀ ਵਾਲਾ ਪਾਠ ਪੂਰਾ ਕਰੋ।'
-        },
-        {
-          icon: '🙏', iconClass: 'icon-teal', name: 'ਨਾਮ ਅਭਿਆਸ (ਧਿਆਨ ਟਾਈਮਰ)',
-          desc: 'ਇੱਕ ਨਰਮ ਪ੍ਰਤੀ ਘੰਟਾ ਅਭਿਆਸ ਟਾਈਮਰ। ਐਪ ਤੁਹਾਨੂੰ ਹਰ ਘੰਟੇ 2 ਮਿੰਟ ਰੁਕਣ ਅਤੇ ਵਾਹਿਗੁਰੂ ਨੂੰ ਯਾਦ ਕਰਨ ਦੀ ਯਾਦ ਦਿਵਾਉਂਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਸੁੰਦਰ ਨੋਟੀਫਿਕੇਸ਼ਨ ਅਤੇ ਧਿਆਨ ਸਕ੍ਰੀਨ ਹੁੰਦੀ ਹੈ।',
-          tip: 'ਪ੍ਰਤੀ ਘੰਟਾ ਰੀਮਾਈਂਡਰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ ਨੂੰ ਸਮਰੱਥ ਕਰੋ। ਜਦੋਂ ਟਾਈਮਰ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ, ਆਪਣੀਆਂ ਅੱਖਾਂ ਬੰਦ ਕਰੋ ਅਤੇ 2 ਮਿੰਟ ਨਾਮ ਸਿਮਰਨ 'ਤੇ ਧਿਆਨ ਕੇਂਦਰਿਤ ਕਰੋ।',
-          purpose: 'ਆਪਣੇ ਪੂਰੇ ਦਿਨ ਵਿੱਚ ਪ੍ਰਤੀ ਘੰਟਾ ਨਾਮ ਸਿਮਰਨ ਦੀ ਆਦਤ ਬਣਾਓ — ਇੱਕ ਮੁੱਖ ਸਿੱਖ ਅਧਿਆਤਮਿਕ ਅਭਿਆਸ।'
-        },
-        {
-          icon: '📜', iconClass: 'icon-gold', name: 'ਰੋਜ਼ਾਨਾ ਹੁਕਮਨਾਮਾ',
-          desc: 'ਸ਼੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤਸਰ ਤੋਂ ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ ਪ੍ਰਾਪਤ ਕਰੋ। ਗੁਰਮੁਖੀ, ਹਿੰਦੀ, ਅੰਗਰੇਜ਼ੀ ਅਨੁਵਾਦ ਅਤੇ ਇਸਦੇ ਮਹੱਤਵ ਦੇ ਨਾਲ ਪੂਰਾ ਸ਼ਬਦ ਪੜ੍ਹੋ।',
-          tip: 'ਗੁਰੂ ਦੇ ਮਾਰਗਦਰਸ਼ਨ ਨਾਲ ਆਪਣੇ ਦਿਨ ਦੀ ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਸਵੇਰੇ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਇਸ ਪੰਨੇ 'ਤੇ ਜਾਓ। ਹੁਕਮਨਾਮਾ ਰੋਜ਼ਾਨਾ ਅੱਪਡੇਟ ਹੁੰਦਾ ਹੈ।',
-          purpose: 'ਗੁਰੂ ਦੇ ਦਿਵਈ ਆਦੇਸ਼ ਨਾਲ ਹਰ ਰੋਜ਼ ਦੀ ਸ਼ੁਰੂਆਤ ਕਰੋ — ਸ਼੍ਰੀ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਤੋਂ ਰੋਜ਼ਾਨਾ ਹੁਕਮਨਾਮਾ।'
-        },
-        {
-          icon: '🔍', iconClass: 'icon-blue', name: 'ਗੁਰਬਾਣੀ ਖੋਜ (ਸਰਚ)',
-          desc: 'ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਲਈ ਇੱਕ ਸ਼ਕਤੀਸ਼ਾਲੀ ਖੋਜ ਇੰਜਣ। ਕੀਵਰਡ, ਸ਼ਬਦ ਲਾਈਨ ਜਾਂ ਅੰਗ ਨੰਬਰ ਦੁਆਰਾ ਖੋਜ ਕਰੋ। ਨਤੀਜੇ ਗੁਰਮੁਖੀ, ਲਿਪਾਂਤਰਨ ਅਤੇ ਅਨੁਵਾਦ ਦਿਖਾਉਂਦੇ ਹਨ।',
-          tip: 'ਕਿਸੇ ਵੀ ਭਾਸ਼ਾ (ਅੰਗਰੇਜ਼ੀ, ਪੰਜਾਬੀ, ਹਿੰਦੀ) ਵਿੱਚ ਕੀਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਨਤੀਜੇ ਪੂਰੇ ਸੰਦਰਭ ਨਾਲ ਤੁਰੰਤ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ।',
-          purpose: 'ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਤੋਂ ਕੋਈ ਵੀ ਸ਼ਬਦ ਜਾਂ ਵਚਨ ਤੁਰੰਤ ਲੱਭੋ।'
-        },
-        {
-          icon: '🪔', iconClass: 'icon-rose', name: 'ਸ਼ਬਦ ਵਿਚਾਰ (ਚਿੰਤਨ)',
-          desc: 'ਰੋਜ਼ਾਨਾ ਦਿਵਈ ਚਿੰਤਨ — ਇੱਕ ਸ਼ਬਦ ਜਿਸਦਾ ਡੂੰਘਾ ਅਰਥ ਚਿੰਤਨ ਲਈ ਪੇਸ਼ ਕੀਤਾ ਗਿਆ ਹੈ। ਗੁਰੂ ਦੇ ਗਿਆਨ ਨੂੰ ਆਪਣੇ ਵਿਚਾਰਾਂ ਦਾ ਮਾਰਗਦਰਸ਼ਨ ਕਰਨ ਦਿਓ।',
-          tip: 'ਸ਼ਬਦ ਅਤੇ ਇਸਦੀ ਵਿਆਖਿਆ ਪੜ੍ਹਨ ਲਈ ਕੁਝ ਸ਼ਾਂਤ ਪਲ ਲਓ। ਵਿਚਾਰ ਕਰੋ ਕਿ ਇਹ ਅੱਜ ਤੁਹਾਡੇ ਜੀਵਨ 'ਤੇ ਕਿਵੇਂ ਲਾਗੂ ਹੁੰਦਾ ਹੈ।',
-          purpose: 'ਇੱਕ ਵਿਸ਼ੇਸ਼ ਸ਼ਬਦ ਦੇ ਰੋਜ਼ਾਨਾ ਚਿੰਤਨ ਦੁਆਰਾ ਗੁਰਬਾਣੀ ਦੀ ਆਪਣੀ ਸਮਝ ਨੂੰ ਡੂੰਘਾ ਕਰੋ।'
-        },
-        {
-          icon: '🤖', iconClass: 'icon-purple', name: 'ਗੁਰਬਾਣੀ GPT',
-          desc: 'ਇੱਕ AI-ਸੰਚਾਲਿਤ ਅਧਿਆਤਮਿਕ ਸਾਥੀ। ਨਾਮ ਸਿਮਰਨ, ਗੁਰਬਾਣੀ, ਸਿੱਖ ਇਤਿਹਾਸ ਜਾਂ ਅਧਿਆਤਮਿਕ ਮਾਰਗ ਬਾਰੇ ਕੁਝ ਵੀ ਪੁੱਛੋ ਅਤੇ ਗੁਰਸਿੱਖੀ ਵਿੱਚ ਅਧਾਰਤ ਵਿਚਾਰਸ਼ੀਲ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ।',
-          tip: 'ਕਿਸੇ ਖਾਸ ਸ਼ਬਦ, ਸਿੱਖ ਧਾਰਣਾ ਬਾਰੇ ਪੁੱਛਣ ਜਾਂ ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ 'ਤੇ ਮਾਰਗਦਰਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ। AI ਗੁਰਬਾਣੀ ਗਿਆਨ ਤੋਂ ਖਿੱਚਦਾ ਹੈ।',
-          purpose: 'ਸਿੱਖ ਮਾਰਗ ਬਾਰੇ ਆਪਣੇ ਸਵਾਲਾਂ ਲਈ ਨਿੱਜੀ ਅਧਿਆਤਮਿਕ ਮਾਰਗਦਰਸ਼ਨ ਅਤੇ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ।'
-        },
-        {
-          icon: '🎲', iconClass: 'icon-blue', name: 'ਰੈਂਡਮ ਸ਼ਬਦ',
-          desc: 'ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਤੋਂ ਇੱਕ ਬੇਤਰਤੀਬ ਸ਼ਬਦ ਲੱਭੋ। ਅਚਾਨਕ ਦਿਵਈ ਗਿਆਨ ਪ੍ਰਾਪਤ ਕਰਨ ਦਾ ਇੱਕ ਸੁੰਦਰ ਤਰੀਕਾ — ਪ੍ਰੇਰਣਾ ਦੇ ਇੱਕ ਪਲ ਲਈ ਬਿਲਕੁਲ ਸਹੀ।',
-          tip: 'ਹਰ ਵਾਰ ਇੱਕ ਨਵਾਂ ਬੇਤਰਤੀਬ ਸ਼ਬਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ। ਇੱਕ ਵਧੀਆ ਰੋਜ਼ਾਨਾ ਅਭਿਆਸ — ਗੁਰੂ ਨੂੰ ਤੁਹਾਨੂੰ ਹੈਰਾਨ ਕਰਨ ਦਿਓ।',
-          purpose: 'ਇੱਕ ਬੇਤਰਤੀਬ ਸ਼ਬਦ ਨਾਲ ਅਚਾਨਕ ਦਿਵਈ ਗਿਆਨ ਪ੍ਰਾਪਤ ਕਰੋ — ਪ੍ਰੇਰਣਾ ਦੀ ਇੱਕ ਰੋਜ਼ਾਨਾ ਖੁਰਾਕ।'
-        },
-        {
-          icon: '📡', iconClass: 'icon-green', name: 'ਸਾਧਸੰਗਤ ਲਾਈਵ',
-          desc: 'ਦੁਨੀਆ ਭਰ ਦੇ ਗੁਰਦੁਆਰਿਆਂ ਅਤੇ ਸਿੱਖ ਚੈਨਲਾਂ ਤੋਂ ਲਾਈਵ ਕੀਰਤਨ, ਕਥਾ ਅਤੇ ਅਧਿਆਤਮਿਕ ਪ੍ਰੋਗਰਾਮ ਲੱਭੋ ਅਤੇ ਦੇਖੋ। ਇੱਕ ਕਿਊਰੇਟਿਡ ਅਨੁਭਵ ਨਾਲ ਪ੍ਰੀਮੀਅਮ YouTube ਏਕੀਕਰਣ।',
-          tip: 'ਸ਼੍ਰੇਣੀ ਅਨੁਸਾਰ ਲਾਈਵ ਸਟ੍ਰੀਮ ਬ੍ਰਾਊਜ਼ ਕਰੋ। ਇਨ-ਐਪ ਦੇਖਣ ਲਈ ਕਿਸੇ ਵੀ ਸਟ੍ਰੀਮ 'ਤੇ ਟੈਪ ਕਰੋ। ਸਵੇਰ ਅਤੇ ਸ਼ਾਮ ਦੀ ਸੰਗਤ ਲਈ ਬਿਲਕੁਲ ਸਹੀ।',
-          purpose: 'ਲਾਈਵ ਕੀਰਤਨ ਅਤੇ ਕਥਾ ਸਟ੍ਰੀਮਿੰਗ ਦੁਆਰਾ ਵਿਸ਼ਵ ਸੰਗਤ ਨਾਲ ਜੁੜੋ।'
-        },
-        {
-          icon: '🎵', iconClass: 'icon-gold', name: 'ਗੁਰਬਾਣੀ ਰੇਡੀਓ',
-          desc: '24/7 ਗੁਰਬਾਣੀ ਕੀਰਤਨ ਸਟ੍ਰੀਮਿੰਗ। ਕਈ ਚੈਨਲਾਂ ਵਿੱਚੋਂ ਚੁਣੋ: ਲਾਈਵ ਦਰਬਾਰ ਸਾਹਿਬ ਕੀਰਤਨ, ਅੰਮ੍ਰਿਤਵੇਲਾ ਕੀਰਤਨ ਸੰਗ੍ਰਹਿ ਅਤੇ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ ਧਿਆਨ ਸਟ੍ਰੀਮ।',
-          tip: 'ਕੰਮ ਕਰਦੇ, ਪੜ੍ਹਦੇ ਜਾਂ ਆਰਾਮ ਕਰਦੇ ਸਮੇਂ ਬੈਕਗ੍ਰਾਉਂਡ ਵਿੱਚ ਚਲਾਓ। ਐਪ ਦੇ ਦੂਜੇ ਭਾਗਾਂ ਵਿੱਚ ਨੈਵੀਗੇਟ ਕਰਨ 'ਤੇ ਵੀ ਆਡੀਓ ਜਾਰੀ ਰਹਿੰਦਾ ਹੈ।',
-          purpose: 'ਕਈ ਕਿਊਰੇਟਿਡ ਆਡੀਓ ਸਟ੍ਰੀਮਾਂ ਨਾਲ 24/7 ਦਿਵਈ ਕੀਰਤਨ ਵਿੱਚ ਆਪਣੇ ਆਪ ਨੂੰ ਲੀਨ ਕਰੋ।'
-        },
-        {
-          icon: '📚', iconClass: 'icon-indigo', name: 'ਇਨਸਾਈਟਸ (ਸਿੱਖਣਾ)',
-          desc: 'ਗੁਰਸਿੱਖੀ ਗਿਆਨ ਦੀ ਇੱਕ ਵਧਦੀ ਲਾਇਬ੍ਰੇਰੀ — ਸਿੱਖ ਇਤਿਹਾਸ, ਦਰਸ਼ਨ, ਗੁਰਬਾਣੀ ਅਰਥ, ਸਖੀਆਂ ਅਤੇ ਅਧਿਆਤਮਿਕ ਗਿਆਨ 'ਤੇ ਲੇਖ ਜੋ ਤੁਹਾਡੀ ਸਮਝ ਨੂੰ ਡੂੰਘਾ ਕਰਦੇ ਹਨ।',
-          tip: 'ਸ਼੍ਰੇਣੀ ਅਨੁਸਾਰ ਬ੍ਰਾਊਜ਼ ਕਰੋ ਜਾਂ ਵਿਸ਼ੇ ਖੋਜੋ। ਤੁਹਾਡੀ ਸਿੱਖਣ ਦੇ ਵਿਸਤਾਰ ਲਈ ਨਵੀਂ ਸਮੱਗਰੀ ਨਿਯਮਿਤ ਤੌਰ 'ਤੇ ਜੋੜੀ ਜਾਂਦੀ ਹੈ।',
-          purpose: 'ਸਿੱਖ ਇਤਿਹਾਸ, ਦਰਸ਼ਨ ਅਤੇ ਗੁਰਬਾਣੀ ਅਰਥਾਂ ਦੇ ਆਪਣੇ ਗਿਆਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।'
-        },
-        {
-          icon: '❤️', iconClass: 'icon-red', name: 'ਪਸੰਦੀਦਾ',
-          desc: 'ਆਪਣੇ ਪਸੰਦੀਦਾ ਸ਼ਬਦ, ਬਾਣੀਆਂ, ਲੇਖ ਅਤੇ ਸਮੱਗਰੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਅਤੇ ਵਿਵਸਥਿਤ ਕਰੋ। ਇੱਕ ਥਾਂ ਤੋਂ ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਪਸੰਦੀਦਾ ਚੀਜ਼ਾਂ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਕਰੋ।',
-          tip: 'ਕਿਸੇ ਵੀ ਸ਼ਬਦ ਜਾਂ ਸਮੱਗਰੀ 'ਤੇ ਦਿਲ ਆਈਕਨ ਟੈਪ ਕਰਕੇ ਇਸਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ। ਆਪਣੇ ਪਸੰਦੀਦਾ ਨੂੰ ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਵਿਵਸਥਿਤ ਕਰੋ।',
-          purpose: 'ਪਿਆਰੀ ਗੁਰਬਾਣੀ ਅਤੇ ਅਧਿਆਤਮਿਕ ਸਮੱਗਰੀ ਦਾ ਤੁਹਾਡਾ ਨਿੱਜੀ ਸੰਗ੍ਰਹਿ — ਹਮੇਸ਼ਾ ਤੁਹਾਡੀਆਂ ਉਂਗਲਾਂ 'ਤੇ।'
-        },
-        {
-          icon: '📝', iconClass: 'icon-rose', name: 'ਨੋਟਸ (ਅਧਿਆਤਮਿਕ ਜਰਨਲ)',
-          desc: 'ਆਪਣੇ ਵਿਚਾਰਾਂ, ਪ੍ਰਤੀਬਿੰਬਾਂ ਅਤੇ ਸਿੱਖਣ ਨੂੰ ਲਿਖਣ ਲਈ ਇੱਕ ਨਿੱਜੀ ਅਧਿਆਤਮਿਕ ਜਰਨਲ। ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਦੀ ਇੱਕ ਨਿੱਜੀ ਡਾਇਰੀ ਰੱਖੋ।',
-          tip: 'ਆਪਣੇ ਨਿਤਨੇਮ ਜਾਂ ਧਿਆਨ ਸੈਸ਼ਨ ਤੋਂ ਬਾਅਦ ਲਿਖੋ। ਦਿਨ ਦੇ ਹੁਕਮਨਾਮਾ ਜਾਂ ਸ਼ਬਦ ਤੋਂ ਤੁਸੀਂ ਕੀ ਸਿੱਖਿਆ ਇਸ 'ਤੇ ਪ੍ਰਤੀਬਿੰਬਤ ਕਰੋ।',
-          purpose: 'ਇੱਕ ਨਿੱਜੀ, ਸੁੰਦਰ ਜਰਨਲ ਨਾਲ ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਦਾ ਦਸਤਾਵੇਜ਼ੀਕਰਨ ਕਰੋ।'
-        },
-        {
-          icon: '📅', iconClass: 'icon-gold', name: 'ਗੁਰਪੁਰਬ ਕੈਲੰਡਰ',
-          desc: 'ਸਾਰੇ ਸਿੱਖ ਗੁਰਪੁਰਬਾਂ (ਵਰ੍ਹੇਗੰਢ), ਇਤਿਹਾਸਕ ਘਟਨਾਵਾਂ ਅਤੇ ਤਿਉਹਾਰਾਂ ਨੂੰ ਇੱਕ ਸੁੰਦਰ ਕੈਲੰਡਰ 'ਤੇ ਦੇਖੋ। ਇਸਦੇ ਮਹੱਤਵ ਬਾਰੇ ਹੋਰ ਜਾਣਨ ਲਈ ਕਿਸੇ ਵੀ ਘਟਨਾ 'ਤੇ ਟੈਪ ਕਰੋ।',
-          tip: 'ਹੋਮਪੇਜ ਕਾਊਂਟਡਾਊਨ ਦੇ ਨਾਲ ਅਗਲਾ ਆਉਣ ਵਾਲਾ ਗੁਰਪੁਰਬ ਦਿਖਾਉਂਦਾ ਹੈ। ਸਾਲ ਦੀ ਯੋਜਨਾ ਬਣਾਉਣ ਲਈ ਕੈਲੰਡਰ ਦੀ ਵਰਤੋਂ ਕਰੋ।',
-          purpose: 'ਕਦੇ ਵੀ ਕੋਈ ਗੁਰਪੁਰਬ ਨਾ ਖੁੰਝਾਓ — ਸਿੱਖ ਇਤਿਹਾਸ ਅਤੇ ਸਮਾਰੋਹਾਂ ਨਾਲ ਜੁੜੇ ਰਹੋ।'
-        },
-        {
-          icon: '📿', iconClass: 'icon-teal', name: 'ਮੇਰੀ ਪੋਥੀ (ਬਾਣੀ ਸੰਗ੍ਰਹਿ)',
-          desc: 'ਆਪਣੀਆਂ ਪਸੰਦੀਦਾ ਬਾਣੀਆਂ ਦੀ ਚੋਣ ਕਰਕੇ ਆਪਣਾ ਨਿੱਜੀ ਬਾਣੀ ਸੰਗ੍ਰਹਿ ਬਣਾਓ। ਉਹਨਾਂ ਨੂੰ ਹਰ ਰੋਜ਼ ਆਪਣੇ ਪਸੰਦੀਦਾ ਕ੍ਰਮ ਵਿੱਚ ਪੜ੍ਹੋ।',
-          tip: 'ਨਿਤਨੇਮ ਭਾਗ 'ਤੇ ਜਾਓ ਅਤੇ ਆਪਣੀ ਰੋਜ਼ਾਨਾ ਪੜ੍ਹਨ ਦੀ ਸੂਚੀ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰਨ ਲਈ "ਮੇਰੀ ਪੋਥੀ" ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਕਰੋ।',
-          purpose: 'ਤੁਹਾਡੀ ਰੋਜ਼ਾਨਾ ਅਧਿਆਤਮਿਕ ਪ੍ਰਥਾ ਲਈ ਇੱਕ ਨਿੱਜੀ ਬਾਣੀ ਪਲੇਲਿਸਟ।'
-        },
-        {
-          icon: '⏰', iconClass: 'icon-orange', name: 'ਸਿਨੇਮੈਟਿਕ ਅਲਾਰਮ (ਰੀਮਾਈਂਡਰ)',
-          desc: 'ਅੰਮ੍ਰਿਤਵੇਲਾ ਲਈ ਇੱਕ ਸੁੰਦਰ ਸਿਨੇਮੈਟਿਕ ਅਲਾਰਮ ਸਿਸਟਮ। ਸੂਰਜ ਡੁੱਬਣ ਦੇ ਸਮੇਂ ਲਈ ਸੱਜੇ ਡ੍ਰੈਗ ਕਰੋ, ਸੂਰਜ ਚੜ੍ਹਨ ਲਈ ਖੱਬੇ। ਇੱਕ ਸ਼ਾਨਦਾਰ ਵਿਜ਼ੁਅਲ ਇੰਟਰਫੇਸ ਨਾਲ ਅਧਿਆਤਮਿਕ ਰੀਮਾਈਂਡਰ ਸੈੱਟ ਕਰੋ।',
-          tip: 'ਇਸਨੂੰ ਅੰਮ੍ਰਿਤਵੇਲਾ ਜਾਗਣ ਦੇ ਅਲਾਰਮ ਵਜੋਂ ਵਰਤੋਂ। ਸਿਨੇਮੈਟਿਕ ਇੰਟਰਫੇਸ ਅਧਿਆਤਮਿਕ ਅਭਿਆਸ ਲਈ ਜਾਗਣ ਨੂੰ ਇੱਕ ਸੁੰਦਰ ਅਨੁਭਵ ਬਣਾਉਂਦਾ ਹੈ।',
-          purpose: 'ਇੱਕ ਸੁੰਦਰ, ਸਿਨੇਮੈਟਿਕ ਅਲਾਰਮ ਨਾਲ ਅੰਮ੍ਰਿਤਵੇਲਾ ਅਤੇ ਅਧਿਆਤਮਿਕ ਅਭਿਆਸਾਂ ਲਈ ਜਾਗੋ।'
-        },
-        {
-          icon: '🎨', iconClass: 'icon-purple', name: 'ਡਾਇਨਾਮਿਕ ਥੀਮ',
-          desc: 'ANHAD ਦਿਨ ਦੇ ਸਮੇਂ ਅਨੁਸਾਰ ਆਪਣੀ ਦਿੱਖ ਨੂੰ ਆਪਣੇ ਆਪ ਬਦਲਦਾ ਹੈ — ਅੰਮ੍ਰਿਤਵੇਲਾ (ਸਵੇਰ), ਦਿਨ, ਸ਼ਾਮ ਅਤੇ ਰਾਤ। ਹਰੇਕ ਸਮਾਂ ਸਲਾਟ ਵਿੱਚ ਵਿਲੱਖਣ ਰੰਗ, ਪਿਛੋਕੜ ਅਤੇ ਮਾਹੌਲ ਹੁੰਦਾ ਹੈ।',
-          tip: 'ਪੂਰੇ ਅਨੁਭਵ ਲਈ ਥੀਮ ਨੂੰ "ਆਟੋ" 'ਤੇ ਚੱਲਣ ਦਿਓ। ਪਿਛੋਕੜ ਕਲਾਕਾਰੀ ਅਤੇ ਕਾਰਡ ਰੰਗ ਸਥਾਨਕ ਘੰਟੇ ਦੇ ਨਾਲ ਖੂਬਸੂਰਤੀ ਨਾਲ ਅਨੁਕੂਲ ਹੁੰਦੇ ਹਨ।',
-          purpose: 'ਇੱਕ ਇਮਰਸਿਵ ਵਿਜ਼ੁਅਲ ਅਨੁਭਵ ਜੋ ਦਿਨ ਅਤੇ ਰਾਤ ਦੀਆਂ ਲੈਅ ਨਾਲ ਇਕਸਾਰ ਹੁੰਦਾ ਹੈ।'
-        },
-        {
-          icon: '⚙️', iconClass: 'icon-blue', name: 'ਸੈਟਿੰਗਾਂ ਅਤੇ ਪ੍ਰੋਫਾਈਲ',
-          desc: 'ਆਪਣੇ ANHAD ਅਨੁਭਵ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰੋ। ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ, ਥੀਮ ਤਰਜੀਹਾਂ, ਆਡੀਓ ਸੈਟਿੰਗਾਂ ਅਤੇ ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। ਅਧਿਆਤਮਿਕ ਰੀਮਾਈਂਡਰ ਅਤੇ ਅਲਾਰਮ ਤਰਜੀਹਾਂ ਕੌਂਫਿਗਰ ਕਰੋ।',
-          tip: 'ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ, ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ ਨੂੰ ਸਮਰੱਥ/ਅਸਮਰੱਥ ਕਰੋ ਅਤੇ ਆਪਣੀ ਪਸੰਦ ਅਨੁਸਾਰ ਥੀਮ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰੋ।',
-          purpose: 'ANHAD ਨੂੰ ਸੱਚਮੁੱਚ ਆਪਣਾ ਬਣਾਓ — ਆਪਣੇ ਅਧਿਆਤਮਿਕ ਸਾਥੀ ਦੇ ਹਰ ਪਹਿਲੂ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰੋ।'
-        }
-      ]
-    }
-  };
-
-  var currentLang = 'en';
-  var container = document.getElementById('featuresContainer');
-
-  function render(lang) {
-    currentLang = lang;
-    var data = content[lang];
-    document.getElementById('guideTitle').textContent = data.title;
-    document.getElementById('sectionEssential').textContent = data.essentials;
-    document.querySelectorAll('.lang-btn').forEach(function(btn) {
-      btn.classList.toggle('active', btn.dataset.lang === lang);
-    });
-
-    var html = '';
-    data.features.forEach(function(f, idx) {
-      html += '<div class="feature-card" data-index="' + idx + '">';
-      html += '<div class="feature-card-header">';
-      html += '<div class="feature-icon ' + f.iconClass + '">' + f.icon + '</div>';
-      html += '<div><div class="feature-name">' + f.name + '</div></div>';
-      html += '<div class="feature-chevron">▼</div>';
-      html += '</div>';
-      html += '<div class="feature-details">';
-      html += '<div class="feature-desc">' + f.desc + '</div>';
-      html += '<div class="feature-tip"><strong>💡 How to use:</strong> ' + f.tip + '</div>';
-      html += '<div class="feature-purpose"><strong>🎯 Main purpose:</strong> ' + f.purpose + '</div>';
-      html += '</div></div>';
-    });
-    container.innerHTML = html;
-
-    // click to toggle
-    container.querySelectorAll('.feature-card').forEach(function(card) {
-      card.addEventListener('click', function(e) {
-        // don't toggle if user selected text
-        if (window.getSelection().toString().length > 0) return;
-        var wasOpen = card.classList.contains('open');
-        // close all others
-        container.querySelectorAll('.feature-card.open').forEach(function(c) {
-          c.classList.remove('open');
-        });
-        if (!wasOpen) card.classList.add('open');
-      });
-    });
-  }
-
-  // language switcher
-  document.getElementById('langBar').addEventListener('click', function(e) {
-    var btn = e.target.closest('.lang-btn');
-    if (btn) render(btn.dataset.lang);
+// [icon, iconClass, name, desc, tip, purpose]
+var D={en:[
+["🏠","cg","Home","Your spiritual dashboard. Guru portrait slider, daily Gurbani verse, Nanakshahi date, time-based greeting.","Tap the Guru portrait for the full verse. Use the progress bar to track today's Nitnem banis.","One place to start your daily spiritual journey."],
+["📿","cg","Nitnem (Daily Prayers)","Complete collection of Sikh daily prayers — Japji Sahib, Jaap Sahib, Tav Prasad Savaiye, Chaupai Sahib, Anand Sahib, Rehras Sahib, Sohila Sahib.","Swipe left/right between Banis. Tap any verse for translation.","Read daily Nitnem with clear Gurmukhi text and translations."],
+["🔥","co","Nitnem Tracker","Track daily Nitnem progress and build streaks. See completed Banis at a glance.","Check off each Bani after reciting. Streaks grow with every consecutive day.","Build a consistent Nitnem routine with streak motivation."],
+["📖","cp","Sehaj Paath (SGGS Reader)","Read Sri Guru Granth Sahib Ji from Ang 1 to 1430 with automatic bookmarking.","Reading position saves automatically. Use the tracker to see your progress.","Complete a self-paced reading of Sri Guru Granth Sahib Ji."],
+["🙏","ct","Naam Abhyas (Meditation Timer)","Hourly practice timer reminding you to pause 2 minutes for Waheguru Simran.","Enable notifications for hourly reminders. Close your eyes and focus on Naam.","Build a habit of hourly Naam remembrance throughout the day."],
+["📜","cg","Daily Hukamnama","Today's Hukamnama from Sri Darbar Sahib with full Shabad, translations, and significance.","Visit first thing in the morning. Updates daily.","Start each day with the Guru's divine command."],
+["🔍","cb","Gurbani Khoj (Search)","Search Sri Guru Granth Sahib Ji by keyword, Shabad line, or Ang number.","Use English, Punjabi, or Hindi keywords. Results appear instantly.","Find any Shabad or verse instantly."],
+["🪔","cr2","Shabad Vichar (Contemplation)","Daily featured Shabad with deeper meaning presented for reflection.","Take quiet moments to read and reflect.","Deepen understanding through daily contemplation."],
+["🤖","cp","Gurbani GPT","AI-powered companion. Ask about Naam Simran, Gurbani, Sikh history, or the spiritual path.","Ask about a specific Shabad or seek guidance on your journey.","Get personalized spiritual guidance."],
+["🎲","cb","Random Shabad","Discover a random Shabad for unexpected divine wisdom.","Tap to get a new Shabad each time.","Receive daily inspiration."],
+["📡","cg2","Sadhsangat Live","Live Kirtan, Katha, and spiritual programs from Gurdwaras worldwide.","Browse by category. Tap to watch in-app.","Connect with the global sangat through live streaming."],
+["🎵","cg","Gurbani Radio","24/7 Kirtan streaming — Darbar Sahib Live, Amritvela Kirtan, Waheguru Simran.","Plays in the background while you navigate the app.","Immerse in divine Kirtan 24/7."],
+["📚","cind","Insights (Learning)","Articles on Sikh history, philosophy, Gurbani meanings, and sakhis.","Browse by category. New content added regularly.","Expand your knowledge of Sikh history and Gurbani."],
+["❤️","cr","Favorites","Save your favorite Shabads, Banis, and articles in one place.","Tap the heart icon to save. Organize into collections.","Your personal collection of beloved content."],
+["📝","cr2","Notes (Spiritual Journal)","Private journal for thoughts, reflections, and spiritual learnings.","Write after Nitnem or meditation.","Document your spiritual journey."],
+["📅","cg","Gurpurab Calendar","All Sikh Gurpurabs and festivals with countdowns.","Homepage shows next Gurpurab with countdown.","Never miss a Gurpurab."],
+["📿","ct","My Pothi (Bani Collection)","Custom Bani collection — read favorite Banis in your preferred order.","Go to Nitnem section and use My Pothi.","Personalized Bani playlist."],
+["⏰","co","Cinematic Alarm (Reminders)","Beautiful alarm for Amritvela. Drag right for sunset, left for sunrise.","Use as Amritvela wake-up alarm.","Wake up for Amritvela beautifully."],
+["🎨","cp","Dynamic Theme","ANHAD changes appearance — Amritvela, Day, Evening, Night. Unique colors each slot.","Run on Auto for the full experience.","Immersive visuals aligned with day and night."],
+["⚙️","cb","Settings & Profile","Customize notifications, theme, audio, profile.","Set your language, enable notifications.","Make ANHAD truly yours."]
+],hi:[
+["🏠","cg","होम","आपका आध्यात्मिक डैशबोर्ड। गुरु पोर्ट्रेट स्लाइडर, दैनिक गुरबाणी वचन, नानकशाही तिथि।","गुरु पोर्ट्रेट पर टैप करें। प्रोग्रेस बार से नितनेम ट्रैक करें।","एक स्थान पर अपनी दैनिक आध्यात्मिक यात्रा शुरू करें।"],
+["📿","cg","नितनेम","जपुजी साहिब, जाप साहिब, तव प्रसाद स्वैये, चौपाई साहिब, आनंद साहिब, रहिरास साहिब, सोहिला साहिब।","बाएँ/दाएँ स्वाइप करें। अनुवाद के लिए टैप करें।","स्पष्ट गुरुमुखी पाठ और अनुवाद के साथ नितनेम पढ़ें।"],
+["🔥","co","नितनेम ट्रैकर","दैनिक नितनेम प्रगति ट्रैक करें और स्ट्रीक्स बनाएँ।","प्रत्येक बाणी पूरी करने पर चेक करें।","स्ट्रीक प्रेरणा के साथ नियमित नितनेम।"],
+["📖","cp","सहज पाठ","श्री गुरु ग्रंथ साहिब जी को अंग 1 से 1430 तक पढ़ें। स्वचालित बुकमार्किंग।","पढ़ने की स्थिति स्वचालित सहेजी जाती है।","स्व-गति से श्री गुरु ग्रंथ साहिब का पाठ पूरा करें।"],
+["🙏","ct","नाम अभ्यास","हर घंटे 2 मिनट वाहेगुरु सिमरन के लिए रुकने की याद दिलाता है।","नोटिफिकेशन सक्षम करें। आँखें बंद करें और नाम पर ध्यान दें।","पूरे दिन नाम स्मरण की आदत।"],
+["📜","cg","दैनिक हुकमनामा","श्री दरबार साहिब से आज का हुकमनामा। अनुवाद और महत्व के साथ।","सुबह सबसे पहले देखें। रोजाना अपडेट।","गुरु के आदेश से दिन शुरू करें।"],
+["🔍","cb","गुरबाणी खोज","कीवर्ड, शबद लाइन या अंग नंबर से खोजें।","अंग्रेजी, पंजाबी या हिंदी में खोजें। तुरंत परिणाम।","कोई भी शबद तुरंत खोजें।"],
+["🪔","cr2","शबद विचार","दैनिक चिंतन के लिए विशेष शबद।","शांत पलों में पढ़ें और विचार करें।","गुरबानी की समझ गहरी करें।"],
+["🤖","cp","गुरबाणी GPT","AI आध्यात्मिक साथी। नाम सिमरन, गुरबानी, सिख इतिहास के बारे में पूछें।","विशिष्ट शबद के बारे में पूछें।","व्यक्तिगत आध्यात्मिक मार्गदर्शन।"],
+["🎲","cb","रैंडम शबद","अप्रत्याशित दिव्य ज्ञान के लिए बेतरतीब शबद।","हर बार नया शबद पाने के लिए टैप करें।","दैनिक प्रेरणा।"],
+["📡","cg2","साधसंगत लाइव","गुरुद्वारों से लाइव कीर्तन, कथा और आध्यात्मिक कार्यक्रम।","श्रेणी देखें। इन-ऐप देखें।","वैश्विक संगत से जुड़ें।"],
+["🎵","cg","गुरबाणी रेडियो","24/7 कीर्तन स्ट्रीमिंग। दरबार साहिब, अमृतवेला, वाहेगुरु सिमरन।","बैकग्राउंड में चलता रहता है।","24/7 दिव्य कीर्तन में डूबें।"],
+["📚","cind","इनसाइट्स","सिख इतिहास, दर्शन, गुरबानी अर्थ पर लेख।","श्रेणी देखें। नई सामग्री नियमित जुड़ती है।","सिख ज्ञान का विस्तार करें।"],
+["❤️","cr","पसंदीदा","पसंदीदा शबद, बाणियाँ और लेख सहेजें।","दिल आइकन टैप करें। संग्रह में व्यवस्थित करें।","आपका निजी संग्रह।"],
+["📝","cr2","नोट्स","विचारों और सीखने के लिए निजी आध्यात्मिक जर्नल।","नितनेम या ध्यान के बाद लिखें।","अपनी आध्यात्मिक यात्रा का दस्तावेज़ीकरण।"],
+["📅","cg","गुरपुरब कैलेंडर","सभी गुरपुरब और त्योहार काउंटडाउन के साथ।","होमपेज पर अगला गुरपुरब दिखता है।","कोई गुरपुरब न चूकें।"],
+["📿","ct","मेरी पोथी","पसंदीदा बाणियों का निजी संग्रह।","नितनेम में जाकर मेरी पोथी का उपयोग करें।","निजी बाणी प्लेलिस्ट।"],
+["⏰","co","सिनेमैटिक अलार्म","अमृतवेला के लिए सुंदर अलार्म।","अमृतवेला अलार्म के रूप में उपयोग करें।","अमृतवेला के लिए खूबसूरती से जागें।"],
+["🎨","cp","डायनामिक थीम","समय के अनुसार रूप बदलता है — अमृतवेला, दिन, शाम, रात।","ऑटो पर चलने दें।","दिन-रात की लय के अनुरूप दृश्य अनुभव।"],
+["⚙️","cb","सेटिंग्स","नोटिफिकेशन, थीम, ऑडियो, प्रोफाइल कस्टमाइज़ करें।","भाषा सेट करें, नोटिफिकेशन सक्षम करें।","ANHAD को अपना बनाएं।"]
+],pa:[
+["🏠","cg","ਹੋਮ","ਤੁਹਾਡਾ ਅਧਿਆਤਮਿਕ ਡੈਸ਼ਬੋਰਡ। ਗੁਰੂ ਪੋਰਟਰੇਟ, ਰੋਜ਼ਾਨਾ ਗੁਰਬਾਣੀ ਵਚਨ, ਨਾਨਕਸ਼ਾਹੀ ਤਾਰੀਖ।","ਗੁਰੂ ਪੋਰਟਰੇਟ 'ਤੇ ਟੈਪ ਕਰੋ। ਪ੍ਰੋਗਰੈਸ ਬਾਰ ਨਾਲ ਨਿਤਨੇਮ ਟ੍ਰੈਕ ਕਰੋ।","ਇੱਕ ਥਾਂ 'ਤੇ ਰੋਜ਼ਾਨਾ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ।"],
+["📿","cg","ਨਿਤਨੇਮ","ਜਪੁਜੀ ਸਾਹਿਬ, ਜਾਪੁ ਸਾਹਿਬ, ਤਵ ਪ੍ਰਸਾਦਿ ਸਵਯੇ, ਚੌਪਈ ਸਾਹਿਬ, ਅਨੰਦ ਸਾਹਿਬ, ਰਹਿਰਾਸ ਸਾਹਿਬ, ਸੋਹਿਲਾ ਸਾਹਿਬ।","ਖੱਬੇ/ਸੱਜੇ ਸਵਾਈਪ ਕਰੋ। ਅਨੁਵਾਦ ਲਈ ਟੈਪ ਕਰੋ।","ਸਪਸ਼ਟ ਗੁਰਮੁਖੀ ਪਾਠ ਨਾਲ ਨਿਤਨੇਮ ਪੜ੍ਹੋ।"],
+["🔥","co","ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ","ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਪ੍ਰਗਤੀ ਟ੍ਰੈਕ ਕਰੋ ਅਤੇ ਸਟ੍ਰੀਕਸ ਬਣਾਓ।","ਹਰ ਬਾਣੀ ਪੂਰੀ ਕਰਨ 'ਤੇ ਚੈੱਕ ਕਰੋ।","ਸਟ੍ਰੀਕ ਪ੍ਰੇਰਣਾ ਨਾਲ ਨਿਯਮਤ ਨਿਤਨੇਮ।"],
+["📖","cp","ਸਹਜ ਪਾਠ","ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਅੰਗ 1 ਤੋਂ 1430 ਤੱਕ ਪੜ੍ਹੋ। ਆਟੋਮੈਟਿਕ ਬੁੱਕਮਾਰਕਿੰਗ।","ਪੜ੍ਹਨ ਦੀ ਸਥਿਤੀ ਆਪਣੇ ਆਪ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀ ਹੈ।","ਸਵੈ-ਗਤੀ ਨਾਲ ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਦਾ ਪਾਠ।"],
+["🙏","ct","ਨਾਮ ਅਭਿਆਸ","ਹਰ ਘੰਟੇ 2 ਮਿੰਟ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ ਲਈ ਯਾਦ ਦਿਵਾਉਂਦਾ ਹੈ।","ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ ਸਮਰੱਥ ਕਰੋ। ਅੱਖਾਂ ਬੰਦ ਕਰਕੇ ਨਾਮ 'ਤੇ ਧਿਆਨ ਦਿਓ।","ਦਿਨ ਭਰ ਨਾਮ ਸਿਮਰਨ ਦੀ ਆਦਤ।"],
+["📜","cg","ਰੋਜ਼ਾਨਾ ਹੁਕਮਨਾਮਾ","ਸ਼੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਤੋਂ ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ। ਅਨੁਵਾਦ ਅਤੇ ਮਹੱਤਵ ਨਾਲ।","ਸਵੇਰੇ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਦੇਖੋ। ਰੋਜ਼ਾਨਾ ਅੱਪਡੇਟ।","ਗੁਰੂ ਦੇ ਆਦੇਸ਼ ਨਾਲ ਦਿਨ ਸ਼ੁਰੂ ਕਰੋ।"],
+["🔍","cb","ਗੁਰਬਾਣੀ ਖੋਜ","ਕੀਵਰਡ, ਸ਼ਬਦ ਲਾਈਨ ਜਾਂ ਅੰਗ ਨੰਬਰ ਨਾਲ ਖੋਜੋ।","ਅੰਗਰੇਜ਼ੀ, ਪੰਜਾਬੀ ਜਾਂ ਹਿੰਦੀ ਵਿੱਚ ਖੋਜੋ। ਤੁਰੰਤ ਨਤੀਜੇ।","ਕੋਈ ਵੀ ਸ਼ਬਦ ਤੁਰੰਤ ਲੱਭੋ।"],
+["🪔","cr2","ਸ਼ਬਦ ਵਿਚਾਰ","ਰੋਜ਼ਾਨਾ ਚਿੰਤਨ ਲਈ ਵਿਸ਼ੇਸ਼ ਸ਼ਬਦ।","ਸ਼ਾਂਤ ਪਲਾਂ ਵਿੱਚ ਪੜ੍ਹੋ ਅਤੇ ਵਿਚਾਰ ਕਰੋ।","ਗੁਰਬਾਣੀ ਦੀ ਸਮਝ ਡੂੰਘੀ ਕਰੋ।"],
+["🤖","cp","ਗੁਰਬਾਣੀ GPT","AI ਅਧਿਆਤਮਿਕ ਸਾਥੀ। ਨਾਮ ਸਿਮਰਨ, ਗੁਰਬਾਣੀ, ਸਿੱਖ ਇਤਿਹਾਸ ਬਾਰੇ ਪੁੱਛੋ।","ਖਾਸ ਸ਼ਬਦ ਬਾਰੇ ਪੁੱਛੋ।","ਨਿਜੀ ਅਧਿਆਤਮਿਕ ਮਾਰਗਦਰਸ਼ਨ।"],
+["🎲","cb","ਰੈਂਡਮ ਸ਼ਬਦ","ਅਚਾਨਕ ਦਿਵਈ ਗਿਆਨ ਲਈ ਬੇਤਰਤੀਬ ਸ਼ਬਦ।","ਹਰ ਵਾਰ ਨਵਾਂ ਸ਼ਬਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।","ਰੋਜ਼ਾਨਾ ਪ੍ਰੇਰਣਾ।"],
+["📡","cg2","ਸਾਧਸੰਗਤ ਲਾਈਵ","ਗੁਰਦੁਆਰਿਆਂ ਤੋਂ ਲਾਈਵ ਕੀਰਤਨ, ਕਥਾ ਅਤੇ ਪ੍ਰੋਗਰਾਮ।","ਸ਼੍ਰੇਣੀ ਦੇਖੋ। ਇਨ-ਐਪ ਦੇਖੋ।","ਵਿਸ਼ਵ ਸੰਗਤ ਨਾਲ ਜੁੜੋ।"],
+["🎵","cg","ਗੁਰਬਾਣੀ ਰੇਡੀਓ","24/7 ਕੀਰਤਨ ਸਟ੍ਰੀਮਿੰਗ। ਦਰਬਾਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤਵੇਲਾ, ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ।","ਬੈਕਗ੍ਰਾਉਂਡ ਵਿੱਚ ਚਲਦਾ ਰਹਿੰਦਾ ਹੈ।","24/7 ਦਿਵਈ ਕੀਰਤਨ ਵਿੱਚ ਲੀਨ ਹੋਵੋ।"],
+["📚","cind","ਇਨਸਾਈਟਸ","ਸਿੱਖ ਇਤਿਹਾਸ, ਦਰਸ਼ਨ, ਗੁਰਬਾਣੀ ਅਰਥਾਂ 'ਤੇ ਲੇਖ।","ਸ਼੍ਰੇਣੀ ਦੇਖੋ। ਨਵੀਂ ਸਮੱਗਰੀ ਨਿਯਮਿਤ ਜੁੜਦੀ ਹੈ।","ਸਿੱਖ ਗਿਆਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।"],
+["❤️","cr","ਪਸੰਦੀਦਾ","ਪਸੰਦੀਦਾ ਸ਼ਬਦ, ਬਾਣੀਆਂ ਅਤੇ ਲੇਖ ਸੁਰੱਖਿਅਤ ਕਰੋ।","ਦਿਲ ਆਈਕਨ ਟੈਪ ਕਰੋ। ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਵਿਵਸਥਿਤ ਕਰੋ।","ਤੁਹਾਡਾ ਨਿਜੀ ਸੰਗ੍ਰਹਿ।"],
+["📝","cr2","ਨੋਟਸ","ਵਿਚਾਰਾਂ ਅਤੇ ਸਿੱਖਣ ਲਈ ਨਿਜੀ ਅਧਿਆਤਮਿਕ ਜਰਨਲ।","ਨਿਤਨੇਮ ਜਾਂ ਧਿਆਨ ਤੋਂ ਬਾਅਦ ਲਿਖੋ।","ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਦਾ ਦਸਤਾਵੇਜ਼।"],
+["📅","cg","ਗੁਰਪੁਰਬ ਕੈਲੰਡਰ","ਸਾਰੇ ਗੁਰਪੁਰਬ ਅਤੇ ਤਿਉਹਾਰ ਕਾਊਂਟਡਾਊਨ ਨਾਲ।","ਹੋਮਪੇਜ 'ਤੇ ਅਗਲਾ ਗੁਰਪੁਰਬ ਦਿਖਦਾ ਹੈ।","ਕੋਈ ਗੁਰਪੁਰਬ ਨਾ ਖੁੰਝਾਓ।"],
+["📿","ct","ਮੇਰੀ ਪੋਥੀ","ਪਸੰਦੀਦਾ ਬਾਣੀਆਂ ਦਾ ਨਿਜੀ ਸੰਗ੍ਰਹਿ।","ਨਿਤਨੇਮ ਭਾਗ ਵਿੱਚ ਜਾ ਕੇ ਮੇਰੀ ਪੋਥੀ ਵਰਤੋਂ।","ਨਿਜੀ ਬਾਣੀ ਪਲੇਲਿਸਟ।"],
+["⏰","co","ਸਿਨੇਮੈਟਿਕ ਅਲਾਰਮ","ਅੰਮ੍ਰਿਤਵੇਲਾ ਲਈ ਸੁੰਦਰ ਅਲਾਰਮ।","ਅੰਮ੍ਰਿਤਵੇਲਾ ਅਲਾਰਮ ਵਜੋਂ ਵਰਤੋਂ।","ਅੰਮ੍ਰਿਤਵੇਲਾ ਲਈ ਖੂਬਸੂਰਤੀ ਨਾਲ ਜਾਗੋ।"],
+["🎨","cp","ਡਾਇਨਾਮਿਕ ਥੀਮ","ਸਮੇਂ ਅਨੁਸਾਰ ਰੂਪ ਬਦਲਦਾ ਹੈ — ਅੰਮ੍ਰਿਤਵੇਲਾ, ਦਿਨ, ਸ਼ਾਮ, ਰਾਤ।","ਆਟੋ 'ਤੇ ਚੱਲਣ ਦਿਓ।","ਦਿਨ-ਰਾਤ ਦੀ ਲੈਅ ਅਨੁਸਾਰ ਦ੍ਰਿਸ਼ ਅਨੁਭਵ।"],
+["⚙️","cb","ਸੈਟਿੰਗਾਂ","ਨੋਟੀਫਿਕੇਸ਼ਨ, ਥੀਮ, ਆਡੀਓ, ਪ੍ਰੋਫਾਈਲ ਕਸਟਮਾਈਜ਼ ਕਰੋ।","ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ, ਨੋਟੀਫਿਕੇਸ਼ਨ ਸਮਰੱਥ ਕਰੋ।","ANHAD ਨੂੰ ਆਪਣਾ ਬਣਾਓ।"]
+]};
+</script>
+<script>
+(function(){
+var fc=document.getElementById('fc'),gt=document.getElementById('gt'),se=document.getElementById('se');
+function r(l){
+ gt.textContent=l==='hi'?'गाइड':l==='pa'?'ਗਾਈਡ':'Guide';
+ se.textContent=l==='hi'?'आवश्यक':l==='pa'?'ਜ਼ਰੂਰੀ':'ESSENTIALS';
+ document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});
+ var items=D[l]||D.en,h='';
+ for(var i=0;i<items.length;i++){
+  var f=items[i];
+  h+='<div class="card"><div class="ch"><div class="ci '+f[1]+'">'+f[0]+'</div><div><div class="cn">'+f[2]+'</div></div><div class="cv">&#9660;</div></div><div class="cbdy"><div class="cd">'+f[3]+'</div><div class="ctip"><strong>&#128161; '+(l==='hi'?'कैसे उपयोग करें':l==='pa'?'ਕਿਵੇਂ ਵਰਤੋਂ ਕਰੀਏ':'How to use')+':</strong> '+f[4]+'</div><div class="cpu"><strong>&#127919; '+(l==='hi'?'मुख्य उद्देश्य':l==='pa'?'ਮੁੱਖ ਉਦੇਸ਼':'Main purpose')+':</strong> '+f[5]+'</div></div></div>';
+ }
+ fc.innerHTML=h;
+ fc.querySelectorAll('.card').forEach(function(c){
+  c.addEventListener('click',function(){
+   var o=c.classList.contains('open');
+   fc.querySelectorAll('.card.open').forEach(function(x){x.classList.remove('open')});
+   if(!o)c.classList.add('open');
   });
-
-  // detect saved tour language, else default to English
-  var savedLang = localStorage.getItem('anhad_tour_lang') || 'en';
-  if (['en','hi','pa'].indexOf(savedLang) === -1) savedLang = 'en';
-  render(savedLang);
+ });
+}
+document.getElementById('lb').addEventListener('click',function(e){
+ var b=e.target.closest('.lang-btn');if(b)r(b.dataset.l);
+});
+var sl=localStorage.getItem('anhad_tour_lang')||'en';
+if(['en','hi','pa'].indexOf(sl)===-1)sl='en';
+r(sl);
+})();
 </script>
 </body>
 </html>
