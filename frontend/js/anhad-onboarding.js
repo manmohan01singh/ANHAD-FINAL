@@ -1191,32 +1191,7 @@
         }
     };
 
-    // Auto-launch trigger
-    function setupOnboarding() {
-        // Only run on the main home screen (index.html), not sub-pages
-        const isMainPage = window.location.pathname.endsWith('index.html') ||
-            window.location.pathname.endsWith('/') ||
-            document.getElementById('guruSlider') !== null;
-
-        if (isMainPage) {
-            // Check if user has already completed the onboarding
-            if (localStorage.getItem(TOUR_KEY) !== 'true') {
-                selectedLang = localStorage.getItem(LANG_KEY);
-
-                if (!selectedLang) {
-                    setTimeout(showLanguagePicker, 1500);
-                } else {
-                    setTimeout(startTour, 1500);
-                }
-            }
-        }
-    }
-
-    // Run immediately if page already loaded, otherwise wait for load event
-    if (document.readyState === 'complete') {
-        setupOnboarding();
-    } else {
-        window.addEventListener('load', setupOnboarding);
-    }
+    // Auto-launch removed — only manual Guide page is used
+    // (window.startAnhadOnboardingTour remains available for programmatic use)
 
 })();

@@ -9093,5 +9093,18 @@
     const collageGenerator = new CollageGenerator();
     console.log('[Collage] CollageGenerator initialized');
   </script>
+
+  <!-- Handle mobile hardware back button (Android) -->
+  <script>
+    (function() {
+      if (window.Capacitor) {
+        try {
+          window.Capacitor.Plugins.App.addListener('backButton', function() {
+            window.history.back();
+          });
+        } catch(e) {}
+      }
+    })();
+  </script>
 </body>
 </html>
