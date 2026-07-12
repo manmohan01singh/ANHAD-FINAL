@@ -1381,6 +1381,8 @@
     if (isPlayLocked && streamName === currentStream) {
       if (audio && !audio.paused && !audio.ended) {
         console.log('[AnhadAudio] ⚡ play() — already playing stream:', streamName);
+        // Ensure audio actually outputs sound (page navigation can suspend playback)
+        if (audio.readyState >= 2) { audio.play().catch(function(){}); }
         return;
       }
       // Wait for the current play cycle to finish (lock clears via 'playing' event or timeout)
