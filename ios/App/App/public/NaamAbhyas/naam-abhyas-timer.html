@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pa" data-theme="dark">
+<head>
+  <!-- ══ Instant dark flash prevention ══ -->
+  <script>
+  (function() {
+    try {
+      var theme = localStorage.getItem('anhad_theme') || 'auto';
+      var effective = theme === 'auto'
+        ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark')
+        : theme;
+      document.documentElement.setAttribute('data-theme', effective);
+      document.documentElement.setAttribute('data-theme-mode', theme);
+      document.documentElement.style.backgroundColor = effective === 'dark' ? '#08080F' : '#FAF8F5';
+      if (effective === 'dark') document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.classList.add('theme-loaded');
+    } catch(e) {}
+  })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#08080F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Naam Simran Timer — ANHAD Spiritual App.">
+  <title>ਨਾਮ ਸਿਮਰਨ | Naam Simran — ANHAD</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Timer Styles -->
+  <link rel="stylesheet" href="naam-abhyas-timer.css">
+
+  <!-- Naam Abhyas Manager -->
+  <script src="../lib/naam-abhyas-manager.js"></script>
+</head>
+<body>
+
+<!-- ═══ ROOT APP ═══ -->
+<div id="timerApp">
+
+  <!-- Background -->
+  <div class="timer-bg">
+    <div class="timer-bg-gradient"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TIMER SCREEN
+  ══════════════════════════════════════════════ -->
+  <section id="timerScreen" class="timer-screen">
+
+    <!-- Close Button -->
+    <button class="timer-close-btn" id="closeBtn" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- Breathing Orb -->
+    <div class="timer-orb-wrapper">
+      <!-- Pulse rings -->
+      <div class="timer-orb-ring"></div>
+      <div class="timer-orb-ring"></div>
+      <div class="timer-orb-ring"></div>
+
+      <!-- Progress ring -->
+      <svg class="timer-progress-ring" viewBox="0 0 168 168">
+        <circle class="timer-progress-track" cx="84" cy="84" r="76"/>
+        <circle class="timer-progress-fill" id="progressFill" cx="84" cy="84" r="76"
+          stroke-dasharray="477.5" stroke-dashoffset="0"/>
+      </svg>
+
+      <!-- Main orb -->
+      <div class="timer-orb" id="timerOrb">
+        <span class="timer-ik-onkar">ੴ</span>
+      </div>
+    </div>
+
+    <!-- Session label -->
+    <div class="timer-session-label">WAHEGURU SIMRAN</div>
+
+    <!-- Countdown -->
+    <div class="timer-display" id="timerDisplay">2:00</div>
+    <div class="timer-label">remaining</div>
+
+    <!-- Actions -->
+    <div class="timer-actions">
+      <button class="timer-btn timer-btn-primary" id="startBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        Start Simran
+      </button>
+
+      <button class="timer-btn timer-btn-secondary" id="pauseBtn" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" y1="4" x2="6" y2="20"/>
+          <line x1="18" y1="4" x2="18" y2="20"/>
+        </svg>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       COMPLETION SCREEN
+  ══════════════════════════════════════════════ -->
+  <section id="completionScreen" class="timer-screen hidden">
+
+    <div class="completion-inner">
+
+      <!-- Check icon -->
+      <div class="completion-check-wrapper">
+        <div class="completion-check-glow"></div>
+        <div class="completion-check-ring"></div>
+        <span class="completion-check-icon">🙏</span>
+      </div>
+
+      <h1 class="completion-title">Waheguru Ji</h1>
+      <div class="completion-gurmukhi">ਵਾਹਿਗੁਰੂ ਜੀ</div>
+      <p class="completion-sub">
+        Session complete. May the Naam<br>carry your mind in peace.
+      </p>
+
+      <!-- Stats -->
+      <div class="completion-stats-row">
+        <div class="completion-stat-card">
+          <span class="completion-stat-icon">🙏</span>
+          <span class="completion-stat-value" id="statToday">1</span>
+          <span class="completion-stat-label">Today</span>
+        </div>
+
+        <div class="completion-stat-card">
+          <span class="completion-stat-icon">🔥</span>
+          <span class="completion-stat-value" id="statStreak">0</span>
+          <span class="completion-stat-label">Streak</span>
+        </div>
+
+        <div class="completion-stat-card">
+          <span class="completion-stat-icon">⏱</span>
+          <span class="completion-stat-value" id="statDuration">2m</span>
+          <span class="completion-stat-label">Duration</span>
+        </div>
+      </div>
+
+      <!-- Done button -->
+      <button class="completion-done-btn" id="doneBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Done — Waheguru Ji 🙏
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- Pause indicator -->
+  <div class="timer-pause-indicator" id="pauseIndicator">
+    ⏸ Paused
+  </div>
+
+  <!-- Toast -->
+  <div class="timer-toast" id="timerToast"></div>
+
+</div>
+
+<!-- ═══ Global Notification Engine ═══ -->
+<script src="../lib/capacitor-notifications-global.js" defer></script>
+
+<!-- ═══ Timer Engine ═══ -->
+<script src="naam-abhyas-timer.js"></script>
+
+</body>
+</html>

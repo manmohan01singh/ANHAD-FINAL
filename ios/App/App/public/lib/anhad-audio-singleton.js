@@ -743,39 +743,9 @@
   }
 
   function getDynamicCoverAsset(streamName) {
-    if (!streamName) return resolveAsset('icons/icon-512x512.png');
-    const timeSlot = getTimeOfDay();
-    let forceNight = false;
-    try {
-      const theme = document.documentElement.getAttribute('data-theme') || 'light';
-      if (theme === 'dark') forceNight = true;
-    } catch(e) {}
-    const slot = forceNight ? 'night' : timeSlot;
-
-    const covers = {
-      darbar: {
-        morning: 'HERO CARD IMAGES/morning-darbar-sahib.webp',
-        day: 'HERO CARD IMAGES/day-darbar-sahib.webp',
-        evening: 'HERO CARD IMAGES/evening-darbar-sahib.webp',
-        night: 'HERO CARD IMAGES/night-darbar-sahib.webp'
-      },
-      amritvela: {
-        morning: 'HERO CARD IMAGES/morning-amritvela-kirtan.webp',
-        day: 'HERO CARD IMAGES/day-amritvela-kirtan.webp',
-        evening: 'HERO CARD IMAGES/evening-amritvela-kirtan.webp',
-        night: 'HERO CARD IMAGES/night-amritvela-kirtan.webp'
-      },
-      simran: {
-        morning: 'HERO CARD IMAGES/morning-waheguru-simran.webp',
-        day: 'HERO CARD IMAGES/day-waheguru-simran.webp',
-        evening: 'HERO CARD IMAGES/evening-waheguru-simran.webp',
-        night: 'HERO CARD IMAGES/night-waheguru-simran.webp'
-      }
-    };
-
-    const streamCovers = covers[streamName] || covers.darbar;
-    const cover = streamCovers[slot] || streamCovers.day;
-    return resolveAsset(cover);
+    // Always use ANHAD app logo for ALL notifications (kirtan, radio, simran)
+    // This ensures consistent branding across all system notifications
+    return resolveAsset('assets/app-logo.png');
   }
 
   // ─── OS LOCKSCREEN (MEDIA SESSION) ───
