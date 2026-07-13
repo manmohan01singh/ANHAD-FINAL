@@ -533,37 +533,46 @@
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
       var ln = window.Capacitor.Plugins.LocalNotifications;
       
-      // Cancel previous alarm ID 4242
-      ln.cancel({ notifications: [{ id: 4242 }] }).catch(function(){});
-      
-      if (!alarm.enabled) return;
+      ln.requestPermissions().then(function (permission) {
+        if (permission.display === 'granted') {
+          // Cancel previous alarm ID 4242
+          ln.cancel({ notifications: [{ id: 4242 }] }).catch(function(){});
+          
+          if (!alarm.enabled) return;
 
-      var timeParts = alarm.time.split(':');
-      var hour = parseInt(timeParts[0], 10);
-      var min = parseInt(timeParts[1], 10);
+          var timeParts = alarm.time.split(':');
+          var hour = parseInt(timeParts[0], 10);
+          var min = parseInt(timeParts[1], 10);
 
-      ln.schedule({
-        notifications: [
-          {
-            title: '⏰ Gurbani Alarm',
-            body: 'Time to listen to ' + METADATA[alarm.stream].title + '! Tap to play.',
-            id: 4242,
-            schedule: {
-              on: {
-                hour: hour,
-                minute: min
-              },
-              repeats: true
-            },
-            extra: {
-              url: 'GurbaniRadio/gurbani-radio.html?stream=' + alarm.stream
-            }
-          }
-        ]
-      }).then(function() {
-        console.log('[Alarm] Local notification scheduled daily at ' + alarm.time);
-      }).catch(function(e) {
-        console.warn('Failed to schedule local notification:', e);
+          ln.schedule({
+            notifications: [
+              {
+                title: '⏰ Gurbani Alarm',
+                body: 'Time to listen to ' + METADATA[alarm.stream].title + '! Tap to play.',
+                id: 4242,
+                schedule: {
+                  on: {
+                    hour: hour,
+                    minute: min
+                  },
+                  repeats: true,
+                  allowWhileIdle: true
+                },
+                extra: {
+                  url: 'GurbaniRadio/gurbani-radio.html?stream=' + alarm.stream
+                }
+              }
+            ]
+          }).then(function() {
+            console.log('[Alarm] Local notification scheduled daily at ' + alarm.time);
+          }).catch(function(e) {
+            console.warn('Failed to schedule local notification:', e);
+          });
+        } else {
+          showToast('⚠️ Enable notifications to support Gurbani alarm');
+        }
+      }).catch(function(err) {
+        console.warn('Notification permission request error:', err);
       });
     }
   }

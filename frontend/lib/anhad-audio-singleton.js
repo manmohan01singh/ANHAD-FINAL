@@ -361,16 +361,15 @@
       this.audio.addEventListener('play', () => {
         isPlaying = true;
         emit('statechange', getPublicState());
+        persistState();
       });
       this.audio.addEventListener('pause', () => {
         isPlaying = false;
         emit('statechange', getPublicState());
+        persistState();
       });
       this.audio.addEventListener('timeupdate', () => {
-        if (currentStream && STREAMS[currentStream].type === 'playlist') {
-          // Sync playback position for save state persistence
-          persistState();
-        }
+        persistState();
         // Dispatch UI timeupdate
         const dur = this.audio.duration || 3600;
         const pct = Math.max(0, Math.min(100, (this.audio.currentTime / dur) * 100));
@@ -819,7 +818,7 @@
       duration: PlaybackQueueController.audio ? PlaybackQueueController.audio.duration : 3600,
       manualOffset,
       streamType: currentStream ? STREAMS[currentStream].type : null,
-      artwork: currentStream ? STREAMS[currentStream].artwork : ''
+      artwork: currentStream ? getDynamicCoverAsset(currentStream) : ''
     };
   }
 
