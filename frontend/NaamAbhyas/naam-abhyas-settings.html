@@ -1,36 +1,278 @@
 <!DOCTYPE html>
-<html lang="pa">
+<html lang="pa" data-theme="dark">
 <head>
+  <!-- Theme Init -->
   <script>
   (function() {
     try {
-      var theme = localStorage.getItem('anhad_theme') || 'auto';
-      var effective = theme;
-      if (theme === 'auto') {
-        var h = new Date().getHours();
-        effective = (h >= 5 && h < 20) ? 'light' : 'dark';
-      }
+      var theme = localStorage.getItem('anhad_theme') || localStorage.getItem('naam_abhyas_theme') || 'auto';
+      var effective = theme === 'auto'
+        ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark')
+        : theme;
       document.documentElement.setAttribute('data-theme', effective);
-      document.documentElement.setAttribute('data-theme-mode', theme);
-      document.documentElement.style.backgroundColor = effective === 'dark' ? '#0D0D0F' : '#FAF8F5';
-      document.documentElement.style.color = effective === 'dark' ? '#F5F5F7' : '#1C1C1E';
-      if (effective === 'dark') {
-        document.documentElement.classList.add('dark', 'dark-mode');
-      }
-      document.documentElement.classList.add('theme-loaded');
+      document.documentElement.style.backgroundColor = effective === 'dark' ? '#08080F' : '#FAF8F5';
+      if (effective === 'dark') document.documentElement.classList.add('dark');
     } catch(e) {}
   })();
   </script>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <title>Naam Abhyas Schedule — ANHAD</title>
+  <title>Naam Abhyas Settings — ANHAD</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="naam-abhyas-settings.css">
+</head>
+<body>
+
+<div id="settingsApp">
+
+  <!-- Header -->
+  <header class="settings-header">
+    <button class="back-btn" id="backBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <div class="header-title">
+      <h1>Naam Abhyas Settings</h1>
+      <p>ਨਾਮ ਅਭਿਆਸ ਸੈਟਿੰਗਜ਼</p>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="settings-content">
+
+    <!-- Master Toggle -->
+    <div class="settings-section">
+      <div class="setting-item setting-item-large">
+        <div class="setting-icon">🙏</div>
+        <div class="setting-info">
+          <div class="setting-label">Enable Naam Abhyas</div>
+          <div class="setting-sublabel">Turn on hourly reminders</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="masterToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Time Range -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>Active Time Range</h2>
+        <p>Reminders will only appear during these hours</p>
+      </div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Start Time</div>
+          <div class="setting-sublabel">First notification of the day</div>
+        </div>
+        <select id="startHourSelect" class="time-select">
+          <!-- Options populated by JS -->
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">End Time</div>
+          <div class="setting-sublabel">Last notification of the day</div>
+        </div>
+        <select id="endHourSelect" class="time-select">
+          <!-- Options populated by JS -->
+        </select>
+      </div>
+    </div>
+
+    <!-- Session Duration -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>Session Duration</h2>
+        <p>How long each Simran session lasts</p>
+      </div>
+      
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Default Duration</div>
+        </div>
+        <select id="durationSelect" class="time-select">
+          <option value="60">1 minute</option>
+          <option value="120" selected>2 minutes</option>
+          <option value="180">3 minutes</option>
+          <option value="300">5 minutes</option>
+          <option value="600">10 minutes</option>
+          <option value="900">15 minutes</option>
+          <option value="custom">Custom...</option>
+        </select>
+      </div>
+
+      <div class="setting-item" id="customDurationInput" style="display:none;">
+        <div class="setting-info">
+          <div class="setting-label">Custom Duration (minutes)</div>
+        </div>
+        <input type="number" id="customMinutes" class="custom-input" min="1" max="60" value="5">
+      </div>
+    </div>
+
+    <!-- Notification Sound -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>Notification Sound</h2>
+        <p>Choose your reminder tone</p>
+      </div>
+      
+      <div class="sound-options">
+        <label class="sound-option">
+          <input type="radio" name="sound" value="gentle-chime" checked>
+          <div class="sound-card">
+            <div class="sound-icon">🔔</div>
+            <div class="sound-name">Gentle Chime</div>
+            <button class="sound-preview" data-sound="gentle-chime">▶</button>
+          </div>
+        </label>
+
+        <label class="sound-option">
+          <input type="radio" name="sound" value="soft-bell">
+          <div class="sound-card">
+            <div class="sound-icon">🕉️</div>
+            <div class="sound-name">Soft Bell</div>
+            <button class="sound-preview" data-sound="soft-bell">▶</button>
+          </div>
+        </label>
+
+        <label class="sound-option">
+          <input type="radio" name="sound" value="singing-bowl">
+          <div class="sound-card">
+            <div class="sound-icon">🎵</div>
+            <div class="sound-name">Singing Bowl</div>
+            <button class="sound-preview" data-sound="singing-bowl">▶</button>
+          </div>
+        </label>
+
+        <label class="sound-option">
+          <input type="radio" name="sound" value="peaceful-harp">
+          <div class="sound-card">
+            <div class="sound-icon">🪕</div>
+            <div class="sound-name">Peaceful Harp</div>
+            <button class="sound-preview" data-sound="peaceful-harp">▶</button>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Theme Selection -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>Appearance</h2>
+        <p>Choose your preferred theme</p>
+      </div>
+      
+      <div class="theme-options">
+        <label class="theme-option">
+          <input type="radio" name="theme" value="auto" checked>
+          <div class="theme-card">
+            <div class="theme-preview theme-preview-auto"></div>
+            <div class="theme-name">Auto</div>
+          </div>
+        </label>
+
+        <label class="theme-option">
+          <input type="radio" name="theme" value="light">
+          <div class="theme-card">
+            <div class="theme-preview theme-preview-light"></div>
+            <div class="theme-name">Light</div>
+          </div>
+        </label>
+
+        <label class="theme-option">
+          <input type="radio" name="theme" value="dark">
+          <div class="theme-card">
+            <div class="theme-preview theme-preview-dark"></div>
+            <div class="theme-name">Dark</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Advanced Options -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>Advanced</h2>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Auto-start Timer</div>
+          <div class="setting-sublabel">Start automatically when notification is tapped</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoStartToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Vibration</div>
+          <div class="setting-sublabel">Vibrate on notification</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="vibrationToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-info">
+          <div class="setting-label">Random Timing</div>
+          <div class="setting-sublabel">Vary notification times within each hour</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="randomTimingToggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="settings-section">
+      <div class="info-card">
+        <div class="info-icon">💡</div>
+        <div class="info-content">
+          <h3>How Naam Abhyas Works</h3>
+          <p>Random reminders will appear throughout the day within your selected time range. Each reminder invites you to pause and do a short Simran session.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:100px;"></div>
+
+  </main>
+
+  <!-- Save Button -->
+  <div class="save-bar">
+    <button class="save-btn" id="saveBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Save Settings
+    </button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="naam-abhyas-settings.js"></script>
+
+</body>
+</html>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #FAF8F5; --bg-card: #FFFFFF; --bg-hover: #F5F3F0;
