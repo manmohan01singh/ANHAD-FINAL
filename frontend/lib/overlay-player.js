@@ -122,7 +122,7 @@
     const isPlayerPage = currentPath.includes('gurbani-radio');
     const isDashboardPage = currentPath.includes('dashboard');
 
-    if (isPlayerPage || isDashboardPage || !state.currentStream) {
+    if (isPlayerPage || isDashboardPage || (!state.isPlaying && !state.isLoading)) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');
       return;

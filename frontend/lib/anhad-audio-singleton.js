@@ -891,19 +891,7 @@
     getStream: () => currentStream
   };
 
-  // Auto-resume if it was playing before reload
-  try {
-    const state = JSON.parse(localStorage.getItem(STATE_KEY));
-    if (state && state.isPlaying && state.currentStream) {
-      console.log('[AnhadAudio] Auto-resuming stream after reload:', state.currentStream);
-      setTimeout(() => {
-        // Only auto-resume if it hasn't been started manually in the meantime
-        if (!isPlaying) {
-          play(state.currentStream);
-        }
-      }, 500);
-    }
-  } catch(e) {}
+
 
   console.log('🪯 ANHAD Audio Singleton loaded — ONE audio, ONE truth');
 })();
