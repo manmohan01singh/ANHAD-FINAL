@@ -890,16 +890,8 @@
             if (ex.action === 'show_alarm') {
                 showAlarmPopup(ex.alarmLabel, ex.alarmTime, ex.alarmIcon, ex.alarmTone);
             } else if (ex.action === 'auto_start_naam' || ex.action === 'show_naam') {
-                var isOnNaamPage = window.location.pathname.toLowerCase().includes('naamabhyas');
                 storePendingNaamLaunch(ex);
-                if (isOnNaamPage) {
-                    // On Naam page: dispatch event so naam-abhyas.js handles it natively
-                    window.dispatchEvent(new CustomEvent('naamAbhyasAlarmFired', {
-                        detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
-                    }));
-                } else {
-                    window.location.href = resolveNaamUrl(ex);
-                }
+                showNaamAbhyasPopup(ex.hour, ex.minute);
             }
         });
     }

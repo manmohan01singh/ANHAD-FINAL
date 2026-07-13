@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <script>
+  (function() {
+    try {
+      var theme = localStorage.getItem('anhad_theme') || 'auto';
+      var effective = theme;
+      if (theme === 'auto') {
+        var h = new Date().getHours();
+        effective = (h >= 5 && h < 20) ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', effective);
+      document.documentElement.setAttribute('data-theme-mode', theme);
+      document.documentElement.style.backgroundColor = effective === 'dark' ? '#0D0D0F' : '#FAF8F5';
+      document.documentElement.style.color = effective === 'dark' ? '#F5F5F7' : '#1C1C1E';
+      if (effective === 'dark') {
+        document.documentElement.classList.add('dark', 'dark-mode');
+      }
+      document.documentElement.classList.add('theme-loaded');
+    } catch(e) {}
+  })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Naam Abhyas Schedule — ANHAD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #FAF8F5; --bg-card: #FFFFFF; --bg-hover: #F5F3F0;
+      --text: #1C1C1E; --text-sec: #8E8E93; --text-dim: #AEAEB2;
+      --border: #E5E5E7; --accent: #FF9500; --accent-deep: #E65C00;
+      --gold: #F7C634; --success: #34C759; --shadow: 0 1px 3px rgba(0,0,0,0.06);
+      --radius: 14px; --radius-sm: 10px; --radius-pill: 999px;
+      --safe-bottom: env(safe-area-inset-bottom, 12px);
+    }
+    [data-theme="dark"] {
+      --bg: #0D0D0F; --bg-card: #1C1C1E; --bg-hover: #2C2C2E;
+      --text: #F5F5F7; --text-sec: #8E8E93; --text-dim: #636366;
+      --border: #2C2C2E; --shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+    body { min-height: 100vh; padding-bottom: 90px; }
+
+    /* ── Header ── */
+    .header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: max(env(safe-area-inset-top, 12px), 12px) 16px 10px; display: flex; align-items: center; gap: 10px; }
+    .back-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--bg-hover); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .back-btn:active { transform: scale(0.9); }
+    .header-title { flex: 1; }
+    .header-title h1 { font-size: 17px; font-weight: 700; }
+    .header-title span { font-size: 11px; color: var(--text-sec); }
+    .header-actions { display: flex; gap: 6px; }
+    .hbtn { padding: 6px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; }
+    .hbtn:active { transform: scale(0.95); }
+    .hbtn.primary { background: var(--accent); color: #fff; border: none; box-shadow: 0 4px 12px rgba(255,149,0,0.3); }
+
+    /* ── Content ── */
+    .content { padding: 12px 16px 0; max-width: 520px; margin: 0 auto; }
+
+    /* ── Stats Bar ── */
+    .stats-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+    .stat-item { flex: 1; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; text-align: center; box-shadow: var(--shadow); }
+    .stat-item .num { font-size: 20px; font-weight: 700; color: var(--accent); }
+    .stat-item .lbl { font-size: 10px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+
+    /* ── Section ── */
+    .section { margin-bottom: 20px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 2px; }
+    .section-header h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-sec); }
+    .section-header button { background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+    .section-header button:active { background: var(--bg-hover); }
+
+    /* ── Schedule List ── */
+    .sched-list { display: flex; flex-direction: column; gap: 6px; }
+    .sched-item { display: flex; align-items: center; gap: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); transition: border-color .2s; }
+    .sched-item.completed { border-left: 3px solid var(--success); }
+    .sched-item .check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-dim); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; color: transparent; transition: all .2s; }
+    .sched-item.completed .check { background: var(--success); border-color: var(--success); color: #fff; }
+    .sched-item .time { font-size: 15px; font-weight: 600; min-width: 60px; }
+    .sched-item .info { flex: 1; }
+    .sched-item .info .label { font-size: 12px; color: var(--text-sec); }
+    .sched-item .info .sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+    .sched-item .actions { display: flex; gap: 6px; align-items: center; }
+    .sched-item .minute-picker { background: var(--bg-hover); border: 1px solid var(--border); color: var(--text); padding: 4px 6px; border-radius: 6px; font-size: 11px; font-family: inherit; }
+    .sched-item .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; display: none; }
+    .sched-item.upcoming .dot { display: block; animation: pulseDot 1.5s ease-in-out infinite; }
+    @keyframes pulseDot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ── Toggle ── */
+    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; background: var(--border); border-radius: 12px; cursor: pointer; transition: background .25s; }
+    .toggle.active { background: var(--accent); }
+    .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: transform .25s cubic-bezier(.34,1.56,.64,1); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle.active::after { transform: translateX(18px); }
+
+    /* ── Modal ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); display: none; align-items: flex-end; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet { width: 100%; max-width: 400px; background: var(--bg-card); border-radius: 20px 20px 0 0; padding: 20px 24px max(var(--safe-bottom), 20px); animation: sheetUp .35s cubic-bezier(.4,0,.2,1); max-height: 85vh; overflow-y: auto; }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .modal-body { margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions button { flex: 1; padding: 14px; border-radius: var(--radius-sm); border: none; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; }
+    .modal-actions .btn-primary { background: var(--accent); color: #fff; }
+    .modal-actions .btn-secondary { background: var(--bg-hover); color: var(--text); }
+    .modal-actions button:active { transform: scale(0.97); }
+    .modal-option { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+    .modal-option:last-child { border-bottom: none; }
+    .modal-option label { font-size: 15px; font-weight: 500; }
+    .modal-option select { background: var(--bg-hover); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 8px; font-size: 14px; font-family: inherit; }
+
+    /* ── Save Button ── */
+    .save-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; padding: 12px 16px var(--safe-bottom); background: linear-gradient(transparent, var(--bg) 30%); }
+    .save-btn { width: 100%; max-width: 400px; margin: 0 auto; display: block; padding: 15px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-pill); font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 8px 24px rgba(255,149,0,0.35); transition: all .2s; }
+    .save-btn:active { transform: scale(0.97); }
+    .save-btn.hidden { opacity: 0; pointer-events: none; transform: translateY(20px); }
+    .save-btn.saving { opacity: 0.6; pointer-events: none; }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--bg-card); color: var(--text); padding: 10px 20px; border-radius: var(--radius-pill); font-size: 14px; z-index: 300; opacity: 0; transition: all .35s cubic-bezier(.4,0,.2,1); border: 1px solid var(--border); pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #0D0D0F; --bg-card: #1C1C1E; --bg-hover: #2C2C2E; --text: #F5F5F7; --text-sec: #8E8E93; --text-dim: #636366; --border: #2C2C2E; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="back-btn" id="backBtn">&#x2190;</button>
+    <div class="header-title">
+      <h1>Naam Abhyas</h1>
+      <span>Today's Schedule</span>
+    </div>
+    <div class="header-actions">
+      <button class="hbtn primary" id="startTimerBtn">&#x25B6; Timer</button>
+      <button class="hbtn" id="settingsBtn">&#x2699;</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+      <div class="stat-item"><div class="num" id="statCompleted">0</div><div class="lbl">Done Today</div></div>
+      <div class="stat-item"><div class="num" id="statStreak">0</div><div class="lbl">Day Streak</div></div>
+      <div class="stat-item"><div class="num" id="statSessions">0</div><div class="lbl">Scheduled</div></div>
+    </div>
+
+    <!-- Schedule List -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Hourly Schedule</h2>
+        <button id="editScheduleBtn">Edit Times</button>
+      </div>
+      <div class="sched-list" id="scheduleList"></div>
+    </div>
+
+    <div style="height:20px;"></div>
+  </div>
+
+  <div class="save-bar">
+    <button class="save-btn hidden" id="saveBtn">Save Schedule</button>
+  </div>
+
+  <div class="toast" id="toast">Saved!</div>
+
+  <!-- Modal: Settings -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Settings</div>
+      <div class="modal-body">
+        <div class="modal-option">
+          <label>Naam Abhyas</label>
+          <div class="toggle active" id="enabledToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Session Duration</label>
+          <select id="durationSelect">
+            <option value="1">1 min</option>
+            <option value="2">2 min</option>
+            <option value="3">3 min</option>
+            <option value="5">5 min</option>
+            <option value="10">10 min</option>
+          </select>
+        </div>
+        <div class="modal-option">
+          <label>Active From</label>
+          <select id="startHour"></select>
+        </div>
+        <div class="modal-option">
+          <label>Active Until</label>
+          <select id="endHour"></select>
+        </div>
+        <div class="modal-option">
+          <label>Auto-start Timer</label>
+          <div class="toggle active" id="autoStartToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Hour Start Reminder</label>
+          <div class="toggle" id="hourStartToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Pre-reminder</label>
+          <div class="toggle" id="preReminderToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Vibration</label>
+          <div class="toggle active" id="vibrationToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Sound</label>
+          <div class="toggle active" id="soundToggle"></div>
+        </div>
+        <div class="modal-option">
+          <label>Lock Screen Alert</label>
+          <div class="toggle active" id="lockScreenToggle"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="closeSettingsBtn">Cancel</button>
+        <button class="btn-primary" id="saveSettingsBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      var DEFAULTS = {
+        enabled: true, duration: 2,
+        activeHours: { start: 5, end: 22 },
+        notifications: {
+          hourStart: true, preReminder: true, preReminderMinutes: 2,
+          sound: 'gentle-bell', vibration: true, lockScreen: true, soundEnabled: true
+        },
+        autoStartTimer: true, theme: 'dark', showGurmukhiText: true,
+        meditationSettings: { showBreathingGuide: true, showWaheguruText: true, keepScreenAwake: true, ambientSoundVolume: 0.3 }
+      };
+      var CONFIG_KEY = 'naam_abhyas_config';
+      var SCHEDULE_KEY = 'naam_abhyas_schedule';
+      var RECORDS_KEY = 'naam_abhyas_completion_records_v1';
+
+      function $(id) { return document.getElementById(id); }
+
+      function read(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch(e) { return fallback; } }
+      function write(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+
+      function getConfig() { var c = read(CONFIG_KEY, null); return c || JSON.parse(JSON.stringify(DEFAULTS)); }
+      function getSchedule() { return read(SCHEDULE_KEY, {}); }
+      function getRecords() { return read(RECORDS_KEY, {}); }
+
+      function todayStr() { return new Date().toLocaleDateString('en-CA'); }
+
+      function formatH12(h) {
+        var per = h >= 12 ? 'PM' : 'AM';
+        var hh = h % 12 || 12;
+        return hh + ' ' + per;
+      }
+
+      function pad2(n) { return String(n).padStart(2, '0'); }
+
+      function populateSelect(sel, max, selected) {
+        sel.innerHTML = '';
+        for (var i = 0; i <= max; i++) {
+          var opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = max === 23 ? formatH12(i) : pad2(i);
+          if (i === selected) opt.selected = true;
+          sel.appendChild(opt);
+        }
+      }
+
+      function renderSchedule() {
+        var config = getConfig();
+        var schedule = getSchedule();
+        var records = getRecords();
+        var list = $('scheduleList');
+        list.innerHTML = '';
+        var start = config.activeHours.start;
+        var end = config.activeHours.end;
+        var now = new Date();
+        var currentHour = now.getHours();
+        var currentMin = now.getMinutes();
+        var today = todayStr();
+        var completedCount = 0;
+        var totalScheduled = 0;
+
+        for (var h = start; h <= end; h++) {
+          var slot = schedule[h] || {};
+          var minute = slot.startMinute !== undefined ? slot.startMinute : 30;
+          var enabled = slot.enabled !== false;
+
+          if (!enabled) continue;
+          totalScheduled++;
+
+          var sessionId = today + 'T' + pad2(h) + ':' + pad2(minute);
+          var isCompleted = !!records[sessionId];
+          var isUpcoming = h > currentHour || (h === currentHour && minute > currentMin);
+          var isCurrent = h === currentHour && minute <= currentMin && !isCompleted;
+
+          if (isCompleted) completedCount++;
+
+          var item = document.createElement('div');
+          item.className = 'sched-item' + (isCompleted ? ' completed' : '') + (isUpcoming ? ' upcoming' : '');
+
+          var check = document.createElement('div');
+          check.className = 'check';
+          check.textContent = isCompleted ? '\u2713' : '';
+          item.appendChild(check);
+
+          var time = document.createElement('div');
+          time.className = 'time';
+          time.textContent = formatH12(h);
+          item.appendChild(time);
+
+          var info = document.createElement('div');
+          info.className = 'info';
+          info.innerHTML = '<div class="label">' + pad2(minute) + ' min past \u2022 ' + (isCompleted ? 'Completed' : isCurrent ? 'Now' : isUpcoming ? 'Upcoming' : 'Pending') + '</div>';
+          item.appendChild(info);
+
+          var dot = document.createElement('div');
+          dot.className = 'dot';
+          if (isUpcoming) item.querySelector('.info') && item.appendChild(dot);
+          item.appendChild(dot);
+
+          list.appendChild(item);
+        }
+
+        $('statCompleted').textContent = completedCount;
+        $('statSessions').textContent = totalScheduled;
+
+        var streak = computeStreak();
+        $('statStreak').textContent = streak;
+      }
+
+      function computeStreak() {
+        try {
+          var history = read('naam_abhyas_history', {});
+          var date = new Date();
+          var count = 0;
+          for (var i = 0; i < 365; i++) {
+            var d = date.toLocaleDateString('en-CA');
+            var has = history[d] && Object.keys(history[d]).length > 0;
+            if (i > 0 && !has) break;
+            if (has) count++;
+            date.setDate(date.getDate() - 1);
+          }
+          return count;
+        } catch(e) { return 0; }
+      }
+
+      function loadModal() {
+        var config = getConfig();
+        $('enabledToggle').classList.toggle('active', config.enabled);
+        $('durationSelect').value = config.duration || 2;
+        $('autoStartToggle').classList.toggle('active', config.autoStartTimer !== false);
+        $('hourStartToggle').classList.toggle('active', config.notifications.hourStart);
+        $('preReminderToggle').classList.toggle('active', config.notifications.preReminder);
+        $('vibrationToggle').classList.toggle('active', config.notifications.vibration !== false);
+        $('soundToggle').classList.toggle('active', config.notifications.soundEnabled !== false);
+        $('lockScreenToggle').classList.toggle('active', config.notifications.lockScreen !== false);
+        populateSelect($('startHour'), 23, config.activeHours.start);
+        populateSelect($('endHour'), 23, config.activeHours.end);
+        $('saveBtn').classList.add('hidden');
+      }
+
+      function collectModalConfig() {
+        return {
+          enabled: $('enabledToggle').classList.contains('active'),
+          duration: parseInt($('durationSelect').value, 10),
+          activeHours: { start: parseInt($('startHour').value, 10), end: parseInt($('endHour').value, 10) },
+          notifications: {
+            hourStart: $('hourStartToggle').classList.contains('active'),
+            preReminder: $('preReminderToggle').classList.contains('active'),
+            preReminderMinutes: 2, sound: 'gentle-bell',
+            vibration: $('vibrationToggle').classList.contains('active'),
+            lockScreen: $('lockScreenToggle').classList.contains('active'),
+            soundEnabled: $('soundToggle').classList.contains('active')
+          },
+          autoStartTimer: $('autoStartToggle').classList.contains('active'),
+          theme: 'dark', showGurmukhiText: true,
+          meditationSettings: { showBreathingGuide: true, showWaheguruText: true, keepScreenAwake: true, ambientSoundVolume: 0.3 }
+        };
+      }
+
+      function buildDefaultSchedule(config) {
+        var s = {};
+        for (var h = config.activeHours.start; h <= config.activeHours.end; h++) {
+          s[h] = { startMinute: 30, enabled: true };
+        }
+        return s;
+      }
+
+      function showToast(msg) {
+        var t = $('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, 2500);
+      }
+
+      async function saveScheduleData() {
+        var config = collectModalConfig();
+        var existing = getSchedule();
+        // Ensure all hours in range have entries
+        for (var h = config.activeHours.start; h <= config.activeHours.end; h++) {
+          if (!existing[h]) existing[h] = { startMinute: 30, enabled: true };
+        }
+        write(CONFIG_KEY, config);
+        write(SCHEDULE_KEY, existing);
+
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+          try {
+            if (window.__anhadGlobalScheduler && typeof window.__anhadGlobalScheduler.scheduleAll === 'function') {
+              await window.__anhadGlobalScheduler.scheduleAll();
+            }
+          } catch(e) {}
+        }
+
+        renderSchedule();
+        $('settingsModal').classList.remove('open');
+        showToast('Saved');
+        $('saveBtn').classList.add('hidden');
+      }
+
+      function goBack() {
+        if (window.history.length > 1) window.history.back();
+        else window.location.href = '../index.html';
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        renderSchedule();
+        loadModal();
+
+        $('backBtn').addEventListener('click', goBack);
+        $('startTimerBtn').addEventListener('click', function() {
+          window.location.href = 'naam-abhyas.html';
+        });
+        $('settingsBtn').addEventListener('click', function() {
+          loadModal();
+          $('settingsModal').classList.add('open');
+        });
+        $('closeSettingsBtn').addEventListener('click', function() {
+          $('settingsModal').classList.remove('open');
+        });
+        $('saveSettingsBtn').addEventListener('click', function() {
+          var btn = this;
+          btn.textContent = 'Saving...';
+          btn.disabled = true;
+          saveScheduleData().then(function() {
+            btn.textContent = 'Save';
+            btn.disabled = false;
+          }).catch(function() {
+            btn.textContent = 'Save';
+            btn.disabled = false;
+          });
+        });
+
+        // Mark changes when modal toggles/selects change
+        $('settingsModal').querySelectorAll('.toggle, select').forEach(function(el) {
+          el.addEventListener('change', function() {
+            $('saveBtn').classList.remove('hidden');
+          });
+          el.addEventListener('click', function() {
+            $('saveBtn').classList.remove('hidden');
+          });
+        });
+      });
+
+    })();
+  </script>
+</body>
+</html>

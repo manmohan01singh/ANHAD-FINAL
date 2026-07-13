@@ -39,6 +39,7 @@
 	"packageClassList": [
 		"NativeAudio",
 		"AppPlugin",
+		"FilesystemPlugin",
 		"HapticsPlugin",
 		"LocalNotificationsPlugin",
 		"SplashScreenPlugin",

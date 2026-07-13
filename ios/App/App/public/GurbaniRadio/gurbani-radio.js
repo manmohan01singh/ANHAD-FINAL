@@ -1,1008 +1,874 @@
-/* ═══════════════════════════════════════════════════════════════════════════
-   GURBANI RADIO — Complete Audio Engine v3.0
-   Real audio playback · Virtual-live server sync · Mini-player bridge
-   ═══════════════════════════════════════════════════════════════════════════ */
-
+/**
+ * GURBANI RADIO — Page controller and stream recording engine
+ * ══════════════════════════════════════════════════════════════════
+ * Implements:
+ *   1. Direct binding to window.AnhadAudio (Unified audio singleton)
+ *   2. Ditto UI representation of the shared gold/beige design
+ *   3. Custom MediaRecorder captureStream recorder (works for all streams)
+ *   4. Sleep timer logic
+ *   5. Robust progress bar seeking & time updating
+ *   6. Auto-theme selection (5 AM to 8 PM Light theme, 8 PM to 5 AM Dark theme)
+ *   7. Full Gurbani Alarm Scheduler (Local Notifications + Foreground)
+ * ══════════════════════════════════════════════════════════════════
+ */
 (function () {
-    'use strict';
+  'use strict';
 
-    // ─── CONFIG ────────────────────────────────────────────────────────────────
+  // ─── DOM References ───
+  var DOM = {};
+  var sleepTimerId = null;
+  var sleepTimerEnd = 0;
 
-    const API_BASE = (() => {
-        try {
-            if (window.Capacitor) return 'https://anhad-final.onrender.com';
-            const port = window.location.port;
-            if (port === '3000' || port === '3001') return '';
-            const host = window.location.hostname;
-            if (host.match(/^[0-9]+(\.[0-9]+){3}$/)) return `http://${host}:3000`;
-            return 'https://anhad-final.onrender.com';
-        } catch (e) { return 'https://anhad-final.onrender.com'; }
-    })();
+  // ─── Recording State ───
+  var recState = {
+    isRecording: false,
+    chunks: [],
+    startTime: 0,
+    intervalId: null,
+    mediaRecorder: null,
+    abortController: null,
+    xhr: null,
+    maxDurationSeconds: 300,
+    streamType: null
+  };
 
-    const R2_BASE = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
-    const SIMRAN_R2_BASE = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev';
-    const SIMRAN_R2_PREFIX = 'waheguru';
-    const STATE_KEY = 'anhad_global_audio';
-    const SIMRAN_FILENAMES = [
-        '01 - DEENANATH SUNO WAHEGURU SIMRAN DAY 1.mp3',
-        '02 - TUM KARO DAYA WAHEGURU SIMRAIN DAY 2.mp3',
-        '03 - SUNN YAAR HAMARE SAJAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '04 - SUKH NAAHI RE HAR BHAGAT BINA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '05 - TU PRABH DATA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '06 - SATNAM WAHEGURU - SIMRAN - AMRITVELA TRUST..mp3',
-        '07 - MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '08 - RAKHWALA SIMRAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '09 - AAS PYAASI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '10 - PRABH PAAS JAN KI ARDAS - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '11 - TU HI TU HI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '12 - NAAM NAAM NAAM APNA NAAM DEHO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '13 - DHAN GURU RAMDAS JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '14 - AAO SAJANA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '15 - TUJ BIN KAVAN HAMARA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '16 - MERA BAID GURU GOVINDA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '17 - JAGAN TE SUPNA BHALA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '18 - EH NEECH KARAM HAR MERE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '19 - APNA NAAM JAPAO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '20 - MERE PYAARE SATUGURU JI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '21 - RAKH LEHO BHAGWAN - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '22 - KAB GAL LAVENGE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '23 - MERE RAM MERE RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '24 - RAKHEYA KARO SIMRAN DAY 25.mp3',
-        '25 - WAHEGURU SIMRAN UTH NAAM JAP AMRITVELA TRUST BEST SIMRAN.mp3',
-        '26 - BEST WAHEGURU SIMRAN DAY 27 CHALIYA 2020.mp3',
-        '27 - KAD NANAK AAVE VARI - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '28 - BIN GUR NA PAVAIGO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '29 - KIYO SHINGAR MILAN KE TAAYEE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '30 - NAAM BINA NAHI JEEVIA JAYE - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '31 - AATH PEHAR SIMRO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '32 - MIL MERE PREETMA JEEO - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '33 - SATNAM SHRI WAHEGURU SIMRAN DAY 35 CHALIYA 2020.mp3',
-        '34 - RAKH RAKH MERE BEETHLA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '35 - PRAAN ADHAARA RAM - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '36 - DHAN BABA NANAK - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '37 - SUNN MANN MITTAR PYAREYA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-        '38 - MERE SATGUR PYARE GURNANAK AAJA - WAHEGURU SIMRAN - AMRITVELA TRUST..mp3',
-    ];
+  // ─── Haptics ───
+  function haptic(style) {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+        window.Capacitor.Plugins.Haptics.impact({ style: style || 'MEDIUM' }).catch(function () {});
+      } else if (navigator.vibrate) {
+        navigator.vibrate(style === 'HEAVY' ? 80 : 40);
+      }
+    } catch (e) {}
+  }
 
-    const BG_SLOTS = {
-        morning: '../assets/darbar-sahib-morning-bg.webp',
-        day: '../assets/darbar-sahib-day-bg.webp',
-        evening: '../assets/darbar-sahib-evening-bg.webp',
-        night: '../assets/HERO CARD IMAGES/new-night-bg.avif',
+  // ─── Toast ───
+  var toastTimer = null;
+  function showToast(msg) {
+    var el = DOM.toast;
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
+  }
+
+  // ─── Date Formatter ───
+  function formatSeconds(sec) {
+    if (!sec || isNaN(sec) || !isFinite(sec)) return '00:00';
+    var m = Math.floor(sec / 60);
+    var s = Math.floor(sec % 60);
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  // ─── Time of Day helpers ───
+  function getTimeOfDay() {
+    var h = new Date().getHours();
+    if (h >= 5 && h < 9) return 'morning';
+    if (h >= 9 && h < 16) return 'day';
+    if (h >= 16 && h < 20) return 'evening';
+    return 'night';
+  }
+
+  function getCoverForStream(stream) {
+    var timeSlot = getTimeOfDay();
+    
+    // Force night artwork if theme is dark
+    var theme = document.documentElement.getAttribute('data-theme') || 'light';
+    if (theme === 'dark') {
+      timeSlot = 'night';
+    }
+
+    var covers = {
+      darbar: {
+        morning: '../assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
+        day: '../assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+        evening: '../assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
+        night: '../assets/HERO CARD IMAGES/night-darbar-sahib.webp'
+      },
+      amritvela: {
+        morning: '../assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+        day: '../assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+        evening: '../assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+        night: '../assets/HERO CARD IMAGES/night-amritvela-kirtan.webp'
+      },
+      simran: {
+        morning: '../assets/HERO CARD IMAGES/morning-waheguru-simran.webp',
+        day: '../assets/HERO CARD IMAGES/day-waheguru-simran.webp',
+        evening: '../assets/HERO CARD IMAGES/evening-waheguru-simran.webp',
+        night: '../assets/HERO CARD IMAGES/night-waheguru-simran.webp'
+      }
     };
 
-    const HERO = '../assets/HERO CARD IMAGES';
+    var streamCovers = covers[stream] || covers.darbar;
+    var cover = streamCovers[timeSlot];
+    return cover || streamCovers.day;
+  }
 
-    const STREAMS = {
-        darbar: {
-            name: 'Sachkhand Sahib',
-            subtitle: 'Sri Harmandir Sahib Ji',
-            url: 'https://live.sgpc.net:8443/;nocache=1',
-            type: 'live',
-            artwork: `${HERO}/day-darbar-sahib.webp`,
-            artworkSlots: {
-                morning: `${HERO}/morning-darbar-sahib.webp`,
-                day: `${HERO}/day-darbar-sahib.webp`,
-                evening: `${HERO}/evening-darbar-sahib.webp`,
-                night: `${HERO}/night-darbar-sahib.webp`,
-            },
-            bgSlots: BG_SLOTS,
-            trackTitle: 'Kirtan • Live',
-            accent: '#C88010',
-        },
-        amritvela: {
-            name: 'Amritvela Kirtan',
-            subtitle: 'ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ',
-            url: null,
-            type: 'playlist',
-            totalTracks: 40,
-            artwork: `${HERO}/day-amritvela-kirtan.webp`,
-            artworkSlots: {
-                morning: `${HERO}/morning-amritvela-kirtan.webp`,
-                day: `${HERO}/day-amritvela-kirtan.webp`,
-                evening: `${HERO}/evening-amritvela-kirtan.webp`,
-                night: `${HERO}/night-amritvela-kirtan.webp`,
-            },
-            bgSlots: BG_SLOTS,
-            trackTitle: 'Amritvela Kirtan',
-            accent: '#B8860B',
-            getTrackUrl(idx) {
-                const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks + 1;
-                return `${R2_BASE}/day-${i}.webm?t=${Date.now()}`;
-            }
-        },
-        simran: {
-            name: 'Waheguru Simran',
-            subtitle: 'Naam Simran • Virtual Live',
-            url: null,
-            type: 'simran',
-            totalTracks: 38,
-            artwork: `${HERO}/day-waheguru-simran.webp`,
-            artworkSlots: {
-                morning: `${HERO}/morning-waheguru-simran.webp`,
-                day: `${HERO}/day-waheguru-simran.webp`,
-                evening: `${HERO}/evening-waheguru-simran.webp`,
-                night: `${HERO}/night-waheguru-simran.webp`,
-            },
-            bgSlots: BG_SLOTS,
-            trackTitle: 'Waheguru • Waheguru',
-            accent: '#8B7355',
-            getTrackUrl(idx) {
-                const i = ((idx % this.totalTracks) + this.totalTracks) % this.totalTracks;
-                const filename = SIMRAN_FILENAMES[i];
-                return `${SIMRAN_R2_BASE}/${SIMRAN_R2_PREFIX}/${encodeURIComponent(filename)}`;
-            }
-        }
+  // ─── Audio Meta Resolvers ───
+  var METADATA = {
+    darbar: {
+      title: 'Darbar Sahib Live',
+      artist: 'Sri Harmandir Sahib Ji, Amritsar',
+      location: 'Live from Amritsar'
+    },
+    amritvela: {
+      title: 'Amritvela Kirtan',
+      artist: 'Daily Amritvela Kirtan Recitals',
+      location: 'Daily Recital'
+    },
+    simran: {
+      title: 'Waheguru Simran',
+      artist: 'Waheguru Naam Jaap',
+      location: 'Amritvela Trust'
+    }
+  };
+
+  // Cover fallback checker
+  function verifyCover(src, targetImg) {
+    var img = new Image();
+    img.src = src;
+    img.onload = function() {
+      if (targetImg) targetImg.src = src;
     };
+    img.onerror = function() {
+      if (targetImg) targetImg.src = '../assets/darbar-sahib-evening.webp';
+    };
+  }
 
-    // ─── TIME OF DAY ───────────────────────────────────────────────────────────
+  // ─── Sync UI with Audio State ───
+  function syncUI() {
+    var audio = window.AnhadAudio;
+    if (!audio) return;
 
-    function getSlot() {
-        const forced = localStorage.getItem('anhad_forced_time_of_day');
-        if (forced && ['morning', 'day', 'evening', 'night'].includes(forced)) {
-            return forced;
-        }
-        const h = new Date().getHours();
-        if (h >= 5 && h < 9) return 'morning';
-        if (h >= 9 && h < 16) return 'day';
-        if (h >= 16 && h < 20) return 'evening';
-        return 'night';
+    var state = audio.getState();
+    var stream = state.currentStream || 'darbar';
+
+    // 1. Update Tabs & Sliding Indicator
+    var tabsContainer = document.querySelector('.gr-tabs');
+    if (tabsContainer) {
+      var tabIndex = stream === 'darbar' ? 0 : (stream === 'amritvela' ? 1 : 2);
+      tabsContainer.setAttribute('data-active', tabIndex);
     }
-
-    function syncTimeOfDay() {
-        const slot = getSlot();
-        const prevSlot = document.documentElement.getAttribute('data-time-of-day');
-        if (slot === prevSlot) return;
-        document.documentElement.setAttribute('data-time-of-day', slot);
-        updateBg(slot);
-        const st = STREAMS[curStream];
-        if (st && st.artworkSlots) {
-            const artSrc = st.artworkSlots[slot] || st.artwork;
-            if (elArtImg) {
-                elArtImg.classList.add('xfade');
-                setTimeout(() => {
-                    elArtImg.src = artSrc + '?v=' + Date.now();
-                    elArtImg.classList.remove('xfade');
-                }, 320);
-            }
-        }
-    }
-
-    // Refresh theme on storage changes from other tabs
-    window.addEventListener('storage', e => {
-        if (e.key === 'anhad_forced_time_of_day' || e.key === 'anhad_theme') syncTimeOfDay();
-    });
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) syncTimeOfDay();
+    document.querySelectorAll('.gr-tab').forEach(function (tab) {
+      if (tab.getAttribute('data-stream') === stream) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
     });
 
-    // Listen for theme changes from global-theme.js
-    document.addEventListener('anhadThemeChanged', () => {
-        syncTimeOfDay();
-    });
-    window.addEventListener('anhadTimeForced', () => {
-        syncTimeOfDay();
-    });
-
-    // ─── SERVER SYNC ───────────────────────────────────────────────────────────
-
-    let _syncCache = null;
-    let _syncCacheAt = 0;
-    let _syncStream = null; // which stream the cache is for
-    const SYNC_TTL = 4000;
-    const EPOCH = 1704067200000; // Jan 1 2024
-
-    async function getServerPos(force = false) {
-        // Invalidate cache if stream switched
-        if (_syncStream !== curStream) {
-            _syncCache = null;
-            _syncStream = curStream;
-        }
-        if (!force && _syncCache && (Date.now() - _syncCacheAt) < SYNC_TTL) {
-            const drift = (Date.now() - _syncCacheAt) / 1000;
-            return { trackIndex: _syncCache.trackIndex, position: _syncCache.position + drift, trackFilename: _syncCache.trackFilename };
-        }
-        try {
-            const t0 = Date.now();
-            const apiPath = curStream === 'simran' ? '/api/simran/live' : '/api/radio/live';
-            const res = await fetch(`${API_BASE}${apiPath}?t=${Date.now()}&r=${Math.random()}`,
-                { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-            const t1 = Date.now();
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            const latency = (t1 - t0) / 2000;
-            _syncCache = { trackIndex: data.trackIndex, position: data.trackPosition + latency, trackFilename: data.trackFilename };
-            _syncCacheAt = Date.now();
-            _syncStream = curStream;
-            return { ..._syncCache };
-        } catch (e) {
-            return localPos();
-        }
+    // 1b. Update Favorite button state
+    var isFav = localStorage.getItem('gr_fav_' + stream) === 'true';
+    if (DOM.favoriteBtn) {
+      if (isFav) {
+        DOM.favoriteBtn.classList.add('favorited');
+      } else {
+        DOM.favoriteBtn.classList.remove('favorited');
+      }
     }
 
-    function localPos() {
-        const isSimran = curStream === 'simran';
-        const totalTracks = isSimran ? 38 : 40;
-        const trackDuration = isSimran ? 600 : 3600; // Simran tracks ~10min, Amritvela ~1hr
-        const total = totalTracks * trackDuration;
-        const elapsed = (Date.now() - EPOCH) / 1000;
-        const pos = ((elapsed % total) + total) % total;
-        return { trackIndex: Math.floor(pos / trackDuration), position: pos % trackDuration, trackFilename: isSimran ? SIMRAN_FILENAMES[Math.floor(pos / trackDuration) % 38] : undefined };
-    }
-
-    // ─── STATE ─────────────────────────────────────────────────────────────────
-
-    // All audio state managed by window.AnhadAudio singleton
-    // Radio Page subscribes to master state for perfect synchronization (Category 3 fix)
-    let curStream = 'darbar'; // Local UI-only state for stream selection display
-    let sleepTimer = null;
-    let sleepEnd = 0;
-    let sleepTick = null;
-
-    // ─── DOM REFS ──────────────────────────────────────────────────────────────
-
-    const $ = id => document.getElementById(id);
-
-    const elPlayer = $('player');
-    const elBtnDarbar = $('btnDarbar');
-    const elBtnAmrit = $('btnAmritvela');
-    const elBtnSimran = $('btnSimran');
-    const elPill = $('streamPill');
-    const elArtwork = $('artworkCard');
-    const elArtImg = $('artworkImg');
-    const elArtGlow = $('artworkGlow');
-    const elTitle = $('trackTitle');
-    const elArtist = $('trackArtist');
-    const elSub = $('trackSubtitle');
-    const elMiniEq = $('miniEq');
-    const elPlayBtn = $('playBtn');
-    const elPlayIcon = $('playIcon');
-    const elPrevBtn = $('prevBtn');
-    const elRewindBtn = $('rewindBtn');
-    const elNextBtn = $('nextBtn');
-    const elForwardBtn = $('forwardBtn');
-    const elVolInput = $('volumeInput');
-    const elVolFill = $('volumeFill');
-    const elProgFill = $('progressFill');
-    const elProgKnob = $('progressKnob');
-    const elElapsed = $('elapsedTime');
-    const elLiveBtn = $('liveBtn');
-    const elLiveDot = $('liveDot');
-    const elLiveBehind = $('liveBehind');
-    const elStatus = $('statusPill');
-    const elStatusDot = $('statusDot');
-    const elStatusTxt = $('statusText');
-    const elErr = $('errToast');
-    const elErrTitle = $('errTitle');
-    const elErrMsg = $('errMsg');
-    const elConn = $('connOverlay');
-    const elConnStream = $('connStream');
-    const elPlSheet = $('plSheet');
-    const elSleepSheet = $('sleepSheet');
-    const elSleepBubble = $('sleepBubble');
-    const elSimSwitch = $('simranSwitch');
-    const elSimState = $('simranState');
-
-    // BG layers
-    const elBgMorning = $('bgMorning');
-    const elBgDay = $('bgDay');
-    const elBgEvening = $('bgEvening');
-    const elBgNight = $('bgNight');
-
-    // ─── BACKGROUND ENGINE ─────────────────────────────────────────────────────
-
-    const BG_ELS = { morning: elBgMorning, day: elBgDay, evening: elBgEvening, night: elBgNight };
-
-    function updateBg(slot) {
-        Object.entries(BG_ELS).forEach(([k, el]) => {
-            if (!el) return;
-            if (k === slot) {
-                el.classList.remove('hidden');
-                el.style.opacity = '1';
-                el.style.display = 'block';
-            } else {
-                el.classList.add('hidden');
-                el.style.opacity = '0';
-            }
-        });
-    }
-
-    // ─── AUDIO ENGINE (DELEGATED TO UNIFIED ANHADAUDIO SINGLETON) ──────────────
-
-    // All audio state is managed by window.AnhadAudio singleton
-    // This page subscribes to state changes via event listeners
-
-    async function startStream(name) {
-        curStream = name;
-        const st = STREAMS[name];
-        setConn(true, st.name);
-
-        if (window.AudioCoordinator) window.AudioCoordinator.requestPlay('GurbaniRadioPage');
-
-        try {
-            // NUCLEAR FIX: For Darbar Sahib, use simple direct audio playback
-            if (name === 'darbar') {
-                console.log('[GurbaniRadio] NUCLEAR FIX: Starting Darbar Sahib with direct audio');
-                
-                // Stop other streams first
-                if (window.AnhadAudio) {
-                    window.AnhadAudio.pause();
-                }
-                
-                // Get or create dedicated Darbar audio element
-                if (!window._darbarAudio) {
-                    window._darbarAudio = new Audio();
-                    window._darbarAudio.preload = 'none';
-                    window._darbarAudio.crossOrigin = 'anonymous';
-                }
-                
-                const darbarAudio = window._darbarAudio;
-                darbarAudio.pause();
-                darbarAudio.currentTime = 0;
-                darbarAudio.src = st.url + '&t=' + Date.now();
-                darbarAudio.volume = elVolInput ? parseFloat(elVolInput.value) : 0.7;
-                
-                darbarAudio.onloadstart = () => setConn(true);
-                darbarAudio.oncanplay = () => setConn(false);
-                darbarAudio.onplaying = () => {
-                    isPlaying = true;
-                    updateUI();
-                    setConn(false);
-                };
-                darbarAudio.onerror = (e) => {
-                    setConn(false);
-                    showErr('Stream Error', 'Unable to connect to Darbar Sahib.');
-                };
-                
-                await darbarAudio.play();
-                setConn(false);
-                return;
-            }
-            
-            // For other streams - STOP Darbar first
-            if (window._darbarAudio && !window._darbarAudio.paused) {
-                window._darbarAudio.pause();
-            }
-            
-            if (window.AnhadAudio) {
-                const grState = window.AnhadAudio.getState();
-                if (grState.isPlaying && grState.currentStream === name) {
-                    setConn(false);
-                    return;
-                }
-                await window.AnhadAudio.play(name);
-            }
-        } catch (e) {
-            console.error(`[GurbaniRadio] Failed to start stream ${name}:`, e);
-            setConn(false);
-        } finally {
-            setConn(false);
-        }
-    }
-
-    // Dummy advanceTrack mapping (AnhadAudio handles this autonomously)
-    async function advanceTrack(keepElement) {
-        if (window.AnhadAudio) {
-            await window.AnhadAudio.playNextTrack();
-        }
-    }
-
-    async function togglePlay() {
-        // NUCLEAR FIX: Handle Darbar separately
-        if (curStream === 'darbar' && window._darbarAudio) {
-            const darbarAudio = window._darbarAudio;
-            if (darbarAudio.paused) {
-                try {
-                    await darbarAudio.play();
-                    isPlaying = true;
-                    updateUI();
-                } catch (e) {
-                    console.error('[GurbaniRadio] Darbar play failed:', e);
-                }
-            } else {
-                darbarAudio.pause();
-                isPlaying = false;
-                updateUI();
-            }
-            return;
-        }
-        
-        // For other streams, use AnhadAudio
-        if (!window.AnhadAudio) return;
-        const gaState = window.AnhadAudio.getState();
-        if (!gaState.isPlaying || gaState.currentStream !== curStream) {
-            await startStream(curStream);
-        } else {
-            window.AnhadAudio.pause();
-        }
-    }
-
-    // Dummy bridgeState mapping (AnhadAudio authoritatively manages global state)
-    function bridgeState() { }
-
-    // Dummy updateMediaSession mapping (AnhadAudio manages this globally)
-    function updateMediaSession() { }
-
-    // ─── STREAM SWITCHING ──────────────────────────────────────────────────────
-
-    function setStream(name) {
-        const st = STREAMS[name];
-        curStream = name;
-        const slot = getSlot();
-
-        // Update segmented switcher
-        [elBtnDarbar, elBtnAmrit, elBtnSimran].forEach(b =>
-            b.classList.toggle('active', b.dataset.stream === name));
-        if (elPill) elPill.className = 'stream-pill ' + name;
-
-        // Accent
-        if (elPlayer) elPlayer.dataset.stream = name;
-
-        // Artwork crossfade
-        const artSrc = (st.artworkSlots && st.artworkSlots[slot]) || st.artwork;
-        if (elArtImg) {
-            elArtImg.classList.add('xfade');
-            setTimeout(() => {
-                elArtImg.src = artSrc + '?v=' + Date.now();
-                elArtImg.classList.remove('xfade');
-            }, 320);
-        }
-        if (elArtGlow) elArtGlow.style.background =
-            `radial-gradient(circle, ${st.accent}66, transparent 70%)`;
-
-        // Track info
-        if (elTitle) elTitle.textContent = st.trackTitle || st.name;
-        if (elArtist) elArtist.textContent = st.name;
-        if (elSub) elSub.textContent = st.subtitle;
-
-        // Background
-        updateBg(slot);
-
-        // Progress reset for live
-        if (st.type === 'live') {
-            if (elProgFill) elProgFill.style.width = '0%';
-            if (elProgKnob) elProgKnob.style.left = '0%';
-            if (elElapsed) elElapsed.textContent = '∞';
-        }
-        
-        // Reset live badge state
-        setLiveSynced(true);
-        updateSeekButtons();
-        
-        // CRITICAL: Update UI to reflect current playing state
-        updateUI();
-    }
-
-    // ─── PLAY STATE UI ─────────────────────────────────────────────────────────
-
-    function updateUI() {
-        if (!elPlayBtn || !elPlayIcon) return;
-
-        // NUCLEAR FIX: Check Darbar audio state separately
-        let playing = false;
-        if (curStream === 'darbar' && window._darbarAudio) {
-            playing = !window._darbarAudio.paused;
-        } else {
-            const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
-            playing = state.isPlaying || false;
-        }
-
-        if (playing) {
-            elPlayBtn.classList.remove('paused');
-            elPlayIcon.innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
-            elArtwork?.classList.add('playing');
-            elMiniEq?.classList.add('playing');
-            elArtGlow?.classList.add('pulse');
-        } else {
-            elPlayBtn.classList.add('paused');
-            elPlayIcon.innerHTML = '<polygon points="6,4 20,12 6,20" fill="currentColor"/>';
-            elArtwork?.classList.remove('playing');
-            elMiniEq?.classList.remove('playing');
-            elArtGlow?.classList.remove('pulse');
-        }
-    }
-
-    // ─── CONNECT OVERLAY ───────────────────────────────────────────────────────
-
-    function setConn(show, name) {
-        if (elPlayBtn) {
-            elPlayBtn.classList.toggle('loading', show);
-        }
-        if (elConn) {
-            elConn.classList.toggle('show', false);
-        }
-    }
-
-    function setLiveSynced(isSynced) {
-        if (!elLiveBtn || !elLiveDot) return;
-        if (isSynced) {
-            elLiveBtn.classList.remove('behind');
-            elLiveBtn.classList.add('synced');
-            elLiveDot.classList.remove('pulsing');
-            if (elLiveBehind) elLiveBehind.textContent = '';
-        } else {
-            elLiveBtn.classList.add('behind');
-            elLiveBtn.classList.remove('synced');
-            elLiveDot.classList.add('pulsing');
-            if (elLiveBehind) {
-                // Read from AnhadAudio singleton instead of local state
-                const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
-                const curTrack = state.currentTrackIndex || 0;
-                const audioCurrentTime = state.currentTime || 0;
-                
-                // Compute total drift from live edge
-                const liveNow = localPos();
-                let diff = 0;
-                if (curTrack === liveNow.trackIndex) {
-                    diff = Math.round(liveNow.position - audioCurrentTime);
-                } else {
-                    const dur = curStream === 'simran' ? 600 : 3600;
-                    diff = Math.round((liveNow.trackIndex - curTrack) * dur + liveNow.position - audioCurrentTime);
-                }
-                // Show as -Xs or -Xm — YouTube-style
-                if (diff > 0) {
-                    if (diff < 60) elLiveBehind.textContent = `-${diff}s`;
-                    else elLiveBehind.textContent = `-${Math.floor(diff / 60)}m${diff % 60 > 0 ? (diff % 60) + 's' : ''}`;
-                } else {
-                    elLiveBehind.textContent = '';
-                    // We're actually ahead — that means synced
-                    setLiveSynced(true);
-                }
-            }
-        }
-    }
-
-    function updateSeekButtons() {
-        const st = STREAMS[curStream];
-        const isLiveStream = st && st.type === 'live';
-        if (elRewindBtn) {
-            elRewindBtn.disabled = isLiveStream;
-            elRewindBtn.style.opacity = isLiveStream ? '0.35' : '1';
-            elRewindBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
-        }
-        if (elForwardBtn) {
-            elForwardBtn.disabled = isLiveStream;
-            elForwardBtn.style.opacity = isLiveStream ? '0.35' : '1';
-            elForwardBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
-        }
-        if (elPrevBtn) {
-            elPrevBtn.disabled = isLiveStream;
-            elPrevBtn.style.opacity = isLiveStream ? '0.35' : '1';
-            elPrevBtn.style.pointerEvents = isLiveStream ? 'none' : 'auto';
-        }
-    }
-
-    // ─── STATUS PILL ───────────────────────────────────────────────────────────
-
-    function showStatus(msg, isErr) {
-        if (!elStatus) return;
-        elStatusTxt.textContent = msg;
-        elStatusDot.classList.toggle('error', !!isErr);
-        elStatus.classList.add('show');
-        clearTimeout(elStatus._t);
-        elStatus._t = setTimeout(() => elStatus.classList.remove('show'), 2600);
-    }
-
-    // ─── ERROR TOAST ───────────────────────────────────────────────────────────
-
-    function showErr(title, msg) {
-        if (!elErr) return;
-        elErrTitle.textContent = title;
-        elErrMsg.textContent = msg;
-        elErr.classList.add('show');
-        clearTimeout(elErr._t);
-        elErr._t = setTimeout(() => elErr.classList.remove('show'), 5500);
-    }
-
-    // ─── SLEEP TIMER ───────────────────────────────────────────────────────────
-
-    function setSleep(mins) {
-        clearTimeout(sleepTimer);
-        clearInterval(sleepTick);
-        if (!mins) {
-            sleepEnd = 0;
-            if (elSleepBubble) { elSleepBubble.classList.remove('visible'); elSleepBubble.textContent = ''; }
-            return;
-        }
-        sleepEnd = Date.now() + mins * 60000;
-        sleepTimer = setTimeout(() => {
-            // Pause through AnhadAudio singleton
-            if (window.AnhadAudio) {
-                window.AnhadAudio.pause();
-            }
-            clearInterval(sleepTick);
-            if (elSleepBubble) { elSleepBubble.classList.remove('visible'); elSleepBubble.textContent = ''; }
-            showStatus('Sleep timer — Goodnight 🙏');
-        }, mins * 60000);
-
-        // Countdown bubble
-        sleepTick = setInterval(() => {
-            const rem = sleepEnd - Date.now();
-            if (rem <= 0) { clearInterval(sleepTick); return; }
-            const m = Math.ceil(rem / 60000);
-            if (elSleepBubble) elSleepBubble.textContent = `Sleep in ${m}m`;
-        }, 10000);
-
-        if (elSleepBubble) {
-            const m = Math.ceil(mins);
-            elSleepBubble.textContent = `Sleep in ${m}m`;
-            elSleepBubble.classList.add('visible');
-        }
-        showStatus(`Sleep timer: ${mins} min`);
-    }
-
-    // ─── VOLUME ────────────────────────────────────────────────────────────────
-
-    if (elVolInput) {
-        elVolInput.addEventListener('input', function () {
-            const v = this.value;
-            // Set volume through AnhadAudio singleton
-            if (window.AnhadAudio) {
-                const audio = window.AnhadAudio.getAudio();
-                if (audio) audio.volume = parseFloat(v);
-            }
-            if (elVolFill) elVolFill.style.width = (v * 100) + '%';
-        });
-    }
-
-    // ─── CONTROLS ──────────────────────────────────────────────────────────────
-
-    if (elPlayBtn) elPlayBtn.addEventListener('click', () => togglePlay());
-
-    if (elPrevBtn) elPrevBtn.addEventListener('click', () => showStatus('Seeking to previous track'));
-
-    if (elRewindBtn) {
-        elRewindBtn.addEventListener('click', () => {
-            if (window.AnhadAudio) {
-                const audio = window.AnhadAudio.getAudio();
-                const state = window.AnhadAudio.getState();
-                if (audio && state.currentStream) {
-                    audio.currentTime = Math.max(0, audio.currentTime - 10);
-                    showStatus('Rewinded 10s');
-                }
-            }
-        });
-    }
-
-    if (elForwardBtn) {
-        elForwardBtn.addEventListener('click', () => {
-            if (window.AnhadAudio) {
-                const audio = window.AnhadAudio.getAudio();
-                const state = window.AnhadAudio.getState();
-                if (audio && state.currentStream) {
-                    const dur = audio.duration || 3600;
-                    audio.currentTime = Math.min(dur - 2, audio.currentTime + 10);
-                    showStatus('Forwarded 10s');
-                }
-            }
-        });
-    }
-
-    if (elNextBtn) elNextBtn.addEventListener('click', async () => {
-        if (STREAMS[curStream].type !== 'live') {
-            await advanceTrack();
-            showStatus('Skipped to next track');
-        } else {
-            showStatus('Live — cannot skip');
-        }
-    });
-
-    // Stream switcher - DISPLAY ONLY, don't play on click
-    if (elBtnDarbar) {
-        elBtnDarbar.addEventListener('click', () => {
-            setStream('darbar');
-            // Don't auto-play, just update UI
-        });
-    }
-    if (elBtnAmrit) {
-        elBtnAmrit.addEventListener('click', () => {
-            setStream('amritvela');
-            // Don't auto-play, just update UI
-        });
-    }
-    if (elBtnSimran) {
-        elBtnSimran.addEventListener('click', () => {
-            setStream('simran');
-            // Don't auto-play, just update UI
-        });
-    }
-
-    // (Simran sub-switch removed — no functionality)
-
-    // Live button — seek to current live edge (YouTube-style drift seek, not restart)
-    if (elLiveBtn) {
-        elLiveBtn.addEventListener('click', async () => {
-            if (window.AnhadAudio) {
-                await window.AnhadAudio.jumpToLive();
-            }
-        });
-    }
-
-    // Back button
-    const elBack = $('backBtn');
-    if (elBack) {
-        elBack.addEventListener('click', () => {
-            if (window.history.length > 1) window.history.back();
-            else window.location.href = '../index.html';
-        });
-    }
-
-    // ─── PLAYLIST SHEET ────────────────────────────────────────────────────────
-
-    const elPlBtn = $('playlistBtn');
-    const elPlClose = $('plClose');
-    const elPlOver = $('plOverlay');
-
-    function openPl() { if (elPlSheet) elPlSheet.classList.add('show'); }
-    function closePl() { if (elPlSheet) elPlSheet.classList.remove('show'); }
-
-    if (elPlBtn) elPlBtn.addEventListener('click', openPl);
-    if (elPlClose) elPlClose.addEventListener('click', closePl);
-    if (elPlOver) elPlOver.addEventListener('click', closePl);
-
-    // Playlist item clicks
-    ['plItemDarbar', 'plItemAmrit', 'plItemSimran'].forEach((id, idx) => {
-        const el = $(id);
-        if (!el) return;
-        const names = ['darbar', 'amritvela', 'simran'];
-        el.addEventListener('click', () => { closePl(); startStream(names[idx]); });
-    });
-
-    // ─── SLEEP SHEET ───────────────────────────────────────────────────────────
-
-    const elSleepBtn = $('sleepBtn');
-    const elSleepClose = $('sleepClose');
-    const elSleepOver = $('sleepOverlay');
-    const elSleepCancel = $('sleepCancel');
-
-    function openSleep() { if (elSleepSheet) elSleepSheet.classList.add('show'); }
-    function closeSleep() { if (elSleepSheet) elSleepSheet.classList.remove('show'); }
-
-    if (elSleepBtn) elSleepBtn.addEventListener('click', openSleep);
-    if (elSleepClose) elSleepClose.addEventListener('click', closeSleep);
-    if (elSleepOver) elSleepOver.addEventListener('click', closeSleep);
-    if (elSleepCancel) elSleepCancel.addEventListener('click', () => { setSleep(0); closeSleep(); });
-
-    document.querySelectorAll('.sleep-opt').forEach(opt => {
-        opt.addEventListener('click', () => {
-            document.querySelectorAll('.sleep-opt').forEach(o => o.classList.remove('active-sleep'));
-            opt.classList.add('active-sleep');
-            setSleep(parseInt(opt.dataset.mins, 10));
-            closeSleep();
-        });
-    });
-
-    // ─── SHARE / FAV ───────────────────────────────────────────────────────────
-
-    const elFavBtn = $('favBtn');
-    const elShareBtn = $('shareBtn');
-    let isFav = localStorage.getItem('grFav') === '1';
-
-    function updateFav() {
-        if (!elFavBtn) return;
-        if (isFav) elFavBtn.classList.add('active');
-        else elFavBtn.classList.remove('active');
-    }
-    updateFav();
-
-    if (elFavBtn) {
-        elFavBtn.addEventListener('click', () => {
-            isFav = !isFav;
-            localStorage.setItem('grFav', isFav ? '1' : '0');
-            updateFav();
-            showStatus(isFav ? 'Added to favourites ♥' : 'Removed from favourites');
-            if (navigator.vibrate) navigator.vibrate(30);
-        });
-    }
-
-    if (elShareBtn) {
-        elShareBtn.addEventListener('click', async () => {
-            const data = {
-                title: 'Gurbani Radio — ANHAD', url: window.location.href,
-                text: 'Listen to Live Kirtan & Amritvela 24/7'
-            };
-            try {
-                if (navigator.share) await navigator.share(data);
-                else {
-                    await navigator.clipboard.writeText(window.location.href);
-                    showStatus('Link copied!');
-                }
-            } catch (e) { if (e.name !== 'AbortError') showStatus('Could not share', true); }
-        });
-    }
-
-    // ─── ERROR RETRY ───────────────────────────────────────────────────────────
-
-    const elErrRetry = $('errRetry');
-    if (elErrRetry) {
-        elErrRetry.addEventListener('click', () => {
-            elErr.classList.remove('show');
-            startStream(curStream);
-        });
-    }
-
-    // ─── DYNAMIC BG ON INIT ────────────────────────────────────────────────────
-
-    function initBg() {
-        const initialSlot = getSlot();
-        updateBg(initialSlot);
-        syncTimeOfDay();
-    }
-
-    // ─── INIT ──────────────────────────────────────────────────────────────────
-
-    function init() {
-        initBg();
-        setStream('darbar');
-        updateUI();
-
-        // ─── QUERY PARAM SEAMLESS REDIRECT ───────────────────────────────────────
-        let initialStream = 'darbar';
-        let forcePlay = false;
-
-        try {
-            const urlParams = new URLSearchParams(window.location.search);
-            const queryStream = urlParams.get('stream');
-            if (queryStream && ['darbar', 'amritvela', 'simran'].includes(queryStream)) {
-                initialStream = queryStream;
-                forcePlay = true;
-            } else {
-                // Pick up from localStorage if GMP was playing
-                const saved = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
-                if (saved && saved.isPlaying && saved.stream &&
-                    (Date.now() - (saved.timestamp || 0)) < 30 * 60000) {
-                    initialStream = saved.stream;
-                    forcePlay = true;
-                }
-            }
-        } catch (e) { }
-
-        setStream(initialStream);
-
-        // Listen to global singleton state updates
-        if (window.AnhadAudio) {
-            window.AnhadAudio.on('statechange', (state) => {
-                if (state.currentStream) {
-                    curStream = state.currentStream;
-
-                    [elBtnDarbar, elBtnAmrit, elBtnSimran].forEach(b => {
-                        if (b) b.classList.toggle('active', b.dataset.stream === curStream);
-                    });
-                    if (elPill) elPill.className = 'stream-pill ' + curStream;
-                    if (elPlayer) elPlayer.dataset.stream = curStream;
-
-                    const st = STREAMS[curStream];
-                    if (st) {
-                        if (elTitle) elTitle.textContent = state.currentTrackTitle || st.trackTitle || st.name;
-                        if (elArtist) elArtist.textContent = state.currentTrackArtist || st.name;
-                        if (elSub) elSub.textContent = state.streamSubtitle || st.subtitle;
-
-                        const slot = getSlot();
-                        const artSrc = (st.artworkSlots && st.artworkSlots[slot]) || state.artwork || st.artwork;
-                        if (elArtImg && !elArtImg.src.includes(artSrc)) {
-                            elArtImg.classList.add('xfade');
-                            setTimeout(() => {
-                                elArtImg.src = artSrc + '?v=' + Date.now();
-                                elArtImg.classList.remove('xfade');
-                            }, 320);
-                        }
-                        if (elArtGlow) elArtGlow.style.background = `radial-gradient(circle, ${st.accent}66, transparent 70%)`;
-                    }
-                }
-
-                const activeSt = STREAMS[curStream];
-                if (activeSt && activeSt.type === 'live') {
-                    if (elProgFill) elProgFill.style.width = '0%';
-                    if (elProgKnob) elProgKnob.style.left = '0%';
-                    if (elElapsed) elElapsed.textContent = '∞';
-                } else {
-                    if (state.duration && isFinite(state.duration)) {
-                        const pct = Math.min((state.currentTime / state.duration) * 100, 100);
-                        if (elProgFill) elProgFill.style.width = pct + '%';
-                        if (elProgKnob) elProgKnob.style.left = pct + '%';
-                        const s = Math.floor(state.currentTime % 60);
-                        const m = Math.floor(state.currentTime / 60);
-                        if (elElapsed) elElapsed.textContent = m + ':' + (s < 10 ? '0' : '') + s;
-                    }
-                }
-
-                setConn(state.isLoading);
-                updateUI();
-
-                setLiveSynced(!state.isBehind);
-                if (state.isBehind && state.liveOffset) {
-                    const diff = Math.round(state.liveOffset);
-                    if (elLiveBehind) {
-                        if (diff < 60) elLiveBehind.textContent = `-${diff}s`;
-                        else elLiveBehind.textContent = `-${Math.floor(diff / 60)}m${diff % 60 > 0 ? (diff % 60) + 's' : ''}`;
-                    }
-                } else {
-                    if (elLiveBehind) elLiveBehind.textContent = '';
-                }
-
-                updateSeekButtons();
-            });
-
-            // Initialize or sync with currently playing singleton state
-            const state = window.AnhadAudio.getState();
-            if (state.isPlaying && state.currentStream === initialStream) {
-                updateUI();
-            } else if (forcePlay) {
-                // CAPACITOR FIX: Auto-play requires a user gesture — defer to first interaction
-                // Use click/touchend (NOT pointerdown/touchstart) — only click/touchend are valid
-                // user-gesture events for audio.play() on Android WebView
-                if (window.Capacitor) {
-                    /* defer auto-play */
-                    const playOnInteraction = function() {
-                        document.removeEventListener('click', playOnInteraction, { capture: true });
-                        document.removeEventListener('touchend', playOnInteraction, { capture: true });
-                        startStream(initialStream);
-                    };
-                    document.addEventListener('click', playOnInteraction, { once: true, capture: true });
-                    document.addEventListener('touchend', playOnInteraction, { once: true, capture: true });
-                    updateUI();
-                } else {
-                    startStream(initialStream);
-                }
-            } else {
-                updateUI();
-            }
-
-            // Note: decoder warmup for Darbar SGPC stream happens in startStream()
-            // on the first play call, so we don't pre-load anything here.
-        } else {
-            // Fallback if singleton is not loaded
-            if (forcePlay) {
-                if (window.Capacitor) {
-                    /* defer auto-play */
-                    const playOnInteraction = function() {
-                        document.removeEventListener('click', playOnInteraction, { capture: true });
-                        document.removeEventListener('touchend', playOnInteraction, { capture: true });
-                        startStream(initialStream);
-                    };
-                    document.addEventListener('click', playOnInteraction, { once: true, capture: true });
-                    document.addEventListener('touchend', playOnInteraction, { once: true, capture: true });
-                    updateUI();
-                } else {
-                    startStream(initialStream);
-                }
-            }
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+    // 2. Update Play/Pause Buttons
+    if (state.isPlaying) {
+      DOM.playBtn.querySelector('.play-icon').style.display = 'none';
+      DOM.playBtn.querySelector('.pause-icon').style.display = 'block';
+      DOM.waveIcon.classList.add('playing');
     } else {
-        init();
+      DOM.playBtn.querySelector('.play-icon').style.display = 'block';
+      DOM.playBtn.querySelector('.pause-icon').style.display = 'none';
+      DOM.waveIcon.classList.remove('playing');
     }
 
-    // ═══ CONTINUOUS UI UPDATE LOOP FOR SMOOTH STATE TRANSITIONS ═══
-    // Update UI every 300ms to ensure smooth play button state changes
-    setInterval(() => {
-        if (!document.hidden) {
-            updateUI();
-        }
-    }, 300);
+    // 3. Update Text Info
+    var meta = METADATA[stream];
+    if (meta) {
+      DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
+      DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
+      DOM.pillLocationText.textContent = meta.location;
+      
+      // Dynamic time-based and theme-based album cover resolution
+      var coverSrc = getCoverForStream(stream);
+      verifyCover(coverSrc, DOM.coverImg);
+    }
 
-    // Listen for audio state changes from AnhadAudio singleton
-    if (window.AnhadAudio) {
-        const audio = window.AnhadAudio.getAudio();
+    // 4. Update Banner & Recording controls
+    if (stream === 'darbar') {
+      DOM.listeningLiveText.textContent = 'LIVE';
+      DOM.listeningLiveText.style.color = '#E24C4C';
+      DOM.listeningTimeBadge.textContent = 'LIVE';
+    } else {
+      DOM.listeningLiveText.textContent = stream.toUpperCase();
+      DOM.listeningLiveText.style.color = 'var(--accent-gold)';
+      DOM.listeningTimeBadge.textContent = formatSeconds(state.currentTime);
+    }
+
+    if (DOM.recordItem) {
+      DOM.recordLabel.textContent = recState.isRecording ? formatSeconds(Math.floor((Date.now() - recState.startTime) / 1000)) : 'Record';
+    }
+
+    // 4b. Update Behind Live Button status
+    var behindLiveBtn = document.getElementById('grBtnJumpLive');
+    if (behindLiveBtn) {
+      var offset = audio.getLiveOffset();
+      if (stream !== 'darbar' && offset > 5) {
+        behindLiveBtn.style.display = 'inline-block';
+        behindLiveBtn.textContent = 'Behind Live ' + formatSeconds(offset) + ' (Tap to Jump Live)';
+      } else {
+        behindLiveBtn.style.display = 'none';
+      }
+    }
+
+    // 5. Update Timeline
+    updateTimeline(state.currentTime, state.duration, stream);
+  }
+
+  function updateTimeline(current, duration, stream) {
+    if (DOM.isDraggingSlider) return;
+
+    DOM.timeCurrent.textContent = formatSeconds(current);
+
+    if (stream === 'darbar') {
+      DOM.timeTotal.textContent = 'LIVE';
+      DOM.sliderFill.style.width = '100%';
+      DOM.sliderHandle.style.left = '100%';
+    } else {
+      var dur = duration || 3600; // fallback 1 hour
+      DOM.timeTotal.textContent = formatSeconds(dur);
+      var pct = Math.max(0, Math.min(100, (current / dur) * 100));
+      DOM.sliderFill.style.width = pct + '%';
+      DOM.sliderHandle.style.left = pct + '%';
+    }
+  }
+
+  // ─── Timeline dragging ───
+  function setupSlider() {
+    DOM.isDraggingSlider = false;
+
+    function handleMove(e) {
+      var audio = window.AnhadAudio;
+      if (!audio || audio.getState().currentStream === 'darbar') return;
+
+      var rect = DOM.sliderContainer.getBoundingClientRect();
+      var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+
+      DOM.sliderFill.style.width = (pct * 100) + '%';
+      DOM.sliderHandle.style.left = (pct * 100) + '%';
+
+      var state = audio.getState();
+      var dur = state.duration || 3600;
+      DOM.timeCurrent.textContent = formatSeconds(pct * dur);
+    }
+
+    function handleEnd(e) {
+      if (!DOM.isDraggingSlider) return;
+      DOM.isDraggingSlider = false;
+
+      var audio = window.AnhadAudio;
+      if (audio) {
+        var rect = DOM.sliderContainer.getBoundingClientRect();
+        var clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+        var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+
+        var state = audio.getState();
+        var dur = state.duration || 3600;
+        var seekTime = pct * dur;
+
+        var audioEl = audio.getAudio();
+        if (audioEl) {
+          audioEl.currentTime = seekTime;
+        }
+      }
+
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleMove);
+      document.removeEventListener('touchend', handleEnd);
+    }
+
+    DOM.sliderContainer.addEventListener('mousedown', function (e) {
+      DOM.isDraggingSlider = true;
+      handleMove(e);
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+    });
+
+    DOM.sliderContainer.addEventListener('touchstart', function (e) {
+      DOM.isDraggingSlider = true;
+      handleMove(e);
+      document.addEventListener('touchmove', handleMove);
+      document.addEventListener('touchend', handleEnd);
+    }, { passive: true });
+  }
+
+  // ─── Gurbani Recording Engine (MediaRecorder exactly what plays) ───
+  async function startRecording() {
+    var audio = window.AnhadAudio;
+    if (!audio) return;
+
+    var state = audio.getState();
+    var stream = state.currentStream || 'darbar';
+    var audioEl = audio.getAudio();
+
+    if (!audioEl || audioEl.paused) {
+      showToast('⚠️ Please play radio before recording');
+      return;
+    }
+
+    haptic('HEAVY');
+    recState.isRecording = true;
+    recState.chunks = [];
+    recState.startTime = Date.now();
+    recState.streamType = stream;
+
+    DOM.recordItem.classList.add('recording');
+    DOM.recordLabel.textContent = '00:00';
+    showToast('🔴 Recording Gurbani... Tap again to stop');
+
+    recState.intervalId = setInterval(function () {
+      var elapsed = Math.floor((Date.now() - recState.startTime) / 1000);
+      DOM.recordLabel.textContent = formatSeconds(elapsed);
+
+      if (elapsed >= recState.maxDurationSeconds) {
+        stopRecording(true);
+      }
+    }, 1000);
+
+    try {
+      var mediaStream = null;
+      if (audioEl.captureStream) {
+        mediaStream = audioEl.captureStream();
+      } else if (audioEl.mozCaptureStream) {
+        mediaStream = audioEl.mozCaptureStream();
+      }
+
+      if (mediaStream) {
+        var options = {};
+        if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options.mimeType = 'audio/webm';
+        } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+          options.mimeType = 'audio/aac';
+        }
+
+        var mediaRecorder = new MediaRecorder(mediaStream, options);
+        recState.mediaRecorder = mediaRecorder;
+        
+        mediaRecorder.ondataavailable = function (e) {
+          if (e.data && e.data.size > 0) {
+            recState.chunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.start(1000);
+      } else {
+        downloadStream(audioEl.src);
+      }
+    } catch (e) {
+      console.warn('Recording start error, trying direct download:', e);
+      downloadStream(audioEl && audioEl.src);
+    }
+  }
+
+  function downloadStream(url) {
+    if (!url) { showToast('No stream URL'); return; }
+    var xhr = new XMLHttpRequest();
+    recState.xhr = xhr;
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onprogress = function(e) {
+      if (!recState.isRecording && xhr.readyState < 4) {
+        xhr.abort();
+      }
+    };
+    xhr.onload = function() {
+      if (xhr.status === 200 && recState.isRecording) {
+        recState.chunks.push(xhr.response);
+      }
+    };
+    xhr.onerror = function() {
+      console.error('XHR download failed');
+    };
+    xhr.onloadend = function() {
+      if (recState.isRecording) {
+        stopRecording(false);
+      }
+    };
+    xhr.send();
+  }
+
+  async function stopRecording(autoStop) {
+    if (!recState.isRecording) return;
+    recState.isRecording = false;
+
+    if (recState.intervalId) clearInterval(recState.intervalId);
+    if (recState.mediaRecorder) {
+      try { recState.mediaRecorder.stop(); } catch(e) {}
+    }
+    if (recState.abortController) recState.abortController.abort();
+    if (recState.xhr) {
+      try { recState.xhr.abort(); } catch(e) {}
+    }
+
+    DOM.recordItem.classList.remove('recording');
+    DOM.recordLabel.textContent = 'Record';
+    haptic('MEDIUM');
+
+    setTimeout(function() {
+      if (recState.chunks.length === 0) {
+        showToast('No audio recorded');
+        return;
+      }
+
+      showToast('Saving Gurbani recording...');
+
+      var isSimran = recState.streamType === 'simran';
+      var mimeType = isSimran ? 'audio/mpeg' : 'audio/webm';
+      var ext = isSimran ? '.mp3' : '.webm';
+      var blob = new Blob(recState.chunks, { type: mimeType });
+      var dateStr = new Date().toISOString().slice(0,10);
+      var filename = 'Gurbani_' + recState.streamType + '_' + dateStr + ext;
+
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+        try {
+          var reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            var base64data = reader.result.split(',')[1];
+            window.Capacitor.Plugins.Filesystem.writeFile({
+              path: filename,
+              data: base64data,
+              directory: 'DOCUMENTS'
+            }).then(function () {
+              showToast('Saved to Documents!');
+            }).catch(function (err) {
+              console.error('File write failed:', err);
+              triggerWebDownload(blob, filename);
+            });
+          };
+        } catch (err) {
+          triggerWebDownload(blob, filename);
+        }
+      } else {
+        triggerWebDownload(blob, filename);
+      }
+    }, 200);
+  }
+
+  function triggerWebDownload(blob, filename) {
+    try {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('✅ Recording downloaded successfully!');
+    } catch (e) {
+      showToast('❌ Recording export failed');
+    }
+  }
+
+  function toggleRecording() {
+    if (recState.isRecording) {
+      stopRecording(false);
+    } else {
+      startRecording();
+    }
+  }
+
+  // ─── Sleep Timer ───
+  function setSleepTimer(mins) {
+    if (sleepTimerId) {
+      clearTimeout(sleepTimerId);
+      sleepTimerId = null;
+    }
+
+    if (mins <= 0) {
+      sleepTimerEnd = 0;
+      showToast('⏰ Sleep Timer Cancelled');
+      return;
+    }
+
+    sleepTimerEnd = Date.now() + mins * 60 * 1000;
+    showToast('⏰ Sleep Timer set for ' + mins + ' minutes');
+
+    sleepTimerId = setTimeout(function () {
+      var audio = window.AnhadAudio;
+      if (audio && audio.isPlaying()) {
+        audio.pause();
+        showToast('⏰ Sleep timer completed. Audio paused.');
+      }
+    }, mins * 60 * 1000);
+  }
+
+  // ─── Alarm Management ───
+  function loadAlarmSettings() {
+    try {
+      var alarmRaw = localStorage.getItem('anhad_radio_alarm');
+      if (alarmRaw) {
+        var alarm = JSON.parse(alarmRaw);
+        document.getElementById('alarmEnabled').checked = !!alarm.enabled;
+        document.getElementById('alarmTime').value = alarm.time || '04:30';
+        document.getElementById('alarmStream').value = alarm.stream || 'amritvela';
+      }
+    } catch(e) {}
+  }
+
+  function saveAlarmSettings() {
+    var enabled = document.getElementById('alarmEnabled').checked;
+    var time = document.getElementById('alarmTime').value;
+    var stream = document.getElementById('alarmStream').value;
+
+    var alarm = {
+      enabled: enabled,
+      time: time,
+      stream: stream
+    };
+
+    localStorage.setItem('anhad_radio_alarm', JSON.stringify(alarm));
+    scheduleNotificationAlarm(alarm);
+    
+    showToast(enabled ? '⏰ Alarm set for ' + time : '⏰ Alarm disabled');
+    document.getElementById('alarmSheet').style.display = 'none';
+  }
+
+  function scheduleNotificationAlarm(alarm) {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
+      var ln = window.Capacitor.Plugins.LocalNotifications;
+      
+      ln.requestPermissions().then(function (permission) {
+        if (permission.display === 'granted') {
+          // Cancel previous alarm ID 4242
+          ln.cancel({ notifications: [{ id: 4242 }] }).catch(function(){});
+          
+          if (!alarm.enabled) return;
+
+          var timeParts = alarm.time.split(':');
+          var hour = parseInt(timeParts[0], 10);
+          var min = parseInt(timeParts[1], 10);
+
+          ln.schedule({
+            notifications: [
+              {
+                title: '⏰ Gurbani Alarm',
+                body: 'Time to listen to ' + METADATA[alarm.stream].title + '! Tap to play.',
+                id: 4242,
+                schedule: {
+                  on: {
+                    hour: hour,
+                    minute: min
+                  },
+                  repeats: true,
+                  allowWhileIdle: true
+                },
+                extra: {
+                  url: 'GurbaniRadio/gurbani-radio.html?stream=' + alarm.stream
+                }
+              }
+            ]
+          }).then(function() {
+            console.log('[Alarm] Local notification scheduled daily at ' + alarm.time);
+          }).catch(function(e) {
+            console.warn('Failed to schedule local notification:', e);
+          });
+        } else {
+          showToast('⚠️ Enable notifications to support Gurbani alarm');
+        }
+      }).catch(function(err) {
+        console.warn('Notification permission request error:', err);
+      });
+    }
+  }
+
+  // ─── Theme Manager (100% Time-Based Auto) ───
+  function initTheme() {
+    var h = new Date().getHours();
+    // 5 AM to 8 PM (20:00) is light theme, otherwise dark theme
+    var autoTheme = (h >= 5 && h < 20) ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', autoTheme);
+  }
+
+  // ─── Event Bindings ───
+  function cacheDom() {
+    DOM.toast          = document.getElementById('grToast');
+    DOM.playBtn        = document.getElementById('grPlayBtn');
+    DOM.coverImg       = document.getElementById('grCoverImg');
+    DOM.trackTitle     = document.getElementById('grTrackTitle');
+    DOM.trackArtist    = document.getElementById('grTrackArtist');
+    DOM.pillLocationText = document.getElementById('grPillLocationText');
+    DOM.listeningLiveText = document.getElementById('grListeningLiveText');
+    DOM.listeningTimeBadge = document.getElementById('grListeningTimeBadge');
+    DOM.waveIcon       = document.getElementById('grWaveIcon');
+    DOM.timeCurrent    = document.getElementById('grTimeCurrent');
+    DOM.timeTotal      = document.getElementById('grTimeTotal');
+    DOM.sliderContainer = document.getElementById('grSliderContainer');
+    DOM.sliderFill     = document.getElementById('grSliderFill');
+    DOM.sliderHandle   = document.getElementById('grSliderHandle');
+    DOM.recordItem     = document.getElementById('btnRecord');
+    DOM.recordLabel    = document.getElementById('grRecordLabel');
+    DOM.favoriteBtn    = document.getElementById('grFavoriteBtn');
+  }
+
+  function bindEvents() {
+    // Back navigation
+    document.getElementById('grBackBtn').addEventListener('click', function () {
+      haptic('LIGHT');
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '../index.html';
+      }
+    });
+
+    // Settings icon shows informational theme toast
+    document.getElementById('grSettingsBtn').addEventListener('click', function () {
+      haptic('LIGHT');
+      showToast('⏰ Theme is set automatically based on time of day');
+    });
+
+    // Play/Pause toggle
+    DOM.playBtn.addEventListener('click', function () {
+      haptic('MEDIUM');
+      var audio = window.AnhadAudio;
+      if (audio) {
+        audio.toggle();
+      }
+    });
+
+    // Skip controls
+    document.getElementById('grBtnSkipBack').addEventListener('click', function () {
+      haptic('LIGHT');
+      var audio = window.AnhadAudio;
+      if (audio) {
+        var audioEl = audio.getAudio();
+        if (audioEl && audio.getState().currentStream !== 'darbar') {
+          audioEl.currentTime = Math.max(0, audioEl.currentTime - 15);
+        }
+      }
+    });
+
+    document.getElementById('grBtnSkipFwd').addEventListener('click', function () {
+      haptic('LIGHT');
+      var audio = window.AnhadAudio;
+      if (audio) {
+        var state = audio.getState();
+        if (state.currentStream === 'darbar') return;
+        var audioEl = audio.getAudio();
+        if (audioEl) {
+          var offset = audio.getLiveOffset ? audio.getLiveOffset() : 0;
+          if (offset < 10) {
+            showToast('⚠️ Cannot skip forward past the live broadcast');
+            return;
+          }
+          // Clamp skip to the live edge boundary (offset = 0)
+          var maxAllowedTime = Math.max(0, audioEl.currentTime + offset - 2);
+          audioEl.currentTime = Math.min(maxAllowedTime, audioEl.currentTime + 15);
+        }
+      }
+    });
+
+    // Prev/Next controls
+    document.getElementById('grBtnPrev').addEventListener('click', function () {
+      haptic('LIGHT');
+      var audio = window.AnhadAudio;
+      if (audio && typeof audio.playNextTrack === 'function') {
+        audio.playNextTrack(false);
+      }
+    });
+
+    document.getElementById('grBtnNext').addEventListener('click', function () {
+      haptic('LIGHT');
+      var audio = window.AnhadAudio;
+      if (audio && typeof audio.playNextTrack === 'function') {
+        audio.playNextTrack(true);
+      }
+    });
+
+    // Tabs switching
+    document.querySelectorAll('.gr-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var stream = tab.getAttribute('data-stream');
+        haptic('MEDIUM');
+        var audio = window.AnhadAudio;
         if (audio) {
-            audio.addEventListener('play', () => updateUI());
-            audio.addEventListener('pause', () => updateUI());
-            audio.addEventListener('playing', () => updateUI());
+          audio.play(stream);
         }
+      });
+    });
+
+    // Utility panel
+    document.getElementById('btnSleepTimer').addEventListener('click', function () {
+      haptic('LIGHT');
+      document.getElementById('sleepTimerSheet').style.display = 'flex';
+    });
+
+    // Alarm sheet open
+    document.getElementById('btnAlarm').addEventListener('click', function () {
+      haptic('LIGHT');
+      loadAlarmSettings();
+      document.getElementById('alarmSheet').style.display = 'flex';
+    });
+
+    document.getElementById('btnShare').addEventListener('click', function () {
+      haptic('LIGHT');
+      if (navigator.share) {
+        navigator.share({
+          title: 'Gurbani Radio',
+          text: 'Listen to Darbar Sahib Live Kirtan on ANHAD App',
+          url: window.location.href
+        }).catch(function() {});
+      } else {
+        showToast('🔗 App Link copied to clipboard!');
+      }
+    });
+
+    // Record click
+    DOM.recordItem.addEventListener('click', function () {
+      toggleRecording();
+    });
+
+    // Favorite click
+    if (DOM.favoriteBtn) {
+      DOM.favoriteBtn.addEventListener('click', function () {
+        haptic('LIGHT');
+        var audio = window.AnhadAudio;
+        if (!audio) return;
+        var state = audio.getState();
+        var stream = state.currentStream || 'darbar';
+        var isFav = localStorage.getItem('gr_fav_' + stream) === 'true';
+        if (isFav) {
+          localStorage.setItem('gr_fav_' + stream, 'false');
+          DOM.favoriteBtn.classList.remove('favorited');
+          showToast('💔 Removed from Library');
+        } else {
+          localStorage.setItem('gr_fav_' + stream, 'true');
+          DOM.favoriteBtn.classList.add('favorited');
+          showToast('❤️ Added to Library');
+        }
+      });
     }
 
-    // Listen for Darbar audio state changes
-    if (window._darbarAudio) {
-        window._darbarAudio.addEventListener('play', () => updateUI());
-        window._darbarAudio.addEventListener('pause', () => updateUI());
-        window._darbarAudio.addEventListener('playing', () => updateUI());
+    // Behind Live button
+    var behindLiveBtn = document.getElementById('grBtnJumpLive');
+    if (behindLiveBtn) {
+      behindLiveBtn.addEventListener('click', function () {
+        haptic('MEDIUM');
+        var audio = window.AnhadAudio;
+        if (audio) {
+          audio.jumpToLive();
+          showToast('⏭️ Jumped to Live Stream');
+        }
+      });
     }
 
-    // Persist on page hide (for GMP continuity)
-    window.addEventListener('pagehide', bridgeState);
-    window.addEventListener('beforeunload', bridgeState);
+    // Sleep Timer Sheet dismiss
+    document.getElementById('sleepTimerBackdrop').addEventListener('click', function () {
+      document.getElementById('sleepTimerSheet').style.display = 'none';
+    });
+
+    document.querySelectorAll('.gr-sheet-opt').forEach(function (opt) {
+      opt.addEventListener('click', function () {
+        document.querySelectorAll('.gr-sheet-opt').forEach(function (el) { el.classList.remove('active'); });
+        opt.classList.add('active');
+
+        var mins = parseInt(opt.getAttribute('data-mins'), 10);
+        setSleepTimer(mins);
+
+        setTimeout(function () {
+          document.getElementById('sleepTimerSheet').style.display = 'none';
+        }, 300);
+      });
+    });
+
+    // Alarm Sheet dismiss & save
+    document.getElementById('alarmBackdrop').addEventListener('click', function () {
+      document.getElementById('alarmSheet').style.display = 'none';
+    });
+
+    document.getElementById('btnSaveAlarm').addEventListener('click', function () {
+      haptic('MEDIUM');
+      saveAlarmSettings();
+    });
+
+    // Audio Engine subscriptions
+    var audio = window.AnhadAudio;
+    if (audio) {
+      audio.on('statechange', syncUI);
+      audio.on('loading', function (e) {
+        if (e.isLoading) {
+          DOM.playBtn.classList.add('loading');
+        } else {
+          DOM.playBtn.classList.remove('loading');
+        }
+      });
+
+      // Update seek slider on timeupdate
+      var audioEl = audio.getAudio();
+      if (audioEl) {
+        audioEl.addEventListener('timeupdate', function () {
+          var state = audio.getState();
+          updateTimeline(audioEl.currentTime, audioEl.duration, state.currentStream);
+        });
+      }
+    }
+  }
+
+  // ─── Alarm foreground checker ───
+  var lastCheckedMinute = -1;
+  setInterval(function () {
+    var alarmRaw = localStorage.getItem('anhad_radio_alarm');
+    if (!alarmRaw) return;
+    try {
+      var alarm = JSON.parse(alarmRaw);
+      if (!alarm || !alarm.enabled || !alarm.time) return;
+
+      var now = new Date();
+      var currentMin = now.getMinutes();
+      if (currentMin === lastCheckedMinute) return; // check once per minute
+
+      var timeParts = alarm.time.split(':');
+      var alarmHour = parseInt(timeParts[0], 10);
+      var alarmMin = parseInt(timeParts[1], 10);
+
+      if (now.getHours() === alarmHour && currentMin === alarmMin) {
+        lastCheckedMinute = currentMin;
+        var audio = window.AnhadAudio;
+        if (audio && !audio.isPlaying()) {
+          audio.play(alarm.stream);
+          showToast('⏰ Daily Gurbani Alarm triggered!');
+          haptic('HEAVY');
+        }
+      }
+    } catch(e) {}
+  }, 15000);
+
+  // ─── Initializer ───
+  function boot() {
+    initTheme();
+    cacheDom();
+    bindEvents();
+    setupSlider();
+    syncUI();
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var streamParam = urlParams.get('stream');
+    if (streamParam) {
+      var audio = window.AnhadAudio;
+      if (audio && audio.STREAMS.indexOf(streamParam) !== -1) {
+        setTimeout(function() {
+          audio.play(streamParam);
+        }, 500);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
 
 })();

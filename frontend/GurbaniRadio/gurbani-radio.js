@@ -27,7 +27,8 @@
     intervalId: null,
     mediaRecorder: null,
     abortController: null,
-    maxDurationSeconds: 300, // 5 min guard
+    xhr: null,
+    maxDurationSeconds: 300,
     streamType: null
   };
 
@@ -335,7 +336,6 @@
     }, 1000);
 
     try {
-      // Capture stream directly from the audio element (records exactly what is playing)
       var mediaStream = null;
       if (audioEl.captureStream) {
         mediaStream = audioEl.captureStream();
@@ -360,40 +360,41 @@
           }
         };
 
-        mediaRecorder.start(1000); // chunk every second
+        mediaRecorder.start(1000);
       } else {
-        // Fallback for older browsers
-        var streamUrl = audioEl.src;
-        recState.abortController = new AbortController();
-        var response = await fetch(streamUrl, {
-          signal: recState.abortController.signal
-        });
-
-        var reader = response.body.getReader();
-        while (recState.isRecording) {
-          var result = await reader.read();
-          if (result.done) break;
-          recState.chunks.push(result.value);
-        }
+        downloadStream(audioEl.src);
       }
     } catch (e) {
-      console.warn('Recording start error, trying fetch fallback:', e);
-      try {
-        var streamUrl = audioEl.src;
-        recState.abortController = new AbortController();
-        var response = await fetch(streamUrl, { signal: recState.abortController.signal });
-        var reader = response.body.getReader();
-        while (recState.isRecording) {
-          var result = await reader.read();
-          if (result.done) break;
-          recState.chunks.push(result.value);
-        }
-      } catch (err) {
-        console.error('Fetch fallback failed:', err);
-        showToast('⚠️ Stream recording is restricted on Web due to browser security. Works in Native App.');
+      console.warn('Recording start error, trying direct download:', e);
+      downloadStream(audioEl && audioEl.src);
+    }
+  }
+
+  function downloadStream(url) {
+    if (!url) { showToast('No stream URL'); return; }
+    var xhr = new XMLHttpRequest();
+    recState.xhr = xhr;
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onprogress = function(e) {
+      if (!recState.isRecording && xhr.readyState < 4) {
+        xhr.abort();
+      }
+    };
+    xhr.onload = function() {
+      if (xhr.status === 200 && recState.isRecording) {
+        recState.chunks.push(xhr.response);
+      }
+    };
+    xhr.onerror = function() {
+      console.error('XHR download failed');
+    };
+    xhr.onloadend = function() {
+      if (recState.isRecording) {
         stopRecording(false);
       }
-    }
+    };
+    xhr.send();
   }
 
   async function stopRecording(autoStop) {
@@ -405,23 +406,28 @@
       try { recState.mediaRecorder.stop(); } catch(e) {}
     }
     if (recState.abortController) recState.abortController.abort();
+    if (recState.xhr) {
+      try { recState.xhr.abort(); } catch(e) {}
+    }
 
     DOM.recordItem.classList.remove('recording');
     DOM.recordLabel.textContent = 'Record';
     haptic('MEDIUM');
 
-    // Small timeout to let MediaRecorder dispatch final chunks
     setTimeout(function() {
       if (recState.chunks.length === 0) {
-        showToast('⚠️ No audio recorded');
+        showToast('No audio recorded');
         return;
       }
 
-      showToast('💾 Saving Gurbani recording...');
+      showToast('Saving Gurbani recording...');
 
-      var mimeType = recState.streamType === 'simran' ? 'audio/mpeg' : 'audio/webm';
+      var isSimran = recState.streamType === 'simran';
+      var mimeType = isSimran ? 'audio/mpeg' : 'audio/webm';
+      var ext = isSimran ? '.mp3' : '.webm';
       var blob = new Blob(recState.chunks, { type: mimeType });
-      var filename = 'Gurbani_' + recState.streamType + '_' + new Date().toISOString().slice(0,10) + '.mp3';
+      var dateStr = new Date().toISOString().slice(0,10);
+      var filename = 'Gurbani_' + recState.streamType + '_' + dateStr + ext;
 
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
         try {
@@ -434,7 +440,7 @@
               data: base64data,
               directory: 'DOCUMENTS'
             }).then(function () {
-              showToast('✅ Saved to mobile Documents folder!');
+              showToast('Saved to Documents!');
             }).catch(function (err) {
               console.error('File write failed:', err);
               triggerWebDownload(blob, filename);

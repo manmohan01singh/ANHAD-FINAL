@@ -1,62 +1,46 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * OVERLAY PLAYER V4 — Thin UI Wrapper for AnhadAudio Singleton
- *
- * This file ONLY handles the mini-player UI injection and updates.
- * All audio logic is delegated to window.AnhadAudio (anhad-audio-singleton.js)
+ * OVERLAY PLAYER (UI WRAPPER)
+ * 
+ * Thin UI wrapper that delegates 100% of playback logic to window.AnhadAudio.
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-(function () {
+(function() {
   'use strict';
 
   // Prevent double-init
-  if (window.AnhadOverlayPlayerUI) return;
+  if (window.AnhadOverlayPlayerUI) {
+    console.log('[OverlayPlayer] Overlay UI already loaded, skipping duplicate init');
+    return;
+  }
 
   let miniPlayerEl = null;
   let unsubscribeStateChange = null;
   let unsubscribeLoading = null;
   let unsubscribeTimeUpdate = null;
   let retryCount = 0;
-  const MAX_RETRIES = 200; // 20 seconds max
+  const MAX_RETRIES = 200;
 
-  /**
-   * Initialize the UI wrapper
-   */
   function init() {
-    console.log('[OverlayPlayerUI] Checking audio singleton availability...');
+    console.log('[OverlayPlayer] Initializing thin UI wrapper...');
 
-    // NUCLEAR GUARD: On cached SPA return, skip all overlay player initialization
-    // The mini-player DOM is already in the cached HTML — no re-init needed.
-    if (window._ANHAD_SKIP_AUDIO_INIT) {
-      console.log('[OverlayPlayerUI] 🚫 Cached return, skipping init');
-      window.AnhadOverlayPlayerUI = true;
-      return;
-    }
-
-    // Wait for singleton to be available (dynamic demand load)
     if (!window.AnhadAudio) {
-      console.log('[OverlayPlayerUI] AnhadAudio not ready yet, registering ready listener');
-      window.addEventListener('anhad_audio_ready', () => {
-        console.log('[OverlayPlayerUI] Waking up UI initialization...');
-        init();
-      }, { once: true });
+      retryCount++;
+      if (retryCount >= MAX_RETRIES) {
+        console.error('[OverlayPlayer] AnhadAudio singleton not available, aborting');
+        return;
+      }
+      setTimeout(init, 100);
       return;
     }
 
-    console.log('[OverlayPlayerUI] AnhadAudio active, initializing thin UI wrapper...');
-    // Inject UI
     injectUI();
-
-    // Subscribe to singleton events
     subscribeToSingleton();
 
-    // Listen for SPA page changes to toggle visibility
     window.addEventListener('anhad_page_changed', handlePageChange);
-
-    // Mark as loaded
     window.AnhadOverlayPlayerUI = true;
-    console.log('[OverlayPlayerUI] ✅ UI wrapper ready');
+    console.log('[OverlayPlayer] ✅ Thin UI wrapper initialized successfully');
   }
 
   function injectUI() {
@@ -96,7 +80,7 @@
     document.body.appendChild(container);
     miniPlayerEl = container;
 
-    // Attach UI listeners - all delegate to AnhadAudio singleton
+    // Button actions
     document.getElementById('gmp-play-btn').onclick = (e) => {
       e.stopPropagation();
       if (window.navigator?.vibrate) window.navigator.vibrate(10);
@@ -131,26 +115,14 @@
   }
 
   function updateUI() {
-    if (!miniPlayerEl) return;
-    if (!window.AnhadAudio) return;
+    if (!miniPlayerEl || !window.AnhadAudio) return;
 
     const state = window.AnhadAudio.getState();
-
-    // Force hide on player page and dashboard
     const currentPath = window.location.pathname.toLowerCase();
     const isPlayerPage = currentPath.includes('gurbani-radio');
     const isDashboardPage = currentPath.includes('dashboard');
 
-    if (isPlayerPage || isDashboardPage) {
-      miniPlayerEl.style.display = 'none';
-      miniPlayerEl.classList.remove('gmp--visible');
-      return;
-    }
-
-    // Don't show if nothing is loaded
-    // Once the user has played a stream (currentStream is set), the mini-player
-    // stays visible even on pause so they can easily resume.
-    if (!state.currentStream) {
+    if (isPlayerPage || isDashboardPage || (!state.isPlaying && !state.isLoading)) {
       miniPlayerEl.style.display = 'none';
       miniPlayerEl.classList.remove('gmp--visible');
       return;
@@ -167,9 +139,9 @@
     const loader = document.getElementById('gmp-loader');
     const btnLoader = document.getElementById('gmp-btn-loader');
 
-    if (artImg) artImg.src = state.artwork;
-    if (titleEl) titleEl.textContent = state.streamName;
-    if (subEl) subEl.textContent = state.streamSubtitle;
+    if (artImg) artImg.src = state.artwork || 'assets/HERO CARD IMAGES/day-darbar-sahib.webp';
+    if (titleEl) titleEl.textContent = state.currentTrackTitle;
+    if (subEl) subEl.textContent = state.currentTrackArtist;
     if (liveDot) liveDot.style.display = state.streamType === 'live' ? 'block' : 'none';
 
     if (loader) loader.classList.toggle('active', state.isLoading);
@@ -188,25 +160,14 @@
   function subscribeToSingleton() {
     if (!window.AnhadAudio) return;
 
-    // Subscribe to state changes
-    unsubscribeStateChange = window.AnhadAudio.on('statechange', () => {
-      updateUI();
-    });
-
-    // Subscribe to loading events
-    unsubscribeLoading = window.AnhadAudio.on('loading', () => {
-      updateUI();
-    });
-
-    // Subscribe to time updates for progress bar
+    unsubscribeStateChange = window.AnhadAudio.on('statechange', updateUI);
+    unsubscribeLoading = window.AnhadAudio.on('loading', updateUI);
     unsubscribeTimeUpdate = window.AnhadAudio.on('timeupdate', (data) => {
       if (data && data.progress !== undefined) {
         const progressFill = document.getElementById('gmp-progress-fill');
         if (progressFill) progressFill.style.width = data.progress + '%';
       }
     });
-
-    console.log('[OverlayPlayerUI] Subscribed to AnhadAudio events');
   }
 
   function cleanup() {
@@ -215,14 +176,14 @@
     if (unsubscribeTimeUpdate) unsubscribeTimeUpdate();
   }
 
-  // Initialize
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  // Cleanup on page unload
   window.addEventListener('pagehide', cleanup);
 
+  // Expose global controller mapping so legacy overlay calls still resolve
+  window.AnhadOverlayPlayerUIExposed = true;
 })();

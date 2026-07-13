@@ -1,429 +1,291 @@
 <!DOCTYPE html>
-<html lang="pa">
+<html lang="pa" data-theme="light">
 <head>
-  <meta name="color-scheme" content="light dark">
-    <!-- CRITICAL: Theme blocker - MUST run before paint -->
   <script>
-    (function() {
-      try {
-        const theme = localStorage.getItem('anhad_theme') || 'auto';
-        let effectiveTheme = theme;
-        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
-        if (theme === 'auto') {
-          if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
-            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
-          } else {
-            const hour = new Date().getHours();
-            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
-            
-            if (hour >= 5 && hour < 9) timeOfDay = 'morning';
-            else if (hour >= 9 && hour < 16) timeOfDay = 'day';
-            else if (hour >= 16 && hour < 20) timeOfDay = 'evening';
-            else timeOfDay = 'night';
-          }
-        }
-        document.documentElement.setAttribute('data-theme', effectiveTheme);
-        document.documentElement.setAttribute('data-theme-mode', theme);
-        if (theme === 'auto') {
-          document.documentElement.setAttribute('data-time-of-day', timeOfDay);
-        }
-        document.documentElement.style.colorScheme = effectiveTheme;
-        if (effectiveTheme === 'dark') {
-          document.documentElement.classList.add('dark', 'dark-mode');
-        } else {
-          document.documentElement.classList.remove('dark', 'dark-mode');
-        }
-        
-        let bg = (effectiveTheme === 'dark') ? '#0D0D0F' : '#FAF8F5';
-        if (theme === 'auto') {
-          if (timeOfDay === 'morning') bg = '#FFF5EC';
-          else if (timeOfDay === 'day') bg = '#FFFDF9';
-          else if (timeOfDay === 'evening') bg = '#FFF8E7';
-          else if (timeOfDay === 'night') bg = '#0F0F12';
-        }
-        document.documentElement.style.backgroundColor = bg;
-        document.documentElement.classList.add('theme-loaded');
-
-        document.addEventListener('DOMContentLoaded', function() {
-          if (effectiveTheme === 'dark') document.body.classList.add('dark-mode');
-          document.body.classList.add('theme-loaded');
-        }, { once: true });
-
-        if (document.documentElement.hasAttribute('data-anhad-home')) {
-          try { sessionStorage.removeItem('gurbaniKhoj_state'); } catch(e) {}
-        }
-      } catch (e) {}
-    })();
+  (function() {
+    try {
+      // Gurbani Radio theme is light/beige by default based on the shared premium design
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.style.backgroundColor = '#FAF8F5';
+    } catch(e) {}
+  })();
   </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#FFF8E6">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#FAF8F5">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Gurbani Radio — Anhad</title>
+  <meta name="description" content="Gurbani Radio — Live Kirtan, Nitnem & Simran. ANHAD App.">
+  <title>ਗੁਰਬਾਣੀ ਰੇਡੀਓ | Gurbani Radio — ANHAD</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="gurbani-radio-ios.css">
+  <link rel="stylesheet" href="../css/anhad-core.css">
+  <link rel="stylesheet" href="gurbani-radio.css">
 
-  <!-- Fade in on load -->
-  <style>
-    body { animation: pageIn 0.25s ease both; }
-    @keyframes pageIn { from { opacity:0; } to { opacity:1; } }
-  </style>
+  <!-- Core Scripts -->
+  <script src="../lib/smart-back.js"></script>
+  <script src="../lib/naam-abhyas-manager.js"></script>
+  <script src="../lib/anhad-audio-singleton.js"></script>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════
-     DYNAMIC BACKGROUND STACK
-     ══════════════════════════════════════════════════════ -->
-<div class="bg-stack">
-  <img id="bgMorning" class="bg-layer hidden"
-       src="../assets/darbar-sahib-morning-bg.webp" alt="" loading="eager" fetchpriority="low">
-  <img id="bgDay"     class="bg-layer hidden"
-       src="../assets/darbar-sahib-day-bg.webp"     alt="" loading="eager" fetchpriority="high">
-  <img id="bgEvening" class="bg-layer hidden"
-       src="../assets/darbar-sahib-evening-bg.webp" alt="" loading="lazy">
-  <img id="bgNight"   class="bg-layer hidden"
-       src="../assets/HERO CARD IMAGES/new-night-bg.avif"   alt="" loading="lazy">
-
-  <div class="bg-vignette"></div>
-  <div class="bg-gradient"></div>
-
-  <!-- Ambient bloom orbs removed for performance -->
-</div>
-<div class="bg-blur-wash"></div>
-<div class="bg-noise"></div>
-
-<!-- Inline script to show correct background immediately -->
-<script>
-(function() {
-  const hour = new Date().getHours();
-  let slot = 'day';
-  if (hour >= 5 && hour < 9) slot = 'morning';
-  else if (hour >= 9 && hour < 16) slot = 'day';
-  else if (hour >= 16 && hour < 20) slot = 'evening';
-  else slot = 'night';
-  
-  console.log('[GR-INLINE] Setting initial background to:', slot, 'hour:', hour);
-  
-  const bgElements = {
-    morning: document.getElementById('bgMorning'),
-    day: document.getElementById('bgDay'),
-    evening: document.getElementById('bgEvening'),
-    night: document.getElementById('bgNight')
-  };
-  
-  Object.entries(bgElements).forEach(([key, el]) => {
-    if (el) {
-      if (key === slot) {
-        el.classList.remove('hidden');
-        console.log('[GR-INLINE] Showing:', key);
-      } else {
-        el.classList.add('hidden');
-      }
-    }
-  });
-})();
-</script>
-
-<!-- ══════════════════════════════════════════════════════
-     MAIN PLAYER
-     ══════════════════════════════════════════════════════ -->
-<main id="player" class="player-container" data-stream="darbar">
-
-  <!-- HEADER -->
-  <div class="header">
-    <button id="backBtn" class="header-btn" aria-label="Back">
+<div class="app" id="radioApp">
+  <!-- Top Navigation Bar -->
+  <nav class="gr-nav">
+    <button class="gr-icon-btn back-btn" id="grBackBtn" aria-label="Back">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 18l-6-6 6-6"/>
       </svg>
     </button>
-    <span class="header-title">Gurbani Radio</span>
-    <button id="sleepBtn" class="header-btn" aria-label="Sleep timer" title="Sleep timer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6v6l4 2"/>
+    <div class="gr-title">
+      <div class="gr-ik-onkar">ੴ</div>
+      <div class="gr-title-main">Gurbani Radio</div>
+    </div>
+    <button class="gr-icon-btn settings-btn" id="grSettingsBtn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
-  </div>
+  </nav>
 
-  <!-- Sleep bubble (inline label) -->
-  <div id="sleepBubble" class="sleep-bubble"></div>
-
-  <!-- STREAM SWITCHER -->
-  <div class="stream-switcher">
-    <div id="streamPill" class="stream-pill darbar"></div>
-
-    <button id="btnDarbar" class="stream-btn active" data-stream="darbar" aria-label="Sachkhand Sahib Live">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4"/>
+  <!-- Stream Selector Tabs -->
+  <div class="gr-tabs" data-active="0">
+    <div class="gr-tabs-slider" id="grTabsSlider"></div>
+    <button class="gr-tab active" data-stream="darbar" id="tabLive">
+      <svg class="gr-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="2"/>
+        <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
       </svg>
-      Sachkhand Sahib
+      Live
     </button>
-
-    <button id="btnAmritvela" class="stream-btn" data-stream="amritvela" aria-label="Amritvela Kirtan">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="12" cy="12" r="4.5"/>
-        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2"/>
+    <button class="gr-tab" data-stream="amritvela" id="tabKirtan">
+      <svg class="gr-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
       </svg>
-      Amritvela
+      Kirtan
     </button>
-
-    <button id="btnSimran" class="stream-btn" data-stream="simran" aria-label="Waheguru Simran">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z"/>
+    <button class="gr-tab" data-stream="simran" id="tabSimran">
+      <svg class="gr-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
       </svg>
       Simran
     </button>
   </div>
 
+  <!-- Main Player Card -->
+  <div class="gr-card-wrapper">
+    <div class="gr-card">
+      <div class="gr-card-media">
+        <img id="grCoverImg" src="../assets/darbar-sahib-evening.webp" alt="Darbar Sahib" class="gr-cover-img">
+        <div class="gr-badge-live" id="grBadgeLive">
+          <span class="gr-live-dot"></span>
+          LIVE
+        </div>
+        <button class="gr-favorite-btn" id="grFavoriteBtn" aria-label="Favorite">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      </div>
 
-
-  <!-- ARTWORK -->
-  <div class="artwork-section">
-    <div id="artworkGlow" class="artwork-glow"></div>
-    <div id="artworkCard" class="artwork-card" role="img" aria-label="Now playing artwork">
-      <img id="artworkImg" class="artwork-img" src="../assets/darbar-sahib-day.webp" alt="Now playing">
-    </div>
-  </div>
-
-  <!-- TRACK INFO -->
-  <section id="trackInfo" class="track-info">
-    <div class="track-row">
-      <h1 id="trackTitle" class="track-title">Kirtan • Live</h1>
-      <div id="miniEq" class="mini-eq" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
+      <div class="gr-info">
+        <div class="gr-info-title-row">
+          <h2 class="gr-track-title" id="grTrackTitle">Darbar Sahib Live</h2>
+          <!-- Audio Wave Visualizer icon -->
+          <div class="gr-wave-icon" id="grWaveIcon">
+            <span class="bar bar-1"></span>
+            <span class="bar bar-2"></span>
+            <span class="bar bar-3"></span>
+          </div>
+        </div>
+        <p class="gr-track-artist" id="grTrackArtist">Sri Harmandir Sahib Ji, Amritsar</p>
+        <div class="gr-pill-location" id="grPillLocation">
+          <span class="gr-pill-dot"></span>
+          <span id="grPillLocationText">Live from Amritsar</span>
+        </div>
       </div>
     </div>
-    <p id="trackArtist" class="track-artist">Sachkhand Sahib Live</p>
-    <p id="trackSubtitle" class="track-subtitle">Sri Harmandir Sahib Ji</p>
-  </section>
-
-  <!-- LIVE BUTTON -->
-  <div class="live-action">
-    <button id="liveBtn" class="live-btn synced" aria-label="Jump to live">
-      <span id="liveDot" class="live-dot"></span>
-      <span>Live</span>
-      <span id="liveBehind" class="live-behind-txt"></span>
-    </button>
   </div>
 
-  <!-- PROGRESS BAR -->
-  <div class="progress-section">
-    <div id="progressTrack" class="progress-track" role="slider" aria-label="Playback progress">
-      <div id="progressFill" class="progress-fill" style="width:0%"></div>
-      <div id="progressKnob" class="progress-knob" style="left:0%"></div>
+  <!-- Audio Playback Info Banner -->
+  <div class="gr-listening-banner">
+    <div class="gr-listening-status">
+      <svg class="gr-listening-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+      </svg>
+      <span>You are listening</span>
+      <span class="gr-listening-dot"></span>
+      <span class="gr-listening-live" id="grListeningLiveText">LIVE</span>
     </div>
-    <div class="progress-labels">
-      <span id="elapsedTime">∞</span>
-      <span class="live-indicator">LIVE</span>
-      <span>∞</span>
+    <div class="gr-listening-time-badge" id="grListeningTimeBadge">00:00</div>
+  </div>
+
+  <!-- Playback Control Center -->
+  <div class="gr-controls-section">
+    <!-- Slider Timeline -->
+    <div class="gr-timeline">
+      <span class="gr-time-current" id="grTimeCurrent">00:00</span>
+      <div class="gr-slider-container" id="grSliderContainer">
+        <div class="gr-slider-track">
+          <div class="gr-slider-fill" id="grSliderFill"></div>
+        </div>
+        <div class="gr-slider-handle" id="grSliderHandle"></div>
+      </div>
+      <span class="gr-time-total" id="grTimeTotal">LIVE</span>
     </div>
-  </div>
 
-  <!-- CONTROLS -->
-  <div class="controls">
-    <button id="prevBtn" class="ctrl-btn secondary" aria-label="Previous Track">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 20L9 12l10-8v16zM5 4v16"/>
-      </svg>
-    </button>
-
-    <button id="rewindBtn" class="ctrl-btn secondary" aria-label="Rewind 10 seconds">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-        <path d="M3 3v5h5"/>
-        <text x="12" y="15" font-size="7" font-weight="bold" text-anchor="middle" fill="currentColor" stroke="none">10</text>
-      </svg>
-    </button>
-
-    <button id="playBtn" class="ctrl-btn primary paused" aria-label="Play / Pause">
-      <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <polygon points="6,4 20,12 6,20" fill="currentColor"/>
-      </svg>
-      <div id="playSpinner" class="play-spinner"></div>
-    </button>
-
-    <button id="forwardBtn" class="ctrl-btn secondary" aria-label="Forward 10 seconds">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-        <path d="M21 3v5h-5"/>
-        <text x="12" y="15" font-size="7" font-weight="bold" text-anchor="middle" fill="currentColor" stroke="none">10</text>
-      </svg>
-    </button>
-
-    <button id="nextBtn" class="ctrl-btn secondary" aria-label="Next Track">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M5 4l10 8-10 8V4zM19 4v16"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- VOLUME -->
-  <div class="volume-section">
-    <svg class="vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-    </svg>
-    <div class="vol-slider">
-      <div id="volumeFill" class="vol-fill" style="width:70%"></div>
-      <input id="volumeInput" class="vol-input" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Volume">
+    <!-- Conditional Jump to Live Button -->
+    <div style="text-align: center; margin-top: -6px; margin-bottom: 2px;">
+      <button class="gr-btn-jump-live" id="grBtnJumpLive" style="display: none;"></button>
     </div>
-    <svg class="vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
-    </svg>
-  </div>
 
-  <!-- FOOTER ACTIONS -->
-  <div class="footer-actions">
-    <button id="playlistBtn" class="foot-btn" aria-label="Streams">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 6h18M3 12h18M3 18h12M18 14l4-3v8l-4-5z"/>
-      </svg>
-    </button>
-    <button id="favBtn" class="foot-btn" aria-label="Favourite">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    </button>
-    <button id="shareBtn" class="foot-btn" aria-label="Share">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-        <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/>
-      </svg>
-    </button>
-  </div>
+    <!-- Buttons Panel -->
+    <div class="gr-controls-row">
+      <!-- Skip Back 15s -->
+      <button class="gr-ctrl-btn gr-btn-skip-back" id="grBtnSkipBack" aria-label="Rewind 15 seconds">
+        <svg class="gr-ctrl-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span class="gr-skip-num">15</span>
+      </button>
 
-</main>
-
-<!-- ══════════════════════════════════════════════════════
-     STATUS PILL
-     ══════════════════════════════════════════════════════ -->
-<div id="statusPill" class="status-pill" aria-live="polite">
-  <span id="statusDot" class="status-dot"></span>
-  <span id="statusText">Connected</span>
-</div>
-
-<!-- ══════════════════════════════════════════════════════
-     ERROR TOAST
-     ══════════════════════════════════════════════════════ -->
-<div id="errToast" class="err-toast" role="alert">
-  <div class="err-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M12 8v4m0 4h.01"/>
-    </svg>
-  </div>
-  <div class="err-body">
-    <div id="errTitle" class="err-title">Connection Error</div>
-    <div id="errMsg"   class="err-msg">Reconnecting…</div>
-  </div>
-  <button id="errRetry" class="err-retry">Retry</button>
-</div>
-
-<!-- conn-overlay removed — no loading page shown -->
-
-<!-- ══════════════════════════════════════════════════════
-     PLAYLIST BOTTOM SHEET
-     ══════════════════════════════════════════════════════ -->
-<div id="plSheet" class="pl-sheet" role="dialog" aria-label="Choose stream">
-  <div id="plOverlay" class="sh-overlay"></div>
-  <div class="pl-panel">
-    <div class="pl-header">
-      <span class="pl-title">🎵 Streams</span>
-      <button id="plClose" class="pl-close" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
+      <!-- Previous -->
+      <button class="gr-ctrl-btn gr-btn-prev" id="grBtnPrev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="19 20 9 12 19 4 19 20"/>
+          <line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
         </svg>
       </button>
-    </div>
 
-    <!-- Darbar -->
-    <div id="plItemDarbar" class="pl-item active-item">
-      <div class="pl-icon active-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 21h18M6 21V10l6-5 6 5v11M9 21v-4h6v4"/>
+      <!-- Main Play/Pause -->
+      <button class="gr-play-btn" id="grPlayBtn" aria-label="Play">
+        <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
-      </div>
-      <div class="pl-text">
-        <div class="pl-name">Sachkhand Sahib Live</div>
-        <div class="pl-sub">Sri Harmandir Sahib Ji • 24/7</div>
-      </div>
-      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
-    </div>
-
-    <!-- Amritvela -->
-    <div id="plItemAmrit" class="pl-item">
-      <div class="pl-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <circle cx="12" cy="12" r="4.5"/>
-          <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2"/>
-        </svg>
-      </div>
-      <div class="pl-text">
-        <div class="pl-name">Amritvela Kirtan</div>
-        <div class="pl-sub">ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ • Virtual Live</div>
-      </div>
-      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
-    </div>
-
-    <!-- Simran -->
-    <div id="plItemSimran" class="pl-item">
-      <div class="pl-icon" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 21c4 0 7-3 7-7 0-3.5-3-7-7-11-4 4-7 7.5-7 11 0 4 3 7 7 7z"/>
-        </svg>
-      </div>
-      <div class="pl-text">
-        <div class="pl-name">Waheguru Simran</div>
-        <div class="pl-sub">Naam Simran • Virtual Live</div>
-      </div>
-      <div class="pl-playing" aria-hidden="true"><span></span><span></span><span></span></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════
-     SLEEP TIMER SHEET
-     ══════════════════════════════════════════════════════ -->
-<div id="sleepSheet" class="sleep-sheet" role="dialog" aria-label="Sleep timer">
-  <div id="sleepOverlay" class="sh-overlay"></div>
-  <div class="sleep-panel">
-    <div class="pl-header">
-      <span class="pl-title">⏱ Sleep Timer</span>
-      <button id="sleepClose" class="pl-close" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M18 6L6 18M6 6l12 12"/>
+        <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+          <rect x="6" y="4" width="4" height="16"/>
+          <rect x="14" y="4" width="4" height="16"/>
         </svg>
       </button>
+
+      <!-- Next -->
+      <button class="gr-ctrl-btn gr-btn-next" id="grBtnNext" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 4 15 12 5 20 5 4"/>
+          <line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- Skip Forward 15s -->
+      <button class="gr-ctrl-btn gr-btn-skip-fwd" id="grBtnSkipFwd" aria-label="Fast forward 15 seconds">
+        <svg class="gr-ctrl-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+          <path d="M21 3v5h-5"/>
+        </svg>
+        <span class="gr-skip-num">15</span>
+      </button>
     </div>
-    <div class="sleep-grid">
-      <div class="sleep-opt" data-mins="5">5 min</div>
-      <div class="sleep-opt" data-mins="10">10 min</div>
-      <div class="sleep-opt" data-mins="15">15 min</div>
-      <div class="sleep-opt" data-mins="20">20 min</div>
-      <div class="sleep-opt" data-mins="30">30 min</div>
-      <div class="sleep-opt" data-mins="45">45 min</div>
-      <div class="sleep-opt" data-mins="60">1 hr</div>
-      <div class="sleep-opt" data-mins="90">1.5 hr</div>
-      <div class="sleep-opt" data-mins="120">2 hr</div>
-    </div>
-    <button id="sleepCancel" class="sleep-cancel">Cancel Timer</button>
   </div>
+
+  <!-- Bottom Utility Panel -->
+  <div class="gr-utility-panel">
+    <button class="gr-util-item" id="btnSleepTimer">
+      <div class="gr-util-icon-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </div>
+      <span class="gr-util-label">Sleep Timer</span>
+    </button>
+    <button class="gr-util-item" id="btnAlarm">
+      <div class="gr-util-icon-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9zm-4.27 13a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </div>
+      <span class="gr-util-label">Alarm</span>
+    </button>
+    <button class="gr-util-item" id="btnShare">
+      <div class="gr-util-icon-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6l-4-4-4 4m4-4v13"/>
+        </svg>
+      </div>
+      <span class="gr-util-label">Share</span>
+    </button>
+    <!-- Gurbani Recorder Button -->
+    <button class="gr-util-item" id="btnRecord">
+      <div class="gr-util-icon-circle gr-record-circle" id="grRecordCircle">
+        <span class="gr-record-dot"></span>
+      </div>
+      <span class="gr-util-label" id="grRecordLabel">Record</span>
+    </button>
+  </div>
+
+  <!-- Sleep Timer overlay bottom sheet -->
+  <div class="gr-sheet-overlay" id="sleepTimerSheet" style="display:none;">
+    <div class="gr-sheet-backdrop" id="sleepTimerBackdrop"></div>
+    <div class="gr-sheet">
+      <div class="gr-sheet-handle"></div>
+      <h3 class="gr-sheet-title">Sleep Timer</h3>
+      <div class="gr-sheet-options">
+        <button class="gr-sheet-opt" data-mins="15">15 Minutes</button>
+        <button class="gr-sheet-opt" data-mins="30">30 Minutes</button>
+        <button class="gr-sheet-opt" data-mins="45">45 Minutes</button>
+        <button class="gr-sheet-opt" data-mins="60">1 Hour</button>
+        <button class="gr-sheet-opt active" data-mins="0">Off</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alarm Sheet overlay bottom sheet -->
+  <div class="gr-sheet-overlay" id="alarmSheet" style="display:none;">
+    <div class="gr-sheet-backdrop" id="alarmBackdrop"></div>
+    <div class="gr-sheet">
+      <div class="gr-sheet-handle"></div>
+      <h3 class="gr-sheet-title">Set Daily Gurbani Alarm</h3>
+      <div style="padding: 16px 20px 28px 20px; display: flex; flex-direction: column; gap: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600; font-size: 15px; color: var(--text-prime);">Enable Alarm</span>
+          <input type="checkbox" id="alarmEnabled" style="width: 22px; height: 22px; accent-color: var(--accent-gold); cursor: pointer;">
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600; font-size: 15px; color: var(--text-prime);">Alarm Time</span>
+          <input type="time" id="alarmTime" value="04:30" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); font-family: inherit; font-size: 16px; font-weight: 600; background: var(--bg-card); color: var(--text-prime); outline: none;">
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 600; font-size: 15px; color: var(--text-prime);">Select Stream</span>
+          <select id="alarmStream" style="padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); font-family: inherit; font-size: 15px; font-weight: 600; background: var(--bg-card); color: var(--text-prime); outline: none; cursor: pointer;">
+            <option value="darbar">Darbar Sahib Live</option>
+            <option value="amritvela">Amritvela Kirtan</option>
+            <option value="simran">Waheguru Simran</option>
+          </select>
+        </div>
+        <button class="gr-sheet-opt active" id="btnSaveAlarm" style="width: 100%; border-radius: 20px; margin-top: 14px; padding: 12px 0; border: none; font-size: 15px; font-weight: 700; cursor: pointer; text-align: center;">Save Alarm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast system -->
+  <div class="gr-toast" id="grToast"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     SCRIPTS
-     ══════════════════════════════════════════════════════ -->
-<!-- Global audio coordinator (silences other players) -->
-<script src="../lib/global-theme.js"></script>
-<!-- Consolidated Audio Singleton -->
-<script src="../lib/anhad-audio-singleton.js"></script>
-<!-- Main player engine -->
+<!-- Global Notification Engine -->
+<script src="../lib/capacitor-notifications-global.js" defer></script>
+
+<!-- Gurbani Radio Logic -->
 <script src="gurbani-radio.js"></script>
 
 </body>

@@ -362,11 +362,13 @@
         isPlaying = true;
         emit('statechange', getPublicState());
         persistState();
+        updateNativeMediaState();
       });
       this.audio.addEventListener('pause', () => {
         isPlaying = false;
         emit('statechange', getPublicState());
         persistState();
+        updateNativeMediaState();
       });
       this.audio.addEventListener('timeupdate', () => {
         persistState();
@@ -666,6 +668,10 @@
     manualOffset = 0;
     pauseAnchor = null;
     persistState();
+    _nativeServiceStarted = false;
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+      try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
+    }
   }
 
   function jumpToLive() {
@@ -774,27 +780,59 @@
 
   // ─── OS LOCKSCREEN (MEDIA SESSION) ───
   function updateMediaSession() {
-    if (!('mediaSession' in navigator) || !currentStream) return;
-
+    if (!currentStream) return;
     const stream = STREAMS[currentStream];
     if (!stream) return;
 
-    const artworkUrl = getDynamicCoverAsset(currentStream);
+    const title = currentTrackTitle || stream.name;
+    const artist = currentTrackArtist || stream.subtitle;
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: currentTrackTitle || stream.name,
-      artist: currentTrackArtist || stream.subtitle,
-      album: 'ANHAD',
-      artwork: [
-        { src: artworkUrl, sizes: '512x512', type: 'image/webp' }
-      ]
-    });
+    // Web MediaSession for lock screen controls (PWA)
+    if ('mediaSession' in navigator) {
+      const artworkUrl = getDynamicCoverAsset(currentStream);
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: title,
+        artist: artist,
+        album: 'ANHAD',
+        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/webp' }]
+      });
+      navigator.mediaSession.setActionHandler('play', () => resume());
+      navigator.mediaSession.setActionHandler('pause', () => pause());
+      navigator.mediaSession.setActionHandler('stop', () => stop());
+      navigator.mediaSession.setActionHandler('previoustrack', () => playNextTrack(false));
+      navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack(true));
+    }
 
-    navigator.mediaSession.setActionHandler('play', () => resume());
-    navigator.mediaSession.setActionHandler('pause', () => pause());
-    navigator.mediaSession.setActionHandler('stop', () => stop());
-    navigator.mediaSession.setActionHandler('previoustrack', () => playNextTrack(false));
-    navigator.mediaSession.setActionHandler('nexttrack', () => playNextTrack(true));
+    // Native Capacitor foreground service notification
+    updateNativeMediaNotification(title, artist);
+  }
+
+  function updateNativeMediaState() {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AudioService) return;
+    try {
+      window.Capacitor.Plugins.AudioService.updateState({ action: isPlaying ? 'PLAY' : 'PAUSE' });
+    } catch(e) { /* silently fail */ }
+  }
+
+  var _nativeServiceStarted = false;
+  function updateNativeMediaNotification(title, artist) {
+    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.AudioService) return;
+    try {
+      if (!_nativeServiceStarted) {
+        _nativeServiceStarted = true;
+        window.Capacitor.Plugins.AudioService.start({
+          title: title || 'ANHAD Kirtan',
+          artist: artist || 'Sri Harmandir Sahib Ji',
+          stream: currentStream || 'darbar'
+        });
+      } else {
+        window.Capacitor.Plugins.AudioService.updateNotification({
+          title: title || 'ANHAD Kirtan',
+          artist: artist || '',
+          stream: currentStream || 'darbar'
+        });
+      }
+    } catch(e) { /* silently fail */ }
   }
 
   // ─── UTILITIES & ACCESSORS ───
