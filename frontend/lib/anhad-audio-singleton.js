@@ -749,22 +749,22 @@
 
     const covers = {
       darbar: {
-        morning: 'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
-        day: 'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
-        evening: 'assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
-        night: 'assets/HERO CARD IMAGES/night-darbar-sahib.webp'
+        morning: 'HERO CARD IMAGES/morning-darbar-sahib.webp',
+        day: 'HERO CARD IMAGES/day-darbar-sahib.webp',
+        evening: 'HERO CARD IMAGES/evening-darbar-sahib.webp',
+        night: 'HERO CARD IMAGES/night-darbar-sahib.webp'
       },
       amritvela: {
-        morning: 'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
-        day: 'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
-        evening: 'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
-        night: 'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp'
+        morning: 'HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+        day: 'HERO CARD IMAGES/day-amritvela-kirtan.webp',
+        evening: 'HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+        night: 'HERO CARD IMAGES/night-amritvela-kirtan.webp'
       },
       simran: {
-        morning: 'assets/HERO CARD IMAGES/morning-waheguru-simran.webp',
-        day: 'assets/HERO CARD IMAGES/day-waheguru-simran.webp',
-        evening: 'assets/HERO CARD IMAGES/evening-waheguru-simran.webp',
-        night: 'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
+        morning: 'HERO CARD IMAGES/morning-waheguru-simran.webp',
+        day: 'HERO CARD IMAGES/day-waheguru-simran.webp',
+        evening: 'HERO CARD IMAGES/evening-waheguru-simran.webp',
+        night: 'HERO CARD IMAGES/night-waheguru-simran.webp'
       }
     };
 
