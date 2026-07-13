@@ -498,7 +498,7 @@
   // ─── DARBAR LIVE STREAM MANAGER ───
   const DarbarLiveManager = {
     play() {
-      const url = SGPC_LIVE + '&t=' + Math.floor(Date.now() / 5000) * 5000;
+      const url = SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000;
       currentTrackTitle = 'Darbar Sahib Live';
       currentTrackArtist = 'Sri Harmandir Sahib Ji, Amritsar';
       updateMediaSession();

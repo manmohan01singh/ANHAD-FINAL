@@ -871,3 +871,152 @@ html, body {
     box-shadow: 0 0 0 0 rgba(226, 76, 76, 0);
   }
 }
+
+/* ─── LANDSCAPE & LOW-HEIGHT RESPONSIVE LAYOUT ─── */
+@media (max-height: 580px) or (orientation: landscape) and (max-height: 640px) {
+  .app {
+    padding: calc(env(safe-area-inset-top, 24px) + 2px) 16px max(env(safe-area-inset-bottom, 8px), 8px);
+    overflow-y: auto;
+    height: 100vh;
+    max-width: 100%;
+    gap: 8px;
+  }
+  .gr-nav {
+    height: 38px;
+    margin-bottom: 4px;
+  }
+  .gr-title-main {
+    font-size: 14px;
+  }
+  .gr-ik-onkar {
+    font-size: 18px;
+  }
+  .gr-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .gr-icon-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gr-tabs {
+    height: 36px;
+    margin-bottom: 4px;
+  }
+  .gr-tab {
+    font-size: 11px;
+    gap: 4px;
+  }
+  .gr-tab-icon {
+    width: 12px;
+    height: 12px;
+  }
+  .gr-card-wrapper {
+    margin-bottom: 4px;
+    padding: 0;
+  }
+  .gr-card {
+    padding: 10px;
+    gap: 10px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .gr-card-media {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+  }
+  .gr-cover-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+  }
+  .gr-badge-live {
+    padding: 2px 6px;
+    font-size: 8px;
+    top: 6px;
+    left: 6px;
+  }
+  .gr-favorite-btn {
+    width: 28px;
+    height: 28px;
+    bottom: 6px;
+    right: 6px;
+  }
+  .gr-favorite-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .gr-info {
+    text-align: left;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+  .gr-track-title {
+    font-size: 14px;
+  }
+  .gr-track-artist {
+    font-size: 11px;
+  }
+  .gr-pill-location {
+    padding: 2px 8px;
+    font-size: 9px;
+  }
+  .gr-listening-banner {
+    padding: 6px 12px;
+    margin-bottom: 4px;
+  }
+  .gr-listening-status {
+    font-size: 11px;
+  }
+  .gr-listening-time-badge {
+    font-size: 11px;
+  }
+  .gr-controls-section {
+    padding: 0;
+  }
+  .gr-timeline {
+    margin-bottom: 4px;
+  }
+  .gr-time-current, .gr-time-total {
+    font-size: 10px;
+  }
+  .gr-controls-row {
+    gap: 12px;
+  }
+  .gr-play-btn {
+    width: 50px;
+    height: 50px;
+  }
+  .gr-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .gr-ctrl-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .gr-ctrl-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gr-utility-panel {
+    margin-top: 4px;
+    padding-top: 4px;
+    gap: 8px;
+  }
+  .gr-util-icon-circle {
+    width: 36px;
+    height: 36px;
+  }
+  .gr-util-icon-circle svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gr-util-label {
+    font-size: 10px;
+  }
+}
