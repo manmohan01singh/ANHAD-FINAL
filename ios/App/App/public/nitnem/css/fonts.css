@@ -47,6 +47,24 @@
     font-display: optional;
 }
 
+/* Riyasti Hastlikhat */
+@font-face {
+    font-family: 'RiyastiHastlikhat';
+    src: url('../g-fonts/RiyastiHastlikhat.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: optional;
+}
+
+/* PG Muskan */
+@font-face {
+    font-family: 'PGMuskan';
+    src: url('../g-fonts/pg_muskan_5.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: optional;
+}
+
 /* Font Classes */
 .font-pg-serif {
     font-family: 'PG Serif', 'Noto Sans Gurmukhi', sans-serif !important;
@@ -62,6 +80,14 @@
 
 .font-pixel-r {
     font-family: 'Pixel R', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-riyasti {
+    font-family: 'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.font-pg-muskan {
+    font-family: 'PGMuskan', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
 .font-noto {

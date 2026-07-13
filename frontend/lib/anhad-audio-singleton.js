@@ -454,13 +454,15 @@
 
         try {
           await this.audio.play();
+          // Play succeeded — don't emit statechange here.
+          // The 'play' event listener will set isPlaying=true and emit statechange.
         } catch (e) {
           console.warn('[PlaybackQueueController] autoplay blocked or load failed:', e.message);
           isPlaying = false;
+          emit('statechange', getPublicState());
         } finally {
           isLoading = false;
           emit('loading', { isLoading: false });
-          emit('statechange', getPublicState());
         }
       });
     },
@@ -746,7 +748,7 @@
     // System notifications (lock screen, notification panel) → Always use ANHAD app logo
     // Mini player (inside app UI) → Use time-based artwork
     if (forNotification) {
-      return resolveAsset('icon-512x512.png');
+      return resolveAsset('icon-1024x1024.png');
     }
 
     // Mini player: Time-based artwork

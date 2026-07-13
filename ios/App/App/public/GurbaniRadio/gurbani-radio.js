@@ -305,7 +305,10 @@
   // ─── Gurbani Recording Engine (MediaRecorder exactly what plays) ───
   async function startRecording() {
     var audio = window.AnhadAudio;
-    if (!audio) return;
+    if (!audio) {
+      showToast('⚠️ Audio system not initialized');
+      return;
+    }
 
     var state = audio.getState();
     var stream = state.currentStream || 'darbar';
@@ -338,17 +341,40 @@
     try {
       var mediaStream = null;
       if (audioEl.captureStream) {
-        mediaStream = audioEl.captureStream();
+        try {
+          mediaStream = audioEl.captureStream();
+        } catch (captureErr) {
+          if (captureErr.name === 'SecurityError') {
+            showToast('⚠️ Recording not supported for this stream (CORS)');
+            haptic('ERROR');
+          } else {
+            showToast('⚠️ Recording failed: ' + captureErr.message);
+          }
+          recState.isRecording = false;
+          DOM.recordItem.classList.remove('recording');
+          DOM.recordLabel.textContent = 'Record';
+          if (recState.intervalId) {
+            clearInterval(recState.intervalId);
+            recState.intervalId = null;
+          }
+          return;
+        }
       } else if (audioEl.mozCaptureStream) {
         mediaStream = audioEl.mozCaptureStream();
       }
 
       if (mediaStream) {
-        var options = {};
-        if (MediaRecorder.isTypeSupported('audio/webm')) {
+        var options = { audioBitsPerSecond: 128000 };
+        
+        // Try multiple mimeTypes for compatibility
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          options.mimeType = 'audio/webm;codecs=opus';
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
           options.mimeType = 'audio/webm';
-        } else if (MediaRecorder.isTypeSupported('audio/aac')) {
-          options.mimeType = 'audio/aac';
+        } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+          options.mimeType = 'audio/ogg;codecs=opus';
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options.mimeType = 'audio/mp4';
         }
 
         var mediaRecorder = new MediaRecorder(mediaStream, options);
@@ -356,45 +382,36 @@
         
         mediaRecorder.ondataavailable = function (e) {
           if (e.data && e.data.size > 0) {
+            console.log('Chunk recorded:', e.data.size, 'bytes');
             recState.chunks.push(e.data);
           }
         };
+        
+        mediaRecorder.onerror = function(e) {
+          console.error('MediaRecorder error:', e);
+          showToast('⚠️ Recording error occurred');
+        };
+        
+        mediaRecorder.onstop = function() {
+          console.log('MediaRecorder stopped. Total chunks:', recState.chunks.length);
+        };
 
-        mediaRecorder.start(1000);
+        // Start recording with smaller time slices for more frequent chunks
+        mediaRecorder.start(500);
+        console.log('MediaRecorder started with mimeType:', options.mimeType);
       } else {
-        downloadStream(audioEl.src);
+        showToast('⚠️ Recording not supported on this device');
+        recState.isRecording = false;
+        DOM.recordItem.classList.remove('recording');
+        DOM.recordLabel.textContent = 'Record';
       }
     } catch (e) {
-      console.warn('Recording start error, trying direct download:', e);
-      downloadStream(audioEl && audioEl.src);
+      console.error('Recording start error:', e);
+      showToast('⚠️ Failed to start recording: ' + e.message);
+      recState.isRecording = false;
+      DOM.recordItem.classList.remove('recording');
+      DOM.recordLabel.textContent = 'Record';
     }
-  }
-
-  function downloadStream(url) {
-    if (!url) { showToast('No stream URL'); return; }
-    var xhr = new XMLHttpRequest();
-    recState.xhr = xhr;
-    xhr.open('GET', url, true);
-    xhr.responseType = 'blob';
-    xhr.onprogress = function(e) {
-      if (!recState.isRecording && xhr.readyState < 4) {
-        xhr.abort();
-      }
-    };
-    xhr.onload = function() {
-      if (xhr.status === 200 && recState.isRecording) {
-        recState.chunks.push(xhr.response);
-      }
-    };
-    xhr.onerror = function() {
-      console.error('XHR download failed');
-    };
-    xhr.onloadend = function() {
-      if (recState.isRecording) {
-        stopRecording(false);
-      }
-    };
-    xhr.send();
   }
 
   async function stopRecording(autoStop) {
@@ -402,9 +419,20 @@
     recState.isRecording = false;
 
     if (recState.intervalId) clearInterval(recState.intervalId);
-    if (recState.mediaRecorder) {
-      try { recState.mediaRecorder.stop(); } catch(e) {}
+    
+    // Wait for MediaRecorder to finish and collect final chunks
+    if (recState.mediaRecorder && recState.mediaRecorder.state !== 'inactive') {
+      try {
+        recState.mediaRecorder.stop();
+        // Give MediaRecorder time to fire ondataavailable
+        await new Promise(function(resolve) {
+          setTimeout(resolve, 300);
+        });
+      } catch(e) {
+        console.error('MediaRecorder stop error:', e);
+      }
     }
+    
     if (recState.abortController) recState.abortController.abort();
     if (recState.xhr) {
       try { recState.xhr.abort(); } catch(e) {}
@@ -414,20 +442,31 @@
     DOM.recordLabel.textContent = 'Record';
     haptic('MEDIUM');
 
+    // Wait a bit longer for all chunks to be collected
     setTimeout(function() {
       if (recState.chunks.length === 0) {
-        showToast('No audio recorded');
+        showToast('⚠️ No audio recorded. Please play radio first.');
         return;
       }
 
-      showToast('Saving Gurbani recording...');
+      showToast('💾 Saving Gurbani recording...');
 
       var isSimran = recState.streamType === 'simran';
       var mimeType = isSimran ? 'audio/mpeg' : 'audio/webm';
       var ext = isSimran ? '.mp3' : '.webm';
+      
+      // Create blob from all collected chunks
       var blob = new Blob(recState.chunks, { type: mimeType });
+      
+      // Verify blob has content
+      if (blob.size === 0) {
+        showToast('⚠️ Recording is empty. Please try again.');
+        return;
+      }
+      
       var dateStr = new Date().toISOString().slice(0,10);
-      var filename = 'Gurbani_' + recState.streamType + '_' + dateStr + ext;
+      var timeStr = new Date().toISOString().slice(11,19).replace(/:/g, '-');
+      var filename = 'Gurbani_' + recState.streamType + '_' + dateStr + '_' + timeStr + ext;
 
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
         try {
@@ -440,19 +479,27 @@
               data: base64data,
               directory: 'DOCUMENTS'
             }).then(function () {
-              showToast('Saved to Documents!');
+              showToast('✅ Saved to Documents: ' + filename);
+              // Clear chunks after successful save
+              recState.chunks = [];
             }).catch(function (err) {
               console.error('File write failed:', err);
+              showToast('⚠️ Save failed, downloading instead...');
               triggerWebDownload(blob, filename);
             });
           };
+          reader.onerror = function(err) {
+            console.error('FileReader error:', err);
+            triggerWebDownload(blob, filename);
+          };
         } catch (err) {
+          console.error('Filesystem write error:', err);
           triggerWebDownload(blob, filename);
         }
       } else {
         triggerWebDownload(blob, filename);
       }
-    }, 200);
+    }, 500);
   }
 
   function triggerWebDownload(blob, filename) {

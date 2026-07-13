@@ -454,13 +454,15 @@
 
         try {
           await this.audio.play();
+          // Play succeeded — don't emit statechange here.
+          // The 'play' event listener will set isPlaying=true and emit statechange.
         } catch (e) {
           console.warn('[PlaybackQueueController] autoplay blocked or load failed:', e.message);
           isPlaying = false;
+          emit('statechange', getPublicState());
         } finally {
           isLoading = false;
           emit('loading', { isLoading: false });
-          emit('statechange', getPublicState());
         }
       });
     },

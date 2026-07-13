@@ -31,10 +31,17 @@
         SGPC_HUKAM_AUDIO: 'https://corsproxy.io/?url=http://live.sgpc.net:8443/;nocache=1'
     };
 
+    const FONT_MAP = {
+        'riyasti': "Riyasti, RiyastiHastlikhat, 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif",
+        'pg-muskan': "PGMuskan, 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif",
+        'gurbani-akhar': "'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif"
+    };
+
     const state = {
         data: null,
         settings: JSON.parse(localStorage.getItem('anhad_hukam_settings')) || {
             fontSize: 24,
+            fontFamily: 'riyasti',
             showTranslit: true,
             showEnglish: true,
             showPunjabi: true
@@ -56,6 +63,7 @@
         closeSettings: document.getElementById('closeSettings'),
         fontSizeSlider: document.getElementById('fontSizeSlider'),
         fontSizeDisplay: document.getElementById('fontSizeDisplay'),
+        fontFamilySelect: document.getElementById('fontFamilySelect'),
         translitToggle: document.getElementById('translitToggle'),
         englishToggle: document.getElementById('englishToggle'),
         punjabiToggle: document.getElementById('punjabiToggle')
@@ -66,6 +74,7 @@
     async function init() {
         try {
             console.log('🚀 Hukamnama V3 Initializing...');
+            
             setupListeners();
             applySettings();
             
@@ -202,6 +211,12 @@
 
         elements.fontSizeSlider.addEventListener('input', (e) => {
             state.settings.fontSize = e.target.value;
+            updateDisplay();
+            saveSettings();
+        });
+
+        elements.fontFamilySelect.addEventListener('change', (e) => {
+            state.settings.fontFamily = e.target.value;
             updateDisplay();
             saveSettings();
         });
@@ -662,12 +677,11 @@
     }
 
     function updateDisplay() {
-        const verses = document.querySelectorAll('.verse-gurmukhi');
-        verses.forEach(v => v.style.fontSize = `${state.settings.fontSize}px`);
+        const fontKey = state.settings.fontFamily || 'riyasti';
+        if (elements.fontFamilySelect) elements.fontFamilySelect.value = fontKey;
         elements.fontSizeDisplay.textContent = `${state.settings.fontSize}px`;
         
         if (state.data) {
-            // Re-render content to apply toggle changes
             const d = state.data;
             elements.hukamContent.innerHTML = d.verses.map((v, i) => {
                 const delay = Math.min(i * 60, 400);
@@ -680,6 +694,13 @@
                 </div>`;
             }).join('');
         }
+        
+        // Apply font class to override default hardcoded font-family
+        document.querySelectorAll('.verse-gurmukhi').forEach(v => {
+            v.classList.remove('font-riyasti', 'font-pg-muskan', 'font-gurbani-akhar');
+            v.classList.add(`font-${fontKey}`);
+            v.style.fontSize = `${state.settings.fontSize}px`;
+        });
     }
 
     // ─── UI HELPERS ──────────────────────────────────────────────────────
@@ -705,11 +726,18 @@
 
     function applySettings() {
         elements.fontSizeSlider.value = state.settings.fontSize;
+        if (elements.fontFamilySelect) elements.fontFamilySelect.value = state.settings.fontFamily;
         elements.translitToggle.checked = state.settings.showTranslit;
         elements.englishToggle.checked = state.settings.showEnglish;
         elements.punjabiToggle.checked = state.settings.showPunjabi;
         
-        const theme = localStorage.getItem('anhad_theme') || 'dark';
+        const fontKey = state.settings.fontFamily || 'riyasti';
+        document.querySelectorAll('.verse-gurmukhi').forEach(v => {
+            v.classList.remove('font-riyasti', 'font-pg-muskan', 'font-gurbani-akhar');
+            v.classList.add(`font-${fontKey}`);
+        });
+        
+        const theme = localStorage.getItem('anhad_theme') || 'auto';
         setAppTheme(theme);
         updateThemePills(theme);
     }

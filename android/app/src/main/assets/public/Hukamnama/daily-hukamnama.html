@@ -94,66 +94,74 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=optional" rel="stylesheet">
 
     <style>
+        /* Custom Gurbani Fonts */
+        @font-face {
+            font-family: 'RiyastiHastlikhat';
+            src: url('RiyastiHastlikhat.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'PGMuskan';
+            src: url('pg_muskan_5.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        /* Font Classes for font selector override */
+        .font-riyasti {
+            font-family: 'RiyastiHastlikhat', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif !important;
+        }
+        .font-pg-muskan {
+            font-family: 'PGMuskan', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif !important;
+        }
+        .font-gurbani-akhar {
+            font-family: 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif !important;
+        }
+
         :root {
             --accent: #C9A84C;
             --accent-rgb: 201, 168, 76;
-            --bg: #0D0D0F;
-            --surface: #1C1C1E;
-            --text-primary: rgba(255,255,255,0.92);
-            --text-secondary: rgba(255,255,255,0.55);
-            --text-tertiary: rgba(255,255,255,0.30);
-            --separator: rgba(255,255,255,0.06);
+            --bg: #FAF6ED;
+            --surface: #FFFFFF;
+            --text-primary: rgba(0,0,0,0.92);
+            --text-secondary: rgba(0,0,0,0.62);
+            --text-tertiary: rgba(0,0,0,0.42);
+            --separator: rgba(0,0,0,0.08);
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
             --header-h: calc(52px + var(--safe-top));
-            --font-gurmukhi: 'Noto Sans Gurmukhi', sans-serif;
+            --font-gurmukhi: 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
             --font-system: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
             --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         [data-time="morning"] {
             --accent: #D4AF37;
-            --text-primary: rgba(255,255,255,0.94);
         }
         [data-time="afternoon"] {
             --accent: #C9A84C;
         }
         [data-time="evening"] {
             --accent: #BF9B30;
-            --text-primary: rgba(255,255,255,0.88);
-            --text-secondary: rgba(255,255,255,0.50);
         }
         [data-time="night"] {
             --accent: #A88828;
-            --text-primary: rgba(255,255,255,0.82);
-            --text-secondary: rgba(255,255,255,0.45);
-            --text-tertiary: rgba(255,255,255,0.22);
         }
 
-        [data-theme="light"] {
-            --bg: #F5F5F7;
-            --surface: #FFFFFF;
-            --text-primary: rgba(0,0,0,0.85);
-            --text-secondary: rgba(0,0,0,0.48);
-            --text-tertiary: rgba(0,0,0,0.22);
-            --separator: rgba(0,0,0,0.06);
-        }
-        [data-theme="light"][data-time="morning"] {
-            --accent: #B8942E;
-        }
-        [data-theme="light"][data-time="evening"] {
-            --accent: #A07F25;
-            --text-primary: rgba(0,0,0,0.80);
-            --text-secondary: rgba(0,0,0,0.42);
-        }
-        [data-theme="light"][data-time="night"] {
-            --accent: #8B6F1E;
-            --text-primary: rgba(0,0,0,0.75);
-            --text-secondary: rgba(0,0,0,0.38);
-            --text-tertiary: rgba(0,0,0,0.18);
+        [data-theme="dark"] {
+            --bg: #0D0D0F;
+            --surface: #1C1C1E;
+            --text-primary: rgba(255,255,255,0.92);
+            --text-secondary: rgba(255,255,255,0.62);
+            --text-tertiary: rgba(255,255,255,0.42);
+            --separator: rgba(255,255,255,0.08);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
             background: var(--bg);
             color: var(--text-primary);
@@ -161,6 +169,36 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             transition: background 0.35s ease, color 0.35s ease;
+            position: relative;
+        }
+
+        /* ═══ PAPER BACKGROUND - PERMANENT (LIGHT MODE ONLY) ═══ */
+        .paper-background {
+            position: fixed;
+            inset: 0;
+            opacity: 1;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                /* Paper texture from Nitnem reader */
+                url('../nitnem/css/image.png') center/cover no-repeat,
+                /* Fallback vintage paper texture */
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.12'/%3E%3C/svg%3E"),
+                /* Warm vintage paper base */
+                linear-gradient(180deg,
+                    #F4ECD8 0%,
+                    #FAF6EB 8%,
+                    #FDF9F0 20%,
+                    #FFFDF8 50%,
+                    #FDF9F0 80%,
+                    #FAF6EB 92%,
+                    #F4ECD8 100%);
+            background-color: #FAF6ED;
+        }
+
+        [data-theme="dark"] .paper-background {
+            background: #0D0D0F;
+            background-image: none;
         }
         #mainScroll::-webkit-scrollbar { display: none; }
         #mainScroll { -ms-overflow-style: none; scrollbar-width: none; }
@@ -200,10 +238,13 @@
             transition: background 0.25s ease, backdrop-filter 0.25s ease, transform 0.35s var(--ease);
         }
         .app-header.scrolled {
-            background: var(--surface);
+            background: rgba(250, 246, 237, 0.92);
             backdrop-filter: saturate(180%) blur(24px);
             -webkit-backdrop-filter: saturate(180%) blur(24px);
             border-bottom: 0.5px solid var(--separator);
+        }
+        [data-theme="dark"] .app-header.scrolled {
+            background: rgba(28, 28, 30, 0.92);
         }
         .app-header.hidden-header {
             transform: translateY(-100%);
@@ -219,23 +260,25 @@
         .header-btn:active { background: var(--surface); }
         .header-btn svg { width: 22px; height: 22px; }
         .header-title-small {
+            font-family: var(--font-gurmukhi);
             font-weight: 600; font-size: 0.95rem;
             opacity: 0; color: var(--text-primary);
             transition: opacity 0.25s ease;
         }
         .app-header.scrolled .header-title-small { opacity: 1; }
 
-        /* ─── HERO — TRANSITION INTO GURBANI ─── */
+        /* ─── HERO — SERENE & ELEGANT ─── */
         .hero {
             position: relative;
             width: 100%;
-            padding: calc(var(--header-h) + 16px) 24px 0;
+            padding: calc(var(--header-h) + 32px) 24px 32px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             overflow: visible;
             transform-origin: center top;
+            z-index: 2; /* Above paper */
         }
         .hero-glow {
             position: absolute;
@@ -243,21 +286,25 @@
             left: 50%;
             transform: translateX(-50%);
             width: 300px; height: 300px;
-            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.07) 0%, rgba(var(--accent-rgb), 0.02) 50%, transparent 70%);
+            background: radial-gradient(circle at center, rgba(var(--accent-rgb), 0.06) 0%, rgba(var(--accent-rgb), 0.02) 50%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
             transition: opacity 0.8s ease;
+            display: none; /* Hidden in light mode with paper */
+        }
+        [data-theme="dark"] .hero-glow {
+            display: block; /* Show in dark mode */
         }
         .hero-portrait {
             width: 104px; height: 104px;
             border-radius: 50%;
-            padding: 3px;
-            background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.3), rgba(var(--accent-rgb), 0.06));
+            padding: 4px;
+            background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.5), rgba(var(--accent-rgb), 0.2));
             box-shadow:
-                0 0 0 1px rgba(var(--accent-rgb), 0.15),
-                0 4px 24px rgba(0,0,0,0.12),
-                inset 0 1px 1px rgba(255,255,255,0.06);
-            margin-bottom: 16px;
+                0 0 0 1px rgba(var(--accent-rgb), 0.25),
+                0 8px 32px rgba(0,0,0,0.12),
+                inset 0 1px 2px rgba(255,255,255,0.5);
+            margin-bottom: 20px;
             flex-shrink: 0;
             opacity: 0;
             transform: scale(0.92);
@@ -274,25 +321,23 @@
             border-radius: 50%;
             overflow: hidden;
             background: var(--bg);
-            border: 1px solid rgba(var(--accent-rgb), 0.08);
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            border: 2px solid rgba(var(--accent-rgb), 0.15);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
         }
         .hero-portrait-inner img {
             width: 100%; height: 100%;
             object-fit: cover;
             object-position: center;
-            transition: transform 8s linear;
         }
-        .hero.panning .hero-portrait-inner img {
-            transform: scale(1.06);
-        }
+        
         .hero-title {
-            font-size: 24px;
+            font-family: var(--font-gurmukhi);
+            font-size: 28px;
             font-weight: 700;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.02em;
             color: var(--text-primary);
             line-height: 1.3;
-            margin-bottom: 2px;
+            margin-bottom: 6px;
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.3s ease, transform 0.3s var(--ease);
@@ -304,9 +349,10 @@
             transition-delay: 0.13s;
         }
         .hero-guru {
-            font-size: 13px;
+            font-family: var(--font-gurmukhi);
+            font-size: 14px;
             color: var(--text-secondary);
-            font-weight: 400;
+            font-weight: 500;
             line-height: 1.4;
             opacity: 0;
             transform: translateY(6px);
@@ -323,11 +369,11 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 12px;
             color: var(--text-tertiary);
-            font-weight: 400;
-            letter-spacing: 0.01em;
+            font-weight: 500;
+            letter-spacing: 0.02em;
             opacity: 0;
             transform: translateY(4px);
             transition: opacity 0.3s ease, transform 0.3s var(--ease);
@@ -339,21 +385,22 @@
             transition-delay: 0.27s;
         }
         .hero-meta-sep {
-            opacity: 0.25;
+            opacity: 0.4;
             font-size: 8px;
         }
         .hero-meta strong {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-secondary);
         }
+        
         .hero-transition {
-            width: 60px;
+            width: 80px;
             height: 2px;
             border-radius: 1px;
-            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.2) 20%, rgba(var(--accent-rgb), 0.2) 80%, transparent);
-            margin: 16px auto 0;
+            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.3) 20%, rgba(var(--accent-rgb), 0.3) 80%, transparent);
+            margin: 20px auto 0;
             filter: blur(0.5px);
-            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.06);
+            box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.2);
             opacity: 0;
             transform: scaleX(0);
             transition: opacity 0.3s ease, transform 0.35s var(--ease);
@@ -397,29 +444,34 @@
             transform: scaleX(calc(1 - var(--scroll-progress, 0) * 0.3));
         }
 
-        /* ─── GURBANI — READING FIRST ─── */
+        /* ─── GURBANI — READING FIRST (BEAUTIFUL GURMUKHI FONT) ─── */
         .gurbani-section {
             padding: 0 24px 120px;
             max-width: 680px;
             margin: 0 auto;
+            z-index: 2; /* Above paper */
+            position: relative;
         }
+        
         .verse-raag {
-            font-size: 11px;
+            font-family: var(--font-gurmukhi);
+            font-size: 12px;
             color: var(--text-tertiary);
             text-align: center;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
             opacity: 0;
             transform: translateY(6px);
             animation: raagEnter 0.3s var(--ease) 0.45s forwards;
         }
         @keyframes raagEnter {
-            to { opacity: 0.7; transform: translateY(0); }
+            to { opacity: 0.8; transform: translateY(0); }
         }
+        
         .verse-block {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            padding: 8px 0;
             opacity: 0;
             transform: translateY(10px);
             animation: verseEnter 0.3s var(--ease) forwards;
@@ -427,40 +479,53 @@
         @keyframes verseEnter {
             to { opacity: 1; transform: translateY(0); }
         }
+        
         .verse-gurmukhi {
-            font-family: var(--font-gurmukhi);
-            font-size: 1.35rem;
+            font-family: 'RiyastiHastlikhat', 'Noto Sans Gurmukhi', 'Gurmukhi MN', 'AnmolLipi', sans-serif;
+            font-size: 2rem;
             line-height: 2.2;
             color: var(--text-primary);
-            font-weight: 400;
+            font-weight: 500;
             text-align: center;
             word-wrap: break-word;
-            letter-spacing: 0.01em;
+            letter-spacing: 0.03em;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            margin-bottom: 6px;
         }
+        
         .verse-translation {
-            font-size: 0.95rem;
+            /* ENGLISH TRANSLATION - Always uses system font, NOT Riyasti */
+            font-family: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            font-size: 1rem;
             line-height: 1.7;
             color: var(--text-secondary);
             text-align: center;
             margin-top: 14px;
             font-weight: 400;
+            padding: 0 8px;
         }
+        
         .verse-translit {
-            font-size: 0.85rem;
-            line-height: 1.6;
+            /* TRANSLITERATION - Always uses system font, NOT Riyasti */
+            font-family: -apple-system, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+            font-size: 0.875rem;
+            line-height: 1.5;
             color: var(--text-tertiary);
             text-align: center;
             margin-top: 10px;
             font-style: italic;
+            opacity: 0.85;
         }
+        
         .verse-punjabi {
             font-family: var(--font-gurmukhi);
-            font-size: 1rem;
+            font-size: 1.05rem;
             line-height: 1.8;
             color: var(--text-secondary);
             text-align: center;
             margin-top: 14px;
             font-weight: 500;
+            padding: 0 8px;
         }
 
         /* ─── READING MODE ─── */
@@ -591,77 +656,6 @@
         }
         .toggle-row input[type="checkbox"]:checked::after { transform: translateX(18px); }
 
-        /* ─── AUDIO PLAYER ─── */
-        .hukam-player {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(18,18,18,0.96);
-            backdrop-filter: saturate(200%) blur(24px);
-            -webkit-backdrop-filter: saturate(200%) blur(24px);
-            border-top: 0.5px solid rgba(var(--accent-rgb),0.12);
-            padding: 12px 20px calc(12px + var(--safe-bottom));
-            z-index: 300;
-            transform: translateY(100%);
-            transition: transform 0.3s var(--ease);
-        }
-        [data-theme="light"] .hukam-player { background: rgba(248,248,250,0.96); }
-        .hukam-player.visible { transform: translateY(0); }
-        .hukam-player-top { display: flex; align-items: center; gap: 12px; }
-        .hukam-wave {
-            display: flex; align-items: center; gap: 2px; height: 20px; opacity: 0.3;
-        }
-        .hukam-wave span {
-            display: block; width: 2px;
-            background: var(--accent); border-radius: 1px;
-            animation: wave 1s ease-in-out infinite;
-        }
-        .hukam-wave span:nth-child(1) { height: 6px; animation-delay: 0s; }
-        .hukam-wave span:nth-child(2) { height: 14px; animation-delay: 0.15s; }
-        .hukam-wave span:nth-child(3) { height: 20px; animation-delay: 0.3s; }
-        .hukam-wave span:nth-child(4) { height: 12px; animation-delay: 0.45s; }
-        .hukam-wave span:nth-child(5) { height: 8px; animation-delay: 0.6s; }
-        @keyframes wave {
-            0%,100% { transform: scaleY(0.6); }
-            50% { transform: scaleY(1); }
-        }
-        .hukam-player-info { flex: 1; min-width: 0; }
-        .hukam-player-title {
-            font-size: 0.85rem; font-weight: 600;
-            color: var(--text-primary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .hukam-player-sub { font-size: 0.68rem; color: var(--text-tertiary); margin-top: 1px; }
-        .hukam-play-btn {
-            width: 42px; height: 42px; border-radius: 21px;
-            background: var(--accent); border: none;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; flex-shrink: 0;
-            transition: transform 0.2s ease;
-        }
-        .hukam-play-btn:active { transform: scale(0.9); }
-        .hukam-play-btn svg { color: #000; width: 20px; height: 20px; }
-        .hukam-close-btn {
-            width: 30px; height: 30px; border-radius: 15px;
-            background: transparent; border: none;
-            color: var(--text-tertiary);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-        }
-        .hukam-close-btn:active { opacity: 0.5; }
-        .hukam-progress-wrap { margin-top: 8px; display: flex; align-items: center; gap: 8px; }
-        .hukam-time {
-            font-size: 0.62rem; color: var(--text-tertiary);
-            font-variant-numeric: tabular-nums; min-width: 32px;
-        }
-        .hukam-progress-track {
-            flex: 1; height: 3px;
-            background: var(--separator); border-radius: 1.5px;
-            position: relative; cursor: pointer; overflow: hidden;
-        }
-        .hukam-progress-fill {
-            height: 100%; background: var(--accent); width: 0%;
-            transition: width 0.3s linear;
-        }
-
         .hidden { display: none !important; }
         .pa { font-family: var(--font-gurmukhi); }
 
@@ -684,6 +678,8 @@
     </style>
 </head>
 <body>
+    <!-- Paper Background (permanent in light mode) -->
+    <div class="paper-background" aria-hidden="true"></div>
 
     <div id="skeletonLoader" class="skeleton-container">
         <div class="skeleton-portrait"></div>
@@ -752,11 +748,6 @@
                 <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
         </button>
-        <button class="action-btn" id="audioBtn" title="Listen">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-            </svg>
-        </button>
     </nav>
 
     <div class="modal-overlay" id="settingsModal">
@@ -783,6 +774,14 @@
                     <input type="range" class="slider" id="fontSizeSlider" min="16" max="42" value="24">
                 </div>
                 <div class="setting-group">
+                    <label class="setting-label">Font Family</label>
+                    <select id="fontFamilySelect" style="width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--separator);background:var(--bg);color:var(--text-primary);font-size:0.85rem;font-weight:500;outline:none;cursor:pointer;">
+                        <option value="riyasti">Riyasti Hastlikhat (Default)</option>
+                        <option value="pg-muskan">PG Muskan</option>
+                        <option value="gurbani-akhar">Gurbani Akhar</option>
+                    </select>
+                </div>
+                <div class="setting-group">
                     <div class="toggle-row">
                         <span class="setting-label">Transliteration</span>
                         <input type="checkbox" id="translitToggle" checked>
@@ -797,38 +796,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="hukam-player" id="hukamPlayer">
-        <div class="hukam-player-top">
-            <div class="hukam-wave" id="hukamWave">
-                <span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div class="hukam-player-info">
-                <div class="hukam-player-title">Daily Hukamnama</div>
-                <div class="hukam-player-sub" id="hukamPlayerSub">Sachkhand Sri Harmandir Sahib</div>
-            </div>
-            <button class="hukam-play-btn" id="hukamPlayBtn" aria-label="Play">
-                <svg id="hukamPauseIcon" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
-                </svg>
-                <svg id="hukamPlayIcon" viewBox="0 0 24 24" fill="currentColor" style="display:none">
-                    <polygon points="5,3 19,12 5,21"/>
-                </svg>
-            </button>
-            <button class="hukam-close-btn" id="hukamCloseBtn" aria-label="Close">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-        </div>
-        <div class="hukam-progress-wrap">
-            <span class="hukam-time" id="hukamCurrent">0:00</span>
-            <div class="hukam-progress-track" id="hukamProgressTrack">
-                <div class="hukam-progress-fill" id="hukamProgressFill"></div>
-            </div>
-            <span class="hukam-time" id="hukamDuration">--:--</span>
         </div>
     </div>
 

@@ -842,14 +842,45 @@
             if (ex.action === 'show_alarm') {
                 showAlarmPopup(ex.alarmLabel, ex.alarmTime, ex.alarmIcon, ex.alarmTone);
             } else if (ex.action === 'auto_start_naam' || ex.action === 'show_naam') {
-                // ═══ COLD-START FIX: Store launch data BEFORE navigating ═══
-                // If the app was killed, the WebView loads index.html first.
-                // The navigation below will redirect, but the target page needs
-                // to know it was launched from a notification.
-                storePendingNaamLaunch(ex);
-                var url = resolveNaamUrl(ex);
-                console.log('[ANHAD] Navigating to:', url);
-                window.location.href = url;
+                // ═══ CRITICAL FIX: Prevent app hang when notification clicked while app is open ═══
+                // If we're ALREADY on the Naam Abhyas page, don't reload (causes freeze)
+                // Instead, just trigger the session directly
+                var currentPath = window.location.pathname;
+                var isOnNaamPage = currentPath.indexOf('/NaamAbhyas/naam-abhyas.html') !== -1;
+                
+                if (isOnNaamPage) {
+                    // ✅ Already on the page - trigger session directly (no reload)
+                    console.log('[ANHAD] 🎯 Already on Naam Abhyas page, triggering session directly');
+                    storePendingNaamLaunch(ex);
+                    
+                    // Try to trigger via NaamAbhyasManager first
+                    var manager = getNaamManager();
+                    if (manager && typeof manager.handleNotificationLaunch === 'function') {
+                        manager.handleNotificationLaunch();
+                    } 
+                    // Fallback: dispatch event for naam-abhyas.js to pick up
+                    else if (window.naamAbhyas && typeof window.naamAbhyas.executeAutoStart === 'function') {
+                        window.naamAbhyas._capturedAutoStartParams = {
+                            autoStart: true,
+                            hour: ex.hour,
+                            minute: ex.minute
+                        };
+                        window.naamAbhyas.executeAutoStart();
+                    }
+                    // Last resort: dispatch custom event
+                    else {
+                        window.dispatchEvent(new CustomEvent('naamAbhyasNotificationClick', {
+                            detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
+                        }));
+                    }
+                } else {
+                    // ✅ On different page - navigate to Naam Abhyas (safe)
+                    console.log('[ANHAD] 🚀 Navigating to Naam Abhyas page');
+                    storePendingNaamLaunch(ex);
+                    var url = resolveNaamUrl(ex);
+                    console.log('[ANHAD] Navigating to:', url);
+                    window.location.href = url;
+                }
             }
             else if (ex.action === 'show_tracker') {
                 var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');

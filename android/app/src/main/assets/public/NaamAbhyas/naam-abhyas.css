@@ -239,6 +239,8 @@ a {
 .app-loading {
   position: fixed;
   inset: 0;
+  /* CRITICAL FIX: Set background to prevent black screen on notification click */
+  background: var(--clay-bg);
   z-index: 10000;
   display: flex;
   flex-direction: column;

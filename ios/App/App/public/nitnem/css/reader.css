@@ -721,6 +721,16 @@ body {
     font-family: 'Pixel R', 'Noto Sans Gurmukhi', sans-serif !important;
 }
 
+.verse-gurmukhi.font-riyasti,
+.font-riyasti .verse-gurmukhi {
+    font-family: 'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
+.verse-gurmukhi.font-pg-muskan,
+.font-pg-muskan .verse-gurmukhi {
+    font-family: 'PGMuskan', 'Noto Sans Gurmukhi', sans-serif !important;
+}
+
 .verse-gurmukhi.font-noto,
 .font-noto .verse-gurmukhi {
     font-family: 'Noto Sans Gurmukhi', sans-serif !important;

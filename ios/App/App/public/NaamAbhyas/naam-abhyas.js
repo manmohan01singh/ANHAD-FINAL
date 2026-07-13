@@ -468,6 +468,21 @@ class NaamAbhyas {
                 || (this.currentSchedule && this.currentSchedule[new Date().getHours()]);
             if (session) this.triggerSessionAlert(session);
         });
+
+        // ═══ CRITICAL FIX: Handle notification click when already on page (prevents freeze) ═══
+        window.addEventListener('naamAbhyasNotificationClick', (evt) => {
+            console.log('[NaamAbhyas] 🔔 Notification clicked while on page, triggering session');
+            const { hour, minute, autoStart } = evt.detail || {};
+            
+            if (autoStart) {
+                this._capturedAutoStartParams = {
+                    autoStart: true,
+                    hour: hour,
+                    minute: minute
+                };
+                this.executeAutoStart();
+            }
+        });
     }
 
 

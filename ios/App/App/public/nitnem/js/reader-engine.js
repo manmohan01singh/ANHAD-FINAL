@@ -82,7 +82,9 @@
         'pg-serif': "'PG Serif', 'Noto Sans Gurmukhi', sans-serif",
         'mfjashan': "'MFJashan', 'Noto Sans Gurmukhi', sans-serif",
         'pg-khanna': "'PG Khanna', 'Noto Sans Gurmukhi', sans-serif",
-        'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif"
+        'pixel-r': "'Pixel R', 'Noto Sans Gurmukhi', sans-serif",
+        'riyasti': "'RiyastiHastlikhat', 'Noto Sans Gurmukhi', sans-serif",
+        'pg-muskan': "'PGMuskan', 'Noto Sans Gurmukhi', sans-serif"
     };
 
     // Font Display Names (User-friendly)
@@ -91,7 +93,9 @@
         'pg-serif': 'Gurmukhi Font 1',
         'mfjashan': 'Gurmukhi Font 2',
         'pg-khanna': 'Gurmukhi Font 3',
-        'pixel-r': 'Gurmukhi Font 4'
+        'pixel-r': 'Gurmukhi Font 4',
+        'riyasti': 'Riyasti Hastlikhat',
+        'pg-muskan': 'PG Muskan'
     };
 
     // Default font sizes (larger for non-Noto fonts)
@@ -100,7 +104,9 @@
         'pg-serif': 36,  // Larger for handwritten fonts
         'mfjashan': 36,
         'pg-khanna': 34,
-        'pixel-r': 34
+        'pixel-r': 34,
+        'riyasti': 36,   // Handwritten style
+        'pg-muskan': 36  // Handwritten style
     };
 
     // ═══════════════════════════════════════════════════════════════
@@ -875,7 +881,7 @@
 
         document.querySelectorAll('.verse-gurmukhi').forEach(el => {
             // Remove all font classes first
-            el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r');
+            el.classList.remove('font-noto', 'font-pg-serif', 'font-mfjashan', 'font-pg-khanna', 'font-pixel-r', 'font-riyasti', 'font-pg-muskan');
 
             // Add current font class
             el.classList.add(`font-${fontKey}`);
