@@ -742,9 +742,15 @@
     return 'night';
   }
 
-  function getDynamicCoverAsset(streamName) {
-    // Restore time-based artwork for mini player while keeping notifications with app logo
-    if (!streamName) return resolveAsset('icons/icon-512x512.png');
+  function getDynamicCoverAsset(streamName, forNotification = false) {
+    // System notifications (lock screen, notification panel) → Always use ANHAD app logo
+    // Mini player (inside app UI) → Use time-based artwork
+    if (forNotification) {
+      return resolveAsset('icon-512x512.png');
+    }
+
+    // Mini player: Time-based artwork
+    if (!streamName) return resolveAsset('icon-512x512.png');
     const timeSlot = getTimeOfDay();
     let forceNight = false;
     try {
@@ -790,12 +796,12 @@
 
     // Web MediaSession for lock screen controls (PWA)
     if ('mediaSession' in navigator) {
-      const artworkUrl = getDynamicCoverAsset(currentStream);
+      const artworkUrl = getDynamicCoverAsset(currentStream, true); // true = for notification (use app logo)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: title,
         artist: artist,
         album: 'ANHAD',
-        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/webp' }]
+        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }]
       });
       navigator.mediaSession.setActionHandler('play', () => resume());
       navigator.mediaSession.setActionHandler('pause', () => pause());

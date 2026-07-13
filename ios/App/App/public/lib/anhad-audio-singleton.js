@@ -742,10 +742,47 @@
     return 'night';
   }
 
-  function getDynamicCoverAsset(streamName) {
-    // Always use ANHAD app logo for ALL notifications (kirtan, radio, simran)
-    // This ensures consistent branding across all system notifications
-    return resolveAsset('assets/app-logo.png');
+  function getDynamicCoverAsset(streamName, forNotification = false) {
+    // System notifications (lock screen, notification panel) → Always use ANHAD app logo
+    // Mini player (inside app UI) → Use time-based artwork
+    if (forNotification) {
+      return resolveAsset('icon-512x512.png');
+    }
+
+    // Mini player: Time-based artwork
+    if (!streamName) return resolveAsset('icon-512x512.png');
+    const timeSlot = getTimeOfDay();
+    let forceNight = false;
+    try {
+      const theme = document.documentElement.getAttribute('data-theme') || 'light';
+      if (theme === 'dark') forceNight = true;
+    } catch(e) {}
+    const slot = forceNight ? 'night' : timeSlot;
+
+    const covers = {
+      darbar: {
+        morning: 'HERO CARD IMAGES/morning-darbar-sahib.webp',
+        day: 'HERO CARD IMAGES/day-darbar-sahib.webp',
+        evening: 'HERO CARD IMAGES/evening-darbar-sahib.webp',
+        night: 'HERO CARD IMAGES/night-darbar-sahib.webp'
+      },
+      amritvela: {
+        morning: 'HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+        day: 'HERO CARD IMAGES/day-amritvela-kirtan.webp',
+        evening: 'HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+        night: 'HERO CARD IMAGES/night-amritvela-kirtan.webp'
+      },
+      simran: {
+        morning: 'HERO CARD IMAGES/morning-waheguru-simran.webp',
+        day: 'HERO CARD IMAGES/day-waheguru-simran.webp',
+        evening: 'HERO CARD IMAGES/evening-waheguru-simran.webp',
+        night: 'HERO CARD IMAGES/night-waheguru-simran.webp'
+      }
+    };
+
+    const streamCovers = covers[streamName] || covers.darbar;
+    const cover = streamCovers[slot] || streamCovers.day;
+    return resolveAsset(cover);
   }
 
   // ─── OS LOCKSCREEN (MEDIA SESSION) ───
@@ -759,12 +796,12 @@
 
     // Web MediaSession for lock screen controls (PWA)
     if ('mediaSession' in navigator) {
-      const artworkUrl = getDynamicCoverAsset(currentStream);
+      const artworkUrl = getDynamicCoverAsset(currentStream, true); // true = for notification (use app logo)
       navigator.mediaSession.metadata = new MediaMetadata({
         title: title,
         artist: artist,
         album: 'ANHAD',
-        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/webp' }]
+        artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }]
       });
       navigator.mediaSession.setActionHandler('play', () => resume());
       navigator.mediaSession.setActionHandler('pause', () => pause());
