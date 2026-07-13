@@ -436,8 +436,8 @@
         // Set preload type
         this.audio.preload = preloadMode || 'auto';
 
-        // Set CORS policy: R2 streams support CORS (preloadMode === 'metadata'), live shoutcast does not
-        if (preloadMode === 'metadata') {
+        // Set CORS policy: Only Amritvela R2 bucket supports CORS, others do not (causes playback errors)
+        if (url && url.indexOf('pub-525228169e0c44e38a67c306ba1a458c.r2.dev') !== -1) {
           this.audio.crossOrigin = 'anonymous';
         } else {
           this.audio.removeAttribute('crossorigin');
@@ -729,20 +729,65 @@
     } catch(e) {}
   }
 
+  function getTimeOfDay() {
+    const h = new Date().getHours();
+    if (h >= 5 && h < 9) return 'morning';
+    if (h >= 9 && h < 16) return 'day';
+    if (h >= 16 && h < 20) return 'evening';
+    return 'night';
+  }
+
+  function getDynamicCoverAsset(streamName) {
+    if (!streamName) return resolveAsset('icons/icon-512x512.png');
+    const timeSlot = getTimeOfDay();
+    let forceNight = false;
+    try {
+      const theme = document.documentElement.getAttribute('data-theme') || 'light';
+      if (theme === 'dark') forceNight = true;
+    } catch(e) {}
+    const slot = forceNight ? 'night' : timeSlot;
+
+    const covers = {
+      darbar: {
+        morning: 'assets/HERO CARD IMAGES/morning-darbar-sahib.webp',
+        day: 'assets/HERO CARD IMAGES/day-darbar-sahib.webp',
+        evening: 'assets/HERO CARD IMAGES/evening-darbar-sahib.webp',
+        night: 'assets/HERO CARD IMAGES/night-darbar-sahib.webp'
+      },
+      amritvela: {
+        morning: 'assets/HERO CARD IMAGES/morning-amritvela-kirtan.webp',
+        day: 'assets/HERO CARD IMAGES/day-amritvela-kirtan.webp',
+        evening: 'assets/HERO CARD IMAGES/evening-amritvela-kirtan.webp',
+        night: 'assets/HERO CARD IMAGES/night-amritvela-kirtan.webp'
+      },
+      simran: {
+        morning: 'assets/HERO CARD IMAGES/morning-waheguru-simran.webp',
+        day: 'assets/HERO CARD IMAGES/day-waheguru-simran.webp',
+        evening: 'assets/HERO CARD IMAGES/evening-waheguru-simran.webp',
+        night: 'assets/HERO CARD IMAGES/night-waheguru-simran.webp'
+      }
+    };
+
+    const streamCovers = covers[streamName] || covers.darbar;
+    const cover = streamCovers[slot] || streamCovers.day;
+    return resolveAsset(cover);
+  }
+
   // ─── OS LOCKSCREEN (MEDIA SESSION) ───
   function updateMediaSession() {
-    if (window.Capacitor) return;
-    if (!('mediaSession' in navigator)) return;
+    if (!('mediaSession' in navigator) || !currentStream) return;
 
     const stream = STREAMS[currentStream];
     if (!stream) return;
 
+    const artworkUrl = getDynamicCoverAsset(currentStream);
+
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: currentTrackTitle,
-      artist: currentTrackArtist,
+      title: currentTrackTitle || stream.name,
+      artist: currentTrackArtist || stream.subtitle,
       album: 'ANHAD',
       artwork: [
-        { src: stream.artwork, sizes: '512x512', type: 'image/webp' }
+        { src: artworkUrl, sizes: '512x512', type: 'image/webp' }
       ]
     });
 

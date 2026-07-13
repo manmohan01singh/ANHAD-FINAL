@@ -377,22 +377,20 @@
         }
       }
     } catch (e) {
-      console.warn('Recording start error:', e);
-      if (stream !== 'darbar') {
-        // Safe fetch fallback
-        try {
-          var streamUrl = audioEl.src;
-          recState.abortController = new AbortController();
-          var response = await fetch(streamUrl, { signal: recState.abortController.signal });
-          var reader = response.body.getReader();
-          while (recState.isRecording) {
-            var result = await reader.read();
-            if (result.done) break;
-            recState.chunks.push(result.value);
-          }
-        } catch(err) {}
-      } else {
-        showToast('⚠️ CORS restriction: Stream recording is only available in the native app.');
+      console.warn('Recording start error, trying fetch fallback:', e);
+      try {
+        var streamUrl = audioEl.src;
+        recState.abortController = new AbortController();
+        var response = await fetch(streamUrl, { signal: recState.abortController.signal });
+        var reader = response.body.getReader();
+        while (recState.isRecording) {
+          var result = await reader.read();
+          if (result.done) break;
+          recState.chunks.push(result.value);
+        }
+      } catch (err) {
+        console.error('Fetch fallback failed:', err);
+        showToast('⚠️ Stream recording is restricted on Web due to browser security. Works in Native App.');
         stopRecording(false);
       }
     }
