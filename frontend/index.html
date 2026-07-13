@@ -41,7 +41,24 @@
           else if (timeOfDay === 'evening') bg = '#FFF8E7';
           else if (timeOfDay === 'night') bg = '#0F0F12';
         }
-        document.documentElement.style.backgroundColor = bg;
+        document.documentElement.style.setProperty('background-color', bg, 'important');
+
+        // INLINE CSS VARIABLES — prevent FOUC until theme-variables.css loads
+        var _v = '';
+        if (effectiveTheme === 'dark') {
+          _v = '--bg-primary:#1C1C1E;--bg-secondary:#2C2C2E;--bg-tertiary:#3A3A3C;--text-primary:#F5F5F7;--text-secondary:#8E8E93;--text-accent:#0A84FF;--border-color:rgba(255,255,255,0.15);--shadow-color:rgba(0,0,0,0.5);--highlight-color:#FFD60A;--btn-bg:#0A84FF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#1C3D2A 0%,#2D4A3E 100%);--card-gold-gradient:linear-gradient(140deg,#3D2D1C 0%,#4A3D2A 100%);--card-purple-gradient:linear-gradient(140deg,#2D1C3D 0%,#3A2D4A 100%);--card-blue-gradient:linear-gradient(140deg,#1C2D3D 0%,#2A3D4A 100%);--card-rose-gradient:linear-gradient(140deg,#3D1C2D 0%,#4A2A3D 100%);--card-event-gradient:linear-gradient(160deg,#2D2D1C 0%,#3D3D2A 25%,#4A4A2D 50%,#3D3D1C 75%,#2D2D2A 100%);--event-title-color:#F5F5F7;--event-title-shadow:0 2px 4px rgba(0,0,0,0.5)';
+        } else {
+          _v = '--bg-primary:#FAF8F5;--bg-secondary:#F2F2F7;--bg-tertiary:#E5E5EA;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#007AFF;--border-color:rgba(0,0,0,0.1);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#007AFF;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#E8F5E9 0%,#C8E6C9 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8E1 0%,#FFECB3 100%);--card-purple-gradient:linear-gradient(140deg,#EDE7F6 0%,#D1C4E9 100%);--card-blue-gradient:linear-gradient(140deg,#E3F2FD 0%,#BBDEFB 100%);--card-rose-gradient:linear-gradient(140deg,#FFEBEE 0%,#FFCDD2 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)';
+        }
+        if (theme === 'auto' && document.documentElement.hasAttribute('data-anhad-home')) {
+          if (timeOfDay === 'morning') { _v = '--bg-primary:#FFF5EC;--bg-secondary:#FFEBD8;--bg-tertiary:#FFE0C4;--text-primary:#3E2723;--text-secondary:#7D6B58;--text-accent:#E8A87C;--border-color:rgba(232,168,124,0.2);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#E8A87C;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFE4CC 100%);--card-gold-gradient:linear-gradient(140deg,#FFF5DC 0%,#FFE8B0 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0F0 0%,#FFE0D8 100%);--card-blue-gradient:linear-gradient(140deg,#FFF3E8 0%,#FFE6D0 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0E6 0%,#FFD8C4 100%);--card-event-gradient:linear-gradient(160deg,#FFF8F2 0%,#FFF0E0 25%,#FFE8CC 50%,#FFE0B8 75%,#FFD8A0 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
+          else if (timeOfDay === 'day') { _v = '--bg-primary:#FFFDF9;--bg-secondary:#FFF8EE;--bg-tertiary:#FFF2DF;--text-primary:#1C1C1E;--text-secondary:#8E8E93;--text-accent:#D4943A;--border-color:rgba(212,148,58,0.15);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#D4943A;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F2FAEE 0%,#E0F5D6 100%);--card-gold-gradient:linear-gradient(140deg,#FFFBEE 0%,#FFF3CC 100%);--card-purple-gradient:linear-gradient(140deg,#F5F0FC 0%,#E8DCFA 100%);--card-blue-gradient:linear-gradient(140deg,#EEF6FF 0%,#D8ECFF 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0F3 0%,#FFD8E0 100%);--card-event-gradient:linear-gradient(160deg,#FFFCF8 0%,#FFF8EE 25%,#FFF2E0 50%,#FFE8C8 75%,#FFECB3 100%);--event-title-color:#72500A;--event-title-shadow:0 1px 1px rgba(255,255,255,0.6)'; }
+          else if (timeOfDay === 'evening') { _v = '--bg-primary:#FFF8E7;--bg-secondary:#FFF0D4;--bg-tertiary:#FFE4B5;--text-primary:#3B2A00;--text-secondary:#7A6A4F;--text-accent:#B8860B;--border-color:rgba(184,134,11,0.25);--shadow-color:rgba(0,0,0,0.15);--highlight-color:#FFD60A;--btn-bg:#B8860B;--btn-text:#FFFFFF;--card-green-gradient:linear-gradient(140deg,#F5F5DC 0%,#EEEEC0 100%);--card-gold-gradient:linear-gradient(140deg,#FFF8D8 0%,#FFE896 100%);--card-purple-gradient:linear-gradient(140deg,#FFF0E8 0%,#FFE0C8 100%);--card-blue-gradient:linear-gradient(140deg,#F8F0D8 0%,#EEE4B8 100%);--card-rose-gradient:linear-gradient(140deg,#FFF0D8 0%,#FFE0B0 100%);--card-event-gradient:linear-gradient(160deg,#FFF8E8 0%,#FFF0D0 25%,#FFE8B8 50%,#FFE0A0 75%,#FFD888 100%);--event-title-color:#4A3500;--event-title-shadow:0 1px 1px rgba(255,255,255,0.4)'; }
+        }
+        var _s = document.createElement('style');
+        _s.textContent = ':root{' + _v + '}';
+        document.head.insertBefore(_s, document.head.firstChild);
+
         document.documentElement.classList.add('theme-loaded');
 
         document.addEventListener('DOMContentLoaded', function() {

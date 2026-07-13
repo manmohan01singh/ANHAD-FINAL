@@ -8,7 +8,7 @@
  *   ✅ Single alarm path — sessionStorage flag prevents multi-page duplicate popups
  *   ✅ Full-screen alarm wiring for Smart Reminders via AlarmReliabilityPlugin
  */
-(function () {
+(function() {
     'use strict';
     var EXPIRY_MS = 5 * 60 * 1000;
     var MANAGED_NOTIFICATION_IDS_KEY = 'anhad_managed_notification_ids_v2';
@@ -26,6 +26,40 @@
 
     function isNative() {
         return window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform();
+    }
+
+    function getNaamManager() {
+        return window.NaamAbhyasManager || null;
+    }
+
+    function ensureNaamManagerLoaded() {
+        if (window.NaamAbhyasManager || document.getElementById('naamAbhyasManagerScript')) return;
+        var path = window.location.pathname;
+        var src = 'lib/naam-abhyas-manager.js';
+        if (path.indexOf('/NaamAbhyas/') !== -1 ||
+            path.indexOf('/reminders/') !== -1 ||
+            path.indexOf('/Homepage/') !== -1 ||
+            path.indexOf('/NitnemTracker/') !== -1 ||
+            path.indexOf('/GurbaniRadio/') !== -1 ||
+            path.indexOf('/Calendar/') !== -1 ||
+            path.indexOf('/Hukamnama/') !== -1 ||
+            path.indexOf('/GurbaniKhoj/') !== -1 ||
+            path.indexOf('/SehajPaath/') !== -1 ||
+            path.indexOf('/Favorites/') !== -1 ||
+            path.indexOf('/Notes/') !== -1 ||
+            path.indexOf('/Insights/') !== -1 ||
+            path.indexOf('/Profile/') !== -1 ||
+            path.indexOf('/ShabadVichar/') !== -1 ||
+            path.indexOf('/RandomShabad/') !== -1 ||
+            path.indexOf('/nitnem/') !== -1) {
+            src = '../lib/naam-abhyas-manager.js';
+        }
+        if (path.indexOf('/nitnem/category/') !== -1) src = '../../lib/naam-abhyas-manager.js';
+        var script = document.createElement('script');
+        script.id = 'naamAbhyasManagerScript';
+        script.src = src;
+        script.defer = true;
+        document.head.appendChild(script);
     }
 
     function hash(s) {
@@ -49,7 +83,7 @@
             if (status && status.batteryOptimized === true) {
                 await plugin.requestIgnoreBatteryOptimizations();
             }
-        } catch (e) {
+        } catch(e) {
             console.warn('[ANHAD] Alarm reliability permission check failed:', e);
         }
     }
@@ -58,33 +92,25 @@
         try {
             var ids = JSON.parse(localStorage.getItem(MANAGED_NOTIFICATION_IDS_KEY) || '[]');
             if (!Array.isArray(ids) || ids.length === 0) return;
-            await LN.cancel({ notifications: ids.map(function (id) { return { id: Number(id) }; }) });
-        } catch (e) {
+            await LN.cancel({ notifications: ids.map(function(id) { return { id: Number(id) }; }) });
+        } catch(e) {
             console.warn('[ANHAD] Managed notification cleanup failed:', e);
         }
     }
 
     function saveManagedNotifications(notifs) {
         try {
-            var ids = (notifs || []).map(function (n) { return n.id; }).filter(function (id) { return typeof id === 'number'; });
+            var ids = (notifs || []).map(function(n) { return n.id; }).filter(function(id) { return typeof id === 'number'; });
             localStorage.setItem(MANAGED_NOTIFICATION_IDS_KEY, JSON.stringify(ids));
-        } catch (e) { }
+        } catch(e) {}
     }
 
     function esc(t) { var d = document.createElement('span'); d.textContent = t || ''; return d.innerHTML; }
 
     function getAudioBasePath() {
-        var p = window.location.pathname.toLowerCase();
-        if (p.includes('/nitnem/category/')) {
-            return '../../Audio/';
-        }
-        if (p.includes('/reminders/') || p.includes('/homepage/') || p.includes('/naamabhyas/') ||
-            p.includes('/nitnemtracker/') || p.includes('/gurbaniradio/') || p.includes('/calendar/') ||
-            p.includes('/notes/') || p.includes('/sehajpaath/') || p.includes('/gurbanikhoj/') ||
-            p.includes('/favorites/') || p.includes('/insights/') || p.includes('/profile/') ||
-            p.includes('/shabadvichar/') || p.includes('/randomshabad/') || p.includes('/nitnem/')) {
+        var p = window.location.pathname;
+        if (p.includes('/reminders/') || p.includes('/Homepage/') || p.includes('/NaamAbhyas/') || p.includes('/NitnemTracker/') || p.includes('/GurbaniRadio/'))
             return '../Audio/';
-        }
         return './Audio/';
     }
 
@@ -180,7 +206,7 @@
             '</div>';
 
         document.body.appendChild(o);
-        requestAnimationFrame(function () { o.classList.add('active'); });
+        requestAnimationFrame(function() { o.classList.add('active'); });
 
         // ═══ PLAY THE CORRECT SELECTED TONE ═══
         var audio = document.createElement('audio');
@@ -189,12 +215,12 @@
         var audioFile = AUDIO_FILES[selectedTone] || 'audio1.mp3';
         audio.src = getAudioBasePath() + audioFile;
         document.body.appendChild(audio);
-        audio.play().catch(function () { });
+        audio.play().catch(function() {});
 
         // Vibration
         var vib = null;
         if (navigator.vibrate) {
-            vib = setInterval(function () { navigator.vibrate([400, 200, 400]); }, 2000);
+            vib = setInterval(function() { navigator.vibrate([400, 200, 400]); }, 2000);
         }
 
         function stop() {
@@ -206,8 +232,8 @@
         function dismiss() {
             stop();
             o.classList.remove('active');
-            setTimeout(function () { o.remove(); }, 300);
-            try { localStorage.removeItem('anhad_pending_alarm'); } catch (e) { }
+            setTimeout(function() { o.remove(); }, 300);
+            try { localStorage.removeItem('anhad_pending_alarm'); } catch(e) {}
             // ═══ RECORD ALARM RESPONSE FOR OBEDIENCE TRACKING ═══
             recordAlarmResponse(alarmId, 'completed', label, time);
             window.dispatchEvent(new CustomEvent('alarmInteraction', {
@@ -218,27 +244,25 @@
         function snooze(mins) {
             stop();
             o.classList.remove('active');
-            setTimeout(function () { o.remove(); }, 300);
-            try { localStorage.removeItem('anhad_pending_alarm'); } catch (e) { }
+            setTimeout(function() { o.remove(); }, 300);
+            try { localStorage.removeItem('anhad_pending_alarm'); } catch(e) {}
             recordAlarmResponse(alarmId, 'snoozed', label, time);
             if (isNative() && window.Capacitor.Plugins.LocalNotifications) {
-                window.Capacitor.Plugins.LocalNotifications.schedule({
-                    notifications: [{
-                        id: hash('snz' + Date.now()), title: '🔔 Snoozed: ' + (label || 'Reminder'),
-                        body: 'Your reminder is back!',
-                        schedule: { at: new Date(Date.now() + mins * 60000), allowWhileIdle: true, exact: true },
-                        channelId: 'anhad_alarms', sound: 'default',
-                        extra: { action: 'show_alarm', alarmLabel: label, alarmTime: time, alarmIcon: icon || '🔔', alarmTone: selectedTone }
-                    }]
-                });
+                window.Capacitor.Plugins.LocalNotifications.schedule({ notifications: [{
+                    id: hash('snz' + Date.now()), title: '🔔 Snoozed: ' + (label || 'Reminder'),
+                    body: 'Your reminder is back!',
+                    schedule: { at: new Date(Date.now() + mins * 60000), allowWhileIdle: true, exact: true },
+                    channelId: 'anhad_alarms', sound: 'default',
+                    extra: { action: 'show_alarm', alarmLabel: label, alarmTime: time, alarmIcon: icon || '🔔', alarmTone: selectedTone }
+                }]});
             }
             showToast('Snoozed for ' + mins + ' min 😴');
         }
 
         document.getElementById('anhadCompleteBtn').onclick = dismiss;
-        document.getElementById('anhadSnoozeBtn').onclick = function () { snooze(10); };
+        document.getElementById('anhadSnoozeBtn').onclick = function() { snooze(10); };
 
-        setTimeout(function () {
+        setTimeout(function() {
             if (document.getElementById('anhadAlarmOverlay')) dismiss();
         }, 60000);
 
@@ -246,7 +270,7 @@
             localStorage.setItem('anhad_pending_alarm', JSON.stringify({
                 label: label, time: time, icon: icon, tone: selectedTone, ts: Date.now()
             }));
-        } catch (e) { }
+        } catch(e) {}
     }
 
     // ═══ FORMAT TIME AS 12H ═══
@@ -288,10 +312,10 @@
         } else if (path.indexOf('/nitnem/category/') !== -1) {
             naamUrl = '../../NaamAbhyas/naam-abhyas.html';
         } else if (path.includes('/reminders/') || path.includes('/Homepage/') || path.includes('/NitnemTracker/') ||
-            path.includes('/GurbaniRadio/') || path.includes('/Calendar/') || path.includes('/Hukamnama/') ||
-            path.includes('/GurbaniKhoj/') || path.includes('/SehajPaath/') || path.includes('/Favorites/') ||
-            path.includes('/Notes/') || path.includes('/Insights/') || path.includes('/Profile/') ||
-            path.includes('/ShabadVichar/') || path.includes('/RandomShabad/') || path.includes('/nitnem/')) {
+                   path.includes('/GurbaniRadio/') || path.includes('/Calendar/') || path.includes('/Hukamnama/') ||
+                   path.includes('/GurbaniKhoj/') || path.includes('/SehajPaath/') || path.includes('/Favorites/') ||
+                   path.includes('/Notes/') || path.includes('/Insights/') || path.includes('/Profile/') ||
+                   path.includes('/ShabadVichar/') || path.includes('/RandomShabad/') || path.includes('/nitnem/')) {
             naamUrl = '../NaamAbhyas/naam-abhyas.html';
         } else {
             naamUrl = 'NaamAbhyas/naam-abhyas.html';
@@ -317,37 +341,37 @@
             '</div>';
 
         document.body.appendChild(el);
-        requestAnimationFrame(function () { el.classList.add('active'); });
+        requestAnimationFrame(function() { el.classList.add('active'); });
 
         // Play audio softly
         var audio = document.createElement('audio');
         audio.id = 'anhadNaamAudio'; audio.loop = false; audio.volume = 0.7;
         audio.src = getAudioBasePath() + 'audio1.mp3';
         document.body.appendChild(audio);
-        audio.play().catch(function () { });
+        audio.play().catch(function() {});
 
         function closePopup() {
             el.classList.remove('active');
-            setTimeout(function () { el.remove(); }, 350);
+            setTimeout(function() { el.remove(); }, 350);
             var a = document.getElementById('anhadNaamAudio');
             if (a) { a.pause(); a.remove(); }
         }
 
-        document.getElementById('anhadNaamStartBtn').onclick = function () {
+        document.getElementById('anhadNaamStartBtn').onclick = function() {
             closePopup();
             // Store pending launch for cold-start bridge
             try {
                 localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({
                     autoStart: true, hour: String(h), minute: String(m), timestamp: Date.now()
                 }));
-            } catch (e) { }
+            } catch(e) {}
             window.location.href = naamUrl;
         };
         document.getElementById('anhadNaamSkipBtn').onclick = closePopup;
         document.getElementById('anhadNaamBd').onclick = closePopup;
 
         // Auto-dismiss after 90 seconds
-        setTimeout(function () {
+        setTimeout(function() {
             if (document.getElementById('anhadNaamPopup')) closePopup();
         }, 90000);
     }
@@ -386,7 +410,7 @@
             window.dispatchEvent(new CustomEvent('alarmResponseRecorded', {
                 detail: { alarmId: alarmId, action: action, label: label }
             }));
-        } catch (e) { }
+        } catch(e) {}
     }
 
     function showToast(msg) {
@@ -394,7 +418,7 @@
         t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 24px;border-radius:25px;font-size:14px;z-index:9999999;font-family:-apple-system,sans-serif;';
         t.textContent = msg;
         document.body.appendChild(t);
-        setTimeout(function () { t.remove(); }, 3000);
+        setTimeout(function() { t.remove(); }, 3000);
     }
 
     // ═══ CHECK PENDING ALARM (with expiry + single-show guard) ═══
@@ -418,7 +442,7 @@
             data._shown = true;
             localStorage.setItem('anhad_pending_alarm', JSON.stringify(data));
             showAlarmPopup(data.label, data.time, data.icon, data.tone);
-        } catch (e) { localStorage.removeItem('anhad_pending_alarm'); }
+        } catch(e) { localStorage.removeItem('anhad_pending_alarm'); }
     }
 
     // ═══ SCHEDULE STREAK SAVER NOTIFICATION (6:01 AM daily) ═══
@@ -426,20 +450,20 @@
         if (!isNative()) return;
         try {
             var now = new Date();
-
+            
             // Schedule for next 7 days (Capacitor doesn't support repeats with specific time)
             // scheduleAll() runs periodically so it will reschedule as needed
             for (var d = 0; d < 7; d++) {
                 var scheduleDate = new Date(now);
                 scheduleDate.setDate(scheduleDate.getDate() + d);
                 scheduleDate.setHours(6, 1, 0, 0); // 6:01 AM
-
+                
                 // Skip if time has passed for today
                 if (scheduleDate <= now) continue;
 
                 // Check if user has a streak to protect
                 var streakData = null;
-                try { streakData = JSON.parse(localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData') || '{}'); } catch (e) { }
+                try { streakData = JSON.parse(localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData') || '{}'); } catch(e) {}
                 var hasStreak = streakData && ((streakData.current || streakData.currentStreak || 0) > 0);
 
                 if (hasStreak) {
@@ -453,7 +477,7 @@
                     });
                 }
             }
-        } catch (e) {
+        } catch(e) {
             console.error('[StreakSaver] Error scheduling notification:', e);
         }
     }
@@ -468,13 +492,13 @@
 
             // ═══ CHANNEL SETUP ═══
             // importance=4 (IMPORTANCE_HIGH) is required for heads-up popup.
-            try { await LN.createChannel({ id: 'anhad_alarms', name: 'Anhad Alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch (e) { }
-            try { await LN.createChannel({ id: 'anhad_reminders', name: 'ANHAD Reminders', description: 'Nitnem and spiritual practice alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch (e) { }
+            try { await LN.createChannel({ id: 'anhad_alarms', name: 'Anhad Alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
+            try { await LN.createChannel({ id: 'anhad_reminders', name: 'ANHAD Reminders', description: 'Nitnem and spiritual practice alarms', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             // Delete old channel (may have wrong importance locked from earlier builds)
-            try { await LN.deleteChannel({ id: 'naam_abhyas' }); } catch (e) { }
+            try { await LN.deleteChannel({ id: 'naam_abhyas' }); } catch(e) {}
             // Create fresh channel with guaranteed IMPORTANCE_HIGH for heads-up popup
-            try { await LN.createChannel({ id: 'naam_abhyas_v2', name: 'Naam Abhyas Reminders', description: 'Hourly reminders for Naam Simran', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch (e) { }
-            try { await LN.createChannel({ id: 'spiritual_reminders', name: 'Spiritual Reminders', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch (e) { }
+            try { await LN.createChannel({ id: 'naam_abhyas_v2', name: 'Naam Abhyas Reminders', description: 'Hourly reminders for Naam Simran', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
+            try { await LN.createChannel({ id: 'spiritual_reminders', name: 'Spiritual Reminders', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             await ensureAndroidAlarmReliability();
             await cancelManagedNotifications(LN);
 
@@ -483,13 +507,13 @@
 
             // SmartReminders v7 — include tone in extras
             var sr = null;
-            try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7') || localStorage.getItem('sr_reminders_v4')); } catch (e) { }
+            try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7') || localStorage.getItem('sr_reminders_v4')); } catch(e) {}
             if (sr) {
                 var all = [];
-                if (sr.core) { Object.keys(sr.core).forEach(function (k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
-                if (sr.custom) { sr.custom.forEach(function (r) { if (r && r.enabled) all.push(r); }); }
+                if (sr.core) { Object.keys(sr.core).forEach(function(k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
+                if (sr.custom) { sr.custom.forEach(function(r) { if (r && r.enabled) all.push(r); }); }
                 var reliabilityPlugin = getReliabilityPlugin();
-                all.forEach(function (alarm) {
+                all.forEach(function(alarm) {
                     for (var d = 0; d < 7; d++) {
                         var dt = new Date(now); dt.setDate(dt.getDate() + d);
                         if (alarm.days && alarm.days.indexOf(dt.getDay()) === -1) continue;
@@ -517,7 +541,7 @@
                         // Fires even when phone is locked or app is closed.
                         // Schedule for days 0-1 to extend coverage without exceeding AlarmManager quota.
                         if (reliabilityPlugin && d <= 1) {
-                            (function (lbl, alTime, ts, hourStr, minStr, dayIdx) {
+                            (function(lbl, alTime, ts, hourStr, minStr, dayIdx) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
                                     id: hash('fs_' + (alarm.id || 'a') + '_d' + dayIdx),
                                     timestamp: ts,
@@ -525,7 +549,7 @@
                                     message: alTime + ' \u2014 Tera alarm aa gya! \ud83d\ude4f',
                                     hour: hourStr,
                                     minute: minStr
-                                }).catch(function (e) {
+                                }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
                             })(alarmLabel, alarmTime, st.getTime(), tp[0], tp[1], d);
@@ -536,94 +560,50 @@
 
             // NaamAbhyas
             var nc = null;
-            try { nc = JSON.parse(localStorage.getItem('naam_abhyas_config')); } catch (e) { }
+            try { nc = JSON.parse(localStorage.getItem('naam_abhyas_config')); } catch(e) {}
             if (nc && nc.enabled) {
                 var sh = (nc.activeHours && nc.activeHours.start) || 5;
                 var eh = (nc.activeHours && nc.activeHours.end) || 22;
                 var auto = nc.autoStartTimer || false;
-
+                
                 // ═══ BUG 1/2 FIX: Read from DEDICATED schedule key, then history fallback ═══
                 var scheduleData = null;
-                try { scheduleData = JSON.parse(localStorage.getItem('naam_abhyas_schedule')); } catch (e) { }
+                try { scheduleData = JSON.parse(localStorage.getItem('naam_abhyas_schedule')); } catch(e) {}
                 if (!scheduleData) {
                     try {
                         var history = JSON.parse(localStorage.getItem('naam_abhyas_history') || '{}');
                         var today = new Date().toLocaleDateString('en-CA');
                         scheduleData = history.scheduleHistory && history.scheduleHistory[today];
-                    } catch (e) { }
+                    } catch(e) {}
                 }
-
-                // ═══ FIX 2: Refined, respectful Naam Abhyas notification messages ═══
-                // Time-based categorization for more contextual reminders
-                var naamMessages = {
-                    // 🌅 Morning (Amrit Vela & Early Morning: 3 AM - 8 AM)
-                    morning: [
-                        { gurmukhi: "ਵਾਹਿਗੁਰੂ ਜੀ — ਸਿਮਰਨ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ 🙏", english: "Waheguru Ji — it is time for Naam Simran." },
-                        { gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ", english: "Meditate upon the Divine and find peace." },
-                        { english: "Begin your day with Naam Simran. 🙏" },
-                        { english: "The morning hours are precious for Simran. Begin now." },
-                        { english: "With Guru Sahib's Kirpa, let this moment become a moment of Simran." }
-                    ],
-                    // ☀️ Daytime (9 AM - 5 PM)
-                    daytime: [
-                        { gurmukhi: "ਕਿਰਪਾ ਕਰਕੇ 2 ਮਿੰਟ ਲਈ ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ", english: "Please take 2 minutes for Naam Simran." },
-                        { gurmukhi: "ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ", english: "Remember the Divine Name day and night." },
-                        { gurmukhi: "ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ", english: "O my mind, lovingly meditate on the Naam." },
-                        { english: "Take a peaceful 2-minute pause for Naam Simran. 🙏" },
-                        { english: "Even two minutes of sincere Simran can transform your day." },
-                        { english: "Wherever you are, pause for a moment and remember Waheguru Ji." },
-                        { english: "Take a gentle break and fill your heart with Naam. 🙏" },
-                        { english: "Take two quiet minutes for Waheguru Ji. The world can wait." }
-                    ],
-                    // 🌆 Evening (6 PM - 9 PM)
-                    evening: [
-                        { gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ", english: "O mind, recognize your divine origin." },
-                        { gurmukhi: "ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ", english: "Meditation on the Divine Name brings spiritual purification." },
-                        { english: "End your day by pausing for Naam Simran." },
-                        { english: "Let the mind become still. Remember Waheguru Ji." },
-                        { english: "May these few moments bring peace, humility and remembrance of Waheguru Ji." }
-                    ],
-                    // 🌙 Night (10 PM - 2 AM)
-                    night: [
-                        { gurmukhi: "ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ", english: "You are my Father, You are my Mother." },
-                        { gurmukhi: "ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ ਸਤਿਗੁਰਿ ਦੀਆ ਬੁਝਾਇ ਜੀਉ", english: "The One Name is the Eternal Command." },
-                        { gurmukhi: "ਅੱਖਾਂ ਬੰਦ ਕਰੋ ਅਤੇ ਵਾਹਿਗੁਰੂ ਜੀ ਨੂੰ ਯਾਦ ਕਰੋ 🙏", english: "Close your eyes and remember Waheguru Ji." },
-                        { english: "Offer these final moments of the day to Naam. 🙏" },
-                        { english: "Pause. Breathe. Close your eyes. Waheguru... Waheguru... 🙏" },
-                        { english: "Leave the noise behind for two minutes and rest your mind in Naam." }
-                    ],
-                    // General messages (used as fallback or mixed in)
-                    general: [
-                        { english: "Your Naam Abhyas reminder is here. Waheguru Ji awaits your remembrance." },
-                        { english: "Every moment spent in Naam is precious. Begin your Simran now." },
-                        { english: "Satnam Waheguru 🙏 Your Naam Abhyas session is ready." },
-                        { english: "May this reminder become a blessing in your day. Waheguru Ji 🙏" },
-                        { english: "A gentle reminder to reconnect with the Divine through Naam." }
-                    ]
-                };
-
-                // Helper function to select message based on time of day
-                function getTimeBasedMessage(hour) {
-                    var timeCategory;
-                    if (hour >= 3 && hour < 9) {
-                        timeCategory = naamMessages.morning;
-                    } else if (hour >= 9 && hour < 18) {
-                        timeCategory = naamMessages.daytime;
-                    } else if (hour >= 18 && hour < 22) {
-                        timeCategory = naamMessages.evening;
-                    } else {
-                        timeCategory = naamMessages.night;
-                    }
-                    
-                    // Mix in some general messages (20% chance)
-                    if (Math.random() < 0.2) {
-                        timeCategory = naamMessages.general;
-                    }
-                    
-                    // Select message from appropriate category
-                    var msgIdx = Math.floor(Math.random() * timeCategory.length);
-                    return timeCategory[msgIdx];
-                }
+                
+                // ═══ FIX 2: Richer bilingual Naam Abhyas notification messages ═══
+                var spiritualMessages = [
+                    { gurmukhi: 'ਵਾਹਿਗੁਰੂ ਜੀ — ਸਮਾਂ ਹੋ ਗਿਆ', english: 'Time for Naam! Leave everything for 2 minutes 🙏' },
+                    { gurmukhi: 'ਸਬ ਕੰਮ ਛੱਡੋ, ਵਾਹਿਗੁਰੂ ਜੀ ਦਾ ਸਿਮਰਨ ਕਰੋ', english: 'Leave all work, remember Vaheguru Ji 🙏' },
+                    { gurmukhi: 'ਜਪਿ ਮਨ ਸਤਿ ਨਾਮੁ ਸਦਾ ਸਤਿ ਨਾਮੁ', english: 'Chant the True Name — Sat Naam always' },
+                    { gurmukhi: 'ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ', english: 'Meditate, meditate, meditate and find peace' },
+                    { gurmukhi: 'ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ', english: 'Naam japan naal anand aunda hai 🙏' },
+                    { gurmukhi: 'ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ', english: 'Recognize your divine origin' },
+                    { gurmukhi: 'ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ', english: 'Chant the Lord\'s Name day and night' },
+                    { gurmukhi: 'ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ', english: 'O my mind, chant the Naam as Gurmukh' },
+                    { gurmukhi: 'ਤੂੰ ਮੇਰਾ ਪਿਤਾ ਤੂੰਹੈ ਮੇਰਾ ਮਾਤਾ', english: 'You are my Father, You are my Mother' },
+                    { gurmukhi: 'ਏਕੋ ਨਾਮੁ ਹੁਕਮੁ ਹੈ ਨਾਨਕ', english: 'The One Name is the Lord\'s Command' },
+                    { gurmukhi: 'ਕਿਰਪਾ ਕਰਕੇ 2 ਮਿੰਟ ਲਈ ਅੱਖਾਂ ਬੰਦ ਕਰੋ', english: 'Sat Naam, Waheguru 🙏 2 min only' },
+                    { english: 'Phone pocket vich rakh lo • akhan band kro • Waheguru japo 🙏' },
+                    { english: '2 minutes with Waheguru > 2 hours of scrolling 🙏' },
+                    { english: 'Tera schedule ho gya. Chal 2 min Waheguru bol 🙏' },
+                    { english: 'Har kise nu wait kra, Waheguru nu nahi. Time ho gya! 🙏' },
+                    { english: 'Drop everything. Your appointment with the Divine is NOW.' },
+                    { english: 'In the noise of life, find 2 minutes of Naam silence.' },
+                    { english: 'Naam Abhyas slot live! 120 seconds Rab naal 🙏' },
+                    { english: '2-minute Simran break: kaam pause, Waheguru play 🙏' },
+                    { english: 'Your streak grows stronger with every session. Japo Waheguru!' },
+                    { english: 'The Divine is waiting. Just 2 minutes, right now. 🙏' },
+                    { english: 'Be still. Breathe. Close your eyes. Waheguru Waheguru... 🙏' },
+                    { english: 'Discipline compounds. Every 2 min session brings moksha closer.' },
+                    { english: 'Waheguru Waheguru Waheguru... bas 2 min. Tu kar sakda hai! 🙏' }
+                ];
 
                 for (var nd = 0; nd < 7; nd++) {
                     for (var nh = sh; nh <= eh; nh++) {
@@ -633,27 +613,27 @@
                         var session = scheduleData && scheduleData[nh];
                         if (!session || typeof session.startMinute !== 'number') continue;
                         var sessionMinute = session.startMinute;
-
-                        var ndt = new Date(now);
-                        ndt.setDate(ndt.getDate() + nd);
+                        
+                        var ndt = new Date(now); 
+                        ndt.setDate(ndt.getDate() + nd); 
                         ndt.setHours(nh, sessionMinute, 0, 0);
-
+                        
                         // PRECISION FIX: Fire at exact session time (no 30s early offset)
                         // The previous 30s offset compounded with Android's Doze-mode batching,
                         // causing notifications to fire 1-7 minutes late.
                         var alertTime = new Date(ndt.getTime());
                         if (ndt <= now) continue;
                         if (alertTime <= now) alertTime = new Date(now.getTime() + 1000);
-
-                        // Time-based message selection using the helper function
-                        var message = getTimeBasedMessage(nh);
-
-                        var bodyText = message.gurmukhi && message.english
-                            ? message.gurmukhi + ' — ' + message.english
+                        
+                        // Deterministic message selection (consistent per hour)
+                        var msgIdx = (nh + nd * 7) % spiritualMessages.length;
+                        var message = spiritualMessages[msgIdx];
+                        var bodyText = message.gurmukhi && message.english 
+                            ? message.gurmukhi + ' — ' + message.english 
                             : message.english || message.gurmukhi;
-
+                        
                         // ═══ FIX 2: Include session time in notification title ═══
-                        var sessionH12 = (function (h, m) {
+                        var sessionH12 = (function(h, m) {
                             var per = h >= 12 ? 'PM' : 'AM';
                             var hh = h % 12 || 12;
                             return hh + ':' + (m < 10 ? '0' + m : m) + ' ' + per;
@@ -686,7 +666,7 @@
                         // Extended to days 0-2 for better coverage when app isn't opened daily.
                         // ~18 hours × 3 days = ~54 alarms, within Android's 50+ exact alarm quota.
                         if (reliabilityPlugin && nd <= 2) {
-                            (function (lbl, alTime, ts, hStr, mStr, dayIdx) {
+                            (function(lbl, alTime, ts, hStr, mStr, dayIdx) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
                                     id: hash('fs_naam_' + nh + '_d' + dayIdx),
                                     timestamp: ts,
@@ -694,14 +674,14 @@
                                     message: alTime + ' \u2014 ' + bodyText,
                                     hour: hStr,
                                     minute: mStr
-                                }).catch(function (e) {
+                                }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
                             })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute), nd);
                         }
                     }
                 }
-                console.log('[ANHAD] Naam Abhyas: scheduled ' + notifs.filter(function (n) { return n.channelId === 'naam_abhyas_v2'; }).length + ' notifications');
+                console.log('[ANHAD] Naam Abhyas: scheduled ' + notifs.filter(function(n) { return n.channelId === 'naam_abhyas_v2'; }).length + ' notifications');
             }
 
             // Daily nitnem summary at 10 PM
@@ -744,7 +724,7 @@
                     { hour: 18, stream: 'amritvela', body: 'Take a quiet moment with Gurbani kirtan.' }
                 ];
                 for (var kd = 0; kd < 3; kd++) {
-                    kirtanSlots.forEach(function (slot, slotIndex) {
+                    kirtanSlots.forEach(function(slot, slotIndex) {
                         var kt = new Date(now);
                         kt.setDate(kt.getDate() + kd);
                         kt.setHours(slot.hour, 0, 0, 0);
@@ -775,7 +755,7 @@
             } else {
                 saveManagedNotifications([]);
             }
-        } catch (e) { }
+        } catch(e) {}
     }
 
     // ═══ NOTIFICATION LISTENERS — PRODUCTION FIX: Cold-start + warm-start deep-link ═══
@@ -785,28 +765,32 @@
 
         // Resolve correct Naam Abhyas URL based on current page depth
         function resolveNaamUrl(ex) {
-            var currentPath = window.location.pathname.toLowerCase();
+            var manager = getNaamManager();
+            if (manager && typeof manager.getLaunchUrl === 'function') {
+                return manager.getLaunchUrl(ex || {}, window.location.pathname);
+            }
+            var currentPath = window.location.pathname;
             var basePath = 'NaamAbhyas/naam-abhyas.html';
-            if (currentPath.indexOf('/naamabhyas/') !== -1) {
+            if (currentPath.indexOf('/NaamAbhyas/') !== -1) {
                 basePath = 'naam-abhyas.html';
+            } else if (currentPath.indexOf('/reminders/') !== -1 || 
+                       currentPath.indexOf('/Homepage/') !== -1 ||
+                       currentPath.indexOf('/NitnemTracker/') !== -1 ||
+                       currentPath.indexOf('/GurbaniRadio/') !== -1 ||
+                       currentPath.indexOf('/Calendar/') !== -1 ||
+                       currentPath.indexOf('/Hukamnama/') !== -1 ||
+                       currentPath.indexOf('/GurbaniKhoj/') !== -1 ||
+                       currentPath.indexOf('/SehajPaath/') !== -1 ||
+                       currentPath.indexOf('/Favorites/') !== -1 ||
+                       currentPath.indexOf('/Notes/') !== -1 ||
+                       currentPath.indexOf('/Insights/') !== -1 ||
+                       currentPath.indexOf('/Profile/') !== -1 ||
+                       currentPath.indexOf('/ShabadVichar/') !== -1 ||
+                       currentPath.indexOf('/RandomShabad/') !== -1 ||
+                       currentPath.indexOf('/nitnem/') !== -1) {
+                basePath = '../NaamAbhyas/naam-abhyas.html';
             } else if (currentPath.indexOf('/nitnem/category/') !== -1) {
                 basePath = '../../NaamAbhyas/naam-abhyas.html';
-            } else if (currentPath.indexOf('/reminders/') !== -1 ||
-                currentPath.indexOf('/homepage/') !== -1 ||
-                currentPath.indexOf('/nitnemtracker/') !== -1 ||
-                currentPath.indexOf('/gurbaniradio/') !== -1 ||
-                currentPath.indexOf('/calendar/') !== -1 ||
-                currentPath.indexOf('/hukamnama/') !== -1 ||
-                currentPath.indexOf('/gurbanikhoj/') !== -1 ||
-                currentPath.indexOf('/sehajpaath/') !== -1 ||
-                currentPath.indexOf('/favorites/') !== -1 ||
-                currentPath.indexOf('/notes/') !== -1 ||
-                currentPath.indexOf('/insights/') !== -1 ||
-                currentPath.indexOf('/profile/') !== -1 ||
-                currentPath.indexOf('/shabadvichar/') !== -1 ||
-                currentPath.indexOf('/randomshabad/') !== -1 ||
-                currentPath.indexOf('/nitnem/') !== -1) {
-                basePath = '../NaamAbhyas/naam-abhyas.html';
             }
             var params = ['autoStart=true'];
             if (ex.hour !== undefined) params.push('hour=' + ex.hour);
@@ -819,6 +803,11 @@
         // on the right page yet. Store the intent in localStorage so the target
         // page can pick it up when it loads.
         function storePendingNaamLaunch(ex) {
+            var manager = getNaamManager();
+            if (manager && typeof manager.storeLaunchIntent === 'function') {
+                manager.storeLaunchIntent(ex || {});
+                return;
+            }
             try {
                 localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({
                     autoStart: true,
@@ -827,102 +816,89 @@
                     timestamp: Date.now()
                 }));
                 console.log('[ANHAD] 💾 Stored pending Naam launch for cold-start pickup');
-            } catch (e) { }
+            } catch(e) {}
         }
 
         function resolveFrontendUrl(url) {
             if (!url) return '';
             if (/^https?:\/\//.test(url) || url.indexOf('../') === 0 || url.indexOf('./') === 0) return url;
-            var p = window.location.pathname.toLowerCase();
-            if (p.indexOf('/nitnem/category/') !== -1) {
-                return '../../' + url;
-            }
-            if (p.indexOf('/naamabhyas/') !== -1 ||
-                p.indexOf('/nitnemtracker/') !== -1 ||
-                p.indexOf('/gurbaniradio/') !== -1 ||
-                p.indexOf('/homepage/') !== -1 ||
-                p.indexOf('/reminders/') !== -1 ||
-                p.indexOf('/calendar/') !== -1 ||
-                p.indexOf('/notes/') !== -1 ||
-                p.indexOf('/sehajpaath/') !== -1 ||
-                p.indexOf('/gurbanikhoj/') !== -1 ||
-                p.indexOf('/favorites/') !== -1 ||
-                p.indexOf('/insights/') ||
-                p.indexOf('/profile/') !== -1 ||
-                p.indexOf('/shabadvichar/') !== -1 ||
-                p.indexOf('/randomshabad/') !== -1 ||
-                p.indexOf('/nitnem/') !== -1) {
+            var p = window.location.pathname;
+            if (p.indexOf('/NaamAbhyas/') !== -1 ||
+                p.indexOf('/NitnemTracker/') !== -1 ||
+                p.indexOf('/GurbaniRadio/') !== -1 ||
+                p.indexOf('/Homepage/') !== -1 ||
+                p.indexOf('/reminders/') !== -1) {
                 return '../' + url;
             }
             return './' + url;
         }
 
-        if (!window.__anhadGlobalNotifListenerRegistered) {
-            window.__anhadGlobalNotifListenerRegistered = true;
-            LN.addListener('localNotificationActionPerformed', function (data) {
-                var ex = data.notification && data.notification.extra;
-                if (!ex) return;
-                console.log('[ANHAD] Notification clicked:', JSON.stringify(ex));
-                if (ex.action === 'show_alarm') {
-                    showAlarmPopup(ex.alarmLabel, ex.alarmTime, ex.alarmIcon, ex.alarmTone);
-                } else if (ex.action === 'auto_start_naam' || ex.action === 'show_naam') {
-                    // ═══ COLD-START FIX: Store launch data BEFORE navigating ═══
-                    // If the app was killed, the WebView loads index.html first.
-                    // The navigation below will redirect, but the target page needs
-                    // to know it was launched from a notification.
-                    storePendingNaamLaunch(ex);
-                    var url = resolveNaamUrl(ex);
-                    console.log('[ANHAD] Navigating to:', url);
-                    window.location.href = url;
-                }
-                else if (ex.action === 'show_tracker') {
-                    var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
-                    if (trackerPath) window.location.href = trackerPath;
-                }
-                else if (ex.action === 'show_streak_saver') {
-                    // ═══ AUTO-PERSIST STREAK CHECK: Run inline before navigating ═══
-                    // This ensures streak data is saved even if the user only taps the notification
-                    // briefly. The streak saver page will pick up the persisted state.
-                    try {
-                        var _streakRaw = localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData');
-                        var _streakObj = _streakRaw ? JSON.parse(_streakRaw) : {};
-                        var _today = new Date().toLocaleDateString('en-CA');
-                        var _amritLog = JSON.parse(localStorage.getItem('nitnemTracker_amritvelaLog') || '{}');
-                        if (!_amritLog[_today] && (_streakObj.current || _streakObj.currentStreak || 0) > 0) {
-                            _streakObj.lastAutoSaveCheck = _today;
-                            _streakObj.autoSaveTriggered = true;
-                            localStorage.setItem('anhad_streak_data', JSON.stringify(_streakObj));
-                            console.log('[StreakSaver] Auto-persisted streak check for', _today);
-                        }
-                    } catch (streakErr) { console.warn('[StreakSaver] Auto-persist failed:', streakErr); }
-                    var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? 'nitnem-tracker.html' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
-                    if (trackerPath) window.location.href = trackerPath + '?streakSaver=activate';
-                }
-                // ═══ SPIRITUAL NOTIFICATION ACTIONS ═══
-                else if (window.SpiritualNotifications) {
-                    window.SpiritualNotifications.handleNotificationAction(ex.action, ex.target);
-                }
-                else if (ex.url) {
-                    window.location.href = resolveFrontendUrl(ex.url);
-                }
+        if (!window.__anhadNotifListenerRegistered) {
+            window.__anhadNotifListenerRegistered = true;
+            LN.addListener('localNotificationActionPerformed', function(data) {
+            var ex = data.notification && data.notification.extra;
+            if (!ex) return;
+            console.log('[ANHAD] Notification clicked:', JSON.stringify(ex));
+            if (ex.action === 'show_alarm') {
+                showAlarmPopup(ex.alarmLabel, ex.alarmTime, ex.alarmIcon, ex.alarmTone);
+            } else if (ex.action === 'auto_start_naam' || ex.action === 'show_naam') {
+                // ═══ COLD-START FIX: Store launch data BEFORE navigating ═══
+                // If the app was killed, the WebView loads index.html first.
+                // The navigation below will redirect, but the target page needs
+                // to know it was launched from a notification.
+                storePendingNaamLaunch(ex);
+                var url = resolveNaamUrl(ex);
+                console.log('[ANHAD] Navigating to:', url);
+                window.location.href = url;
+            }
+            else if (ex.action === 'show_tracker') {
+                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? '' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
+                if (trackerPath) window.location.href = trackerPath;
+            }
+            else if (ex.action === 'show_streak_saver') {
+                // ═══ AUTO-PERSIST STREAK CHECK: Run inline before navigating ═══
+                // This ensures streak data is saved even if the user only taps the notification
+                // briefly. The streak saver page will pick up the persisted state.
+                try {
+                    var _streakRaw = localStorage.getItem('anhad_streak_data') || localStorage.getItem('nitnemTracker_streakData');
+                    var _streakObj = _streakRaw ? JSON.parse(_streakRaw) : {};
+                    var _today = new Date().toLocaleDateString('en-CA');
+                    var _amritLog = JSON.parse(localStorage.getItem('nitnemTracker_amritvelaLog') || '{}');
+                    if (!_amritLog[_today] && (_streakObj.current || _streakObj.currentStreak || 0) > 0) {
+                        _streakObj.lastAutoSaveCheck = _today;
+                        _streakObj.autoSaveTriggered = true;
+                        localStorage.setItem('anhad_streak_data', JSON.stringify(_streakObj));
+                        console.log('[StreakSaver] Auto-persisted streak check for', _today);
+                    }
+                } catch(streakErr) { console.warn('[StreakSaver] Auto-persist failed:', streakErr); }
+                var trackerPath = window.location.pathname.includes('/NitnemTracker/') ? 'nitnem-tracker.html' : resolveFrontendUrl('NitnemTracker/nitnem-tracker.html');
+                if (trackerPath) window.location.href = trackerPath + '?streakSaver=activate';
+            }
+            // ═══ SPIRITUAL NOTIFICATION ACTIONS ═══
+            else if (window.SpiritualNotifications) {
+                window.SpiritualNotifications.handleNotificationAction(ex.action, ex.target);
+            }
+            else if (ex.url) {
+                window.location.href = resolveFrontendUrl(ex.url);
+            }
             });
         }
         // ═══ FOREGROUND: Smart popup when Naam notification arrives (Fix 4) ═══
-        LN.addListener('localNotificationReceived', function (n) {
+        LN.addListener('localNotificationReceived', function(n) {
             var ex = n.extra;
             if (!ex) return;
             if (ex.action === 'show_alarm') {
                 showAlarmPopup(ex.alarmLabel, ex.alarmTime, ex.alarmIcon, ex.alarmTone);
             } else if (ex.action === 'auto_start_naam' || ex.action === 'show_naam') {
                 var isOnNaamPage = window.location.pathname.toLowerCase().includes('naamabhyas');
+                storePendingNaamLaunch(ex);
                 if (isOnNaamPage) {
                     // On Naam page: dispatch event so naam-abhyas.js handles it natively
                     window.dispatchEvent(new CustomEvent('naamAbhyasAlarmFired', {
                         detail: { hour: ex.hour, minute: ex.minute, autoStart: true }
                     }));
                 } else {
-                    // On any other page: show beautiful Naam-specific bottom-sheet popup
-                    showNaamAbhyasPopup(ex.hour, ex.minute);
+                    window.location.href = resolveNaamUrl(ex);
                 }
             }
         });
@@ -931,12 +907,8 @@
     // ═══ FOREGROUND ALARM CHECK — pass tone ═══
     var lastCheckedMin = -1;
     function checkAlarms() {
-        // Skip if smart-reminders-v7 is loaded — it has its own foreground checker
-        // that shows a richer modal. We only act as a fallback for other pages.
-        if (window.AlarmScheduler && window.AlarmScheduler.checkAlarms) return;
-
         var sr = null;
-        try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7') || localStorage.getItem('sr_reminders_v4')); } catch (e) { }
+        try { sr = JSON.parse(localStorage.getItem('sr_reminders_v7')); } catch(e) {}
         if (!sr) return;
         var now = new Date();
         var ct = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
@@ -945,8 +917,8 @@
         if (mk === lastCheckedMin) return;
 
         var all = [];
-        if (sr.core) { Object.keys(sr.core).forEach(function (k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
-        if (sr.custom) { sr.custom.forEach(function (r) { if (r && r.enabled) all.push(r); }); }
+        if (sr.core) { Object.keys(sr.core).forEach(function(k) { var r = sr.core[k]; if (r && r.enabled) all.push(r); }); }
+        if (sr.custom) { sr.custom.forEach(function(r) { if (r && r.enabled) all.push(r); }); }
         for (var i = 0; i < all.length; i++) {
             if (all[i].time === ct && (!all[i].days || all[i].days.indexOf(dow) !== -1)) {
                 lastCheckedMin = mk;
@@ -966,12 +938,12 @@
             setTimeout(setupBackButton, 500);
             return;
         }
-        appPlugin.addListener('backButton', function (data) {
+        appPlugin.addListener('backButton', function(data) {
             // 1. Close alarm popup if open
             var overlay = document.getElementById('anhadAlarmOverlay');
             if (overlay) {
                 overlay.classList.remove('active');
-                setTimeout(function () { overlay.remove(); }, 300);
+                setTimeout(function() { overlay.remove(); }, 300);
                 var a = document.getElementById('anhadAlarmAudio');
                 if (a) { a.pause(); a.remove(); }
                 return;
@@ -980,9 +952,15 @@
             // 2. Close any open modal/bottom-sheet/overlay
             var modals = document.querySelectorAll('.modal.active, .bottom-sheet.active, .alarm-modal.active, .penalty-modal-overlay.active, .side-panel.active, .overlay.active, [class*="modal"].active');
             if (modals.length > 0) {
-                modals.forEach(function (m) { m.classList.remove('active'); m.style.display = 'none'; });
+                modals.forEach(function(m) { m.classList.remove('active'); m.style.display = 'none'; });
                 var backdrop = document.querySelectorAll('.modal-backdrop, .overlay-backdrop');
-                backdrop.forEach(function (b) { b.classList.remove('active'); b.style.display = 'none'; });
+                backdrop.forEach(function(b) { b.classList.remove('active'); b.style.display = 'none'; });
+                return;
+            }
+
+            // 2.5. Check if page overrides back button
+            if (window.__anhadBackOverride && typeof window.__anhadBackOverride === 'function') {
+                window.__anhadBackOverride();
                 return;
             }
 
@@ -1016,7 +994,7 @@
 
     // ═══ OFFLINE BANNER ═══
     function setupOfflineBanner() {
-        window.addEventListener('offline', function () {
+        window.addEventListener('offline', function() {
             if (document.getElementById('anhadOffline')) return;
             var b = document.createElement('div');
             b.id = 'anhadOffline';
@@ -1024,7 +1002,7 @@
             b.textContent = '⚠️ You are offline';
             document.body.appendChild(b);
         });
-        window.addEventListener('online', function () {
+        window.addEventListener('online', function() {
             var b = document.getElementById('anhadOffline');
             if (b) b.remove();
         });
@@ -1043,13 +1021,14 @@
                     // Schedule will happen in the next scheduleAll() call
                 }
             }
-        } catch (e) {
+        } catch(e) {
             console.log('[StreakSaver] Plugin not available or error:', e);
         }
     }
 
     // ═══ BOOT ═══
     function boot() {
+        ensureNaamManagerLoaded();
         injectCSS();
         setupOfflineBanner();
         setupBackButton();
@@ -1061,17 +1040,17 @@
             checkBootFlag();
             scheduleAll();
             setupListeners();
-            document.addEventListener('visibilitychange', function () {
+            document.addEventListener('visibilitychange', function() {
                 if (document.visibilityState === 'visible') { scheduleAll(); checkAlarms(); checkPendingAlarm(); }
             });
             if (window.Capacitor.Plugins.App) {
-                window.Capacitor.Plugins.App.addListener('appStateChange', function (s) {
+                window.Capacitor.Plugins.App.addListener('appStateChange', function(s) {
                     if (s.isActive) { scheduleAll(); checkAlarms(); checkPendingAlarm(); }
                 });
             }
         } else {
             var retries = 0;
-            var iv = setInterval(function () {
+            var iv = setInterval(function() {
                 if (++retries > 25) { clearInterval(iv); return; }
                 if (isNative() && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) {
                     clearInterval(iv);

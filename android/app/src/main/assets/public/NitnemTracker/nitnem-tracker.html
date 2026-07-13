@@ -445,11 +445,10 @@
             </section>
 
             <!-- ═══════════════════════════════════════════════════════════════════
-                 SECTION 2: TODAY'S NITNEM PROGRESS
+                 SECTION 2: MY POTHI - Track Your Daily Banis
             ═══════════════════════════════════════════════════════════════════ -->
-            <section class="card nitnem-progress-card" id="nitnemProgressSection">
+            <a href="../nitnem/my-pothi.html" class="card pothi-redirect-card" id="pothiRedirectCard" style="text-decoration:none;color:inherit;display:block;">
                 <div class="card-glow nitnem-glow"></div>
-
                 <div class="card-header">
                     <div class="card-icon book-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -459,101 +458,21 @@
                         </svg>
                     </div>
                     <div class="card-title-group">
-                        <h2 class="card-title">ਅੱਜ ਦਾ ਨਿਤਨੇਮ</h2>
-                        <p class="card-subtitle">Today's Nitnem</p>
+                        <h2 class="card-title">ਮੇਰੀ ਪੋਥੀ</h2>
+                        <p class="card-subtitle">Track Your Nitnem Banis Here 📖</p>
                     </div>
-                    <button class="yesterday-btn" id="yesterdayBtn" onclick="DateHistoryView.show()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M15 18l-6-6 6-6"/></svg>
-                        Yesterday
-                    </button>
-                    <div class="progress-ring-mini" id="progressRingMini">
-                        <svg viewBox="0 0 36 36">
-                            <circle class="progress-ring-bg" cx="18" cy="18" r="15" />
-                            <circle class="progress-ring-fill" cx="18" cy="18" r="15" id="nitnemProgressRing" />
-                        </svg>
-                        <span class="progress-percentage" id="nitnemProgressPercent">0%</span>
-                    </div>
+                    <svg class="card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
                 </div>
-
-                <div class="card-body nitnem-body">
-                    <!-- Time Period Tabs -->
-                    <div class="time-period-tabs" id="timePeriodTabs">
-                        <button class="period-tab active" data-period="amritvela">
-                            <span class="tab-icon">🌅</span>
-                            <span class="tab-label">ਅੰਮ੍ਰਿਤ ਵੇਲਾ</span>
-                            <span class="tab-count" id="amritvelaBaniCount">0/0</span>
-                        </button>
-                        <button class="period-tab" data-period="rehras">
-                            <span class="tab-icon">🌇</span>
-                            <span class="tab-label">ਰਹਿਰਾਸ</span>
-                            <span class="tab-count" id="rehrasBaniCount">0/0</span>
-                        </button>
-                        <button class="period-tab" data-period="sohila">
-                            <span class="tab-icon">🌙</span>
-                            <span class="tab-label">ਸੋਹਿਲਾ</span>
-                            <span class="tab-count" id="sohilaBaniCount">0/0</span>
-                        </button>
-                    </div>
-
-                    <!-- Bani List Container -->
-                    <div class="bani-list-container" id="baniListContainer">
-                        <!-- Amritvela Banis -->
-                        <div class="bani-list active" data-period="amritvela" id="amritvelaBaniList">
-                            <!-- Banis will be dynamically injected -->
-                            <div class="bani-placeholder">
-                                <p>No banis added yet</p>
-                                <button class="add-bani-mini-btn" data-period="amritvela">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 5v14M5 12h14" />
-                                    </svg>
-                                    Add Bani
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Rehras Banis -->
-                        <div class="bani-list" data-period="rehras" id="rehrasBaniList">
-                            <div class="bani-placeholder">
-                                <p>No banis added yet</p>
-                                <button class="add-bani-mini-btn" data-period="rehras">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 5v14M5 12h14" />
-                                    </svg>
-                                    Add Bani
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Sohila Banis -->
-                        <div class="bani-list" data-period="sohila" id="sohilaBaniList">
-                            <div class="bani-placeholder">
-                                <p>No banis added yet</p>
-                                <button class="add-bani-mini-btn" data-period="sohila">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 5v14M5 12h14" />
-                                    </svg>
-                                    Add Bani
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body" style="padding: 16px 20px;">
+                    <p style="font-size: 14px; color: var(--text-secondary); margin: 0;">
+                        ✅ Mark your daily Nitnem Banis complete<br>
+                        📊 Track your reading progress<br>
+                        🙏 Build your spiritual routine
+                    </p>
                 </div>
-
-                <div class="card-footer nitnem-footer">
-                    <button class="add-bani-btn" id="addBaniBtn">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 5v14M5 12h14" />
-                        </svg>
-                        <span>Add Bani</span>
-                    </button>
-                    <button class="complete-all-btn" id="completeAllBtn" disabled>
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        <span>Complete All</span>
-                    </button>
-                </div>
-            </section>
+            </a>
 
             <!-- ═══════════════════════════════════════════════════════════════════
                  SECTION 3: MALA COUNTER

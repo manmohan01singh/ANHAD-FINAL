@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
+<title>Guide | ANHAD</title>
+<script>
+(function(){
+  var t=localStorage.getItem('anhad_theme')||'dark';
+  if(t==='auto'){
+    var h=(new Date()).getHours();
+    t=(h>=5&&h<9||h>=18||h<5)?'dark':'light';
+  }
+  document.documentElement.setAttribute('data-theme',t);
+  if(t==='dark')document.documentElement.classList.add('dark-mode');
+})();
+</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#FAF8F5;min-height:100vh;padding:0 0 100px;overflow-x:hidden;background:#0A0A0C}
+[data-theme="light"] body{background:#F5F0EB;color:#2D1F0E}
+.guide-header{position:sticky;top:0;z-index:100;background:rgba(10,10,12,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 20px;display:flex;align-items:center;gap:12px}
+[data-theme="light"] .guide-header{background:rgba(255,255,255,0.85);border-bottom-color:rgba(0,0,0,0.06)}
+.guide-header h1{font-size:20px;font-weight:800;flex:1;background:linear-gradient(135deg,#D4943A,#B8860B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.back-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:#FAF8F5;font-size:18px;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center}
+[data-theme="light"] .back-btn{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.08);color:#2D1F0E}
+.back-btn:active{transform:scale(0.92)}
+.lang-bar{display:flex;gap:8px;padding:12px 20px}
+.lang-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:600;cursor:pointer}
+[data-theme="light"] .lang-btn{border-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.4)}
+.lang-btn.active{background:rgba(212,148,58,0.2);border-color:#D4943A;color:#D4943A}
+.sec-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.3);padding:24px 20px 12px}
+[data-theme="light"] .sec-title{color:rgba(0,0,0,0.3)}
+.card{margin:0 16px 10px;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+[data-theme="light"] .card{background:rgba(255,255,255,0.7);border-color:rgba(0,0,0,0.06)}
+.card:active{transform:scale(0.98)}
+.ch{display:flex;align-items:center;gap:12px}
+.ci{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cg{background:rgba(212,148,58,0.15)}
+.co{background:rgba(255,159,10,0.15)}
+.cp{background:rgba(175,82,222,0.15)}
+.ct{background:rgba(90,200,250,0.15)}
+.cb{background:rgba(0,122,255,0.15)}
+.cr{background:rgba(255,59,48,0.15)}
+.cg2{background:rgba(52,199,89,0.15)}
+.cr2{background:rgba(255,69,120,0.15)}
+.cind{background:rgba(94,92,230,0.15)}
+.cn{font-size:16px;font-weight:700;color:#FAF8F5}
+[data-theme="light"] .cn{color:#2D1F0E}
+.cv{margin-left:auto;color:rgba(255,255,255,0.2);font-size:14px;transition:transform .3s}
+[data-theme="light"] .cv{color:rgba(0,0,0,0.2)}
+.card.open .cv{transform:rotate(180deg)}
+.cbdy{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .35s,opacity .25s,margin .25s}
+.card.open .cbdy{max-height:600px;opacity:1;margin-top:14px}
+.cd{font-size:13.5px;line-height:1.6;color:rgba(255,255,255,0.7);margin-bottom:12px}
+[data-theme="light"] .cd{color:rgba(0,0,0,0.6)}
+.cd strong{color:#D4943A}
+.ctip{background:rgba(212,148,58,0.08);border-left:3px solid #D4943A;padding:10px 14px;border-radius:0 10px 10px 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.75);margin-bottom:10px}
+[data-theme="light"] .ctip{background:rgba(212,148,58,0.06);color:rgba(0,0,0,0.65)}
+.ctip strong{color:#D4943A}
+.cpu{font-size:13px;line-height:1.5;color:rgba(255,255,255,0.55);font-style:italic}
+[data-theme="light"] .cpu{color:rgba(0,0,0,0.45)}
+.cpu strong{color:#D4943A;font-style:normal}
+</style>
+</head>
+<body>
+<div class="guide-header"><a href="javascript:history.back()" class="back-btn">&#8592;</a><h1 id="gt">Guide</h1></div>
+<div class="lang-bar" id="lb">
+  <button class="lang-btn active" data-l="en">English</button>
+  <button class="lang-btn" data-l="hi">हिन्दी</button>
+  <button class="lang-btn" data-l="pa">ਪੰਜਾਬੀ</button>
+</div>
+<div class="sec-title" id="se">ESSENTIALS</div>
+<div id="fc"></div>
+<script>
+// [icon, iconClass, name, desc, tip, purpose]
+var D={en:[
+["🏠","cg","Home","Your spiritual dashboard. Guru portrait slider, daily Gurbani verse, Nanakshahi date, time-based greeting.","Tap the Guru portrait for the full verse. Use the progress bar to track today's Nitnem banis.","One place to start your daily spiritual journey."],
+["📿","cg","Nitnem (Daily Prayers)","Complete collection of Sikh daily prayers — Japji Sahib, Jaap Sahib, Tav Prasad Savaiye, Chaupai Sahib, Anand Sahib, Rehras Sahib, Sohila Sahib.","Swipe left/right between Banis. Tap any verse for translation.","Read daily Nitnem with clear Gurmukhi text and translations."],
+["🔥","co","Nitnem Tracker","Track daily Nitnem progress and build streaks. See completed Banis at a glance.","Check off each Bani after reciting. Streaks grow with every consecutive day.","Build a consistent Nitnem routine with streak motivation."],
+["📖","cp","Sehaj Paath (SGGS Reader)","Read Sri Guru Granth Sahib Ji from Ang 1 to 1430 with automatic bookmarking.","Reading position saves automatically. Use the tracker to see your progress.","Complete a self-paced reading of Sri Guru Granth Sahib Ji."],
+["🙏","ct","Naam Abhyas (Meditation Timer)","Hourly practice timer reminding you to pause 2 minutes for Waheguru Simran.","Enable notifications for hourly reminders. Close your eyes and focus on Naam.","Build a habit of hourly Naam remembrance throughout the day."],
+["📜","cg","Daily Hukamnama","Today's Hukamnama from Sri Darbar Sahib with full Shabad, translations, and significance.","Visit first thing in the morning. Updates daily.","Start each day with the Guru's divine command."],
+["🔍","cb","Gurbani Khoj (Search)","Search Sri Guru Granth Sahib Ji by keyword, Shabad line, or Ang number.","Use English, Punjabi, or Hindi keywords. Results appear instantly.","Find any Shabad or verse instantly."],
+["🪔","cr2","Shabad Vichar (Contemplation)","Daily featured Shabad with deeper meaning presented for reflection.","Take quiet moments to read and reflect.","Deepen understanding through daily contemplation."],
+["🤖","cp","Gurbani GPT","AI-powered companion. Ask about Naam Simran, Gurbani, Sikh history, or the spiritual path.","Ask about a specific Shabad or seek guidance on your journey.","Get personalized spiritual guidance."],
+["🎲","cb","Random Shabad","Discover a random Shabad for unexpected divine wisdom.","Tap to get a new Shabad each time.","Receive daily inspiration."],
+["📡","cg2","Sadhsangat Live","Live Kirtan, Katha, and spiritual programs from Gurdwaras worldwide.","Browse by category. Tap to watch in-app.","Connect with the global sangat through live streaming."],
+["🎵","cg","Gurbani Radio","24/7 Kirtan streaming — Darbar Sahib Live, Amritvela Kirtan, Waheguru Simran.","Plays in the background while you navigate the app.","Immerse in divine Kirtan 24/7."],
+["📚","cind","Insights (Learning)","Articles on Sikh history, philosophy, Gurbani meanings, and sakhis.","Browse by category. New content added regularly.","Expand your knowledge of Sikh history and Gurbani."],
+["❤️","cr","Favorites","Save your favorite Shabads, Banis, and articles in one place.","Tap the heart icon to save. Organize into collections.","Your personal collection of beloved content."],
+["📝","cr2","Notes (Spiritual Journal)","Private journal for thoughts, reflections, and spiritual learnings.","Write after Nitnem or meditation.","Document your spiritual journey."],
+["📅","cg","Gurpurab Calendar","All Sikh Gurpurabs and festivals with countdowns.","Homepage shows next Gurpurab with countdown.","Never miss a Gurpurab."],
+["📿","ct","My Pothi (Bani Collection)","Custom Bani collection — read favorite Banis in your preferred order.","Go to Nitnem section and use My Pothi.","Personalized Bani playlist."],
+["⏰","co","Cinematic Alarm (Reminders)","Beautiful alarm for Amritvela. Drag right for sunset, left for sunrise.","Use as Amritvela wake-up alarm.","Wake up for Amritvela beautifully."],
+["🎨","cp","Dynamic Theme","ANHAD changes appearance — Amritvela, Day, Evening, Night. Unique colors each slot.","Run on Auto for the full experience.","Immersive visuals aligned with day and night."],
+["⚙️","cb","Settings & Profile","Customize notifications, theme, audio, profile.","Set your language, enable notifications.","Make ANHAD truly yours."]
+],hi:[
+["🏠","cg","होम","आपका आध्यात्मिक डैशबोर्ड। गुरु पोर्ट्रेट स्लाइडर, दैनिक गुरबाणी वचन, नानकशाही तिथि।","गुरु पोर्ट्रेट पर टैप करें। प्रोग्रेस बार से नितनेम ट्रैक करें।","एक स्थान पर अपनी दैनिक आध्यात्मिक यात्रा शुरू करें।"],
+["📿","cg","नितनेम","जपुजी साहिब, जाप साहिब, तव प्रसाद स्वैये, चौपाई साहिब, आनंद साहिब, रहिरास साहिब, सोहिला साहिब।","बाएँ/दाएँ स्वाइप करें। अनुवाद के लिए टैप करें।","स्पष्ट गुरुमुखी पाठ और अनुवाद के साथ नितनेम पढ़ें।"],
+["🔥","co","नितनेम ट्रैकर","दैनिक नितनेम प्रगति ट्रैक करें और स्ट्रीक्स बनाएँ।","प्रत्येक बाणी पूरी करने पर चेक करें।","स्ट्रीक प्रेरणा के साथ नियमित नितनेम।"],
+["📖","cp","सहज पाठ","श्री गुरु ग्रंथ साहिब जी को अंग 1 से 1430 तक पढ़ें। स्वचालित बुकमार्किंग।","पढ़ने की स्थिति स्वचालित सहेजी जाती है।","स्व-गति से श्री गुरु ग्रंथ साहिब का पाठ पूरा करें।"],
+["🙏","ct","नाम अभ्यास","हर घंटे 2 मिनट वाहेगुरु सिमरन के लिए रुकने की याद दिलाता है।","नोटिफिकेशन सक्षम करें। आँखें बंद करें और नाम पर ध्यान दें।","पूरे दिन नाम स्मरण की आदत।"],
+["📜","cg","दैनिक हुकमनामा","श्री दरबार साहिब से आज का हुकमनामा। अनुवाद और महत्व के साथ।","सुबह सबसे पहले देखें। रोजाना अपडेट।","गुरु के आदेश से दिन शुरू करें।"],
+["🔍","cb","गुरबाणी खोज","कीवर्ड, शबद लाइन या अंग नंबर से खोजें।","अंग्रेजी, पंजाबी या हिंदी में खोजें। तुरंत परिणाम।","कोई भी शबद तुरंत खोजें।"],
+["🪔","cr2","शबद विचार","दैनिक चिंतन के लिए विशेष शबद।","शांत पलों में पढ़ें और विचार करें।","गुरबानी की समझ गहरी करें।"],
+["🤖","cp","गुरबाणी GPT","AI आध्यात्मिक साथी। नाम सिमरन, गुरबानी, सिख इतिहास के बारे में पूछें।","विशिष्ट शबद के बारे में पूछें।","व्यक्तिगत आध्यात्मिक मार्गदर्शन।"],
+["🎲","cb","रैंडम शबद","अप्रत्याशित दिव्य ज्ञान के लिए बेतरतीब शबद।","हर बार नया शबद पाने के लिए टैप करें।","दैनिक प्रेरणा।"],
+["📡","cg2","साधसंगत लाइव","गुरुद्वारों से लाइव कीर्तन, कथा और आध्यात्मिक कार्यक्रम।","श्रेणी देखें। इन-ऐप देखें।","वैश्विक संगत से जुड़ें।"],
+["🎵","cg","गुरबाणी रेडियो","24/7 कीर्तन स्ट्रीमिंग। दरबार साहिब, अमृतवेला, वाहेगुरु सिमरन।","बैकग्राउंड में चलता रहता है।","24/7 दिव्य कीर्तन में डूबें।"],
+["📚","cind","इनसाइट्स","सिख इतिहास, दर्शन, गुरबानी अर्थ पर लेख।","श्रेणी देखें। नई सामग्री नियमित जुड़ती है।","सिख ज्ञान का विस्तार करें।"],
+["❤️","cr","पसंदीदा","पसंदीदा शबद, बाणियाँ और लेख सहेजें।","दिल आइकन टैप करें। संग्रह में व्यवस्थित करें।","आपका निजी संग्रह।"],
+["📝","cr2","नोट्स","विचारों और सीखने के लिए निजी आध्यात्मिक जर्नल।","नितनेम या ध्यान के बाद लिखें।","अपनी आध्यात्मिक यात्रा का दस्तावेज़ीकरण।"],
+["📅","cg","गुरपुरब कैलेंडर","सभी गुरपुरब और त्योहार काउंटडाउन के साथ।","होमपेज पर अगला गुरपुरब दिखता है।","कोई गुरपुरब न चूकें।"],
+["📿","ct","मेरी पोथी","पसंदीदा बाणियों का निजी संग्रह।","नितनेम में जाकर मेरी पोथी का उपयोग करें।","निजी बाणी प्लेलिस्ट।"],
+["⏰","co","सिनेमैटिक अलार्म","अमृतवेला के लिए सुंदर अलार्म।","अमृतवेला अलार्म के रूप में उपयोग करें।","अमृतवेला के लिए खूबसूरती से जागें।"],
+["🎨","cp","डायनामिक थीम","समय के अनुसार रूप बदलता है — अमृतवेला, दिन, शाम, रात।","ऑटो पर चलने दें।","दिन-रात की लय के अनुरूप दृश्य अनुभव।"],
+["⚙️","cb","सेटिंग्स","नोटिफिकेशन, थीम, ऑडियो, प्रोफाइल कस्टमाइज़ करें।","भाषा सेट करें, नोटिफिकेशन सक्षम करें।","ANHAD को अपना बनाएं।"]
+],pa:[
+["🏠","cg","ਹੋਮ","ਤੁਹਾਡਾ ਅਧਿਆਤਮਿਕ ਡੈਸ਼ਬੋਰਡ। ਗੁਰੂ ਪੋਰਟਰੇਟ, ਰੋਜ਼ਾਨਾ ਗੁਰਬਾਣੀ ਵਚਨ, ਨਾਨਕਸ਼ਾਹੀ ਤਾਰੀਖ।","ਗੁਰੂ ਪੋਰਟਰੇਟ 'ਤੇ ਟੈਪ ਕਰੋ। ਪ੍ਰੋਗਰੈਸ ਬਾਰ ਨਾਲ ਨਿਤਨੇਮ ਟ੍ਰੈਕ ਕਰੋ।","ਇੱਕ ਥਾਂ 'ਤੇ ਰੋਜ਼ਾਨਾ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਸ਼ੁਰੂ ਕਰੋ।"],
+["📿","cg","ਨਿਤਨੇਮ","ਜਪੁਜੀ ਸਾਹਿਬ, ਜਾਪੁ ਸਾਹਿਬ, ਤਵ ਪ੍ਰਸਾਦਿ ਸਵਯੇ, ਚੌਪਈ ਸਾਹਿਬ, ਅਨੰਦ ਸਾਹਿਬ, ਰਹਿਰਾਸ ਸਾਹਿਬ, ਸੋਹਿਲਾ ਸਾਹਿਬ।","ਖੱਬੇ/ਸੱਜੇ ਸਵਾਈਪ ਕਰੋ। ਅਨੁਵਾਦ ਲਈ ਟੈਪ ਕਰੋ।","ਸਪਸ਼ਟ ਗੁਰਮੁਖੀ ਪਾਠ ਨਾਲ ਨਿਤਨੇਮ ਪੜ੍ਹੋ।"],
+["🔥","co","ਨਿਤਨੇਮ ਟ੍ਰੈਕਰ","ਰੋਜ਼ਾਨਾ ਨਿਤਨੇਮ ਪ੍ਰਗਤੀ ਟ੍ਰੈਕ ਕਰੋ ਅਤੇ ਸਟ੍ਰੀਕਸ ਬਣਾਓ।","ਹਰ ਬਾਣੀ ਪੂਰੀ ਕਰਨ 'ਤੇ ਚੈੱਕ ਕਰੋ।","ਸਟ੍ਰੀਕ ਪ੍ਰੇਰਣਾ ਨਾਲ ਨਿਯਮਤ ਨਿਤਨੇਮ।"],
+["📖","cp","ਸਹਜ ਪਾਠ","ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਨੂੰ ਅੰਗ 1 ਤੋਂ 1430 ਤੱਕ ਪੜ੍ਹੋ। ਆਟੋਮੈਟਿਕ ਬੁੱਕਮਾਰਕਿੰਗ।","ਪੜ੍ਹਨ ਦੀ ਸਥਿਤੀ ਆਪਣੇ ਆਪ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀ ਹੈ।","ਸਵੈ-ਗਤੀ ਨਾਲ ਸ਼੍ਰੀ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਦਾ ਪਾਠ।"],
+["🙏","ct","ਨਾਮ ਅਭਿਆਸ","ਹਰ ਘੰਟੇ 2 ਮਿੰਟ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ ਲਈ ਯਾਦ ਦਿਵਾਉਂਦਾ ਹੈ।","ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ ਸਮਰੱਥ ਕਰੋ। ਅੱਖਾਂ ਬੰਦ ਕਰਕੇ ਨਾਮ 'ਤੇ ਧਿਆਨ ਦਿਓ।","ਦਿਨ ਭਰ ਨਾਮ ਸਿਮਰਨ ਦੀ ਆਦਤ।"],
+["📜","cg","ਰੋਜ਼ਾਨਾ ਹੁਕਮਨਾਮਾ","ਸ਼੍ਰੀ ਦਰਬਾਰ ਸਾਹਿਬ ਤੋਂ ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ। ਅਨੁਵਾਦ ਅਤੇ ਮਹੱਤਵ ਨਾਲ।","ਸਵੇਰੇ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਦੇਖੋ। ਰੋਜ਼ਾਨਾ ਅੱਪਡੇਟ।","ਗੁਰੂ ਦੇ ਆਦੇਸ਼ ਨਾਲ ਦਿਨ ਸ਼ੁਰੂ ਕਰੋ।"],
+["🔍","cb","ਗੁਰਬਾਣੀ ਖੋਜ","ਕੀਵਰਡ, ਸ਼ਬਦ ਲਾਈਨ ਜਾਂ ਅੰਗ ਨੰਬਰ ਨਾਲ ਖੋਜੋ।","ਅੰਗਰੇਜ਼ੀ, ਪੰਜਾਬੀ ਜਾਂ ਹਿੰਦੀ ਵਿੱਚ ਖੋਜੋ। ਤੁਰੰਤ ਨਤੀਜੇ।","ਕੋਈ ਵੀ ਸ਼ਬਦ ਤੁਰੰਤ ਲੱਭੋ।"],
+["🪔","cr2","ਸ਼ਬਦ ਵਿਚਾਰ","ਰੋਜ਼ਾਨਾ ਚਿੰਤਨ ਲਈ ਵਿਸ਼ੇਸ਼ ਸ਼ਬਦ।","ਸ਼ਾਂਤ ਪਲਾਂ ਵਿੱਚ ਪੜ੍ਹੋ ਅਤੇ ਵਿਚਾਰ ਕਰੋ।","ਗੁਰਬਾਣੀ ਦੀ ਸਮਝ ਡੂੰਘੀ ਕਰੋ।"],
+["🤖","cp","ਗੁਰਬਾਣੀ GPT","AI ਅਧਿਆਤਮਿਕ ਸਾਥੀ। ਨਾਮ ਸਿਮਰਨ, ਗੁਰਬਾਣੀ, ਸਿੱਖ ਇਤਿਹਾਸ ਬਾਰੇ ਪੁੱਛੋ।","ਖਾਸ ਸ਼ਬਦ ਬਾਰੇ ਪੁੱਛੋ।","ਨਿਜੀ ਅਧਿਆਤਮਿਕ ਮਾਰਗਦਰਸ਼ਨ।"],
+["🎲","cb","ਰੈਂਡਮ ਸ਼ਬਦ","ਅਚਾਨਕ ਦਿਵਈ ਗਿਆਨ ਲਈ ਬੇਤਰਤੀਬ ਸ਼ਬਦ।","ਹਰ ਵਾਰ ਨਵਾਂ ਸ਼ਬਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ।","ਰੋਜ਼ਾਨਾ ਪ੍ਰੇਰਣਾ।"],
+["📡","cg2","ਸਾਧਸੰਗਤ ਲਾਈਵ","ਗੁਰਦੁਆਰਿਆਂ ਤੋਂ ਲਾਈਵ ਕੀਰਤਨ, ਕਥਾ ਅਤੇ ਪ੍ਰੋਗਰਾਮ।","ਸ਼੍ਰੇਣੀ ਦੇਖੋ। ਇਨ-ਐਪ ਦੇਖੋ।","ਵਿਸ਼ਵ ਸੰਗਤ ਨਾਲ ਜੁੜੋ।"],
+["🎵","cg","ਗੁਰਬਾਣੀ ਰੇਡੀਓ","24/7 ਕੀਰਤਨ ਸਟ੍ਰੀਮਿੰਗ। ਦਰਬਾਰ ਸਾਹਿਬ, ਅੰਮ੍ਰਿਤਵੇਲਾ, ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ।","ਬੈਕਗ੍ਰਾਉਂਡ ਵਿੱਚ ਚਲਦਾ ਰਹਿੰਦਾ ਹੈ।","24/7 ਦਿਵਈ ਕੀਰਤਨ ਵਿੱਚ ਲੀਨ ਹੋਵੋ।"],
+["📚","cind","ਇਨਸਾਈਟਸ","ਸਿੱਖ ਇਤਿਹਾਸ, ਦਰਸ਼ਨ, ਗੁਰਬਾਣੀ ਅਰਥਾਂ 'ਤੇ ਲੇਖ।","ਸ਼੍ਰੇਣੀ ਦੇਖੋ। ਨਵੀਂ ਸਮੱਗਰੀ ਨਿਯਮਿਤ ਜੁੜਦੀ ਹੈ।","ਸਿੱਖ ਗਿਆਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।"],
+["❤️","cr","ਪਸੰਦੀਦਾ","ਪਸੰਦੀਦਾ ਸ਼ਬਦ, ਬਾਣੀਆਂ ਅਤੇ ਲੇਖ ਸੁਰੱਖਿਅਤ ਕਰੋ।","ਦਿਲ ਆਈਕਨ ਟੈਪ ਕਰੋ। ਸੰਗ੍ਰਹਿ ਵਿੱਚ ਵਿਵਸਥਿਤ ਕਰੋ।","ਤੁਹਾਡਾ ਨਿਜੀ ਸੰਗ੍ਰਹਿ।"],
+["📝","cr2","ਨੋਟਸ","ਵਿਚਾਰਾਂ ਅਤੇ ਸਿੱਖਣ ਲਈ ਨਿਜੀ ਅਧਿਆਤਮਿਕ ਜਰਨਲ।","ਨਿਤਨੇਮ ਜਾਂ ਧਿਆਨ ਤੋਂ ਬਾਅਦ ਲਿਖੋ।","ਆਪਣੀ ਅਧਿਆਤਮਿਕ ਯਾਤਰਾ ਦਾ ਦਸਤਾਵੇਜ਼।"],
+["📅","cg","ਗੁਰਪੁਰਬ ਕੈਲੰਡਰ","ਸਾਰੇ ਗੁਰਪੁਰਬ ਅਤੇ ਤਿਉਹਾਰ ਕਾਊਂਟਡਾਊਨ ਨਾਲ।","ਹੋਮਪੇਜ 'ਤੇ ਅਗਲਾ ਗੁਰਪੁਰਬ ਦਿਖਦਾ ਹੈ।","ਕੋਈ ਗੁਰਪੁਰਬ ਨਾ ਖੁੰਝਾਓ।"],
+["📿","ct","ਮੇਰੀ ਪੋਥੀ","ਪਸੰਦੀਦਾ ਬਾਣੀਆਂ ਦਾ ਨਿਜੀ ਸੰਗ੍ਰਹਿ।","ਨਿਤਨੇਮ ਭਾਗ ਵਿੱਚ ਜਾ ਕੇ ਮੇਰੀ ਪੋਥੀ ਵਰਤੋਂ।","ਨਿਜੀ ਬਾਣੀ ਪਲੇਲਿਸਟ।"],
+["⏰","co","ਸਿਨੇਮੈਟਿਕ ਅਲਾਰਮ","ਅੰਮ੍ਰਿਤਵੇਲਾ ਲਈ ਸੁੰਦਰ ਅਲਾਰਮ।","ਅੰਮ੍ਰਿਤਵੇਲਾ ਅਲਾਰਮ ਵਜੋਂ ਵਰਤੋਂ।","ਅੰਮ੍ਰਿਤਵੇਲਾ ਲਈ ਖੂਬਸੂਰਤੀ ਨਾਲ ਜਾਗੋ।"],
+["🎨","cp","ਡਾਇਨਾਮਿਕ ਥੀਮ","ਸਮੇਂ ਅਨੁਸਾਰ ਰੂਪ ਬਦਲਦਾ ਹੈ — ਅੰਮ੍ਰਿਤਵੇਲਾ, ਦਿਨ, ਸ਼ਾਮ, ਰਾਤ।","ਆਟੋ 'ਤੇ ਚੱਲਣ ਦਿਓ।","ਦਿਨ-ਰਾਤ ਦੀ ਲੈਅ ਅਨੁਸਾਰ ਦ੍ਰਿਸ਼ ਅਨੁਭਵ।"],
+["⚙️","cb","ਸੈਟਿੰਗਾਂ","ਨੋਟੀਫਿਕੇਸ਼ਨ, ਥੀਮ, ਆਡੀਓ, ਪ੍ਰੋਫਾਈਲ ਕਸਟਮਾਈਜ਼ ਕਰੋ।","ਭਾਸ਼ਾ ਸੈੱਟ ਕਰੋ, ਨੋਟੀਫਿਕੇਸ਼ਨ ਸਮਰੱਥ ਕਰੋ।","ANHAD ਨੂੰ ਆਪਣਾ ਬਣਾਓ।"]
+]};
+</script>
+<script>
+(function(){
+var fc=document.getElementById('fc'),gt=document.getElementById('gt'),se=document.getElementById('se');
+function r(l){
+ gt.textContent=l==='hi'?'गाइड':l==='pa'?'ਗਾਈਡ':'Guide';
+ se.textContent=l==='hi'?'आवश्यक':l==='pa'?'ਜ਼ਰੂਰੀ':'ESSENTIALS';
+ document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.toggle('active',b.dataset.l===l)});
+ var items=D[l]||D.en,h='';
+ for(var i=0;i<items.length;i++){
+  var f=items[i];
+  h+='<div class="card"><div class="ch"><div class="ci '+f[1]+'">'+f[0]+'</div><div><div class="cn">'+f[2]+'</div></div><div class="cv">&#9660;</div></div><div class="cbdy"><div class="cd">'+f[3]+'</div><div class="ctip"><strong>&#128161; '+(l==='hi'?'कैसे उपयोग करें':l==='pa'?'ਕਿਵੇਂ ਵਰਤੋਂ ਕਰੀਏ':'How to use')+':</strong> '+f[4]+'</div><div class="cpu"><strong>&#127919; '+(l==='hi'?'मुख्य उद्देश्य':l==='pa'?'ਮੁੱਖ ਉਦੇਸ਼':'Main purpose')+':</strong> '+f[5]+'</div></div></div>';
+ }
+ fc.innerHTML=h;
+ fc.querySelectorAll('.card').forEach(function(c){
+  c.addEventListener('click',function(){
+   var o=c.classList.contains('open');
+   fc.querySelectorAll('.card.open').forEach(function(x){x.classList.remove('open')});
+   if(!o)c.classList.add('open');
+  });
+ });
+}
+document.getElementById('lb').addEventListener('click',function(e){
+ var b=e.target.closest('.lang-btn');if(b)r(b.dataset.l);
+});
+var sl=localStorage.getItem('anhad_tour_lang')||'en';
+if(['en','hi','pa'].indexOf(sl)===-1)sl='en';
+r(sl);
+})();
+</script>
+</body>
+</html>

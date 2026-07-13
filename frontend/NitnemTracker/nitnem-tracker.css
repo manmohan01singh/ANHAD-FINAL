@@ -1684,15 +1684,24 @@ ol {
     height: 28px;
     border-radius: var(--radius-full);
     color: var(--text-quaternary);
-    opacity: 0;
-    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out);
+    opacity: 0.6;
+    transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
 }
 
-.bani-item:hover .bani-remove-btn {
+.bani-item:hover .bani-remove-btn,
+.bani-item:active .bani-remove-btn,
+.bani-remove-btn:focus-visible {
     opacity: 1;
 }
 
-.bani-remove-btn:hover {
+@media (hover: none) and (pointer: coarse) {
+    .bani-remove-btn {
+        opacity: 0.7;
+    }
+}
+
+.bani-remove-btn:hover,
+.bani-remove-btn:active {
     background: rgba(255, 59, 48, 0.15);
     color: var(--ios-red);
 }

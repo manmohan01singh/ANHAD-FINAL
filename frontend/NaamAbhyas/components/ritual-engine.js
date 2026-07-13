@@ -32,14 +32,14 @@ class RitualEngine {
         // Track if 10-second beep was played
         this.tenSecondBeepPlayed = false;
 
-        // Affirmations for completion
+        // Affirmations for completion - Actual Gurbani verses from Sri Guru Granth Sahib Ji
         this.affirmations = [
-            { gurmukhi: "ਧੰਨ ਗੁਰੂ ਨਾਨਕ", english: "Well done. Return to your duty." },
-            { gurmukhi: "ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ", english: "You showed up." },
-            { gurmukhi: "ਸਤਿ ਨਾਮ", english: "Discipline compounds." },
-            { gurmukhi: "ਸ਼ੁਕਰਾਨਾ", english: "Another step on the path." },
-            { gurmukhi: "ਚੜ੍ਹਦੀ ਕਲਾ", english: "Your spirit rises." },
-            { gurmukhi: "ਮਨ ਜੀਤੇ ਜਗੁ ਜੀਤੁ", english: "Conquer the mind, conquer the world." }
+            { gurmukhi: "ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ", english: "Chanting the Naam, millions of sins are erased" },
+            { gurmukhi: "ਜਪਿ ਮਨ ਮੇਰੇ ਗੋਵਿੰਦ ਕੀ ਬਾਣੀ", english: "O my mind, chant the Word of the Lord" },
+            { gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ", english: "Meditating, meditating, meditating, I find peace" },
+            { gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ", english: "O my mind, you are the embodiment of Light - recognize your origin" },
+            { gurmukhi: "ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ", english: "Chant the Lord's Name, day and night" },
+            { gurmukhi: "ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ", english: "O my mind, chant the Naam as Gurmukh" }
         ];
 
         // Session metrics
@@ -290,34 +290,43 @@ class RitualEngine {
     }
 
     /**
-     * ENTRY POINT FOR SCHEDULED SESSIONS: Triggered by the countdown system
-     * These sessions COUNT towards streak and schedule completion
-     * @param {Object} scheduleSession - Session object from the schedule
+     * ═══ SCHEDULED SESSION STARTER ═══
+     * Entry point for notification-triggered sessions
+     * These COUNT towards streak and schedule completion
+     * @param {Object} scheduleSession - Session from the schedule
      * @param {number} durationMinutes - Duration in minutes
      */
     triggerScheduledSession(scheduleSession, durationMinutes = 2) {
-        console.log(`[RitualEngine] 🕐 Starting SCHEDULED session:`, scheduleSession);
+        console.log(`[RitualEngine] 🕐 SCHEDULED session starting:`, {
+            hour: scheduleSession.hour,
+            startTime: scheduleSession.startTime,
+            duration: durationMinutes
+        });
 
         this.sessionDurationMinutes = durationMinutes;
-        this.isExtraSession = false; // NOT extra - this is scheduled
+        this.isExtraSession = false; // Scheduled = counts toward streak
         this.tenSecondBeepPlayed = false;
 
-        // Use the session data from the schedule
+        // Build complete session object
         this.currentSession = {
             ...scheduleSession,
             status: 'pending',
             isExtra: false,
-            durationMinutes: durationMinutes
+            durationMinutes: durationMinutes,
+            startedAt: new Date().toISOString()
         };
 
-        // Play arrival sound
-        this.playBeep('start');
-
-        // Vibrate pattern for attention
-        if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200, 100, 200]);
+        // Play gentle chime ONCE (no duplicate sounds)
+        if (this.app?.audioManager) {
+            this.app.audioManager.playChime();
         }
 
+        // Gentle vibration for attention
+        if (navigator.vibrate) {
+            navigator.vibrate([100, 50, 100]);
+        }
+
+        // Enter active meditation state
         this.enterActiveState();
     }
 
@@ -347,7 +356,16 @@ class RitualEngine {
 
         console.log('[RitualEngine] Entering ACTIVE state');
 
-        // Show overlay
+        // Show meditation overlay (new lightweight UI)
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) {
+            meditationOverlay.classList.add('active');
+            console.log('[RitualEngine] ✅ Meditation overlay shown');
+        } else {
+            console.error('[RitualEngine] ❌ Meditation overlay not found!');
+        }
+
+        // Also show ritual overlay as fallback (for compatibility)
         const overlay = document.getElementById('ritualOverlay');
         const activeState = document.getElementById('ritualActiveState');
         const completionState = document.getElementById('ritualCompletionState');
@@ -412,10 +430,17 @@ class RitualEngine {
     }
 
     /**
-     * Start the countdown timer (FIXED - uses passed duration)
+     * ═══ ROCK-SOLID COUNTDOWN TIMER ═══
+     * Single implementation, no flickering, perfect accuracy
      * @param {number} durationMinutes - Duration in minutes
      */
     startCountdown(durationMinutes) {
+        // Cancel any existing timer
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
+
         const durationSeconds = durationMinutes * 60;
         const startTime = Date.now();
         const endTime = startTime + (durationSeconds * 1000);
@@ -424,6 +449,7 @@ class RitualEngine {
         const progressRing = document.getElementById('progressRingFill');
         const circumference = 2 * Math.PI * 85;
 
+        // Initialize progress ring
         if (progressRing) {
             progressRing.style.strokeDasharray = circumference;
             progressRing.style.strokeDashoffset = 0;
@@ -432,48 +458,50 @@ class RitualEngine {
         // Generate progress dots
         this.generateProgressDots(8);
 
-        console.log(`[RitualEngine] Starting countdown: ${durationMinutes} minutes (${durationSeconds} seconds)`);
+        console.log(`[RitualEngine] ⏱️ Countdown started: ${durationMinutes} min (${durationSeconds} sec)`);
 
+        // Use setInterval for smooth updates (every 100ms)
         this.countdownInterval = setInterval(() => {
             const now = Date.now();
             const remaining = Math.max(0, (endTime - now) / 1000);
 
-            // TIMER COMPLETE - Auto-complete and return
+            // ═══ TIMER COMPLETE ═══
             if (remaining <= 0) {
                 clearInterval(this.countdownInterval);
                 this.countdownInterval = null;
 
                 if (timerEl) timerEl.textContent = '0:00';
 
-                // Auto-complete and close
+                console.log('[RitualEngine] ⏰ Timer complete - auto-closing');
                 this.completeSession();
                 return;
             }
 
-            // Play beep at 10 seconds remaining
+            // ═══ 10-SECOND WARNING ═══
             if (remaining <= 10 && !this.tenSecondBeepPlayed) {
                 this.tenSecondBeepPlayed = true;
                 this.playBeep('warning');
+                console.log('[RitualEngine] 🔔 10-second warning');
             }
 
-            // Update timer display
+            // ═══ UPDATE DISPLAY ═══
             const mins = Math.floor(remaining / 60);
             const secs = Math.floor(remaining % 60);
             if (timerEl) {
                 timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
             }
 
-            // Update progress ring
+            // ═══ UPDATE PROGRESS RING ═══
             const elapsed = durationSeconds - remaining;
             const progress = elapsed / durationSeconds;
             if (progressRing) {
                 progressRing.style.strokeDashoffset = circumference * progress;
             }
 
-            // Update progress dots
+            // ═══ UPDATE PROGRESS DOTS ═══
             this.updateProgressDots(elapsed, durationSeconds);
 
-        }, 100);
+        }, 100); // Update every 100ms for smooth animation
     }
 
     /**
@@ -624,7 +652,11 @@ class RitualEngine {
         this.hideSkipConfirmation();
         this.cleanup();
 
-        // Close overlay immediately
+        // Close meditation overlay
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) meditationOverlay.classList.remove('active');
+
+        // Close ritual overlay immediately
         const overlay = document.getElementById('ritualOverlay');
         if (overlay) overlay.classList.remove('active');
 
@@ -642,14 +674,13 @@ class RitualEngine {
     }
 
     /**
-     * COMPLETE SESSION - Auto-close and return to main page
+     * ═══ BULLETPROOF SESSION COMPLETION ═══
+     * Handles recording, syncing, and returning to main page
      */
     completeSession() {
-        console.log('[RitualEngine] Session complete - auto-closing');
+        console.log('[RitualEngine] 🎉 Session completing...');
 
-        // ─── SILENCE AUTO-RESTORE ────────────────────────────────────────────
-        // If silence was active during this session, restore audio before exiting
-        // so the NEXT alarm / ritual fires with sound as expected.
+        // ═══ RESTORE AUDIO IF MUTED ═══
         if (this.silenceMode) {
             this.silenceMode = false;
             const am = this.app?.audioManager;
@@ -662,75 +693,87 @@ class RitualEngine {
                 if (icon) icon.textContent = '🔔';
                 if (text) text.textContent = 'Silence';
             }
-            console.log('[RitualEngine] Silence auto-restored on session completion');
+            console.log('[RitualEngine] Audio restored');
         }
-        // ─────────────────────────────────────────────────────────────────────
 
+        // ═══ CLEANUP TIMERS & RESOURCES ═══
         this.cleanup();
 
-        // Play completion beep
-        this.playBeep('complete');
-
-        // Vibrate completion
-        if (navigator.vibrate) {
-            navigator.vibrate([100, 50, 100]);
+        // ═══ COMPLETION FEEDBACK ═══
+        // Play gentle completion chime
+        if (this.app?.audioManager) {
+            this.app.audioManager.playChime();
         }
 
-        // Record the session
+        // Vibrate completion pattern
+        if (navigator.vibrate) {
+            navigator.vibrate([100, 50, 100, 50, 200]);
+        }
+
+        // ═══ RECORD SESSION DATA ═══
         if (this.app && this.currentSession) {
             const sessionData = {
                 hour: this.currentSession.hour,
                 startTime: this.currentSession.startTime,
+                startedAt: this.currentSession.startedAt,
+                endedAt: new Date().toISOString(),
                 duration: this.sessionDurationMinutes * 60, // seconds
                 status: 'completed',
                 endedEarly: false,
                 presenceConfirmed: this.presenceConfirmed,
-                isExtra: this.isExtraSession,
+                isExtra: this.isExtraSession, // KEY: Scheduled vs Extra
                 metrics: { ...this.sessionMetrics }
             };
 
-            // Only mark in schedule if not extra
+            // ═══ MARK SCHEDULE AS DONE (only for scheduled sessions) ═══
             if (!this.isExtraSession && this.app.currentSchedule?.[this.currentSession.hour]) {
                 this.app.currentSchedule[this.currentSession.hour].status = 'completed';
+                console.log(`[RitualEngine] ✅ Marked hour ${this.currentSession.hour} as completed in schedule`);
             }
 
-            // Record session (handles both scheduled and extra)
+            // ═══ RECORD TO HISTORY ═══
             this.app.recordSession(sessionData);
 
-            // Update streak only for scheduled sessions
+            // ═══ UPDATE STREAK (only for scheduled) ═══
             if (!this.isExtraSession) {
                 this.app.updateStreak();
+                console.log('[RitualEngine] ✅ Streak updated');
+            } else {
+                console.log('[RitualEngine] ℹ️ Extra session - streak not affected');
             }
 
             // ═══ SYNC TO NITNEM TRACKER ═══
-            // Dispatch event so global-alarm-system.js can sync to Nitnem Tracker
             window.dispatchEvent(new CustomEvent('naamAbhyasComplete', {
                 detail: {
                     count: 1,
                     duration: this.sessionDurationMinutes * 60,
                     hour: this.currentSession.hour,
                     isScheduled: !this.isExtraSession,
-                    presenceConfirmed: this.presenceConfirmed
+                    presenceConfirmed: this.presenceConfirmed,
+                    timestamp: new Date().toISOString()
                 }
             }));
-            console.log('[RitualEngine] ✅ Dispatched naamAbhyasComplete for Nitnem sync');
+            console.log('[RitualEngine] ✅ Synced to Nitnem Tracker');
         }
 
-        // Show brief completion message then auto-close
+        // ═══ SHOW BRIEF COMPLETION THEN AUTO-CLOSE ═══
         this.showCompletionBriefly();
     }
 
     /**
-     * Show completion state briefly, then auto-close
+     * ═══ SHOW COMPLETION & AUTO-RETURN TO MAIN ═══
+     * Brief celebration, then close and return to main page
      */
     showCompletionBriefly() {
         const activeState = document.getElementById('ritualActiveState');
         const completionState = document.getElementById('ritualCompletionState');
+        const meditationOverlay = document.getElementById('meditationOverlay');
 
+        // Hide timer, show completion
         if (activeState) activeState.classList.add('hidden');
         if (completionState) completionState.classList.remove('hidden');
 
-        // Set affirmation
+        // Set random Gurbani affirmation
         const affirmation = this.affirmations[Math.floor(Math.random() * this.affirmations.length)];
         const gurmukhiEl = document.getElementById('affirmationGurmukhi');
         const englishEl = document.getElementById('affirmationEnglish');
@@ -747,10 +790,10 @@ class RitualEngine {
         // Trigger completion celebration animation
         this.triggerCompletionCelebration();
 
-        // Auto-close after 5 seconds (extended for celebration)
+        // Auto-close after 4 seconds (smooth transition)
         this.autoCloseTimeout = setTimeout(() => {
             this.continueDay();
-        }, 5000);
+        }, 4000);
     }
 
     /**
@@ -889,14 +932,31 @@ class RitualEngine {
      * Continue day - close overlay and return to main page
      */
     continueDay() {
+        console.log('[RitualEngine] Continuing day - closing overlay');
+
         // Clear auto-close timeout
         if (this.autoCloseTimeout) {
             clearTimeout(this.autoCloseTimeout);
             this.autoCloseTimeout = null;
         }
 
+        // Hide meditation overlay
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) {
+            meditationOverlay.classList.remove('active');
+            console.log('[RitualEngine] ✅ Meditation overlay hidden');
+        }
+
+        // Hide ritual overlay with smooth transition
         const overlay = document.getElementById('ritualOverlay');
-        if (overlay) overlay.classList.remove('active');
+        if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                // Clean up celebration particles
+                const celebration = overlay.querySelector('.completion-celebration');
+                if (celebration) celebration.remove();
+            }, 300);
+        }
 
         this.cleanup();
         this.state = 'IDLE';

@@ -1003,8 +1003,14 @@
 
             if (!isInViewport) {
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Disable SVG clicks during scroll to prevent race condition
+                var svgOverlayEl = document.getElementById('anhad-tour-svg-overlay');
+                if (svgOverlayEl) svgOverlayEl.style.pointerEvents = 'none';
                 // Delay rendering step until scroll settles completely
-                setTimeout(performHighlight, 550);
+                setTimeout(function () {
+                    if (svgOverlayEl) svgOverlayEl.style.pointerEvents = 'auto';
+                    performHighlight();
+                }, 550);
                 return;
             }
         }
@@ -1059,6 +1065,13 @@
                 e.preventDefault();
                 e.stopPropagation();
                 advanceTour();
+            });
+
+            // Tap anywhere on popover body to advance (except on buttons)
+            popover.addEventListener('click', function (e) {
+                if (!e.target.closest('#tourNextBtn') && !e.target.closest('#tourSkipBtn')) {
+                    advanceTour();
+                }
             });
 
             // Adjust popover placement mathematically with safe delay
@@ -1178,35 +1191,7 @@
         }
     };
 
-    // Auto-launch trigger
-    window.addEventListener('load', () => {
-        // Only run on the main home screen (index.html), not sub-pages
-        const isMainPage = window.location.pathname.endsWith('index.html') ||
-            window.location.pathname.endsWith('/') ||
-            document.getElementById('guruSlider') !== null;
-
-        if (isMainPage) {
-            // Bind manual trigger to guide button in header
-            const guideBtn = document.getElementById('tourGuideBtn');
-            if (guideBtn) {
-                guideBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    window.startAnhadOnboardingTour(true); // force language select on manual click
-                });
-            }
-
-            // Check if user has already completed the onboarding
-            if (localStorage.getItem(TOUR_KEY) !== 'true') {
-                selectedLang = localStorage.getItem(LANG_KEY);
-
-                if (!selectedLang) {
-                    setTimeout(showLanguagePicker, 1500);
-                } else {
-                    setTimeout(startTour, 1500);
-                }
-            }
-        }
-    });
+    // Auto-launch removed — only manual Guide page is used
+    // (window.startAnhadOnboardingTour remains available for programmatic use)
 
 })();

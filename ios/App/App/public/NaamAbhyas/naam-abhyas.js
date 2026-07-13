@@ -472,10 +472,9 @@ class NaamAbhyas {
 
 
     /**
-     * ═══ BUG 7 FIX: Execute auto-start using params captured on critical path ═══
-     * Uses this._capturedAutoStartParams instead of reading URL (which is already cleaned).
-     * Called from deferred init after ritualEngine is ready.
-     * Includes retry if ritualEngine isn't initialized yet.
+     * ═══ CLEAN NOTIFICATION FLOW ═══
+     * User clicks notification → Opens app → Timer starts immediately
+     * NO popup, NO extra sounds, NO interruptions
      */
     executeAutoStart() {
         const params = this._capturedAutoStartParams;
@@ -484,13 +483,12 @@ class NaamAbhyas {
         // Clear captured params to prevent re-execution
         this._capturedAutoStartParams = null;
 
-        console.log('[NaamAbhyas] 🚀 Executing auto-start from notification click:', params);
+        console.log('[NaamAbhyas] 🚀 CLEAN AUTO-START: Notification clicked, starting timer immediately');
 
-        // Get the current session or use the provided hour/minute
+        // Get the session
         const hour = parseInt(params.hour) || new Date().getHours();
         const minute = parseInt(params.minute) || new Date().getMinutes();
 
-        // Find the matching session or create one
         let targetSession = this.currentSchedule[hour];
         if (!targetSession) {
             targetSession = this.getNextScheduledSession() || {
@@ -501,22 +499,22 @@ class NaamAbhyas {
             };
         }
 
-        // Start meditation — retry up to 3 times if ritualEngine isn't ready
-        const startSession = (retryCount) => {
+        // Store session for meditation
+        this.currentAlertSession = targetSession;
+
+        // Start meditation immediately - NO popup, NO extra sounds, NO interruptions
+        // Play gentle chime and start directly
+        setTimeout(() => {
+            console.log('[NaamAbhyas] ✅ Starting meditation directly from notification with gentle chime');
+            if (this.audioManager) {
+                this.audioManager.playChime();
+            }
             if (this.ritualEngine) {
-                console.log('[NaamAbhyas] ✅ RitualEngine ready, triggering session');
-                this.ritualEngine.triggerScheduledSession(targetSession, this.config.duration || 2);
-            } else if (retryCount > 0) {
-                console.log(`[NaamAbhyas] ⏳ RitualEngine not ready, retrying in 500ms (${retryCount} left)`);
-                setTimeout(() => startSession(retryCount - 1), 500);
+                this.ritualEngine.triggerScheduledSession(targetSession, this.config.duration);
             } else {
-                console.warn('[NaamAbhyas] ❌ RitualEngine never initialized, using fallback');
                 this.startMeditation();
             }
-        };
-
-        // Small delay for UI to settle, then start
-        setTimeout(() => startSession(3), 300);
+        }, 100);
     }
 
     /**
@@ -757,9 +755,10 @@ class NaamAbhyas {
             });
         }
 
-        // ─── Modals: Meditation Overlay (Present / Silent / Skip) ──────────────
+        // ─── Modals: Meditation Overlay (Present / Silent / Skip / Chime) ──────────────
         const medPresentBtn = document.getElementById('medPresentBtn');
         const medSilentBtn = document.getElementById('medSilentBtn');
+        const medChimeBtn = document.getElementById('medChimeBtn');
         const skipMeditationBtn = document.getElementById('skipMeditationBtn');
 
         if (medPresentBtn) {
@@ -767,7 +766,46 @@ class NaamAbhyas {
                 // Flash effect for presence acknowledgment
                 medPresentBtn.classList.add('acknowledging');
                 setTimeout(() => medPresentBtn.classList.remove('acknowledging'), 500);
-                if (this.ritualEngine) this.ritualEngine.recordPresence();
+                if (this.ritualEngine) this.ritualEngine.confirmPresence();
+            });
+        }
+
+        if (medSilentBtn) {
+            medSilentBtn.addEventListener('click', () => {
+                const isMuted = medSilentBtn.getAttribute('data-muted') === 'true';
+                medSilentBtn.setAttribute('data-muted', !isMuted);
+                const icon = medSilentBtn.querySelector('.btn-icon');
+                if (icon) icon.textContent = isMuted ? '🔊' : '🔇';
+                
+                if (this.audioManager) {
+                    if (isMuted) this.audioManager.unmute();
+                    else this.audioManager.mute();
+                }
+            });
+        }
+
+        if (medChimeBtn) {
+            medChimeBtn.addEventListener('click', () => {
+                const isEnabled = medChimeBtn.getAttribute('data-enabled') === 'true';
+                medChimeBtn.setAttribute('data-enabled', !isEnabled);
+                
+                if (this.audioManager) {
+                    if (!isEnabled) {
+                        this.audioManager.enableChime();
+                        this.showToast('Chime enabled', 'success');
+                    } else {
+                        this.audioManager.disableChime();
+                        this.showToast('Chime disabled', 'success');
+                    }
+                }
+            });
+        }
+
+        if (skipMeditationBtn) {
+            skipMeditationBtn.addEventListener('click', () => {
+                if (confirm('End this session early?')) {
+                    this.endMeditationEarly();
+                }
             });
         }
 
@@ -2231,14 +2269,29 @@ class NaamAbhyas {
         });
 
         // ═══ FIX BUG 4: Respect autoStartTimer setting ═══
-        // If auto-start is enabled, skip the alert modal and start the session directly
+        // Auto-start directly without alert modal using smooth meditation flow
         if (this.config.autoStartTimer) {
-            console.log('[NaamAbhyas] ⚡ Auto-start enabled — starting meditation directly');
-            if (this.ritualEngine) {
-                this.ritualEngine.triggerScheduledSession(session, this.config.duration || 2);
-            } else {
-                this.startMeditation();
-            }
+            console.log('[NaamAbhyas] ⚡ Auto-start enabled — smooth countdown');
+            var _autoSession = session;
+            this.currentAlertSession = _autoSession;
+
+            this.showToast('🙏 Naam Abhyas starting in 3...', 'nimrata', 3500);
+
+            var _count = 3;
+            var _countInterval = setInterval(function () {
+                _count--;
+                if (_count > 0) {
+                    this.showToast('🙏 Starting in ' + _count + '...', 'nimrata', 1500);
+                }
+            }.bind(this), 1000);
+
+            setTimeout(function () {
+                clearInterval(_countInterval);
+                this.showToast('✙ Naam Abhyas 🙏', 'nimrata', 2000);
+                setTimeout(function () {
+                    this.startMeditation();
+                }.bind(this), 500);
+            }.bind(this), 3200);
             return;
         }
 
@@ -2273,8 +2326,13 @@ class NaamAbhyas {
     }
 
     async startMeditation() {
+        console.log('[NaamAbhyas] 🧘 Starting meditation session');
+        
         const session = this.currentAlertSession || this.getNextScheduledSession();
-        if (!session) return;
+        if (!session) {
+            console.warn('[NaamAbhyas] No session found');
+            return;
+        }
 
         // Mark session as in progress
         session.status = 'in_progress';
@@ -2289,48 +2347,106 @@ class NaamAbhyas {
         // Keep screen awake if possible
         await this.requestWakeLock();
 
-        // Play start bell
-        if (this.config.notifications.soundEnabled) {
-            this.playSound('start-bell');
+        // Play gentle chime ONCE (single clean sound)
+        if (this.config.notifications.soundEnabled && this.audioManager) {
+            setTimeout(() => {
+                this.audioManager.play('gentle-bell').catch(e => console.log('Sound failed:', e));
+            }, 100);
         }
 
-        // Auto-play Vaheguru Jaap in background
+        // Auto-play Vaheguru Jaap in background (optional)
         if (this.audioManager) {
             this.audioManager.playAmbient(0.25).catch(e => console.log('Vaheguru Jaap failed:', e));
         }
 
-        // Start timer
-        const duration = this.config.duration * 60; // seconds
-        let remaining = duration;
+        // Start clean timer - no flickering
+        const _duration = this.config.duration * 60; // seconds
+        const _startTime = Date.now();
+        const _endTime = _startTime + (_duration * 1000);
+        let _tenSecBeep = true;
+        const _timerDisplay = document.getElementById('timerDisplay');
+        const _progressBar = document.getElementById('timerProgressBar');
+        const _progressRing = document.getElementById('medProgressRing');
+        const _ringCircum = _progressRing ? 2 * Math.PI * 85 : 0;
+        let _completed = false;
 
-        const timerDisplay = document.getElementById('timerDisplay');
-        const progressBar = document.getElementById('timerProgressBar');
+        if (_progressRing) {
+            _progressRing.style.strokeDasharray = _ringCircum;
+            _progressRing.style.strokeDashoffset = 0;
+        }
 
-        this.activeTimer = setInterval(() => {
-            remaining--;
+        const self = this;
+        
+        // Clean RAF-based timer
+        function _tick() {
+            // Safety check: ensure elements still exist
+            if (!document.getElementById('meditationOverlay')) {
+                console.log('[NaamAbhyas] Overlay removed, stopping timer');
+                if (self._timerRAF) cancelAnimationFrame(self._timerRAF);
+                self._timerRAF = null;
+                return;
+            }
 
-            // Update display
-            const minutes = Math.floor(remaining / 60);
-            const seconds = remaining % 60;
-            if (timerDisplay) {
-                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            const _now = Date.now();
+            const _remaining = Math.max(0, (_endTime - _now) / 1000);
+
+            // Completion check
+            if (_remaining <= 0 && !_completed) {
+                _completed = true;
+                if (_timerDisplay) _timerDisplay.textContent = '0:00';
+                if (_progressBar) _progressBar.style.width = '100%';
+                if (_progressRing) _progressRing.style.strokeDashoffset = _ringCircum;
+                self.completeMeditation(session);
+                return;
+            }
+
+            // 10-second warning (gentle chime)
+            if (_remaining <= 10 && _remaining > 9 && _tenSecBeep) {
+                _tenSecBeep = false;
+                if (self.config.notifications.soundEnabled && self.audioManager) {
+                    self.audioManager.play('gentle-bell').catch(e => {});
+                }
+            }
+
+            // Update display (smooth, no flickering)
+            const _mins = Math.floor(_remaining / 60);
+            const _secs = Math.floor(_remaining % 60);
+            if (_timerDisplay) {
+                _timerDisplay.textContent = _mins + ':' + (_secs < 10 ? '0' : '') + _secs;
             }
 
             // Update progress
-            const progress = ((duration - remaining) / duration) * 100;
-            if (progressBar) {
-                progressBar.style.width = `${progress}%`;
+            const _elapsed = (_duration * 1000) - (_endTime - _now);
+            const _progress = Math.min(_elapsed / (_duration * 1000), 1);
+            if (_progressBar) {
+                _progressBar.style.width = (_progress * 100) + '%';
+            }
+            if (_progressRing) {
+                _progressRing.style.strokeDashoffset = _ringCircum * _progress;
             }
 
-            // Timer complete
-            if (remaining <= 0) {
-                this.completeMeditation(session);
-            }
-        }, 1000);
+            self._timerRAF = requestAnimationFrame(_tick);
+        }
+
+        // Clear any existing timer
+        if (this._timerRAF) {
+            cancelAnimationFrame(this._timerRAF);
+            this._timerRAF = null;
+        }
+        
+        // Start the clean timer
+        this._timerRAF = requestAnimationFrame(_tick);
+        console.log('[NaamAbhyas] ✅ Timer started successfully');
     }
 
     async completeMeditation(session) {
-        // Clear timer
+        console.log('[NaamAbhyas] 🎉 Completing meditation session');
+        
+        // Clear timer immediately
+        if (this._timerRAF) {
+            cancelAnimationFrame(this._timerRAF);
+            this._timerRAF = null;
+        }
         if (this.activeTimer) {
             clearInterval(this.activeTimer);
             this.activeTimer = null;
@@ -2339,12 +2455,12 @@ class NaamAbhyas {
         // Release wake lock
         this.releaseWakeLock();
 
-        // Play completion bell
-        if (this.config.notifications.soundEnabled) {
-            this.playSound('end-bell');
+        // Play completion chime (single time only)
+        if (this.config.notifications.soundEnabled && this.audioManager) {
+            this.audioManager.play('gentle-bell').catch(e => console.log('Sound failed:', e));
         }
 
-        // Vibrate completion
+        // Vibrate completion (single time only)
         if (this.config.notifications.vibration && navigator.vibrate) {
             navigator.vibrate([200, 100, 200]);
         }
@@ -2378,26 +2494,32 @@ class NaamAbhyas {
         // Update streak
         this.updateStreak();
 
-        // Hide meditation overlay
+        // Hide meditation overlay FIRST
         const overlay = document.getElementById('meditationOverlay');
         if (overlay) {
             overlay.classList.remove('active');
         }
-
-        // Show completion modal
-        this.showCompletionModal();
 
         // Update UI
         this.updateUI();
 
         // Check achievements
         this.checkAchievements();
+
+        // Show completion modal after short delay
+        setTimeout(() => {
+            this.showCompletionModal();
+        }, 300);
     }
 
     endMeditationEarly() {
         const session = this.currentAlertSession || { hour: new Date().getHours() };
 
         // Clear timer
+        if (this._timerRAF) {
+            cancelAnimationFrame(this._timerRAF);
+            this._timerRAF = null;
+        }
         if (this.activeTimer) {
             clearInterval(this.activeTimer);
             this.activeTimer = null;
@@ -2931,35 +3053,49 @@ class NaamAbhyas {
        MODALS
     ═════════════════════════════════════════════════════════════════════════ */
 
-    showCompletionModal() {
+    showCompletionModal(stats) {
         const modal = document.getElementById('completionModal');
         if (!modal) return;
 
-        // Update stats in modal
-        const stats = this.history.statistics;
-        const today = this.getTodayString();
-        const todaysSessions = this.history.sessions.filter(s =>
-            s.date === today && s.status === 'completed'
-        ).length;
-        const totalHours = this.config.activeHours.end - this.config.activeHours.start + 1;
+        // Rotating high-spirit blessings - Naam Simran focused (fixed verses)
+        var blessings = [
+            "ਸਤਿ ਨਾਮੁ ਵਡਿਆਈ ਵੀਚਾਰੁ — True is the Naam, True is His Glory - you meditated upon it.",
+            "ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿ ਜੀਉ — Waheguru, Waheguru, Waheguru, Wahe Jio.",
+            "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ — Meditating, meditating, you found peace.",
+            "ਨਾਨਕ ਨਾਮੁ ਮਿਲੈ ਵਡਿਆਈ — O Nanak, through the Naam, greatness is obtained.",
+            "ਹਰਿ ਕਾ ਨਾਮੁ ਮਨ ਵਸਿਆ — The Lord's Name dwells in your mind now.",
+            "ਜਪਿ ਜਪਿ ਨਾਮੁ ਪਰਮ ਸੁਖੁ ਪਾਇਆ — Chanting, chanting the Naam, you found supreme peace."
+        ];
+        var rndBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+        var blessingEl = document.getElementById('completionBlessing');
+        if (blessingEl) blessingEl.textContent = rndBlessing;
 
-        this.setTextContent('compDuration', `${this.config.duration}:00`);
-        this.setTextContent('compStreak', stats.currentStreak);
-        this.setTextContent('compToday', `${todaysSessions}/${totalHours}`);
+        // Update stats
+        var historyStats = this.history.statistics;
+        var today = this.getTodayString();
+        var todaysSessions = this.history.sessions.filter(function (s) {
+            return s.date === today && s.status === 'completed';
+        }).length;
+        var totalHours = this.config.activeHours.end - this.config.activeHours.start + 1;
+
+        this.setTextContent('compDuration', this.config.duration + ':00');
+        this.setTextContent('compStreak', historyStats.currentStreak);
+        this.setTextContent('compToday', todaysSessions + '/' + totalHours);
 
         // Next session info
-        const nextSession = this.getNextScheduledSession();
-        const nextInfo = document.getElementById('nextSessionInfo');
+        var nextSession = this.getNextScheduledSession();
+        var nextInfo = document.getElementById('nextSessionInfo');
         if (nextInfo) {
             if (nextSession) {
-                const timeUntil = this.calculateTimeUntil(nextSession.hour, nextSession.startMinute);
-                nextInfo.textContent = `Next session: ${nextSession.startTime} (in ${timeUntil})`;
+                var timeUntil = this.calculateTimeUntil(nextSession.hour, nextSession.startMinute);
+                nextInfo.textContent = 'Next session: ' + nextSession.startTime + ' (in ' + timeUntil + ')';
             } else {
-                nextInfo.textContent = 'All sessions completed for today! 🎉';
+                nextInfo.textContent = 'All sessions completed for today! \uD83C\uDF89';
             }
         }
 
         modal.classList.add('active');
+        this.playIosChime('completion');
     }
 
     hideCompletionModal() {
@@ -3612,35 +3748,6 @@ NaamAbhyas.prototype._updateActivePreset = function (mins) {
     document.querySelectorAll('.preset-btn').forEach(btn => {
         btn.classList.toggle('active', parseInt(btn.dataset.min) === mins);
     });
-};
-
-NaamAbhyas.prototype.showCompletionModal = function (stats) {
-    const modal = document.getElementById('completionModal');
-    if (!modal) return;
-
-    // Rotating high-spirit blessings
-    const blessings = [
-        "Millions of sins erased. You are purified.",
-        "The mind is stilled. The soul is awake.",
-        "You walked with the Guru for these moments.",
-        "A peaceful heart is a sacred temple.",
-        "Simran is the only true wealth. You are rich today.",
-        "ਧੰਨੁ ਧੰਨੁ ਤੂ ਮੇਰੇ ਸਤਿਗੁਰਾ... Blessed are you, O True Guru."
-    ];
-    const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
-
-    const blessingEl = document.getElementById('completionBlessing');
-    if (blessingEl) blessingEl.textContent = randomBlessing;
-
-    // Update stats
-    if (stats) {
-        if (document.getElementById('compDuration')) document.getElementById('compDuration').textContent = `${stats.duration}m`;
-        if (document.getElementById('compStreak')) document.getElementById('compStreak').textContent = stats.streak;
-        if (document.getElementById('compToday')) document.getElementById('compToday').textContent = `${stats.today}/${stats.goal}`;
-    }
-
-    modal.classList.add('active');
-    this.playIosChime('completion');
 };
 
 NaamAbhyas.prototype.playIosChime = function (type) {

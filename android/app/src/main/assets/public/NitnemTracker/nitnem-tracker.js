@@ -3733,6 +3733,47 @@ const NitnemManager = {
     },
 
     /**
+     * Sync Nitnem Tracker selected banis → My Pothi (anhad_my_pothi)
+     * Ensures bidirectional consistency: adding/removing in Tracker updates Pothi.
+     */
+    syncSelectedBanisToMyPothi() {
+        try {
+            var periods = ['amritvela', 'rehras', 'sohila'];
+            var uniqueIds = [];
+            var seen = {};
+
+            periods.forEach(function (p) {
+                var list = this.selectedBanis[p] || [];
+                list.forEach(function (b) {
+                    if (b && b.id != null && !seen[b.id]) {
+                        seen[b.id] = true;
+                        uniqueIds.push(b.id);
+                    }
+                });
+            }, this);
+
+            // Update anhad_my_pothi (ordered array of IDs)
+            localStorage.setItem('anhad_my_pothi', JSON.stringify(uniqueIds));
+
+            // Build data array for anhad_my_pothi_data
+            var pothiData = [];
+            uniqueIds.forEach(function (id) {
+                var bani = this.allBanis ? this.allBanis.find(function (b) { return b.id === id; }) : null;
+                if (bani) {
+                    pothiData.push({
+                        id: bani.id,
+                        name: bani.nameGurmukhi || bani.name || 'Unknown',
+                        english: bani.nameEnglish || bani.english || 'Unknown'
+                    });
+                }
+            }, this);
+            localStorage.setItem('anhad_my_pothi_data', JSON.stringify(pothiData));
+        } catch (e) {
+            console.warn('[NitnemManager] syncSelectedBanisToMyPothi failed:', e);
+        }
+    },
+
+    /**
      * Load today's progress
      */
     loadTodayProgress() {
@@ -4098,6 +4139,7 @@ const NitnemManager = {
         }
 
         this.saveSelectedBanis();
+        this.syncSelectedBanisToMyPothi();
         this.renderBaniList(period);
         this.updateCounts();
         this.updateProgress();
@@ -4226,6 +4268,7 @@ const NitnemManager = {
 
         this.selectedBanis[period].push(entry);
         this.saveSelectedBanis();
+        this.syncSelectedBanisToMyPothi();
         this.renderBaniList(period);
         this.updateCounts();
         this.updateProgress();
@@ -4256,6 +4299,7 @@ const NitnemManager = {
         }
 
         this.saveSelectedBanis();
+        this.syncSelectedBanisToMyPothi();
         this.renderBaniList(period);
         this.updateCounts();
         this.updateProgress();

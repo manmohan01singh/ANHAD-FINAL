@@ -1542,6 +1542,16 @@
           const isDark = getIsDark(localStorage.getItem('anhad_theme'));
           this._apply(isDark);
         }
+        if (e.key === 'nitnemTracker_nitnemLog' || e.key === 'nitnemTracker_selectedBanis' || e.key === 'anhad_streak_data') {
+          Store.clearCache();
+          UIController.updateNitnemCard();
+        }
+      });
+
+      // Listen for in-page nitnem updates (same page, e.g. My Pothi dispatches this)
+      window.addEventListener('nitnemUpdated', () => {
+        Store.clearCache();
+        UIController.updateNitnemCard();
       });
     },
 

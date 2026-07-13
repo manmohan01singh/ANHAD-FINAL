@@ -75,7 +75,7 @@
 
     const STREAMS = {
         darbar: {
-            name: 'Darbar Sahib Live',
+            name: 'Sachkhand Sahib',
             subtitle: 'Sri Harmandir Sahib Ji',
             url: 'https://live.sgpc.net:8443/;nocache=1',
             type: 'live',
@@ -320,8 +320,51 @@
         if (window.AudioCoordinator) window.AudioCoordinator.requestPlay('GurbaniRadioPage');
 
         try {
+            // NUCLEAR FIX: For Darbar Sahib, use simple direct audio playback
+            if (name === 'darbar') {
+                console.log('[GurbaniRadio] NUCLEAR FIX: Starting Darbar Sahib with direct audio');
+                
+                // Stop other streams first
+                if (window.AnhadAudio) {
+                    window.AnhadAudio.pause();
+                }
+                
+                // Get or create dedicated Darbar audio element
+                if (!window._darbarAudio) {
+                    window._darbarAudio = new Audio();
+                    window._darbarAudio.preload = 'none';
+                    window._darbarAudio.crossOrigin = 'anonymous';
+                }
+                
+                const darbarAudio = window._darbarAudio;
+                darbarAudio.pause();
+                darbarAudio.currentTime = 0;
+                darbarAudio.src = st.url + '&t=' + Date.now();
+                darbarAudio.volume = elVolInput ? parseFloat(elVolInput.value) : 0.7;
+                
+                darbarAudio.onloadstart = () => setConn(true);
+                darbarAudio.oncanplay = () => setConn(false);
+                darbarAudio.onplaying = () => {
+                    isPlaying = true;
+                    updateUI();
+                    setConn(false);
+                };
+                darbarAudio.onerror = (e) => {
+                    setConn(false);
+                    showErr('Stream Error', 'Unable to connect to Darbar Sahib.');
+                };
+                
+                await darbarAudio.play();
+                setConn(false);
+                return;
+            }
+            
+            // For other streams - STOP Darbar first
+            if (window._darbarAudio && !window._darbarAudio.paused) {
+                window._darbarAudio.pause();
+            }
+            
             if (window.AnhadAudio) {
-                // If it is already playing this stream, don't restart it to avoid audio cut out!
                 const grState = window.AnhadAudio.getState();
                 if (grState.isPlaying && grState.currentStream === name) {
                     setConn(false);
@@ -330,8 +373,10 @@
                 await window.AnhadAudio.play(name);
             }
         } catch (e) {
+            console.error(`[GurbaniRadio] Failed to start stream ${name}:`, e);
             setConn(false);
-            updateUI();
+        } finally {
+            setConn(false);
         }
     }
 
@@ -343,6 +388,26 @@
     }
 
     async function togglePlay() {
+        // NUCLEAR FIX: Handle Darbar separately
+        if (curStream === 'darbar' && window._darbarAudio) {
+            const darbarAudio = window._darbarAudio;
+            if (darbarAudio.paused) {
+                try {
+                    await darbarAudio.play();
+                    isPlaying = true;
+                    updateUI();
+                } catch (e) {
+                    console.error('[GurbaniRadio] Darbar play failed:', e);
+                }
+            } else {
+                darbarAudio.pause();
+                isPlaying = false;
+                updateUI();
+            }
+            return;
+        }
+        
+        // For other streams, use AnhadAudio
         if (!window.AnhadAudio) return;
         const gaState = window.AnhadAudio.getState();
         if (!gaState.isPlaying || gaState.currentStream !== curStream) {
@@ -373,7 +438,7 @@
         // Accent
         if (elPlayer) elPlayer.dataset.stream = name;
 
-        // Artwork crossfade — use time-of-day slot
+        // Artwork crossfade
         const artSrc = (st.artworkSlots && st.artworkSlots[slot]) || st.artwork;
         if (elArtImg) {
             elArtImg.classList.add('xfade');
@@ -390,7 +455,7 @@
         if (elArtist) elArtist.textContent = st.name;
         if (elSub) elSub.textContent = st.subtitle;
 
-        // Background — use current time of day
+        // Background
         updateBg(slot);
 
         // Progress reset for live
@@ -399,9 +464,13 @@
             if (elProgKnob) elProgKnob.style.left = '0%';
             if (elElapsed) elElapsed.textContent = '∞';
         }
+        
         // Reset live badge state
         setLiveSynced(true);
         updateSeekButtons();
+        
+        // CRITICAL: Update UI to reflect current playing state
+        updateUI();
     }
 
     // ─── PLAY STATE UI ─────────────────────────────────────────────────────────
@@ -409,9 +478,14 @@
     function updateUI() {
         if (!elPlayBtn || !elPlayIcon) return;
 
-        // Read playing state from AnhadAudio singleton
-        const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
-        const playing = state.isPlaying || false;
+        // NUCLEAR FIX: Check Darbar audio state separately
+        let playing = false;
+        if (curStream === 'darbar' && window._darbarAudio) {
+            playing = !window._darbarAudio.paused;
+        } else {
+            const state = window.AnhadAudio ? window.AnhadAudio.getState() : {};
+            playing = state.isPlaying || false;
+        }
 
         if (playing) {
             elPlayBtn.classList.remove('paused');
@@ -613,10 +687,25 @@
         }
     });
 
-    // Stream switcher
-    if (elBtnDarbar) elBtnDarbar.addEventListener('click', () => startStream('darbar'));
-    if (elBtnAmrit) elBtnAmrit.addEventListener('click', () => startStream('amritvela'));
-    if (elBtnSimran) elBtnSimran.addEventListener('click', () => startStream('simran'));
+    // Stream switcher - DISPLAY ONLY, don't play on click
+    if (elBtnDarbar) {
+        elBtnDarbar.addEventListener('click', () => {
+            setStream('darbar');
+            // Don't auto-play, just update UI
+        });
+    }
+    if (elBtnAmrit) {
+        elBtnAmrit.addEventListener('click', () => {
+            setStream('amritvela');
+            // Don't auto-play, just update UI
+        });
+    }
+    if (elBtnSimran) {
+        elBtnSimran.addEventListener('click', () => {
+            setStream('simran');
+            // Don't auto-play, just update UI
+        });
+    }
 
     // (Simran sub-switch removed — no functionality)
 
@@ -858,6 +947,9 @@
             } else {
                 updateUI();
             }
+
+            // Note: decoder warmup for Darbar SGPC stream happens in startStream()
+            // on the first play call, so we don't pre-load anything here.
         } else {
             // Fallback if singleton is not loaded
             if (forcePlay) {
@@ -882,6 +974,31 @@
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
+    }
+
+    // ═══ CONTINUOUS UI UPDATE LOOP FOR SMOOTH STATE TRANSITIONS ═══
+    // Update UI every 300ms to ensure smooth play button state changes
+    setInterval(() => {
+        if (!document.hidden) {
+            updateUI();
+        }
+    }, 300);
+
+    // Listen for audio state changes from AnhadAudio singleton
+    if (window.AnhadAudio) {
+        const audio = window.AnhadAudio.getAudio();
+        if (audio) {
+            audio.addEventListener('play', () => updateUI());
+            audio.addEventListener('pause', () => updateUI());
+            audio.addEventListener('playing', () => updateUI());
+        }
+    }
+
+    // Listen for Darbar audio state changes
+    if (window._darbarAudio) {
+        window._darbarAudio.addEventListener('play', () => updateUI());
+        window._darbarAudio.addEventListener('pause', () => updateUI());
+        window._darbarAudio.addEventListener('playing', () => updateUI());
     }
 
     // Persist on page hide (for GMP continuity)

@@ -32,14 +32,14 @@ class RitualEngine {
         // Track if 10-second beep was played
         this.tenSecondBeepPlayed = false;
 
-        // Affirmations for completion
+        // Affirmations for completion - Actual Gurbani verses from Sri Guru Granth Sahib Ji
         this.affirmations = [
-            { gurmukhi: "ਧੰਨ ਗੁਰੂ ਨਾਨਕ", english: "Well done. Return to your duty." },
-            { gurmukhi: "ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫ਼ਤਹਿ", english: "You showed up." },
-            { gurmukhi: "ਸਤਿ ਨਾਮ", english: "Discipline compounds." },
-            { gurmukhi: "ਸ਼ੁਕਰਾਨਾ", english: "Another step on the path." },
-            { gurmukhi: "ਚੜ੍ਹਦੀ ਕਲਾ", english: "Your spirit rises." },
-            { gurmukhi: "ਮਨ ਜੀਤੇ ਜਗੁ ਜੀਤੁ", english: "Conquer the mind, conquer the world." }
+            { gurmukhi: "ਨਾਮ ਜਪਤ ਅਘ ਕੋਟਿ ਉਤਾਰੇ", english: "Chanting the Naam, millions of sins are erased" },
+            { gurmukhi: "ਜਪਿ ਮਨ ਮੇਰੇ ਗੋਵਿੰਦ ਕੀ ਬਾਣੀ", english: "O my mind, chant the Word of the Lord" },
+            { gurmukhi: "ਸਿਮਰਉ ਸਿਮਰਿ ਸਿਮਰਿ ਸੁਖ ਪਾਵਉ", english: "Meditating, meditating, meditating, I find peace" },
+            { gurmukhi: "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ", english: "O my mind, you are the embodiment of Light - recognize your origin" },
+            { gurmukhi: "ਹਰਿ ਕਾ ਨਾਮੁ ਜਪਿ ਦਿਨਸੁ ਰਾਤਿ", english: "Chant the Lord's Name, day and night" },
+            { gurmukhi: "ਗੁਰਮੁਖਿ ਨਾਮੁ ਜਪਹੁ ਮਨ ਮੇਰੇ", english: "O my mind, chant the Naam as Gurmukh" }
         ];
 
         // Session metrics
@@ -310,12 +310,10 @@ class RitualEngine {
             durationMinutes: durationMinutes
         };
 
-        // Play arrival sound
-        this.playBeep('start');
-
-        // Vibrate pattern for attention
+        // NO extra sounds - gentle chime already played by executeAutoStart
+        // Just gentle vibration for attention
         if (navigator.vibrate) {
-            navigator.vibrate([200, 100, 200, 100, 200]);
+            navigator.vibrate([100, 50, 100]);
         }
 
         this.enterActiveState();
@@ -347,7 +345,16 @@ class RitualEngine {
 
         console.log('[RitualEngine] Entering ACTIVE state');
 
-        // Show overlay
+        // Show meditation overlay (new lightweight UI)
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) {
+            meditationOverlay.classList.add('active');
+            console.log('[RitualEngine] ✅ Meditation overlay shown');
+        } else {
+            console.error('[RitualEngine] ❌ Meditation overlay not found!');
+        }
+
+        // Also show ritual overlay as fallback (for compatibility)
         const overlay = document.getElementById('ritualOverlay');
         const activeState = document.getElementById('ritualActiveState');
         const completionState = document.getElementById('ritualCompletionState');
@@ -624,7 +631,11 @@ class RitualEngine {
         this.hideSkipConfirmation();
         this.cleanup();
 
-        // Close overlay immediately
+        // Close meditation overlay
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) meditationOverlay.classList.remove('active');
+
+        // Close ritual overlay immediately
         const overlay = document.getElementById('ritualOverlay');
         if (overlay) overlay.classList.remove('active');
 
@@ -668,8 +679,10 @@ class RitualEngine {
 
         this.cleanup();
 
-        // Play completion beep
-        this.playBeep('complete');
+        // Play gentle charming chime for completion
+        if (this.app?.audioManager) {
+            this.app.audioManager.playChime();
+        }
 
         // Vibrate completion
         if (navigator.vibrate) {
@@ -747,10 +760,10 @@ class RitualEngine {
         // Trigger completion celebration animation
         this.triggerCompletionCelebration();
 
-        // Auto-close after 5 seconds (extended for celebration)
+        // Auto-close after 4 seconds (smooth transition)
         this.autoCloseTimeout = setTimeout(() => {
             this.continueDay();
-        }, 5000);
+        }, 4000);
     }
 
     /**
@@ -889,14 +902,31 @@ class RitualEngine {
      * Continue day - close overlay and return to main page
      */
     continueDay() {
+        console.log('[RitualEngine] Continuing day - closing overlay');
+
         // Clear auto-close timeout
         if (this.autoCloseTimeout) {
             clearTimeout(this.autoCloseTimeout);
             this.autoCloseTimeout = null;
         }
 
+        // Hide meditation overlay
+        const meditationOverlay = document.getElementById('meditationOverlay');
+        if (meditationOverlay) {
+            meditationOverlay.classList.remove('active');
+            console.log('[RitualEngine] ✅ Meditation overlay hidden');
+        }
+
+        // Hide ritual overlay with smooth transition
         const overlay = document.getElementById('ritualOverlay');
-        if (overlay) overlay.classList.remove('active');
+        if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => {
+                // Clean up celebration particles
+                const celebration = overlay.querySelector('.completion-celebration');
+                if (celebration) celebration.remove();
+            }, 300);
+        }
 
         this.cleanup();
         this.state = 'IDLE';

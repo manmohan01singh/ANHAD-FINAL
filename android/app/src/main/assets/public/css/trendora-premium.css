@@ -3680,7 +3680,7 @@ a:active {
   }
 
   body {
-    background: white;
+    background: var(--bg-primary, white);
     padding-bottom: 0;
   }
 }

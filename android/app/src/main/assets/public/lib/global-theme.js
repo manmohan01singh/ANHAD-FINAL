@@ -66,7 +66,7 @@
             html.setAttribute('data-theme', 'dark');
             html.style.colorScheme = 'dark';
             // FORCE inline styles to ensure immediate visual update
-            html.style.backgroundColor = '#0D0D0F';
+            html.style.setProperty('background-color', '#0D0D0F', 'important');
             html.style.color = '#F5F5F7';
         } else {
             html.classList.remove('dark', 'dark-mode');
@@ -74,7 +74,7 @@
             html.setAttribute('data-theme', 'light');
             html.style.colorScheme = 'light';
             // FORCE inline styles to ensure immediate visual update
-            html.style.backgroundColor = '#FAF8F5';
+            html.style.setProperty('background-color', '#FAF8F5', 'important');
             html.style.color = '#1C1C1E';
         }
 
@@ -88,7 +88,7 @@
             else if (timeOfDay === 'day') autoBg = '#FFFDF9';
             else if (timeOfDay === 'evening') autoBg = '#FFF8E7';
             else if (timeOfDay === 'night') autoBg = '#0F0F12';
-            html.style.backgroundColor = autoBg;
+            html.style.setProperty('background-color', autoBg, 'important');
         }
 
         // Update meta theme-color (cached — not queried on every tick)
