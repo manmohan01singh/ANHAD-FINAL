@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pa" data-theme="dark">
 <head>
+  <!-- ══ Instant dark flash prevention ══ -->
   <script>
   (function() {
     try {
@@ -9,193 +10,204 @@
         ? ((new Date().getHours() >= 5 && new Date().getHours() < 20) ? 'light' : 'dark')
         : theme;
       document.documentElement.setAttribute('data-theme', effective);
-      document.documentElement.style.backgroundColor = effective === 'dark' ? '#0A0A0F' : '#F9F9FB';
-      if (effective === 'dark') document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme-mode', theme);
+      document.documentElement.style.backgroundColor = effective === 'dark' ? '#08080F' : '#FAF8F5';
+      if (effective === 'dark') document.documentElement.classList.add('dark', 'dark-mode');
+      document.documentElement.classList.add('theme-loaded');
     } catch(e) {}
   })();
   </script>
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#0A0A0F">
-  <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas</title>
+  <meta name="theme-color" content="#08080F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Naam Abhyas — 2-minute Naam Simran meditation timer. ANHAD Spiritual App.">
+  <title>ਨਾਮ ਅਭਿਆਸ | Naam Abhyas — ANHAD</title>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&family=Noto+Sans+Gurmukhi:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+  <!-- Page Styles -->
   <link rel="stylesheet" href="naam-abhyas.css">
+
+  <!-- Naam Abhyas Manager — MUST load before page JS -->
   <script src="../lib/naam-abhyas-manager.js"></script>
 </head>
 <body>
 
+<!-- ═══ ROOT APP SHELL ═══ -->
 <div id="naamApp">
 
-  <!-- Background -->
-  <div class="na-bg"></div>
+  <!-- ── Background ── -->
+  <div class="na-bg">
+    <div class="na-bg-aurora"></div>
+    <div class="na-bg-stars" id="naStars"></div>
+  </div>
 
-  <!-- Header -->
-  <header class="na-header">
-    <button class="na-icon-btn" id="backBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+  <!-- ── Navigation Bar ── -->
+  <nav class="na-nav">
+    <button class="na-nav-btn" id="naBackBtn" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
         <path d="M15 18l-6-6 6-6"/>
       </svg>
     </button>
-    
-    <div class="na-header-title">
-      <div class="na-title-main">Naam Abhyas</div>
-      <div class="na-title-gurmukhi">ਨਾਮ ਅਭਿਆਸ</div>
+
+    <div class="na-nav-title">
+      <div class="na-nav-title-main">Naam Abhyas</div>
+      <div class="na-nav-title-gurmukhi">ਨਾਮ ਅਭਿਆਸ</div>
     </div>
 
-    <button class="na-icon-btn" id="settingsBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 1v6M12 17v6M5.64 5.64l4.24 4.24M14.12 14.12l4.24 4.24M1 12h6M17 12h6M5.64 18.36l4.24-4.24M14.12 9.88l4.24-4.24"/>
+    <button class="na-nav-btn" id="naSettingsBtn" aria-label="Schedule Settings" style="font-size:18px;opacity:0.6;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
-  </header>
+  </nav>
 
-  <!-- Main Content -->
-  <main class="na-main" id="mainScreen">
-    
-    <!-- Stats Card -->
-    <div class="na-card na-stats-card">
-      <div class="na-stats-header">
-        <div class="na-stats-icon">🙏</div>
-        <div class="na-stats-info">
-          <div class="na-stats-title">Today's Progress</div>
-          <div class="na-stats-date" id="statsDate">--</div>
-        </div>
-        <div class="na-stats-percent" id="statsPercent">0%</div>
-      </div>
-      
-      <div class="na-stats-grid">
-        <div class="na-stat-item">
-          <div class="na-stat-value" id="statCompleted">0</div>
-          <div class="na-stat-label">Completed</div>
-        </div>
-        <div class="na-stat-item">
-          <div class="na-stat-value" id="statStreak">0</div>
-          <div class="na-stat-label">Day Streak</div>
-        </div>
-        <div class="na-stat-item">
-          <div class="na-stat-value" id="statTotal">0</div>
-          <div class="na-stat-label">This Week</div>
-        </div>
+  <!-- ══════════════════════════════════════════════
+       TIMER SCREEN
+  ══════════════════════════════════════════════ -->
+  <section id="naTimerScreen" class="na-screen">
+
+    <!-- Breathing Orb -->
+    <div class="na-orb-wrapper" aria-hidden="true">
+      <!-- Pulse rings -->
+      <div class="na-orb-ring"></div>
+      <div class="na-orb-ring"></div>
+      <div class="na-orb-ring"></div>
+
+      <!-- Progress SVG ring overlaid on the orb -->
+      <svg class="na-progress-ring" viewBox="0 0 168 168" aria-hidden="true">
+        <circle class="na-progress-track" cx="84" cy="84" r="76"/>
+        <circle class="na-progress-fill" id="naProgressFill" cx="84" cy="84" r="76"
+          stroke-dasharray="477.5"
+          stroke-dashoffset="0"/>
+      </svg>
+
+      <!-- Main glowing orb -->
+      <div class="na-orb" id="naOrb">
+        <span class="na-ik-onkar" aria-hidden="true">ੴ</span>
       </div>
     </div>
 
-    <!-- Schedule List Header -->
-    <div class="na-section-header">
-      <h2 class="na-section-title">Today's Schedule</h2>
-      <p class="na-section-subtitle">Random reminder times throughout your selected hours</p>
+    <!-- Session chips -->
+    <div class="na-session-chips" role="status" aria-live="polite">
+      <div class="na-chip">
+        <span class="na-chip-dot"></span>
+        <span id="naSessionTypeChip">Naam Simran</span>
+      </div>
+      <div class="na-chip">
+        <span id="naSessionTimeChip">—</span>
+      </div>
     </div>
 
-    <!-- Schedule List -->
-    <div class="na-schedule-list" id="scheduleList">
-      <!-- Dynamically generated by JS -->
-    </div>
+    <!-- Session label -->
+    <div class="na-session-label" aria-hidden="true">WAHEGURU SIMRAN</div>
 
-  </main>
+    <!-- Countdown -->
+    <div class="na-timer-display" id="naTimerDisplay" role="timer" aria-live="off" aria-label="Time remaining">2:00</div>
+    <div class="na-timer-label">remaining</div>
 
-  <!-- Timer Screen (Full Screen Overlay) -->
-  <div class="na-timer-overlay" id="timerOverlay">
-    <div class="na-timer-screen">
-      
-      <button class="na-close-btn" id="closeTimerBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M18 6L6 18M6 6l12 12"/>
+    <!-- Actions -->
+    <div class="na-actions">
+      <!-- Start button (shown before first start) -->
+      <button class="na-btn na-btn-primary" id="naStartBtn" aria-label="Start Naam Simran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
+        Start Simran
       </button>
 
-      <!-- Breathing Orb -->
-      <div class="na-orb-container">
-        <div class="na-orb-ring"></div>
-        <div class="na-orb-ring"></div>
-        <div class="na-orb-ring"></div>
-        
-        <svg class="na-progress-ring" viewBox="0 0 200 200">
-          <circle class="na-progress-bg" cx="100" cy="100" r="90"/>
-          <circle class="na-progress-bar" id="progressBar" cx="100" cy="100" r="90"/>
+      <!-- Pause/Resume button (shown while timer active) -->
+      <button class="na-btn na-btn-secondary" id="naPauseBtn" aria-label="Pause" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" y1="4" x2="6" y2="20"/>
+          <line x1="18" y1="4" x2="18" y2="20"/>
         </svg>
-        
-        <div class="na-orb">
-          <span class="na-orb-symbol">ੴ</span>
-        </div>
-      </div>
-
-      <div class="na-timer-label">WAHEGURU SIMRAN</div>
-      <div class="na-timer-display" id="timerDisplay">2:00</div>
-      <div class="na-timer-sublabel">remaining</div>
-
-      <div class="na-timer-actions">
-        <button class="na-btn na-btn-primary" id="startTimerBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polygon points="5 3 19 12 5 21 5 3"/>
-          </svg>
-          Start Simran
-        </button>
-        <button class="na-btn na-btn-secondary" id="pauseTimerBtn" style="display:none;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <line x1="6" y1="4" x2="6" y2="20"/>
-            <line x1="18" y1="4" x2="18" y2="20"/>
-          </svg>
-        </button>
-      </div>
-
+      </button>
     </div>
-  </div>
 
-  <!-- Completion Screen -->
-  <div class="na-completion-overlay" id="completionOverlay">
-    <div class="na-completion-screen">
-      
-      <div class="na-completion-icon">
-        <div class="na-completion-ring"></div>
-        <span class="na-completion-emoji">🙏</span>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       COMPLETION SCREEN
+  ══════════════════════════════════════════════ -->
+  <section id="naCompletionScreen" class="na-screen hidden" style="display:none;" aria-label="Session complete">
+
+    <div class="na-completion-inner">
+
+      <!-- Animated check -->
+      <div class="na-check-wrapper" aria-hidden="true">
+        <div class="na-check-glow"></div>
+        <div class="na-check-ring"></div>
+        <span class="na-check-icon">🙏</span>
       </div>
 
       <h1 class="na-completion-title">Waheguru Ji</h1>
       <div class="na-completion-gurmukhi">ਵਾਹਿਗੁਰੂ ਜੀ</div>
-      <p class="na-completion-message">
+      <p class="na-completion-sub">
         Session complete. May the Naam<br>carry your mind in peace.
       </p>
 
-      <div class="na-completion-stats">
-        <div class="na-completion-stat">
-          <div class="na-completion-stat-icon">🙏</div>
-          <div class="na-completion-stat-value" id="completionStatToday">1</div>
-          <div class="na-completion-stat-label">Today</div>
+      <!-- Stats row -->
+      <div class="na-stats-row" role="group" aria-label="Session statistics">
+
+        <div class="na-stat-card" style="--delay:0.1s">
+          <span class="na-stat-icon">🙏</span>
+          <span class="na-stat-value" id="naStatToday">1</span>
+          <span class="na-stat-label">Today</span>
         </div>
-        <div class="na-completion-stat">
-          <div class="na-completion-stat-icon">🔥</div>
-          <div class="na-completion-stat-value" id="completionStatStreak">0</div>
-          <div class="na-completion-stat-label">Streak</div>
+
+        <div class="na-stat-card" style="--delay:0.2s">
+          <span class="na-stat-icon"><span class="na-streak-flame">🔥</span></span>
+          <span class="na-stat-value" id="naStatStreak">0</span>
+          <span class="na-stat-label">Streak</span>
         </div>
-        <div class="na-completion-stat">
-          <div class="na-completion-stat-icon">⏱</div>
-          <div class="na-completion-stat-value" id="completionStatDuration">2m</div>
-          <div class="na-completion-stat-label">Duration</div>
+
+        <div class="na-stat-card" style="--delay:0.3s">
+          <span class="na-stat-icon">⏱</span>
+          <span class="na-stat-value" id="naStatDuration">2m</span>
+          <span class="na-stat-label">Duration</span>
         </div>
+
       </div>
 
-      <button class="na-btn na-btn-done" id="doneBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <!-- Done button -->
+      <button class="na-done-btn" id="naDoneBtn" aria-label="Done, return to app">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
         Done — Waheguru Ji 🙏
       </button>
 
     </div>
+
+    <div class="na-safe-bottom"></div>
+  </section>
+
+  <!-- Pause indicator -->
+  <div class="na-pause-indicator" id="naPauseIndicator" role="status" aria-live="polite">
+    ⏸ Paused
   </div>
 
   <!-- Toast -->
-  <div class="na-toast" id="toast"></div>
+  <div class="na-toast" id="naToast" role="alert" aria-live="assertive"></div>
 
-</div>
+  <!-- Confetti layer (above completion screen) -->
+  <div class="na-confetti-layer" id="naConfettiLayer" aria-hidden="true"></div>
 
+</div><!-- /#naamApp -->
+
+<!-- ═══ Global Notification Engine ═══ -->
 <script src="../lib/capacitor-notifications-global.js" defer></script>
+
+<!-- ═══ Page Timer Engine ═══ -->
 <script src="naam-abhyas.js"></script>
 
 </body>

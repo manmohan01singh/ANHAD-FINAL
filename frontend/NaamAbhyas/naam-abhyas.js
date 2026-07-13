@@ -1,563 +1,563 @@
 /**
- * NAAM ABHYAS V3.0 — Complete Professional System
+ * NAAM ABHYAS — Single Timer Engine
  * ══════════════════════════════════════════════════════════════════
- * Features:
- * - Random notification times within user-selected hour range
- * - On/Off toggle in settings
- * - Custom duration selection
- * - Notification sound selection
- * - Theme control
- * - Direct timer start from notification (no popups)
- * - Auto-mark complete when timer finishes
- * - Beautiful claymorphism UI
+ * Architecture:
+ *   1. NaamAbhyasManager (lib) = single source of truth for launch context
+ *   2. This file = single countdown engine, never spawns duplicate intervals
+ *   3. ONE visibility listener to handle background/foreground
+ *   4. Completion recorded ONCE via manager.completeSession()
+ *
+ * Rules:
+ *   - Never read localStorage for launch context (manager owns that)
+ *   - Never create more than one interval / requestAnimationFrame loop
+ *   - Never re-navigate or duplicate complete
  * ══════════════════════════════════════════════════════════════════
  */
-(function() {
+(function () {
   'use strict';
 
-  // ═══ CONFIGURATION & STATE ═══
-  var CONFIG_KEY = 'naamAbhyas_config_v3';
-  var SESSIONS_KEY = 'naamAbhyas_sessions_v3';
-  var STATS_KEY = 'naamAbhyas_stats_v3';
+  /* ─────────────────────────────────────────────────
+     CONFIG
+  ───────────────────────────────────────────────── */
+  var SESSION_DURATION_SECONDS = 120; // 2 minutes default
 
-  var DEFAULT_CONFIG = {
-    enabled: true,
-    startHour: 6,
-    endHour: 22,
-    sessionCount: 8,
-    duration: 120, // seconds
-    notificationSound: 'chime1',
-    theme: 'auto'
-  };
-
-  var state = {
-    config: null,
-    todaySessions: [],
-    timerRunning: false,
-    timerStartTime: null,
-    timerDuration: 120,
-    timerInterval: null,
-    currentSessionId: null
-  };
-
+  /* ─────────────────────────────────────────────────
+     DOM REFERENCES — set once after DOMContentLoaded
+  ───────────────────────────────────────────────── */
   var DOM = {};
+  var _startBtnSwapped = false;
 
-  // ═══ UTILITY FUNCTIONS ═══
-  function loadConfig() {
-    try {
-      var saved = localStorage.getItem(CONFIG_KEY);
-      state.config = saved ? JSON.parse(saved) : DEFAULT_CONFIG;
-    } catch(e) {
-      state.config = DEFAULT_CONFIG;
-    }
+  /* ─────────────────────────────────────────────────
+     TIMER STATE — single canonical object
+  ───────────────────────────────────────────────── */
+  var state = {
+    phase: 'idle',          // idle | running | paused | done
+    totalSeconds: SESSION_DURATION_SECONDS,
+    remainingMs: SESSION_DURATION_SECONDS * 1000,
+    startedAt: null,        // wall clock when last resumed
+    pausedAt: null,
+    launchContext: null,    // resolved once from manager
+    completed: false,       // guard against double-complete
+    intervalId: null        // ONE interval id
+  };
+
+  /* ─────────────────────────────────────────────────
+     UTILITY
+  ───────────────────────────────────────────────── */
+  function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+  function formatTime(ms) {
+    var totalSec = Math.max(0, Math.ceil(ms / 1000));
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    return pad(m) + ':' + pad(s);
   }
 
-  function saveConfig() {
-    try {
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(state.config));
-    } catch(e) {}
+  function isDarkMode() {
+    return document.documentElement.getAttribute('data-theme') === 'dark' ||
+      window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 
-  function getTodayKey() {
-    return new Date().toLocaleDateString('en-CA');
-  }
-
-  function loadTodaySessions() {
-    try {
-      var today = getTodayKey();
-      var allSessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '{}');
-      state.todaySessions = allSessions[today] || [];
-    } catch(e) {
-      state.todaySessions = [];
-    }
-  }
-
-  function saveTodaySessions() {
-    try {
-      var today = getTodayKey();
-      var allSessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '{}');
-      allSessions[today] = state.todaySessions;
-      localStorage.setItem(SESSIONS_KEY, JSON.stringify(allSessions));
-    } catch(e) {}
-  }
-
-  function generateRandomSessions() {
-    if (!state.config.enabled) return [];
-    
-    var sessions = [];
-    var start = state.config.startHour;
-    var end = state.config.endHour;
-    var count = state.config.sessionCount;
-    
-    // Generate random times between start and end hours
-    var usedMinutes = new Set();
-    
-    for (var i = 0; i < count; i++) {
-      var randomHour = start + Math.floor(Math.random() * (end - start + 1));
-      var randomMinute = Math.floor(Math.random() * 60);
-      
-      // Avoid exact duplicates
-      var key = randomHour + ':' + randomMinute;
-      while (usedMinutes.has(key)) {
-        randomMinute = Math.floor(Math.random() * 60);
-        key = randomHour + ':' + randomMinute;
-      }
-      usedMinutes.add(key);
-      
-      sessions.push({
-        id: 'session_' + Date.now() + '_' + i,
-        hour: randomHour,
-        minute: randomMinute,
-        completed: false,
-        completedAt: null
-      });
-    }
-    
-    // Sort by time
-    sessions.sort(function(a, b) {
-      return (a.hour * 60 + a.minute) - (b.hour * 60 + b.minute);
-    });
-    
-    return sessions;
-  }
-
-  function ensureTodaySessions() {
-    var today = getTodayKey();
-    var lastGenerated = localStorage.getItem('naamAbhyas_lastGenerated');
-    
-    if (lastGenerated !== today || state.todaySessions.length === 0) {
-      state.todaySessions = generateRandomSessions();
-      saveTodaySessions();
-      localStorage.setItem('naamAbhyas_lastGenerated', today);
-      scheduleAllNotifications();
-    }
-  }
-
-  function formatH12(hour, minute) {
-    var per = hour >= 12 ? 'PM' : 'AM';
-    var h12 = hour % 12 || 12;
-    var min = String(minute).padStart(2, '0');
-    return h12 + ':' + min + ' ' + per;
-  }
-
-  function formatMinSec(seconds) {
-    var m = Math.floor(seconds / 60);
-    var s = Math.floor(seconds % 60);
-    return m + ':' + String(s).padStart(2, '0');
-  }
-
+  /* ─────────────────────────────────────────────────
+     HAPTICS — thin wrapper, fail-safe
+  ───────────────────────────────────────────────── */
   function haptic(style) {
     try {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
-        window.Capacitor.Plugins.Haptics.impact({ style: style || 'MEDIUM' }).catch(function(){});
+        window.Capacitor.Plugins.Haptics.impact({ style: style || 'MEDIUM' }).catch(function () {});
       }
-    } catch(e) {}
+    } catch (e) {}
   }
 
-  function showToast(msg) {
-    if (!DOM.toast) return;
-    DOM.toast.textContent = msg;
-    DOM.toast.classList.add('show');
-    setTimeout(function() {
-      DOM.toast.classList.remove('show');
-    }, 3000);
+  function hapticSuccess() {
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+        window.Capacitor.Plugins.Haptics.notification({ type: 'SUCCESS' }).catch(function () {});
+      }
+    } catch (e) {}
   }
 
-  function playChime() {
+  /* ─────────────────────────────────────────────────
+     TOAST
+  ───────────────────────────────────────────────── */
+  var toastTimer = null;
+  function showToast(msg, durationMs) {
+    var el = DOM.toast;
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, durationMs || 2500);
+  }
+
+  /* ─────────────────────────────────────────────────
+     AUDIO CHIME
+  ───────────────────────────────────────────────── */
+  function playChime(type) {
+    // Gentle audio cue — uses Web Audio API oscillator so no file needed
     try {
       var ctx = new (window.AudioContext || window.webkitAudioContext)();
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(528, ctx.currentTime);
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.8);
-    } catch(e) {}
-  }
 
-  // ═══ RENDER FUNCTIONS ═══
-  function renderStats() {
-    var completed = state.todaySessions.filter(function(s) { return s.completed; }).length;
-    var total = state.todaySessions.length;
-    var percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
-    var today = new Date();
-    var dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-    
-    // Calculate streak
-    var streak = calculateStreak();
-    
-    // Calculate week total
-    var weekTotal = calculateWeekTotal();
-    
-    if (DOM.statsDate) DOM.statsDate.textContent = dateStr;
-    if (DOM.statsPercent) DOM.statsPercent.textContent = percent + '%';
-    if (DOM.statCompleted) DOM.statCompleted.textContent = completed;
-    if (DOM.statStreak) DOM.statStreak.textContent = streak;
-    if (DOM.statTotal) DOM.statTotal.textContent = weekTotal;
-  }
-
-  function calculateStreak() {
-    try {
-      var allSessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '{}');
-      var streak = 0;
-      var date = new Date();
-      
-      for (var i = 0; i < 365; i++) {
-        var key = date.toLocaleDateString('en-CA');
-        var daySessions = allSessions[key] || [];
-        var hasCompleted = daySessions.some(function(s) { return s.completed; });
-        
-        if (i === 0 && !hasCompleted) {
-          // Today not complete yet, check yesterday
-          date.setDate(date.getDate() - 1);
-          continue;
-        }
-        
-        if (!hasCompleted) break;
-        streak++;
-        date.setDate(date.getDate() - 1);
-      }
-      
-      return streak;
-    } catch(e) {
-      return 0;
-    }
-  }
-
-  function calculateWeekTotal() {
-    try {
-      var allSessions = JSON.parse(localStorage.getItem(SESSIONS_KEY) || '{}');
-      var total = 0;
-      var today = new Date();
-      var startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      
-      for (var i = 0; i < 7; i++) {
-        var date = new Date(startOfWeek);
-        date.setDate(startOfWeek.getDate() + i);
-        var key = date.toLocaleDateString('en-CA');
-        var daySessions = allSessions[key] || [];
-        total += daySessions.filter(function(s) { return s.completed; }).length;
-      }
-      
-      return total;
-    } catch(e) {
-      return 0;
-    }
-  }
-
-  function renderScheduleList() {
-    if (!DOM.scheduleList) return;
-    
-    DOM.scheduleList.innerHTML = '';
-    
-    if (state.todaySessions.length === 0) {
-      var empty = document.createElement('div');
-      empty.style.cssText = 'text-align:center;padding:40px 20px;color:var(--text-sec);';
-      empty.textContent = state.config.enabled 
-        ? 'No sessions scheduled for today' 
-        : 'Naam Abhyas is disabled. Enable it in settings.';
-      DOM.scheduleList.appendChild(empty);
-      return;
-    }
-    
-    state.todaySessions.forEach(function(session) {
-      var item = document.createElement('div');
-      item.className = 'na-schedule-item' + (session.completed ? ' completed' : '');
-      item.setAttribute('data-id', session.id);
-      
-      item.innerHTML = [
-        '<div class="na-schedule-time">',
-        '  <div class="na-schedule-time-icon">🙏</div>',
-        '  <div class="na-schedule-time-text">' + formatH12(session.hour, session.minute) + '</div>',
-        '</div>',
-        '<div class="na-schedule-info">',
-        '  <div class="na-schedule-label">Naam Simran</div>',
-        '  <div class="na-schedule-duration">' + Math.floor(state.config.duration / 60) + ' min session</div>',
-        '</div>',
-        '<div class="na-schedule-check">',
-        '  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">',
-        '    <polyline points="20 6 9 17 4 12"/>',
-        '  </svg>',
-        '</div>'
-      ].join('');
-      
-      if (!session.completed) {
-        item.addEventListener('click', function() {
-          startTimerForSession(session);
+      if (type === 'start') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(528, ctx.currentTime);        // A love freq
+        osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.8);
+      } else if (type === 'complete') {
+        // Three ascending tones
+        [0, 0.3, 0.6].forEach(function (offset, i) {
+          var o2 = ctx.createOscillator();
+          var g2 = ctx.createGain();
+          o2.connect(g2);
+          g2.connect(ctx.destination);
+          o2.type = 'sine';
+          var freqs = [528, 660, 792];
+          o2.frequency.setValueAtTime(freqs[i], ctx.currentTime + offset);
+          g2.gain.setValueAtTime(0, ctx.currentTime + offset);
+          g2.gain.linearRampToValueAtTime(0.2, ctx.currentTime + offset + 0.05);
+          g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.6);
+          o2.start(ctx.currentTime + offset);
+          o2.stop(ctx.currentTime + offset + 0.6);
         });
       }
-      
-      DOM.scheduleList.appendChild(item);
-    });
+    } catch (e) { /* audio not critical */ }
   }
 
-  // ═══ TIMER FUNCTIONS ═══
-  function startTimerForSession(session) {
-    state.currentSessionId = session.id;
-    state.timerDuration = state.config.duration;
-    openTimerScreen();
-    
-    // Auto-start after animation
-    setTimeout(function() {
-      startTimer();
-    }, 400);
-  }
-
-  function openTimerScreen() {
-    if (DOM.timerOverlay) {
-      DOM.timerOverlay.classList.add('active');
+  /* ─────────────────────────────────────────────────
+     STARS BACKGROUND GENERATOR
+  ───────────────────────────────────────────────── */
+  function generateStars() {
+    var container = DOM.stars;
+    if (!container) return;
+    var count = 40;
+    for (var i = 0; i < count; i++) {
+      var star = document.createElement('div');
+      star.className = 'na-star';
+      var size = Math.random() * 2 + 1;
+      star.style.cssText = [
+        'width:' + size + 'px',
+        'height:' + size + 'px',
+        'left:' + (Math.random() * 100) + '%',
+        'top:' + (Math.random() * 100) + '%',
+        '--dur:' + (2 + Math.random() * 4) + 's',
+        '--delay:' + (Math.random() * 4) + 's',
+        '--opA:' + (0.05 + Math.random() * 0.15),
+        '--opB:' + (0.3 + Math.random() * 0.4)
+      ].join(';');
+      container.appendChild(star);
     }
-    haptic('MEDIUM');
   }
 
-  function closeTimerScreen() {
-    if (DOM.timerOverlay) {
-      DOM.timerOverlay.classList.remove('active');
-    }
-    if (state.timerInterval) {
-      clearInterval(state.timerInterval);
-      state.timerInterval = null;
-    }
-    state.timerRunning = false;
-    if (DOM.timerOrb) DOM.timerOrb.classList.remove('breathing');
+  /* ─────────────────────────────────────────────────
+     PROGRESS RING
+  ───────────────────────────────────────────────── */
+  function updateProgressRing(remainingMs) {
+    var fill = DOM.progressFill;
+    if (!fill) return;
+    var total = state.totalSeconds * 1000;
+    var ratio = Math.max(0, Math.min(1, remainingMs / total));
+    var r = 76; // radius matches SVG in HTML
+    var circumference = 2 * Math.PI * r;
+    fill.style.strokeDasharray = circumference;
+    fill.style.strokeDashoffset = circumference * (1 - ratio);
   }
 
+  /* ─────────────────────────────────────────────────
+     TIMER DISPLAY UPDATE
+  ───────────────────────────────────────────────── */
+  function renderTimer(ms) {
+    var timeStr = formatTime(ms);
+    if (DOM.timerDisplay) {
+      DOM.timerDisplay.textContent = timeStr;
+      if (ms <= 15000) {
+        DOM.timerDisplay.classList.add('urgent');
+      } else {
+        DOM.timerDisplay.classList.remove('urgent');
+      }
+    }
+    updateProgressRing(ms);
+  }
+
+  /* ─────────────────────────────────────────────────
+     THE ONE AND ONLY TICK ENGINE
+     Never call startTicking() more than once.
+     Guard: state.intervalId
+  ───────────────────────────────────────────────── */
+  function startTicking() {
+    if (state.intervalId !== null) return; // already ticking
+
+    state.startedAt = Date.now();
+
+    state.intervalId = setInterval(function () {
+      if (state.phase !== 'running') return;
+
+      var elapsed = Date.now() - state.startedAt;
+      var remaining = state.remainingMs - elapsed;
+
+      if (remaining <= 0) {
+        remaining = 0;
+        renderTimer(0);
+        stopTicking();
+        onTimerComplete();
+      } else {
+        renderTimer(remaining);
+      }
+    }, 250);
+  }
+
+  function stopTicking() {
+    if (state.intervalId !== null) {
+      clearInterval(state.intervalId);
+      state.intervalId = null;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────
+     START / PAUSE / RESUME
+  ───────────────────────────────────────────────── */
   function startTimer() {
-    if (state.timerRunning) return;
-    
-    state.timerRunning = true;
-    state.timerStartTime = Date.now();
-    
-    // Play gentle chime
-    playChime();
-    
-    // Start breathing animation
-    if (DOM.timerOrb) DOM.timerOrb.classList.add('breathing');
-    
-    // Update button states
-    if (DOM.startTimerBtn) DOM.startTimerBtn.style.display = 'none';
-    if (DOM.pauseTimerBtn) DOM.pauseTimerBtn.style.display = 'flex';
-    
-    // Start countdown
-    updateTimerDisplay();
-    state.timerInterval = setInterval(updateTimerDisplay, 250);
-    
-    haptic('LIGHT');
+    if (state.phase !== 'idle' && state.phase !== 'paused') return;
+
+    if (state.phase === 'idle') {
+      state.remainingMs = state.totalSeconds * 1000;
+      renderTimer(state.remainingMs);
+      if (DOM.orbEl) DOM.orbEl.classList.add('breathing');
+      // Swap Start button → Pause button
+      if (!_startBtnSwapped) {
+        _startBtnSwapped = true;
+        if (DOM.startBtn) DOM.startBtn.style.display = 'none';
+        if (DOM.pauseBtn) DOM.pauseBtn.style.display = 'flex';
+        window.dispatchEvent(new CustomEvent('naamTimerStarted'));
+      }
+    }
+
+    state.phase = 'running';
+    state.startedAt = Date.now();
+    updatePlayPauseBtn(false);
+    hidePauseIndicator();
+    startTicking();
   }
 
   function pauseTimer() {
-    if (!state.timerRunning) return;
-    
-    state.timerRunning = false;
-    var elapsed = (Date.now() - state.timerStartTime) / 1000;
-    state.timerDuration = Math.max(0, state.timerDuration - elapsed);
-    
-    if (state.timerInterval) {
-      clearInterval(state.timerInterval);
-      state.timerInterval = null;
-    }
-    
-    if (DOM.timerOrb) DOM.timerOrb.classList.remove('breathing');
-    
-    // Update button
-    if (DOM.pauseTimerBtn) {
-      DOM.pauseTimerBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-    }
-    
+    if (state.phase !== 'running') return;
+    var elapsed = Date.now() - state.startedAt;
+    state.remainingMs = Math.max(0, state.remainingMs - elapsed);
+    state.phase = 'paused';
+    stopTicking();
+    updatePlayPauseBtn(true);
+    showPauseIndicator();
     haptic('LIGHT');
-    showToast('⏸ Paused');
   }
 
   function resumeTimer() {
-    if (state.timerRunning) return;
-    
-    state.timerRunning = true;
-    state.timerStartTime = Date.now();
-    
-    if (DOM.timerOrb) DOM.timerOrb.classList.add('breathing');
-    
-    // Update button
-    if (DOM.pauseTimerBtn) {
-      DOM.pauseTimerBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>';
-    }
-    
-    updateTimerDisplay();
-    state.timerInterval = setInterval(updateTimerDisplay, 250);
-    
-    haptic('LIGHT');
+    if (state.phase !== 'paused') return;
+    state.phase = 'running';
+    state.startedAt = Date.now();
+    startTicking();
+    updatePlayPauseBtn(false);
+    hidePauseIndicator();
   }
 
-  function updateTimerDisplay() {
-    if (!state.timerRunning) return;
-    
-    var elapsed = (Date.now() - state.timerStartTime) / 1000;
-    var remaining = Math.max(0, state.timerDuration - elapsed);
-    
-    // Update display
-    if (DOM.timerDisplay) {
-      DOM.timerDisplay.textContent = formatMinSec(remaining);
-    }
-    
-    // Update progress ring
-    if (DOM.progressBar) {
-      var totalDuration = state.config.duration;
-      var progress = 1 - (remaining / totalDuration);
-      var circumference = 2 * Math.PI * 90;
-      var offset = circumference * (1 - progress);
-      DOM.progressBar.style.strokeDashoffset = offset;
-    }
-    
-    // Check if complete
-    if (remaining <= 0) {
-      completeTimer();
+  function togglePause() {
+    if (state.phase === 'running') pauseTimer();
+    else if (state.phase === 'paused') resumeTimer();
+  }
+
+  /* ─────────────────────────────────────────────────
+     UI STATE HELPERS
+  ───────────────────────────────────────────────── */
+  function updatePlayPauseBtn(isPaused) {
+    if (!DOM.pauseBtn) return;
+    DOM.pauseBtn.innerHTML = isPaused
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="6" y2="20"/><line x1="18" y1="4" x2="18" y2="20"/></svg>';
+  }
+
+  function showPauseIndicator() {
+    if (DOM.pauseIndicator) DOM.pauseIndicator.classList.add('visible');
+  }
+  function hidePauseIndicator() {
+    if (DOM.pauseIndicator) DOM.pauseIndicator.classList.remove('visible');
+  }
+
+  /* ─────────────────────────────────────────────────
+     COMPLETION
+  ───────────────────────────────────────────────── */
+  function onTimerComplete() {
+    if (state.completed) return;
+    state.completed = true;
+    state.phase = 'done';
+    stopTicking();
+
+    if (DOM.orbEl) DOM.orbEl.classList.remove('breathing');
+
+    playChime('complete');
+    hapticSuccess();
+
+    // Record the session ONCE via manager
+    recordSessionCompletion();
+
+    // Show completion screen
+    setTimeout(function () {
+      showCompletionScreen();
+    }, 400);
+  }
+
+  function recordSessionCompletion() {
+    try {
+      var manager = window.NaamAbhyasManager;
+      if (!manager || typeof manager.completeSession !== 'function') return;
+
+      var ctx = state.launchContext;
+      manager.completeSession({
+        endedAt: new Date(),
+        durationSeconds: state.totalSeconds,
+        sessionId: ctx && ctx.session && ctx.session.id ? ctx.session.id : null,
+        hour: ctx && ctx.hour !== null ? ctx.hour : undefined,
+        minute: ctx && ctx.minute !== null ? ctx.minute : undefined
+      });
+    } catch (e) {
+      console.warn('[NaamAbhyas] Session record failed:', e);
     }
   }
 
-  function completeTimer() {
-    if (state.timerInterval) {
-      clearInterval(state.timerInterval);
-      state.timerInterval = null;
-    }
-    
-    state.timerRunning = false;
-    if (DOM.timerOrb) DOM.timerOrb.classList.remove('breathing');
-    
-    // Mark session as complete
-    if (state.currentSessionId) {
-      var session = state.todaySessions.find(function(s) { return s.id === state.currentSessionId; });
-      if (session) {
-        session.completed = true;
-        session.completedAt = new Date().toISOString();
-        saveTodaySessions();
-      }
-    }
-    
-    // Play completion chime
-    playChime();
-    haptic('SUCCESS');
-    
-    // Close timer and show completion
-    closeTimerScreen();
-    showCompletionScreen();
-  }
-
-  // ═══ COMPLETION SCREEN ═══
+  /* ─────────────────────────────────────────────────
+     COMPLETION SCREEN
+  ───────────────────────────────────────────────── */
   function showCompletionScreen() {
-    if (DOM.completionOverlay) {
-      DOM.completionOverlay.classList.add('active');
+    // Transition screens
+    if (DOM.timerScreen) DOM.timerScreen.classList.add('hidden');
+    if (DOM.completionScreen) {
+      DOM.completionScreen.classList.remove('hidden');
+      DOM.completionScreen.style.display = 'flex';
     }
-    
-    // Update stats
-    var completed = state.todaySessions.filter(function(s) { return s.completed; }).length;
-    var streak = calculateStreak();
-    var duration = Math.floor(state.config.duration / 60);
-    
-    if (DOM.completionStatToday) DOM.completionStatToday.textContent = completed;
-    if (DOM.completionStatStreak) DOM.completionStatStreak.textContent = streak;
-    if (DOM.completionStatDuration) DOM.completionStatDuration.textContent = duration + 'm';
+
+    // Populate stats
+    var stats = computeStats();
+    if (DOM.statToday) DOM.statToday.textContent = stats.todayCount;
+    if (DOM.statStreak) DOM.statStreak.textContent = stats.streak;
+    if (DOM.statDuration) DOM.statDuration.textContent = Math.round(state.totalSeconds / 60) + 'm';
+
+    // Confetti
+    launchConfetti();
   }
 
-  function closeCompletionScreen() {
-    if (DOM.completionOverlay) {
-      DOM.completionOverlay.classList.remove('active');
-    }
-    
-    // Refresh UI
-    renderStats();
-    renderScheduleList();
-    
-    haptic('MEDIUM');
-  }
+  function computeStats() {
+    var todayCount = 0;
+    var streak = 0;
+    try {
+      var manager = window.NaamAbhyasManager;
+      if (!manager) throw new Error('no manager');
 
-  // ═══ NOTIFICATION SCHEDULING ═══
-  function scheduleAllNotifications() {
-    if (!window.Capacitor || !window.Capacitor.Plugins || !window.Capacitor.Plugins.LocalNotifications) return;
-    
-    var LN = window.Capacitor.Plugins.LocalNotifications;
-    
-    // Cancel all existing Naam Abhyas notifications
-    LN.getPending().then(function(result) {
-      var pending = result.notifications || [];
-      var toCancel = pending.filter(function(n) { 
-        return n.id >= 90000 && n.id < 91000; 
-      }).map(function(n) { return { id: n.id }; });
-      
-      if (toCancel.length > 0) {
-        LN.cancel({ notifications: toCancel });
+      var today = new Date().toLocaleDateString('en-CA');
+      var records = JSON.parse(localStorage.getItem(manager.KEYS.records) || '{}');
+      var extras = JSON.parse(localStorage.getItem(manager.KEYS.extras) || '[]');
+      var history = JSON.parse(localStorage.getItem(manager.KEYS.history) || '{}');
+
+      // Count today's completed scheduled sessions
+      var todayScheduled = Object.values(records).filter(function (r) {
+        return r && r.completedAt && r.completedAt.startsWith(today);
+      }).length;
+
+      // Count today's extras
+      var todayExtras = (Array.isArray(extras) ? extras : []).filter(function (r) {
+        return r && r.completedAt && r.completedAt.startsWith(today);
+      }).length;
+
+      todayCount = todayScheduled + todayExtras;
+
+      // Streak: how many consecutive days have at least one session
+      var date = new Date();
+      var streakCount = 0;
+      for (var i = 0; i < 365; i++) {
+        var d = date.toLocaleDateString('en-CA');
+        var hasSession = (history[d] && Object.keys(history[d]).length > 0);
+        if (i === 0 && !hasSession) { break; } // today might be the first
+        if (!hasSession && i > 0) break;
+        if (hasSession) streakCount++;
+        date.setDate(date.getDate() - 1);
       }
-    }).catch(function() {});
-    
-    if (!state.config.enabled) return;
-    
-    // Schedule new notifications
-    var notifications = state.todaySessions.map(function(session, index) {
-      var scheduleTime = new Date();
-      scheduleTime.setHours(session.hour, session.minute, 0, 0);
-      
-      return {
-        id: 90000 + index,
-        title: '🙏 Naam Abhyas Time',
-        body: 'It\'s time for your ' + Math.floor(state.config.duration / 60) + '-minute Naam Simran. Tap to begin.',
-        schedule: {
-          at: scheduleTime,
-          allowWhileIdle: true,
-          exact: true
-        },
-        channelId: 'naam_abhyas_v3',
-        sound: 'default',
-        smallIcon: 'ic_stat_notify',
-        largeIcon: 'app_logo',
-        extra: {
-          action: 'start_naam_abhyas',
-          sessionId: session.id,
-          hour: session.hour,
-          minute: session.minute
-        }
-      };
+      streak = streakCount;
+    } catch (e) {
+      todayCount = 1;
+      streak = 0;
+    }
+    return { todayCount: todayCount || 1, streak: streak };
+  }
+
+  /* ─────────────────────────────────────────────────
+     CONFETTI
+  ───────────────────────────────────────────────── */
+  function launchConfetti() {
+    var layer = DOM.confettiLayer;
+    if (!layer) return;
+    var colors = ['#FF9500', '#F7C634', '#FFFFFF', '#FF6B35', '#FFB347'];
+    var count = 55;
+    for (var i = 0; i < count; i++) {
+      (function (idx) {
+        setTimeout(function () {
+          var el = document.createElement('div');
+          el.className = 'na-confetto';
+          var w = Math.random() * 8 + 4;
+          var h = Math.random() * 6 + 3;
+          var color = colors[Math.floor(Math.random() * colors.length)];
+          el.style.cssText = [
+            'left:' + (Math.random() * 100) + '%',
+            'width:' + w + 'px',
+            'height:' + h + 'px',
+            'background:' + color,
+            'opacity:' + (0.7 + Math.random() * 0.3),
+            '--dur:' + (2 + Math.random() * 1.5) + 's',
+            '--delay:' + (Math.random() * 0.3) + 's',
+            '--drift:' + ((Math.random() - 0.5) * 120) + 'px',
+            '--spin:' + (Math.random() * 720 - 360) + 'deg'
+          ].join(';');
+          layer.appendChild(el);
+          setTimeout(function () { el.remove(); }, 4000);
+        }, idx * 30);
+      })(i);
+    }
+  }
+
+  /* ─────────────────────────────────────────────────
+     BACKGROUND / FOREGROUND HANDLING
+     Explicitly handles visibility, Cordova resume, and Capacitor App state changes
+  ───────────────────────────────────────────────── */
+  function handleAppResume() {
+    if (state.phase === 'running') {
+      var elapsed = Date.now() - state.startedAt;
+      var remaining = Math.max(0, state.remainingMs - elapsed);
+      renderTimer(remaining);
+
+      // Reset startedAt to now, and remainingMs to the new offset
+      state.startedAt = Date.now();
+      state.remainingMs = remaining;
+
+      if (state.intervalId === null) {
+        startTicking();
+      }
+    }
+  }
+
+  function handleAppPause() {
+    if (state.phase === 'running') {
+      // Correct remainingMs before suspension
+      var elapsed = Date.now() - state.startedAt;
+      state.remainingMs = Math.max(0, state.remainingMs - elapsed);
+      state.startedAt = Date.now();
+    }
+  }
+
+  function setupVisibilityListener() {
+    if (window.__naamAbhyasVisibilityInstalled) return;
+    window.__naamAbhyasVisibilityInstalled = true;
+
+    // 1. HTML5 visibility change
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        handleAppResume();
+      } else {
+        handleAppPause();
+      }
     });
-    
-    if (notifications.length > 0) {
-      LN.schedule({ notifications: notifications }).catch(function(e) {
-        console.error('Failed to schedule notifications:', e);
-      });
-    }
-  }
 
-  // ═══ NOTIFICATION HANDLER ═══
-  function checkNotificationLaunch() {
-    var url = new URL(window.location.href);
-    var autoStart = url.searchParams.get('autoStart') === 'true';
-    var hour = url.searchParams.get('hour');
-    var minute = url.searchParams.get('minute');
-    
-    if (autoStart && hour !== null && minute !== null) {
-      // Find the session
-      var session = state.todaySessions.find(function(s) {
-        return s.hour === parseInt(hour, 10) && s.minute === parseInt(minute, 10);
-      });
-      
-      if (session && !session.completed) {
-        // Start timer directly (no popup)
-        setTimeout(function() {
-          startTimerForSession(session);
-        }, 300);
+    // 2. Cordova/Capacitor standard resume & pause document events
+    document.addEventListener('resume', handleAppResume);
+    document.addEventListener('pause', handleAppPause);
+
+    // 3. Capacitor Native App plugin state changes
+    try {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('appStateChange', function (s) {
+          if (s.isActive) {
+            handleAppResume();
+          } else {
+            handleAppPause();
+          }
+        });
       }
-      
-      // Clean URL
-      window.history.replaceState({}, '', window.location.pathname);
+    } catch (e) {}
+  }
+
+  /* ─────────────────────────────────────────────────
+     NAVIGATION — resolve launch context from manager
+  ───────────────────────────────────────────────── */
+  function resolveLaunchContext() {
+    try {
+      var manager = window.NaamAbhyasManager;
+      if (manager && typeof manager.getLaunchContext === 'function') {
+        return manager.getLaunchContext();
+      }
+    } catch (e) {}
+
+    // Fallback: read URL params directly
+    try {
+      var url = new URL(window.location.href);
+      var autoStart = url.searchParams.get('autoStart') === 'true';
+      if (!autoStart) return null;
+      return {
+        autoStart: true,
+        source: 'url',
+        hour: url.searchParams.get('hour'),
+        minute: url.searchParams.get('minute'),
+        session: null
+      };
+    } catch (e) { return null; }
+  }
+
+  /* ─────────────────────────────────────────────────
+     POPULATE SESSION CHIP
+  ───────────────────────────────────────────────── */
+  function populateSessionInfo(ctx) {
+    if (!ctx) return;
+    var hour = ctx.hour !== null && ctx.hour !== undefined ? Number(ctx.hour) : null;
+    var minute = ctx.minute !== null && ctx.minute !== undefined ? Number(ctx.minute) : null;
+
+    if (hour !== null && Number.isFinite(hour)) {
+      var per = hour >= 12 ? 'PM' : 'AM';
+      var h12 = hour % 12 || 12;
+      var mStr = minute !== null && Number.isFinite(minute) ? String(minute).padStart(2, '0') : '00';
+      var timeStr = h12 + ':' + mStr + ' ' + per;
+      if (DOM.sessionTimeChip) DOM.sessionTimeChip.textContent = timeStr;
+    } else {
+      if (DOM.sessionTimeChip) DOM.sessionTimeChip.textContent = 'Extra Session';
+    }
+
+    if (ctx.source === 'notification') {
+      if (DOM.sessionTypeChip) DOM.sessionTypeChip.textContent = '🔔 Scheduled';
     }
   }
 
-  // ═══ NAVIGATION ═══
+  /* ─────────────────────────────────────────────────
+     BACK NAVIGATION
+  ───────────────────────────────────────────────── */
+  var lastBackPress = 0;
+  function handlePhysicalBack() {
+    if (state.phase === 'running') {
+      pauseTimer();
+      showToast('⏸ Paused — tap back again to leave');
+      var now = Date.now();
+      if (now - lastBackPress < 2000) {
+        goBack();
+      } else {
+        lastBackPress = now;
+      }
+    } else {
+      goBack();
+    }
+  }
+
   function goBack() {
-    haptic('LIGHT');
+    window.__anhadBackOverride = null;
+    stopTicking();
     if (window.history.length > 1) {
       window.history.back();
     } else {
@@ -565,87 +565,151 @@
     }
   }
 
-  function openSettings() {
-    haptic('LIGHT');
-    window.location.href = 'naam-abhyas-settings.html';
+  function onDone() {
+    window.__anhadBackOverride = null;
+    haptic('MEDIUM');
+    goBack();
   }
 
-  // ═══ DOM & EVENT BINDINGS ═══
+  /* ─────────────────────────────────────────────────
+     SUBSCRIPTION TO MANAGER LAUNCH EVENT
+     Handles warm-start when page is already open
+  ───────────────────────────────────────────────── */
+  function subscribeToLaunchEvent() {
+    window.addEventListener('naamAbhyasLaunchReady', function (e) {
+      var ctx = e && e.detail;
+      if (!ctx || state.phase !== 'idle') return;
+      state.launchContext = ctx;
+      populateSessionInfo(ctx);
+      if (ctx.autoStart) {
+        setTimeout(function () { startTimer(); playChime('start'); }, 300);
+      }
+    }, { once: true });
+
+    // Also handle foreground alarm event
+    window.addEventListener('naamAbhyasAlarmFired', function (e) {
+      if (state.phase === 'running' || state.phase === 'done') return;
+      if (e && e.detail) {
+        state.launchContext = state.launchContext || {
+          autoStart: true,
+          source: 'notification',
+          hour: e.detail.hour,
+          minute: e.detail.minute,
+          session: null
+        };
+        populateSessionInfo(state.launchContext);
+      }
+      if (state.phase === 'idle') {
+        startTimer();
+        playChime('start');
+      } else if (state.phase === 'paused') {
+        resumeTimer();
+      }
+    });
+  }
+
+  /* ─────────────────────────────────────────────────
+     DOM INIT
+  ───────────────────────────────────────────────── */
   function cacheDom() {
-    DOM.scheduleList = document.getElementById('scheduleList');
-    DOM.statsDate = document.getElementById('statsDate');
-    DOM.statsPercent = document.getElementById('statsPercent');
-    DOM.statCompleted = document.getElementById('statCompleted');
-    DOM.statStreak = document.getElementById('statStreak');
-    DOM.statTotal = document.getElementById('statTotal');
-    DOM.timerOverlay = document.getElementById('timerOverlay');
-    DOM.timerDisplay = document.getElementById('timerDisplay');
-    DOM.timerOrb = document.querySelector('.na-orb');
-    DOM.progressBar = document.getElementById('progressBar');
-    DOM.startTimerBtn = document.getElementById('startTimerBtn');
-    DOM.pauseTimerBtn = document.getElementById('pauseTimerBtn');
-    DOM.closeTimerBtn = document.getElementById('closeTimerBtn');
-    DOM.completionOverlay = document.getElementById('completionOverlay');
-    DOM.completionStatToday = document.getElementById('completionStatToday');
-    DOM.completionStatStreak = document.getElementById('completionStatStreak');
-    DOM.completionStatDuration = document.getElementById('completionStatDuration');
-    DOM.doneBtn = document.getElementById('doneBtn');
-    DOM.toast = document.getElementById('toast');
+    DOM.timerScreen      = document.getElementById('naTimerScreen');
+    DOM.completionScreen = document.getElementById('naCompletionScreen');
+    DOM.timerDisplay     = document.getElementById('naTimerDisplay');
+    DOM.pauseBtn         = document.getElementById('naPauseBtn');
+    DOM.startBtn         = document.getElementById('naStartBtn');
+    DOM.backBtn          = document.getElementById('naBackBtn');
+    DOM.doneBtn          = document.getElementById('naDoneBtn');
+    DOM.orbEl            = document.getElementById('naOrb');
+    DOM.progressFill     = document.getElementById('naProgressFill');
+    DOM.pauseIndicator   = document.getElementById('naPauseIndicator');
+    DOM.toast            = document.getElementById('naToast');
+    DOM.stars            = document.getElementById('naStars');
+    DOM.confettiLayer    = document.getElementById('naConfettiLayer');
+    DOM.sessionTimeChip  = document.getElementById('naSessionTimeChip');
+    DOM.sessionTypeChip  = document.getElementById('naSessionTypeChip');
+    DOM.settingsBtn      = document.getElementById('naSettingsBtn');
+    DOM.statToday        = document.getElementById('naStatToday');
+    DOM.statStreak       = document.getElementById('naStatStreak');
+    DOM.statDuration     = document.getElementById('naStatDuration');
   }
 
   function bindEvents() {
-    var backBtn = document.getElementById('backBtn');
-    if (backBtn) backBtn.addEventListener('click', goBack);
-    
-    var settingsBtn = document.getElementById('settingsBtn');
-    if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
-    
-    if (DOM.closeTimerBtn) {
-      DOM.closeTimerBtn.addEventListener('click', closeTimerScreen);
-    }
-    
-    if (DOM.startTimerBtn) {
-      DOM.startTimerBtn.addEventListener('click', startTimer);
-    }
-    
-    if (DOM.pauseTimerBtn) {
-      DOM.pauseTimerBtn.addEventListener('click', function() {
-        if (state.timerRunning) {
-          pauseTimer();
-        } else {
-          resumeTimer();
-        }
-      });
-    }
-    
-    if (DOM.doneBtn) {
-      DOM.doneBtn.addEventListener('click', closeCompletionScreen);
-    }
+    if (DOM.backBtn) DOM.backBtn.addEventListener('click', function () {
+      if (state.phase === 'running') {
+        pauseTimer();
+        showToast('⏸ Paused — tap back again to leave');
+        // Second tap within 2s actually leaves
+        var taps = (DOM.backBtn._taps || 0) + 1;
+        DOM.backBtn._taps = taps;
+        setTimeout(function () { if (DOM.backBtn._taps === taps) DOM.backBtn._taps = 0; }, 2000);
+        if (taps >= 2) { goBack(); }
+      } else {
+        goBack();
+      }
+    });
+
+    if (DOM.pauseBtn) DOM.pauseBtn.addEventListener('click', function () {
+      togglePause();
+      haptic('LIGHT');
+    });
+
+    if (DOM.startBtn) DOM.startBtn.addEventListener('click', function () {
+      if (state.phase === 'idle') {
+        playChime('start');
+        startTimer();
+      }
+    });
+
+    if (DOM.doneBtn) DOM.doneBtn.addEventListener('click', onDone);
+
+    if (DOM.settingsBtn) DOM.settingsBtn.addEventListener('click', function() {
+      window.location.href = 'naam-abhyas-settings.html';
+    });
   }
 
-  // ═══ INITIALIZATION ═══
-  function init() {
+  /* ─────────────────────────────────────────────────
+     BOOT — called once after DOM ready
+  ───────────────────────────────────────────────── */
+  function boot() {
     cacheDom();
-    loadConfig();
-    loadTodaySessions();
-    ensureTodaySessions();
-    renderStats();
-    renderScheduleList();
+    generateStars();
     bindEvents();
-    checkNotificationLaunch();
-    
-    // Refresh every minute
-    setInterval(function() {
-      renderStats();
-      renderScheduleList();
-    }, 60000);
+    setupVisibilityListener();
+    subscribeToLaunchEvent();
+    window.__anhadBackOverride = handlePhysicalBack;
+
+    // Initialise timer display
+    renderTimer(state.totalSeconds * 1000);
+    updateProgressRing(state.totalSeconds * 1000);
+    updatePlayPauseBtn(false);
+
+    // Resolve launch context
+    var ctx = resolveLaunchContext();
+    if (ctx) {
+      state.launchContext = ctx;
+      populateSessionInfo(ctx);
+      if (ctx.autoStart) {
+        // Small delay so page has painted before chime + animation
+        setTimeout(function () {
+          playChime('start');
+          startTimer();
+        }, 500);
+      }
+    }
+
+    // Fire manager's auto-bridge (in case it loaded after this script)
+    if (window.NaamAbhyasManager && typeof window.NaamAbhyasManager.installAutoBridge === 'function') {
+      window.NaamAbhyasManager.installAutoBridge();
+    }
   }
 
-  // ═══ BOOT ═══
+  /* ─────────────────────────────────────────────────
+     ENTRY POINT
+  ───────────────────────────────────────────────── */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
-    init();
+    boot();
   }
 
 })();
