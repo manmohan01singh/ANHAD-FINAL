@@ -9,25 +9,16 @@
   --saffron-glow: rgba(255,149,0,0.25);
   --gold:         #F7C634;
   --gold-soft:    rgba(247,198,52,0.15);
-  --bg:           #FAF8F5;
-  --bg-card:      rgba(0,0,0,0.04);
-  --bg-card2:     rgba(0,0,0,0.06);
-  --text-prime:   #1C1C1E;
-  --text-sec:     rgba(0,0,0,0.45);
-  --text-dim:     rgba(0,0,0,0.25);
-  --radius-pill:  999px;
-  --radius-card:  24px;
-  --ease-spring:  cubic-bezier(.34,1.56,.64,1);
-  --ease-smooth:  cubic-bezier(.4,0,.2,1);
-}
-
-[data-theme="dark"] {
   --bg:           #08080F;
   --bg-card:      rgba(255,255,255,0.05);
   --bg-card2:     rgba(255,255,255,0.08);
   --text-prime:   #FFFFFF;
   --text-sec:     rgba(255,255,255,0.55);
   --text-dim:     rgba(255,255,255,0.30);
+  --radius-pill:  999px;
+  --radius-card:  24px;
+  --ease-spring:  cubic-bezier(.34,1.56,.64,1);
+  --ease-smooth:  cubic-bezier(.4,0,.2,1);
 }
 
 /* ── Reset ── */

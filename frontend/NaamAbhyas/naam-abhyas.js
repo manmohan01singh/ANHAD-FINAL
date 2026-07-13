@@ -627,7 +627,6 @@
     DOM.confettiLayer    = document.getElementById('naConfettiLayer');
     DOM.sessionTimeChip  = document.getElementById('naSessionTimeChip');
     DOM.sessionTypeChip  = document.getElementById('naSessionTypeChip');
-    DOM.settingsBtn      = document.getElementById('naSettingsBtn');
     DOM.statToday        = document.getElementById('naStatToday');
     DOM.statStreak       = document.getElementById('naStatStreak');
     DOM.statDuration     = document.getElementById('naStatDuration');
@@ -661,10 +660,6 @@
     });
 
     if (DOM.doneBtn) DOM.doneBtn.addEventListener('click', onDone);
-
-    if (DOM.settingsBtn) DOM.settingsBtn.addEventListener('click', function() {
-      window.location.href = 'naam-abhyas-settings.html';
-    });
   }
 
   /* ─────────────────────────────────────────────────
