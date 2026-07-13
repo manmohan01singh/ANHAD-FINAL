@@ -1,4 +1,4 @@
-package com.gurbaniradio.app;
+package com.anhad.app;
 
 import android.app.AlarmManager;
 import android.content.Context;

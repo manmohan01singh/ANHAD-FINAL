@@ -1,4 +1,4 @@
-package com.gurbaniradio.app.widgets;
+package com.anhad.app.widgets;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;

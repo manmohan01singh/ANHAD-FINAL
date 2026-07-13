@@ -2,8 +2,8 @@
 <resources>
     <string name="app_name">Anhad</string>
     <string name="title_activity_main">Anhad</string>
-    <string name="package_name">com.gurbaniradio.app</string>
-    <string name="custom_url_scheme">com.gurbaniradio.app</string>
+    <string name="package_name">com.anhad.app</string>
+    <string name="custom_url_scheme">com.anhad.app</string>
     
     <!-- Widget Descriptions -->
     <string name="nitnem_widget_description">Track your daily Nitnem progress and streak</string>

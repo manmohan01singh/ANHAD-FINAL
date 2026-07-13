@@ -1,10 +1,10 @@
-package com.gurbaniradio.app.widgets;
+package com.anhad.app.widgets;
 
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.widget.RemoteViews;
 
-import com.gurbaniradio.app.R;
+import com.anhad.app.R;
 
 import org.json.JSONObject;
 

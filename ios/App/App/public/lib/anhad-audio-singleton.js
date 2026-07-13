@@ -748,7 +748,7 @@
     // System notifications (lock screen, notification panel) → Always use ANHAD app logo
     // Mini player (inside app UI) → Use time-based artwork
     if (forNotification) {
-      return resolveAsset('icon-512x512.png');
+      return resolveAsset('icon-1024x1024.png');
     }
 
     // Mini player: Time-based artwork

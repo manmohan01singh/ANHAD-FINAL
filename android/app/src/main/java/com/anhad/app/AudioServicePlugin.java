@@ -1,4 +1,4 @@
-package com.gurbaniradio.app;
+package com.anhad.app;
 
 import android.content.Intent;
 import android.content.BroadcastReceiver;
@@ -33,7 +33,7 @@ public class AudioServicePlugin extends Plugin {
             }
         };
 
-        IntentFilter filter = new IntentFilter("com.gurbaniradio.app.MEDIA_COMMAND");
+        IntentFilter filter = new IntentFilter("com.anhad.app.MEDIA_COMMAND");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             getContext().registerReceiver(mediaCommandReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
         } else {

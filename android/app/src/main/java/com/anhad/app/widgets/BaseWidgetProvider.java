@@ -1,4 +1,4 @@
-package com.gurbaniradio.app.widgets;
+package com.anhad.app.widgets;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
-import com.gurbaniradio.app.MainActivity;
+import com.anhad.app.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +21,7 @@ import org.json.JSONObject;
 public abstract class BaseWidgetProvider extends AppWidgetProvider {
 
     protected static final String WIDGET_PREFS = "anhad_widgets";
-    protected static final String ACTION_WIDGET_CLICK = "com.gurbaniradio.app.widgets.CLICK";
+    protected static final String ACTION_WIDGET_CLICK = "com.anhad.app.widgets.CLICK";
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

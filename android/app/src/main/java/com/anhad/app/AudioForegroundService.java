@@ -1,4 +1,4 @@
-package com.gurbaniradio.app;
+package com.anhad.app;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -33,9 +33,9 @@ public class AudioForegroundService extends Service {
     private static final String CHANNEL_ID = "anhad_audio_service";
     private static final int NOTIFICATION_ID = 9001;
     
-    public static final String ACTION_PLAY = "com.gurbaniradio.app.ACTION_PLAY";
-    public static final String ACTION_PAUSE = "com.gurbaniradio.app.ACTION_PAUSE";
-    public static final String ACTION_STOP = "com.gurbaniradio.app.ACTION_STOP";
+    public static final String ACTION_PLAY = "com.anhad.app.ACTION_PLAY";
+    public static final String ACTION_PAUSE = "com.anhad.app.ACTION_PAUSE";
+    public static final String ACTION_STOP = "com.anhad.app.ACTION_STOP";
     
     private PowerManager.WakeLock wakeLock;
     private MediaSessionCompat mediaSession;
@@ -53,7 +53,7 @@ public class AudioForegroundService extends Service {
     }
 
     private void broadcastCommand(String command) {
-        Intent intent = new Intent("com.gurbaniradio.app.MEDIA_COMMAND");
+        Intent intent = new Intent("com.anhad.app.MEDIA_COMMAND");
         intent.putExtra("command", command);
         sendBroadcast(intent);
     }

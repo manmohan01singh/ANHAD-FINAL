@@ -9,7 +9,7 @@ class WidgetDataBridge {
     static let shared = WidgetDataBridge()
     
     // App Group identifier - must match entitlements
-    private let suiteName = "group.com.gurbaniradio.app"
+    private let suiteName = "group.com.anhad.app"
     
     private var defaults: UserDefaults? {
         return UserDefaults(suiteName: suiteName)

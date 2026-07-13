@@ -19,7 +19,7 @@
         "electron:dev": "electron . --dev",
         "electron:build": "npm run build && electron-builder --win",
         "electron:build:all": "npm run build && electron-builder --win --mac --linux",
-        "cap:init": "npx cap init \"Gurbani Radio\" \"com.gurbaniradio.app\" --web-dir frontend",
+        "cap:init": "npx cap init \"Gurbani Radio\" \"com.anhad.app\" --web-dir frontend",
         "cap:add:android": "npx cap add android",
         "cap:sync": "npm run build && npx cap sync",
         "cap:open:android": "npx cap open android",

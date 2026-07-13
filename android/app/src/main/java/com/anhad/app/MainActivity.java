@@ -1,4 +1,4 @@
-package com.gurbaniradio.app;
+package com.anhad.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import com.getcapacitor.BridgeActivity;
-import com.gurbaniradio.app.widgets.WidgetDataBridgePlugin;
+import com.anhad.app.widgets.WidgetDataBridgePlugin;
 
 public class MainActivity extends BridgeActivity {
 
@@ -79,9 +79,9 @@ public class MainActivity extends BridgeActivity {
 
         // Register receiver for background audio controls
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mediaCommandReceiver, new IntentFilter("com.gurbaniradio.app.MEDIA_COMMAND"), Context.RECEIVER_EXPORTED);
+            registerReceiver(mediaCommandReceiver, new IntentFilter("com.anhad.app.MEDIA_COMMAND"), Context.RECEIVER_EXPORTED);
         } else {
-            registerReceiver(mediaCommandReceiver, new IntentFilter("com.gurbaniradio.app.MEDIA_COMMAND"));
+            registerReceiver(mediaCommandReceiver, new IntentFilter("com.anhad.app.MEDIA_COMMAND"));
         }
 
         // Handle widget click routing

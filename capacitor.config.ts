@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'com.gurbaniradio.app',
+    appId: 'com.anhad.app',
     appName: 'Anhad',
     webDir: 'frontend',
 
