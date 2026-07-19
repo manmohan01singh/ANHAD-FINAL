@@ -267,13 +267,17 @@ class NaamAbhyas {
         this.previewAudio = null;
         this.previewTimeout = null;
 
-        // SAFETY: Force hide loading screen after 10 seconds no matter what
+        // Timer completion guard — prevents double-fire on completeMeditation
+        this._completionInProgress = false;
+
+        // SAFETY: Force hide loading screen after 5 seconds no matter what
         setTimeout(() => {
             if (!this.isInitialized) {
                 console.warn('⚠️ Force hiding loading screen after timeout');
                 this.hideLoadingScreen();
+                this.isInitialized = true;
             }
-        }, 10000);
+        }, 5000);
     }
 
     /* ═════════════════════════════════════════════════════════════════════════
@@ -300,7 +304,8 @@ class NaamAbhyas {
                         var pendingRaw = localStorage.getItem('anhad_pending_naam_launch');
                         if (pendingRaw) {
                             var pending = JSON.parse(pendingRaw);
-                            if (pending && pending.autoStart && (Date.now() - (pending.timestamp || 0)) < 15000) {
+                            // Extended to 60s window — cold starts can be slow on low-end devices
+                            if (pending && pending.autoStart && (Date.now() - (pending.timestamp || 0)) < 60000) {
                                 this._capturedAutoStartParams = {
                                     autoStart: true,
                                     hour: pending.hour,
@@ -2321,6 +2326,7 @@ class NaamAbhyas {
         const timerDisplay = document.getElementById('timerDisplay');
         const progressBar = document.getElementById('timerProgressBar');
 
+        this._completionInProgress = false;
         this.activeTimer = setInterval(() => {
             remaining--;
 
@@ -2337,15 +2343,25 @@ class NaamAbhyas {
                 progressBar.style.width = `${progress}%`;
             }
 
-            // Timer complete
+            // Timer complete — IMMEDIATELY stop the interval to prevent infinite loop
             if (remaining <= 0) {
+                const timerRef = this.activeTimer;
+                this.activeTimer = null; // null FIRST before clearInterval
+                if (timerRef) clearInterval(timerRef);
                 this.completeMeditation(session);
             }
         }, 1000);
     }
 
     async completeMeditation(session) {
-        // Clear timer
+        // Guard against double-completion (e.g., if called from interval AND manually)
+        if (this._completionInProgress) {
+            console.warn('[NaamAbhyas] completeMeditation called while already completing — suppressed');
+            return;
+        }
+        this._completionInProgress = true;
+
+        // Clear timer if still running (safety net)
         if (this.activeTimer) {
             clearInterval(this.activeTimer);
             this.activeTimer = null;
@@ -2407,6 +2423,9 @@ class NaamAbhyas {
 
         // Check achievements
         this.checkAchievements();
+
+        // Reset completion guard for next session
+        this._completionInProgress = false;
     }
 
     endMeditationEarly() {

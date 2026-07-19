@@ -86,9 +86,10 @@ public class AudioForegroundService extends Service {
             if (ACTION_PAUSE.equals(action)) {
                 isPlaying = false;
                 updateMediaSessionState();
-                updateNotification();
                 broadcastCommand("PAUSE");
-                return START_STICKY;
+                stopForeground(true);
+                stopSelf();
+                return START_NOT_STICKY;
             }
             
             if (ACTION_PLAY.equals(action)) {
@@ -131,8 +132,9 @@ public class AudioForegroundService extends Service {
             public void onPause() {
                 isPlaying = false;
                 updateMediaSessionState();
-                updateNotification();
                 broadcastCommand("PAUSE");
+                stopForeground(true);
+                stopSelf();
             }
             
             @Override

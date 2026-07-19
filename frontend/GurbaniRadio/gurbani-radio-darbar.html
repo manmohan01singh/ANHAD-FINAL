@@ -147,6 +147,18 @@
         --shadow-outer: 8px 8px 16px rgba(0, 0, 0, 0.1), -8px -8px 16px rgba(255, 255, 255, 0.9) !important;
         --shadow-inner: inset 2px 2px 5px rgba(0, 0, 0, 0.05), inset -2px -2px 5px rgba(255, 255, 255, 0.8) !important;
     }
+
+    /* ═══ Dark Theme — Explicit for auto mode (night/evening) ═══ */
+    html[data-theme="dark"], html.dark-mode, body.dark-mode {
+        --bg-dark: #0a0a0a !important;
+        --bg-elevated: #141414 !important;
+        --surface-1: rgba(255, 255, 255, 0.08) !important;
+        --surface-2: rgba(255, 255, 255, 0.12) !important;
+        --surface-3: rgba(255, 255, 255, 0.18) !important;
+        --text-primary: #FFFFFF !important;
+        --text-secondary: rgba(255, 255, 255, 0.75) !important;
+        --text-tertiary: rgba(255, 255, 255, 0.5) !important;
+    }
     
     html[data-theme="light"] .bg-overlay,
     body.light-theme .bg-overlay {
@@ -155,6 +167,15 @@
             rgba(255,255,255,0.5) 30%,
             rgba(255,255,255,0.8) 70%,
             rgba(255,255,255,0.95) 100%) !important;
+    }
+    
+    html[data-theme="dark"] .bg-overlay,
+    html.dark-mode .bg-overlay {
+        background: linear-gradient(180deg,
+            rgba(13,13,15,0.4) 0%,
+            rgba(13,13,15,0.2) 30%,
+            rgba(13,13,15,0.7) 70%,
+            rgba(13,13,15,0.95) 100%) !important;
     }
     
     html[data-theme="light"] .bg-image,
@@ -172,6 +193,7 @@
             inset 2px 2px 5px rgba(255,255,255,0.8),
             inset -2px -2px 5px rgba(0,0,0,0.05) !important;
     }
+
 
     *, *::before, *::after {
         margin: 0;

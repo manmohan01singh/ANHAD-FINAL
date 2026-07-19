@@ -322,7 +322,7 @@
     window.addEventListener('storage', (e) => {
       if (e.key === 'anhad_forced_time_of_day' || e.key === 'anhad_theme') instantRefresh();
     });
-    setInterval(smartRefresh, 60000);
+    setInterval(smartRefresh, 1000);
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         _lastSlot = null;

@@ -175,17 +175,66 @@ public class MainActivity extends BridgeActivity {
      * Strategy: Check if intent has a launchUrl or specific notification data.
      * If detected, inject a localStorage flag that the Naam Abhyas page will read.
      */
+    /**
+     * Helper to retrieve a string extra from standard root keys or nested inside Capacitor objects.
+     */
+    private String getNestedStringExtra(Bundle extras, String key) {
+        if (extras == null) return null;
+        if (extras.containsKey(key)) {
+            Object val = extras.get(key);
+            return val != null ? val.toString() : null;
+        }
+        
+        // Check for Capacitor's nested "notification" JSON string
+        if (extras.containsKey("notification")) {
+            try {
+                String notifJson = extras.getString("notification");
+                if (notifJson != null) {
+                    org.json.JSONObject obj = new org.json.JSONObject(notifJson);
+                    if (obj.has("extra")) {
+                        org.json.JSONObject extraObj = obj.getJSONObject("extra");
+                        if (extraObj.has(key)) {
+                            return extraObj.getString(key);
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+        
+        // Check for Capacitor's nested "localNotification" bundle
+        if (extras.containsKey("localNotification")) {
+            Bundle nested = extras.getBundle("localNotification");
+            if (nested != null && nested.containsKey("extra")) {
+                Bundle extraBundle = nested.getBundle("extra");
+                if (extraBundle != null && extraBundle.containsKey(key)) {
+                    Object val = extraBundle.get(key);
+                    return val != null ? val.toString() : null;
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * ═══ PRODUCTION FIX: Handles notification click routing ═══
+     * 
+     * Capacitor LocalNotifications plugin handles most click routing via its
+     * JavaScript listener (localNotificationActionPerformed). However, on cold
+     * start (app was killed), the WebView hasn't loaded yet when the intent fires.
+     * 
+     * Strategy: Check if intent has a launchUrl or specific notification data.
+     * If detected, inject a localStorage flag that the Naam Abhyas page will read.
+     */
     private void handleNotificationRoute(Intent intent) {
         if (intent == null) return;
         
-        // Check for Capacitor's notification extras
         Bundle extras = intent.getExtras();
         if (extras == null) return;
         
-        // Look for any indication this is a Naam Abhyas notification
-        String type = extras.getString("type", null);
-        String action = extras.getString("action", null);
-        String url = extras.getString("url", null);
+        String type = getNestedStringExtra(extras, "type");
+        String action = getNestedStringExtra(extras, "action");
+        String url = getNestedStringExtra(extras, "url");
         
         boolean isNaamNotification = "naam_abhyas".equals(type) 
             || "auto_start_naam".equals(action) 
@@ -194,18 +243,30 @@ public class MainActivity extends BridgeActivity {
         
         if (!isNaamNotification) return;
         
-        Log.d(TAG, "🙏 Naam Abhyas notification click detected (cold start path)");
+        Log.d(TAG, "🙏 Naam Abhyas notification click detected (routing path)");
         
-        String hour = extras.getString("hour", "");
-        String minute = extras.getString("minute", "");
+        String hour = getNestedStringExtra(extras, "hour");
+        String minute = getNestedStringExtra(extras, "minute");
+        if (hour == null) hour = "";
+        if (minute == null) minute = "";
         
-        // Inject localStorage bridge via JavaScript after bridge is ready
+        // Inject localStorage bridge or dispatch custom event if already on page to prevent reloading/flicker
         final String jsInject = "javascript:void(function(){" +
-            "try{localStorage.setItem('anhad_pending_naam_launch',JSON.stringify({" +
-            "autoStart:true,hour:'" + hour + "',minute:'" + minute + "'," +
-            "timestamp:" + System.currentTimeMillis() +
-            "}));console.log('[MainActivity] Injected cold-start bridge');" +
-            "window.location.href='NaamAbhyas/naam-abhyas.html?autoStart=true&hour=" + hour + "&minute=" + minute + "';" +
+            "try{" +
+            "  var nh='" + hour + "'; var nm='" + minute + "';" +
+            "  var isNaamPage = window.location.pathname.toLowerCase().includes('naamabhyas');" +
+            "  if (isNaamPage) {" +
+            "    console.log('[MainActivity] Already on Naam page, dispatching click event');" +
+            "    window.dispatchEvent(new CustomEvent('naamAbhyasNotificationClick', {" +
+            "      detail: { autoStart: true, hour: nh, minute: nm }" +
+            "    }));" +
+            "  } else {" +
+            "    console.log('[MainActivity] Navigating to Naam page');" +
+            "    localStorage.setItem('anhad_pending_naam_launch', JSON.stringify({" +
+            "      autoStart: true, hour: nh, minute: nm, timestamp: Date.now()" +
+            "    }));" +
+            "    window.location.href = 'NaamAbhyas/naam-abhyas.html?autoStart=true&hour=' + nh + '&minute=' + nm;" +
+            "  }" +
             "}catch(e){console.error('[MainActivity] Bridge injection failed:',e);}})()";
         
         navigateWhenReady(jsInject, 0);
@@ -216,6 +277,9 @@ public class MainActivity extends BridgeActivity {
         intent.removeExtra("url");
         intent.removeExtra("hour");
         intent.removeExtra("minute");
+        if (extras.containsKey("notification")) {
+            intent.removeExtra("notification");
+        }
     }
 
     /**

@@ -55,8 +55,8 @@
     --text-align:          center;
 
     /* ── Layout ── */
-    --safe-top:            env(safe-area-inset-top, 0px);
-    --safe-bottom:         env(safe-area-inset-bottom, 0px);
+    --safe-top:            max(env(safe-area-inset-top, 24px), 24px);
+    --safe-bottom:         max(env(safe-area-inset-bottom, 16px), 16px);
     --nav-height:          64px;
 }
 

@@ -105,6 +105,29 @@
         } catch(e) {}
     }
 
+    async function cancelManagedFSAlarms() {
+        var reliabilityPlugin = getReliabilityPlugin();
+        if (!reliabilityPlugin) return;
+        try {
+            var ids = JSON.parse(localStorage.getItem('anhad_managed_fs_alarm_ids') || '[]');
+            if (!Array.isArray(ids) || ids.length === 0) return;
+            for (var i = 0; i < ids.length; i++) {
+                try {
+                    await reliabilityPlugin.cancelFullScreenAlarm({ id: Number(ids[i]) });
+                } catch(e) {}
+            }
+            localStorage.setItem('anhad_managed_fs_alarm_ids', '[]');
+        } catch(e) {
+            console.warn('[ANHAD] Full-screen alarm cleanup failed:', e);
+        }
+    }
+
+    function saveManagedFSAlarms(ids) {
+        try {
+            localStorage.setItem('anhad_managed_fs_alarm_ids', JSON.stringify(ids));
+        } catch(e) {}
+    }
+
     function esc(t) { var d = document.createElement('span'); d.textContent = t || ''; return d.innerHTML; }
 
     function getAudioBasePath() {
@@ -501,8 +524,10 @@
             try { await LN.createChannel({ id: 'spiritual_reminders', name: 'Spiritual Reminders', importance: 4, visibility: 1, vibration: true, sound: 'default', lights: true, lightColor: '#f7c634' }); } catch(e) {}
             await ensureAndroidAlarmReliability();
             await cancelManagedNotifications(LN);
+            await cancelManagedFSAlarms();
 
             var notifs = [];
+            var fsAlarmIds = [];
             var now = new Date();
 
             // SmartReminders v7 — include tone in extras
@@ -541,9 +566,11 @@
                         // Fires even when phone is locked or app is closed.
                         // Schedule for days 0-1 to extend coverage without exceeding AlarmManager quota.
                         if (reliabilityPlugin && d <= 1) {
-                            (function(lbl, alTime, ts, hourStr, minStr, dayIdx) {
+                            var fsId = hash('fs_' + (alarm.id || 'a') + '_d' + d);
+                            fsAlarmIds.push(fsId);
+                            (function(lbl, alTime, ts, hourStr, minStr, dayIdx, fId) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
-                                    id: hash('fs_' + (alarm.id || 'a') + '_d' + dayIdx),
+                                    id: fId,
                                     timestamp: ts,
                                     title: lbl,
                                     message: alTime + ' \u2014 Tera alarm aa gya! \ud83d\ude4f',
@@ -552,7 +579,7 @@
                                 }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
-                            })(alarmLabel, alarmTime, st.getTime(), tp[0], tp[1], d);
+                            })(alarmLabel, alarmTime, st.getTime(), tp[0], tp[1], d, fsId);
                         }
                     }
                 });
@@ -666,9 +693,11 @@
                         // Extended to days 0-2 for better coverage when app isn't opened daily.
                         // ~18 hours × 3 days = ~54 alarms, within Android's 50+ exact alarm quota.
                         if (reliabilityPlugin && nd <= 2) {
-                            (function(lbl, alTime, ts, hStr, mStr, dayIdx) {
+                            var fsId = hash('fs_naam_' + nh + '_d' + nd);
+                            fsAlarmIds.push(fsId);
+                            (function(lbl, alTime, ts, hStr, mStr, dayIdx, fId) {
                                 reliabilityPlugin.scheduleFullScreenAlarm({
-                                    id: hash('fs_naam_' + nh + '_d' + dayIdx),
+                                    id: fId,
                                     timestamp: ts,
                                     title: lbl,
                                     message: alTime + ' \u2014 ' + bodyText,
@@ -677,7 +706,7 @@
                                 }).catch(function(e) {
                                     console.warn('[ANHAD] FS alarm failed:', e);
                                 });
-                            })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute), nd);
+                            })(naamTitle, sessionH12, alertTime.getTime(), String(nh), String(sessionMinute), nd, fsId);
                         }
                     }
                 }
@@ -755,6 +784,7 @@
             } else {
                 saveManagedNotifications([]);
             }
+            saveManagedFSAlarms(fsAlarmIds);
         } catch(e) {}
     }
 

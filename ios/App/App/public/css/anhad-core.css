@@ -11,8 +11,8 @@
   --ac-gold:          #D4943A;
   --ac-gold-glow:     rgba(212, 148, 58, 0.22);
   --ac-gold-border:   rgba(212, 148, 58, 0.18);
-  --ac-safe-top:      env(safe-area-inset-top,    20px);
-  --ac-safe-bottom:   env(safe-area-inset-bottom, 34px);
+  --ac-safe-top:      max(env(safe-area-inset-top, 24px), 24px);
+  --ac-safe-bottom:   max(env(safe-area-inset-bottom, 16px), 16px);
   --ac-safe-left:     env(safe-area-inset-left,    0px);
   --ac-safe-right:    env(safe-area-inset-right,   0px);
   --ac-nav-height:    56px;

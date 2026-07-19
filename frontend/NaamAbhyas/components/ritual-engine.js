@@ -645,6 +645,8 @@ class RitualEngine {
      * COMPLETE SESSION - Auto-close and return to main page
      */
     completeSession() {
+        if (this.state === 'COMPLETING') return;
+        this.state = 'COMPLETING';
         console.log('[RitualEngine] Session complete - auto-closing');
 
         // ─── SILENCE AUTO-RESTORE ────────────────────────────────────────────

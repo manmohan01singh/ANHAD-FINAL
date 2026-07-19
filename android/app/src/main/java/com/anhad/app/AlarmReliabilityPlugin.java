@@ -156,4 +156,38 @@ public class AlarmReliabilityPlugin extends Plugin {
             call.reject("Failed to schedule full screen alarm", e);
         }
     }
+
+    @PluginMethod
+    public void cancelFullScreenAlarm(PluginCall call) {
+        try {
+            int id = call.getInt("id", 0);
+            Intent intent = new Intent(getContext(), AlarmReceiver.class);
+            
+            int flags = android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags |= android.app.PendingIntent.FLAG_IMMUTABLE;
+            }
+
+            android.app.PendingIntent pendingIntent = android.app.PendingIntent.getBroadcast(
+                    getContext(),
+                    id,
+                    intent,
+                    flags
+            );
+
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+            if (alarmManager != null) {
+                alarmManager.cancel(pendingIntent);
+                pendingIntent.cancel();
+                
+                JSObject result = new JSObject();
+                result.put("success", true);
+                call.resolve(result);
+            } else {
+                call.reject("AlarmManager is null");
+            }
+        } catch (Exception e) {
+            call.reject("Failed to cancel full screen alarm", e);
+        }
+    }
 }

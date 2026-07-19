@@ -630,12 +630,20 @@
     }
   }
 
-  // ─── Theme Manager (100% Time-Based Auto) ───
   function initTheme() {
-    var h = new Date().getHours();
-    // 5 AM to 8 PM (20:00) is light theme, otherwise dark theme
-    var autoTheme = (h >= 5 && h < 20) ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', autoTheme);
+    function applyRadioTheme() {
+      var isDark = window.AnhadTheme ? window.AnhadTheme.isDark() : false;
+      var activeTheme = isDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', activeTheme);
+      document.body.classList.toggle('dark-mode', isDark);
+      document.body.style.backgroundColor = isDark ? '#0A0A0C' : '#FAF8F5';
+      if (typeof syncUI === 'function') {
+        syncUI();
+      }
+    }
+    applyRadioTheme();
+    window.addEventListener('themechange', applyRadioTheme);
+    window.addEventListener('anhadThemeChanged', applyRadioTheme);
   }
 
   // ─── Event Bindings ───

@@ -26,8 +26,8 @@
     --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
     --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
     --font-gurmukhi: 'Noto Sans Gurmukhi', 'Raavi', sans-serif;
-    --safe-top: env(safe-area-inset-top, 44px);
-    --safe-bottom: env(safe-area-inset-bottom, 34px);
+    --safe-top: max(env(safe-area-inset-top, 24px), 24px);
+    --safe-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
     --nav-h: 60px;
     --tab-h: 80px;
 }

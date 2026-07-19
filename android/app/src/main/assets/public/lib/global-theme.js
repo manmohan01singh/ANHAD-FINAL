@@ -172,12 +172,17 @@
                 lastAppliedSlot = slot;
                 lastAppliedTheme = effectiveTheme;
                 applyTheme('auto');
+                
+                // Dispatch events immediately so all page widgets update cards/images/overlays instantly
+                const eventDetail = { bubbles: true, detail: { theme: 'auto', slot } };
+                document.dispatchEvent(new CustomEvent('themechange', eventDetail));
+                document.dispatchEvent(new CustomEvent('anhadThemeChanged', eventDetail));
             }
         } else {
             lastAppliedSlot = null;
             lastAppliedTheme = null;
         }
-    }, 30000); // 30s safety net — event-driven 'themechange' handles instant switching (was 500ms)
+    }, 1000);
 
     // Only sync icons on load — full theme was already applied by inline IIFE in <head>.
     // Running full applyTheme() here would cause a redundant style recalculation.

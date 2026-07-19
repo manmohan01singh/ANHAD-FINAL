@@ -28,8 +28,8 @@
     --red-light: rgba(255, 59, 48, 0.1);
     --border: var(--border-color);
     --nav-bg: var(--bg-secondary);
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: max(env(safe-area-inset-top, 24px), 24px);
+    --safe-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
     --font-gurmukhi: 'Raavi', 'Noto Sans Gurmukhi', 'Mukta Mahee', sans-serif;
 
     --orb-1: rgba(255, 180, 100, 0.2);

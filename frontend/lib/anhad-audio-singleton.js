@@ -625,6 +625,10 @@
       offset: manualOffset
     };
     persistState();
+    _nativeServiceStarted = false;
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
+      try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
+    }
   }
 
   function resume() {

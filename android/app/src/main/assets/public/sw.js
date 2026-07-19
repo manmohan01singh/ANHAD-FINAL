@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v8.0.2'; // FORCE CLEAR ALL CACHES - Fix missing ) syntax in daily-hukamnama.js
+const CACHE_VERSION = 'anhad-v9.0.0'; // Android package rename: com.anhad.app; notification artwork; font fixes
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

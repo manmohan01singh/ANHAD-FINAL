@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="pa" data-theme="light">
+<html lang="pa">
 <head>
+  <script src="../lib/global-theme.js"></script>
   <script>
   (function() {
     try {
-      // Gurbani Radio theme is light/beige by default based on the shared premium design
-      document.documentElement.setAttribute('data-theme', 'light');
-      document.documentElement.style.backgroundColor = '#FAF8F5';
+      var isDark = window.AnhadTheme ? window.AnhadTheme.isDark() : false;
+      var theme = isDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.backgroundColor = isDark ? '#0A0A0C' : '#FAF8F5';
     } catch(e) {}
   })();
   </script>

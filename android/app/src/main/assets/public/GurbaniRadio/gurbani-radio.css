@@ -85,7 +85,7 @@ html, body {
   position: relative;
   background: var(--bg-primary);
   box-sizing: border-box;
-  padding: calc(env(safe-area-inset-top, 20px) + 8px) 20px max(env(safe-area-inset-bottom, 8px), 8px);
+  padding: calc(max(env(safe-area-inset-top, 24px), 24px) + 12px) 24px max(env(safe-area-inset-bottom, 12px), 12px);
   overflow: hidden;
   box-shadow: 0 0 50px rgba(53, 46, 42, 0.05);
 }
@@ -1053,3 +1053,19 @@ html, body {
     font-size: 10px;
   }
 }
+
+[data-theme="dark"] {
+  --bg-primary:         #0A0A0C;
+  --bg-secondary:       #141417;
+  --bg-card:            #141417;
+  --text-prime:         #FFFFFF;
+  --text-sec:           #A0A0A5;
+  --text-light:         #7C7C82;
+  --border-color:       rgba(255, 255, 255, 0.08);
+  --separator:          rgba(255, 255, 255, 0.06);
+  --shadow-xs:          0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm:          0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-md:          0 12px 28px rgba(0, 0, 0, 0.5);
+  --shadow-lg:          0 24px 48px rgba(0, 0, 0, 0.6);
+}
+
