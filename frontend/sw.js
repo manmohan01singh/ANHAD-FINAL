@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.0.3'; // Stream library UI + Settings overflow fix
+const CACHE_VERSION = 'anhad-v9.1.0'; // Dynamic theme claymorphism: day=light, night=dark, fix progress bar + borders
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
