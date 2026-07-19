@@ -83,6 +83,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+Gurmukhi:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    /* ─── PLAYER SHEET DISABLED: Using lightweight inline player instead ─── */
+    #playerSheet, #playerBackdrop { display: none !important; }
+
     /* ═══════════════════════════════════════════════════════════════
        ULTIMATE PREMIUM DESIGN SYSTEM
        iOS-Level Visual DNA · Apple SF + Gurbani Golden Touch
@@ -8024,6 +8027,7 @@
     /* ── CREATING YOUTUBE CARDS LAYOUT ────────────────── */
     function createYtVideoCard(v, isLiveCard = false, showChannelIndicator = false) {
       const card = CE('div');
+      card.dataset.videoId = v.videoId;
       
       // Gesture recognition: long press to open context action sheet
       let pressTimer = null;
@@ -8069,7 +8073,7 @@
             openIosActionSheet(v);
             return;
           }
-          openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', true);
+          playInline(card, v.videoId);
         });
         return card;
       }
@@ -8180,7 +8184,7 @@
           openIosActionSheet(v);
           return;
         }
-        openPlayer(v.videoId, v.title, v.channelName, v.channelThumbnail || '', false);
+        playInline(card, v.videoId);
       });
 
       return card;
@@ -8329,49 +8333,74 @@
 
     /* ── WATCH PAGE SHEET PLAYER CONTROLLER ───────────── */
     function openPlayer(videoId, title, channelName, channelThumbnail, isLive = false) {
-      State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
+      // Save to watch history
       saveToWatchHistory({ videoId, title, channelName, channelThumbnail, isLive, duration: isLive ? 'LIVE' : '--:--', progress: '0%', watchedAt: Date.now() });
+      State.currentPlaying = { videoId, title, channelName, channelThumbnail, isLive };
 
-      const playerSheet = $('playerSheet');
-      const playerBackdrop = $('playerBackdrop');
+      // Pause Anhad background audio
+      if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
 
-      $('playerDetailTitle').textContent = title;
-      $('playerMiniTitle').textContent = title;
-      $('playerDetailChannel').textContent = channelName;
-      $('playerMiniChannel').textContent = channelName;
-      $('playerChannelAvatar').src = channelThumbnail || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='38' height='38' viewBox='0 0 38 38'><rect width='100%' height='100%' fill='%23FFB300'/><text x='50%' y='55%' text-anchor='middle' fill='black' font-size='16' font-family='sans-serif' font-weight='bold'>${getInitials(channelName)}</text></svg>`;
-      $('audioDiscSpin').style.backgroundImage = `url('https://i.ytimg.com/vi/${videoId}/mqdefault.jpg')`;
-      requestIdleCallback(() => { extractAmbientColor(videoId); }, { timeout: 1000 });
-      $('playerProgressBar').parentElement.style.setProperty('--progress', 0);
+      // Remove any existing overlay
+      const existing = document.getElementById('anhad-inline-player-overlay');
+      if (existing) existing.remove();
 
-      const channel = State.myChannels.find(c => c.channelName === channelName);
-      updateSubscribeBtnState(channel);
+      // Build clean fullscreen overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'anhad-inline-player-overlay';
+      overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'background:rgba(0,0,0,0.96)',
+        'display:flex', 'flex-direction:column',
+        'align-items:center', 'justify-content:center',
+        'padding:env(safe-area-inset-top,16px) 12px env(safe-area-inset-bottom,16px)',
+        'animation:aipoFadeIn .2s ease'
+      ].join(';');
 
-      if (isLive) {
-        $('playerProgressBar').style.display = 'none';
-        $('playerLiveBadgeRow').style.display = 'flex';
-        $('playerVideoViewsRow').textContent = 'Streaming Live';
-      } else {
-        $('playerProgressBar').style.display = 'block';
-        $('playerLiveBadgeRow').style.display = 'none';
-        $('playerVideoViewsRow').textContent = 'Video Playback';
-      }
+      overlay.innerHTML = `
+        <style>
+          @keyframes aipoFadeIn{from{opacity:0}to{opacity:1}}
+        </style>
+        <div style="width:100%;max-width:760px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#fff;gap:8px;">
+          <div style="flex:1;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#FFB300;">${title || 'Gurbani'}</div>
+          <button id="anhad-close-overlay" style="background:rgba(255,255,255,0.1);border:none;color:#fff;font-weight:800;font-size:13px;padding:8px 18px;border-radius:20px;cursor:pointer;flex-shrink:0;">✕ Close</button>
+        </div>
+        <div style="width:100%;max-width:760px;position:relative;padding-bottom:56.25%;background:#000;border-radius:14px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.7);">
+          <iframe
+            src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+          </iframe>
+        </div>
+        <div style="margin-top:10px;color:rgba(255,255,255,0.45);font-size:11px;">${channelName || ''}</div>
+      `;
 
-      // Open in a single frame — no forced reflow, no nested rAF
-      playerSheet.style.display = 'block';
-      playerBackdrop.style.display = 'block';
-      playerSheet.className = 'player-sheet open';
-      playerBackdrop.classList.add('visible');
-      document.body.classList.add('mini-player-active');
-
-      State.likeState = false;
-      $('playerLikeBtn').style.color = 'var(--text-primary)';
-      $('playerLikeText').textContent = 'Like';
-
-      loadYtIframePlayer(videoId);
-      if (bgPlayEnabled) { setupNativeAudioCommandListener(); startNativeAudioService(); }
+      document.body.appendChild(overlay);
+      overlay.querySelector('#anhad-close-overlay').addEventListener('click', () => overlay.remove());
       haptic('medium');
-      window.dispatchEvent(new CustomEvent('sadhsangatPlayerOpened', { detail: { title, channelName } }));
+    }
+
+    /* ── INLINE CARD PLAYER (replaces thumbnail with iframe) ── */
+    function playInline(card, videoId) {
+      if (window.AnhadAudio && typeof window.AnhadAudio.pause === 'function') window.AnhadAudio.pause();
+      const thumbWrap = card.querySelector('.yt-video-thumb-wrap') || card.querySelector('.yt-live-now-thumb-wrap');
+      if (thumbWrap) {
+        thumbWrap.style.position = 'relative';
+        thumbWrap.style.paddingBottom = '56.25%';
+        thumbWrap.style.height = '0';
+        thumbWrap.style.overflow = 'hidden';
+        thumbWrap.innerHTML = `<iframe
+          src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px;">
+        </iframe>`;
+        card.style.pointerEvents = 'none';
+      } else {
+        openPlayer(videoId, '', '', '', false);
+      }
     }
 
     function updateSubscribeBtnState(channel) {

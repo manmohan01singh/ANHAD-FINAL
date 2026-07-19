@@ -632,7 +632,14 @@
 
   function initTheme() {
     function applyRadioTheme() {
-      var isDark = window.AnhadTheme ? window.AnhadTheme.isDark() : false;
+      // Time-based auto theme: dark at night (8 PM – 5 AM), light otherwise
+      var hour = new Date().getHours();
+      var isNight = (hour >= 20 || hour < 5);
+
+      // If global theme explicitly forces dark, honour it
+      var globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'auto';
+      var isDark = isNight || globalTheme === 'dark' || (globalTheme === 'auto' && (window.AnhadTheme ? window.AnhadTheme.isDark() : isNight));
+
       var activeTheme = isDark ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', activeTheme);
       document.body.classList.toggle('dark-mode', isDark);
@@ -644,6 +651,8 @@
     applyRadioTheme();
     window.addEventListener('themechange', applyRadioTheme);
     window.addEventListener('anhadThemeChanged', applyRadioTheme);
+    // Re-check every 10 minutes so the page auto-switches at nightfall
+    setInterval(applyRadioTheme, 10 * 60 * 1000);
   }
 
   // ─── Event Bindings ───

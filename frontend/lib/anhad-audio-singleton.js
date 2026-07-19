@@ -626,6 +626,10 @@
     };
     persistState();
     _nativeServiceStarted = false;
+    // Update MediaSession so Android notification shows Paused (not Playing)
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
       try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
     }
@@ -675,6 +679,11 @@
     pauseAnchor = null;
     persistState();
     _nativeServiceStarted = false;
+    // Clear MediaSession so Android removes the notification entirely
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
+    }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
       try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
     }
@@ -809,6 +818,7 @@
         album: 'ANHAD',
         artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }]
       });
+      navigator.mediaSession.playbackState = 'playing';
       navigator.mediaSession.setActionHandler('play', () => resume());
       navigator.mediaSession.setActionHandler('pause', () => pause());
       navigator.mediaSession.setActionHandler('stop', () => stop());

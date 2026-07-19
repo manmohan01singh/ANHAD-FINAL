@@ -3813,6 +3813,26 @@ const NitnemManager = {
         const log = StorageManager.load(CONFIG.STORAGE_KEYS.NITNEM_LOG, {});
         log[today] = this.completedToday;
         StorageManager.save(CONFIG.STORAGE_KEYS.NITNEM_LOG, log);
+
+        // Sync with UnifiedStats
+        if (window.UnifiedStats && typeof window.UnifiedStats.syncNitnemProgress === 'function') {
+            let totalBanis = 0;
+            let completedBanis = 0;
+            const completedList = [];
+
+            Object.keys(this.selectedBanis).forEach(period => {
+                totalBanis += (this.selectedBanis[period] || []).length;
+                completedBanis += (this.completedToday[period] || []).length;
+                (this.completedToday[period] || []).forEach(uid => {
+                    if (!completedList.includes(uid)) {
+                        completedList.push(uid);
+                    }
+                });
+            });
+
+            const isDayComplete = totalBanis > 0 && completedBanis >= totalBanis;
+            window.UnifiedStats.syncNitnemProgress(completedList, isDayComplete);
+        }
     },
 
     /**

@@ -80,6 +80,7 @@
 /* ─── Back Button ─────────────────────────────────────────────────────────── */
 .glass-nav__back,
 .glass-back-btn {
+  justify-self: start;
   display: inline-flex;
   align-items: center;
   gap: 4px;

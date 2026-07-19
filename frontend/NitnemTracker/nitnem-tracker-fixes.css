@@ -1864,3 +1864,56 @@ button:active,
     background: rgba(10, 132, 255, 0.15) !important;
     color: #0A84FF !important;
 }
+
+/* ─── MY POTHI REDIRECT CARD POLISH ─── */
+.pothi-redirect-card {
+    position: relative !important;
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.12) 0%, rgba(255, 160, 50, 0.05) 100%) !important;
+    border: 1px solid rgba(212, 148, 58, 0.25) !important;
+    box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, var(--clay-shadow-soft, 0.08)),
+        -12px -12px 24px rgba(255, 255, 255, var(--clay-highlight, 0.9)),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.8),
+        inset -4px -4px 8px rgba(212, 148, 58, 0.1) !important;
+    border-radius: var(--clay-radius-card, 24px) !important;
+    transition: transform 0.3s var(--clay-spring, cubic-bezier(0.34, 1.56, 0.64, 1)), box-shadow 0.3s ease, border-color 0.3s ease !important;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 24px;
+}
+
+[data-theme="dark"] .pothi-redirect-card {
+    background: linear-gradient(135deg, rgba(212, 148, 58, 0.15) 0%, rgba(255, 160, 50, 0.08) 100%) !important;
+    border-color: rgba(212, 148, 58, 0.3) !important;
+    box-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.35),
+        -12px -12px 24px rgba(255, 255, 255, 0.03),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.05),
+        inset -4px -4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.pothi-redirect-card:hover {
+    transform: translateY(-4px) scale(1.01) !important;
+    border-color: rgba(212, 148, 58, 0.45) !important;
+    box-shadow: 
+        16px 16px 28px rgba(0, 0, 0, var(--clay-shadow-mid, 0.12)),
+        -16px -16px 28px rgba(255, 255, 255, var(--clay-highlight, 0.9)),
+        inset 4px 4px 8px rgba(255, 255, 255, 0.9),
+        inset -4px -4px 8px rgba(212, 148, 58, 0.15) !important;
+}
+
+.pothi-redirect-card:active {
+    transform: scale(0.98) !important;
+}
+
+/* Arrow Slide Animation */
+.pothi-redirect-card .card-arrow {
+    transition: transform 0.3s var(--clay-spring, cubic-bezier(0.34, 1.56, 0.64, 1)), color 0.3s ease !important;
+    color: var(--text-secondary, #86868b);
+}
+
+.pothi-redirect-card:hover .card-arrow {
+    transform: translateX(6px) !important;
+    color: var(--ac-gold, #D4943A) !important;
+}

@@ -534,6 +534,7 @@
     </div>
 
     <!-- GurbaniDB — IndexedDB offline cache -->
+    <script src="../lib/unified-stats.js"></script>
     <script src="../lib/gurbani-db.js"></script>
 
     <script>
@@ -831,14 +832,85 @@
                     console.log(`[My Pothi] Added ${bani.name} to Nitnem Tracker (${period}) with UID ${entry.uid}`);
                 });
 
+                // Prune any deleted custom banis (non-core banis not present in pothiOrder)
+                const coreNitnemIds = [2, 4, 6, 7, 9, 10, 21, 23, 24];
+                const deletedUids = [];
+
+                Object.keys(nitnemSelected).forEach(period => {
+                    if (!Array.isArray(nitnemSelected[period])) return;
+                    
+                    nitnemSelected[period] = nitnemSelected[period].filter(entry => {
+                        // Core Nitnem banis are protected
+                        if (coreNitnemIds.includes(entry.id)) return true;
+                        
+                        // If it's in pothiOrder, keep it
+                        if (pothiOrder.includes(entry.id)) return true;
+                        
+                        // Otherwise, it was deleted! Track its UID to clean up progress logs
+                        deletedUids.push(entry.uid);
+                        console.log(`[My Pothi] Pruning deleted custom bani: ${entry.nameEnglish || entry.id} (UID: ${entry.uid})`);
+                        return false;
+                    });
+                });
+
+                // Clean up deleted UIDs from progress logs
+                if (deletedUids.length > 0) {
+                    const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+                    let logChanged = false;
+                    
+                    Object.keys(nitnemLog).forEach(date => {
+                        const dayLog = nitnemLog[date];
+                        if (dayLog) {
+                            Object.keys(dayLog).forEach(period => {
+                                if (Array.isArray(dayLog[period])) {
+                                    const originalLength = dayLog[period].length;
+                                    dayLog[period] = dayLog[period].filter(uid => !deletedUids.includes(uid));
+                                    if (dayLog[period].length !== originalLength) {
+                                        logChanged = true;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (logChanged) {
+                        localStorage.setItem('nitnemTracker_nitnemLog', JSON.stringify(nitnemLog));
+                        console.log('[My Pothi] Cleaned up deleted UIDs from progress logs');
+                    }
+                }
+
                 // Save to Nitnem Tracker
                 localStorage.setItem('nitnemTracker_selectedBanis', JSON.stringify(nitnemSelected));
-                console.log('[My Pothi] Synced with Nitnem Tracker:', addedUids.size, 'banis added');
+                console.log('[My Pothi] Synced with Nitnem Tracker:', addedUids.size, 'banis added,', deletedUids.length, 'banis pruned');
 
-                // Dispatch event to notify Nitnem Tracker to refresh
+                // Dispatch events to notify all views to refresh
                 window.dispatchEvent(new CustomEvent('nitnemUpdated', {
-                    detail: { source: 'myPothi', addedCount: addedUids.size }
+                    detail: { source: 'myPothi', addedCount: addedUids.size, deletedCount: deletedUids.length }
                 }));
+                window.dispatchEvent(new CustomEvent('dashboardRefresh'));
+                window.dispatchEvent(new CustomEvent('statsUpdated'));
+                window.dispatchEvent(new CustomEvent('themechange')); // Force sync updates
+                
+                // Recalculate streak/completion stats on page directly if UnifiedStats is loaded
+                if (window.UnifiedStats && typeof window.UnifiedStats.syncNitnemProgress === 'function') {
+                    let total = 0;
+                    let completed = 0;
+                    const completedList = [];
+                    const todayStr = new Date().toLocaleDateString('en-CA');
+                    const todayLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}')[todayStr] || {};
+                    
+                    Object.keys(nitnemSelected).forEach(period => {
+                        total += (nitnemSelected[period] || []).length;
+                        completed += (todayLog[period] || []).length;
+                        (todayLog[period] || []).forEach(uid => {
+                            if (!completedList.includes(uid)) {
+                                completedList.push(uid);
+                            }
+                        });
+                    });
+                    const isDayComplete = total > 0 && completed >= total;
+                    window.UnifiedStats.syncNitnemProgress(completedList, isDayComplete);
+                }
             } catch (e) {
                 console.error('[My Pothi] Error syncing with Nitnem Tracker:', e);
             }
