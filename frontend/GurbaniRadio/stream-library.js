@@ -169,105 +169,8 @@
     var streamMeta = getStreamById(streamId);
     if (!streamMeta) return;
 
-    // For built-in streams (darbar, amritvela, simran) use existing singleton keys
-    if (streamId === 'darbar' || streamId === 'amritvela' || streamId === 'simran') {
-      audio.play(streamId);
-    } else if (streamMeta.url) {
-      // Custom stream: inject a temporary override into the singleton
-      playCustomUrl(streamMeta);
-    }
-  }
-
-  // ─── Custom URL playback ─────────────────────────────────────────
-  function playCustomUrl(streamMeta) {
-    var audio = window.AnhadAudio;
-    if (!audio) return;
-
-    // Register a temporary stream by monkey-patching getState display info
-    // The singleton doesn't natively know these streams, so we directly
-    // play the URL on the audio element via the existing play mechanism.
-
-    // Use the singleton's own audio element and swap the src
-    var audioEl = audio.getAudio();
-    if (!audioEl) {
-      // Fallback: create new audio tag
-      audioEl = new Audio();
-      audioEl.crossOrigin = 'anonymous';
-    }
-
-    // Pause any current playback via singleton
-    if (audio.isPlaying()) audio.pause();
-
-    // Track the custom stream so the UI knows what's playing
-    window._anhadCustomStream = {
-      id: streamMeta.id,
-      name: streamMeta.name,
-      artist: streamMeta.sub,
-      url: streamMeta.url,
-      emoji: streamMeta.emoji
-    };
-
-    // Update display info immediately
-    updateCustomStreamUI(streamMeta);
-
-    // Try to play through singleton first (it handles media session)
-    try {
-      // Temporarily store URL in a hidden elem so singleton can use it
-      audioEl.src = streamMeta.url;
-      audioEl.crossOrigin = 'anonymous';
-      audioEl.load();
-      audioEl.play().catch(function (e) {
-        console.warn('[StreamLib] Custom stream play failed:', e);
-        showLibToast('⚠️ Stream failed: ' + streamMeta.name);
-        window._anhadCustomStream = null;
-      });
-
-      // Update media session
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: streamMeta.name,
-          artist: streamMeta.sub,
-          album: 'ANHAD'
-        });
-        navigator.mediaSession.playbackState = 'playing';
-      }
-    } catch (e) {
-      console.error('[StreamLib] Playback error:', e);
-    }
-  }
-
-  function updateCustomStreamUI(meta) {
-    var titleEl = document.getElementById('grTrackTitle');
-    var artistEl = document.getElementById('grTrackArtist');
-    var pillEl = document.getElementById('grPillLocationText');
-    var liveTextEl = document.getElementById('grListeningLiveText');
-    var timeBadgeEl = document.getElementById('grListeningTimeBadge');
-
-    if (titleEl) titleEl.textContent = meta.name;
-    if (artistEl) artistEl.textContent = meta.sub;
-    if (pillEl) pillEl.textContent = meta.sub;
-    if (liveTextEl) { liveTextEl.textContent = 'LIVE'; liveTextEl.style.color = '#E24C4C'; }
-    if (timeBadgeEl) timeBadgeEl.textContent = 'LIVE';
-
-    // Update cover to a neutral cover
-    var coverEl = document.getElementById('grCoverImg');
-    if (coverEl) {
-      var hour = new Date().getHours();
-      var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      var slot = isDark ? 'night' : (hour < 9 ? 'morning' : hour < 16 ? 'day' : hour < 20 ? 'evening' : 'night');
-      coverEl.src = '../assets/HERO CARD IMAGES/' + slot + '-darbar-sahib.webp';
-    }
-
-    // Show wave / update play button
-    var waveEl = document.getElementById('grWaveIcon');
-    var playEl = document.getElementById('grPlayBtn');
-    if (waveEl) waveEl.classList.add('playing');
-    if (playEl) {
-      var pi = playEl.querySelector('.play-icon');
-      var pui = playEl.querySelector('.pause-icon');
-      if (pi) pi.style.display = 'none';
-      if (pui) pui.style.display = 'block';
-    }
+    // Direct delegation to Audio Singleton
+    audio.play(streamId);
   }
 
   // ─── Haptics ─────────────────────────────────────────────────────
@@ -647,6 +550,21 @@
   function init() {
     injectCSS();
     createSheet();
+
+    // Register all custom streams in the Audio Singleton
+    var audio = window.AnhadAudio;
+    if (audio && typeof audio.registerStream === 'function') {
+      ALL_STREAMS.forEach(function (s) {
+        if (s.url) {
+          audio.registerStream(s.id, {
+            name: s.name,
+            subtitle: s.sub,
+            url: s.url,
+            type: 'live' // All custom streams are live Shoutcast/Icecast broadcasts
+          });
+        }
+      });
+    }
 
     // Bind backdrop click
     var backdrop = document.getElementById('slBackdrop');

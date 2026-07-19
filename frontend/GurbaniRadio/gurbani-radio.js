@@ -192,22 +192,23 @@
     }
 
     // 3. Update Text Info
-    var meta = METADATA[stream];
-    if (customStream && customStream.id !== 'darbar' && customStream.id !== 'amritvela' && customStream.id !== 'simran') {
-      // Custom library stream is playing — let stream-library control UI text
-      // Only update play/pause state below
-    } else if (meta) {
-      DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
-      DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
-      DOM.pillLocationText.textContent = meta.location;
-      
-      // Dynamic time-based and theme-based album cover resolution
-      var coverSrc = getCoverForStream(stream);
-      verifyCover(coverSrc, DOM.coverImg);
-    }
+    var streamInfo = audio.getStreamInfo ? audio.getStreamInfo(stream) : null;
+    var meta = METADATA[stream] || {
+      title: (streamInfo && streamInfo.name) ? streamInfo.name : 'Gurbani Stream',
+      artist: (streamInfo && streamInfo.subtitle) ? streamInfo.subtitle : 'ANHAD Radio',
+      location: (streamInfo && streamInfo.subtitle) ? streamInfo.subtitle : 'Live Stream'
+    };
+
+    DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
+    DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
+    DOM.pillLocationText.textContent = meta.location;
+    
+    // Dynamic time-based and theme-based album cover resolution
+    var coverSrc = getCoverForStream(stream);
+    verifyCover(coverSrc, DOM.coverImg);
 
     // 4. Update Banner & Recording controls
-    if (stream === 'darbar' || (customStream && customStream.id !== 'darbar' && customStream.id !== 'amritvela' && customStream.id !== 'simran')) {
+    if (state.streamType === 'live' || stream === 'darbar') {
       DOM.listeningLiveText.textContent = 'LIVE';
       DOM.listeningLiveText.style.color = '#E24C4C';
       DOM.listeningTimeBadge.textContent = 'LIVE';
