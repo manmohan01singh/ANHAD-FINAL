@@ -157,6 +157,7 @@ html, body {
   height: 46px;
   border: 1px solid rgba(53, 46, 42, 0.02);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .gr-tabs-slider {
@@ -164,19 +165,21 @@ html, body {
   top: 4px;
   bottom: 4px;
   left: 4px;
+  /* Default for 3 slots — overridden by dynamic <style> for other counts */
   width: calc((100% - 8px) / 3);
   background: var(--accent-gold);
   border-radius: var(--radius-pill);
   z-index: 1;
   box-shadow: 0 3px 8px rgba(var(--accent-gold-rgb), 0.25);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.gr-tabs[data-active="1"] .gr-tabs-slider {
-  transform: translateX(100%);
-}
-.gr-tabs[data-active="2"] .gr-tabs-slider {
-  transform: translateX(200%);
-}
+
+/* Static 3-slot positions (still needed until stream-library injects dynamic ones) */
+.gr-tabs[data-active="0"] .gr-tabs-slider { transform: translateX(0%); }
+.gr-tabs[data-active="1"] .gr-tabs-slider { transform: translateX(100%); }
+.gr-tabs[data-active="2"] .gr-tabs-slider { transform: translateX(200%); }
+.gr-tabs[data-active="3"] .gr-tabs-slider { transform: translateX(300%); }
+.gr-tabs[data-active="4"] .gr-tabs-slider { transform: translateX(400%); }
 
 .gr-tab {
   flex: 1;
@@ -192,18 +195,35 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   position: relative;
   z-index: 2;
   transition: color 0.25s ease;
+  padding: 0 6px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.gr-tab.active {
-  color: #FFFFFF;
+.gr-tab.active { color: #FFFFFF; }
+
+/* Icon-only mode (4–5 slots) */
+.gr-tab.icon-only {
+  font-size: 0;    /* hide any text that leaked */
+  gap: 0;
+  padding: 0 2px;
 }
 .gr-tab-icon {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
 }
+.gr-tab-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+
 
 /* ─── ALBUM ARTWORK CARD ─── */
 .gr-card-wrapper {

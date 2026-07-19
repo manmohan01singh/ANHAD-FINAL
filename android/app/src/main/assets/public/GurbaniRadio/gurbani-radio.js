@@ -145,14 +145,25 @@
     var state = audio.getState();
     var stream = state.currentStream || 'darbar';
 
+    // If a custom library stream is playing, let stream-library manage UI
+    // (still update play/pause button and wave icon here)
+    var customStream = window._anhadCustomStream;
+
     // 1. Update Tabs & Sliding Indicator
     var tabsContainer = document.querySelector('.gr-tabs');
     if (tabsContainer) {
-      var tabIndex = stream === 'darbar' ? 0 : (stream === 'amritvela' ? 1 : 2);
+      var tabs = tabsContainer.querySelectorAll('.gr-tab');
+      var activeStreamId = customStream ? customStream.id : stream;
+      var tabIndex = 0;
+      tabs.forEach(function(tab, idx) {
+        if (tab.getAttribute('data-stream') === activeStreamId) tabIndex = idx;
+      });
       tabsContainer.setAttribute('data-active', tabIndex);
     }
+
     document.querySelectorAll('.gr-tab').forEach(function (tab) {
-      if (tab.getAttribute('data-stream') === stream) {
+      var activeId = customStream ? customStream.id : stream;
+      if (tab.getAttribute('data-stream') === activeId) {
         tab.classList.add('active');
       } else {
         tab.classList.remove('active');
@@ -182,7 +193,10 @@
 
     // 3. Update Text Info
     var meta = METADATA[stream];
-    if (meta) {
+    if (customStream && customStream.id !== 'darbar' && customStream.id !== 'amritvela' && customStream.id !== 'simran') {
+      // Custom library stream is playing — let stream-library control UI text
+      // Only update play/pause state below
+    } else if (meta) {
       DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
       DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
       DOM.pillLocationText.textContent = meta.location;
@@ -193,7 +207,7 @@
     }
 
     // 4. Update Banner & Recording controls
-    if (stream === 'darbar') {
+    if (stream === 'darbar' || (customStream && customStream.id !== 'darbar' && customStream.id !== 'amritvela' && customStream.id !== 'simran')) {
       DOM.listeningLiveText.textContent = 'LIVE';
       DOM.listeningLiveText.style.color = '#E24C4C';
       DOM.listeningTimeBadge.textContent = 'LIVE';
@@ -687,10 +701,14 @@
       }
     });
 
-    // Settings icon shows informational theme toast
+    // Settings icon — opens Stream Library
     document.getElementById('grSettingsBtn').addEventListener('click', function () {
       haptic('LIGHT');
-      showToast('⏰ Theme is set automatically based on time of day');
+      if (window.GurbaniStreamLib) {
+        window.GurbaniStreamLib.open();
+      } else {
+        showToast('⏰ Theme is set automatically based on time of day');
+      }
     });
 
     // Play/Pause toggle
@@ -751,11 +769,13 @@
       }
     });
 
-    // Tabs switching
+    // Tabs switching — delegate to stream library if loaded
     document.querySelectorAll('.gr-tab').forEach(function (tab) {
       tab.addEventListener('click', function () {
         var stream = tab.getAttribute('data-stream');
         haptic('MEDIUM');
+        // Clear any custom stream override on tab click
+        window._anhadCustomStream = null;
         var audio = window.AnhadAudio;
         if (audio) {
           audio.play(stream);
