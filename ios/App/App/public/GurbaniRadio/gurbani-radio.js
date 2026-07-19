@@ -902,8 +902,8 @@
 
   // ─── Initializer ───
   function boot() {
-    initTheme();
     cacheDom();
+    initTheme();
     bindEvents();
     setupSlider();
     syncUI();
