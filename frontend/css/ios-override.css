@@ -1791,6 +1791,148 @@ a,
     inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
 }
 
+/* ── Morning Soft Cushion Claymorphism Override (5:00 AM to 9:00 AM) ── */
+[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .event-card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-card,
+[data-theme-mode="auto"][data-time-of-day="morning"] .nitnem-card {
+  background: linear-gradient(145deg, #FFFDF6, #FFEAD4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  border-radius: 24px !important;
+  box-shadow: 4px 4px 10px rgba(232, 148, 100, 0.1), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(232, 148, 100, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Morning Specific Cards */
+[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--nitnem,
+[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--gold {
+  background: linear-gradient(145deg, #FFFDF6, #FFEAB8) !important;
+  box-shadow: 4px 4px 10px rgba(212, 148, 58, 0.1), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(212, 148, 58, 0.06) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--sehaj,
+[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--purple {
+  background: linear-gradient(145deg, #FFFAFA, #FFE0DB) !important;
+  box-shadow: 4px 4px 10px rgba(180, 100, 100, 0.08), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(180, 100, 100, 0.05) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--hukam,
+[data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--green {
+  background: linear-gradient(145deg, #FFFDF9, #FFE4C8) !important;
+  box-shadow: 4px 4px 10px rgba(232, 110, 60, 0.08), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(232, 110, 60, 0.05) !important;
+}
+
+/* Morning Buttons & Controls */
+[data-theme-mode="auto"][data-time-of-day="morning"] .header__btn,
+[data-theme-mode="auto"][data-time-of-day="morning"] .header-btn--glass,
+[data-theme-mode="auto"][data-time-of-day="morning"] .header__back,
+[data-theme-mode="auto"][data-time-of-day="morning"] .glass-nav__back,
+[data-theme-mode="auto"][data-time-of-day="morning"] .event-card__learn-more,
+[data-theme-mode="auto"][data-time-of-day="morning"] .tab-item.active {
+  background: linear-gradient(145deg, #FFFDF9, #FFE5D0) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 3px 3px 8px rgba(232, 148, 100, 0.08), 
+              -3px -3px 8px rgba(255, 255, 255, 0.95), 
+              inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95), 
+              inset -1.5px -1.5px 3px rgba(232, 148, 100, 0.05) !important;
+  border-radius: 20px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ── Evening Soft Cushion Claymorphism Override (4:00 PM to 8:00 PM) ── */
+[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .event-card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-card,
+[data-theme-mode="auto"][data-time-of-day="evening"] .nitnem-card {
+  background: linear-gradient(145deg, #FFFDF8, #FFECB8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  border-radius: 24px !important;
+  box-shadow: 4px 4px 10px rgba(184, 134, 11, 0.10), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(184, 134, 11, 0.06) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Evening Specific Cards */
+[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--nitnem,
+[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--gold {
+  background: linear-gradient(145deg, #FFFFFA, #FFE498) !important;
+  box-shadow: 4px 4px 10px rgba(184, 134, 11, 0.12), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(184, 134, 11, 0.07) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--sehaj,
+[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--purple {
+  background: linear-gradient(145deg, #FFF8FA, #FFE0C8) !important;
+  box-shadow: 4px 4px 10px rgba(180, 110, 80, 0.08), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(180, 110, 80, 0.06) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--hukam,
+[data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--green {
+  background: linear-gradient(145deg, #FFFDF8, #FFEAB0) !important;
+  box-shadow: 4px 4px 10px rgba(184, 134, 11, 0.10), 
+              -4px -4px 10px rgba(255, 255, 255, 0.95), 
+              inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
+              inset -2px -2px 4px rgba(184, 134, 11, 0.06) !important;
+}
+
+/* Evening Buttons & Controls */
+[data-theme-mode="auto"][data-time-of-day="evening"] .header__btn,
+[data-theme-mode="auto"][data-time-of-day="evening"] .header-btn--glass,
+[data-theme-mode="auto"][data-time-of-day="evening"] .header__back,
+[data-theme-mode="auto"][data-time-of-day="evening"] .glass-nav__back,
+[data-theme-mode="auto"][data-time-of-day="evening"] .event-card__learn-more,
+[data-theme-mode="auto"][data-time-of-day="evening"] .tab-item.active {
+  background: linear-gradient(145deg, #FFFDF8, #FFECB8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 3px 3px 8px rgba(184, 134, 11, 0.08), 
+              -3px -3px 8px rgba(255, 255, 255, 0.95), 
+              inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95), 
+              inset -1.5px -1.5px 3px rgba(184, 134, 11, 0.05) !important;
+  border-radius: 20px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ── Day & Night Event Card Overrides to Match Light/Dark Themes ── */
+[data-theme-mode="auto"][data-time-of-day="day"] .event-card {
+  border: 1.5px solid rgba(212, 148, 58, 0.25) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="day"] .event-card__learn-more {
+  background: rgba(212, 148, 58, 0.08) !important;
+  color: #B8860B !important;
+  border: 1px solid rgba(212, 148, 58, 0.3) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="night"] .event-card {
+  border: 1.5px solid rgba(212, 148, 58, 0.3) !important;
+}
+[data-theme-mode="auto"][data-time-of-day="night"] .event-card__learn-more {
+  background: rgba(212, 148, 58, 0.15) !important;
+  color: #FFD60A !important;
+  border: 1px solid rgba(212, 148, 58, 0.4) !important;
+}
+
 /* ── Override any mobile disabling of blur on cards ── */
 .is-mobile .quick-card,
 .is-mobile .event-card,
