@@ -121,9 +121,14 @@ html[data-theme="dark"] .glass-card * {
   color: #FFFFFF !important;
 }
 
+/* CRITICAL FIX: Specific elements in dark mode */
 [data-theme="dark"] .toggle-label,
 [data-theme="dark"] .next-title,
 [data-theme="dark"] .timeline-title,
+[data-theme="dark"] .sync-hub-title,
+[data-theme="dark"] .sync-item-label,
+[data-theme="dark"] .stats-title,
+[data-theme="dark"] .ach-title,
 [data-theme="dark"] .qa-title,
 [data-theme="dark"] .wisdom-translation,
 [data-theme="dark"] .schedule-time-value {
@@ -133,9 +138,38 @@ html[data-theme="dark"] .glass-card * {
 [data-theme="dark"] .toggle-desc,
 [data-theme="dark"] .next-subtitle,
 [data-theme="dark"] .timeline-subtitle,
+[data-theme="dark"] .sync-hub-subtitle,
+[data-theme="dark"] .sync-item-desc,
+[data-theme="dark"] .stats-subtitle,
+[data-theme="dark"] .ach-subtitle,
 [data-theme="dark"] .qa-sub,
-[data-theme="dark"] .schedule-time-range {
+[data-theme="dark"] .schedule-time-range,
+[data-theme="dark"] .progress-info,
+[data-theme="dark"] .countdown-label,
+[data-theme="dark"] .wisdom-source {
   color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* CRITICAL FIX: SVG icons in dark mode should be white */
+[data-theme="dark"] .glass-card svg,
+[data-theme="dark"] .toggle-icon-wrap svg,
+[data-theme="dark"] .next-icon-wrap svg,
+[data-theme="dark"] .timeline-icon-wrap svg,
+[data-theme="dark"] .sync-hub-icon-wrap svg,
+[data-theme="dark"] .stats-icon-wrap svg,
+[data-theme="dark"] .ach-icon-wrap svg,
+[data-theme="dark"] .qa-btn svg {
+  stroke: #FFFFFF !important;
+  color: #FFFFFF !important;
+}
+
+/* CRITICAL FIX: Stat numbers in dark mode */
+[data-theme="dark"] .stat-number,
+[data-theme="dark"] .stat-name,
+[data-theme="dark"] .ring-value,
+[data-theme="dark"] .weekly-val,
+[data-theme="dark"] .weekly-lbl {
+  color: #FFFFFF !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

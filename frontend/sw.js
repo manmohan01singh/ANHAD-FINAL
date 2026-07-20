@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.8.0'; // v10.8.0: Marcellus font, Header orb (day/night), Naam Abhyas dark cards FIXED (black bg + white text)
+const CACHE_VERSION = 'anhad-v10.11.0'; // v10.11.0: Fixed dark mode cards, settings panel lag, and nitnem font change
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

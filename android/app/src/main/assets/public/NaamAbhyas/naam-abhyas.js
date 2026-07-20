@@ -3262,13 +3262,16 @@ class NaamAbhyas {
     showSettingsModal() {
         const modal = document.getElementById('settingsModal');
         if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            // CRITICAL FIX: Use requestAnimationFrame to prevent lag
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
 
-            // Performance: Instead of hiding canvas (which causes reflow), 
-            // we just pause the starfield animation if it exists
-            const starsField = document.getElementById('starsField');
-            if (starsField) starsField.style.animationPlayState = 'paused';
+                // Performance: Instead of hiding canvas (which causes reflow), 
+                // we just pause the starfield animation if it exists
+                const starsField = document.getElementById('starsField');
+                if (starsField) starsField.style.animationPlayState = 'paused';
+            });
         }
     }
 

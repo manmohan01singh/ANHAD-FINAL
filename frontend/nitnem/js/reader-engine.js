@@ -1725,7 +1725,21 @@
                 state.settings.gurbaniFontSize = FONT_SIZES[fontKey];
             }
             
+            // CRITICAL FIX: Force immediate style reflow so font changes without refresh
             applyFontToVerses();
+            
+            // Force browser to recalculate styles immediately
+            requestAnimationFrame(() => {
+                const versesContainer = document.getElementById('versesContainer');
+                if (versesContainer) {
+                    // Trigger reflow by reading a layout property
+                    void versesContainer.offsetHeight;
+                    
+                    // Re-apply font in case it didn't take
+                    applyFontToVerses();
+                }
+            });
+            
             saveSettings();
         });
 
