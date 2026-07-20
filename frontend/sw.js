@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.9.0'; // v9.9.0: Orbs repositioned to top, navbar shadow removed, Naam Abhyas time-based colors, dark mode correct
+const CACHE_VERSION = 'anhad-v10.0.0'; // v10.0.0: Orbs HIGHLY visible, Gurbani Radio pill fixed, force cache clear
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
