@@ -283,18 +283,21 @@
         ].join('');
 
         // Play button
-        card.querySelector('.sl-card-play').addEventListener('click', function (e) {
-          e.stopPropagation();
-          hapticLight();
-          var sid = this.getAttribute('data-stream-id');
-          var meta = getStreamById(sid);
-          if (!meta) return;
-          var slts = getSlots();
-          var slotIdx = slts.indexOf(sid);
-          if (slotIdx === -1) slotIdx = 0;
-          switchToStream(sid, slotIdx, slts);
-          closeSheet();
-        });
+        var playBtn = card.querySelector('.sl-card-play');
+        if (playBtn) {
+          playBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            hapticLight();
+            var sid = this.getAttribute('data-stream-id');
+            var meta = getStreamById(sid);
+            if (!meta) return;
+            var slts = getSlots();
+            var slotIdx = slts.indexOf(sid);
+            if (slotIdx === -1) slotIdx = 0;
+            switchToStream(sid, slotIdx, slts);
+            closeSheet();
+          });
+        }
 
         // 3-dot menu
         var dotsBtn = card.querySelector('.sl-card-dots');
