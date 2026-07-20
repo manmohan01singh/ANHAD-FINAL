@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.5.0'; // v10.5.0: ONLY Sky Blue orb (opacity 1.3), stream pill shows proper names (DARBAR SAHIB, AMRITVELA KIRTAN, WAHEGURU SIMRAN)
+const CACHE_VERSION = 'anhad-v10.6.0'; // v10.6.0: Trajan Pro font for ANHAD title (all themes), Day/Night claymorphism pill with raised 3D effect
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
