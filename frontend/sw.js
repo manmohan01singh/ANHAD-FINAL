@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.0.0'; // v10.0.0: Orbs HIGHLY visible, Gurbani Radio pill fixed, force cache clear
+const CACHE_VERSION = 'anhad-v10.2.0'; // v10.2.0: Orbs behind ALL content (fixed position), removed green orb, only Sky Blue (major) + Red/Yellow/Purple
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
