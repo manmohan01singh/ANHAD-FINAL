@@ -70,33 +70,61 @@
 }
 
 [data-theme="light"] {
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-bg-strong: rgba(255, 255, 255, 0.8);
-  --glass-bg-light: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-border-strong: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-bg-strong: rgba(255, 255, 255, 0.95);
+  --glass-bg-light: rgba(0, 0, 0, 0.02);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-strong: rgba(0, 0, 0, 0.12);
   --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 
-  --clay-bg: #EDEDED;
+  --clay-bg: #F5F5F7;
   --clay-surface: #FFFFFF;
-  --clay-elevated: #F5F5F7;
+  --clay-elevated: #FAFAFA;
   --clay-modal: #FFFFFF;
-  --clay-extrude: -3px -3px 6px rgba(255, 255, 255, 0.8), 3px 3px 10px rgba(0, 0, 0, 0.08);
-  --clay-extrude-sm: -2px -2px 4px rgba(255, 255, 255, 0.7), 2px 2px 6px rgba(0, 0, 0, 0.06);
-  --clay-pressed: inset 2px 2px 6px rgba(0, 0, 0, 0.06), inset -1px -1px 3px rgba(255, 255, 255, 0.5);
-  --clay-pressed-sm: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
-  --clay-inset: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+  --clay-extrude: -2px -2px 4px rgba(255, 255, 255, 0.9), 2px 2px 6px rgba(0, 0, 0, 0.06);
+  --clay-extrude-sm: -1px -1px 2px rgba(255, 255, 255, 0.8), 1px 1px 3px rgba(0, 0, 0, 0.04);
+  --clay-pressed: inset 1px 1px 4px rgba(0, 0, 0, 0.05), inset -1px -1px 2px rgba(255, 255, 255, 0.5);
+  --clay-pressed-sm: inset 1px 1px 2px rgba(0, 0, 0, 0.04);
+  --clay-inset: inset 0 1px 3px rgba(0, 0, 0, 0.03);
 
   --clay-sacred: #C5842E;
   --clay-sacred-light: #D4943A;
   --clay-sacred-dark: #A06E1E;
-  --clay-sacred-glow: rgba(197, 132, 46, 0.2);
+  --clay-sacred-glow: rgba(197, 132, 46, 0.15);
   --clay-gold: #C5842E;
-  --clay-gold-light: rgba(197, 132, 46, 0.08);
+  --clay-gold-light: rgba(197, 132, 46, 0.06);
   --clay-text: #1D1D1F;
   --clay-text-secondary: #6E6E73;
   --clay-text-tertiary: #86868B;
+}
+
+/* DARK MODE FIX: White cards with subtle shadows on black background */
+[data-theme="dark"] .glass-card,
+.theme-dark .glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .glass-card *,
+.theme-dark .glass-card * {
+  color: #1D1D1F !important;
+}
+
+[data-theme="dark"] .clay-text,
+.theme-dark .clay-text {
+  color: #1D1D1F !important;
+}
+
+[data-theme="dark"] .clay-text-secondary,
+.theme-dark .clay-text-secondary {
+  color: #6E6E73 !important;
+}
+
+[data-theme="dark"] .clay-text-tertiary,
+.theme-dark .clay-text-tertiary {
+  color: #86868B !important;
 }
 
 /* ─── NOISE TEXTURE OVERLAY ─── */
@@ -168,51 +196,55 @@ a {
   border-radius: var(--radius-xs);
 }
 
-/* ─── BACKGROUND GRADIENT ORBS ─── */
+/* ─── BACKGROUND GRADIENT ORBS — OPTIMIZED FOR PERFORMANCE ─── */
 .bg-orb {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  filter: blur(80px);
-  opacity: 0.12;
+  filter: blur(60px);
+  opacity: 0.08;
+  will-change: transform;
   animation: orbFloat 20s ease-in-out infinite;
+  /* Hardware acceleration without forcing layer promotion everywhere */
+  transform: translateZ(0);
 }
 
 @media (max-width: 768px) and (pointer: coarse) {
   .bg-orb {
-    filter: blur(40px);
-    /* Halves GPU rasterization/fill cost on mobile screen sizes */
+    filter: blur(30px);
+    opacity: 0.06;
+    /* Further reduced blur for mobile GPU */
   }
 }
 
 .bg-orb-1 {
-  width: 400px;
-  height: 400px;
+  width: 320px;
+  height: 320px;
   background: var(--clay-sacred);
-  top: -100px;
-  right: -100px;
+  top: -80px;
+  right: -80px;
   animation-delay: 0s;
 }
 
 .bg-orb-2 {
-  width: 300px;
-  height: 300px;
+  width: 260px;
+  height: 260px;
   background: #8B5CF6;
-  bottom: -80px;
-  left: -80px;
+  bottom: -60px;
+  left: -60px;
   animation-delay: -7s;
-  opacity: 0.08;
+  opacity: 0.05;
 }
 
 .bg-orb-3 {
-  width: 250px;
-  height: 250px;
+  width: 220px;
+  height: 220px;
   background: var(--clay-sacred-light);
   top: 50%;
   left: 50%;
   animation-delay: -14s;
-  opacity: 0.06;
+  opacity: 0.04;
 }
 
 @keyframes orbFloat {
@@ -476,17 +508,20 @@ a {
   height: 40px;
 }
 
-/* ═══ CARD SYSTEM — Glassmorphism Core ═══ */
+/* ═══ CARD SYSTEM — Optimized Claymorphism ═══ */
 .glass-card {
   position: relative;
   background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  /* CRITICAL FIX: Disable backdrop-filter on cards — major GPU bottleneck on mobile */
+  /* backdrop-filter: blur(var(--glass-blur)); */
+  /* -webkit-backdrop-filter: blur(var(--glass-blur)); */
   border-radius: var(--radius-2xl);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+  /* CRITICAL FIX: Reduce shadow complexity for 60fps scrolling */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   padding: var(--space-xl);
-  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-spring), background 0.3s;
+  /* CRITICAL FIX: Remove transform from transition — causes repaints */
+  transition: background 0.2s ease;
   overflow: hidden;
 }
 
@@ -501,14 +536,15 @@ a {
   pointer-events: none;
 }
 
-.glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glass-shadow), 0 12px 40px rgba(0, 0, 0, 0.15);
-  background: var(--glass-bg-strong);
+/* CRITICAL FIX: Remove hover transforms — not needed on mobile, causes lag */
+@media (hover: hover) and (pointer: fine) {
+  .glass-card:hover {
+    background: var(--glass-bg-strong);
+  }
 }
 
 .glass-card:active {
-  transform: translateY(0) scale(0.99);
+  opacity: 0.95;
 }
 
 /* ─── HERO SECTION ─── */

@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.6.0'; // v9.6.0: Random spiritual notifications (5-6 daily nudges); random_spiritual_notifs IndexedDB store
+const CACHE_VERSION = 'anhad-v9.7.0'; // v9.7.0: Naam Abhyas UI optimization, font flash fix, spiritual notifications added
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
@@ -315,6 +315,7 @@ function _markShownToday(id) {
 // INSTALL EVENT - Cache static files but DON'T skip waiting automatically
 // ═══════════════════════════════════════════════════════════════════════════════
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   console.log('[SW] Installing...');
 
   event.waitUntil(
@@ -828,6 +829,89 @@ async function checkAndFireScheduledNotifications() {
 
   const now = Date.now();
   const today = new Date().toLocaleDateString('en-CA');
+
+  const spiritualNotifications = [
+    {
+      id: 'hukamnama_morning',
+      title: '📜 ਅੱਜ ਦਾ ਹੁਕਮਨਾਮਾ | Ajj da Hukamnama',
+      body: 'Ajj da Hukamnama Sahib read kr lya tuc? Je nhi ta hune kr skde ho',
+      timeRanges: [[6, 10], [12, 14]], // 6-10 AM or 12-2 PM
+      url: '/Hukamnama/daily-hukamnama.html',
+      icon: '📜'
+    },
+    {
+      id: 'nitnem_reminder',
+      title: '🙏 ਨਿਤਨੇਮ ਯਾਦ | Nitnem Reminder',
+      body: 'Nitnem da time hai ji. Aao Gurbani pdhiye',
+      timeRanges: [[5, 9], [18, 20]], // 5-9 AM or 6-8 PM
+      url: '/nitnem/index.html',
+      icon: '🙏'
+    },
+    {
+      id: 'kirtan_time',
+      title: '🎵 ਕੀਰਤਨ ਸੁਣੋ | Kirtan Sunno',
+      body: 'Kujh der Kirtan sun lo. Rabb di yaad ch lin karo',
+      timeRanges: [[8, 12], [15, 19]], // 8 AM-12 PM or 3-7 PM
+      url: '/GurbaniRadio/gurbani-radio.html',
+      icon: '🎵'
+    },
+    {
+      id: 'simran_reminder',
+      title: '☬ ਵਾਹਿਗੁਰੂ ਸਿਮਰਨ | Vaheguru Simran',
+      body: 'Waheguru Simran sun ke mn ko shant kro',
+      timeRanges: [[7, 11], [13, 17], [20, 22]], // 7-11 AM, 1-5 PM, 8-10 PM
+      url: '/GurbaniRadio/gurbani-radio.html?stream=simran',
+      icon: '☬'
+    },
+    {
+      id: 'gurpurab_reminder',
+      title: '🌸 ਗੁਰਪੁਰਬ ਯਾਦ | Gurpurab Yaad',
+      body: 'Ajj koi Gurpurab ya important din hai? Check kro',
+      timeRanges: [[9, 12], [17, 20]], // 9 AM-12 PM or 5-8 PM
+      url: '/index.html',
+      icon: '🌸'
+    },
+    {
+      id: 'guru_sikhya',
+      title: '💎 ਗੁਰੂ ਦੀ ਸਿੱਖਿਆ | Guru di Sikhya',
+      body: 'Ajj Guru Ji di ik sikhya yaad rakhiye',
+      timeRanges: [[10, 14], [16, 21]], // 10 AM-2 PM or 4-9 PM
+      url: '/index.html',
+      icon: '💎'
+    }
+  ];
+
+  // Check and fire spiritual notifications
+  for (const notif of spiritualNotifications) {
+    // Check if current time falls in any of the time ranges
+    const currentHour = new Date().getHours();
+    const inTimeRange = notif.timeRanges.some(([start, end]) => currentHour >= start && currentHour < end);
+    
+    if (!inTimeRange) continue;
+    if (_hasShownToday(notif.id)) continue;
+
+    // Random chance to fire (20% per check to avoid spam)
+    if (Math.random() > 0.2) continue;
+
+    try {
+      await self.registration.showNotification(notif.title, {
+        body: notif.body,
+        icon: '/assets/icon-192x192.png',
+        badge: '/assets/icon-72x72.png',
+        tag: notif.id,
+        data: { url: notif.url },
+        requireInteraction: false,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'dismiss', title: 'Later' }
+        ]
+      });
+      _markShownToday(notif.id);
+      console.log(`[SW] Fired spiritual notification: ${notif.title}`);
+    } catch (e) {
+      console.error('[SW] Failed to show spiritual notification:', e);
+    }
+  }
 
   const defaultNotifications = [
     {

@@ -54,6 +54,7 @@
         }
 
         // Apply saved font settings blocking before paint
+        // CRITICAL FIX: Inject inline style to prevent FOUC when font settings load
         try {
           const saved = localStorage.getItem('anhad_reader_v5');
           if (saved) {
@@ -73,11 +74,18 @@
             const fontSize = settings.gurbaniFontSize || 28;
             const textAlign = settings.textAlign || 'center';
 
+            // CRITICAL FIX: Inject inline <style> to prevent flash
+            const styleEl = document.createElement('style');
+            styleEl.id = 'anhad-font-preload';
+            styleEl.textContent = `:root{--font-gurmukhi:${fontFamily};--gurmukhi-size:${fontSize}px;--font-weight:${fontWeight};--text-align:${textAlign};}html{font-family:var(--font-gurmukhi);}`;
+            document.head.insertBefore(styleEl, document.head.firstChild);
+
             const root = document.documentElement;
             root.style.setProperty('--font-gurmukhi', fontFamily);
             root.style.setProperty('--gurmukhi-size', fontSize + 'px');
             root.style.setProperty('--font-weight', fontWeight);
             root.style.setProperty('--text-align', textAlign);
+            root.classList.add('font-' + fontKey);
 
             const palette = [
               'currentColor', '#D4AF37', '#8E8E93', '#DC2626', '#F59E0B', 
