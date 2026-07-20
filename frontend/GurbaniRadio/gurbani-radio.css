@@ -147,6 +147,7 @@ html, body {
 }
 
 /* ─── SEGMENTED CONTROL (STREAM TABS) ─── */
+/* v10.7.0: FIXED translateX calculation - uses calc() not percentage */
 .gr-tabs {
   display: flex;
   background: var(--bg-secondary);

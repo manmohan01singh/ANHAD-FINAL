@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v10.6.0'; // v10.6.0: Trajan Pro font for ANHAD title (all themes), Day/Night claymorphism pill with raised 3D effect
+const CACHE_VERSION = 'anhad-v10.7.0'; // v10.7.0: Orb opacity 1.3→0.6, Stream tabs CACHE-BUSTED (gurbani-radio.css?v=10.7.0), FORCE CLEAR OLD CACHES
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
