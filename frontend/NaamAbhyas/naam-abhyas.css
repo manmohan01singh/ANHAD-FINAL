@@ -99,32 +99,44 @@
   --clay-text-tertiary: #86868B;
 }
 
-/* DARK MODE FIX: White cards with subtle shadows on black background */
+/* DARK MODE FIX: White cards with black text on black background */
 [data-theme="dark"] .glass-card,
-.theme-dark .glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+.theme-dark .glass-card,
+body.theme-dark .glass-card,
+html[data-theme="dark"] .glass-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
 }
 
+/* Force all text inside cards to be black in dark mode */
 [data-theme="dark"] .glass-card *,
-.theme-dark .glass-card * {
-  color: #1D1D1F !important;
+.theme-dark .glass-card *,
+body.theme-dark .glass-card *,
+html[data-theme="dark"] .glass-card * {
+  color: #000000 !important;
 }
 
-[data-theme="dark"] .clay-text,
-.theme-dark .clay-text {
-  color: #1D1D1F !important;
+[data-theme="dark"] .toggle-label,
+[data-theme="dark"] .toggle-desc,
+[data-theme="dark"] .next-title,
+[data-theme="dark"] .next-subtitle,
+[data-theme="dark"] .timeline-title,
+[data-theme="dark"] .timeline-subtitle,
+[data-theme="dark"] .qa-title,
+[data-theme="dark"] .qa-sub,
+[data-theme="dark"] .wisdom-translation,
+[data-theme="dark"] .schedule-time-value {
+  color: #000000 !important;
 }
 
-[data-theme="dark"] .clay-text-secondary,
-.theme-dark .clay-text-secondary {
-  color: #6E6E73 !important;
-}
-
-[data-theme="dark"] .clay-text-tertiary,
-.theme-dark .clay-text-tertiary {
-  color: #86868B !important;
+[data-theme="dark"] .toggle-desc,
+[data-theme="dark"] .next-subtitle,
+[data-theme="dark"] .timeline-subtitle,
+[data-theme="dark"] .qa-sub,
+[data-theme="dark"] .schedule-time-range {
+  color: #3C3C43 !important;
+  opacity: 0.8;
 }
 
 /* ─── NOISE TEXTURE OVERLAY ─── */
@@ -165,6 +177,13 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: auto;
   line-height: 1.5;
+}
+
+/* Dark mode: Pure black background */
+[data-theme="dark"] body,
+body.theme-dark,
+html[data-theme="dark"] body {
+  background: #000000 !important;
 }
 
 [data-theme="dark"] body::before {

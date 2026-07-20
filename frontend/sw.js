@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.7.0'; // v9.7.0: Naam Abhyas UI optimization, font flash fix, spiritual notifications added
+const CACHE_VERSION = 'anhad-v9.8.0'; // v9.8.0: Naam Abhyas dark mode fixed, orbs visible, navbar icons bright, claymorphism nav
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
