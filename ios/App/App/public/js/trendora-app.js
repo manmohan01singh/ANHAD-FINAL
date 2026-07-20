@@ -1553,6 +1553,24 @@
         Store.clearCache();
         UIController.updateNitnemCard();
       });
+
+      // Listen for UnifiedStats events so streak updates live on the dashboard
+      window.addEventListener('statsChanged', () => {
+        Store.clearCache();
+        UIController.updateNitnemCard();
+      });
+      window.addEventListener('statsInitialized', () => {
+        Store.clearCache();
+        UIController.updateNitnemCard();
+      });
+      window.addEventListener('streakUpdated', () => {
+        Store.clearCache();
+        UIController.updateNitnemCard();
+      });
+      window.addEventListener('nitnemDayCompleted', () => {
+        Store.clearCache();
+        UIController.updateNitnemCard();
+      });
     },
 
     _apply(isDark) {

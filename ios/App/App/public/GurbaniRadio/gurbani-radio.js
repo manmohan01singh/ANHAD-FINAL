@@ -145,14 +145,25 @@
     var state = audio.getState();
     var stream = state.currentStream || 'darbar';
 
+    // If a custom library stream is playing, let stream-library manage UI
+    // (still update play/pause button and wave icon here)
+    var customStream = window._anhadCustomStream;
+
     // 1. Update Tabs & Sliding Indicator
     var tabsContainer = document.querySelector('.gr-tabs');
     if (tabsContainer) {
-      var tabIndex = stream === 'darbar' ? 0 : (stream === 'amritvela' ? 1 : 2);
+      var tabs = tabsContainer.querySelectorAll('.gr-tab');
+      var activeStreamId = customStream ? customStream.id : stream;
+      var tabIndex = 0;
+      tabs.forEach(function(tab, idx) {
+        if (tab.getAttribute('data-stream') === activeStreamId) tabIndex = idx;
+      });
       tabsContainer.setAttribute('data-active', tabIndex);
     }
+
     document.querySelectorAll('.gr-tab').forEach(function (tab) {
-      if (tab.getAttribute('data-stream') === stream) {
+      var activeId = customStream ? customStream.id : stream;
+      if (tab.getAttribute('data-stream') === activeId) {
         tab.classList.add('active');
       } else {
         tab.classList.remove('active');
@@ -181,19 +192,23 @@
     }
 
     // 3. Update Text Info
-    var meta = METADATA[stream];
-    if (meta) {
-      DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
-      DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
-      DOM.pillLocationText.textContent = meta.location;
-      
-      // Dynamic time-based and theme-based album cover resolution
-      var coverSrc = getCoverForStream(stream);
-      verifyCover(coverSrc, DOM.coverImg);
-    }
+    var streamInfo = audio.getStreamInfo ? audio.getStreamInfo(stream) : null;
+    var meta = METADATA[stream] || {
+      title: (streamInfo && streamInfo.name) ? streamInfo.name : 'Gurbani Stream',
+      artist: (streamInfo && streamInfo.subtitle) ? streamInfo.subtitle : 'ANHAD Radio',
+      location: (streamInfo && streamInfo.subtitle) ? streamInfo.subtitle : 'Live Stream'
+    };
+
+    DOM.trackTitle.textContent = state.currentTrackTitle || meta.title;
+    DOM.trackArtist.textContent = state.currentTrackArtist || meta.artist;
+    DOM.pillLocationText.textContent = meta.location;
+    
+    // Dynamic time-based and theme-based album cover resolution
+    var coverSrc = getCoverForStream(stream);
+    verifyCover(coverSrc, DOM.coverImg);
 
     // 4. Update Banner & Recording controls
-    if (stream === 'darbar') {
+    if (state.streamType === 'live' || stream === 'darbar') {
       DOM.listeningLiveText.textContent = 'LIVE';
       DOM.listeningLiveText.style.color = '#E24C4C';
       DOM.listeningTimeBadge.textContent = 'LIVE';
@@ -632,7 +647,14 @@
 
   function initTheme() {
     function applyRadioTheme() {
-      var isDark = window.AnhadTheme ? window.AnhadTheme.isDark() : false;
+      // Time-based auto theme: dark at night (8 PM – 5 AM), light otherwise
+      var hour = new Date().getHours();
+      var isNight = (hour >= 20 || hour < 5);
+
+      // If global theme explicitly forces dark, honour it
+      var globalTheme = window.AnhadTheme ? window.AnhadTheme.get() : 'auto';
+      var isDark = isNight || globalTheme === 'dark' || (globalTheme === 'auto' && (window.AnhadTheme ? window.AnhadTheme.isDark() : isNight));
+
       var activeTheme = isDark ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', activeTheme);
       document.body.classList.toggle('dark-mode', isDark);
@@ -644,6 +666,8 @@
     applyRadioTheme();
     window.addEventListener('themechange', applyRadioTheme);
     window.addEventListener('anhadThemeChanged', applyRadioTheme);
+    // Re-check every 10 minutes so the page auto-switches at nightfall
+    setInterval(applyRadioTheme, 10 * 60 * 1000);
   }
 
   // ─── Event Bindings ───
@@ -678,10 +702,14 @@
       }
     });
 
-    // Settings icon shows informational theme toast
+    // Settings icon — opens Stream Library
     document.getElementById('grSettingsBtn').addEventListener('click', function () {
       haptic('LIGHT');
-      showToast('⏰ Theme is set automatically based on time of day');
+      if (window.GurbaniStreamLib) {
+        window.GurbaniStreamLib.open();
+      } else {
+        showToast('⏰ Theme is set automatically based on time of day');
+      }
     });
 
     // Play/Pause toggle
@@ -742,11 +770,13 @@
       }
     });
 
-    // Tabs switching
+    // Tabs switching — delegate to stream library if loaded
     document.querySelectorAll('.gr-tab').forEach(function (tab) {
       tab.addEventListener('click', function () {
         var stream = tab.getAttribute('data-stream');
         haptic('MEDIUM');
+        // Clear any custom stream override on tab click
+        window._anhadCustomStream = null;
         var audio = window.AnhadAudio;
         if (audio) {
           audio.play(stream);

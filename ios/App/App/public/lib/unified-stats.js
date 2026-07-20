@@ -223,6 +223,47 @@
             console.log('[UnifiedStats] Nitnem day completed!');
             return today.nitnemComplete;
         },
+        
+        syncNitnemProgress: function(completedBanisList, isDayComplete) {
+            const stats = getStats();
+            const today = getTodayData(stats);
+            
+            const wasComplete = today.nitnemComplete;
+            today.nitnemBanis = completedBanisList || [];
+            today.nitnemComplete = !!isDayComplete;
+            today.lastUpdated = new Date().toISOString();
+            
+            if (today.nitnemComplete && !wasComplete) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toLocaleDateString('en-CA');
+                
+                if (stats.daily[yesterdayStr]?.nitnemComplete) {
+                    stats.streaks.nitnem = (stats.streaks.nitnem || 0) + 1;
+                } else {
+                    stats.streaks.nitnem = 1;
+                }
+            } else if (!today.nitnemComplete && wasComplete) {
+                if (stats.streaks.nitnem > 0) {
+                    stats.streaks.nitnem = stats.streaks.nitnem - 1;
+                }
+            }
+            
+            saveStats(stats);
+            
+            window.dispatchEvent(new CustomEvent('nitnemBaniCompleted', {
+                detail: { completed: today.nitnemBanis }
+            }));
+            
+            if (today.nitnemComplete) {
+                window.dispatchEvent(new CustomEvent('nitnemDayCompleted', {
+                    detail: { date: getTodayString() }
+                }));
+            }
+            
+            console.log(`[UnifiedStats] Synced Nitnem progress. Banis: ${today.nitnemBanis.length}, Complete: ${today.nitnemComplete}, Streak: ${stats.streaks.nitnem}`);
+            return stats.streaks.nitnem;
+        },
 
         // Kirtan - Listening minutes
         recordKirtanListening: function(minutes = 1) {

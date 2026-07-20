@@ -16,8 +16,26 @@ async function loadVersion() {
 
 // Apply theme on page load
 function applyTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const savedTheme = localStorage.getItem('anhad_theme') || 'auto';
+    let effectiveTheme = savedTheme;
+    if (savedTheme === 'auto') {
+        let timeOfDay = localStorage.getItem('anhad_forced_time_of_day');
+        if (timeOfDay && ['morning', 'day', 'evening', 'night'].includes(timeOfDay)) {
+            effectiveTheme = (timeOfDay === 'night') ? 'dark' : 'light';
+        } else {
+            const hour = new Date().getHours();
+            effectiveTheme = (hour >= 5 && hour < 20) ? 'light' : 'dark';
+        }
+    }
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    document.documentElement.setAttribute('data-theme-mode', savedTheme);
+    if (effectiveTheme === 'dark') {
+        document.documentElement.classList.add('dark', 'dark-mode');
+        document.body.classList.add('dark-mode');
+    } else {
+        document.documentElement.classList.remove('dark', 'dark-mode');
+        document.body.classList.remove('dark-mode');
+    }
 }
 
 // Animate elements on scroll
@@ -177,11 +195,34 @@ function setupKeyboardNavigation() {
     });
 }
 
+// Update streak display from UnifiedStats
+function updateStreakDisplay() {
+    const streakEl = document.getElementById('nitnemStreak') ||
+                     document.querySelector('.quick-card__streak') ||
+                     document.querySelector('[data-streak]');
+    if (!streakEl) return;
+
+    let streak = 0;
+    try {
+        if (window.UnifiedStats) {
+            streak = window.UnifiedStats.getStreaks().nitnem || 0;
+        } else {
+            const sd = localStorage.getItem('anhad_streak_data');
+            if (sd) { const p = JSON.parse(sd); streak = p.current || p.currentStreak || 0; }
+        }
+    } catch(e) {}
+
+    if (streak > 0) {
+        streakEl.innerHTML = `🔥 ${streak} day${streak > 1 ? 's' : ''}`;
+    }
+}
+
 // Initialize page
 function init() {
     console.log('🙏 Journey page loaded - Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh');
     
-    // Apply theme
+    // Theme is already applied by inline IIFE in <head>
+    // applyTheme() still available as fallback for dynamic changes
     applyTheme();
     
     // Load version
@@ -190,6 +231,9 @@ function init() {
     // Setup observers and animations
     observeElements();
     
+    // Update streak if any streak element exists on page
+    updateStreakDisplay();
+
     // Setup interactions
     setupBackButton();
     setupContactTracking();
@@ -201,6 +245,11 @@ function init() {
     
     // Track page view
     trackInteraction('journey_page_view');
+
+    // Listen for live streak changes
+    window.addEventListener('statsInitialized', updateStreakDisplay);
+    window.addEventListener('statsChanged', updateStreakDisplay);
+    window.addEventListener('streakUpdated', updateStreakDisplay);
 }
 
 // Wait for DOM to be ready

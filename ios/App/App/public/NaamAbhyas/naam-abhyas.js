@@ -874,8 +874,17 @@ class NaamAbhyas {
         }
         if (syncGpt) {
             syncGpt.addEventListener('click', () => {
-                if (window.navigateTo) window.navigateTo('../GurbaniGPT/index.html');
-                else window.location.href = '../GurbaniGPT/index.html';
+                // Gurbani GPT is Coming Soon — show toast instead of navigating
+                const toastEl = document.getElementById('toast') || document.querySelector('.toast');
+                if (toastEl) {
+                    toastEl.textContent = '📿 Gurbani GPT Companion is Coming Soon!';
+                    toastEl.classList.add('show', 'visible');
+                    setTimeout(() => toastEl.classList.remove('show', 'visible'), 3000);
+                } else if (typeof this.showToast === 'function') {
+                    this.showToast('📿 Gurbani GPT Companion is Coming Soon!');
+                } else {
+                    alert('📿 Gurbani GPT Companion is Coming Soon!');
+                }
             });
         }
         if (syncSangat) {

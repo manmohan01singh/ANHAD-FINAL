@@ -1,5 +1,4 @@
 {
-  "rootDirectory": "frontend",
   "headers": [
     {
       "source": "/api/(.*)",
@@ -9,5 +8,10 @@
         { "key": "Cache-Control", "value": "no-cache, no-store" }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/stream.js": {
+      "runtime": "edge"
+    }
+  }
 }

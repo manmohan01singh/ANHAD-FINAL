@@ -2,6 +2,26 @@
 <html lang="pa">
 <head>
   <script src="../lib/global-theme.js"></script>
+  <!-- Force latest SW to take control immediately -->
+  <script>
+  (function() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistration().then(function(reg) {
+        if (!reg) return;
+        // If a new SW is waiting, send SKIP_WAITING to activate it now
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+        // Also trigger an update check so new SW downloads
+        reg.update().catch(function(){});
+        // When controllerchange fires (new SW took over), reload to get fresh files
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+          window.location.reload();
+        });
+      }).catch(function(){});
+    }
+  })();
+  </script>
   <script>
   (function() {
     try {
@@ -289,6 +309,9 @@
 
 <!-- Gurbani Radio Logic -->
 <script src="gurbani-radio.js"></script>
+
+<!-- Stream Library (custom slots + all streams) -->
+<script src="stream-library.js"></script>
 
 </body>
 </html>

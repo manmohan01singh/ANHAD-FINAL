@@ -299,6 +299,202 @@
         .pothi-bani-card.drag-over { border-color: var(--ios-blue); background: rgba(0, 122, 255, 0.06); }
 
         /* ═══════════════════════════════════════════════════
+           INSIGHTS & PROGRESS CHARTS (LeetCode / GitHub style)
+           ═══════════════════════════════════════════════════ */
+        .pothi-insights-card {
+            border-radius: 24px;
+            padding: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 8px 8px 24px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: var(--blur-thick);
+            -webkit-backdrop-filter: var(--blur-thick);
+        }
+        .insights-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .insights-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .insights-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.06);
+            border-radius: 12px;
+            padding: 2px;
+            gap: 2px;
+        }
+        [data-theme="dark"] .insights-tabs {
+            background: rgba(255,255,255,0.08);
+        }
+        .insights-tab-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .insights-tab-btn.active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        [data-theme="dark"] .insights-tab-btn.active {
+            background: var(--bg-tertiary);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        /* Weekly View CSS */
+        .weekly-bars-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .weekly-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .weekly-bar-label {
+            width: 80px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .weekly-bar-track {
+            flex: 1;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.05);
+            overflow: hidden;
+            position: relative;
+        }
+        [data-theme="dark"] .weekly-bar-track {
+            background: rgba(255,255,255,0.08);
+        }
+        .weekly-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .weekly-bar-value {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Monthly Grid CSS */
+        .monthly-grid-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .monthly-grid-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .monthly-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            min-width: 250px;
+        }
+        @media (min-width: 400px) {
+            .monthly-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 8px;
+            }
+        }
+        .grid-cell {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.15s, background-color 0.2s;
+        }
+        .grid-cell:hover {
+            transform: scale(1.15);
+            z-index: 10;
+        }
+        .grid-cell.lvl-0 { background: rgba(0,0,0,0.04); }
+        [data-theme="dark"] .grid-cell.lvl-0 { background: rgba(255,255,255,0.05); }
+        
+        .grid-cell.lvl-1 { background: rgba(212, 175, 55, 0.25); border: 1px solid rgba(212, 175, 55, 0.1); }
+        .grid-cell.lvl-2 { background: rgba(212, 175, 55, 0.55); border: 1px solid rgba(212, 175, 55, 0.2); }
+        .grid-cell.lvl-3 { background: rgba(212, 175, 55, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .grid-cell.lvl-full { background: var(--ios-green); border: 1px solid rgba(52, 199, 89, 0.2); box-shadow: 0 0 6px rgba(52, 199, 89, 0.2); }
+        
+        .grid-legend {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+        .grid-legend .grid-cell {
+            width: 12px;
+            height: 12px;
+            cursor: default;
+        }
+        
+        .insights-tooltip {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--sacred-gold);
+            font-weight: 600;
+            text-align: center;
+            min-height: 18px;
+            transition: color 0.2s;
+        }
+        .insights-tooltip.highlight {
+            color: var(--ios-green);
+        }
+
+        /* Yearly Stats CSS */
+        .yearly-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .yearly-stat-card {
+            background: rgba(0,0,0,0.02);
+            border: 1px solid var(--separator);
+            border-radius: 16px;
+            padding: 12px;
+            text-align: center;
+        }
+        [data-theme="dark"] .yearly-stat-card {
+            background: rgba(255,255,255,0.02);
+        }
+        .yearly-stat-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--sacred-gold);
+            margin-bottom: 2px;
+        }
+        .yearly-stat-lbl {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ═══════════════════════════════════════════════════
            EDIT MODE
            ═══════════════════════════════════════════════════ */
         .edit-view { display: none; }
@@ -507,6 +703,9 @@
                 </div>
                 <div class="pothi-list" id="pothiList"></div>
             </div>
+            
+            <!-- Insights / Progress Charts -->
+            <div class="pothi-insights-card" id="pothiInsightsCard" style="display:none; margin: 24px 16px 0;"></div>
         </div>
 
         <!-- EDIT MODE -->
@@ -534,6 +733,7 @@
     </div>
 
     <!-- GurbaniDB — IndexedDB offline cache -->
+    <script src="../lib/unified-stats.js"></script>
     <script src="../lib/gurbani-db.js"></script>
 
     <script>
@@ -586,8 +786,14 @@
         function loadPothi() {
             try {
                 const saved = localStorage.getItem('anhad_my_pothi');
-                if (saved) pothiOrder = JSON.parse(saved);
-            } catch (e) { pothiOrder = []; }
+                if (saved) {
+                    pothiOrder = JSON.parse(saved);
+                } else {
+                    // Default core Nitnem banis: Japji, Jaap, Savaiye, Chaupai, Anand, Rehras, Sohila
+                    pothiOrder = [2, 4, 6, 9, 10, 21, 23];
+                    localStorage.setItem('anhad_my_pothi', JSON.stringify(pothiOrder));
+                }
+            } catch (e) { pothiOrder = [2, 4, 6, 9, 10, 21, 23]; }
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -652,6 +858,7 @@
             }
 
             saveCompletedBanis(completed);
+            renderInsights();
         }
 
         function syncCompletionToNitnemTracker(baniId, isComplete) {
@@ -831,14 +1038,81 @@
                     console.log(`[My Pothi] Added ${bani.name} to Nitnem Tracker (${period}) with UID ${entry.uid}`);
                 });
 
+                // Prune any deleted banis (not present in pothiOrder)
+                const deletedUids = [];
+
+                Object.keys(nitnemSelected).forEach(period => {
+                    if (!Array.isArray(nitnemSelected[period])) return;
+                    
+                    nitnemSelected[period] = nitnemSelected[period].filter(entry => {
+                        // If it's in pothiOrder, keep it
+                        if (pothiOrder.includes(entry.id)) return true;
+                        
+                        // Otherwise, it was deleted! Track its UID to clean up progress logs
+                        deletedUids.push(entry.uid);
+                        console.log(`[My Pothi] Pruning deleted bani: ${entry.nameEnglish || entry.id} (UID: ${entry.uid})`);
+                        return false;
+                    });
+                });
+
+                // Clean up deleted UIDs from progress logs
+                if (deletedUids.length > 0) {
+                    const nitnemLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}');
+                    let logChanged = false;
+                    
+                    Object.keys(nitnemLog).forEach(date => {
+                        const dayLog = nitnemLog[date];
+                        if (dayLog) {
+                            Object.keys(dayLog).forEach(period => {
+                                if (Array.isArray(dayLog[period])) {
+                                    const originalLength = dayLog[period].length;
+                                    dayLog[period] = dayLog[period].filter(uid => !deletedUids.includes(uid));
+                                    if (dayLog[period].length !== originalLength) {
+                                        logChanged = true;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (logChanged) {
+                        localStorage.setItem('nitnemTracker_nitnemLog', JSON.stringify(nitnemLog));
+                        console.log('[My Pothi] Cleaned up deleted UIDs from progress logs');
+                    }
+                }
+
                 // Save to Nitnem Tracker
                 localStorage.setItem('nitnemTracker_selectedBanis', JSON.stringify(nitnemSelected));
-                console.log('[My Pothi] Synced with Nitnem Tracker:', addedUids.size, 'banis added');
+                console.log('[My Pothi] Synced with Nitnem Tracker:', addedUids.size, 'banis added,', deletedUids.length, 'banis pruned');
 
-                // Dispatch event to notify Nitnem Tracker to refresh
+                // Dispatch events to notify all views to refresh
                 window.dispatchEvent(new CustomEvent('nitnemUpdated', {
-                    detail: { source: 'myPothi', addedCount: addedUids.size }
+                    detail: { source: 'myPothi', addedCount: addedUids.size, deletedCount: deletedUids.length }
                 }));
+                window.dispatchEvent(new CustomEvent('dashboardRefresh'));
+                window.dispatchEvent(new CustomEvent('statsUpdated'));
+                window.dispatchEvent(new CustomEvent('themechange')); // Force sync updates
+                
+                // Recalculate streak/completion stats on page directly if UnifiedStats is loaded
+                if (window.UnifiedStats && typeof window.UnifiedStats.syncNitnemProgress === 'function') {
+                    let total = 0;
+                    let completed = 0;
+                    const completedList = [];
+                    const todayStr = new Date().toLocaleDateString('en-CA');
+                    const todayLog = JSON.parse(localStorage.getItem('nitnemTracker_nitnemLog') || '{}')[todayStr] || {};
+                    
+                    Object.keys(nitnemSelected).forEach(period => {
+                        total += (nitnemSelected[period] || []).length;
+                        completed += (todayLog[period] || []).length;
+                        (todayLog[period] || []).forEach(uid => {
+                            if (!completedList.includes(uid)) {
+                                completedList.push(uid);
+                            }
+                        });
+                    });
+                    const isDayComplete = total > 0 && completed >= total;
+                    window.UnifiedStats.syncNitnemProgress(completedList, isDayComplete);
+                }
             } catch (e) {
                 console.error('[My Pothi] Error syncing with Nitnem Tracker:', e);
             }
@@ -933,6 +1207,7 @@
             });
             list.innerHTML = html;
             initDragAndDrop();
+            renderInsights();
         }
 
         // ═══════════════════════════════════════════════════════════════
@@ -1030,6 +1305,233 @@
                 isDragging = false;
                 dragItem = null;
             }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // INSIGHTS CHARTS & GRAPHS (LeetCode / GitHub Consistency style)
+        // ═══════════════════════════════════════════════════════════════
+        function renderInsights() {
+            const container = document.getElementById('pothiInsightsCard');
+            if (!container) return;
+            if (pothiOrder.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+
+            // Get active tab from state or default to 'month'
+            const activeTab = localStorage.getItem('pothi_insights_tab') || 'month';
+
+            // Load completion data
+            const completedData = loadCompletedBanis();
+
+            // Render skeleton
+            container.innerHTML = `
+                <div class="insights-card-inner">
+                    <div class="insights-header">
+                        <div class="insights-title">📊 ਪ੍ਰਗਤੀ (Reading Progress)</div>
+                        <div class="insights-tabs">
+                            <button class="insights-tab-btn ${activeTab === 'week' ? 'active' : ''}" onclick="switchInsightsTab('week')">ਹਫ਼ਤਾ</button>
+                            <button class="insights-tab-btn ${activeTab === 'month' ? 'active' : ''}" onclick="switchInsightsTab('month')">ਮਹੀਨਾ</button>
+                            <button class="insights-tab-btn ${activeTab === 'year' ? 'active' : ''}" onclick="switchInsightsTab('year')">ਸਾਲ</button>
+                        </div>
+                    </div>
+                    <div class="insights-content" id="insightsTabContent">
+                        <!-- Chart goes here -->
+                    </div>
+                </div>
+            `;
+
+            const tabContent = document.getElementById('insightsTabContent');
+            if (activeTab === 'week') {
+                renderWeeklyView(tabContent, completedData);
+            } else if (activeTab === 'month') {
+                renderMonthlyView(tabContent, completedData);
+            } else {
+                renderYearlyView(tabContent, completedData);
+            }
+        }
+
+        window.switchInsightsTab = function(tabName) {
+            localStorage.setItem('pothi_insights_tab', tabName);
+            renderInsights();
+        };
+
+        function renderWeeklyView(el, data) {
+            let html = '<div class="weekly-bars-container">';
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toLocaleDateString('en-CA');
+                const dayName = date.toLocaleDateString('pa-IN', { weekday: 'short' });
+                
+                const completedIds = data[dateStr] || [];
+                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
+                const pct = pothiOrder.length > 0 ? Math.round((matchingCompleted.length / pothiOrder.length) * 100) : 0;
+                
+                const dayLabel = i === 0 ? 'ਅੱਜ (Today)' : (i === 1 ? 'ਕੱਲ੍ਹ (Yest.)' : dayName);
+                
+                html += `
+                    <div class="weekly-bar-row">
+                        <div class="weekly-bar-label">${dayLabel}</div>
+                        <div class="weekly-bar-track">
+                            <div class="weekly-bar-fill" style="width: ${pct}%; background: ${pct === 100 ? 'var(--ios-green)' : 'var(--sacred-gold)'};"></div>
+                        </div>
+                        <div class="weekly-bar-value">${pct}%</div>
+                    </div>
+                `;
+            }
+            html += '</div>';
+            el.innerHTML = html;
+        }
+
+        function renderMonthlyView(el, data) {
+            let html = `
+                <div class="monthly-grid-desc">Last 35 days reading consistency (GitHub / LeetCode style)</div>
+                <div class="monthly-grid-wrapper">
+                    <div class="monthly-grid">
+            `;
+            
+            const today = new Date();
+            const daysToShow = 35;
+            const cells = [];
+            
+            for (let i = daysToShow - 1; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toLocaleDateString('en-CA');
+                
+                const completedIds = data[dateStr] || [];
+                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
+                const completedCount = matchingCompleted.length;
+                const totalCount = pothiOrder.length;
+                const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                
+                let intensityClass = 'lvl-0';
+                if (pct === 100) intensityClass = 'lvl-full';
+                else if (pct > 66) intensityClass = 'lvl-3';
+                else if (pct > 33) intensityClass = 'lvl-2';
+                else if (pct > 0) intensityClass = 'lvl-1';
+                
+                const formattedDate = date.toLocaleDateString('pa-IN', { month: 'short', day: 'numeric' });
+                const tooltipText = `${formattedDate}: ${completedCount}/${totalCount} Banis (${pct}%)`;
+                
+                cells.push(`
+                    <div class="grid-cell ${intensityClass}" title="${tooltipText}" onclick="showInsightsTooltip('${tooltipText}', this)"></div>
+                `);
+            }
+            
+            html += cells.join('');
+            html += `
+                    </div>
+                </div>
+                <div class="grid-legend">
+                    <span>Less</span>
+                    <div class="grid-cell lvl-0"></div>
+                    <div class="grid-cell lvl-1"></div>
+                    <div class="grid-cell lvl-2"></div>
+                    <div class="grid-cell lvl-3"></div>
+                    <div class="grid-cell lvl-full"></div>
+                    <span>More</span>
+                </div>
+                <div class="insights-tooltip" id="insightsTooltip">Tap a square to see details</div>
+            `;
+            el.innerHTML = html;
+        }
+
+        window.showInsightsTooltip = function(text, el) {
+            const tooltip = document.getElementById('insightsTooltip');
+            if (tooltip) {
+                tooltip.textContent = text;
+                tooltip.classList.add('highlight');
+                setTimeout(() => tooltip.classList.remove('highlight'), 2000);
+            }
+        };
+
+        function renderYearlyView(el, data) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            let activeDays = 0;
+            let completeDays = 0;
+            let totalBanisRead = 0;
+            
+            // Loop through all dates in current year
+            Object.keys(data).forEach(dateStr => {
+                if (!dateStr.startsWith(currentYear)) return;
+                const completedIds = data[dateStr] || [];
+                const matchingCompleted = completedIds.filter(id => pothiOrder.includes(id));
+                if (matchingCompleted.length > 0) {
+                    activeDays++;
+                    totalBanisRead += matchingCompleted.length;
+                    if (matchingCompleted.length >= pothiOrder.length) {
+                        completeDays++;
+                    }
+                }
+            });
+
+            // Calculate streak from data
+            const allCompletedDates = Object.keys(data).filter(dateStr => {
+                const matching = (data[dateStr] || []).filter(id => pothiOrder.includes(id));
+                return matching.length >= pothiOrder.length;
+            });
+            const currentStreak = calculatePothiStreak(allCompletedDates);
+
+            el.innerHTML = `
+                <div class="yearly-stats-grid">
+                    <div class="yearly-stat-card">
+                        <div class="yearly-stat-val">${activeDays}</div>
+                        <div class="yearly-stat-lbl">Active Days</div>
+                    </div>
+                    <div class="yearly-stat-card">
+                        <div class="yearly-stat-val">${completeDays}</div>
+                        <div class="yearly-stat-lbl">100% Completed Days</div>
+                    </div>
+                    <div class="yearly-stat-card">
+                        <div class="yearly-stat-val">${totalBanisRead}</div>
+                        <div class="yearly-stat-lbl">Total Banis Read</div>
+                    </div>
+                    <div class="yearly-stat-card">
+                        <div class="yearly-stat-val">🔥 ${currentStreak}</div>
+                        <div class="yearly-stat-lbl">Current Streak</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculatePothiStreak(dates) {
+            if (!dates || dates.length === 0) return 0;
+            const toUtcDay = (dateStr) => {
+                const parts = String(dateStr).split('-');
+                if (parts.length !== 3) return NaN;
+                return Date.UTC(+parts[0], +parts[1] - 1, +parts[2]) / 86400000;
+            };
+
+            const today = new Date().toLocaleDateString('en-CA');
+            const todayDay = toUtcDay(today);
+            const yesterdayDay = todayDay - 1;
+
+            const dayNumbers = [...new Set(dates.map(toUtcDay))]
+                .filter(d => !isNaN(d))
+                .sort((a, b) => b - a);
+
+            if (!dayNumbers.length) return 0;
+
+            const mostRecent = dayNumbers[0];
+            const isStreakActive = mostRecent === todayDay || mostRecent === yesterdayDay;
+
+            if (!isStreakActive) return 0;
+
+            let streak = 1;
+            for (let i = 0; i < dayNumbers.length - 1; i++) {
+                if (dayNumbers[i] - dayNumbers[i + 1] === 1) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            return streak;
         }
 
         // ═══════════════════════════════════════════════════════════════

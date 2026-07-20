@@ -78,14 +78,14 @@ html, body {
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height */
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
   position: relative;
   background: var(--bg-primary);
   box-sizing: border-box;
-  padding: calc(max(env(safe-area-inset-top, 24px), 24px) + 12px) 24px max(env(safe-area-inset-bottom, 12px), 12px);
+  padding: calc(env(safe-area-inset-top, 24px) + 6px) 20px calc(env(safe-area-inset-bottom, 12px) + 8px);
   overflow: hidden;
   box-shadow: 0 0 50px rgba(53, 46, 42, 0.05);
 }
@@ -157,6 +157,7 @@ html, body {
   height: 46px;
   border: 1px solid rgba(53, 46, 42, 0.02);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .gr-tabs-slider {
@@ -164,19 +165,21 @@ html, body {
   top: 4px;
   bottom: 4px;
   left: 4px;
+  /* Default for 3 slots — overridden by dynamic <style> for other counts */
   width: calc((100% - 8px) / 3);
   background: var(--accent-gold);
   border-radius: var(--radius-pill);
   z-index: 1;
   box-shadow: 0 3px 8px rgba(var(--accent-gold-rgb), 0.25);
-  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.gr-tabs[data-active="1"] .gr-tabs-slider {
-  transform: translateX(100%);
-}
-.gr-tabs[data-active="2"] .gr-tabs-slider {
-  transform: translateX(200%);
-}
+
+/* Static 3-slot positions (still needed until stream-library injects dynamic ones) */
+.gr-tabs[data-active="0"] .gr-tabs-slider { transform: translateX(0%); }
+.gr-tabs[data-active="1"] .gr-tabs-slider { transform: translateX(100%); }
+.gr-tabs[data-active="2"] .gr-tabs-slider { transform: translateX(200%); }
+.gr-tabs[data-active="3"] .gr-tabs-slider { transform: translateX(300%); }
+.gr-tabs[data-active="4"] .gr-tabs-slider { transform: translateX(400%); }
 
 .gr-tab {
   flex: 1;
@@ -192,18 +195,35 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   position: relative;
   z-index: 2;
   transition: color 0.25s ease;
+  padding: 0 6px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.gr-tab.active {
-  color: #FFFFFF;
+.gr-tab.active { color: #FFFFFF; }
+
+/* Icon-only mode (4–5 slots) */
+.gr-tab.icon-only {
+  font-size: 0;    /* hide any text that leaked */
+  gap: 0;
+  padding: 0 2px;
 }
 .gr-tab-icon {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
 }
+.gr-tab-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+
 
 /* ─── ALBUM ARTWORK CARD ─── */
 .gr-card-wrapper {
@@ -1067,5 +1087,31 @@ html, body {
   --shadow-sm:          0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-md:          0 12px 28px rgba(0, 0, 0, 0.5);
   --shadow-lg:          0 24px 48px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── SCREEN HEIGHT SCALING INSIGHTS ─── */
+@media (max-height: 780px) {
+  :root { --section-gap: 12px; }
+  .gr-card { padding: 12px; gap: 8px; }
+  .gr-card-media { max-height: 200px; }
+  .gr-ctrl-btn { width: 40px; height: 40px; }
+  .gr-play-btn { width: 56px; height: 56px; }
+}
+
+@media (max-height: 700px) {
+  :root { --section-gap: 8px; }
+  .gr-card { padding: 10px; gap: 6px; }
+  .gr-card-media { max-height: 150px; }
+  .gr-ctrl-btn { width: 36px; height: 36px; }
+  .gr-play-btn { width: 48px; height: 48px; }
+  .gr-utility-panel { padding-top: 4px; }
+  .gr-util-icon-circle { width: 36px; height: 36px; }
+}
+
+@media (max-height: 640px) {
+  :root { --section-gap: 6px; }
+  .gr-card-media { max-height: 120px; }
+  .gr-util-label { font-size: 9px; }
+  .gr-util-icon-circle { width: 32px; height: 32px; }
 }
 

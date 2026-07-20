@@ -22,7 +22,22 @@
   const CDN_BASE_R2 = 'https://pub-525228169e0c44e38a67c306ba1a458c.r2.dev';
   const CDN_BASE_SIMRAN = 'https://pub-8bf31fc1f2a44451b40a3ded7e07fac2.r2.dev/waheguru';
   const SGPC_LIVE = 'https://live.sgpc.net:8443/;nocache=1';
-  
+
+  // ── HTTPS proxy for HTTP Icecast streams ──
+  // On HTTPS web (Vercel), browsers block http:// audio (mixed content).
+  // We proxy via /api/stream?url=... edge function.
+  // On Capacitor (Android/iOS), http is allowed via usesCleartextTraffic.
+  const IS_CAPACITOR = !!(window.Capacitor && window.Capacitor.isNative);
+  const IS_HTTPS_WEB  = !IS_CAPACITOR && location.protocol === 'https:';
+
+  function toProxiedUrl(rawUrl) {
+    if (!rawUrl) return rawUrl;
+    if (!IS_HTTPS_WEB) return rawUrl;          // Capacitor / http:// local – use as-is
+    if (rawUrl.startsWith('https://')) return rawUrl; // already HTTPS – no proxy needed
+    // HTTP stream on HTTPS web → route through edge proxy
+    return '/api/stream?url=' + encodeURIComponent(rawUrl);
+  }
+
   const VIRTUAL_LIVE_EPOCH_START = 1704067200; // 2024-01-01 00:00:00 UTC
   
   const AMRITVELA_KNOWN_DURATIONS = {
@@ -141,6 +156,134 @@
         const filename = simranTracks[safeIndex];
         return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?v=2.1.5`;
       }
+    },
+    // GurbaniSewa streams
+    gs_akhand: {
+      name: 'Akhand Paath',
+      subtitle: 'Non-stop Paath',
+      url: 'http://radio.gurbanisewa.org:8000/stream',
+      type: 'live'
+    },
+    gs_simran_gm: {
+      name: 'Simran — Gur Mantar',
+      subtitle: 'Gur Mantar Simran',
+      url: 'http://radio.gurbanisewa.org:8003/stream',
+      type: 'live'
+    },
+    gs_simran_mm: {
+      name: 'Simran — Mool Mantar',
+      subtitle: 'Mool Mantar Simran',
+      url: 'http://radio.gurbanisewa.org:8002/stream',
+      type: 'live'
+    },
+    gs_kirtan: {
+      name: 'Kirtan — Gurbani',
+      subtitle: 'Gurbani Kirtan',
+      url: 'http://radio.gurbanisewa.org:8001/stream',
+      type: 'live'
+    },
+    gs_darbar_sgpc: {
+      name: 'Kirtan — Darbar Sahib (SGPC)',
+      subtitle: 'SGPC Live Stream',
+      url: 'http://sgpc.net:8000/listen.ols',
+      type: 'live'
+    },
+    gs_puratan: {
+      name: 'Kirtan — Puratan',
+      subtitle: 'Classical Kirtan',
+      url: 'http://radio.gurbanisewa.org:8008/stream',
+      type: 'live'
+    },
+    gs_raag: {
+      name: 'Kirtan — Raag',
+      subtitle: 'Raag Kirtan',
+      url: 'http://radio.gurbanisewa.org:8009/stream',
+      type: 'live'
+    },
+    gs_katha_g: {
+      name: 'Katha — Gurbani',
+      subtitle: 'Gurbani Katha',
+      url: 'http://radio.gurbanisewa.org:8013/stream',
+      type: 'live'
+    },
+    gs_katha_sggs: {
+      name: 'Katha — Sri Guru Granth Sahib',
+      subtitle: 'SGGS Katha',
+      url: 'http://radio.gurbanisewa.org:8011/stream',
+      type: 'live'
+    },
+    gs_katha_sdgs: {
+      name: 'Katha — Sri Dasam Granth',
+      subtitle: 'Dasam Granth Katha',
+      url: 'http://radio.gurbanisewa.org:8014/stream',
+      type: 'live'
+    },
+    gs_katha_itihaas: {
+      name: 'Katha — Itihaas',
+      subtitle: 'Sikh History Katha',
+      url: 'http://radio.gurbanisewa.org:8012/stream',
+      type: 'live'
+    },
+    gs_katha_sawal: {
+      name: 'Katha — Gurmat Sawal Jawab',
+      subtitle: 'Q&A Katha',
+      url: 'http://radio.gurbanisewa.org:8015/stream',
+      type: 'live'
+    },
+    gs_audiobooks: {
+      name: 'Audio Books',
+      subtitle: 'Sikh Literature',
+      url: 'http://radio.gurbanisewa.org:8005/stream',
+      type: 'live'
+    },
+    gs_kavishri: {
+      name: 'Kavishri / Dhadi',
+      subtitle: 'Kavishri & Dhadi Vaaran',
+      url: 'http://radio.gurbanisewa.org:8007/stream',
+      type: 'live'
+    },
+    gs_sarabrog: {
+      name: 'Sarab Rog Ka Aukhad Naam',
+      subtitle: 'Healing Naam',
+      url: 'http://radio.gurbanisewa.org:8004/stream',
+      type: 'live'
+    },
+    gs_sahibzadey: {
+      name: 'Sahibzadey Sewa Dal',
+      subtitle: 'Sewa Dal Kirtan',
+      url: 'http://radio.gurbanisewa.org:8016/stream',
+      type: 'live'
+    },
+    gs_paath_sdgs: {
+      name: 'Paath — Sri Dasam Granth',
+      subtitle: 'Dasam Granth Paath',
+      url: 'http://radio.gurbanisewa.org:8007/stream',
+      type: 'live'
+    },
+    gs_sukhmani: {
+      name: 'Paath — Sukhmani Sahib',
+      subtitle: 'Sukhmani Sahib Paath',
+      url: 'http://radio.gurbanisewa.org:8017/stream',
+      type: 'live'
+    },
+    // SikhNet streams
+    sn_bangla: {
+      name: 'Gurdwara Bangla Sahib',
+      subtitle: 'SikhNet Radio',
+      url: 'https://play.sikhnet.com/radio/banglasahib',
+      type: 'live'
+    },
+    sn_hazur: {
+      name: 'Takhat Sri Hazur Sahib',
+      subtitle: 'SikhNet Radio',
+      url: 'https://www.sikhnet.com/s/sikhnetradio',
+      type: 'live'
+    },
+    sn_dukh: {
+      name: 'Gurdwara Dukh Niwaran Sahib',
+      subtitle: 'SikhNet Radio (Ludhiana)',
+      url: 'https://www.sikhnet.com/s/sikhnetradio',
+      type: 'live'
     }
   };
 
@@ -500,10 +643,13 @@
 
   // ─── DARBAR LIVE STREAM MANAGER ───
   const DarbarLiveManager = {
-    play() {
-      const url = SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000;
-      currentTrackTitle = 'Darbar Sahib Live';
-      currentTrackArtist = 'Sri Harmandir Sahib Ji, Amritsar';
+    play(streamName) {
+      const streamObj = streamName ? STREAMS[streamName] : null;
+      const rawUrl = (streamObj && streamObj.url) ? streamObj.url : (SGPC_LIVE + '?t=' + Math.floor(Date.now() / 5000) * 5000);
+      const url = toProxiedUrl(rawUrl);
+
+      currentTrackTitle = streamObj ? streamObj.name : 'Darbar Sahib Live';
+      currentTrackArtist = streamObj ? (streamObj.subtitle || streamObj.artist || '') : 'Sri Harmandir Sahib Ji, Amritsar';
       updateMediaSession();
 
       // Force 'auto' preload for live Shoutcast stream to bypass metadata load stalls
@@ -518,7 +664,7 @@
     pauseAnchor = null;
 
     if (STREAMS[streamName].type === 'live') {
-      DarbarLiveManager.play();
+      DarbarLiveManager.play(streamName);
       return;
     }
 
@@ -626,6 +772,10 @@
     };
     persistState();
     _nativeServiceStarted = false;
+    // Update MediaSession so Android notification shows Paused (not Playing)
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'paused';
+    }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
       try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
     }
@@ -675,6 +825,11 @@
     pauseAnchor = null;
     persistState();
     _nativeServiceStarted = false;
+    // Clear MediaSession so Android removes the notification entirely
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
+    }
     if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioService) {
       try { window.Capacitor.Plugins.AudioService.stop(); } catch(e) { /* silently fail */ }
     }
@@ -809,6 +964,7 @@
         album: 'ANHAD',
         artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/png' }]
       });
+      navigator.mediaSession.playbackState = 'playing';
       navigator.mediaSession.setActionHandler('play', () => resume());
       navigator.mediaSession.setActionHandler('pause', () => pause());
       navigator.mediaSession.setActionHandler('stop', () => stop());
@@ -895,6 +1051,11 @@
     if (stream) play(stream);
   });
 
+  function registerStream(id, streamObj) {
+    if (!id || !streamObj) return;
+    STREAMS[id] = streamObj;
+  }
+
   // Export Unified Singleton API
   window.AnhadAudio = {
     _singleton: true,
@@ -907,6 +1068,7 @@
     jumpToLive,
     playNextTrack,
     setVolume,
+    registerStream,
     getState: getPublicState,
     getAudio: () => PlaybackQueueController.audio,
     isPlaying: () => isPlaying,
@@ -915,7 +1077,7 @@
     getCurrentTrackArtist: () => currentTrackArtist,
     on,
     off,
-    STREAMS: Object.keys(STREAMS),
+    get STREAMS() { return Object.keys(STREAMS); },
     getStreamInfo: (name) => STREAMS[name] ? { ...STREAMS[name] } : null,
     getLiveOffset,
     getLiveDrift,
