@@ -100,6 +100,31 @@
     --event-title-shadow: 0 1px 1px rgba(255,255,255,0.6);
 }
 
+/* Night Time — Dark mode colors (8:00 PM to 5:00 AM) — HOME PAGE ONLY */
+[data-anhad-home][data-theme-mode="auto"][data-time-of-day="night"] {
+    /* Same as dark mode exactly */
+    --bg-primary: #1C1C1E;
+    --bg-secondary: #2C2C2E;
+    --bg-tertiary: #3A3A3C;
+    --text-primary: #F5F5F7;
+    --text-secondary: #8E8E93;
+    --text-accent: #0A84FF;
+    --border-color: rgba(255, 255, 255, 0.15);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --highlight-color: #FFD60A;
+    --btn-bg: #0A84FF;
+    --btn-text: #FFFFFF;
+    /* Card gradients — dark mode versions */
+    --card-green-gradient: linear-gradient(140deg, #1C3D2A 0%, #2D4A3E 100%);
+    --card-gold-gradient: linear-gradient(140deg, #3D2D1C 0%, #4A3D2A 100%);
+    --card-purple-gradient: linear-gradient(140deg, #2D1C3D 0%, #3A2D4A 100%);
+    --card-blue-gradient: linear-gradient(140deg, #1C2D3D 0%, #2A3D4A 100%);
+    --card-rose-gradient: linear-gradient(140deg, #3D1C2D 0%, #4A2A3D 100%);
+    --card-event-gradient: linear-gradient(160deg, #2D2D1C 0%, #3D3D2A 25%, #4A4A2D 50%, #3D3D1C 75%, #2D2D2A 100%);
+    --event-title-color: #F5F5F7;
+    --event-title-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 /* Evening / Golden Hour — Warm Amber shades (4:00 PM to 8:00 PM) — HOME PAGE ONLY */
 [data-anhad-home][data-theme-mode="auto"][data-time-of-day="evening"] {
     --bg-primary: #FFF8E7;

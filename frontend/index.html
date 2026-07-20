@@ -414,14 +414,14 @@
        TIME-BASED COLOR PALETTE FOR HEADER BUTTONS (AUTO MODE)
        ═══════════════════════════════════════════════════════════════ */
     
-    /* DAY TIME: Light blue tint */
+    /* DAY TIME: Same as light mode — neutral white glass, no sky-blue tint */
     [data-theme-mode="auto"][data-time-of-day="day"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="day"] .header__right {
-      background: rgba(220, 244, 255, 0.15) !important;
-      border: 0.5px solid rgba(80, 160, 230, 0.25) !important;
+      background: rgba(255, 255, 255, 0.72) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(80, 160, 230, 0.15),
-        inset 0 1px 1px rgba(200, 230, 255, 0.2) !important;
+        0 2px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
     }
     
     /* MORNING TIME: Peach/warm tint */
@@ -444,25 +444,25 @@
         inset 0 1px 1px rgba(255, 240, 220, 0.2) !important;
     }
     
-    /* NIGHT TIME: Golden/amber tint */
+    /* NIGHT TIME: Dark mode glass — matches data-theme=dark styling */
     [data-theme-mode="auto"][data-time-of-day="night"] .header__left,
     [data-theme-mode="auto"][data-time-of-day="night"] .header__right {
-      background: rgba(212, 148, 58, 0.08) !important;
-      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(212, 148, 58, 0.12),
-        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+        0 2px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
     /* CENTER TITLE PILL TIME-BASED COLORS */
     
-    /* DAY TIME: Light blue tint */
+    /* DAY TIME: Same as light mode — neutral white glass, no sky-blue tint */
     [data-theme-mode="auto"][data-time-of-day="day"] .anhad-title-pill {
-      background: rgba(220, 244, 255, 0.12) !important;
-      border: 0.5px solid rgba(80, 160, 230, 0.22) !important;
+      background: rgba(255, 255, 255, 0.68) !important;
+      border: 0.5px solid rgba(0, 0, 0, 0.07) !important;
       box-shadow: 
-        0 2px 12px rgba(80, 160, 230, 0.12),
-        inset 0 1px 1px rgba(200, 230, 255, 0.18) !important;
+        0 2px 12px rgba(0, 0, 0, 0.07),
+        inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
     }
     
     /* MORNING TIME: Peach tint */
@@ -483,13 +483,13 @@
         inset 0 1px 1px rgba(255, 240, 220, 0.18) !important;
     }
     
-    /* NIGHT TIME: Golden tint */
+    /* NIGHT TIME: Dark mode glass — matches data-theme=dark styling */
     [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill {
-      background: rgba(212, 148, 58, 0.08) !important;
-      border: 0.5px solid rgba(212, 148, 58, 0.18) !important;
+      background: rgba(255, 255, 255, 0.04) !important;
+      border: 0.5px solid rgba(255, 255, 255, 0.08) !important;
       box-shadow: 
-        0 2px 12px rgba(212, 148, 58, 0.12),
-        inset 0 1px 1px rgba(255, 230, 180, 0.1) !important;
+        0 2px 12px rgba(0, 0, 0, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
     }
     
     /* CENTER TITLE - SEPARATE WATERDROPLET */
@@ -561,12 +561,12 @@
       -webkit-text-fill-color: #8B3A0E !important;
     }
     
-    /* NIGHT TIME: Soft golden title (not glowing) */
+    /* NIGHT TIME: Bright golden title on dark bg — same as dark mode */
     [data-theme-mode="auto"][data-time-of-day="night"] .anhad-title-pill h1.header__title,
     [data-theme-mode="auto"][data-time-of-day="night"] h1.header__title {
-      color: #D4AF37 !important;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-      -webkit-text-fill-color: #D4AF37 !important;
+      color: #FFEB3B !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6) !important;
+      -webkit-text-fill-color: #FFEB3B !important;
     }
     
     /* LIGHT MODE: Dark title for visibility */
@@ -2647,7 +2647,7 @@
         <button class="header__btn ios-haptic" id="settingsBtn"
            aria-label="Settings"
            title="Settings"
-           onclick="window.location.href='./Settings/index.html'"
+           onclick="try{sessionStorage.setItem('anhad_welcomed','1');localStorage.setItem('anhad_welcome_seen','true');localStorage.setItem('anhad_session_active_ts',Date.now().toString());}catch(e){} window.location.href='./Settings/index.html'"
            style="display: flex; align-items: center; justify-content: center; border: none; background: inherit; cursor: pointer;">
           <span class="ios-emoji" role="img" aria-label="settings" style="font-size: 20px;">⚙️</span>
         </button>

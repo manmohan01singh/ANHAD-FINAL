@@ -702,15 +702,9 @@
       }
     });
 
-    // Settings icon — opens Stream Library
-    document.getElementById('grSettingsBtn').addEventListener('click', function () {
-      haptic('LIGHT');
-      if (window.GurbaniStreamLib) {
-        window.GurbaniStreamLib.open();
-      } else {
-        showToast('⏰ Theme is set automatically based on time of day');
-      }
-    });
+    // Settings icon — handled exclusively by stream-library.js patchSettingsButton()
+    // stream-library.js replaces the button and wires its own click to openSheet()
+    // No binding needed here.
 
     // Play/Pause toggle
     DOM.playBtn.addEventListener('click', function () {
