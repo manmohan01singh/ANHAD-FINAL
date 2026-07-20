@@ -46,7 +46,7 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
     0 0 0 1px rgba(255, 255, 255, 0.5) inset !important;
 }
 
-/* Tab Item Styles - Unified */
+/* Tab Item Styles - Unified - BRIGHT ICONS */
 .tab-item {
   display: flex !important;
   flex-direction: column !important;
@@ -56,8 +56,9 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
   padding: 8px 18px !important;
   border-radius: 20px !important;
   text-decoration: none !important;
-  color: rgba(255, 255, 255, 0.5) !important;
-  transition: color 0.15s ease !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  /* FIXED: Increased from 0.5 to 0.95 - icons now bright */
+  transition: color 0.15s ease, background 0.2s ease !important;
   position: relative !important;
   flex: 1 !important;
   min-width: 60px !important;
@@ -65,12 +66,33 @@ html:not([data-theme="dark"]):not(.dark-mode) .tab-bar {
 
 [data-theme="light"] .tab-item,
 html:not([data-theme="dark"]):not(.dark-mode) .tab-item {
-  color: rgba(0, 0, 0, 0.4) !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+  /* FIXED: Increased from 0.4 to 0.85 - light mode icons bright */
 }
 
+/* ACTIVE TAB - Claymorphism Highlighted Bar */
 .tab-item.active {
   color: #FF3B30 !important;
-  background: rgba(255, 59, 48, 0.1) !important;
+  /* Soft cushion clay effect */
+  background: linear-gradient(145deg, rgba(255, 245, 245, 0.95), rgba(255, 230, 230, 0.9)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 
+    3px 3px 8px rgba(255, 59, 48, 0.15),
+    -3px -3px 8px rgba(255, 255, 255, 0.95),
+    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.95),
+    inset -1.5px -1.5px 3px rgba(255, 59, 48, 0.08) !important;
+}
+
+/* Dark mode active tab */
+[data-theme="dark"] .tab-item.active,
+html.dark-mode .tab-item.active {
+  background: linear-gradient(145deg, rgba(40, 40, 42, 0.9), rgba(30, 30, 32, 0.85)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    3px 3px 10px rgba(0, 0, 0, 0.5),
+    -3px -3px 10px rgba(255, 255, 255, 0.05),
+    inset 1.5px 1.5px 3px rgba(0, 0, 0, 0.3),
+    inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.05) !important;
 }
 
 .tab-item.active .tab-icon {
