@@ -1799,95 +1799,96 @@ a,
     inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
 }
 
-/* ── DAY AUTO: Same light-mode claymorphism — no sky-blue glass ── */
-[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
-  box-shadow:
-    8px 8px 20px rgba(212, 148, 58, 0.15),
-    -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.9),
-    inset -4px -4px 10px rgba(212, 148, 58, 0.08) !important;
-  border: 2px solid rgba(255, 255, 255, 0.85) !important;
-  border-radius: 30px !important;
-}
-[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--sehaj {
-  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
-  box-shadow:
-    8px 8px 20px rgba(88, 86, 214, 0.12),
-    -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.9),
-    inset -4px -4px 10px rgba(88, 86, 214, 0.08) !important;
-  border: 2px solid rgba(255, 255, 255, 0.85) !important;
-  border-radius: 30px !important;
-}
-[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--hukam {
-  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
-  box-shadow:
-    8px 8px 20px rgba(255, 149, 0, 0.12),
-    -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.9),
-    inset -4px -4px 10px rgba(255, 149, 0, 0.08) !important;
-  border: 2px solid rgba(255, 255, 255, 0.85) !important;
-  border-radius: 30px !important;
-}
+/* ── DAY AUTO: Light Sky Blue Claymorphism — ALL cards unified ── */
+/* Practice Cards — base sky blue */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card {
-  background: linear-gradient(165deg, #FAF8F5 0%, #F2F2F7 100%) !important;
+  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(0, 0, 0, 0.07),
+    8px 8px 20px rgba(59, 130, 246, 0.10),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.9),
-    inset -4px -4px 10px rgba(0, 0, 0, 0.04) !important;
-  border: 2px solid rgba(255, 255, 255, 0.85) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
+    inset -4px -4px 10px rgba(59, 130, 246, 0.06) !important;
+  border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card {
+/* Nitnem — sky teal tint */
+[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem {
+  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 50%, #BAE6FD 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(0, 0, 0, 0.06),
+    8px 8px 20px rgba(14, 165, 233, 0.12),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 3px 3px 8px rgba(255, 255, 255, 0.85),
-    inset -3px -3px 8px rgba(0, 0, 0, 0.04) !important;
-  border: 2px solid rgba(255, 255, 255, 0.7) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
+    inset -4px -4px 10px rgba(14, 165, 233, 0.07) !important;
+  border: 2px solid rgba(255, 255, 255, 0.88) !important;
+  border-radius: 30px !important;
+}
+/* Sehaj Paath — soft lavender-blue */
+[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--sehaj {
+  background: linear-gradient(165deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
+  box-shadow:
+    8px 8px 20px rgba(56, 189, 248, 0.10),
+    -6px -6px 18px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
+    inset -4px -4px 10px rgba(56, 189, 248, 0.06) !important;
+  border: 2px solid rgba(255, 255, 255, 0.88) !important;
+  border-radius: 30px !important;
+}
+/* Hukamnama — cornflower-blue */
+[data-theme-mode="auto"][data-time-of-day="day"] .practice-card--hukam {
+  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 50%, #C7D2FE 100%) !important;
+  box-shadow:
+    8px 8px 20px rgba(99, 102, 241, 0.10),
+    -6px -6px 18px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
+    inset -4px -4px 10px rgba(99, 102, 241, 0.06) !important;
+  border: 2px solid rgba(255, 255, 255, 0.88) !important;
+  border-radius: 30px !important;
+}
+/* Quick Access Cards — all unified sky blue */
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
+  box-shadow:
+    8px 8px 20px rgba(59, 130, 246, 0.08),
+    -6px -6px 18px rgba(255, 255, 255, 0.95),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.88),
+    inset -3px -3px 8px rgba(59, 130, 246, 0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.85) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--green {
-  background: linear-gradient(140deg, #E8F5E9 0%, #C8E6C9 100%) !important;
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--green,
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--gold,
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--purple,
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--blue,
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--rose,
+[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--teal {
+  background: linear-gradient(140deg, #EFF8FF 0%, #DBEAFE 100%) !important;
 }
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--gold {
-  background: linear-gradient(140deg, #FFF8E1 0%, #FFECB3 100%) !important;
-}
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--purple {
-  background: linear-gradient(140deg, #EDE7F6 0%, #D1C4E9 100%) !important;
-}
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--blue {
-  background: linear-gradient(140deg, #E3F2FD 0%, #BBDEFB 100%) !important;
-}
-[data-theme-mode="auto"][data-time-of-day="day"] .quick-card--rose {
-  background: linear-gradient(140deg, #FFEBEE 0%, #FFCDD2 100%) !important;
-}
+/* Progress Bar — sky blue cushion */
 [data-theme-mode="auto"][data-time-of-day="day"] .progress-inline {
   border-radius: 36px !important;
   padding: 14px 20px !important;
-  background: linear-gradient(165deg, #f5f5f7 0%, #ebebf0 100%) !important;
+  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(0, 0, 0, 0.07),
+    8px 8px 20px rgba(59, 130, 246, 0.08),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.95),
-    inset -4px -4px 10px rgba(0, 0, 0, 0.04) !important;
-  border: 2px solid rgba(255, 255, 255, 0.7) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
+    inset -4px -4px 10px rgba(59, 130, 246, 0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.82) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+/* Event Card — soft sky blue clay */
 [data-theme-mode="auto"][data-time-of-day="day"] .event-card {
-  background: var(--card-event-gradient, linear-gradient(160deg, #FFFCF8 0%, #FFF8EE 25%, #FFF2E0 50%, #FFE8C8 75%, #FFECB3 100%)) !important;
+  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 60%, #C7D2FE 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(0, 0, 0, 0.07),
-    -6px -6px 18px rgba(255, 255, 255, 0.9),
-    inset 3px 3px 8px rgba(255, 255, 255, 0.85),
-    inset -3px -3px 8px rgba(0, 0, 0, 0.04) !important;
-  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    8px 8px 20px rgba(59, 130, 246, 0.08),
+    -6px -6px 18px rgba(255, 255, 255, 0.95),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.90),
+    inset -3px -3px 8px rgba(59, 130, 246, 0.05) !important;
+  border: 2px solid rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -2009,11 +2010,11 @@ a,
 }
 [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--sehaj,
 [data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--purple {
-  background: linear-gradient(145deg, #FFFAFA, #FFE0DB) !important;
-  box-shadow: 4px 4px 10px rgba(180, 100, 100, 0.08), 
+  background: linear-gradient(145deg, #FFFDF9, #FFE0CC) !important;
+  box-shadow: 4px 4px 10px rgba(232, 130, 80, 0.08), 
               -4px -4px 10px rgba(255, 255, 255, 0.95), 
               inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
-              inset -2px -2px 4px rgba(180, 100, 100, 0.05) !important;
+              inset -2px -2px 4px rgba(232, 130, 80, 0.05) !important;
 }
 [data-theme-mode="auto"][data-time-of-day="morning"] .practice-card--hukam,
 [data-theme-mode="auto"][data-time-of-day="morning"] .quick-card--green {
@@ -2351,5 +2352,62 @@ body,
 [data-theme="dark"] .practice-card__ring-icon,
 [data-theme="dark"] .quick-card__icon {
   transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   § 20. GLOBAL SCROLL PERFORMANCE — All Themes, All Devices
+   Eliminates repaint jank during scroll by:
+   1. GPU-compositing every card onto its own layer (translateZ)
+   2. Disabling expensive backdrop-filter + transitions while scrolling
+   3. Using CSS containment to limit paint scope
+———————————————————————————————————————————————————————————————————————————————
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Base GPU layer promotion for ALL cards — all themes */
+.quick-card,
+.practice-card,
+.event-card,
+.nitnem-card,
+.fav-card,
+.insight-card,
+.progress-inline,
+.hero-card {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: auto;
+  contain: layout style;
+}
+
+/* Font smoothing — all themes */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* SCROLL STATE: When body has .scrolling class (added by JS), kill ALL expensive
+   effects so the compositor thread can scroll at 60fps uninterrupted */
+body.scrolling .quick-card,
+body.scrolling .practice-card,
+body.scrolling .event-card,
+body.scrolling .nitnem-card,
+body.scrolling .fav-card,
+body.scrolling .insight-card,
+body.scrolling .progress-inline,
+body.scrolling .hero-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Nav glass: always composited for sticky positioning stability */
+.nav-glass,
+.app-header,
+.header-bar {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   will-change: transform;
 }
