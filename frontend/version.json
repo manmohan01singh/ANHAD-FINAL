@@ -1,7 +1,7 @@
 {
-  "version": "4.0.2",
-  "buildTime": "2026-07-20T01:35:00.000Z",
-  "timestamp": 1784511300000,
-  "commitHash": "stream-proxy",
+  "version": "4.0.3",
+  "buildTime": "2026-07-20T02:27:00.000Z",
+  "timestamp": 1784514420000,
+  "commitHash": "ui-settings-fix",
   "branch": "main"
 }

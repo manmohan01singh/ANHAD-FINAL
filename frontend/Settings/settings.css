@@ -215,7 +215,10 @@ html[data-theme="dark"] .settings-item__label {
 
 @media (max-width: 640px) {
   .settings-page {
-    padding: 16px 0;
+    padding-left: 0;
+    padding-right: 0;
+    /* Keep padding-top from base rule (calc with safe-area + 64px nav) */
+    padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
   }
 
   .settings-section {

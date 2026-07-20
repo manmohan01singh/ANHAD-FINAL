@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.0.2'; // Stream proxy fix: HTTP streams now proxied via /api/stream on HTTPS web
+const CACHE_VERSION = 'anhad-v9.0.3'; // Stream library UI + Settings overflow fix
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
