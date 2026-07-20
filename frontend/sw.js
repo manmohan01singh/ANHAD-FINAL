@@ -12,7 +12,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
-const CACHE_VERSION = 'anhad-v9.2.0'; // Day=sky-blue clay cards, morning colors, global scroll perf
+const CACHE_VERSION = 'anhad-v9.3.0'; // Curved distinct practice cards in day mode, evening peach alignment, scroll flicker fix, HTTPS sikhnet streams
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;

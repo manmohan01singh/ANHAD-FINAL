@@ -12,35 +12,17 @@
 
   // ─── ALL AVAILABLE STREAMS ───────────────────────────────────────
   var ALL_STREAMS = [
-    // ── Core 3 (always built-in) ─
-    { id: 'darbar',    name: 'Darbar Sahib Live',          sub: 'Sri Harmandir Sahib Ji',        emoji: '🎙️', url: null,   fixed: true  },
-    { id: 'amritvela', name: 'Amritvela Kirtan',           sub: 'Daily recitals',                emoji: '🌅', url: null,   fixed: true  },
-    { id: 'simran',    name: 'Waheguru Simran',             sub: 'Waheguru Naam Jaap',            emoji: '📿', url: null,   fixed: true  },
+    // ── Core 3 (always built-in, fixed) ─
+    { id: 'darbar',    name: 'Darbar Sahib Live',          sub: 'Sri Harmandir Sahib Ji',          emoji: '🎙️', url: null, fixed: true  },
+    { id: 'amritvela', name: 'Amritvela Kirtan',           sub: 'ਅੰਮ੍ਰਿਤ ਵੇਲੇ ਦੀ ਬਾਣੀ',             emoji: '🌅', url: null, fixed: true  },
+    { id: 'simran',    name: 'Waheguru Simran',             sub: 'Waheguru Naam Jaap',              emoji: '📿', url: null, fixed: true  },
 
-    // ── GurbaniSewa streams ─
-    { id: 'gs_akhand',      name: 'Akhand Paath',                   sub: 'Non-stop Paath',              emoji: '📖', url: 'http://radio.gurbanisewa.org:8000/stream' },
-    { id: 'gs_simran_gm',   name: 'Simran — Gur Mantar',            sub: 'Gur Mantar Simran',           emoji: '🕉️',  url: 'http://radio.gurbanisewa.org:8003/stream' },
-    { id: 'gs_simran_mm',   name: 'Simran — Mool Mantar',           sub: 'Mool Mantar Simran',          emoji: '🙏', url: 'http://radio.gurbanisewa.org:8002/stream', offline: true },
-    { id: 'gs_kirtan',      name: 'Kirtan — Gurbani',               sub: 'Gurbani Kirtan',              emoji: '🎵', url: 'http://radio.gurbanisewa.org:8001/stream' },
-    { id: 'gs_darbar_sgpc', name: 'Kirtan — Darbar Sahib (SGPC)',   sub: 'SGPC Live Stream',            emoji: '🎙️', url: 'http://sgpc.net:8000/listen.ols'           },
-    { id: 'gs_puratan',     name: 'Kirtan — Puratan',               sub: 'Classical Kirtan',            emoji: '🎶', url: 'http://radio.gurbanisewa.org:8008/stream', offline: true },
-    { id: 'gs_raag',        name: 'Kirtan — Raag',                  sub: 'Raag Kirtan',                 emoji: '🎻', url: 'http://radio.gurbanisewa.org:8009/stream' },
-    { id: 'gs_katha_g',     name: 'Katha — Gurbani',                sub: 'Gurbani Katha',               emoji: '📚', url: 'http://radio.gurbanisewa.org:8013/stream' },
-    { id: 'gs_katha_sggs',  name: 'Katha — Sri Guru Granth Sahib',  sub: 'SGGS Katha',                  emoji: '📜', url: 'http://radio.gurbanisewa.org:8011/stream' },
-    { id: 'gs_katha_sdgs',  name: 'Katha — Sri Dasam Granth',       sub: 'Dasam Granth Katha',          emoji: '🗡️',  url: 'http://radio.gurbanisewa.org:8014/stream', offline: true },
-    { id: 'gs_katha_itihaas', name: 'Katha — Itihaas',             sub: 'Sikh History Katha',          emoji: '⚔️',  url: 'http://radio.gurbanisewa.org:8012/stream', offline: true },
-    { id: 'gs_katha_sawal',  name: 'Katha — Gurmat Sawal Jawab',    sub: 'Q&A Katha',                   emoji: '💬', url: 'http://radio.gurbanisewa.org:8015/stream', offline: true },
-    { id: 'gs_audiobooks',  name: 'Audio Books',                    sub: 'Sikh Literature',             emoji: '🎧', url: 'http://radio.gurbanisewa.org:8005/stream' },
-    { id: 'gs_kavishri',    name: 'Kavishri / Dhadi',               sub: 'Kavishri & Dhadi Vaaran',     emoji: '🥁', url: 'http://radio.gurbanisewa.org:8007/stream' },
-    { id: 'gs_sarabrog',    name: 'Sarab Rog Ka Aukhad Naam',        sub: 'Healing Naam',                emoji: '✨', url: 'http://radio.gurbanisewa.org:8004/stream', offline: true },
-    { id: 'gs_sahibzadey',  name: 'Sahibzadey Sewa Dal',            sub: 'Sewa Dal Kirtan',             emoji: '🏹', url: 'http://radio.gurbanisewa.org:8016/stream' },
-    { id: 'gs_paath_sdgs',  name: 'Paath — Sri Dasam Granth',       sub: 'Dasam Granth Paath',          emoji: '📖', url: 'http://radio.gurbanisewa.org:8017/stream' },
-    { id: 'gs_sukhmani',    name: 'Paath — Sukhmani Sahib',         sub: 'Sukhmani Sahib Paath',        emoji: '🌸', url: 'http://radio.gurbanisewa.org:8017/stream' },
-
-    // ── SikhNet gurdwaras ─
-    { id: 'sn_bangla',      name: 'Gurdwara Bangla Sahib',          sub: 'SikhNet Radio',               emoji: '🕌', url: 'https://play.sikhnet.com/radio/banglasahib' },
-    { id: 'sn_hazur',       name: 'Takhat Sri Hazur Sahib',         sub: 'SikhNet Radio',               emoji: '⚔️',  url: 'https://www.sikhnet.com/s/sikhnetradio' },
-    { id: 'sn_dukh',        name: 'Gurdwara Dukh Niwaran Sahib',   sub: 'SikhNet Radio (Ludhiana)',    emoji: '🛕', url: 'https://www.sikhnet.com/s/sikhnetradio' },
+    // ── Live Gurdwara Streams — HTTPS (radio.sikhnet.com/proxy, port 443) ─
+    { id: 'sn_bangla',  name: 'Gurdwara Bangla Sahib',     sub: 'New Delhi • Live',                emoji: '🕌', url: 'https://radio.sikhnet.com/proxy/gbanglasahib/live' },
+    { id: 'sn_sisganj', name: 'Gurdwara Sis Ganj Sahib',   sub: 'Chandni Chowk, Delhi • Live',     emoji: '⚔️',  url: 'https://radio.sikhnet.com/proxy/gsisganjsahib/live' },
+    { id: 'sn_hazur',   name: 'Takhat Sri Hazur Sahib',    sub: 'Nanded • Live Kirtan',            emoji: '🏯', url: 'https://radio.sikhnet.com/proxy/channel7/live' },
+    { id: 'sn_dukh',    name: 'Gurdwara Dukh Niwaran',     sub: 'Ludhiana • Live Kirtan',          emoji: '🛕', url: 'https://radio.sikhnet.com/proxy/channel10/live' },
+    { id: 'sn_raag',    name: 'Classical Raag Kirtan',      sub: 'SikhNet Channel 3',               emoji: '🎻', url: 'https://radio.sikhnet.com/proxy/channel3/stream_high_autodj' },
   ];
 
   // Default slot layout saved in localStorage key 'gr_custom_slots'

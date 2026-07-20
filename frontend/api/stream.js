@@ -14,6 +14,7 @@ const ALLOWED_HOSTS = [
   'radio.gurbanisewa.org',
   'sgpc.net',
   'live.sgpc.net',
+  'radio.sikhnet.com',   // HTTPS proxy streams — no port restrictions
   'play.sikhnet.com',
   'www.sikhnet.com',
 ];

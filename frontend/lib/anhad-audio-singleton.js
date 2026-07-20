@@ -157,132 +157,36 @@
         return `${CDN_BASE_SIMRAN}/${encodeURIComponent(filename)}?v=2.1.5`;
       }
     },
-    // GurbaniSewa streams
-    gs_akhand: {
-      name: 'Akhand Paath',
-      subtitle: 'Non-stop Paath',
-      url: 'http://radio.gurbanisewa.org:8000/stream',
-      type: 'live'
-    },
-    gs_simran_gm: {
-      name: 'Simran — Gur Mantar',
-      subtitle: 'Gur Mantar Simran',
-      url: 'http://radio.gurbanisewa.org:8003/stream',
-      type: 'live'
-    },
-    gs_simran_mm: {
-      name: 'Simran — Mool Mantar',
-      subtitle: 'Mool Mantar Simran',
-      url: 'http://radio.gurbanisewa.org:8002/stream',
-      type: 'live'
-    },
-    gs_kirtan: {
-      name: 'Kirtan — Gurbani',
-      subtitle: 'Gurbani Kirtan',
-      url: 'http://radio.gurbanisewa.org:8001/stream',
-      type: 'live'
-    },
-    gs_darbar_sgpc: {
-      name: 'Kirtan — Darbar Sahib (SGPC)',
-      subtitle: 'SGPC Live Stream',
-      url: 'http://sgpc.net:8000/listen.ols',
-      type: 'live'
-    },
-    gs_puratan: {
-      name: 'Kirtan — Puratan',
-      subtitle: 'Classical Kirtan',
-      url: 'http://radio.gurbanisewa.org:8008/stream',
-      type: 'live'
-    },
-    gs_raag: {
-      name: 'Kirtan — Raag',
-      subtitle: 'Raag Kirtan',
-      url: 'http://radio.gurbanisewa.org:8009/stream',
-      type: 'live'
-    },
-    gs_katha_g: {
-      name: 'Katha — Gurbani',
-      subtitle: 'Gurbani Katha',
-      url: 'http://radio.gurbanisewa.org:8013/stream',
-      type: 'live'
-    },
-    gs_katha_sggs: {
-      name: 'Katha — Sri Guru Granth Sahib',
-      subtitle: 'SGGS Katha',
-      url: 'http://radio.gurbanisewa.org:8011/stream',
-      type: 'live'
-    },
-    gs_katha_sdgs: {
-      name: 'Katha — Sri Dasam Granth',
-      subtitle: 'Dasam Granth Katha',
-      url: 'http://radio.gurbanisewa.org:8014/stream',
-      type: 'live'
-    },
-    gs_katha_itihaas: {
-      name: 'Katha — Itihaas',
-      subtitle: 'Sikh History Katha',
-      url: 'http://radio.gurbanisewa.org:8012/stream',
-      type: 'live'
-    },
-    gs_katha_sawal: {
-      name: 'Katha — Gurmat Sawal Jawab',
-      subtitle: 'Q&A Katha',
-      url: 'http://radio.gurbanisewa.org:8015/stream',
-      type: 'live'
-    },
-    gs_audiobooks: {
-      name: 'Audio Books',
-      subtitle: 'Sikh Literature',
-      url: 'http://radio.gurbanisewa.org:8005/stream',
-      type: 'live'
-    },
-    gs_kavishri: {
-      name: 'Kavishri / Dhadi',
-      subtitle: 'Kavishri & Dhadi Vaaran',
-      url: 'http://radio.gurbanisewa.org:8007/stream',
-      type: 'live'
-    },
-    gs_sarabrog: {
-      name: 'Sarab Rog Ka Aukhad Naam',
-      subtitle: 'Healing Naam',
-      url: 'http://radio.gurbanisewa.org:8004/stream',
-      type: 'live'
-    },
-    gs_sahibzadey: {
-      name: 'Sahibzadey Sewa Dal',
-      subtitle: 'Sewa Dal Kirtan',
-      url: 'http://radio.gurbanisewa.org:8016/stream',
-      type: 'live'
-    },
-    gs_paath_sdgs: {
-      name: 'Paath — Sri Dasam Granth',
-      subtitle: 'Dasam Granth Paath',
-      url: 'http://radio.gurbanisewa.org:8007/stream',
-      type: 'live'
-    },
-    gs_sukhmani: {
-      name: 'Paath — Sukhmani Sahib',
-      subtitle: 'Sukhmani Sahib Paath',
-      url: 'http://radio.gurbanisewa.org:8017/stream',
-      type: 'live'
-    },
-    // SikhNet streams
+    // ── SikhNet Live Gurdwara Streams (HTTPS, port 443, no proxy needed) ──
+    // Source: https://radio.sikhnet.com/proxy/ — verified 2025-07-20
     sn_bangla: {
       name: 'Gurdwara Bangla Sahib',
-      subtitle: 'SikhNet Radio',
-      url: 'https://play.sikhnet.com/radio/banglasahib',
+      subtitle: 'New Delhi • Live Kirtan',
+      url: 'https://radio.sikhnet.com/proxy/gbanglasahib/live',
+      type: 'live'
+    },
+    sn_sisganj: {
+      name: 'Gurdwara Sis Ganj Sahib',
+      subtitle: 'Chandni Chowk, Delhi • Live',
+      url: 'https://radio.sikhnet.com/proxy/gsisganjsahib/live',
       type: 'live'
     },
     sn_hazur: {
       name: 'Takhat Sri Hazur Sahib',
-      subtitle: 'SikhNet Radio',
-      url: 'https://www.sikhnet.com/s/sikhnetradio',
+      subtitle: 'Nanded • Live Kirtan',
+      url: 'https://radio.sikhnet.com/proxy/channel7/live',
       type: 'live'
     },
     sn_dukh: {
       name: 'Gurdwara Dukh Niwaran Sahib',
-      subtitle: 'SikhNet Radio (Ludhiana)',
-      url: 'https://www.sikhnet.com/s/sikhnetradio',
+      subtitle: 'Ludhiana • Live Kirtan',
+      url: 'https://radio.sikhnet.com/proxy/channel10/live',
+      type: 'live'
+    },
+    sn_raag: {
+      name: 'Classical Raag Kirtan',
+      subtitle: 'SikhNet Channel 3',
+      url: 'https://radio.sikhnet.com/proxy/channel3/stream_high_autodj',
       type: 'live'
     }
   };

@@ -1799,8 +1799,8 @@ a,
     inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
 }
 
-/* ── DAY AUTO: Light Sky Blue Claymorphism — ALL cards unified ── */
-/* Practice Cards — base sky blue */
+/* ── DAY AUTO: Light Sky Blue Claymorphism with distinct practice cards ── */
+/* Practice Cards — base sky blue fallback */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card {
   background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 100%) !important;
   box-shadow:
@@ -1813,36 +1813,36 @@ a,
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-/* Nitnem — sky teal tint */
+/* Nitnem — distinct warm spiritual gold */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--nitnem {
-  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 50%, #BAE6FD 100%) !important;
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFD8 50%, #FFE8D0 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(14, 165, 233, 0.12),
+    8px 8px 20px rgba(212, 148, 58, 0.12),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
-    inset -4px -4px 10px rgba(14, 165, 233, 0.07) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.95),
+    inset -4px -4px 10px rgba(212, 148, 58, 0.07) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
-/* Sehaj Paath — soft lavender-blue */
+/* Sehaj Paath — distinct soft lavender-purple */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--sehaj {
-  background: linear-gradient(165deg, #F0F9FF 0%, #E0F2FE 50%, #BAE6FD 100%) !important;
+  background: linear-gradient(165deg, #F8F5FF 0%, #F0EBFF 50%, #E8E8FF 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(56, 189, 248, 0.10),
+    8px 8px 20px rgba(88, 86, 214, 0.10),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
-    inset -4px -4px 10px rgba(56, 189, 248, 0.06) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.95),
+    inset -4px -4px 10px rgba(88, 86, 214, 0.06) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
-/* Hukamnama — cornflower-blue */
+/* Hukamnama — distinct warm peach-orange */
 [data-theme-mode="auto"][data-time-of-day="day"] .practice-card--hukam {
-  background: linear-gradient(165deg, #EFF8FF 0%, #DBEAFE 50%, #C7D2FE 100%) !important;
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFF0E8 50%, #FFE8D8 100%) !important;
   box-shadow:
-    8px 8px 20px rgba(99, 102, 241, 0.10),
+    8px 8px 20px rgba(255, 149, 0, 0.10),
     -6px -6px 18px rgba(255, 255, 255, 0.95),
-    inset 4px 4px 10px rgba(255, 255, 255, 0.90),
-    inset -4px -4px 10px rgba(99, 102, 241, 0.06) !important;
+    inset 4px 4px 10px rgba(255, 255, 255, 0.95),
+    inset -4px -4px 10px rgba(255, 149, 0, 0.06) !important;
   border: 2px solid rgba(255, 255, 255, 0.88) !important;
   border-radius: 30px !important;
 }
@@ -2086,7 +2086,7 @@ a,
 }
 [data-theme-mode="auto"][data-time-of-day="evening"] .practice-card--sehaj,
 [data-theme-mode="auto"][data-time-of-day="evening"] .quick-card--purple {
-  background: linear-gradient(145deg, #FFF8FA, #FFE0C8) !important;
+  background: linear-gradient(145deg, #FFFDF9, #FFE0CC) !important;
   box-shadow: 4px 4px 10px rgba(180, 110, 80, 0.08), 
               -4px -4px 10px rgba(255, 255, 255, 0.95), 
               inset 2px 2px 4px rgba(255, 255, 255, 0.95), 
@@ -2386,21 +2386,6 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* SCROLL STATE: When body has .scrolling class (added by JS), kill ALL expensive
-   effects so the compositor thread can scroll at 60fps uninterrupted */
-body.scrolling .quick-card,
-body.scrolling .practice-card,
-body.scrolling .event-card,
-body.scrolling .nitnem-card,
-body.scrolling .fav-card,
-body.scrolling .insight-card,
-body.scrolling .progress-inline,
-body.scrolling .hero-card {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  transition: none !important;
-  animation: none !important;
-}
 
 /* Nav glass: always composited for sticky positioning stability */
 .nav-glass,

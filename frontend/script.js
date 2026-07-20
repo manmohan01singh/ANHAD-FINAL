@@ -3112,12 +3112,6 @@ if ('serviceWorker' in navigator) {
             requestAnimationFrame(update);
             ticking = true;
         }
-        // PERF: add .scrolling to body so CSS can disable expensive effects
-        document.body.classList.add('scrolling');
-        clearTimeout(window._scrollEndTimer);
-        window._scrollEndTimer = setTimeout(() => {
-            document.body.classList.remove('scrolling');
-        }, 120);
     }, { passive: true });
 
     update();
